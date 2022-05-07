@@ -10,6 +10,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
+using Stylet;
 
 namespace PRM.Model.Protocol.Base
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -43,20 +44,17 @@ namespace PRM.Service
             {
                 kv.Value.Hide();
             }
-            foreach (var kv in _connectionId2Hosts.ToArray())
-            {
-                DelProtocolHost(kv.Key);
-            }
-            this.CleanupProtocolsAndWindows();
+            this.CloseProtocolHostAsync(_connectionId2Hosts.Keys.ToArray());
         }
 
         private string _lastTabToken = "";
-        private readonly Dictionary<string, TabWindowBase> _token2TabWindows = new Dictionary<string, TabWindowBase>();
-        private readonly Dictionary<string, HostBase> _connectionId2Hosts = new Dictionary<string, HostBase>();
-        private readonly Dictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new Dictionary<string, FullScreenWindowView>();
+        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new ConcurrentDictionary<string, TabWindowBase>();
+        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
+        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
+        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
 
         public int TabWindowCount => _token2TabWindows.Count;
-        public Dictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
+        public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
         private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
         {
@@ -168,12 +166,13 @@ namespace PRM.Service
 
         private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
         {
+            CleanupProtocolsAndWindows();
             // fullscreen normally
             var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-            _connectionId2Hosts.Add(host.ConnectionId, host);
+            _connectionId2Hosts.TryAdd(host.ConnectionId, host);
             host.OnClosed += this.OnProtocolClose;
             host.OnFullScreen2Window += this.MoveProtocolHostToTab;
             this.MoveProtocolHostToFullScreen(host.ConnectionId);
@@ -183,6 +182,7 @@ namespace PRM.Service
 
         private void ConnectWithTab(ProtocolBase protocol, Runner runner, string assignTabToken)
         {
+            CleanupProtocolsAndWindows();
             // open SFTP when SSH is connected.
             if (protocol is SSH { OpenSftpOnConnected: true } ssh)
             {
@@ -217,7 +217,7 @@ namespace PRM.Service
             host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += this.MoveProtocolHostToTab;
             tab.AddItem(new TabItemViewModel(host, protocol.DisplayName));
-            _connectionId2Hosts.Add(host.ConnectionId, host);
+            _connectionId2Hosts.TryAdd(host.ConnectionId, host);
             host.Conn();
             tab.Activate();
         }
@@ -299,7 +299,7 @@ namespace PRM.Service
 
         private void OnProtocolClose(string connectionId)
         {
-            this.DelProtocolHost(connectionId);
+            this.CloseProtocolHostAsync(connectionId);
         }
 
         public void AddTab(TabWindowBase tab)
@@ -307,7 +307,7 @@ namespace PRM.Service
             var token = tab.Token;
             Debug.Assert(!_token2TabWindows.ContainsKey(token));
             Debug.Assert(!string.IsNullOrEmpty(token));
-            _token2TabWindows.Add(token, tab);
+            _token2TabWindows.TryAdd(token, tab);
             tab.Activated += (sender, args) =>
                 _lastTabToken = tab.Token;
         }
@@ -357,7 +357,7 @@ namespace PRM.Service
                 full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
             }
 
-            _connectionId2FullScreenWindows.Add(host.ConnectionId, full);
+            _connectionId2FullScreenWindows.TryAdd(host.ConnectionId, full);
             full.SetProtocolHost(host);
             full.Show();
             return full;
@@ -472,180 +472,203 @@ namespace PRM.Service
             SimpleLogHelper.Debug($@"MoveProtocolHostToTab: Moved host({host.GetHashCode()}) to tab({tab.GetHashCode()})", $@"Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
         }
 
-        public void DelProtocolHost(string connectionId)
+        public void CloseProtocolHostAsync(string connectionId)
         {
-            if (string.IsNullOrEmpty(connectionId)
-                || !_connectionId2Hosts.ContainsKey(connectionId))
+            CloseProtocolHostAsync(new[] { connectionId });
+        }
+        public void CloseProtocolHostAsync(string[] connectionIds)
+        {
+            SimpleLogHelper.Warning($@"CloseProtocolHostAsync");
+            Task.Factory.StartNew(() =>
             {
-                SimpleLogHelper.Warning($"DelProtocolHost: Attempted to delete a nonexistent host(id = {connectionId})");
-                return;
-            }
-
-
-
-
-            HostBase? host = null;
-            lock (this)
-            {
-                if (_connectionId2Hosts.ContainsKey(connectionId))
-                {
-                    host = _connectionId2Hosts[connectionId];
-                    SimpleLogHelper.Debug($@"DelProtocolHost: try to delete host(id = {connectionId}, hash = {host.GetHashCode()})");
-                    try
-                    {
-                        if (host.OnClosed != null)
-                            host.OnClosed -= OnProtocolClose;
-                        if (host.OnFullScreen2Window != null)
-                            host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
-                        _connectionId2Hosts.Remove(connectionId);
-                        SimpleLogHelper.Debug($@"DelProtocolHost: removed and now, Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
-                    }
-                    catch (Exception e)
-                    {
-                        host = null;
-                        SimpleLogHelper.Error("DelProtocolHost: error when get host by connectionId and remove it from dictionary `Hosts`", e);
-                    }
-                }
-            }
-
-            // Dispose
-            try
-            {
-                if (host is IDisposable d)
-                {
-                    d.Dispose();
-                }
-                else
-                {
-                    host?.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-            }
-
-            host?.ProtocolServer?.RunScriptAfterDisconnected();
-
-            this.CleanupProtocolsAndWindows();
+                MarkProtocolHostToClose(connectionIds);
+                CleanupProtocolsAndWindows();
+            });
         }
 
-
-        /// <summary>
-        /// del window & terminate remote connection
-        /// </summary>
-        public void DelTabWindow(string token)
+        private void MarkProtocolHostToClose(string[] connectionIds)
         {
-            SimpleLogHelper.Debug($@"DelTabWindow: try to delete token = {token}");
-            lock (this)
+            foreach (var connectionId in connectionIds)
             {
-                if (!_token2TabWindows.ContainsKey(token)) return;
-                var tab = _token2TabWindows[token];
-                var items = tab.GetViewModel().Items.ToArray();
-                // del protocol
-                foreach (var tabItemViewModel in items)
+                if (_connectionId2Hosts.TryRemove(connectionId, out var host))
                 {
-                    DelProtocolHost(tabItemViewModel.Content.ConnectionId);
-                }
-                SimpleLogHelper.Debug($@"DelTabWindow: deleted tab(token = {token}, hash = {tab.GetHashCode()})", $@"Now Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
-                this.CleanupProtocolsAndWindows();
-            }
-        }
+                    SimpleLogHelper.Debug($@"MarkProtocolHostToClose: marking to close: {host.GetType().Name}(id = {connectionId}, hash = {host.GetHashCode()})");
 
-        #region Clean up
-        public void CloseUnhandledProtocols()
-        {
-            lock (this)
-            {
-                foreach (var c2h in _connectionId2Hosts.ToArray())
-                {
-                    var id = c2h.Key;
-                    var host = c2h.Value;
-                    bool unhandledFlag = true;
-                    foreach (var kv in _token2TabWindows)
+                    if (host.OnClosed != null)
+                        host.OnClosed -= OnProtocolClose;
+                    if (host.OnFullScreen2Window != null)
+                        host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
+                    _hostToBeDispose.Enqueue(host);
+                    host.ProtocolServer.RunScriptAfterDisconnected();
+                    SimpleLogHelper.Debug($@"Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
+
+                    // remove from tab
+                    foreach (var kv in _token2TabWindows.ToArray())
                     {
-                        var token = kv.Key;
                         var tab = kv.Value;
-                        var vm = tab.GetViewModel();
-                        if (vm.Items.Any(x => x.Host.ConnectionId == id))
+                        var items = tab.GetViewModel().Items.Where(x => x.Content.ConnectionId == connectionId).ToArray();
+                        if (items.Length > 0)
+                            Execute.OnUIThread(() =>
+                            {
+                                foreach (var item in items)
+                                {
+                                    tab.GetViewModel().Items.Remove(item);
+                                }
+                                if (tab.GetViewModel().Items.Count == 0)
+                                    tab.Hide();
+                            });
+                    }
+
+                    // hide full
+                    foreach (var kv in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
+                    {
+                        var fullScreenWindow = kv.Value;
+                        if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
                         {
-                            unhandledFlag = false;
-                            break;
+                            Execute.OnUIThread(() =>
+                            {
+                                fullScreenWindow.SetProtocolHost(null);
+                                fullScreenWindow.Hide();
+                            });
                         }
                     }
+                }
+            }
 
-                    if (unhandledFlag && _connectionId2FullScreenWindows.ContainsKey(id))
+            MarkUnhandledProtocolToClose();
+        }
+
+
+        private void MarkUnhandledProtocolToClose()
+        {
+            foreach (var id2Host in _connectionId2Hosts.ToArray())
+            {
+                var id = id2Host.Key;
+                bool unhandledFlag = true;
+                // if host in the tab
+                foreach (var kv in _token2TabWindows)
+                {
+                    var tab = kv.Value;
+                    var vm = tab.GetViewModel();
+                    if (vm.Items.Any(x => x.Host.ConnectionId == id))
                     {
                         unhandledFlag = false;
+                        break;
                     }
+                }
 
-                    if (unhandledFlag)
-                    {
-                        DelProtocolHost(id);
-                    }
+                // if host in the full-screen
+                if (unhandledFlag && _connectionId2FullScreenWindows.ContainsKey(id))
+                {
+                    unhandledFlag = false;
+                }
+
+                // host not in either tab or full-screen
+                if (unhandledFlag && _connectionId2Hosts.TryRemove(id, out var host))
+                {
+                    SimpleLogHelper.Warning($@"MarkUnhandledProtocolToClose: marking to close: {host.GetType().Name}(id = {id}, hash = {host.GetHashCode()})");
+                    if (host.OnClosed != null)
+                        host.OnClosed -= OnProtocolClose;
+                    if (host.OnFullScreen2Window != null)
+                        host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
+                    _hostToBeDispose.Enqueue(host);
+                    host.ProtocolServer.RunScriptAfterDisconnected();
+                    SimpleLogHelper.Warning($@"Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
                 }
             }
         }
 
-        public void CloseEmptyWindows()
+
+        #region Clean up
+        private void CloseMarkedProtocolHost()
         {
-            bool flag = false;
-            lock (this)
+            while (_hostToBeDispose.TryDequeue(out var host))
             {
-                foreach (var kv in _token2TabWindows.ToArray())
+                SimpleLogHelper.Info($@"CloseMarkedProtocolHost: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
+                if (host.OnClosed != null)
+                    host.OnClosed -= OnProtocolClose;
+                if (host.OnFullScreen2Window != null)
+                    host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
+                // Dispose
+                try
                 {
-                    var token = kv.Key;
-                    var tab = kv.Value;
-                    var items = tab.GetViewModel().Items.Where(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false).ToArray();
+                    if (host is IDisposable d)
+                    {
+                        d.Dispose();
+                    }
+                    else
+                    {
+                        host.Close();
+                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+            }
+        }
+
+        private void CloseEmptyWindows()
+        {
+            int closeCount = 0;
+            foreach (var kv in _token2TabWindows.ToArray())
+            {
+                var token = kv.Key;
+                var tab = kv.Value;
+                if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
+                {
+                    SimpleLogHelper.Debug($@"CloseEmptyWindows: closing tab({tab.GetHashCode()})");
+                    ++closeCount;
+                    _token2TabWindows.TryRemove(token, out _);
                     Execute.OnUIThread(() =>
                     {
-                        foreach (var item in items)
-                        {
-                            tab.GetViewModel().Items.Remove(item);
-                        }
+                        tab.Close();
                     });
                 }
+            }
 
-                foreach (var kv in _token2TabWindows.ToArray())
+            foreach (var kv in _connectionId2FullScreenWindows.ToArray())
+            {
+                var connectionId = kv.Key;
+                var fullScreenWindow = kv.Value;
+                if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
                 {
-                    var token = kv.Key;
-                    var tab = kv.Value;
-                    if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
+                    SimpleLogHelper.Debug($@"CloseEmptyWindows: closing full(hash = {fullScreenWindow.GetHashCode()})");
+                    ++closeCount;
+                    _connectionId2FullScreenWindows.TryRemove(connectionId, out _);
+                    Execute.OnUIThread(() =>
                     {
-                        SimpleLogHelper.Debug($@"CloseEmptyWindows: Close tab({tab.GetHashCode()})");
-                        flag = true;
-                        _token2TabWindows.Remove(token); 
-                        Execute.OnUIThread(() =>
-                        {
-                            tab.Close();
-                        });
-                    }
+                        fullScreenWindow.Close();
+                    });
                 }
+            }
+            SimpleLogHelper.Debug($@"CloseEmptyWindows: {closeCount} Empty Host closed");
+            SimpleLogHelper.Info($@"CloseEmptyWindows: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
+        }
 
-                foreach (var kv in _connectionId2FullScreenWindows.ToArray())
+        private bool _isCleaning = false;
+        private readonly object _cleanupLock = new object();
+        public void CleanupProtocolsAndWindows()
+        {
+            if (_isCleaning == false)
+            {
+                lock (_cleanupLock)
                 {
-                    var connectionId = kv.Key;
-                    var fullScreenWindow = kv.Value;
-                    if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
+                    if (_isCleaning == false)
                     {
-                        SimpleLogHelper.Debug($@"CloseFullWindow: close(hash = {fullScreenWindow.GetHashCode()})");
-                        flag = true;
-                        _connectionId2FullScreenWindows.Remove(connectionId);
-                        Execute.OnUIThread(() =>
+                        _isCleaning = true;
+                        try
                         {
-                            fullScreenWindow.Close();
-                        });
+                            this.CloseEmptyWindows();
+                            this.CloseMarkedProtocolHost();
+                        }
+                        finally
+                        {
+                            _isCleaning = false;
+                        }
                     }
                 }
             }
-            if (flag)
-                SimpleLogHelper.Debug($@"Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
-        }
-
-        public void CleanupProtocolsAndWindows()
-        {
-            this.CloseUnhandledProtocols();
-            this.CloseEmptyWindows();
         }
         #endregion
     }
