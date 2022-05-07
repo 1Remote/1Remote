@@ -27,6 +27,11 @@ namespace PRM.View.Host
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            if (Items.Count == 0 && this.View is TabWindowView tab)
+            {
+                tab.Hide();
+                this.CmdClose
+            }
         }
 
         public void Dispose()
@@ -231,9 +236,9 @@ namespace PRM.View.Host
                         }
                         else
                         {
-                            if (o is string assign)
+                            if (o is string connectionId)
                             {
-                                IoC.Get<SessionControlService>().DelProtocolHost(assign);
+                                IoC.Get<SessionControlService>().DelProtocolHost(connectionId);
                             }
                             else if (SelectedItem?.Content.ConnectionId != null)
                             {

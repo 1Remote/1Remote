@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
@@ -18,7 +17,9 @@ using PRM.View.Host;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
+using Screen = System.Windows.Forms.Screen;
 
 
 namespace PRM.Service
@@ -380,8 +381,8 @@ namespace PRM.Service
             }
 
             // move to full-screen-window
-            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ? 
-                this.MoveToExistedFullScreenWindow(host, tab) : 
+            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ?
+                this.MoveToExistedFullScreenWindow(host, tab) :
                 this.MoveToNewFullScreenWindow(host, tab);
 
             this.CleanupProtocolsAndWindows();
@@ -596,10 +597,13 @@ namespace PRM.Service
                     var token = kv.Key;
                     var tab = kv.Value;
                     var items = tab.GetViewModel().Items.Where(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false).ToArray();
-                    foreach (var item in items)
+                    Execute.OnUIThread(() =>
                     {
-                        tab.GetViewModel().Items.Remove(item);
-                    }
+                        foreach (var item in items)
+                        {
+                            tab.GetViewModel().Items.Remove(item);
+                        }
+                    });
                 }
 
                 foreach (var kv in _token2TabWindows.ToArray())
@@ -610,8 +614,11 @@ namespace PRM.Service
                     {
                         SimpleLogHelper.Debug($@"CloseEmptyWindows: Close tab({tab.GetHashCode()})");
                         flag = true;
-                        _token2TabWindows.Remove(token);
-                        tab.Close();
+                        _token2TabWindows.Remove(token); 
+                        Execute.OnUIThread(() =>
+                        {
+                            tab.Close();
+                        });
                     }
                 }
 
@@ -624,7 +631,10 @@ namespace PRM.Service
                         SimpleLogHelper.Debug($@"CloseFullWindow: close(hash = {fullScreenWindow.GetHashCode()})");
                         flag = true;
                         _connectionId2FullScreenWindows.Remove(connectionId);
-                        fullScreenWindow.Close();
+                        Execute.OnUIThread(() =>
+                        {
+                            fullScreenWindow.Close();
+                        });
                     }
                 }
             }

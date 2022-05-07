@@ -814,11 +814,14 @@ namespace PRM.View.Host.ProtocolHosts
             return System.Windows.Forms.Screen.AllScreens[_rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
         }
 
-
+        /// <summary>
+        /// set the parent window of rdp, if parent window is FullScreenWindowView and it's loaded, go full screen
+        /// </summary>
+        /// <param name="value"></param>
         public override void SetParentWindow(Window? value)
         {
             base.SetParentWindow(value);
-            if (value is FullScreenWindowView)
+            if (value is FullScreenWindowView && value.IsLoaded)
             {
                 this.GoFullScreen();
             }
