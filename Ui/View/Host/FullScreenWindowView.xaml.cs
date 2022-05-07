@@ -48,16 +48,17 @@ namespace PRM.View.Host
 
         private void SetContent()
         {
+            // !set content first
+            if (this.IsLoaded && Equals(this.Content, Host) == false)
+            {
+                this.Content = Host;
+            }
+            // !then set host
             if (this.IsLoaded && Host != null)
             {
                 this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
                 this.Icon = Host.ProtocolServer.IconImg;
                 Host.SetParentWindow(this);
-            }
-
-            if (this.IsLoaded && Equals(this.Content, Host) == false)
-            {
-                this.Content = Host;
             }
         }
 
