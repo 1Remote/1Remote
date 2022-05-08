@@ -23,9 +23,6 @@ namespace PRM.View.Settings
         public SettingsPageView()
         {
             InitializeComponent();
-            // TODO 跳转目的地
-            //if (destination == "Data")
-            //    TabItemDataBase.IsSelected = true;
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
