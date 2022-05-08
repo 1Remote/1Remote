@@ -323,7 +323,7 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 view = lv;
                 var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
-                p = MyVisualTreeHelper.FindAncestor<ScrollContentPresenter>((DependencyObject)ip!);
+                p = MyVisualTreeHelper.VisualUpwardSearch<ScrollContentPresenter>((DependencyObject)ip!);
             }
             if (view == null || p == null)
                 return;
@@ -391,7 +391,7 @@ namespace PRM.View.Host.ProtocolHosts
                     aMenu.Items.Add(menu);
                 }
             }
-            else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
+            else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) is ListViewItem item)
             {
                 {
                     var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_delete") };

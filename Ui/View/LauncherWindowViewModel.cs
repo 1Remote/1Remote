@@ -20,6 +20,7 @@ using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
 using Markdig.Wpf;
+using PRM.Model.Protocol.Base;
 using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace PRM.View
@@ -246,18 +247,19 @@ namespace PRM.View
             });
         }
 
-        public void ShowActionsList()
+        public void ShowActionsList(ProtocolBase? protocolBase = null)
         {
-            if (SelectedIndex < 0
-                || SelectedIndex >= VmServerList.Count)
+            if (protocolBase == null)
             {
-                return;
+                if (SelectedIndex < 0
+                    || SelectedIndex >= VmServerList.Count)
+                {
+                    return;
+                }
+                protocolBase = VmServerList[SelectedIndex].Server;
             }
 
-            RaisePropertyChanged(nameof(SelectedItem));
-
-            var protocolServer = VmServerList[SelectedIndex].Server;
-            Actions = new ObservableCollection<ProtocolAction>(protocolServer.GetActions());
+            Actions = new ObservableCollection<ProtocolAction>(protocolBase.GetActions());
             SelectedActionIndex = 0;
 
             ReCalcWindowHeight(true);

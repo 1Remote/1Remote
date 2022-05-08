@@ -163,11 +163,10 @@ namespace PRM.View
 
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_vm.SelectedIndex >= 0 &&
-                _vm.SelectedIndex < IoC.Get<GlobalData>().VmItemList.Count)
+            // 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
+            if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is ListBoxItem { Content: ProtocolBaseViewModel baseViewModel })
             {
-                // TODO BUG 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
-                _vm.ShowActionsList();
+                _vm.ShowActionsList(baseViewModel.Server);
             }
         }
 

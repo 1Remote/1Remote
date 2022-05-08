@@ -9,7 +9,7 @@
 		<AssemblyName>PRemoteM</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreDebug;StoreRelease</Configurations>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net6.0-windows</TargetFramework>
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
