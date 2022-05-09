@@ -54,7 +54,8 @@ namespace PRM.Service
 
         public Key HotKeyKey = Key.M;
 
-        public bool ShowNoteField = true;
+        public bool ShowNoteFieldInLauncher = true;
+        public bool ShowNoteFieldInListView = true;
     }
 
     public class KeywordMatchConfig

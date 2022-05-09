@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 
 namespace PRM.Resources.Converter
 {
-    public class GetClearNote : IValueConverter
+    public class ConverterNoteToVisibility : IValueConverter
     {
         #region IValueConverter 成员
 
@@ -13,9 +14,9 @@ namespace PRM.Resources.Converter
             if (value is string markDown)
             {
                 if (markDown.Any(@char => @char != ' ' && @char != '\t' && @char != '\r' && @char != '\n'))
-                    return markDown;
+                    return Visibility.Visible;
             }
-            return "";
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -64,4 +64,32 @@ namespace PRM.Controls
             PopupNote.IsOpen = true;
         }
     }
+
+
+    public class ConverterNoteToSingleLineNote : IValueConverter
+    {
+        #region IValueConverter 成员
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is string markDown)
+            {
+                markDown = markDown.Replace("\t", " ").Replace("\r", " ").Replace("\n", " ");
+                while (markDown.IndexOf("  ", StringComparison.Ordinal) > 0)
+                {
+                    markDown = markDown.Replace("  ", " ");
+                }
+
+                return markDown.Trim();
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion IValueConverter 成员
+    }
 }

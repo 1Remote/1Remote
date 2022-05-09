@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converter="clr-namespace:PRM.Resources.Converter">
-    <converter:GetClearNote x:Key="GetClearNote" />
+    <converter:ConverterNoteToVisibility x:Key="ConverterNoteToVisibility" />
 </ResourceDictionary>

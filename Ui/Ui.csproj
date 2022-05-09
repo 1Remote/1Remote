@@ -264,6 +264,9 @@
 		<Page Update="Resources\Converter\Converter.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="Resources\Icons\SVG.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="Resources\Languages\de-de.xaml">
 			<SubType>Designer</SubType>
 		</Page>

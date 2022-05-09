@@ -12,6 +12,9 @@
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:ConverterNoteToSingleLineNote x:Key="ConverterNoteToSingleLineNote" />
+    </UserControl.Resources>
     <Grid FocusVisualStyle="{x:Null}">
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -36,12 +39,13 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
                     <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
-                    <ColumnDefinition Width="300" SharedSizeGroup="Name"></ColumnDefinition>
-                    <ColumnDefinition Width="200" SharedSizeGroup="Tags"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Margin="10 0 0 0" Width="20" Height="20" HorizontalAlignment="Left" 
+                <CheckBox Margin="10 0" Width="20" Height="20" HorizontalAlignment="Left" 
                                       IsChecked="{Binding IsSelected, Mode=TwoWay}">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
@@ -58,7 +62,8 @@
                     </CheckBox.Style>
                 </CheckBox>
 
-                <TextBlock Grid.Column="1" Margin="5 0"
+                <!--protocol name-->
+                <TextBlock Grid.Column="1" Margin="5 0 10 0" 
                                                    Text="{Binding Server.ProtocolDisplayName}"
                                                    FontSize="14" FontWeight="Bold"
                                                    Opacity="0.6"
@@ -66,17 +71,18 @@
                                                    VerticalAlignment="Center">
                 </TextBlock>
 
+                <!--icon-->
                 <Grid Grid.Column="2" Width="30" HorizontalAlignment="Center" Margin="5 0">
                     <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                 </Grid>
 
-
+                <!--display name-->
                 <Grid Grid.Column="3" ToolTip="{Binding Server.DisplayName}" Background="Transparent">
-                    <TextBlock Margin="5 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
+                    <TextBlock Margin="5 0 10 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
                 </Grid>
 
-
-                <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                <!--tags-->
+                <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
                     <ItemsControl.Resources>
                         <view:ConverterTagName x:Key="ConverterTagName" />
                     </ItemsControl.Resources>
@@ -104,7 +110,96 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Grid Grid.Column="5" ToolTip="{Binding Server.SubTitle}" Background="Transparent">
+                <!--brief note -->
+                <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
+                    <!--text button show note-->
+                    <Button Name="BtnShowNote"
+                            HorizontalContentAlignment="Left"
+                            Click="BtnShowNote_OnClick"
+                            attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
+                            Background="{DynamicResource BackgroundBrush}"
+                            Foreground="{DynamicResource BackgroundTextBrush}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Collapsed">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Grid>
+                            <TextBlock Margin="5" HorizontalAlignment="Left" MaxWidth="400"
+                                       Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
+                                       TextWrapping="NoWrap"
+                                       Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                                       TextTrimming="CharacterEllipsis"></TextBlock>
+                        </Grid>
+                    </Button>
+
+                    <!--icon button show note-->
+                    <Button
+                        Width="20" Height="20"
+                        Background="Transparent"
+                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                        Foreground="{DynamicResource BackgroundTextBrush}"
+                        attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                        attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Opacity="0.7"
+                        attachProperty:VisionElement.Opacity="0.8"
+                        attachProperty:VisionElement.OpacityAccent="0.9"
+                        Click="BtnShowNote_OnClick"
+                        >
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed"></Condition>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Grid Width="16">
+                            <Path Data="{StaticResource NoteGeometry}"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="0" Stretch="Uniform" />
+                        </Grid>
+                    </Button>
+
+
+
+                    <Popup Name="PopupNote"
+                           Visibility="{Binding ElementName=BtnShowNote, Path=Visibility}"
+                           AllowsTransparency="True"
+                           PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
+                        <Border Padding="0 0 4 4">
+                            <Border.Effect>
+                                <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                            </Border.Effect>
+                            <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
+                                <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
+                                </wpf:MarkdownViewer>
+                            </Border>
+                        </Border>
+                    </Popup>
+                </Grid>
+
+                <!--address-->
+                <Grid Grid.Column="6" ToolTip="{Binding Server.SubTitle}" Background="Transparent">
                     <TextBlock Margin="5 0" MaxWidth="500"
                                FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
                                Text="{Binding Server.SubTitle}">
@@ -115,7 +210,7 @@
                 <!-- setting menu button -->
                 <Button Grid.Column="1" 
                         x:Name="BtnSettingMenu"
-                        Margin="0 0 30 0"
+                        Margin="0 0 10 0"
                         Width="20" Height="20" HorizontalAlignment="Right"
                         Click="BtnSettingMenu_OnClick">
                     <Button.Style>
@@ -141,34 +236,6 @@
                           Stretch="Uniform" />
                 </Button>
 
-
-                <Button Grid.Column="1" 
-                        Width="20" Height="20"
-                        Name="BtnShowNote"
-                        Background="Transparent"
-                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        attachProperty:VisionElement.Opacity="0.8"
-                        attachProperty:VisionElement.OpacityAccent="0.9"
-                        Click="BtnShowNote_OnClick">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                            <Setter Property="Margin" Value="5 0 0 0"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource GetClearNote}}" Value="">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Grid Width="16">
-                        <Path Data="M492.826 997.744s-6.391-6.392 0 0L390.564 863.525h-236.48C70.995 863.525 0.69 793.22 0.69 703.741V173.257c0-89.479 70.305-159.784 153.392-159.784h715.834c83.087 0 153.392 70.305 153.392 159.784v530.484c0 89.479-70.305 159.784-153.392 159.784H646.219L537.565 997.744c-6.391 6.392-12.783 12.783-25.565 12.783-6.392-6.391-12.783-6.391-19.174-12.783z m25.566-76.697l95.87-108.653c6.392-6.392 19.174-12.784 25.565-12.784h230.09c51.13 0 89.479-44.74 89.479-95.87V173.257c0-51.13-38.349-95.87-89.48-95.87H154.084c-51.13 6.391-89.479 44.74-89.479 95.87v530.484c0 51.13 38.349 95.87 89.48 95.87H416.13c12.783 0 19.173 6.392 25.565 12.784l76.697 108.652zM205.215 256.345c0-19.173 12.783-31.956 31.957-31.956h549.657c19.174 0 31.957 12.783 31.957 31.956s-12.783 31.957-31.957 31.957H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391 0-6.391-12.782-6.391-19.174z m0 172.568c0-19.174 12.783-31.957 31.957-31.957h549.657c19.174 0 31.957 12.783 31.957 31.957s-12.783 31.956-31.957 31.956H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391-6.391-6.391-12.783-6.391-19.173z m0 166.174c0-19.173 12.783-31.956 31.957-31.956h549.657c19.174 0 31.957 12.783 31.957 31.956s-12.783 31.957-31.957 31.957H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391 0.001-6.391-6.39-6.391-19.174z"
-                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      StrokeThickness="1" Stretch="Uniform" />
-                    </Grid>
-                </Button>
             </Grid>
         </Grid>
 
@@ -223,19 +290,5 @@
             </Border>
         </Popup>
 
-
-        <Popup Name="PopupNote"
-               AllowsTransparency="True"
-               PlacementTarget="{Binding ElementName=BtnShowNote}" StaysOpen="False">
-            <Border Padding="0 0 4 4">
-                <Border.Effect>
-                    <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                </Border.Effect>
-                <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
-                    <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
-                    </wpf:MarkdownViewer>
-                </Border>
-            </Border>
-        </Popup>
     </Grid>
 </UserControl>
