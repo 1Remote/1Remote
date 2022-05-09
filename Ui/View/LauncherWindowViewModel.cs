@@ -153,8 +153,6 @@ namespace PRM.View
         }
 
 
-        public Visibility GridNoteVisibility { get; set; } = Visibility.Visible;
-
         private double _gridNoteHeight;
         public double GridNoteHeight
         {
@@ -503,6 +501,7 @@ namespace PRM.View
             }
         }
 
+        #region NoteField
 
         private RelayCommand? _cmdHideNoteField;
         public RelayCommand CmdHideNoteField
@@ -511,7 +510,7 @@ namespace PRM.View
             {
                 return _cmdHideNoteField ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<ConfigurationService>().Launcher.ShowNoteField = false;
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher = false;
                     IoC.Get<ConfigurationService>().Save();
                     CalcNoteFieldVisibility();
                     IsShowNoteFieldEnabled = true;
@@ -526,7 +525,7 @@ namespace PRM.View
             {
                 return _cmdShowNoteField ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<ConfigurationService>().Launcher.ShowNoteField = true;
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher = true;
                     IoC.Get<ConfigurationService>().Save();
                     CalcNoteFieldVisibility();
                     IsShowNoteFieldEnabled = false;
@@ -541,10 +540,12 @@ namespace PRM.View
             set => this.SetAndNotifyIfChanged(ref this._isShowNoteFieldEnabled, value);
         }
 
+        public Visibility GridNoteVisibility { get; set; } = Visibility.Visible;
+
         private void CalcNoteFieldVisibility()
         {
             Visibility newVisibility;
-            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false)
+            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
                 newVisibility = Visibility.Collapsed;
             else if (string.IsNullOrEmpty(SelectedItem?.Server?.Note?.Trim()) == false)
                 newVisibility = Visibility.Visible;
@@ -552,7 +553,7 @@ namespace PRM.View
                 newVisibility = Visibility.Collapsed;
             if (GridNoteVisibility == newVisibility) return;
 
-            IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false;
+            IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false;
             GridNoteVisibility = newVisibility;
             if (_noteField != null)
             {
@@ -575,6 +576,8 @@ namespace PRM.View
             {
                 RaisePropertyChanged(nameof(GridNoteVisibility));
             }
-        }
+        } 
+
+        #endregion
     }
 }

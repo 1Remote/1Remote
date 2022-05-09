@@ -45,26 +45,6 @@ namespace PRM.View
         }
     }
 
-
-
-    public class ConverterStringIsEqual : IMultiValueConverter
-    {
-        public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value.Length > 1
-                && value[0] is string s1
-                && value[1] is string s2)
-            {
-                return s1 == s2;
-            }
-            return false;
-        }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
     public class ConverterTagName : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -78,7 +58,7 @@ namespace PRM.View
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

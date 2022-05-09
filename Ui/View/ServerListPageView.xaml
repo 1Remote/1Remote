@@ -119,18 +119,20 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="150"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="100"></ColumnDefinition>
                                     <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
+                                    <ColumnDefinition Width="300" SharedSizeGroup="Name"></ColumnDefinition>
+                                    <ColumnDefinition Width="200" SharedSizeGroup="Tags"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <CheckBox Margin="10 0 0 0" Width="20" Height="20" HorizontalAlignment="Left" 
+                                <CheckBox Margin="10 0" Width="20" Height="20" HorizontalAlignment="Left" 
                                           IsChecked="{Binding IsSelectedAll, Mode=TwoWay}">
                                 </CheckBox>
 
-                                <Button HorizontalContentAlignment="Left" Grid.Column="1" Style="{StaticResource ButtonBarPrimaryStyle}"
+                                <!--protocol name-->
+                                <Button Grid.Column="1" HorizontalContentAlignment="Left" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
                                                          attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                          Background="{DynamicResource BackgroundBrush}"
@@ -163,7 +165,8 @@
                                     </Grid>
                                 </Button>
 
-                                <Button HorizontalContentAlignment="Left" Grid.Column="3" Style="{StaticResource ButtonBarPrimaryStyle}"
+                                <!--display name-->
+                                <Button Grid.Column="3" HorizontalContentAlignment="Left" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
                                                          attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                                     Background="{DynamicResource BackgroundBrush}"
@@ -196,7 +199,64 @@
                                     </Grid>
                                 </Button>
 
-                                <Button HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource ButtonBarPrimaryStyle}"
+                                <!--brief note -->
+                                <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0 10 0">
+                                    <TextBlock Text="{DynamicResource Note}" Margin="25 0 0 0" Visibility="{Binding GridNoteVisibility}" VerticalAlignment="Center"></TextBlock>
+                                    <Grid HorizontalAlignment="Left" Margin="1 0">
+                                        <Button Width="20" Height="20"
+                                            Style="{StaticResource ButtonBarPrimaryStyle}"
+                                            Background="Transparent"
+                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                            HorizontalAlignment="Right"
+                                            Visibility="{Binding GridNoteVisibility}"
+                                            Foreground="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.Opacity="0.5"
+                                            attachProperty:VisionElement.OpacityAccent="0.9"
+                                            Command="{Binding CmdHideNoteField}" >
+                                            <Grid Width="18">
+                                                <Path Data="M989.866667 234.666667h-490.666667c-17.066667 0-34.133333-21.333333-34.133333-42.666667 0-25.6 12.8-42.666667 34.133333-42.666667h490.666667c17.066667 0 34.133333 17.066667 34.133333 42.666667 0 21.333333-12.8 42.666667-34.133333 42.666667z m-473.6 128h465.066666c25.6 0 46.933333 21.333333 46.933334 42.666666 0 25.6-21.333333 42.666667-46.933334 42.666667H516.266667c-25.6 0-46.933333-17.066667-46.933334-42.666667s21.333333-42.666667 46.933334-42.666666z m0 298.666666c-25.6 0-46.933333-21.333333-46.933334-42.666666 0-25.6 21.333333-42.666667 46.933334-42.666667h465.066666c25.6 0 46.933333 17.066667 46.933334 42.666667s-21.333333 42.666667-46.933334 42.666666H516.266667z m4.266666 128h452.266667c29.866667 0 51.2 17.066667 51.2 42.666667s-21.333333 42.666667-51.2 42.666667h-452.266667c-29.866667 0-51.2-17.066667-51.2-42.666667s21.333333-42.666667 51.2-42.666667z m-192 25.6c-17.066667 17.066667-46.933333 17.066667-64 0l-251.733333-273.066666c-17.066667-17.066667-17.066667-51.2 0-68.266667l251.733333-273.066667c17.066667-17.066667 46.933333-17.066667 64 0s17.066667 51.2 0 68.266667l-221.866666 238.933333 221.866666 238.933334c17.066667 21.333333 17.066667 51.2 0 68.266666z"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="0" Stretch="Uniform" />
+                                            </Grid>
+                                        </Button>
+                                        <Button Width="20" Height="20"
+                                            ToolTip="{DynamicResource Note}"
+                                            Background="Transparent"
+                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.Opacity="0.5"
+                                            attachProperty:VisionElement.OpacityAccent="0.9"
+                                            Command="{Binding CmdShowNoteField}" >
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding GridNoteVisibility}" Value="Visible">
+                                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <Grid Width="18">
+                                                <Path Data="M8.533333 192c0-25.6 17.066667-42.666667 34.133334-42.666667h490.666666c21.333333 0 34.133333 17.066667 34.133334 42.666667 0 21.333333-17.066667 42.666667-34.133334 42.666667h-490.666666c-21.333333 0-34.133333-21.333333-34.133334-42.666667z m550.4 213.333333c0 25.6-21.333333 42.666667-46.933333 42.666667h-465.066667c-25.6 0-46.933333-17.066667-46.933333-42.666667 0-21.333333 21.333333-42.666667 46.933333-42.666666h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666666z m-507.733333 256c-25.6 0-46.933333-17.066667-46.933333-42.666666s21.333333-42.666667 46.933333-42.666667h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666667 0 21.333333-21.333333 42.666667-46.933333 42.666666h-465.066667z m507.733333 170.666667c0 25.6-21.333333 42.666667-51.2 42.666667h-452.266666c-29.866667 0-51.2-17.066667-51.2-42.666667s21.333333-42.666667 51.2-42.666667h452.266666c29.866667 0 51.2 17.066667 51.2 42.666667z m140.8-85.333333l221.866667-238.933334-221.866667-238.933333c-17.066667-17.066667-17.066667-51.2 0-68.266667 17.066667-17.066667 46.933333-17.066667 64 0l251.733334 273.066667c17.066667 17.066667 17.066667 51.2 0 68.266667l-251.733334 273.066666c-17.066667 17.066667-46.933333 17.066667-64 0-17.066667-17.066667-17.066667-46.933333 0-68.266666z"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="0" Stretch="Uniform" />
+                                            </Grid>
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+
+                                <!--address-->
+                                <Button Grid.Column="6" HorizontalContentAlignment="Left" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
                                                          attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                                     Background="{DynamicResource BackgroundBrush}"
@@ -304,7 +364,6 @@
             </Style>
 
             <view:ConverterTagsIndicatorIsShow x:Key="ConverterTagsIndicatorIsShow" />
-            <view:ConverterStringIsEqual x:Key="ConverterStringIsEqual" />
             <view:ConverterTagName x:Key="ConverterTagName" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -771,7 +830,7 @@
                                                             </Trigger>
                                                             <DataTrigger Value="True">
                                                                 <DataTrigger.Binding>
-                                                                    <MultiBinding Converter="{StaticResource ConverterStringIsEqual}" >
+                                                                    <MultiBinding Converter="{StaticResource ConverterIsEqual}" >
                                                                         <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
                                                                         <Binding Path="Name" Mode="OneWay"></Binding>
                                                                     </MultiBinding>

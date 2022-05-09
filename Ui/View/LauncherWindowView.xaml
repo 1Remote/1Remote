@@ -18,7 +18,6 @@
                   mc:Ignorable="d"
                   d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
                   Title="LauncherWindowView">
-    <!--d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"-->
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -139,14 +138,12 @@
                                 VerticalAlignment="Center"
                                 attachProperty:VisionElement.Opacity="0.8"
                                 attachProperty:VisionElement.OpacityAccent="0.9"
+                                Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
                                 Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType= view:LauncherWindowView}, Path=DataContext.CmdShowNoteField}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                     <Setter Property="Margin" Value="5 0 0 0"></Setter>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource GetClearNote}}" Value="">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.IsShowNoteFieldEnabled}" Value="False">
                                             <Setter Property="IsEnabled" Value="False"></Setter>
                                         </DataTrigger>
@@ -154,10 +151,10 @@
                                 </Style>
                             </Button.Style>
                             <Grid Width="16">
-                                <Path Data="M492.826 997.744s-6.391-6.392 0 0L390.564 863.525h-236.48C70.995 863.525 0.69 793.22 0.69 703.741V173.257c0-89.479 70.305-159.784 153.392-159.784h715.834c83.087 0 153.392 70.305 153.392 159.784v530.484c0 89.479-70.305 159.784-153.392 159.784H646.219L537.565 997.744c-6.391 6.392-12.783 12.783-25.565 12.783-6.392-6.391-12.783-6.391-19.174-12.783z m25.566-76.697l95.87-108.653c6.392-6.392 19.174-12.784 25.565-12.784h230.09c51.13 0 89.479-44.74 89.479-95.87V173.257c0-51.13-38.349-95.87-89.48-95.87H154.084c-51.13 6.391-89.479 44.74-89.479 95.87v530.484c0 51.13 38.349 95.87 89.48 95.87H416.13c12.783 0 19.173 6.392 25.565 12.784l76.697 108.652zM205.215 256.345c0-19.173 12.783-31.956 31.957-31.956h549.657c19.174 0 31.957 12.783 31.957 31.956s-12.783 31.957-31.957 31.957H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391 0-6.391-12.782-6.391-19.174z m0 172.568c0-19.174 12.783-31.957 31.957-31.957h549.657c19.174 0 31.957 12.783 31.957 31.957s-12.783 31.956-31.957 31.956H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391-6.391-6.391-12.783-6.391-19.173z m0 166.174c0-19.173 12.783-31.956 31.957-31.956h549.657c19.174 0 31.957 12.783 31.957 31.956s-12.783 31.957-31.957 31.957H237.172c-6.392 0-19.174-6.391-25.566-12.783-6.391 0.001-6.391-6.39-6.391-19.174z"
+                                <Path Data="{StaticResource NoteGeometry}"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      StrokeThickness="1" Stretch="Uniform" />
+                                      StrokeThickness="0" Stretch="Uniform" />
                             </Grid>
                         </Button>
 
@@ -511,7 +508,6 @@
 
 
                             <Button Width="20" Height="20"
-                                        ToolTip="{DynamicResource 'Delete'}"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         Background="Transparent"
                                         attachProperty:VisionElement.BackgroundAccent="Transparent"

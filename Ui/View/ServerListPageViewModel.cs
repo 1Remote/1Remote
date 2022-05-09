@@ -489,5 +489,45 @@ namespace PRM.View
         }
 
         #endregion
+
+
+        #region NoteField
+
+        private RelayCommand? _cmdHideNoteField;
+        public RelayCommand CmdHideNoteField
+        {
+            get
+            {
+                return _cmdHideNoteField ??= new RelayCommand((o) =>
+                {
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = false;
+                    IoC.Get<ConfigurationService>().Save();
+                    GridNoteVisibility = Visibility.Collapsed;
+                });
+            }
+        }
+
+        private RelayCommand? _cmdShowNoteField;
+        public RelayCommand CmdShowNoteField
+        {
+            get
+            {
+                return _cmdShowNoteField ??= new RelayCommand((o) =>
+                {
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = true;
+                    IoC.Get<ConfigurationService>().Save();
+                    GridNoteVisibility = Visibility.Visible;
+                });
+            }
+        }
+
+        private Visibility _gridNoteVisibility = Visibility.Visible;
+        public Visibility GridNoteVisibility
+        {
+            get => _gridNoteVisibility;
+            set => this.SetAndNotifyIfChanged(ref this._gridNoteVisibility, value);
+        }
+
+        #endregion
     }
 }

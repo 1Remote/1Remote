@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Resources/Converter/Converter.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Default.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Markdown.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Icons/SVG.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Languages/en-us.xaml"></ResourceDictionary>
             </s:ApplicationLoader.MergedDictionaries>
         </s:ApplicationLoader>
