@@ -220,6 +220,7 @@
 
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
                         <TextBox Grid.Column="1" Text="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
+                                 MaxWidth="400"
                                  ToolTip="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
                                  VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                     </Grid>
@@ -566,7 +567,7 @@
                 Style="{StaticResource ButtonBarAccentStyle}"
                 attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
                 Command="{Binding CmdSaveAndGoBack}"
-                Content="{DynamicResource Back}">
+                Content="{DynamicResource Save}">
         </Button>
     </Grid>
 </UserControl>

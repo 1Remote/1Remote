@@ -32,6 +32,8 @@ namespace PRM.View
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
+        private readonly GlobalData _appData;
+
 
         #region Properties
 
@@ -70,10 +72,11 @@ namespace PRM.View
         #endregion Properties
 
 
-        public MainWindowViewModel(PrmContext context, IWindowManager wm)
+        public MainWindowViewModel(PrmContext context, IWindowManager wm, GlobalData appData)
         {
             Context = context;
             _wm = wm;
+            _appData = appData;
             ShowList();
         }
 
@@ -107,9 +110,9 @@ namespace PRM.View
             {
                 if (Context.DataService == null) return;
                 if (id <= 0) return;
-                Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
-                var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
-                EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server, isDuplicate);
+                Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == id));
+                var server = _appData.VmItemList.First(x => x.Server.Id == id).Server;
+                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);
                 ActivateMe();
             });
 
@@ -120,7 +123,7 @@ namespace PRM.View
                 {
                     Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
                 };
-                EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server);
+                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server);
                 ActivateMe();
             });
 
@@ -129,9 +132,9 @@ namespace PRM.View
                 if (Context.DataService == null) return;
                 var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
                 if (serverBases.Count() > 1)
-                    EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases);
+                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases);
                 else
-                    EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases.First());
+                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
                 ActivateMe();
             };
 
@@ -149,7 +152,7 @@ namespace PRM.View
         protected override void OnClose()
         {
             TaskTrayDispose();
-            IoC.Get<SessionControlService>().Release();
+            App.Close();
         }
 
 
@@ -221,7 +224,7 @@ namespace PRM.View
             Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
             _taskTrayIcon = new System.Windows.Forms.NotifyIcon
             {
-                Text = ConfigurationService.AppName,
+                Text = AppPathHelper.APP_DISPLAY_NAME,
                 Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
                 BalloonTipText = "",
                 Visible = true
@@ -253,7 +256,7 @@ namespace PRM.View
             // rebuild TaskTrayContextMenu while language changed
             if (_taskTrayIcon == null) return;
 
-            var title = new System.Windows.Forms.ToolStripMenuItem(ConfigurationService.AppName);
+            var title = new System.Windows.Forms.ToolStripMenuItem(AppPathHelper.APP_DISPLAY_NAME);
             title.Click += (sender, args) =>
             {
                 HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM");
@@ -269,13 +272,16 @@ namespace PRM.View
                 HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
-            exit.Click += (sender, args) => App.Close();
+            exit.Click += (sender, args) => this.RequestClose();
             _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             _taskTrayIcon.ContextMenuStrip.Items.Add(title);
             _taskTrayIcon.ContextMenuStrip.Items.Add("-");
             _taskTrayIcon.ContextMenuStrip.Items.Add(linkHowToUse);
             _taskTrayIcon.ContextMenuStrip.Items.Add(linkFeedback);
             _taskTrayIcon.ContextMenuStrip.Items.Add(exit);
+
+            // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
+            System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
         }
         #endregion
 
@@ -322,7 +328,7 @@ namespace PRM.View
             {
                 return _cmdExit ??= new RelayCommand((o) =>
                 {
-                    App.Close();
+                    this.RequestClose();
                 });
             }
         }

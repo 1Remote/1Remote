@@ -30,13 +30,8 @@ namespace PRM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-#if DEV
-        public bool AppStartAutomatically = false;
-        public bool AppStartMinimized = false;
-#else
         public bool AppStartAutomatically = true;
         public bool AppStartMinimized = true;
-#endif
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
         #endregion
@@ -46,7 +41,7 @@ namespace PRM.Service
     {
         public bool LauncherEnabled = true;
 
-#if DEV
+#if DEBUG
         public HotkeyModifierKeys HotKeyModifiers = HotkeyModifierKeys.Shift;
 #else
         public HotkeyModifierKeys HotKeyModifiers = HotkeyModifierKeys.Alt;
@@ -70,7 +65,7 @@ namespace PRM.Service
     {
         public const DatabaseType DatabaseType = Model.DAO.DatabaseType.Sqlite;
 
-        private string _sqliteDatabasePath = "./" + ConfigurationService.AppName + ".db";
+        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
         public string SqliteDatabasePath
         {
             get
@@ -112,25 +107,9 @@ namespace PRM.Service
 
     public class ConfigurationService
     {
-        private const string App = "PRemoteM";
-#if DEV
-#if FOR_MICROSOFT_STORE_ONLY
-        public const string AppName = $"{App}(Store)_Debug";
-#else
-        public const string AppName = $"{App}_Debug";
-#endif
-#else
-#if FOR_MICROSOFT_STORE_ONLY
-        public const string AppName = $"{App}(Store)";
-#else
-        public const string AppName = $"{App}";
-#endif
-#endif
-        public string JsonPath;
-
         private readonly KeywordMatchService _keywordMatchService = new KeywordMatchService();
 
-        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders = new List<MatchProviderInfo>();
         private readonly Configuration _cfg;
 
         public GeneralConfig General => _cfg.General;
@@ -149,95 +128,11 @@ namespace PRM.Service
         }
 
 
-        public ConfigurationService(bool isPortable, KeywordMatchService? keywordMatchService)
+        public ConfigurationService(Configuration cfg, KeywordMatchService keywordMatchService)
         {
-            AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
-            _cfg = new Configuration();
-            #region init
-
-            // init path by `IsPortable`
-            // default path of db
-            // default value of json'
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            string oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
-            if (File.Exists(oldIniFilePath) == false)
-            {
-                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
-            }
-
-            if (isPortable)
-            {
-                JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
-                Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
-            }
-            else
-            {
-                if (Directory.Exists(appDateFolder) == false)
-                    Directory.CreateDirectory(appDateFolder);
-                JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
-                Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
-            }
-            #endregion
-
-            if (keywordMatchService == null)
-                return;
             _keywordMatchService = keywordMatchService;
-
-            #region load settings
-            // old user convert the 0.5 ini file to 0.6 json file
-            if (File.Exists(oldIniFilePath) && File.Exists(JsonPath) == false)
-            {
-                try
-                {
-                    var cfg = LoadFromIni(oldIniFilePath, Database.SqliteDatabasePath);
-                    _cfg = cfg;
-                    Save();
-                }
-                finally
-                {
-                    File.Delete(oldIniFilePath);
-                }
-            }
-            else if (File.Exists(JsonPath))
-            {
-                try
-                {
-                    var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
-                    if (cfg != null)
-                        _cfg = cfg;
-                }
-                catch
-                {
-                    File.Delete(JsonPath);
-                    Save();
-                }
-            }
-            else
-            {
-                // new user
-            }
-
-            if (File.Exists(oldIniFilePath))
-                File.Delete(oldIniFilePath);
-
-            var fi = new FileInfo(Database.SqliteDatabasePath);
-            if (fi?.Exists != true)
-                try
-                {
-                    if (fi?.Directory?.Exists == false)
-                        fi.Directory.Create();
-                }
-                catch (Exception)
-                {
-                    if (isPortable)
-                        Database.SqliteDatabasePath = new DatabaseConfig().SqliteDatabasePath;
-                }
-            #endregion
-
-
-
-
-
+            _cfg = cfg;
+            AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
 
             // init matcher
             if (KeywordMatch.EnabledMatchers.Count > 0)
@@ -268,9 +163,10 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
+            Save();
         }
 
         private void OnMatchProviderChangedHandler(object? sender, PropertyChangedEventArgs args)
@@ -290,19 +186,19 @@ namespace PRM.Service
             if (CanSave == false)
                 return;
             CanSave = false;
-            var fi = new FileInfo(JsonPath);
+            var fi = new FileInfo(AppPathHelper.Instance.JsonProfilePath);
             if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
             lock (this)
             {
-                File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                File.WriteAllText(AppPathHelper.Instance.JsonProfilePath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
             }
 #if FOR_MICROSOFT_STORE_ONLY
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
             CanSave = true;
         }
@@ -310,7 +206,8 @@ namespace PRM.Service
 
 
         // TODO remove after 2023.01.01
-        private static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
+        [Obsolete]
+        public static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
         {
             var cfg = new Configuration();
             var ini = new Ini(iniPath);

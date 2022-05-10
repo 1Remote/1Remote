@@ -28,9 +28,14 @@ namespace PRM.Service
     public class SessionControlService
     {
         private readonly PrmContext _context;
-        public SessionControlService(PrmContext context)
+        private readonly ConfigurationService _configurationService;
+        private readonly GlobalData _appData;
+
+        public SessionControlService(PrmContext context, ConfigurationService configurationService, GlobalData appData)
         {
             _context = context;
+            _configurationService = configurationService;
+            _appData = appData;
             GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
         }
 
@@ -86,38 +91,41 @@ namespace PRM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context).ToString());
-            var p = new Process
+            if (_context.DataService != null)
             {
-                StartInfo =
-                        {
-                            FileName = "cmd.exe",
-                            UseShellExecute = false,
-                            RedirectStandardInput = true,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            CreateNoWindow = true
-                        }
-            };
-            p.Start();
-            string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
-            p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
-            p.StandardInput.WriteLine("exit");
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context.DataService).ToString());
+                var p = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = "cmd.exe",
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                p.Start();
+                string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
+                p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
+                p.StandardInput.WriteLine("exit");
 
-            // delete tmp rdp file, ETA 10s
-            Task.Factory.StartNew(() =>
-            {
-                try
+                // delete tmp rdp file, ETA 10s
+                Task.Factory.StartNew(() =>
                 {
-                    Thread.Sleep(1000 * 10);
-                    if (File.Exists(rdpFile))
-                        File.Delete(rdpFile);
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
-            });
+                    try
+                    {
+                        Thread.Sleep(1000 * 10);
+                        if (File.Exists(rdpFile))
+                            File.Delete(rdpFile);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                    }
+                });
+            }
         }
 
         private void ConnectRemoteApp(RdpApp remoteApp)
@@ -130,38 +138,41 @@ namespace PRM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context).ToString());
-            var p = new Process
+            if (_context.DataService != null)
             {
-                StartInfo =
+                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context.DataService).ToString());
+                var p = new Process
                 {
-                    FileName = "cmd.exe",
-                    UseShellExecute = false,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                }
-            };
-            p.Start();
-            p.StandardInput.WriteLine($"mstsc \"" + rdpFile + "\"");
-            p.StandardInput.WriteLine("exit");
+                    StartInfo =
+                    {
+                        FileName = "cmd.exe",
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                p.Start();
+                p.StandardInput.WriteLine($"mstsc \"" + rdpFile + "\"");
+                p.StandardInput.WriteLine("exit");
 
-            // delete tmp rdp file, ETA 10s
-            var t = new Task(() =>
-            {
-                try
+                // delete tmp rdp file, ETA 10s
+                var t = new Task(() =>
                 {
-                    Thread.Sleep(1000 * 10);
-                    if (File.Exists(rdpFile))
-                        File.Delete(rdpFile);
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
-            });
-            t.Start();
+                    try
+                    {
+                        Thread.Sleep(1000 * 10);
+                        if (File.Exists(rdpFile))
+                            File.Delete(rdpFile);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                    }
+                });
+                t.Start();
+            }
         }
 
         private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
@@ -228,7 +239,7 @@ namespace PRM.Service
             // if serverId <= 0, then start multiple sessions
             if (serverId <= 0)
             {
-                var list = _context.AppData.VmItemList.Where(x => x.IsSelected).ToArray();
+                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)
                 {
                     this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
@@ -237,13 +248,13 @@ namespace PRM.Service
             }
             #endregion
 
-            Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
-            _context.ConfigurationService.Engagement.ConnectCount++;
-            _context.ConfigurationService.Save();
+            Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == serverId));
+            _configurationService.Engagement.ConnectCount++;
+            _configurationService.Save();
             // clear selected state
-            _context.AppData.UnselectAllServers();
+            _appData.UnselectAllServers();
 
-            var server = _context.AppData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId)?.Server;
+            var server = _appData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId)?.Server;
             if (server == null)
             {
                 SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
@@ -417,7 +428,7 @@ namespace PRM.Service
         private TabWindowBase CreateNewTabWindow()
         {
             var token = DateTime.Now.Ticks.ToString();
-            AddTab(new TabWindowView(token, _context.LocalityService));
+            AddTab(new TabWindowView(token, IoC.Get<LocalityService>()));
             var tab = _token2TabWindows[token];
 
             // set location

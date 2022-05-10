@@ -32,6 +32,8 @@ namespace PRM.View
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
         public PrmContext Context { get; }
+        public GlobalData AppData { get; }
+
 
         #region properties
 
@@ -102,18 +104,20 @@ namespace PRM.View
         private string _filterString = "";
         #endregion
 
-        public ServerListPageViewModel(PrmContext context)
+        public ServerListPageViewModel(PrmContext context, GlobalData appData)
         {
             Context = context;
-            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+            AppData = appData;
+            AppData.VmItemListDataChanged += RebuildVmServerList;
             RebuildVmServerList();
 
+            GridNoteVisibility = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
                 {
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
-                        Context.AppData.DeleteServer(id);
+                        AppData.DeleteServer(id);
                     }
                 };
 
@@ -129,8 +133,7 @@ namespace PRM.View
         {
             Execute.OnUIThread(() =>
             {
-                if (Context?.AppData?.VmItemList == null) return;
-                foreach (var vs in Context.AppData.VmItemList)
+                foreach (var vs in AppData.VmItemList)
                 {
                     try
                     {
@@ -141,7 +144,7 @@ namespace PRM.View
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
                 }
-                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
+                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
                 CalcVisibleByFilter(_filterString);
                 RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
@@ -195,8 +198,7 @@ namespace PRM.View
             var keyWords = tmp.Item2;
             TagFilters = tagFilters;
             var newList = new List<ProtocolBaseViewModel>();
-            if (Context?.AppData?.VmItemList == null) return;
-            foreach (var vm in Context.AppData.VmItemList)
+            foreach (var vm in AppData.VmItemList)
             {
                 var server = vm.Server;
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, keyWords);
@@ -279,8 +281,7 @@ namespace PRM.View
                                     list.Add(server);
                                 }
                             }
-                            if (Context?.AppData == null) return;
-                            Context.AppData.AddServer(list);
+                            AppData.AddServer(list);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
@@ -320,8 +321,7 @@ namespace PRM.View
                             var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                             if (list?.Count > 0)
                             {
-                                if (Context?.AppData == null) return;
-                                Context.AppData.AddServer(list);
+                                AppData.AddServer(list);
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>
                                 {
@@ -370,13 +370,12 @@ namespace PRM.View
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
-                    if (Context?.AppData == null) return;
                     var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         var ids = ss.Select(x => x.Id);
-                        Context.AppData.DeleteServer(ids);
+                        AppData.DeleteServer(ids);
                     }
                 }, o => ServerListItems.Any(x => x.IsSelected == true));
             }
@@ -404,7 +403,7 @@ namespace PRM.View
             get
             {
                 Debug.Assert(Context != null);
-                return _cmdCancelSelected ??= new RelayCommand((o) => { Context.AppData.UnselectAllServers(); });
+                return _cmdCancelSelected ??= new RelayCommand((o) => { AppData.UnselectAllServers(); });
             }
         }
 

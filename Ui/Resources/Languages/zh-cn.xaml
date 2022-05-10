@@ -81,7 +81,7 @@
     <s:String x:Key="Startup">启动</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">开机自启动</s:String>
     <s:String x:Key="system_options_general_start_minimized">启动时最小化到托盘</s:String>
-    <s:String x:Key="Confirm before closing">关闭前需确认</s:String>
+    <s:String x:Key="Confirm before closing">关闭远程会话前弹窗确认</s:String>
     <s:String x:Key="system_options_general_log_file_path">日志文件</s:String>
 
     <s:String x:Key="system_options_quick_description">快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。</s:String>
@@ -220,7 +220,7 @@
     <s:String x:Key="about_page_feedback">提意见/需求</s:String>
 
     <!-- guidance -->
-    <s:String x:Key="guidance_introduce">PRemoteM 您管理远程会话，并允许你通过启动器快速打开你的远程桌面</s:String>
+    <s:String x:Key="guidance_introduce">PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面</s:String>
     <s:String x:Key="guidance_feature_launcher_key">快速呼出启动器</s:String>
     <s:String x:Key="guidance_feature_launcher_select">选择项目</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">启动会话</s:String>

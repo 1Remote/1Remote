@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using Shawn.Utils;
 
@@ -17,12 +18,22 @@ namespace PRM.Service
         AddressDesc = 7,
     }
 
+    internal class LocalitySettings
+    {
+        public double MainWindowWidth;
+        public double MainWindowHeight;
+        public double TabWindowWidth;
+        public double TabWindowHeight;
+        public WindowState TabWindowState;
+        public EnumServerOrderBy ServerOrderBy
+    }
+
     public sealed class LocalityService : NotifyPropertyChangedBase
     {
         private readonly Ini _ini;
-        public LocalityService(Ini ini)
+        public LocalityService()
         {
-            _ini = ini;
+            _ini = new Ini(Path.Combine(AppPathHelper.Instance.LocalityDirPath, "locality.ini"));
             Load();
         }
 

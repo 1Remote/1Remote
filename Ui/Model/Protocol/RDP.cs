@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using PRM.Utils.RdpFile;
 using Shawn.Utils;
 
@@ -405,10 +406,9 @@ namespace PRM.Model.Protocol
         /// To rdp file object
         /// </summary>
         /// <returns></returns>
-        public RdpConfig ToRdpConfig(PrmContext context)
+        public RdpConfig ToRdpConfig(IDataService dataService)
         {
-            Debug.Assert(context.DataService != null);
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, dataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
                 LoadBalanceInfo = this.LoadBalanceInfo,

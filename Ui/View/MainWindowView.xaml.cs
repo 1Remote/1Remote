@@ -23,16 +23,21 @@ namespace PRM.View
     public partial class MainWindowView : WindowChromeBase
     {
         public MainWindowViewModel Vm { get; }
+        private readonly LocalityService _localityService;
+        private readonly ConfigurationService _configurationService;
 
-        public MainWindowView(MainWindowViewModel vm)
+
+        public MainWindowView(MainWindowViewModel vm, LocalityService localityService, ConfigurationService configurationService)
         {
             InitializeComponent();
             Vm = vm;
+            _localityService = localityService;
+            _configurationService = configurationService;
             this.DataContext = Vm;
-            Title = ConfigurationService.AppName;
+            Title = AppPathHelper.APP_DISPLAY_NAME;
             // restore the window size from 
-            this.Width = Vm.Context.LocalityService.MainWindowWidth;
-            this.Height = Vm.Context.LocalityService.MainWindowHeight;
+            this.Width = localityService.MainWindowWidth;
+            this.Height = localityService.MainWindowHeight;
             // check the current screen size
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             if (this.Width > screenEx.VirtualWorkingArea.Width)
@@ -44,8 +49,8 @@ namespace PRM.View
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    Vm.Context.LocalityService.MainWindowHeight = this.Height;
-                    Vm.Context.LocalityService.MainWindowWidth = this.Width;
+                    localityService.MainWindowHeight = this.Height;
+                    localityService.MainWindowWidth = this.Width;
                     SimpleLogHelper.Info($"Main window resize to: w = {this.Width}, h = {this.Height}");
                 }
             };
@@ -59,10 +64,10 @@ namespace PRM.View
 
             BtnClose.Click += (sender, args) =>
             {
-                if ((Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
-                    && Vm.Context.ConfigurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
-                    && Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
-                    && Vm.Context.ConfigurationService.Engagement.ConnectCount > 30
+                if ((_configurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > _configurationService.Engagement.DoNotShowAgainVersion)
+                    && _configurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
+                    && _configurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
+                    && _configurationService.Engagement.ConnectCount > 30
                    )
                 {
                     // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
@@ -70,7 +75,7 @@ namespace PRM.View
                     return;
                 }
                 vm.HideMe();
-#if DEV
+#if DEBUG
                 App.Close();
 #endif
             };

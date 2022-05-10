@@ -13,6 +13,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using Shawn.Utils;
 
 namespace PRM.View.Editor.Forms
@@ -111,22 +112,26 @@ namespace PRM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(IoC.Get<PrmContext>()).ToString());
-                var p = new Process
+                var ds = IoC.Get<PrmContext>().DataService;
+                if (ds != null)
                 {
-                    StartInfo =
+                    File.WriteAllText(rdpFile, rdp.ToRdpConfig(ds).ToString());
+                    var p = new Process
                     {
-                        FileName = "cmd.exe",
-                        UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true
-                    }
-                };
-                p.Start();
-                p.StandardInput.WriteLine($"notepad " + rdpFile);
-                p.StandardInput.WriteLine("exit");
+                        StartInfo =
+                        {
+                            FileName = "cmd.exe",
+                            UseShellExecute = false,
+                            RedirectStandardInput = true,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            CreateNoWindow = true
+                        }
+                    };
+                    p.Start();
+                    p.StandardInput.WriteLine($"notepad " + rdpFile);
+                    p.StandardInput.WriteLine("exit");
+                }
             }
         }
     }

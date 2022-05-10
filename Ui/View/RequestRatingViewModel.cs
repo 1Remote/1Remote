@@ -40,7 +40,7 @@ namespace PRM.View
                         IoC.Get<ConfigurationService>().Engagement.DoNotShowAgainVersionString = AppVersion.Version;
                     }
                     IoC.Get<ConfigurationService>().Save();
-#if DEV
+#if DEBUG
                     App.Close();
 #endif
                 });

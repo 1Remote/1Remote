@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using PRM.Model;
+using PRM.Service;
 using PRM.View.Settings;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -16,15 +17,12 @@ namespace PRM.View.Guidance
     /// </summary>
     public partial class GuidanceWindow : WindowBase
     {
-        public SettingsPageViewModel SettingsPageViewModel { get; }
-        public GuidanceWindow(PrmContext context, SettingsPageViewModel viewModel)
+        public GuidanceWindowViewModel SettingsPageViewModel { get; }
+        public GuidanceWindow(GuidanceWindowViewModel vm)
         {
-            SettingsPageViewModel = viewModel;
+            SettingsPageViewModel = vm;
+            DataContext = this;
             InitializeComponent();
-            context.ConfigurationService.CanSave = false;
-
-            // stop auto saving configs.
-
             _step = 0;
             Grid1.Visibility = Visibility.Visible;
             Grid2.Visibility = Visibility.Collapsed;
@@ -33,39 +31,10 @@ namespace PRM.View.Guidance
             WinGrid.MouseUp += WinTitleBar_OnMouseUp;
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
-            DataContext = this;
-
-            // set default language
-            CultureInfo ci = CultureInfo.CurrentCulture;
-            Console.WriteLine("CultureInfo.CurrentCulture");
-            Console.WriteLine(CultureInfo.CurrentCulture);
-            Console.WriteLine("CultureInfo.CurrentUICulture");
-            Console.WriteLine(CultureInfo.CurrentUICulture);
-            Console.WriteLine("CultureInfo.DefaultThreadCurrentCulture");
-            Console.WriteLine(CultureInfo.DefaultThreadCurrentCulture);
-            Console.WriteLine("CultureInfo.DefaultThreadCurrentUICulture");
-            Console.WriteLine(CultureInfo.DefaultThreadCurrentUICulture);
-
-            Console.WriteLine("Default Language Info:");
-            Console.WriteLine("* Name: {0}", ci.Name);
-            Console.WriteLine("* Display Name: {0}", ci.DisplayName);
-            Console.WriteLine("* English Name: {0}", ci.EnglishName);
-            Console.WriteLine("* 2-letter ISO Name: {0}", ci.TwoLetterISOLanguageName);
-            Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
-            Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
-
-            SettingsPageViewModel.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
-
             Closing += (sender, args) =>
             {
                 if (Step >= 0)
                     args.Cancel = true;
-            };
-            Closed += (sender, args) =>
-            {
-                // save config when close
-                context.ConfigurationService.CanSave = true;
-                context.ConfigurationService.Save();
             };
         }
 
@@ -114,31 +83,12 @@ namespace PRM.View.Guidance
 
         public override void WinTitleBar_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isDragging = false;
-            _isLeftMouseDown = false;
-
-            if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
-
             if (e.ClickCount == 2)
             {
+                // disabled go Maximized
+                return;
             }
-            else
-            {
-                _isLeftMouseDown = true;
-                var th = new Thread(() =>
-                {
-                    Thread.Sleep(50);
-                    if (_isLeftMouseDown)
-                    {
-                        _isDragging = true;
-                    }
-                    _isLeftMouseDown = false;
-                });
-                th.Start();
-            }
+            base.WinTitleBar_OnPreviewMouseDown(sender, e);
         }
     }
 }

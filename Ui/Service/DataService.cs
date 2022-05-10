@@ -150,7 +150,7 @@ namespace PRM.Service
                 // update 
                 if (_dataBase.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
                 {
-                    _dataBase.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
+                    _dataBase.Set_RSA_SHA1(rsa.Sign("SHA1", AppPathHelper.APP_NAME));
                     _rsa = rsa;
                 }
                 return RSA.EnumRsaStatus.NoError;

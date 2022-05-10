@@ -120,7 +120,7 @@ namespace PRM.View.Host
         {
             if (SelectedItem != null)
             {
-                this.Title = SelectedItem.Header + " - " + ConfigurationService.AppName;
+                this.Title = SelectedItem.Header + " - " + AppPathHelper.APP_DISPLAY_NAME;
             }
         }
 
@@ -272,7 +272,7 @@ namespace PRM.View.Host
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            var v = new TabWindowView(token, IoC.Get<PrmContext>().LocalityService);
+            var v = new TabWindowView(token, IoC.Get<LocalityService>());
             IoC.Get<SessionControlService>().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
