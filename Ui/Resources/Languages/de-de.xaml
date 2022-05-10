@@ -277,4 +277,9 @@
     <s:String x:Key="Buy a coffee">Buy a coffee</s:String>
     <s:String x:Key="Give nice review">Give nice review</s:String>
     <s:String x:Key="Do not show this again in current version">Do not show this again in current version</s:String>
+    <s:String x:Key="User profile">Benutzerprofil</s:String>
+    <s:String x:Key="Portable mode">Tragbarer Modus</s:String>
+    <s:String x:Key="Profile is saved where executable is located">Das Profil wird dort gespeichert, wo sich die ausführbare Datei befindet</s:String>
+    <s:String x:Key="Install for current windows account">Installieren Sie für das aktuelle Windows -Konto</s:String>
+    <s:String x:Key="Profile is saved in your Windows AppData folder">Das Profil wird in Ihrem Windows AppData -Ordner gespeichert</s:String>
 </ResourceDictionary>

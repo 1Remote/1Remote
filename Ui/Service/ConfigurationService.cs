@@ -183,15 +183,16 @@ namespace PRM.Service
 
         public void Save()
         {
-            if (CanSave == false)
-                return;
-            CanSave = false;
-            var fi = new FileInfo(AppPathHelper.Instance.JsonProfilePath);
-            if (fi?.Directory?.Exists == false)
-                fi.Directory.Create();
+            if (!CanSave) return;
             lock (this)
             {
-                File.WriteAllText(AppPathHelper.Instance.JsonProfilePath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                if (!CanSave) return;
+                CanSave = false;
+                var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
+                File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                CanSave = true;
             }
 #if FOR_MICROSOFT_STORE_ONLY
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
@@ -200,7 +201,6 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
-            CanSave = true;
         }
 
 

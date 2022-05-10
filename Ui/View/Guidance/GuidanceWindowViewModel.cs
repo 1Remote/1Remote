@@ -23,8 +23,8 @@ namespace PRM.View.Guidance
             Debug.Assert(App.ResourceDictionary != null);
             _themeService = new ThemeService(App.ResourceDictionary, configuration.Theme);
             _configuration = configuration;
-            ProFileMode = EProFileMode.AppData;
-            ProFileModeIsEnabled = AppPathHelper.CheckPermissionForPortablePaths();
+            ProfileModeIsPortable = false;
+            ProfileModeIsEnabled = AppPathHelper.CheckPermissionForPortablePaths();
 
 
             // set default language
@@ -104,14 +104,14 @@ namespace PRM.View.Guidance
             }
         }
 
-        private EProFileMode _proFileMode = EProFileMode.Portable;
-        public EProFileMode ProFileMode
+        private bool _profileModeIsPortable;
+        public bool ProfileModeIsPortable
         {
-            get => _proFileMode;
-            set => SetAndNotifyIfChanged(ref _proFileMode, value);
+            get => _profileModeIsPortable;
+            set => SetAndNotifyIfChanged(ref _profileModeIsPortable, value);
         }
 
-        public bool ProFileModeIsEnabled { get; }
+        public bool ProfileModeIsEnabled { get; }
 
 
         private void SetTheme(string name)
@@ -130,11 +130,5 @@ namespace PRM.View.Guidance
             _configuration.Theme.BackgroundTextColor = theme.BackgroundTextColor;
             _themeService.ApplyTheme(_configuration.Theme);
         }
-    }
-
-    public enum EProFileMode
-    {
-        Portable = 0,
-        AppData = 1,
     }
 }

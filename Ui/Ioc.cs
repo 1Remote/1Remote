@@ -18,8 +18,10 @@ public static class IoC
     public static T Get<T>(string? key = null) where T : class
     {
         var obj = Instances?.Get(typeof(T), key);
+#if !DEBUG
         if (obj == null)
             throw new Exception("Ioc can not get an item.");
+#endif
         return (T)obj;
     }
 }

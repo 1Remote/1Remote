@@ -127,6 +127,7 @@ namespace PRM.View
                 _filterString = filterString;
                 CalcVisibleByFilter(_filterString);
             };
+            ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
         }
 
         private void RebuildVmServerList()

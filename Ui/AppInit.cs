@@ -80,12 +80,12 @@ namespace PRM
                 var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
                 // 读取旧版本配置信息 TODO remove after 2023.01.01
                 {
-                    string iniPath = portablePaths.IniProfilePath;
-                    string dbDefaultPath = portablePaths.DefaultSqliteDbPath;
+                    string iniPath = portablePaths.ProfileIniPath;
+                    string dbDefaultPath = portablePaths.SqliteDbDefaultPath;
                     if (File.Exists(iniPath) == false)
                     {
-                        iniPath = appDataPaths.IniProfilePath;
-                        dbDefaultPath = appDataPaths.DefaultSqliteDbPath;
+                        iniPath = appDataPaths.ProfileIniPath;
+                        dbDefaultPath = appDataPaths.SqliteDbDefaultPath;
                     }
                     if (File.Exists(iniPath) == true)
                     {
@@ -101,8 +101,8 @@ namespace PRM
                 }
 
                 bool isPortableMode = false;
-                bool portableProfilePathExisted = File.Exists(portablePaths.JsonProfilePath);
-                bool appDataProfilePathExisted = File.Exists(appDataPaths.JsonProfilePath);
+                bool portableProfilePathExisted = File.Exists(portablePaths.ProfileJsonPath);
+                bool appDataProfilePathExisted = File.Exists(appDataPaths.ProfileJsonPath);
                 if (portableProfilePathExisted == false && appDataProfilePathExisted == false)
                 {
                     // 新用户显示引导窗口
@@ -110,7 +110,7 @@ namespace PRM
                     var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, Configuration);
                     var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                     guidanceWindow.ShowDialog();
-                    isPortableMode = guidanceWindowViewModel.ProFileMode == EProFileMode.Portable;
+                    isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
                     AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
                 }
                 else if (portableProfilePathExisted)
@@ -128,11 +128,11 @@ namespace PRM
                     var paths = AppPathHelper.Instance;
                     WritePermissionCheck(paths.BaseDirPath, false);
                     WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
-                    WritePermissionCheck(paths.JsonProfilePath, true);
+                    WritePermissionCheck(paths.ProfileJsonPath, true);
                     WritePermissionCheck(paths.LogFilePath, true);
-                    WritePermissionCheck(paths.DefaultSqliteDbPath, true);
+                    WritePermissionCheck(paths.SqliteDbDefaultPath, true);
                     WritePermissionCheck(paths.KittyDirPath, false);
-                    WritePermissionCheck(paths.LocalityDirPath, false);
+                    WritePermissionCheck(paths.LocalityJsonPath, true);
                 }
 
                 // 文件夹创建
@@ -140,11 +140,11 @@ namespace PRM
                     var paths = AppPathHelper.Instance;
                     CreateDirIfNotExist(paths.BaseDirPath, false);
                     CreateDirIfNotExist(paths.ProtocolRunnerDirPath, false);
-                    CreateDirIfNotExist(paths.JsonProfilePath, true);
+                    CreateDirIfNotExist(paths.ProfileJsonPath, true);
                     CreateDirIfNotExist(paths.LogFilePath, true);
-                    CreateDirIfNotExist(paths.DefaultSqliteDbPath, true);
+                    CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
                     CreateDirIfNotExist(paths.KittyDirPath, false);
-                    CreateDirIfNotExist(paths.LocalityDirPath, false);
+                    CreateDirIfNotExist(paths.LocalityJsonPath, true);
                 }
             }
             #endregion
@@ -165,11 +165,11 @@ namespace PRM
             }
 
             // 读取配置
-            if (File.Exists(AppPathHelper.Instance.JsonProfilePath))
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
             {
                 try
                 {
-                    var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.JsonProfilePath));
+                    var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.ProfileJsonPath));
                     if (tmp != null)
                         Configuration = tmp;
                 }
@@ -180,7 +180,7 @@ namespace PRM
             }
             else
             {
-                Configuration.Database.SqliteDatabasePath = AppPathHelper.Instance.DefaultSqliteDbPath;
+                Configuration.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
             KeywordMatchService = new KeywordMatchService();

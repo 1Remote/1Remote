@@ -25,24 +25,4 @@ namespace PRM.View.Guidance
             InitializeComponent();
         }
     }
-
-
-    public class ConverterEProFileMode : IValueConverter
-    {
-        #region IValueConverter 成员  
-        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value == null)
-                return 0;
-            return ((int)((EProFileMode)value)).ToString();
-        }
-
-        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value == null)
-                return null;
-            return (EProFileMode)(int.Parse(value.ToString() ?? "0"));
-        }
-        #endregion
-    }
 }
