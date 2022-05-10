@@ -13,7 +13,7 @@ namespace PRM.View.Settings.ProtocolConfig
         public ProtocolRunnerSettingsPage()
         {
             InitializeComponent();
-            var vm = new ProtocolRunnerSettingsPageViewModel(IoC.Get<PrmContext>().ProtocolConfigurationService, IoC.Get<ILanguageService>());
+            var vm = new ProtocolRunnerSettingsPageViewModel(IoC.Get<PrmContext>().ProtocolConfigurationService ?? new ProtocolConfigurationService(), IoC.Get<ILanguageService>());
             this.DataContext = vm;
         }
     }

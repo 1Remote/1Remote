@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Windows;
+using Newtonsoft.Json;
 using Shawn.Utils;
 
 namespace PRM.Service
@@ -20,117 +22,127 @@ namespace PRM.Service
 
     internal class LocalitySettings
     {
-        public double MainWindowWidth;
-        public double MainWindowHeight;
-        public double TabWindowWidth;
-        public double TabWindowHeight;
-        public WindowState TabWindowState;
-        public EnumServerOrderBy ServerOrderBy
+        public double MainWindowWidth = 800;
+        public double MainWindowHeight = 530;
+        public double TabWindowWidth = 800;
+        public double TabWindowHeight = 600;
+        public WindowState TabWindowState = WindowState.Normal;
+        public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
     }
 
-    public sealed class LocalityService : NotifyPropertyChangedBase
+    public sealed class LocalityService
     {
-        private readonly Ini _ini;
         public LocalityService()
         {
-            _ini = new Ini(Path.Combine(AppPathHelper.Instance.LocalityDirPath, "locality.ini"));
-            Load();
+            _localitySettings = new LocalitySettings();
+            try
+            {
+                var tmp = JsonConvert.DeserializeObject<LocalitySettings>(File.ReadAllText(AppPathHelper.Instance.LocalityJsonPath));
+                if (tmp != null)
+                    _localitySettings = tmp;
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         public double MainWindowWidth
         {
-            get => _mainWindowWidth;
+            get => _localitySettings.MainWindowWidth;
             set
             {
-                _mainWindowWidth = value;
-                Save();
+                if (Math.Abs(_localitySettings.MainWindowWidth - value) > 0.001)
+                {
+                    _localitySettings.MainWindowWidth = value;
+                    Save();
+                }
             }
         }
 
         public double MainWindowHeight
         {
-            get => _mainWindowHeight;
+            get => _localitySettings.MainWindowHeight;
             set
             {
-                _mainWindowHeight = value;
-                Save();
+                if (Math.Abs(_localitySettings.MainWindowHeight - value) > 0.001)
+                {
+                    _localitySettings.MainWindowHeight = value;
+                    Save();
+                }
             }
         }
 
         public double TabWindowWidth
         {
-            get => _tabWindowWidth;
+            get => _localitySettings.TabWindowWidth;
             set
             {
-                _tabWindowWidth = value;
-                Save();
+                if (Math.Abs(_localitySettings.TabWindowWidth - value) > 0.001)
+                {
+                    _localitySettings.TabWindowWidth = value;
+                    Save();
+                }
             }
         }
 
         public double TabWindowHeight
         {
-            get => _tabWindowHeight;
+            get => _localitySettings.TabWindowHeight;
             set
             {
-                _tabWindowHeight = value;
-                Save();
+                if (Math.Abs(_localitySettings.TabWindowHeight - value) > 0.001)
+                {
+                    _localitySettings.TabWindowHeight = value;
+                    Save();
+                }
             }
         }
 
         public WindowState TabWindowState
         {
-            get => _tabWindowState;
+            get => _localitySettings.TabWindowState;
             set
             {
-                _tabWindowState = value;
-                Save();
+                if (_localitySettings.TabWindowState != value)
+                {
+                    _localitySettings.TabWindowState = value;
+                    Save();
+                }
             }
         }
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;
         public EnumServerOrderBy ServerOrderBy
         {
-            get => _serverOrderBy;
+            get => _localitySettings.ServerOrderBy;
             set
             {
-                SetAndNotifyIfChanged(ref _serverOrderBy, value);
-                Save();
+                if (_localitySettings.ServerOrderBy != value)
+                {
+                    _localitySettings.ServerOrderBy = value;
+                    Save();
+                }
             }
         }
 
 
-        private double _mainWindowWidth = 800;
-        private double _mainWindowHeight = 530;
-        private double _tabWindowWidth = 800;
-        private double _tabWindowHeight = 680;
-        private WindowState _tabWindowState = WindowState.Normal;
+        private readonly LocalitySettings _localitySettings;
 
         #region Interface
 
-        private const string SectionName = "Locality";
-        private bool _saveEnabled = true;
+        public bool CanSave = true;
         private void Save()
         {
-            if (_saveEnabled)
+            if (!CanSave) return;
+            lock (this)
             {
-                _ini.WriteValue(nameof(MainWindowWidth).ToLower(), SectionName, MainWindowWidth.ToString());
-                _ini.WriteValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight.ToString());
-                _ini.WriteValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth.ToString());
-                _ini.WriteValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight.ToString());
-                _ini.WriteValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString());
-                _ini.Save();
+                if (!CanSave) return;
+                CanSave = false;
+                var fi = new FileInfo(AppPathHelper.Instance.LocalityJsonPath);
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
+                File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
+                CanSave = true;
             }
-        }
-
-        private void Load()
-        {
-            _saveEnabled = false;
-            MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), SectionName, MainWindowWidth);
-            MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight);
-            TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth);
-            TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight);
-            if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString()), out var so))
-                ServerOrderBy = so;
-            _saveEnabled = true;
         }
 
         #endregion Interface

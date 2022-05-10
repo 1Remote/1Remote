@@ -23,7 +23,6 @@ namespace PRM.View
     public partial class MainWindowView : WindowChromeBase
     {
         public MainWindowViewModel Vm { get; }
-        private readonly LocalityService _localityService;
         private readonly ConfigurationService _configurationService;
 
 
@@ -31,7 +30,6 @@ namespace PRM.View
         {
             InitializeComponent();
             Vm = vm;
-            _localityService = localityService;
             _configurationService = configurationService;
             this.DataContext = Vm;
             Title = AppPathHelper.APP_DISPLAY_NAME;

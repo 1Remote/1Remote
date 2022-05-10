@@ -277,5 +277,10 @@
     <s:String x:Key="Give suggestions">提点意见</s:String>
     <s:String x:Key="Buy a coffee">买杯咖啡</s:String>
     <s:String x:Key="Give nice review">给个好评</s:String>
-    <s:String x:Key="Do not show this again in current version">不再显示</s:String>
+    <s:String x:Key="Do not show this again in current version">当前版本不再显示</s:String>
+    <s:String x:Key="User profile">用户配置</s:String>
+    <s:String x:Key="Portable mode">便携模式</s:String>
+    <s:String x:Key="Profile is saved where executable is located">配置文件保存在可执行文件所在文件夹</s:String>
+    <s:String x:Key="Install for current windows account">为当前 Windows 用户配置</s:String>
+    <s:String x:Key="Profile is saved in your Windows AppData folder">配置文件保存在 Windows AppData 文件夹</s:String>
 </ResourceDictionary>

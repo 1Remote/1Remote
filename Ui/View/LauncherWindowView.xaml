@@ -385,8 +385,8 @@
 
 
                                     <Grid Width="50" Height="40" HorizontalAlignment="Right" Cursor="SizeAll"
-                                Background="Transparent"
-                                PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
+                                            Background="Transparent"
+                                            PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
                                 </Grid>
 
 
