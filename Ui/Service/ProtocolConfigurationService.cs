@@ -38,49 +38,12 @@ namespace PRM.Service
             }
         }
 
-        public readonly string ProtocolFolderName;
 
-        /// <summary>
-        /// true -> Portable mode(for exe) setting files saved in Environment.CurrentDirectory;
-        /// false -> ApplicationData mode(for Microsoft store.)  setting files saved in Environment.CurrentDirectory 
-        /// </summary>
-        public readonly bool IsPortable;
-
-        public ProtocolConfigurationService(bool isPortable)
+        public ProtocolConfigurationService()
         {
-            IsPortable = isPortable;
-            string protocolFolder2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Protocols");
-
-            if (IsPortable)
-            {
-                string protocolFolder1 = Path.Combine(Environment.CurrentDirectory, "Protocols");
-                ProtocolFolderName = protocolFolder1;
-                // read the protocolFolder1 first
-                if (LoadCheck(protocolFolder1))
-                {
-                    ProtocolConfigs = Load(protocolFolder1);
-                }
-                // if ProtocolConfigs is empty, try to read protocolFolder2
-                else if (LoadCheck(protocolFolder2))
-                {
-                    ProtocolConfigs = Load(protocolFolder2);
-                    ProtocolFolderName = protocolFolder2;
-                }
-                // protocolFolder1, protocolFolder2 are empty, init ProtocolFolderName
-                else
-                {
-                    if (Directory.Exists(ProtocolFolderName) == false)
-                        Directory.CreateDirectory(ProtocolFolderName);
-                    ProtocolConfigs = Load(ProtocolFolderName);
-                }
-            }
-            else
-            {
-                ProtocolFolderName = protocolFolder2;
-                if (Directory.Exists(ProtocolFolderName) == false)
-                    Directory.CreateDirectory(ProtocolFolderName);
-                ProtocolConfigs = Load(ProtocolFolderName);
-            }
+            if (Directory.Exists(AppPathHelper.Instance.ProtocolRunnerDirPath) == false)
+                Directory.CreateDirectory(AppPathHelper.Instance.ProtocolRunnerDirPath);
+            ProtocolConfigs = Load(AppPathHelper.Instance.ProtocolRunnerDirPath);
         }
 
         private static bool LoadCheck(string protocolFolderName)
@@ -249,7 +212,7 @@ namespace PRM.Service
                         externalRunner.EnvironmentVariables.Remove(ev);
                     }
                 }
-                var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
+                var file = Path.Combine(AppPathHelper.Instance.ProtocolRunnerDirPath, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
         }

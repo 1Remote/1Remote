@@ -108,7 +108,7 @@ namespace PRM.View.ErrorReport
                 sb.AppendLine("");
                 sb.AppendLine("|     Component   |                       Version                      |");
                 sb.AppendLine("|:------------------|:--------------------------------------|");
-                sb.AppendLine($"|{ConfigurationService.AppName} | `{AppVersion.Version}`({from})|");
+                sb.AppendLine($"|{AppPathHelper.APP_DISPLAY_NAME} | `{AppVersion.Version}`({from})|");
                 sb.AppendLine($"|.NET Framework | `{framework?.NamedArguments?[0].TypedValue.Value?.ToString()}`    |");
                 sb.AppendLine($"|CLR            | `{Environment.Version}`       |");
                 sb.AppendLine($"|OS             | `{platform}`                  |");
@@ -151,7 +151,7 @@ namespace PRM.View.ErrorReport
             {
                 var path = SelectFileHelper.SaveFile(
                     filter: "log |*.log.md",
-                    selectedFileName: ConfigurationService.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md");
+                    selectedFileName: AppPathHelper.APP_NAME + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md");
                 if (path == null) return;
                 File.WriteAllText(path, TbErrorInfo.Text.Replace("\n", "\n\n"), Encoding.UTF8);
                 var sb = new Storyboard();
@@ -180,7 +180,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{ConfigurationService.AppName} error report.", "");
+                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{AppPathHelper.APP_DISPLAY_NAME} error report.", "");
 #pragma warning disable CS0618
 #pragma warning disable SYSLIB0013 // 类型或成员已过时
                 mailto = Uri.EscapeUriString(mailto);

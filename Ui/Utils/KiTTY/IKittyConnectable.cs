@@ -33,7 +33,7 @@ namespace PRM.Utils.KiTTY
         {
             if (item is ProtocolBase protocolServer)
             {
-                return $"{ConfigurationService.AppName}_{protocolServer.Protocol}_{protocolServer.Id}";
+                return $"{AppPathHelper.APP_NAME}_{protocolServer.Protocol}_{protocolServer.Id}";
             }
             throw new NotSupportedException("you should not access here! something goes wrong");
         }
@@ -270,30 +270,14 @@ reload=yes
 
         public static string GetKittyExeFullName()
         {
-#if DEV
+#if DEBUG
             const string kittyExeName = "kitty_portable_PRemoteM_debug.exe";
 #else
             const string kittyExeName = "kitty_portable_PRemoteM.exe";
 #endif
-#if FOR_MICROSOFT_STORE_ONLY
-            var kittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Kitty");
-#else
-            var kittyExeFolderPath = Path.Combine(Environment.CurrentDirectory, "Kitty");
-            try
-            {
-                var kittyExeFolderPathAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Kitty");
-                if (Directory.Exists(kittyExeFolderPathAppData))
-                    Directory.Delete(kittyExeFolderPathAppData, true);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-#endif
-
-            if (!Directory.Exists(kittyExeFolderPath))
-                Directory.CreateDirectory(kittyExeFolderPath);
-            var kittyExeFullName = Path.Combine(kittyExeFolderPath, kittyExeName);
+            if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
+                Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
+            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, kittyExeName);
             return kittyExeFullName;
         }
 

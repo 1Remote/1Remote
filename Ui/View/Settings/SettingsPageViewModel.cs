@@ -23,11 +23,16 @@ namespace PRM.View.Settings
     {
         private readonly PrmContext _context;
         private LanguageService _languageService => IoC.Get<LanguageService>();
-        private ConfigurationService _configurationService => _context.ConfigurationService;
+        private LauncherService _launcherService => IoC.Get<LauncherService>();
+        private ThemeService _themeService => IoC.Get<ThemeService>();
+        private ConfigurationService _configurationService => IoC.Get<ConfigurationService>();
+        private readonly GlobalData _appData;
 
-        public SettingsPageViewModel(PrmContext context)
+
+        public SettingsPageViewModel(PrmContext context, GlobalData appData)
         {
             _context = context;
+            _appData = appData;
             _context.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(PrmContext.DataService))
@@ -196,7 +201,7 @@ namespace PRM.View.Settings
             set
             {
                 if (value != LauncherHotKeyModifiers
-                    && _context.LauncherService.CheckIfHotkeyAvailable(value, LauncherHotKeyKey)
+                    && _launcherService.CheckIfHotkeyAvailable(value, LauncherHotKeyKey)
                     && SetAndNotifyIfChanged(ref _configurationService.Launcher.HotKeyModifiers, value))
                 {
                     _configurationService.Save();
@@ -211,7 +216,7 @@ namespace PRM.View.Settings
             set
             {
                 if (value != LauncherHotKeyKey
-                    && _context.LauncherService.CheckIfHotkeyAvailable(LauncherHotKeyModifiers, value)
+                    && _launcherService.CheckIfHotkeyAvailable(LauncherHotKeyModifiers, value)
                     && SetAndNotifyIfChanged(ref _configurationService.Launcher.HotKeyKey, value))
                 {
                     _configurationService.Save();
@@ -227,8 +232,6 @@ namespace PRM.View.Settings
         #region Database
 
         public string DbPath => _configurationService.Database.SqliteDatabasePath;
-        //public string RsaPublicKey => _context.DataService?.Database_GetPublicKey() ?? "";
-        //public string RsaPrivateKeyPath => _context.DataService?.Database_GetPrivateKeyPath() ?? "";
 
         private string _dbRsaPublicKey = "";
         public string DbRsaPublicKey
@@ -291,7 +294,7 @@ namespace PRM.View.Settings
             if (string.IsNullOrEmpty(privateKeyPath))
             {
                 var path = SelectFileHelper.OpenFile(
-                    selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                    selectedFileName: AppPathHelper.APP_DISPLAY_NAME + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     checkFileExists: false,
                     filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;
@@ -320,7 +323,7 @@ namespace PRM.View.Settings
                         privateKeyContent = File.ReadAllText(privateKeyPath);
                     }
 
-                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
+                    var ss = _appData.VmItemList.Select(x => x.Server);
                     if (_context.DataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
@@ -343,7 +346,7 @@ namespace PRM.View.Settings
 
                     ValidateDbStatusAndShowMessageBox();
 
-                    _context.AppData.ReloadServerList();
+                    _appData.ReloadServerList();
                 }
             });
             t.Start();
@@ -385,7 +388,7 @@ namespace PRM.View.Settings
                     Debug.Assert(File.Exists(DbPath));
                     File.Copy(DbPath, DbPath + ".back", true);
 
-                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
+                    var ss = _appData.VmItemList.Select(x => x.Server);
                     if (_context.DataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
@@ -400,7 +403,7 @@ namespace PRM.View.Settings
                     File.Delete(DbPath + ".back");
 
                     ValidateDbStatusAndShowMessageBox();
-                    _context.AppData.ReloadServerList();
+                    _appData.ReloadServerList();
                     // done
                     OnRsaProgress(true);
 
@@ -472,7 +475,7 @@ namespace PRM.View.Settings
                         try
                         {
                             _context.InitSqliteDb(path);
-                            _context.AppData.ReloadServerList();
+                            _appData.ReloadServerList();
                             _configurationService.Database.SqliteDatabasePath = path;
                             RaisePropertyChanged(nameof(DbPath));
                             _configurationService.Save();
@@ -515,7 +518,7 @@ namespace PRM.View.Settings
                             Thread.Sleep(500);
                             this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
-                            // this._appContext.AppData.ReloadServerList();
+                            // this._app_appData.ReloadServerList();
                             _configurationService.Database.SqliteDatabasePath = path;
                             File.Delete(oldDbPath);
                         }
@@ -544,8 +547,8 @@ namespace PRM.View.Settings
 
         private void SetTheme(string name)
         {
-            Debug.Assert(_context.ThemeService.Themes.ContainsKey(name));
-            var theme = _context.ThemeService.Themes[name];
+            Debug.Assert(_themeService.Themes.ContainsKey(name));
+            var theme = _themeService.Themes[name];
             _configurationService.Theme.PrimaryMidColor = theme.PrimaryMidColor;
             _configurationService.Theme.PrimaryLightColor = theme.PrimaryLightColor;
             _configurationService.Theme.PrimaryDarkColor = theme.PrimaryDarkColor;
@@ -568,7 +571,7 @@ namespace PRM.View.Settings
             RaisePropertyChanged(nameof(BackgroundColor));
             RaisePropertyChanged(nameof(BackgroundTextColor));
 
-            _context.ThemeService.ApplyTheme(_configurationService.Theme);
+            _themeService.ApplyTheme(_configurationService.Theme);
         }
 
         public string ThemeName
@@ -576,7 +579,7 @@ namespace PRM.View.Settings
             get => _configurationService.Theme.ThemeName;
             set
             {
-                Debug.Assert(_context.ThemeService.Themes.ContainsKey(value));
+                Debug.Assert(_themeService.Themes.ContainsKey(value));
                 if (SetAndNotifyIfChanged(ref _configurationService.Theme.ThemeName, value))
                 {
                     SetTheme(value);
@@ -585,7 +588,7 @@ namespace PRM.View.Settings
             }
         }
 
-        public List<string> ThemeList => _context.ThemeService.Themes.Select(x => x.Key).ToList();
+        public List<string> ThemeList => _themeService.Themes.Select(x => x.Key).ToList();
 
 
         public string PrimaryMidColor
@@ -602,7 +605,7 @@ namespace PRM.View.Settings
                         _configurationService.Theme.PrimaryDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                         RaisePropertyChanged(nameof(PrimaryLightColor));
                         RaisePropertyChanged(nameof(PrimaryDarkColor));
-                        _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                        _themeService.ApplyTheme(_configurationService.Theme);
                     }
                 }
                 catch (Exception e)
@@ -617,7 +620,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryLightColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -627,7 +630,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryDarkColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -637,7 +640,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryTextColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -655,7 +658,7 @@ namespace PRM.View.Settings
                         _configurationService.Theme.AccentDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                         RaisePropertyChanged(nameof(AccentLightColor));
                         RaisePropertyChanged(nameof(AccentDarkColor));
-                        _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                        _themeService.ApplyTheme(_configurationService.Theme);
                     }
                 }
                 catch (Exception e)
@@ -670,7 +673,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.AccentLightColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -680,7 +683,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.AccentDarkColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -690,7 +693,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.AccentTextColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -700,7 +703,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -710,7 +713,7 @@ namespace PRM.View.Settings
             set
             {
                 SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundTextColor, value);
-                _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
 
@@ -724,7 +727,7 @@ namespace PRM.View.Settings
                 {
                     SetTheme(ThemeName);
                     _configurationService.Save();
-                    _context.ThemeService.ApplyTheme(_configurationService.Theme);
+                    _themeService.ApplyTheme(_configurationService.Theme);
                 });
             }
         }

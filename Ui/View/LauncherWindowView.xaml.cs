@@ -145,8 +145,14 @@ namespace PRM.View
                         case Key.Up:
                             _vm.AddSelectedIndexOnVisibilityItems(-1);
                             return;
+                        case Key.Left:
+                            if(IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
+                                _vm.CmdShowNoteField?.Execute();
+                            else
+                                _vm.CmdHideNoteField?.Execute();
+                            return;
                         case Key.PageUp:
-                            _vm.AddSelectedIndexOnVisibilityItems(-5);
+                    _vm.AddSelectedIndexOnVisibilityItems(-5);
                             return;
                     }
                     e.Handled = false;
@@ -219,7 +225,11 @@ namespace PRM.View
         {
             try
             {
-                HyperlinkHelper.OpenUriBySystem(e.Parameter.ToString());
+                var url = e?.Parameter?.ToString();
+                if (url != null)
+                {
+                    HyperlinkHelper.OpenUriBySystem(url);
+                }
             }
             catch (Exception ex)
             {

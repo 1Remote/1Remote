@@ -17,9 +17,9 @@ namespace Ui
         public static void OnlyOneAppInstanceCheck()
         {
 #if FOR_MICROSOFT_STORE_ONLY
-            string instanceName = ConfigurationService.AppName + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName);
+            string instanceName = AppPathHelper.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName);
 #else
-            string instanceName = ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
+            string instanceName = AppPathHelper.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
 #endif
             _namedPipeHelper = new NamedPipeHelper(instanceName);
             if (_namedPipeHelper.IsServer == false)
@@ -46,7 +46,7 @@ namespace Ui
         }
 
 
-        public static ResourceDictionary ResourceDictionary { get; private set; } = new ResourceDictionary();
+        public static ResourceDictionary? ResourceDictionary { get; private set; } = null;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -58,6 +58,7 @@ namespace Ui
         public static void Close(int exitCode = 0)
         {
             _namedPipeHelper?.Dispose();
+            IoC.Get<SessionControlService>().Release();
             IoC.Get<LauncherWindowView>()?.Close();
             IoC.Get<MainWindowView>()?.Close();
             Environment.Exit(exitCode);

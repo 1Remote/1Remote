@@ -5,6 +5,7 @@ using System.Text;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using VariableKeywordMatcher.Model;
 
 namespace PRM.Utils
@@ -111,7 +112,7 @@ namespace PRM.Utils
             // match keywords
             var dispName = server.DisplayName;
             var subTitle = server.SubTitle;
-            var mrs = IoC.Get<PrmContext>().KeywordMatchService.Match(new List<string>() { dispName, subTitle }, kws);
+            var mrs = IoC.Get<KeywordMatchService>().Match(new List<string>() { dispName, subTitle }, kws);
             if (mrs.IsMatchAllKeywords)
                 return new Tuple<bool, MatchResults?>(true, mrs);
 

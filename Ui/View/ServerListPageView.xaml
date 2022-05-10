@@ -201,7 +201,11 @@
 
                                 <!--brief note -->
                                 <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0 10 0">
-                                    <TextBlock Text="{DynamicResource Note}" Margin="25 0 0 0" Visibility="{Binding GridNoteVisibility}" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Text="{DynamicResource Note}" 
+                                               Margin="25 0 0 0" 
+                                               Visibility="{Binding GridNoteVisibility}" 
+                                               Foreground="{DynamicResource BackgroundTextBrush}"
+                                               VerticalAlignment="Center"></TextBlock>
                                     <Grid HorizontalAlignment="Left" Margin="1 0">
                                         <Button Width="20" Height="20"
                                             Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -392,7 +396,7 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource ConverterTagsIndicatorIsShow}">
                                         <Binding Path="TagFilters" Mode="OneWay"></Binding>
-                                        <Binding Path="Context.AppData.TagList" Mode="OneWay"></Binding>
+                                        <Binding Path="AppData.TagList" Mode="OneWay"></Binding>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
                                 <Setter Property="Visibility" Value="Visible"></Setter>
@@ -603,7 +607,7 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <ListBox ItemsSource="{Binding Context.AppData.TagList}" Margin="20" Visibility="Visible" MaxWidth="700" Background="Aqua" MinHeight="300" MinWidth="500">
+            <ListBox ItemsSource="{Binding AppData.TagList}" Margin="20" Visibility="Visible" MaxWidth="700" Background="Aqua" MinHeight="300" MinWidth="500">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
@@ -752,7 +756,7 @@
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Context.AppData.TagList.Count}" Value="0">
+                                    <DataTrigger Binding="{Binding AppData.TagList.Count}" Value="0">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -770,7 +774,7 @@
                         <StackPanel Orientation="Horizontal">
                             <ItemsControl
                                     Name="ListBoxTags"
-                                    ItemsSource="{Binding Context.AppData.TagList}"
+                                    ItemsSource="{Binding AppData.TagList}"
                                     Background="{DynamicResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"

@@ -12,7 +12,6 @@ namespace PRM.Model
 {
     public class PrmContext : NotifyPropertyChangedBase
     {
-        public readonly ConfigurationService ConfigurationService;
         public readonly ProtocolConfigurationService ProtocolConfigurationService;
 
         private IDataService? _dataService;
@@ -22,29 +21,14 @@ namespace PRM.Model
             set => SetAndNotifyIfChanged(ref _dataService, value);
         }
 
-        public readonly LauncherService LauncherService;
-        public readonly ThemeService ThemeService;
-        public readonly KeywordMatchService KeywordMatchService;
-        public readonly LocalityService LocalityService;
-        public bool IsPortable { get; private set; }
-        public GlobalData AppData { get; private set; }
+        private readonly GlobalData _appData;
 
-        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService, LocalityService localityService, ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
+        public PrmContext(ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
         {
-            KeywordMatchService = keywordMatchService;
-            ConfigurationService = configurationService;
-            LauncherService = launcherService;
-            ThemeService = themeService;
-            LocalityService = localityService;
             ProtocolConfigurationService = protocolConfigurationService;
-            AppData = appData;
+            _appData = appData;
         }
 
-        public void Init(bool isPortable)
-        {
-            IsPortable = isPortable;
-            // init service
-        }
 
 
         /// <summary>
@@ -57,17 +41,8 @@ namespace PRM.Model
             {
                 sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
                 var fi = new FileInfo(sqlitePath);
-                if (fi?.Exists != true)
-                    try
-                    {
-                        if (fi?.Directory?.Exists == false)
-                            fi.Directory.Create();
-                    }
-                    catch
-                    {
-                        if (IsPortable)
-                            sqlitePath = new DatabaseConfig().SqliteDatabasePath;
-                    }
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
             }
 
             DataService?.Database_CloseConnection();
@@ -83,23 +58,7 @@ namespace PRM.Model
             DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
             var ret = DataService.Database_SelfCheck();
             if (ret == EnumDbStatus.OK)
-                AppData.SetDbOperator(DataService);
-            return ret;
-        }
-
-
-
-        public static EnumDbStatus SetupSqliteDbConnection(DataService dataService, string sqlitePath)
-        {
-            Debug.Assert(dataService != null);
-            Debug.Assert(string.IsNullOrEmpty(sqlitePath));
-            dataService.Database_CloseConnection();
-            if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
-            {
-                return EnumDbStatus.AccessDenied;
-            }
-            dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
-            var ret = dataService.Database_SelfCheck();
+                _appData.SetDbOperator(DataService);
             return ret;
         }
     }

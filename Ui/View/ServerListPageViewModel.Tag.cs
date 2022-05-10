@@ -64,11 +64,11 @@ namespace PRM.View
                 return;
             if (Context?.DataService == null) return;
             string newTagName = string.Empty;
-            if (o is Tag obj && Context.AppData.TagList.Any(x => x.Name == obj.Name))
+            if (o is Tag obj && AppData.TagList.Any(x => x.Name == obj.Name))
             {
                 newTagName = obj.Name;
             }
-            else if (o is string str && Context.AppData.TagList.Any(x => x.Name == str))
+            else if (o is string str && AppData.TagList.Any(x => x.Name == str))
             {
                 newTagName = str;
             }
@@ -166,7 +166,7 @@ namespace PRM.View
                     if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
-                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
+                    var protocolServerBases = AppData.VmItemList.Select(x => x.Server);
                     foreach (var server in protocolServerBases)
                     {
                         if (server.Tags.Contains(obj.Name))
@@ -174,7 +174,7 @@ namespace PRM.View
                             server.Tags.Remove(obj.Name);
                         }
                     }
-                    Context.AppData.UpdateServer(protocolServerBases);
+                    AppData.UpdateServer(protocolServerBases);
                     var delete = TagFilters.FirstOrDefault(x => x.TagName == obj.Name);
                     if (delete != null)
                     {
@@ -207,7 +207,7 @@ namespace PRM.View
                     if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
                         return;
 
-                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server) ?? new List<ProtocolBase>();
+                    var protocolServerBases = AppData.VmItemList.Select(x => x.Server) ?? new List<ProtocolBase>();
                     foreach (var server in protocolServerBases)
                     {
                         if (server.Tags.Contains(oldTagName))
@@ -216,7 +216,7 @@ namespace PRM.View
                             server.Tags.Add(newTagName);
                         }
                     }
-                    Context.AppData.UpdateServer(protocolServerBases);
+                    AppData.UpdateServer(protocolServerBases);
 
 
                     // restore selected scene
@@ -231,9 +231,9 @@ namespace PRM.View
                     }
 
                     // restore display scene
-                    if (Context.AppData.TagList.Any(x => x.Name == newTagName))
+                    if (AppData.TagList.Any(x => x.Name == newTagName))
                     {
-                        Context.AppData.TagList.First(x => x.Name == newTagName).IsPinned = obj.IsPinned;
+                        AppData.TagList.First(x => x.Name == newTagName).IsPinned = obj.IsPinned;
                     }
                 });
             }
@@ -251,7 +251,7 @@ namespace PRM.View
                     if (Context?.DataService == null) return;
                     if (!(o is Tag obj))
                         return;
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
+                    foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {
@@ -277,7 +277,7 @@ namespace PRM.View
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
+                    foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {

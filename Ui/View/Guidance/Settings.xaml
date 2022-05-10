@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="PRM.View.Guidance.Settings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.View.Guidance"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             xmlns:service="clr-namespace:PRM.Service"
+             Background="{DynamicResource PrimaryMidBrush}"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance local:GuidanceWindow}"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid Margin="0 10 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8" Opacity="0.8">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static service:AppPathHelper.APP_NAME}"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
+                    <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
+                </TextBlock>
+                <TextBlock Margin="0 10 0 0"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="WrapWithOverflow"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   Text="{DynamicResource guidance_feature_start_setting1}">
+                </TextBlock>
+                <TextBlock FontSize="16"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="WrapWithOverflow"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   Text="{DynamicResource guidance_feature_start_setting2}">
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Center" Margin="20 0 0 0">
+            <Grid.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Margin" Value="8"></Setter>
+                    <Setter Property="MinHeight" Value="40"></Setter>
+                </Style>
+                <Style TargetType="TextBlock" x:Key="TextBlockTitleColumn" BasedOn="{StaticResource TextBlockBase}">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Width" Value="180"></Setter>
+                    <Setter Property="Margin" Value="0 0 10 0"></Setter>
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                </Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Margin" Value="12"></Setter>
+                </Style>
+            </Grid.Resources>
+            <StackPanel Grid.IsSharedSizeScope="True">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource system_options_general_start_when_win_login}">
+                    </TextBlock>
+                    <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource system_options_general_start_minimized}">
+                    </TextBlock>
+                    <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource Theme}">
+                    </TextBlock>
+                    <ComboBox Grid.Column="1"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"
+                                      Background="{DynamicResource PrimaryMidBrush}"
+                                      Height="20"
+                                      attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                                      attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
+                                      ItemsSource="{Binding SettingsPageViewModel.ThemeList}"
+                                      SelectedItem="{Binding SettingsPageViewModel.ThemeName}">
+                    </ComboBox>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
+                    <CheckBox Grid.Column="1" 
+                                      IsChecked="{Binding SettingsPageViewModel.ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"
+                                      VerticalAlignment="Center" Width="200"
+                                      HorizontalAlignment="Left"></CheckBox>
+                </Grid>
+                <Grid>
+                    <Grid.Resources>
+                        <local:ConverterEProFileMode x:Key="ConverterEProFileMode"></local:ConverterEProFileMode>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="TXT:user profile">
+                    </TextBlock>
+                    <ComboBox Grid.Column="1" Name="ComboBoxUserProfileMode" 
+                              IsEnabled="{Binding SettingsPageViewModel.ProFileModeIsEnabled, Mode=OneTime}"
+                              SelectedIndex="{Binding SettingsPageViewModel.ProFileMode, Converter={StaticResource ConverterEProFileMode}}"
+                              Foreground="{DynamicResource PrimaryTextBrush}"
+                              Background="{DynamicResource PrimaryMidBrush}"
+                              Height="20"
+                              attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                              attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}">
+                        <ComboBoxItem Content="Save to current folder(Portable)"></ComboBoxItem>
+                        <ComboBoxItem Content="Save to AppData"></ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

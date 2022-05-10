@@ -182,6 +182,7 @@ namespace PRM.View
             RebuildVmServerList();
             IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
             RebuildVmServerList();
+            CalcNoteFieldVisibility();
         }
 
         protected override void OnViewLoaded()

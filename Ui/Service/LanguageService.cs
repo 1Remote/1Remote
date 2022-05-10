@@ -119,7 +119,7 @@ namespace PRM.Service
                 {
                     resource.Add(field, en[field]);
                 }
-#if DEV
+#if DEBUG
                 var mf = string.Join(", ", missingFields);
                 MessageBox.Show($"language resource missing:\r\n {mf}", Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 File.WriteAllText("LANGUAGE_ERROR.txt", mf);

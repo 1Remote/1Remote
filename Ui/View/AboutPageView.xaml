@@ -75,7 +75,7 @@
                         <Image Source="/Resources/Image/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Grid.IsSharedSizeScope="True">
-                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:ConfigurationService.AppName}" Margin="0 10 0 0"></TextBlock>
+                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:AppPathHelper.APP_DISPLAY_NAME}" Margin="0 10 0 0"></TextBlock>
                                 <Grid Style="{StaticResource RowGrid}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>
