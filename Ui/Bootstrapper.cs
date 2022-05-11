@@ -24,7 +24,7 @@ namespace PRM
 {
     public class Bootstrapper : Bootstrapper<MainWindowViewModel>
     {
-        private readonly AppInit _appInit = new AppInit();
+        private readonly AppInit _appInit = new();
         protected override void OnStart()
         {
             // Step1

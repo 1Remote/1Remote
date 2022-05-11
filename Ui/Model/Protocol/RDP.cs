@@ -68,30 +68,18 @@ namespace PRM.Model.Protocol
         Disabled = 2,
     }
 
+    public class RdpLocalSetting
+    {
+        public DateTime LastUpdateTime { get; set; } = DateTime.MinValue;
+        public bool FullScreenLastSessionIsFullScreen { get; set; } = false;
+        public int FullScreenLastSessionScreenIndex { get; set; } = -1;
+    }
+
     // ReSharper disable once InconsistentNaming
     public sealed class RDP : ProtocolBaseWithAddressPortUserPwd
     {
-        public class LocalSetting : NotifyPropertyChangedBase
-        {
-            private bool? _fullScreenLastSessionIsFullScreen = false;
-
-            public bool? FullScreenLastSessionIsFullScreen
-            {
-                get => _fullScreenLastSessionIsFullScreen;
-                set => SetAndNotifyIfChanged(ref _fullScreenLastSessionIsFullScreen, value);
-            }
-
-            private int _fullScreenLastSessionScreenIndex = -1;
-
-            public int FullScreenLastSessionScreenIndex
-            {
-                get => _fullScreenLastSessionScreenIndex;
-                set => SetAndNotifyIfChanged(ref _fullScreenLastSessionScreenIndex, value);
-            }
-        }
-
-        public static string ProtocolName = "RDP";
-        public RDP() : base(ProtocolName, "RDP.V1", "RDP")
+        public const string PROTOCOL_NAME = "RDP";
+        public RDP() : base(PROTOCOL_NAME, "RDP.V1", "RDP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";
@@ -372,12 +360,12 @@ namespace PRM.Model.Protocol
 
         #endregion Gateway
 
-        private LocalSetting _autoSetting = new LocalSetting();
-        public LocalSetting AutoSetting
-        {
-            get => _autoSetting;
-            private set => SetAndNotifyIfChanged(ref _autoSetting, value);
-        }
+        //private RdpLocalSetting _autoSetting = new RdpLocalSetting();
+        //public RdpLocalSetting AutoSetting
+        //{
+        //    get => _autoSetting;
+        //    private set => SetAndNotifyIfChanged(ref _autoSetting, value);
+        //}
 
         public override bool IsOnlyOneInstance()
         {
@@ -566,11 +554,11 @@ namespace PRM.Model.Protocol
 
         public override bool ThisTimeConnWithFullScreen()
         {
-            if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+            if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                || this.IsConnWithFullScreen == true
+                || IoC.Get<LocalityService>().RdpLocalityGet(this.Id.ToString())?.FullScreenLastSessionIsFullScreen == true)
                 return true;
-            if (this.IsConnWithFullScreen == true)
-                return true;
-            return this.AutoSetting.FullScreenLastSessionIsFullScreen ?? false;
+            return false;
         }
     }
 }

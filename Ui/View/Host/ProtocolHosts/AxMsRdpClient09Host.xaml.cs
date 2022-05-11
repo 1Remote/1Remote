@@ -76,7 +76,6 @@ namespace PRM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
 
             _rdpSettings = rdp;
-            _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen ??= false;
             InitRdp(width, height);
             GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
         }
@@ -102,6 +101,7 @@ namespace PRM.View.Host.ProtocolHosts
 
                 RdpDispose();
                 _resizeEndTimer?.Dispose();
+                GC.SuppressFinalize(this);
             });
         }
 
@@ -593,20 +593,14 @@ namespace PRM.View.Host.ProtocolHosts
 
         protected override void GoFullScreen()
         {
-            Debug.Assert(_rdpClient != null);
-            Debug.Assert(this.ParentWindow != null);
-            if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
+            if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable
+                || ParentWindow is not FullScreenWindowView
+                || _rdpClient?.FullScreen == true)
             {
                 return;
             }
-            if (ParentWindow is FullScreenWindowView)
-            {
-                if (_rdpClient?.FullScreen == false)
-                {
-                    IoC.Get<DataService>().Database_UpdateServer(_rdpSettings);
-                    _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
-                }
-            }
+            Debug.Assert(_rdpClient != null);
+            _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
         }
 
         public override ProtocolHostType GetProtocolHostType()
@@ -629,8 +623,8 @@ namespace PRM.View.Host.ProtocolHosts
 
         #region WindowOnResizeEnd
 
-        private readonly System.Timers.Timer _resizeEndTimer = new System.Timers.Timer(500) { Enabled = false, AutoReset = false };
-        private readonly object _resizeEndLocker = new object();
+        private readonly System.Timers.Timer _resizeEndTimer = new(500) { Enabled = false, AutoReset = false };
+        private readonly object _resizeEndLocker = new();
         private bool _canAutoResizeByWindowSizeChanged = true;
 
         /// <summary>
@@ -803,18 +797,18 @@ namespace PRM.View.Host.ProtocolHosts
         {
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                _rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), true, -1);
                 return ScreenInfoEx.GetAllScreensSize();
             }
-            else if (_rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex < 0
-                     || _rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
+
+            int screenIndex = IoC.Get<LocalityService>().RdpLocalityGet(_rdpSettings.Id.ToString())?.FullScreenLastSessionScreenIndex ?? -1;
+            if (screenIndex < 0
+                || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
             {
-                if (this.ParentWindow != null)
-                    _rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
-                else
-                    _rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
+                screenIndex = this.ParentWindow != null ? ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index : ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
-            return System.Windows.Forms.Screen.AllScreens[_rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
+            IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), true, screenIndex);
+            return System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds;
         }
 
         /// <summary>

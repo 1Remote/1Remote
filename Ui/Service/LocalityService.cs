@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
+using PRM.Model.Protocol;
 using Shawn.Utils;
 
 namespace PRM.Service
@@ -28,6 +32,7 @@ namespace PRM.Service
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
+        public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalitys = new();
     }
 
     public sealed class LocalityService
@@ -126,6 +131,28 @@ namespace PRM.Service
 
 
         private readonly LocalitySettings _localitySettings;
+
+        public RdpLocalSetting? RdpLocalityGet(string key)
+        {
+            return _localitySettings.RdpLocalitys.GetValueOrDefault(key);
+        }
+
+        public void RdpLocalityUpdate(string key, bool isFullScreen, int fullScreenIndex = -1)
+        {
+            var value = new RdpLocalSetting()
+            {
+                LastUpdateTime = DateTime.Now,
+                FullScreenLastSessionIsFullScreen = isFullScreen,
+                FullScreenLastSessionScreenIndex = isFullScreen ? fullScreenIndex : -1,
+            };
+            _localitySettings.RdpLocalitys.AddOrUpdate(key, value, (s, setting) => value);
+            var obsoletes = _localitySettings.RdpLocalitys.Where(x => x.Value.LastUpdateTime < DateTime.Now.AddDays(-30)).Select(x => x.Key).ToArray();
+            foreach (var obsolete in obsoletes)
+            {
+                _localitySettings.RdpLocalitys.TryRemove(obsolete, out _);
+            }
+            Save();
+        }
 
         #region Interface
 

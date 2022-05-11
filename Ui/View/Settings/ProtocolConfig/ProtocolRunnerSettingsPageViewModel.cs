@@ -52,7 +52,14 @@ namespace PRM.View.Settings.ProtocolConfig
         private string _selectedRunnerName = "";
         public string SelectedRunnerName
         {
-            get => _selectedRunnerName;
+            get
+            {
+                if (RunnerNames.Count >0 && RunnerNames.All(x => x != _selectedRunnerName))
+                {
+                    return RunnerNames.First();
+                }
+                return _selectedRunnerName;
+            }
             set
             {
                 SetAndNotifyIfChanged(ref _selectedRunnerName, value);
@@ -63,6 +70,7 @@ namespace PRM.View.Settings.ProtocolConfig
                 }
             }
         }
+
         public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
 
         public ObservableCollection<Runner> Runners { get; set; } = new ObservableCollection<Runner>();

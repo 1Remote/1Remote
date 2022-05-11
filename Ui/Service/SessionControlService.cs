@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,10 +54,11 @@ namespace PRM.Service
         }
 
         private string _lastTabToken = "";
-        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new ConcurrentDictionary<string, TabWindowBase>();
-        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
-        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
-        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
+        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new();
+        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new();
+        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new();
+        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new();
+        private readonly ConcurrentQueue<Window> _windowToBeDispose = new();
 
         public int TabWindowCount => _token2TabWindows.Count;
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
@@ -356,9 +358,10 @@ namespace PRM.Service
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
             else if (host.ProtocolServer is RDP rdp
                      && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
-                     && rdp.AutoSetting.FullScreenLastSessionScreenIndex >= 0
-                     && rdp.AutoSetting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
-                screenEx = ScreenInfoEx.GetCurrentScreen(rdp.AutoSetting.FullScreenLastSessionScreenIndex);
+                     && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id.ToString()) is { } setting
+                     && setting.FullScreenLastSessionScreenIndex >= 0
+                     && setting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
+                screenEx = ScreenInfoEx.GetCurrentScreen(setting.FullScreenLastSessionScreenIndex);
             else
                 screenEx = ScreenInfoEx.GetCurrentScreen(IoC.Get<MainWindowView>());
 
@@ -386,7 +389,7 @@ namespace PRM.Service
             if (tab != null)
             {
                 var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
-                tab.GetViewModel().Items.Remove(item);
+                Execute.OnUIThread(() => { tab.GetViewModel().Items.Remove(item); });
                 tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Count > 0 ? tab.GetViewModel().Items.First() : null;
                 SimpleLogHelper.Debug($@"MoveProtocolHostToFullScreen: remove connectionId = {connectionId} from tab({tab.GetHashCode()}) ");
             }
@@ -418,12 +421,11 @@ namespace PRM.Service
             // return the latest tab window.
             else if (_token2TabWindows.ContainsKey(_lastTabToken))
                 return _token2TabWindows[_lastTabToken];
-            else if (_token2TabWindows.Count > 0)
+            else if (_token2TabWindows.IsEmpty == false)
                 return _token2TabWindows.Last().Value;
             // create new TabWindowBase
             return CreateNewTabWindow();
         }
-
 
         private TabWindowBase CreateNewTabWindow()
         {
@@ -489,7 +491,6 @@ namespace PRM.Service
         }
         public void CloseProtocolHostAsync(string[] connectionIds)
         {
-            SimpleLogHelper.Warning($@"CloseProtocolHostAsync");
             Task.Factory.StartNew(() =>
             {
                 MarkProtocolHostToClose(connectionIds);
@@ -528,18 +529,25 @@ namespace PRM.Service
                                 if (tab.GetViewModel().Items.Count == 0)
                                     tab.Hide();
                             });
+                        if (tab.GetViewModel().Items.Count == 0)
+                        {
+                            _token2TabWindows.TryRemove(kv.Key, out _);
+                            _windowToBeDispose.Enqueue(tab);
+                        }
                     }
 
                     // hide full
                     foreach (var kv in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
                     {
-                        var fullScreenWindow = kv.Value;
-                        if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
+                        var full = kv.Value;
+                        if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
                         {
+                            _connectionId2FullScreenWindows.TryRemove(kv.Key, out _);
+                            _windowToBeDispose.Enqueue(full);
                             Execute.OnUIThread(() =>
                             {
-                                fullScreenWindow.SetProtocolHost(null);
-                                fullScreenWindow.Hide();
+                                full.SetProtocolHost(null);
+                                full.Hide();
                             });
                         }
                     }
@@ -584,7 +592,7 @@ namespace PRM.Service
                         host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
                     _hostToBeDispose.Enqueue(host);
                     host.ProtocolServer.RunScriptAfterDisconnected();
-                    SimpleLogHelper.Warning($@"Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
+                    PrintCacheCount();
                 }
             }
         }
@@ -630,35 +638,44 @@ namespace PRM.Service
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing tab({tab.GetHashCode()})");
                     ++closeCount;
-                    _token2TabWindows.TryRemove(token, out _);
-                    Execute.OnUIThread(() =>
-                    {
-                        tab.Close();
-                    });
+                    _token2TabWindows.TryRemove(kv.Key, out _);
+                    _windowToBeDispose.Enqueue(tab);
                 }
             }
 
             foreach (var kv in _connectionId2FullScreenWindows.ToArray())
             {
                 var connectionId = kv.Key;
-                var fullScreenWindow = kv.Value;
-                if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
+                var full = kv.Value;
+                if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
                 {
-                    SimpleLogHelper.Debug($@"CloseEmptyWindows: closing full(hash = {fullScreenWindow.GetHashCode()})");
+                    SimpleLogHelper.Debug($@"CloseEmptyWindows: closing full(hash = {full.GetHashCode()})");
                     ++closeCount;
                     _connectionId2FullScreenWindows.TryRemove(connectionId, out _);
-                    Execute.OnUIThread(() =>
-                    {
-                        fullScreenWindow.Close();
-                    });
+                    _windowToBeDispose.Enqueue(full);
                 }
             }
-            SimpleLogHelper.Debug($@"CloseEmptyWindows: {closeCount} Empty Host closed");
-            SimpleLogHelper.Info($@"CloseEmptyWindows: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}");
+
+            PrintCacheCount();
+            // 在正常的逻辑中，在关闭session时就应该把空窗体移除，不应该有空窗体的存在
+            if (closeCount > 0)
+                SimpleLogHelper.Warning($@"CloseEmptyWindows: {closeCount} Empty Host closed");
+
+            if (_windowToBeDispose.IsEmpty == false)
+            {
+                SimpleLogHelper.Debug($@"Closing: {_windowToBeDispose.Count} Empty Host.");
+                Execute.OnUIThread(() =>
+                {
+                    while (_windowToBeDispose.TryDequeue(out var window))
+                    {
+                        window.Close();
+                    }
+                });
+            }
         }
 
         private bool _isCleaning = false;
-        private readonly object _cleanupLock = new object();
+        private readonly object _cleanupLock = new();
         public void CleanupProtocolsAndWindows()
         {
             if (_isCleaning == false)
@@ -682,5 +699,10 @@ namespace PRM.Service
             }
         }
         #endregion
+
+        private void PrintCacheCount([CallerMemberName] string callMember = "")
+        {
+            SimpleLogHelper.Info($@"{callMember}: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}, WindowToBeDispose = {_windowToBeDispose.Count}");
+        }
     }
 }

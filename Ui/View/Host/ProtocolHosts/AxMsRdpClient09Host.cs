@@ -202,11 +202,10 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
                 _rdpClient.FullScreen = false;
-                _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen = false;
+                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), false);
                 return;
             }
-
-            _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen = true;
+            
 
             var screenSize = this.GetScreenSizeIfRdpIsFullScreen();
 
@@ -240,14 +239,10 @@ namespace PRM.View.Host.ProtocolHosts
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen = true;
-            IoC.Get<DataService>().Database_UpdateServer(_rdpSettings);
         }
 
         private void OnConnectionBarRestoreWindowCall()
         {
-            _rdpSettings.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             // make sure ParentWindow is FullScreen Window
             if (ParentWindow is not FullScreenWindowView)
             {
@@ -256,10 +251,8 @@ namespace PRM.View.Host.ProtocolHosts
 
             // !do not remove
             ParentWindowSetToWindow();
-
-            _rdpSettings.AutoSetting.FullScreenLastSessionIsFullScreen = false;
+            IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), false);
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
-            IoC.Get<DataService>().Database_UpdateServer(_rdpSettings);
         }
 
         #endregion event handler

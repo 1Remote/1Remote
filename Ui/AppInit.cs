@@ -65,7 +65,7 @@ namespace PRM
         public ConfigurationService? ConfigurationService;
         public ThemeService? ThemeService;
         public GlobalData GlobalData = null!;
-        public Configuration Configuration = new Configuration();
+        public Configuration Configuration = new();
 
         public void InitOnStart()
         {

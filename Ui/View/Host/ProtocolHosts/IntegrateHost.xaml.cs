@@ -12,6 +12,7 @@ using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
+using Stylet;
 using Path = System.IO.Path;
 using Timer = System.Timers.Timer;
 
@@ -32,7 +33,7 @@ We should add <UseWindowsForms>true</UseWindowsForms> in the csproj.
 
 namespace PRM.View.Host.ProtocolHosts
 {
-    public partial class IntegrateHost : HostBase
+    public partial class IntegrateHost : HostBase, IDisposable
     {
         #region API
 
@@ -102,7 +103,7 @@ namespace PRM.View.Host.ProtocolHosts
         private Timer? _timer;
         private Process? _process;
         private readonly System.Windows.Forms.Panel _panel;
-        private readonly HashSet<IntPtr> _exeHandles = new HashSet<IntPtr>();
+        private readonly HashSet<IntPtr> _exeHandles = new();
         public readonly string ExeFullName;
         public readonly string ExeArguments;
         private readonly Dictionary<string, string> _environmentVariables;
@@ -223,31 +224,46 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void Close()
         {
-            CloseIntegrate();
-            GC.SuppressFinalize(this);
-            Status = ProtocolHostStatus.Disconnected;
+            Dispose();
             base.Close();
+        }
+
+
+        public void Dispose()
+        {
+            Execute.OnUIThread(() =>
+            {
+                CloseIntegrate();
+                _timer?.Dispose();
+                _process?.Dispose();
+                _panel.Dispose();
+                FormsHost?.Dispose();
+                GC.SuppressFinalize(this);
+            });
         }
 
         private void CloseIntegrate()
         {
-            _timer?.Stop();
-            _timer?.Dispose();
-            _timer = null;
-            if (_process != null)
+            Execute.OnUIThread(() =>
             {
-                try
+                _timer?.Stop();
+                _timer?.Dispose();
+                _timer = null;
+                if (_process != null)
                 {
-                    _process.Exited -= ProcessOnExited;
-                    _process.Kill();
+                    try
+                    {
+                        _process.Exited -= ProcessOnExited;
+                        _process.Kill();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 }
-                catch (Exception)
-                {
-                    // ignored
-                }
-            }
 
-            Status = ProtocolHostStatus.Disconnected;
+                Status = ProtocolHostStatus.Disconnected;
+            });
         }
 
         public void Start()

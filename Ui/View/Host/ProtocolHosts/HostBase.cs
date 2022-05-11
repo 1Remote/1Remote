@@ -58,9 +58,9 @@ namespace PRM.View.Host.ProtocolHosts
             get => _status;
             protected set
             {
-                SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
                 if (_status != value)
                 {
+                    SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
                     _status = value;
                     OnCanResizeNowChanged?.Invoke();
                 }
