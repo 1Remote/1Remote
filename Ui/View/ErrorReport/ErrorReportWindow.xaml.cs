@@ -120,7 +120,7 @@ namespace PRM.View.ErrorReport
             }
         }
 
-        private void BuildRecentLog(ref StringBuilder sb)
+        private static void BuildRecentLog(ref StringBuilder sb)
         {
             sb.AppendLine("## Recent Log ");
             sb.AppendLine();

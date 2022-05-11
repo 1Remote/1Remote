@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using StyletIoC;
+
+namespace PRM;
 
 public static class IoC
 {
@@ -22,6 +22,6 @@ public static class IoC
         if (obj == null)
             throw new Exception("Ioc can not get an item.");
 #endif
-        return (T)obj;
+        return (T)obj!;
     }
 }

@@ -274,6 +274,30 @@
                     </Button>
                 </Grid>
             </Grid>
+
+            <Border 
+                BorderThickness="2 2 0 2"
+                CornerRadius="10 0 0 10" 
+                Padding="5"
+                Margin="0 10"
+                Background="Wheat" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                <Border.BorderBrush>
+                    <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,5" EndPoint="5,0" MappingMode="Absolute">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="Blue" Offset="0"/>
+                            <GradientStop Color="Blue" Offset="0.2"/>
+                            <GradientStop Color="Transparent" Offset="0.4"/>
+                            <GradientStop Color="Transparent" Offset="0.6"/>
+                            <GradientStop Color="Blue" Offset="0.8"/>
+                            <GradientStop Color="Blue" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+
+                <Grid>
+                    <TextBlock>Share your favorite runner!</TextBlock>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

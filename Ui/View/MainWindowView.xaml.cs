@@ -96,10 +96,9 @@ namespace PRM.View
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            SimpleLogHelper.Debug($"MainWindow_OnKeyDown");
-            if (Keyboard.FocusedElement is TextBox textBox)
+            if (Keyboard.FocusedElement is TextBox)
             {
-                SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
+                //SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
             }
             else if (e.Key == Key.Escape && this.DataContext is MainWindowViewModel vm && vm.IsShownList() == false)
             {
@@ -124,7 +123,7 @@ namespace PRM.View
         private void MainFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
             // When press Esc, clear all of the search keywords, but keep selected tags;
-            if (e.Key != Key.Escape || sender is TextBox textBox == false) return;
+            if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
             Vm.SetMainFilterString(s.Item1, null);
         }

@@ -131,7 +131,7 @@ namespace PRM.View
             {
                 if (Context.DataService == null) return;
                 var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
-                if (serverBases.Count() > 1)
+                if (serverBases.Length > 1)
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases);
                 else
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
@@ -240,7 +240,7 @@ namespace PRM.View
             };
         }
 
-        private void TaskTrayDispose()
+        private static void TaskTrayDispose()
         {
             if (_taskTrayIcon != null)
             {

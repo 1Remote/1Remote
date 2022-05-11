@@ -223,6 +223,9 @@
                                  MaxWidth="400"
                                  ToolTip="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
                                  VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
+                        <Button Margin="5 0 0 0" Grid.Column="2" 
+                                Click="ButtonOpenLog_OnClick"
+                                Content="{DynamicResource 'Explore to...'}"></Button>
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -380,7 +383,7 @@
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
                             <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>
-                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>
+                            <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>-->
                         </StackPanel>
                     </Grid>
 
