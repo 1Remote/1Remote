@@ -180,7 +180,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{AppPathHelper.APP_DISPLAY_NAME} error report.", "");
+                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "veckshawn@gmail.com", $"{AppPathHelper.APP_DISPLAY_NAME} error report.", "");
 #pragma warning disable CS0618
 #pragma warning disable SYSLIB0013 // 类型或成员已过时
                 mailto = Uri.EscapeUriString(mailto);

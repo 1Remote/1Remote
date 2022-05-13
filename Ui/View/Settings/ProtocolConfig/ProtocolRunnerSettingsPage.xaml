@@ -121,28 +121,7 @@
 
 
         <DataTemplate DataType="{x:Type default:KittyRunner}">
-            <Grid Margin="25 10 20 10">
-                <Grid.Effect>
-                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                </Grid.Effect>
-                <Grid.OpacityMask>
-                    <VisualBrush Visual="{Binding ElementName=Border1}" />
-                </Grid.OpacityMask>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                        Background="{DynamicResource BackgroundBrush}"
-                        CornerRadius="10" BorderThickness="0">
-                </Border>
-                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
-                                       Text="{Binding Name}" Margin="5"></TextBlock>
-                </Grid>
-
-                <protocolConfig:KittyRunnerSettings Grid.Row="1" Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
-            </Grid>
+            <protocolConfig:KittyRunnerSettings Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
         </DataTemplate>
 
 
@@ -151,41 +130,7 @@
 
         <protocolConfig:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ExternalRunner2Vm>
         <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-            <Grid Margin="25 10 20 10">
-                <Grid.Effect>
-                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                </Grid.Effect>
-                <Grid.OpacityMask>
-                    <VisualBrush Visual="{Binding ElementName=Border1}" />
-                </Grid.OpacityMask>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                        Background="{DynamicResource BackgroundBrush}"
-                        CornerRadius="10" BorderThickness="0">
-                </Border>
-                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
-                    <Button Width="10" Height="10" Tag="{Binding}"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                                    HorizontalAlignment="Right"
-                                    attachProperty:VisionElement.Opacity="0.5"
-                                    attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Command="{Binding DataContext.CmdDeleteRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPage}}}" CommandParameter="{Binding Name}"
-                                    Margin="0 0 10 0">
-                        <Grid Height="10" Width="8">
-                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="2" Stretch="Uniform" />
-                        </Grid>
-                    </Button>
-                </Grid>
-
-                <protocolConfig:ExternalRunnerSettings Grid.Row="1" DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalRunnerSettings>
-            </Grid>
+            <protocolConfig:ExternalRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalRunnerSettings>
         </DataTemplate>
     </UserControl.Resources>
 
@@ -251,8 +196,10 @@
                     </StackPanel>
 
                     <ComboBox Grid.Column="1" 
-                              ItemsSource="{Binding RunnerNames}"
-                              SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                              ItemsSource="{Binding Runners, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding SelectedRunner, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    </ComboBox>
 
 
                     <Button Grid.Column="2" Width="30" Height="30" 
@@ -274,30 +221,6 @@
                     </Button>
                 </Grid>
             </Grid>
-
-            <Border 
-                BorderThickness="2 2 0 2"
-                CornerRadius="10 0 0 10" 
-                Padding="5"
-                Margin="0 10"
-                Background="Wheat" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                <Border.BorderBrush>
-                    <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,5" EndPoint="5,0" MappingMode="Absolute">
-                        <LinearGradientBrush.GradientStops>
-                            <GradientStop Color="Blue" Offset="0"/>
-                            <GradientStop Color="Blue" Offset="0.2"/>
-                            <GradientStop Color="Transparent" Offset="0.4"/>
-                            <GradientStop Color="Transparent" Offset="0.6"/>
-                            <GradientStop Color="Blue" Offset="0.8"/>
-                            <GradientStop Color="Blue" Offset="1"/>
-                        </LinearGradientBrush.GradientStops>
-                    </LinearGradientBrush>
-                </Border.BorderBrush>
-
-                <Grid>
-                    <TextBlock>Share your favorite runner!</TextBlock>
-                </Grid>
-            </Border>
         </Grid>
     </Grid>
 </UserControl>

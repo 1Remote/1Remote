@@ -77,6 +77,14 @@ namespace PRM.View
                 App.Close();
 #endif
             };
+            this.Closing += (sender, args) =>
+            {
+                if (this.ShowInTaskbar)
+                {
+                    vm.HideMe();
+                    args.Cancel = true;
+                }
+            };
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };

@@ -35,6 +35,8 @@
     <s:String x:Key="Connect">Conectar</s:String>
     <s:String x:Key="Connect (New window)">Conectar (Nova janela)</s:String>
     <s:String x:Key="Note">Note</s:String>
+    <s:String x:Key="Share">Share</s:String>
+    <s:String x:Key="Copy">Copy</s:String>
 
     <s:String x:Key="filter_mainwindow">Palavras-chave ou '#' + 'nome_da_tag'</s:String>
     <s:String x:Key="Search (Ctrl+F)">Procurar (Ctrl + F)</s:String>
