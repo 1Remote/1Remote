@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Model;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
 using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf.Controls;
 
 namespace PRM.View.Settings.ProtocolConfig
 {

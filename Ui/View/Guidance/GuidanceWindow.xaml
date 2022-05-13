@@ -131,13 +131,14 @@
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
                 <TextBlock Margin="2" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">Language:</TextBlock>
                 <ComboBox ItemsSource="{Binding SettingsPageViewModel.Languages}"
-                              Foreground="{DynamicResource PrimaryTextBrush}"
-                              Background="{DynamicResource PrimaryMidBrush}"
-                              SelectedValue="{Binding SettingsPageViewModel.Language}"
-                              SelectedValuePath="Key"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Top"
-                              DisplayMemberPath="Value" Height="20" Width="150" />
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value" 
+                          SelectedValue="{Binding SettingsPageViewModel.Language}"
+                          HorizontalAlignment="Right"
+                          Foreground="{DynamicResource PrimaryTextBrush}"
+                          Background="{DynamicResource PrimaryMidBrush}"
+                          VerticalAlignment="Top"
+                          Height="20" Width="150" />
             </StackPanel>
             <TextBlock>
                 <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using PRM.Model.Protocol;
@@ -9,7 +10,25 @@ namespace PRM.Model
 {
     public class ProtocolSettings
     {
-        public string SelectedRunnerName { get; set; } = "";
+        private string _selectedRunnerName = "";
+        public string SelectedRunnerName
+        {
+            get
+            {
+                if (Runners.Count > 0 && Runners.All(x => x.Name != _selectedRunnerName))
+                {
+                    return Runners.First().Name;
+                }
+                return _selectedRunnerName;
+            }
+            set
+            {
+                if (Runners.Any(x => x.Name == value))
+                {
+                    _selectedRunnerName = value;
+                }
+            }
+        }
         public List<Runner> Runners { get; set; } = new List<Runner>();
 
 

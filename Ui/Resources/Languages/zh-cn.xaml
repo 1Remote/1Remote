@@ -35,6 +35,8 @@
     <s:String x:Key="Connect">连接</s:String>
     <s:String x:Key="Connect (New window)">连接 (新窗口)</s:String>
     <s:String x:Key="Note">Note</s:String>
+    <s:String x:Key="Share">分享</s:String>
+    <s:String x:Key="Copy">复制</s:String>
 
     <s:String x:Key="filter_mainwindow">输入关键词或 '#' + 标签名</s:String>
     <s:String x:Key="Search (Ctrl+F)">搜索 (Ctrl + F)</s:String>

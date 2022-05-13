@@ -36,45 +36,48 @@ namespace PRM.View.Settings.ProtocolConfig
             {
                 SetAndNotifyIfChanged(ref _selectedProtocol, value);
                 var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                Runners = new ObservableCollection<Runner>(c.Runners);
-                Macros = c.MarcoNames;
-                RaisePropertyChanged(nameof(Runners));
-                RaisePropertyChanged(nameof(RunnerNames));
-                SelectedRunnerName = c.SelectedRunnerName;
-                if (Runners.Count > 0 && Runners.All(x => x.Name != SelectedRunnerName))
+                Runners.Clear();
+                foreach (var runner in c.Runners)
                 {
-                    SelectedRunnerName = c.Runners.First().Name;
+                    Runners.Add(runner);
                 }
+                if (Runners.Count > 0 && Runners.All(x => x.Name != c.SelectedRunnerName))
+                {
+                    SelectedRunner = Runners.First();
+                }
+                else
+                {
+                    SelectedRunner = Runners.First(x => x.Name == c.SelectedRunnerName) ?? new Runner("");
+                }
+                c.SelectedRunnerName = SelectedRunner.Name;
             }
         }
 
 
-        private string _selectedRunnerName = "";
-        public string SelectedRunnerName
+        private Runner _selectedRunner;
+        public Runner SelectedRunner
         {
             get
             {
-                if (RunnerNames.Count >0 && RunnerNames.All(x => x != _selectedRunnerName))
+                if (Runners.Count > 0 && Runners.All(x => x != _selectedRunner))
                 {
-                    return RunnerNames.First();
+                    _selectedRunner = Runners.First();
                 }
-                return _selectedRunnerName;
+                return _selectedRunner;
             }
             set
             {
-                SetAndNotifyIfChanged(ref _selectedRunnerName, value);
-                var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                if (_selectedRunnerName != c.SelectedRunnerName && Runners.Any(x => x.Name == _selectedRunnerName))
+                var nv = value;
+                if (Runners.Count > 0 && Runners.All(x => x != value))
                 {
-                    c.SelectedRunnerName = _selectedRunnerName;
+                    nv = Runners.First();
                 }
+                _protocolConfigurationService.ProtocolConfigs[_selectedProtocol].SelectedRunnerName = nv.Name;
+                SetAndNotifyIfChanged(ref _selectedRunner, nv);
             }
         }
 
-        public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
-
-        public ObservableCollection<Runner> Runners { get; set; } = new ObservableCollection<Runner>();
-        public List<string> Macros { get; set; } = new List<string>();
+        public ObservableCollection<Runner> Runners { get; } = new ObservableCollection<Runner>();
 
         private RelayCommand? _cmdAddRunner;
         public RelayCommand CmdAddRunner
@@ -95,10 +98,9 @@ namespace PRM.View.Settings.ProtocolConfig
                      }), owner: IoC.Get<MainWindowView>()).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
-                        var newRunner = new ExternalRunner(name) {MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType};
+                        var newRunner = new ExternalRunner(name) { MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType };
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
-                        RaisePropertyChanged(nameof(RunnerNames));
                     }
                 });
             }
@@ -113,7 +115,7 @@ namespace PRM.View.Settings.ProtocolConfig
                 {
                     var pn = o?.ToString();
                     if (pn == null) return;
-                    
+
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                     {
                         var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
@@ -121,14 +123,14 @@ namespace PRM.View.Settings.ProtocolConfig
                         {
                             c.Runners.RemoveAll(x => x.Name == pn);
                         }
-
-                        Runners = new ObservableCollection<Runner>(c.Runners);
-                        RaisePropertyChanged(nameof(Runners));
-                        RaisePropertyChanged(nameof(RunnerNames));
-
-                        if (Runners.All(x => x.Name != SelectedRunnerName))
+                        Runners.Clear();
+                        foreach (var runner in c.Runners)
                         {
-                            SelectedRunnerName = c.Runners.FirstOrDefault()?.Name ?? "";
+                            Runners.Add(runner);
+                        }
+                        if (Runners.All(x => x.Name != SelectedRunner.Name))
+                        {
+                            SelectedRunner = c.Runners.First();
                         }
                         _protocolConfigurationService.Save();
                     }

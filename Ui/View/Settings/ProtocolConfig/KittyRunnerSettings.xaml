@@ -30,41 +30,61 @@
             <Setter Property="Margin" Value="20 0 10 0"></Setter>
         </Style>
     </UserControl.Resources>
-    <StackPanel>
-        <Grid Margin="10">
-            <!--<TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
+    <Grid Margin="25 10 20 10">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+        </Grid.Effect>
+        <Grid.OpacityMask>
+            <VisualBrush Visual="{Binding ElementName=Border1}" />
+        </Grid.OpacityMask>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                Background="{DynamicResource BackgroundBrush}"
+                CornerRadius="10" BorderThickness="0">
+        </Border>
+        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
+                       Text="{Binding Name}" Margin="5"></TextBlock>
+        </Grid>
+        <StackPanel Grid.Row="1">
+            <Grid Margin="10">
+                <!--<TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
                            HorizontalAlignment="Center"
                            FontSize="{StaticResource HeadFontSize}" Text="KiTTY"></TextBlock>-->
-        </Grid>
-        <Grid Style="{StaticResource GridOneRow}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+            </Grid>
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font size'}"></TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
-        </Grid>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font size'}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
+            </Grid>
 
-        <Grid Style="{StaticResource GridOneRow}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Themes}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Themes}"></TextBlock>
 
-            <ComboBox Grid.Column="1" ItemsSource="{Binding PuttyThemeNames}"
+                <ComboBox Grid.Column="1" ItemsSource="{Binding PuttyThemeNames}"
                       SelectedItem="{Binding PuttyThemeName}">
-            </ComboBox>
+                </ComboBox>
 
-            <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
                 <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                     (?)
                 </Hyperlink>
-            </TextBlock>
-        </Grid>
-    </StackPanel>
+                </TextBlock>
+            </Grid>
+        </StackPanel>
+    </Grid>
 </UserControl>
