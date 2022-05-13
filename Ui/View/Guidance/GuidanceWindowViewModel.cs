@@ -17,15 +17,15 @@ namespace PRM.View.Guidance
         private readonly ThemeService _themeService;
         private readonly Configuration _configuration;
 
-        public GuidanceWindowViewModel(LanguageService languageService, Configuration configuration)
+        public GuidanceWindowViewModel(LanguageService languageService, Configuration configuration, bool profileModeIsPortable, bool profileModeIsEnabled)
         {
             _languageService = languageService;
             Debug.Assert(App.ResourceDictionary != null);
             _themeService = new ThemeService(App.ResourceDictionary, configuration.Theme);
             _configuration = configuration;
-            ProfileModeIsPortable = false;
-            ProfileModeIsEnabled = AppPathHelper.CheckPermissionForPortablePaths();
 
+            ProfileModeIsPortable = profileModeIsPortable;
+            ProfileModeIsEnabled = profileModeIsEnabled;
 
             // set default language
             var ci = CultureInfo.CurrentCulture;

@@ -101,25 +101,92 @@ namespace PRM
                 }
 
                 bool isPortableMode = false;
-                bool portableProfilePathExisted = File.Exists(portablePaths.ProfileJsonPath);
-                bool appDataProfilePathExisted = File.Exists(appDataPaths.ProfileJsonPath);
-                if (portableProfilePathExisted == false && appDataProfilePathExisted == false)
                 {
-                    // 新用户显示引导窗口
-                    _isNewUser = true;
-                    var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, Configuration);
-                    var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
-                    guidanceWindow.ShowDialog();
-                    isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
-                    AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
-                }
-                else if (portableProfilePathExisted)
-                {
-                    isPortableMode = true;
-                }
-                else if (appDataProfilePathExisted)
-                {
-                    isPortableMode = false;
+                    _isNewUser = false;
+                    bool portableProfilePathExisted = File.Exists(portablePaths.ProfileJsonPath);
+                    bool appDataProfilePathExisted = File.Exists(appDataPaths.ProfileJsonPath);
+                    bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
+                    bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
+                    bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
+                    bool profileModeIsPortable = false;
+                    bool profileModeIsEnabled = true;
+                    if (permissionForPortable == false                          // 当前目录没有写权限时，只能用 AppData 模式
+                        || (forcePortable == false && forceAppData == true))    // 标记了强制 AppData 模式
+                    {
+                        isPortableMode = false;
+                        profileModeIsPortable = false;
+                        profileModeIsEnabled = false;
+                        if (appDataProfilePathExisted == false)
+                        {
+                            _isNewUser = true;
+                        }
+                    }
+                    else if (forcePortable == true && forceAppData == false)
+                    {
+                        isPortableMode = true;
+                        profileModeIsPortable = true;
+                        profileModeIsEnabled = false;
+                        if (portableProfilePathExisted == false)
+                        {
+                            _isNewUser = true;
+                        }
+                    }
+                    else
+                    {
+                        // 当前目录有写权限，且标志文件都存在或都不存在时
+                        profileModeIsPortable = false;
+                        profileModeIsEnabled = true;
+                        if (portableProfilePathExisted)
+                        {
+                            isPortableMode = true;
+                        }
+                        //else if (appDataProfilePathExisted)
+                        //{
+                        //    isPortableMode = false;
+                        //}
+                        else
+                        {
+                            // portable 配置文件不存在，无论 app_data 的配置是否存在都进引导
+                            _isNewUser = true;
+                        }
+                    }
+
+
+                    if (_isNewUser)
+                    {
+                        // 新用户显示引导窗口
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, Configuration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
+                        guidanceWindow.ShowDialog();
+                        isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
+                        AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
+                    }
+
+                    // 自动创建标志文件
+                    if (permissionForPortable)
+                    {
+                        try
+                        {
+                            if (isPortableMode)
+                            {
+                                if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
+                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData"); 
+                                if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
+                                    File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
+                            }
+                            if (isPortableMode == false)
+                            {
+                                if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE) == false)
+                                    File.WriteAllText(AppPathHelper.FORCE_INTO_APPDATA_MODE, $"rename to '{AppPathHelper.FORCE_INTO_PORTABLE_MODE}' can make it portable");
+                                if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
+                                    File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+                    }
                 }
                 AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
 

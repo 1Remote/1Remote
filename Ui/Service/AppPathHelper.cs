@@ -64,6 +64,9 @@ namespace PRM.Service
             return false;
         }
 
+        public const string FORCE_INTO_PORTABLE_MODE = "FORCE_INTO_PORTABLE_MODE";
+        public const string FORCE_INTO_APPDATA_MODE = "FORCE_INTO_APPDATA_MODE";
+
         public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".json");
         [Obsolete]
