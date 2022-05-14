@@ -56,6 +56,9 @@ namespace PRM.View
             WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
+            WinSystemButtonArea.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
+            WinSystemButtonArea.MouseUp += WinTitleBar_OnMouseUp;
+            WinSystemButtonArea.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             // Startup Location
             WindowStartupLocation = WindowStartupLocation.CenterScreen;

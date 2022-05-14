@@ -15,8 +15,9 @@ namespace PRM.Model.ProtocolRunner
     [JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
     public class Runner : NotifyPropertyChangedBase, ICloneable
     {
-        public Runner(string runnerName)
+        public Runner(string runnerName, string ownerProtocolName)
         {
+            OwnerProtocolName = ownerProtocolName;
             Name = runnerName?.Trim() ?? "";
         }
 
@@ -37,6 +38,7 @@ namespace PRM.Model.ProtocolRunner
                 SetAndNotifyIfChanged(ref _name, str);
             }
         }
+        public string OwnerProtocolName { get; set; }
 
         public object Clone()
         {

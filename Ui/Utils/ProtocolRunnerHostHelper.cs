@@ -28,15 +28,15 @@ namespace PRM.Utils
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
-                SimpleLogHelper.Debug($"we don't have a custom protocol named: {protocolName}");
-                return new InternalDefaultRunner();
+                SimpleLogHelper.Fatal($"we don't have a protocol named: {protocolName}");
+                return new InternalDefaultRunner(protocolName);
             }
 
             var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
-                SimpleLogHelper.Fatal($"{protocolName} does not have any runner!");
-                return new InternalDefaultRunner();
+                SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
+                return new InternalDefaultRunner(protocolName);
             }
 
             var runnerName = assignRunnerName;
@@ -45,11 +45,11 @@ namespace PRM.Utils
             var r = p.Runners.FirstOrDefault(x => x.Name == runnerName);
             if (r == null)
             {
-                SimpleLogHelper.Warning($"{protocolName} does not have a runner name == the selection '{p.SelectedRunnerName}'!");
+                SimpleLogHelper.Fatal($"{protocolName} does not have a runner name == the selection '{p.SelectedRunnerName}'!");
                 r = p.Runners.FirstOrDefault();
             }
 
-            return r ?? new InternalDefaultRunner();
+            return r ?? new InternalDefaultRunner(protocolName);
         }
 
         /// <summary>

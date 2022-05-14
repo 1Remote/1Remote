@@ -20,11 +20,12 @@ public class ExternalRunnerSettingsViewModel
     private readonly ILanguageService _languageService;
     public ExternalRunner ExternalRunner { get; }
 
-    public ExternalRunnerSettingsViewModel(ILanguageService languageService)
-    {
-        ExternalRunner = new ExternalRunner("");
-        _languageService = languageService;
-    }
+    //public ExternalRunnerSettingsViewModel(ILanguageService languageService)
+    //{
+    //    ExternalRunner = new ExternalRunner("");
+    //    _languageService = languageService;
+    //}
+
     public ExternalRunnerSettingsViewModel(ExternalRunner externalRunner, ILanguageService languageService)
     {
         ExternalRunner = externalRunner;
@@ -61,11 +62,11 @@ public class ExternalRunnerSettingsViewModel
                     var name = new FileInfo(path).Name.ToLower();
                     if (name == "winscp.exe".ToLower())
                     {
-                        if (ExternalRunner.ProtocolType == typeof(SFTP))
+                        if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
                         }
-                        if (ExternalRunner.ProtocolType == typeof(FTP))
+                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "ftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
                         }
@@ -73,11 +74,11 @@ public class ExternalRunnerSettingsViewModel
                     }
                     else if (name == "filezilla.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
                     {
-                        if (ExternalRunner.ProtocolType == typeof(SFTP))
+                        if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%";
                         }
-                        if (ExternalRunner.ProtocolType == typeof(FTP))
+                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "ftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%";
                         }
@@ -153,7 +154,7 @@ public class ExternalRunnerSettingsViewModel
                 {
                     Clipboard.SetText(
                         $@"
-Runner for {ExternalRunner.ProtocolType.Name}
+Runner for {ExternalRunner.OwnerProtocolName}
 
 ```
 {JsonConvert.SerializeObject(ExternalRunner, Formatting.Indented)}

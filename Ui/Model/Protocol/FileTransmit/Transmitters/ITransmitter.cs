@@ -21,7 +21,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     _fileIcons.Add(".tmz", SystemIconHelper.GetIcon(".tmz")!);
                 if (_fileIcons.ContainsKey(key))
                     return _fileIcons[key];
-                var icon = SystemIconHelper.GetIcon(key);
+                var icon = SystemIconHelper.GetIcon(key, isFile: true);
                 _fileIcons.Add(key, icon ?? _fileIcons[".tmz"]);
                 return _fileIcons[key];
             }
@@ -33,11 +33,11 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
             {
                 if (_dictIcons.ContainsKey("") == false)
                 {
-                    _dictIcons.Add("", SystemIconHelper.GetIcon("")!);
+                    _dictIcons.Add("", SystemIconHelper.GetIcon("", isDir: true)!);
                 }
                 if (_dictIcons.ContainsKey(key))
                     return _dictIcons[key];
-                var icon = SystemIconHelper.GetIcon(key);
+                var icon = SystemIconHelper.GetIcon(key, isDir: true);
                 _dictIcons.Add(key, icon ?? _dictIcons[""]);
                 return _dictIcons[key];
             }

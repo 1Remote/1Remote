@@ -110,6 +110,25 @@
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
 
                         <Grid>
+                            <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">
+                                <Grid Margin="40 0" Grid.Column="3">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Note}"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"
+                                                   Width="Auto"
+                                                   Margin="0"
+                                        ></TextBlock>
+                                        <TextBox TextWrapping="Wrap" 
+                                                 TextAlignment="Left" Height="220" Margin="0 5"
+                                                 VerticalContentAlignment="Top"
+                                                 AcceptsReturn="True"
+                                                 AcceptsTab="True"
+                                                 Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    </StackPanel>
+                                </Grid>
+                            </controls:GridWith4Columns>
+
                             <StackPanel Orientation="Vertical">
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
@@ -165,7 +184,20 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                            <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1">
+                                            <Border BorderThickness="1" Background="{DynamicResource BackgroundBrush}">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
                                                 <Grid Width="510">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -190,7 +222,21 @@
                                                         </Grid>
                                                     </StackPanel>
                                                     <Grid Grid.Column="1">
-                                                        <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
+                                                        <Border BorderThickness="1 0 0 0">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
+                                                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                        </Border>
                                                         <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
@@ -245,25 +291,6 @@
                                 </controls:GridWith4Columns>
                                 <ContentControl Content="{Binding ProtocolEditControl}"></ContentControl>
                             </StackPanel>
-
-                            <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">
-                                <Grid Margin="40 0" Grid.Column="3">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource Note}"
-                                                   HorizontalAlignment="Center"
-                                                   TextAlignment="Center"
-                                                   Width="Auto"
-                                                   Margin="0"
-                                                   ></TextBlock>
-                                        <TextBox TextWrapping="Wrap" 
-                                                     TextAlignment="Left" Height="220" Margin="0 5"
-                                                     VerticalContentAlignment="Top"
-                                                     AcceptsReturn="True"
-                                                     AcceptsTab="True"
-                                                     Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                    </StackPanel>
-                                </Grid>
-                            </controls:GridWith4Columns>
                         </Grid>
                     </StackPanel>
                 </Grid>

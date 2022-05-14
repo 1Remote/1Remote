@@ -356,7 +356,7 @@ namespace PRM.View.Host.ProtocolHosts
         public override IntPtr GetHostHwnd()
         {
             if (_exeHandles.Count > 0)
-                return _exeHandles.First();
+                return _exeHandles.Last();
             return _process?.MainWindowHandle ?? IntPtr.Zero;
         }
 
