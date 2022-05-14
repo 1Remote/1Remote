@@ -10,31 +10,9 @@ namespace PRM.Model
 {
     public class ProtocolSettings
     {
-        private string _selectedRunnerName = "";
-        public string SelectedRunnerName
-        {
-            get
-            {
-                if (Runners.Count > 0 && Runners.All(x => x.Name != _selectedRunnerName))
-                {
-                    return Runners.First().Name;
-                }
-                return _selectedRunnerName;
-            }
-            set
-            {
-                if (Runners.Any(x => x.Name == value))
-                {
-                    _selectedRunnerName = value;
-                }
-            }
-        }
+        public string SelectedRunnerName { get; set; } = "";
         public List<Runner> Runners { get; set; } = new List<Runner>();
 
-
-
-        [JsonIgnore]
-        public Type ProtocolType { get; private set; } = typeof(RDP);
 
         /// <summary>
         /// All macros name
@@ -65,17 +43,15 @@ namespace PRM.Model
                 return sb.ToString();
             }
         }
-        
 
         public ProtocolSettings()
         {
         }
 
-        public void Init(List<string> marcoNames, List<string> marcoDescriptions, Type protocolType)
+        public void Init(List<string> marcoNames, List<string> marcoDescriptions)
         {
             MarcoNames = marcoNames;
             MarcoDescriptions = marcoDescriptions;
-            ProtocolType = protocolType;
         }
     }
 }

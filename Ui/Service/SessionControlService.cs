@@ -214,25 +214,44 @@ namespace PRM.Service
                 this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
 
-            var tab = this.GetOrCreateTabWindow(assignTabToken);
-            var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
-            protocol.ConnectPreprocess(_context);
-            var host = runner switch
+            TabWindowBase? tab = null;
+            HostBase? host = null;
+            switch (runner)
             {
-                ExternalRunner => ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, protocol, runner),
-                InternalDefaultRunner => ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocol, runner, size.Width, size.Height),
-                _ => throw new NotImplementedException($"unknown runner: {runner.GetType()}")
-            };
-            Debug.Assert(host != null);
+                case InternalDefaultRunner:
+                    {
+                        tab = this.GetOrCreateTabWindow(assignTabToken);
+                        var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                        protocol.ConnectPreprocess(_context);
+                        host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocol, runner, size.Width, size.Height);
+                        break;
+                    }
+                case ExternalRunner:
+                    {
+                        host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, protocol, runner);
+                        // if host is null, could be run without integrate
+                        if (host != null)
+                        {
+                            tab = this.GetOrCreateTabWindow(assignTabToken);
+                        }
+                        break;
+                    }
+                default:
+                    throw new NotImplementedException($"unknown runner: {runner.GetType()}");
+            }
 
-            // get display area size for host
-            Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-            host.OnClosed += OnProtocolClose;
-            host.OnFullScreen2Window += this.MoveProtocolHostToTab;
-            tab.AddItem(new TabItemViewModel(host, protocol.DisplayName));
-            _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-            host.Conn();
-            tab.Activate();
+            if (tab != null)
+            {
+                Debug.Assert(host != null);
+                // get display area size for host
+                Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
+                host.OnClosed += OnProtocolClose;
+                host.OnFullScreen2Window += this.MoveProtocolHostToTab;
+                tab.AddItem(new TabItemViewModel(host, protocol.DisplayName));
+                _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+                host.Conn();
+                tab.Activate();
+            }
         }
 
         private void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName)

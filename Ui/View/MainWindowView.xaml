@@ -59,54 +59,51 @@
             </Grid>
 
             <!-- System Button Area -->
-            <StackPanel Grid.Row="0"
+            <StackPanel Grid.Row="0" Name="WinSystemButtonArea"
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="Transparent">
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding EditorViewModel}" Value="{x:Null}"></Condition>
-                                        <Condition Binding="{Binding ShowAbout}" Value="False"></Condition>
-                                        <Condition Binding="{Binding ShowSetting}" Value="False"></Condition>
-                                    </MultiDataTrigger.Conditions>
-                                    <MultiDataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="1" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </MultiDataTrigger.EnterActions>
-                                    <MultiDataTrigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="0" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </MultiDataTrigger.ExitActions>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-
-                    <Grid>
-                        <TextBox Width="150" Height="25"
-                                 attachProperty:FocusExtension.IsFocused="{Binding MainFilterIsFocused}"
-                                 attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
-                                 Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="{DynamicResource 'Search (Ctrl+F)'}"
-                                 KeyUp="MainFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
-                            <TextBox.Style>
-                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Setter Property="Background" Value="Transparent"></Setter>
-                                    <Setter Property="Opacity" Value="0.5"></Setter>
-                                    <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-                    </Grid>
+                    <TextBox Width="150" Height="25"
+                             attachProperty:FocusExtension.IsFocused="{Binding MainFilterIsFocused}"
+                             attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
+                             Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="{DynamicResource 'Search (Ctrl+F)'}"
+                             KeyUp="MainFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Setter Property="Background" Value="Transparent"></Setter>
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                                <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding EditorViewModel}" Value="{x:Null}"></Condition>
+                                            <Condition Binding="{Binding ShowAbout}" Value="False"></Condition>
+                                            <Condition Binding="{Binding ShowSetting}" Value="False"></Condition>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="1" Duration="0:0:0.5"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </MultiDataTrigger.EnterActions>
+                                        <MultiDataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="0" Duration="0:0:0.5"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </MultiDataTrigger.ExitActions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="IsEnabled" Value="True"></Setter>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                 </Grid>
 
                 <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">

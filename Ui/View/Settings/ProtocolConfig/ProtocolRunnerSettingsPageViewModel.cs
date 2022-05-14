@@ -36,26 +36,26 @@ namespace PRM.View.Settings.ProtocolConfig
             {
                 SetAndNotifyIfChanged(ref _selectedProtocol, value);
                 var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                var selectedRunner = c.SelectedRunnerName;
                 Runners.Clear();
                 foreach (var runner in c.Runners)
                 {
                     Runners.Add(runner);
                 }
-                if (Runners.Count > 0 && Runners.All(x => x.Name != c.SelectedRunnerName))
+                if (Runners.Count > 0 && Runners.All(x => x.Name != selectedRunner))
                 {
                     SelectedRunner = Runners.First();
                 }
-                else
+                else if(Runners.Count > 0)
                 {
-                    SelectedRunner = Runners.First(x => x.Name == c.SelectedRunnerName) ?? new Runner("");
+                    SelectedRunner = Runners.First(x => x.Name == selectedRunner);
                 }
-                c.SelectedRunnerName = SelectedRunner.Name;
             }
         }
 
 
-        private Runner _selectedRunner;
-        public Runner SelectedRunner
+        private Runner? _selectedRunner;
+        public Runner? SelectedRunner
         {
             get
             {
@@ -68,11 +68,15 @@ namespace PRM.View.Settings.ProtocolConfig
             set
             {
                 var nv = value;
-                if (Runners.Count > 0 && Runners.All(x => x != value))
+                if (nv != null && Runners.Count > 0 && Runners.Any(x => x == value))
+                {
+                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                    c.SelectedRunnerName = nv.Name;
+                }
+                else if (Runners.Count > 0 && Runners.All(x => x != value))
                 {
                     nv = Runners.First();
                 }
-                _protocolConfigurationService.ProtocolConfigs[_selectedProtocol].SelectedRunnerName = nv.Name;
                 SetAndNotifyIfChanged(ref _selectedRunner, nv);
             }
         }
@@ -98,7 +102,7 @@ namespace PRM.View.Settings.ProtocolConfig
                      }), owner: IoC.Get<MainWindowView>()).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
-                        var newRunner = new ExternalRunner(name) { MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType };
+                        var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
                     }

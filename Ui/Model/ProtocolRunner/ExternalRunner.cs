@@ -35,8 +35,9 @@ namespace PRM.Model.ProtocolRunner
             }
         }
 
-        public ExternalRunner(string runnerName) : base(runnerName)
+        public ExternalRunner(string runnerName, string ownerProtocolName) : base(runnerName, ownerProtocolName)
         {
+            OwnerProtocolName = ownerProtocolName;
         }
 
         protected string _exePath = "";
@@ -98,8 +99,5 @@ namespace PRM.Model.ProtocolRunner
         /// </summary>
         [JsonIgnore]
         public List<string> MarcoNames { get; set; } = new();
-
-        [JsonIgnore] 
-        public Type ProtocolType { get; set; } = typeof(RDP);
     }
 }
