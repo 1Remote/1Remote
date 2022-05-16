@@ -1,0 +1,573 @@
+﻿<host:TabWindowBase x:Class="PRM.View.Host.TabWindowView"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+                     xmlns:system="clr-namespace:System;assembly=mscorlib"
+                     xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+                     xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+                     xmlns:host="clr-namespace:PRM.View.Host"
+                     mc:Ignorable="d"
+                     d:DataContext="{d:DesignInstance host:TabWindowViewModel}"
+                     ResizeMode="{Binding WindowResizeMode}"
+                     Title="{Binding Title}" Height="600" Width="800">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+1" Command="{Binding CmdShowTabByIndex}" CommandParameter="1"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+2" Command="{Binding CmdShowTabByIndex}" CommandParameter="2"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+3" Command="{Binding CmdShowTabByIndex}" CommandParameter="3"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+4" Command="{Binding CmdShowTabByIndex}" CommandParameter="4"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+5" Command="{Binding CmdShowTabByIndex}" CommandParameter="5"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+6" Command="{Binding CmdShowTabByIndex}" CommandParameter="6"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+7" Command="{Binding CmdShowTabByIndex}" CommandParameter="7"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+8" Command="{Binding CmdShowTabByIndex}" CommandParameter="8"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+9" Command="{Binding CmdShowTabByIndex}" CommandParameter="9"></KeyBinding>
+    </Window.InputBindings>
+    <Window.Template>
+        <ControlTemplate TargetType="host:TabWindowBase">
+            <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"></Setter>
+                        <Setter Property="BorderThickness" Value="2"></Setter>
+                    </Style>
+                </Border.Style>
+                <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
+                    <ContentPresenter />
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="WindowState" Value="Maximized">
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 8 8 8" />
+                    <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Template>
+    <Window.Resources>
+        <ResourceDictionary>
+            <system:Double x:Key="TitleBarHeight">30</system:Double>
+            <system:Double x:Key="TrapezoidHeight">30</system:Double>
+            <Thickness x:Key="TabContentBorderWithColor">5,0,5,5</Thickness>
+            <Thickness x:Key="TabContentBorderWithOutColor">0,0,0,0</Thickness>
+            <!--Tab header content DataTemplate-->
+            <DataTemplate DataType="{x:Type host:TabItemViewModel}">
+                <!--MarkColor border l r b -->
+                <Border BorderBrush="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderThickness" Value="{StaticResource TabContentBorderWithColor}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="True">
+                                    <Setter Property="BorderThickness" Value="{StaticResource TabContentBorderWithOutColor}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <ContentControl Content="{Binding Content}" Background="Transparent" />
+                </Border>
+            </DataTemplate>
+
+            <!--Tab header item Template-->
+            <Style x:Key="DragableTabHeaderItemStyle" TargetType="{x:Type dragablz:DragablzItem}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
+                            <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True" 
+                                      Background="{DynamicResource PrimaryMidBrush}"
+                                      SnapsToDevicePixels="true"
+                                      Height="{StaticResource TitleBarHeight}"
+                                      controls:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
+                                      VerticalAlignment="Bottom">
+                                <Grid.ContextMenu>
+                                    <ContextMenu ItemsSource="{Binding Content.MenuItems}">
+                                        <ContextMenu.Style>
+                                            <Style TargetType="{x:Type ContextMenu}">
+                                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                                                            <Border BorderThickness="1" BorderBrush="{DynamicResource DefaultBorderBrush}" x:Name="Border" Background="{DynamicResource PrimaryMidBrush}">
+                                                                <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ContextMenu.Style>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Border Name="DragablzHeaderItemBorder"></Border>
+                                <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--header item icon-->
+                                    <Border Grid.Column="1" Padding="4 0 4 0">
+                                        <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
+                                        </Grid>
+                                    </Border>
+
+                                    <!--header item content-->
+                                    <Border Grid.Column="2" Padding="0">
+                                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
+                                                  ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                                  ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                                  HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                                  VerticalAlignment="Center"
+                                                  SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                  Margin="{TemplateBinding Control.Padding }"
+                                                  x:Name="contentPresenter" />
+                                    </Border>
+
+                                    <!--header item placeholder(do not remove this)-->
+                                    <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
+                                        <Thumb.Style>
+                                            <Style TargetType="{x:Type Thumb}">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate>
+                                                            <Grid Background="{TemplateBinding Background}" />
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Thumb.Style>
+                                    </Thumb>
+
+
+                                    <Button Grid.Column="4" Width="10" Height="10" 
+                                                Style="{StaticResource ButtonBarAccentStyle}"
+                                                Background="Transparent"
+                                                attachProperty:VisionElement.Opacity="0.5"
+                                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                                attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                Margin="5 0"
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
+                                                CommandParameter="{Binding Content.ConnectionId}">
+                                        <Grid Height="10" Width="8">
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      StrokeThickness="2" Stretch="Uniform" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="dragablz:TabablzControl.IsWrappingTabItem" Value="True">
+                                    <Setter TargetName="contentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.Header}" />
+                                </Trigger>
+                                <!-- Whe MarkColor is not transparent, give more margin to tab header to display border -->
+                                <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="False">
+                                    <Setter TargetName="Trapezoid" Property="Margin" Value="3 0" />
+                                </DataTrigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" TargetName="DragablzHeaderItemContent" />
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                                    <Setter Property="Background" TargetName="DragablzHeaderItemContent" Value="{DynamicResource PrimaryMidBrush}" />
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="0 0 0 5"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" 
+                                            Value="{Binding  RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowBase}, Path=DataContext.SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" TargetName="DragablzHeaderItemContent" />
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="5"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" Value="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="DragablzHeaderItemContent" />
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="5 5 5 0"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" Value="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!--tab header container-->
+            <Style x:Key="DragablzTabHeaderItemHolderStryle" TargetType="{x:Type dragablz:DragablzItemsControl}">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <Canvas IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type dragablz:DragablzItemsControl}">
+                            <Grid Background="{DynamicResource PrimaryMidBrush}"
+                                  Height="{StaticResource TitleBarHeight}">
+                                <Grid Height="{StaticResource TitleBarHeight}" VerticalAlignment="Bottom">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                                  Width="{TemplateBinding ActualWidth}"
+                                                  Height="{StaticResource TitleBarHeight}"
+                                                  VerticalAlignment="Bottom"
+                                                  VerticalContentAlignment="Bottom"
+                                                  controls:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                                  attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                                  Style="{StaticResource ScrollViewMiniStyle}"
+                                                  Background="{x:Null}">
+                                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Bottom"
+                                                        Width="{TemplateBinding ItemsPresenterWidth}"
+                                                        Height="{StaticResource TitleBarHeight}" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <Style TargetType="{x:Type dragablz:TabablzControl}">
+                <!--Add button to left of header items-->
+                <Setter Property="HeaderPrefixContent">
+                    <Setter.Value>
+                        <Grid Margin="5 0" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                            <Grid Width="24" Height="24" VerticalAlignment="Center">
+                                <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                            </Grid>
+                        </Grid>
+                    </Setter.Value>
+                </Setter>
+
+                <!--Add button to right of header items-->
+                <Setter Property="HeaderSuffixContent">
+                    <Setter.Value>
+                        <Grid Background="{DynamicResource PrimaryMidBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Background="{DynamicResource PrimaryMidBrush}">
+                                <Button Width="25" 
+                                        Height="{StaticResource TrapezoidHeight}"
+                                        HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" >
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
+                                        </Style>
+                                    </Button.Style>
+                                    <Grid Width="12" Height="20">
+                                        <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              StrokeThickness="1" Stretch="Uniform">
+                                        </Path>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+
+                            <Grid Grid.Column="0" Background="{DynamicResource PrimaryMidBrush}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="1" MouseDown="WinTitleBar_OnPreviewMouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource PrimaryMidBrush}"></Grid>
+
+                                <Button Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        attachProperty:VisionElement.Opacity="0.5"
+                                        attachProperty:VisionElement.OpacityAccent="0.9"
+                                        HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}">
+                                    <Grid Width="12" HorizontalAlignment="Center">
+                                        <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              StrokeThickness="1" Stretch="Uniform">
+                                        </Path>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource PrimaryMidBrush}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Button" x:Key="WinTitleBarBtnStyle" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                        <Setter Property="Width" Value="35" />
+                                        <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}" />
+                                        <Setter Property="CommandParameter" Value="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" />
+                                        <Setter Property="Focusable" Value="False" />
+                                    </Style>
+                                    <Style TargetType="{x:Type CheckBox}" x:Key="WinTitleBarCbStyle" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                        <Setter Property="Width" Value="35" />
+                                        <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}" />
+                                        <Setter Property="CommandParameter" Value="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" />
+                                        <Setter Property="Focusable" Value="False" />
+                                    </Style>
+                                </StackPanel.Resources>
+
+                                <CheckBox Name="CbPin" 
+                                          ToolTip="{DynamicResource 'Always on top'}"
+                                          IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=Topmost}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource WinTitleBarCbStyle}">
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate>
+                                                        <Grid Name="Grid" Background="{TemplateBinding Background}">
+                                                            <Path Height="15" Width="15" Stretch="Uniform" Fill="{DynamicResource PrimaryTextBrush}" Data="F1 M 14.375 11.25 C 14.980469 11.25 15.548502 11.363933 16.079102 11.591797 C 16.609699 11.819662 17.073566 12.132162 17.470703 12.529297 C 17.867838 12.926433 18.180338 13.3903 18.408203 13.920898 C 18.636066 14.451498 18.75 15.019531 18.75 15.625 C 18.75 16.230469 18.636066 16.798502 18.408203 17.329102 C 18.180338 17.859701 17.867838 18.323568 17.470703 18.720703 C 17.073566 19.117838 16.609699 19.430338 16.079102 19.658203 C 15.548502 19.886068 14.980469 20 14.375 20 C 13.769531 20 13.201497 19.886068 12.670898 19.658203 C 12.140299 19.430338 11.676432 19.117838 11.279297 18.720703 C 10.882161 18.323568 10.569661 17.859701 10.341797 17.329102 C 10.113932 16.798502 10 16.230469 10 15.625 C 10 15.019531 10.113932 14.451498 10.341797 13.920898 C 10.569661 13.3903 10.882161 12.926433 11.279297 12.529297 C 11.676432 12.132162 12.140299 11.819662 12.670898 11.591797 C 13.201497 11.363933 13.769531 11.25 14.375 11.25 Z M 11.25 15.625 C 11.25 16.054688 11.33138 16.459961 11.494141 16.84082 C 11.6569 17.22168 11.879883 17.553711 12.163086 17.836914 C 12.446289 18.120117 12.77832 18.3431 13.15918 18.505859 C 13.540039 18.668619 13.945312 18.75 14.375 18.75 C 14.680989 18.75 14.980469 18.706055 15.273438 18.618164 C 15.566406 18.530273 15.839844 18.401693 16.09375 18.232422 L 11.767578 13.90625 C 11.598307 14.160156 11.469727 14.433594 11.381836 14.726562 C 11.293945 15.019531 11.25 15.319011 11.25 15.625 Z M 16.982422 17.34375 C 17.151691 17.089844 17.280273 16.816406 17.368164 16.523438 C 17.456055 16.230469 17.5 15.93099 17.5 15.625 C 17.5 15.195312 17.416992 14.791667 17.250977 14.414062 C 17.084961 14.036459 16.860352 13.706055 16.577148 13.422852 C 16.293945 13.139648 15.963541 12.915039 15.585938 12.749023 C 15.208333 12.583008 14.804688 12.5 14.375 12.5 C 14.06901 12.5 13.76953 12.543945 13.476562 12.631836 C 13.183593 12.719727 12.910155 12.848308 12.65625 13.017578 Z M 19.433594 7.304688 C 19.21875 7.519531 19.008789 7.716472 18.803711 7.895508 C 18.598633 8.074545 18.387043 8.225912 18.168945 8.349609 C 17.950846 8.473308 17.713215 8.569336 17.456055 8.637695 C 17.198893 8.706055 16.907551 8.740234 16.582031 8.740234 C 16.360676 8.740234 16.149088 8.720703 15.947266 8.681641 L 14.638672 10 L 12.861328 10 L 15.576172 7.285156 L 15.673828 7.314453 C 15.823567 7.360026 15.973307 7.400717 16.123047 7.436523 C 16.272785 7.472332 16.425781 7.490235 16.582031 7.490234 C 16.940104 7.490235 17.278645 7.4056 17.597656 7.236328 L 12.763672 2.402344 C 12.5944 2.721355 12.509765 3.059896 12.509766 3.417969 C 12.509765 3.574219 12.527668 3.727215 12.563477 3.876953 C 12.599283 4.026693 12.639974 4.176433 12.685547 4.326172 L 12.714844 4.423828 L 7.910156 9.21875 C 7.753906 9.153646 7.604166 9.091797 7.460938 9.033203 C 7.317708 8.974609 7.174479 8.925781 7.03125 8.886719 C 6.888021 8.847656 6.739909 8.816732 6.586914 8.793945 C 6.433919 8.771159 6.269531 8.759766 6.09375 8.759766 C 5.722656 8.759766 5.361328 8.813477 5.009766 8.920898 C 4.658203 9.02832 4.332682 9.186198 4.033203 9.394531 L 8.75 14.111328 L 8.75 15.888672 L 6.875 14.003906 L 1.328125 19.560547 L 0 20 L 0.439453 18.671875 L 5.996094 13.125 L 2.226562 9.355469 L 2.666016 8.916016 C 3.121745 8.460287 3.649088 8.111979 4.248047 7.871094 C 4.847005 7.630209 5.46875 7.509766 6.113281 7.509766 C 6.367188 7.509766 6.619466 7.530925 6.870117 7.573242 C 7.120768 7.615561 7.369792 7.675782 7.617188 7.753906 L 11.318359 4.052734 C 11.279297 3.850912 11.259766 3.639324 11.259766 3.417969 C 11.259766 3.098959 11.293945 2.810873 11.362305 2.553711 C 11.430664 2.296551 11.526692 2.057293 11.650391 1.835938 C 11.774088 1.614584 11.925455 1.401367 12.104492 1.196289 C 12.283528 0.991211 12.480469 0.78125 12.695312 0.566406 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate>
+                                                                <Grid Name="Grid" Background="{TemplateBinding Background}">
+                                                                    <Path Height="15" Width="15" Stretch="Uniform" Fill="{DynamicResource PrimaryTextBrush}" Data="F1 M 19.433594 7.304688 C 19.21875 7.519531 19.008789 7.716472 18.803711 7.895508 C 18.598633 8.074545 18.387043 8.225912 18.168945 8.349609 C 17.950846 8.473308 17.713215 8.569336 17.456055 8.637695 C 17.198893 8.706055 16.907551 8.740234 16.582031 8.740234 C 16.360676 8.740234 16.149088 8.720703 15.947266 8.681641 L 12.246094 12.382812 C 12.330729 12.630209 12.392578 12.884115 12.431641 13.144531 C 12.470703 13.404948 12.490234 13.665365 12.490234 13.925781 C 12.490234 14.348959 12.447916 14.733073 12.363281 15.078125 C 12.278646 15.423178 12.156575 15.748698 11.99707 16.054688 C 11.837564 16.360678 11.64388 16.65202 11.416016 16.928711 C 11.18815 17.205404 10.930989 17.486979 10.644531 17.773438 L 6.875 14.003906 L 1.328125 19.560547 L 0 20 L 0.439453 18.671875 L 5.996094 13.125 L 2.226562 9.355469 L 2.666016 8.916016 C 3.121745 8.460287 3.644206 8.111979 4.233398 7.871094 C 4.822591 7.630209 5.439453 7.509766 6.083984 7.509766 C 6.617838 7.509766 7.128906 7.591146 7.617188 7.753906 L 11.318359 4.052734 C 11.279297 3.850912 11.259766 3.639324 11.259766 3.417969 C 11.259766 3.098959 11.293945 2.810873 11.362305 2.553711 C 11.430664 2.296551 11.526692 2.057293 11.650391 1.835938 C 11.774088 1.614584 11.925455 1.401367 12.104492 1.196289 C 12.283528 0.991211 12.480469 0.78125 12.695312 0.566406 Z M 16.582031 7.490234 C 16.940104 7.490235 17.278645 7.4056 17.597656 7.236328 L 12.763672 2.402344 C 12.5944 2.721355 12.509765 3.059896 12.509766 3.417969 C 12.509765 3.600262 12.530924 3.77116 12.573242 3.930664 C 12.61556 4.09017 12.66276 4.254558 12.714844 4.423828 L 7.910156 9.21875 C 7.747396 9.153646 7.594401 9.091797 7.451172 9.033203 C 7.307942 8.974609 7.164713 8.925781 7.021484 8.886719 C 6.878255 8.847656 6.730143 8.816732 6.577148 8.793945 C 6.424153 8.771159 6.259766 8.759766 6.083984 8.759766 C 5.712891 8.759766 5.35319 8.813477 5.004883 8.920898 C 4.656575 9.02832 4.332682 9.186198 4.033203 9.394531 L 10.605469 15.966797 C 10.813802 15.667318 10.973307 15.343425 11.083984 14.995117 C 11.194661 14.646811 11.25 14.290365 11.25 13.925781 C 11.25 13.75 11.238606 13.585612 11.21582 13.432617 C 11.193033 13.279623 11.160481 13.129883 11.118164 12.983398 C 11.075846 12.836914 11.025391 12.692058 10.966797 12.548828 C 10.908203 12.4056 10.846354 12.252604 10.78125 12.089844 L 15.576172 7.285156 C 15.745442 7.33724 15.90983 7.38444 16.069336 7.426758 C 16.22884 7.469076 16.399738 7.490235 16.582031 7.490234 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+
+                                <Button Name="BtnMinimize"  Command="{Binding CmdGoMinimize}" Style="{StaticResource WinTitleBarBtnStyle}">
+                                    <Rectangle Width="15" Height="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" />
+                                </Button>
+
+                                <Button Name="BtnMaximize" Command="{Binding CmdGoMaximize}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Grid>
+                                        <Path Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z " Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+
+                                        <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Height="15" Width="15" Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z" Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </Grid>
+                                </Button>
+
+                                <Button Command="{Binding CmdHostGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Grid Height="15" Width="15">
+                                        <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z "
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+
+                                <Button Name="BtnCloseAll" ToolTip="{DynamicResource 'Close all'}" 
+                                        Command="{Binding CmdCloseAll}" 
+                                        Style="{StaticResource WinTitleBarBtnStyle}"
+                                        attachProperty:VisionElement.ForegroundAccent="White"
+                                        attachProperty:VisionElement.BackgroundAccent="Red"
+                                        attachProperty:VisionElement.ForegroundOnMouseDown="White"
+                                        attachProperty:VisionElement.BackgroundOnMouseDown="Red"
+                                        Visibility="{Binding BtnCloseAllVisibility}">
+                                    <Grid Width="15" Height="15">
+                                        <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z "
+                                            Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+
+                                <Button Name="BtnClose" 
+                                                   ToolTip="{DynamicResource Close}" 
+                                                   Command="{Binding CmdClose}" 
+                                                   Style="{StaticResource WinTitleBarBtnStyle}"
+                                                   attachProperty:VisionElement.ForegroundAccent="White"
+                                                   attachProperty:VisionElement.BackgroundAccent="Red"
+                                                   attachProperty:VisionElement.ForegroundOnMouseDown="White"
+                                                   attachProperty:VisionElement.BackgroundOnMouseDown="Red"
+                                                   >
+                                    <Grid Height="15" Width="15">
+                                        <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+
+                        </Grid>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource DragableTabHeaderItemStyle}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type dragablz:TabablzControl}">
+                            <Grid ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="ColumnDefinition0" />
+                                    <ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Name="RowDefinition0" Height="Auto" />
+                                    <RowDefinition x:Name="RowDefinition1" Height="*" />
+                                </Grid.RowDefinitions>
+                                <Border x:Name="contentPanel" 
+                                        BorderThickness="0" 
+                                        Background="{TemplateBinding Background}"
+                                        Grid.Column="0" 
+                                        Grid.Row="1"
+                                        KeyboardNavigation.DirectionalNavigation="Contained"
+                                        KeyboardNavigation.TabIndex="2" 
+                                        KeyboardNavigation.TabNavigation="Local">
+                                    <Grid>
+                                        <Grid x:Name="PART_ItemsHolder" Margin="0" />
+                                    </Grid>
+                                </Border>
+                                <Grid Grid.Column="0" Grid.Row="0" Margin="0" x:Name="HeaderContainerGrid" Visibility="{TemplateBinding IsHeaderPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ContentControl Grid.Column="0" x:Name="PrefixContentControl"
+                                            Content="{TemplateBinding HeaderPrefixContent}"
+                                            ContentStringFormat="{TemplateBinding HeaderPrefixContentStringFormat}"
+                                            ContentTemplate="{TemplateBinding HeaderPrefixContentStringFormat}"
+                                            ContentTemplateSelector="{TemplateBinding HeaderPrefixContentTemplateSelector}" />
+                                    <dragablz:DragablzItemsControl
+                                            x:Name="PART_HeaderItemsControl"
+                                            Style="{StaticResource DragablzTabHeaderItemHolderStryle}"
+                                            Grid.Column="1"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Items}"
+                                            ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+                                            ItemsOrganiser="{TemplateBinding HeaderItemsOrganiser}"
+                                            KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
+                                            ItemTemplate="{TemplateBinding HeaderItemTemplate}"
+                                            FixedItemCount="{TemplateBinding FixedHeaderCount}">
+                                        <dragablz:DragablzItemsControl.MaxWidth>
+                                            <MultiBinding>
+                                                <MultiBinding.Converter>
+                                                    <dragablz:TabablzHeaderSizeConverter Orientation="Horizontal" />
+                                                </MultiBinding.Converter>
+                                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="ActualWidth" />
+                                                <Binding RelativeSource="{RelativeSource Self}" Path="ItemsPresenterWidth" />
+                                                <Binding ElementName="PrefixContentControl" Path="ActualWidth" />
+                                                <Binding ElementName="DefaultAddButton" Path="DesiredSize.Width" />
+                                                <Binding ElementName="SuffixContentControl" Path="DesiredSize.Width" />
+                                            </MultiBinding>
+                                        </dragablz:DragablzItemsControl.MaxWidth>
+                                    </dragablz:DragablzItemsControl>
+                                    <Button Content="Add"
+                                    x:Name="DefaultAddButton"
+                                    Grid.Column="2"
+                                    Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
+                                    Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    <ContentControl Grid.Column="3" x:Name="SuffixContentControl"
+                                            Content="{TemplateBinding HeaderSuffixContent}"
+                                            ContentStringFormat="{TemplateBinding HeaderSuffixContentStringFormat}"
+                                            ContentTemplate="{TemplateBinding HeaderSuffixContentStringFormat}"
+                                            ContentTemplateSelector="{TemplateBinding HeaderSuffixContentTemplateSelector}"
+                                            HorizontalAlignment="Stretch" />
+
+
+                                    <!--MarkColor border top-->
+                                    <Border BorderThickness="0 0 0 5"
+                                            Grid.Column="0" Grid.ColumnSpan="4"
+                                            BorderBrush="{Binding SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"
+                                            SnapsToDevicePixels="True">
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
+        <dragablz:TabablzControl x:Name="TabablzControl"
+                                 BorderThickness="0"
+                                 Margin="0" Padding="0"
+                                 Background="{DynamicResource PrimaryMidBrush}"
+                                 SelectionChanged="TabablzControl_OnSelectionChanged"
+                                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                 ItemsSource="{Binding Items}"
+                                 HeaderMemberPath="Header">
+            <!-- important for docking -->
+            <dragablz:TabablzControl.InterTabController>
+                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
+                <!--<dragablz:InterTabController />-->
+            </dragablz:TabablzControl.InterTabController>
+        </dragablz:TabablzControl>
+    </Grid>
+</host:TabWindowBase>

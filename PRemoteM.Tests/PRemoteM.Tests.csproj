@@ -70,12 +70,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PRemoteM\PRemoteM.csproj">
-      <Project>{AF7B4735-78AB-41EB-A799-5BAB792B7E22}</Project>
-      <Name>PRemoteM</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

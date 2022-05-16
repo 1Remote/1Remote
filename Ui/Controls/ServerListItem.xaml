@@ -1,0 +1,294 @@
+﻿<UserControl x:Class="PRM.Controls.ServerListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.Controls"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:view="clr-namespace:PRM.View"
+             xmlns:model="clr-namespace:PRM.Model"
+             xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:ConverterNoteToSingleLineNote x:Key="ConverterNoteToSingleLineNote" />
+    </UserControl.Resources>
+    <Grid FocusVisualStyle="{x:Null}">
+        <Grid.InputBindings>
+            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
+            <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
+        </Grid.InputBindings>
+        <Grid Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+        <!--<Grid Opacity="0.4">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0.9,0">
+                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.2"></GradientStop>
+                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.7"></GradientStop>
+                    <GradientStop Color="Transparent" Offset="0.9"></GradientStop>
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>-->
+        <Grid>
+            <Grid.Margin>
+                <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
+            </Grid.Margin>
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
+                    <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Margin="10 0" Width="20" Height="20" HorizontalAlignment="Left" 
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+
+                <!--protocol name-->
+                <TextBlock Grid.Column="1" Margin="5 0 10 0" 
+                                                   Text="{Binding Server.ProtocolDisplayName}"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   Opacity="0.6"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center">
+                </TextBlock>
+
+                <!--icon-->
+                <Grid Grid.Column="2" Width="30" HorizontalAlignment="Center" Margin="5 0">
+                    <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                </Grid>
+
+                <!--display name-->
+                <Grid Grid.Column="3" ToolTip="{Binding Server.DisplayName}" Background="Transparent">
+                    <TextBlock Margin="5 0 10 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
+                </Grid>
+
+                <!--tags-->
+                <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                    <ItemsControl.Resources>
+                        <view:ConverterTagName x:Key="ConverterTagName" />
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="system:String">
+                            <Grid Margin="3">
+                                <Button Content="{Binding Converter={StaticResource ConverterTagName}}" HorizontalAlignment="Left">
+                                    <Button.ToolTip>
+                                        <Label Content="{x:Static system:Environment.NewLine}" 
+                                               ContentStringFormat="{DynamicResource tag_tooltips}"/>
+                                    </Button.ToolTip>
+                                    <Button.InputBindings>
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
+                                    </Button.InputBindings>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!--brief note -->
+                <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
+                    <!--text button show note-->
+                    <Button Name="BtnShowNote"
+                            HorizontalContentAlignment="Left"
+                            Click="BtnShowNote_OnClick"
+                            attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
+                            Background="{DynamicResource BackgroundBrush}"
+                            Foreground="{DynamicResource BackgroundTextBrush}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Collapsed">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Grid>
+                            <TextBlock Margin="5" HorizontalAlignment="Left" MaxWidth="400"
+                                       Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
+                                       TextWrapping="NoWrap"
+                                       Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                                       TextTrimming="CharacterEllipsis"></TextBlock>
+                        </Grid>
+                    </Button>
+
+                    <!--icon button show note-->
+                    <Button
+                        Width="20" Height="20"
+                        Background="Transparent"
+                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                        Foreground="{DynamicResource BackgroundTextBrush}"
+                        attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                        attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Opacity="0.7"
+                        attachProperty:VisionElement.Opacity="0.8"
+                        attachProperty:VisionElement.OpacityAccent="0.9"
+                        Click="BtnShowNote_OnClick"
+                        >
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed"></Condition>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Grid Width="16">
+                            <Path Data="{StaticResource NoteGeometry}"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="0" Stretch="Uniform" />
+                        </Grid>
+                    </Button>
+
+
+
+                    <Popup Name="PopupNote"
+                           Visibility="{Binding ElementName=BtnShowNote, Path=Visibility}"
+                           AllowsTransparency="True"
+                           PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
+                        <Border Padding="0 0 4 4">
+                            <Border.Effect>
+                                <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                            </Border.Effect>
+                            <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
+                                <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
+                                </wpf:MarkdownViewer>
+                            </Border>
+                        </Border>
+                    </Popup>
+                </Grid>
+
+                <!--address-->
+                <Grid Grid.Column="6" ToolTip="{Binding Server.SubTitle}" Background="Transparent">
+                    <TextBlock Margin="5 0" MaxWidth="500"
+                               FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                               Text="{Binding Server.SubTitle}">
+                    </TextBlock>
+                </Grid>
+
+
+                <!-- setting menu button -->
+                <Button Grid.Column="1" 
+                        x:Name="BtnSettingMenu"
+                        Margin="0 0 10 0"
+                        Width="20" Height="20" HorizontalAlignment="Right"
+                        Click="BtnSettingMenu_OnClick">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+                                    <Setter Property="Padding" Value="4"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Path Name="Symbol" Margin="2"
+                          Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Stretch="Uniform" />
+                </Button>
+
+            </Grid>
+        </Grid>
+
+
+        <Popup Name="PopupCardSettingMenu"
+               AllowsTransparency="True"
+               PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
+            <Border Padding="0 0 4 4">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                </Border.Effect>
+                <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
+                    <ListBox ItemsSource="{Binding Actions}" BorderThickness="0">
+                        <ListBox.Style>
+                            <Style TargetType="{x:Type ListBox}">
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                <Setter Property="ItemContainerStyle">
+                                    <Setter.Value>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListBoxItem">
+                                                        <Grid>
+                                                            <Border x:Name="GridContainer">
+                                                            </Border>
+                                                            <ContentPresenter x:Name="ContentPresenter"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate DataType="model:ProtocolAction">
+                                            <Button Padding="10" Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                            Click="ServerMenuButton_OnClick"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalContentAlignment="Left"
+                                                            Content="{Binding ActionName}">
+                                            </Button>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.Style>
+                    </ListBox>
+                </Grid>
+            </Border>
+        </Popup>
+
+    </Grid>
+</UserControl>

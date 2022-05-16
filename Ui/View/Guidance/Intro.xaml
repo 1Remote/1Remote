@@ -1,0 +1,158 @@
+﻿<UserControl x:Class="PRM.View.Guidance.Intro"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.View.Guidance"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:service="clr-namespace:PRM.Service"
+             mc:Ignorable="d" Background="{DynamicResource PrimaryMidBrush}"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        </Style>
+        <Style x:Key="ShortcutBorderStyle" TargetType="{x:Type Border}">
+            <Style.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="FontWeight" Value="Medium" />
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="MinWidth" Value="17" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource PrimaryDarkColor}" Opacity="0.5"></SolidColorBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="4,0,4,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 20 0 0">
+            <StackPanel HorizontalAlignment="Center">
+                <Grid HorizontalAlignment="Center">
+                    <Image Source="/Resources/Image/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
+                </Grid>
+                <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static service:AppPathHelper.APP_NAME}"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
+                    <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*" />
+                <ColumnDefinition Width="50*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="8" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Opacity="0.8">
+                <TextBlock
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            TextWrapping="WrapWithOverflow"
+                            Foreground="{DynamicResource PrimaryTextBrush}"
+                            Text="{DynamicResource guidance_introduce}">
+                </TextBlock>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
+                <Image Source="Resources/launcher_main1.png" Width="200" HorizontalAlignment="Left"></Image>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="10" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{DynamicResource guidance_feature_launcher_key}">
+                    </TextBlock>
+
+                    <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
+                            <TextBlock>Alt</TextBlock>
+                        </Border>
+                        <TextBlock Text="+" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0"></TextBlock>
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                            <TextBlock>M</TextBlock>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_select}"></TextBlock>
+
+                    <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                            <TextBlock>↑</TextBlock>
+                        </Border>
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                            <TextBlock>↓</TextBlock>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_connect}"></TextBlock>
+                    <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                            <TextBlock>Enter</TextBlock>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_menu}"></TextBlock>
+                    <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                            <TextBlock>→</TextBlock>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center">
+                <Image Source="Resources/demo.png" Width="200" Margin="15 0 0 0" HorizontalAlignment="Left"></Image>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1">
+                <TextBlock
+                                VerticalAlignment="Center"
+                                TextWrapping="Wrap"
+                                Foreground="{DynamicResource PrimaryTextBrush}"
+                                Text="{DynamicResource guidance_feature_tab_demo}">
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
