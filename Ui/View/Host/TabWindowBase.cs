@@ -196,8 +196,9 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
             if (this.Height >= screenEx.VirtualWorkingArea.Height)
                 this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
-
             this.MinWidth = this.MinHeight = 300;
+            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
 
             InitSizeChanged();
             InitWindowStateChanged();

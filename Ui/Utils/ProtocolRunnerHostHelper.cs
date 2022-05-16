@@ -110,24 +110,29 @@ namespace PRM.Utils
 
         }
 
+        public static HostBase GetRdpInternalHost(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        {
+            Debug.Assert(runner is InternalDefaultRunner);
+            Debug.Assert(server is RDP);
+            var host = new AxMsRdpClient09Host((RDP)server, (int)width, (int)height);
+            return host;
+        }
+
         /// <summary>
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <param name="context"></param>
         /// <param name="server"></param>
         /// <param name="runner">指定使用哪个 runner 来启动 session，可以为空</param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
-                case RDP rdp:
+                case RDP:
                     {
-                        var host = new AxMsRdpClient09Host(rdp, (int)width, (int)height);
-                        return host;
+                        return GetRdpInternalHost(context, server, runner);
                     }
                 case SSH ssh:
                     {
