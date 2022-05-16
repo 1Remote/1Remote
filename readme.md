@@ -1,11 +1,11 @@
-# PRemoteM
+# PRemoteM.
 
-English | [中文](https://github.com/VShawn/PRemoteM/wiki/Intro-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+English | [中文](https://github.com/OneRemote/PRemoteM/wiki/Intro-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
 
-[![version](https://img.shields.io/github/v/release/vshawn/premotem?color=Green&include_prereleases)](https://github.com/VShawn/PRemoteM/releases)
+[![version](https://img.shields.io/github/v/release/vshawn/premotem?color=Green&include_prereleases)](https://github.com/OneRemote/PRemoteM/releases)
 [![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
-[![issues](https://img.shields.io/github/issues/vshawn/premotem)](https://github.com/VShawn/PRemoteM/issues)
-[![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
+[![issues](https://img.shields.io/github/issues/vshawn/premotem)](https://github.com/OneRemote/PRemoteM/issues)
+[![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/OneRemote/PRemoteM/blob/dev/LICENSE)
 [![Build status](https://ci.appveyor.com/api/projects/status/2qbmeeurdq0vijmf/branch/dev?svg=true)](https://ci.appveyor.com/project/VShawn/premotem-build-dev/branch/dev)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
 
@@ -13,25 +13,24 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 
 ## Features
 
-- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp), [NoMachine and other app](https://github.com/VShawn/PRemoteM/wiki/Protocol:-APP:-NoMachine)
+- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/OneRemote/PRemoteM/wiki/%5BProtocol%5D-RemoteApp), [NoMachine and other app](https://github.com/OneRemote/PRemoteM/wiki/%5BProtocol%5D-APP-NoMachine)
 - Quick and convenient remote session launcher (Alt + M)
 - Multi-screen and HiDPI RDP connection (Test on **Win10 + 4k monitor *2** RDP TO **Win2016**)
 - Detailed connection configuration: tags, icons, colors, connection scripts etc.
 - Multiple languages, themes and tabbed interface
 - [Import connections from mRemoteNG](https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Migrate.jpg)
-- [Password encryption via RSA](https://github.com/VShawn/PRemoteM/wiki/Security)
-- Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner)
+- [Password encryption via RSA](https://github.com/OneRemote/PRemoteM/wiki/Security)
+- Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://github.com/OneRemote/PRemoteM/wiki/%5BProtocol%5D--Protocol-Runners)
 - Portable - just unpack and run
 
 ## Installation
 
 Latest Version: 0.6.2.2
-
-Pre-Release Build: [0.7.0-alpha](https://github.com/VShawn/PRemoteM/releases/tag/0.7.0-pre-release)
+Pre-Release Build: [0.7.0-alpha](https://github.com/OneRemote/PRemoteM/releases/tag/0.7.0-pre-release)
 
 Use one of the following methods to install the application:
 
-- [GitHub release](https://github.com/VShawn/PRemoteM/releases)
+- [GitHub release](https://github.com/OneRemote/PRemoteM/releases)
 - [Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
@@ -42,7 +41,7 @@ Use one of the following methods to install the application:
 
 P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use PRemoteM in Win7.
 
-### [Quick start](https://github.com/VShawn/PRemoteM/wiki/Quick-start)
+### [Quick start](https://github.com/OneRemote/PRemoteM/wiki/Quick-start)
 
 1. Open PRemote.exe.
 
@@ -102,7 +101,7 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 If you like **PRemoteM**, help us make it stronger by doing any of the following:
 
 1. Simply star this repository
-2. [Help translation](https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation)
+2. [Help translation](https://github.com/OneRemote/PRemoteM/wiki/Help-wanted:-Translation)
 3. [Buy a coffee](https://ko-fi.com/VShawn)
 4. [Join DEV](DEVELOP.md)
 
