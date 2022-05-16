@@ -60,7 +60,7 @@ namespace PRM.View
             {
                 if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
-                    RaisePropertyChanged(nameof(SelectedItem)); 
+                    RaisePropertyChanged(nameof(SelectedItem));
                     CalcNoteFieldVisibility();
                     if (this.View is LauncherWindowView view)
                     {
@@ -102,6 +102,7 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _selectedActionIndex, value);
         }
 
+        private readonly DebounceDispatcher _debounceDispatcher = new DebounceDispatcher();
         private string _filter = "";
         public string Filter
         {
@@ -110,11 +111,9 @@ namespace PRM.View
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    Task.Factory.StartNew(() =>
+                    _debounceDispatcher.Debounce(150, (obj) =>
                     {
-                        var filter = _filter;
-                        Thread.Sleep(100);
-                        if (filter == _filter)
+                        if (value == _filter)
                         {
                             CalcVisibleByFilter();
                         }
@@ -161,7 +160,7 @@ namespace PRM.View
         }
 
         private double _noteWidth = 500;
-        public double NoteWidth 
+        public double NoteWidth
         {
             get => _noteWidth;
             set => SetAndNotifyIfChanged(ref _noteWidth, value);
@@ -457,7 +456,7 @@ namespace PRM.View
 
 
 
-        
+
         public void SetHotKey()
         {
             if (this.View is LauncherWindowView window)
@@ -577,7 +576,7 @@ namespace PRM.View
             {
                 RaisePropertyChanged(nameof(GridNoteVisibility));
             }
-        } 
+        }
 
         #endregion
     }

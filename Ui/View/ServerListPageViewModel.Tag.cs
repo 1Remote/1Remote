@@ -21,6 +21,8 @@ namespace PRM.View
         public const string TAB_TAGS_LIST_NAME = "tags_selector_for_list@#@1__()!";
         public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
 
+
+        public bool IsTagFiltersShown { get; set; }
         public string SelectedTabName { get; private set; } = TAB_ALL_NAME;
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
@@ -31,11 +33,11 @@ namespace PRM.View
                 if (SetAndNotifyIfChanged(ref _tagFilters, value))
                 {
                     string tagName;
-                    if (_tagFilters?.Count == 1)
+                    if (_tagFilters.Count == 1)
                     {
                         tagName = _tagFilters.First().TagName;
                     }
-                    else if (_tagFilters == null || _tagFilters?.Count == 0)
+                    else if (_tagFilters.Count == 0)
                     {
                         tagName = TAB_ALL_NAME;
                     }
@@ -43,6 +45,18 @@ namespace PRM.View
                     {
                         tagName = TAB_NONE_SELECTED;
                     }
+
+                    if (_tagFilters.Count > 0 && TagFilters.All(x => AppData.TagList.Any(tag => tag.Name == x.TagName)))
+                    {
+                        // 如果 tag 过滤器已经在 tab 上显示了，就不显示  tag on the top
+                        IsTagFiltersShown = (false == TagFilters.All(x => x.IsIncluded == true && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == x.TagName)));
+                    }
+                    else
+                    {
+                        IsTagFiltersShown = false;
+                    }
+                    RaisePropertyChanged(nameof(IsTagFiltersShown));
+
                     if (SelectedTabName == tagName) return;
                     SelectedTabName = tagName;
                     RaisePropertyChanged(nameof(SelectedTabName));

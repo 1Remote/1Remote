@@ -393,10 +393,18 @@ namespace PRM.View
             }
         }
 
-        public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
+        public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords, bool InvokeOnFilterChanged = true)
         {
-            MainFilterString = TagAndKeywordEncodeHelper.EncodeKeyword(tags, keywords);
-            MainFilterCaretIndex = MainFilterString?.Length ?? 0;
+            if (tags?.Count == 1 && tags.First().TagName is ServerListPageViewModel.TAB_TAGS_LIST_NAME)
+            {
+                _mainFilterString = "";
+                RaisePropertyChanged(nameof(MainFilterString));
+            }
+            else
+            {
+                MainFilterString = TagAndKeywordEncodeHelper.EncodeKeyword(tags, keywords);
+                MainFilterCaretIndex = MainFilterString?.Length ?? 0;
+            }
         }
         #endregion
     }

@@ -59,7 +59,7 @@
             </Grid>
 
             <!-- System Button Area -->
-            <StackPanel Grid.Row="0" Name="WinSystemButtonArea"
+            <StackPanel Grid.Row="0"
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="Transparent">
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                     <TextBox Width="150" Height="25"

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using MSTSCLib;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
@@ -193,11 +194,11 @@ namespace PRM.Service
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(ProtocolBase protocol, Runner runner, string assignTabToken)
+        private void ConnectWithTab(ProtocolBase server, Runner runner, string assignTabToken)
         {
             CleanupProtocolsAndWindows();
             // open SFTP when SSH is connected.
-            if (protocol is SSH { OpenSftpOnConnected: true } ssh)
+            if (server is SSH { OpenSftpOnConnected: true } ssh)
             {
                 var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, SFTP.ProtocolName);
                 var sftp = new SFTP
@@ -220,34 +221,39 @@ namespace PRM.Service
             {
                 case InternalDefaultRunner:
                     {
-                        tab = this.GetOrCreateTabWindow(assignTabToken);
-                        var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
-                        protocol.ConnectPreprocess(_context);
-                        host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocol, runner, size.Width, size.Height);
+                        server.ConnectPreprocess(_context);
+                        if (server is RDP)
+                        {
+                            tab = this.GetOrCreateTabWindow(assignTabToken);
+                            var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(server.ColorHex) == true);
+                            host = ProtocolRunnerHostHelper.GetRdpInternalHost(_context, server, runner, size.Width, size.Height);
+                        }
+                        else
+                        {
+                            host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
+                        }
+
                         break;
                     }
                 case ExternalRunner:
                     {
-                        host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, protocol, runner);
+                        host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, server, runner);
                         // if host is null, could be run without integrate
-                        if (host != null)
-                        {
-                            tab = this.GetOrCreateTabWindow(assignTabToken);
-                        }
                         break;
                     }
                 default:
                     throw new NotImplementedException($"unknown runner: {runner.GetType()}");
             }
 
-            if (tab != null)
+            if (host != null)
             {
-                Debug.Assert(host != null);
+                if (tab == null)
+                    tab = this.GetOrCreateTabWindow(assignTabToken);
                 // get display area size for host
                 Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
                 host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += this.MoveProtocolHostToTab;
-                tab.AddItem(new TabItemViewModel(host, protocol.DisplayName));
+                tab.AddItem(new TabItemViewModel(host, server.DisplayName));
                 _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                 host.Conn();
                 tab.Activate();
@@ -288,7 +294,7 @@ namespace PRM.Service
             Debug.Assert(_context.DataService != null);
             _context.DataService.Database_UpdateServer(server);
 
-            // if is OnlyOneInstance protocol and it is connected now, activate it and return.
+            // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
 

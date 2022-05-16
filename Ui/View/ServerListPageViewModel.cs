@@ -476,11 +476,11 @@ namespace PRM.View
                         RaisePropertyChanged(nameof(TagFilters));
                         SelectedTabName = tabName;
                         RaisePropertyChanged(nameof(SelectedTabName));
+                        if (tabName is not TAB_ALL_NAME)
+                            TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
                     }
                     else if (string.IsNullOrEmpty(tabName) == false)
-                    {
                         TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
-                    }
                     else
                         TagFilters = new List<TagFilter>();
                     IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
