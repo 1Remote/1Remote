@@ -39,9 +39,48 @@ namespace PRM.Controls
             set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
+
         public ServerListItem()
         {
             InitializeComponent();
+            this.MouseMove += (sender, args) =>
+            {
+                if (PopupNote.IsOpen == false) return;
+                if (ButtonShowNote.ActualWidth > 0)
+                {
+                    var p1 = args.MouseDevice.GetPosition(ButtonShowNote);
+                    //SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
+                    if (p1.X < 0 || p1.Y < 0)
+                        PopupNote.IsOpen = false;
+                    else if (p1.Y < ButtonShowNote.ActualHeight && p1.X > ButtonShowNote.ActualWidth)
+                        PopupNote.IsOpen = false;
+                    else if (p1.Y >= ButtonShowNote.ActualHeight)
+                    {
+                        var p3 = args.MouseDevice.GetPosition(PopupNoteGrid);
+                        if (p3.X > PopupNoteGrid.ActualWidth)
+                            PopupNote.IsOpen = false;
+                        if (p3.Y > PopupNoteGrid.ActualHeight)
+                            PopupNote.IsOpen = false;
+                    }
+                }
+                if (ButtonBriefNote.ActualWidth > 0)
+                {
+                    var p2 = args.MouseDevice.GetPosition(ButtonBriefNote);
+                    SimpleLogHelper.Debug($"ButtonBriefNote: {p2.X}, {p2.Y}, h= {ButtonBriefNote.ActualHeight}, w= {ButtonBriefNote.ActualWidth}");
+                    if (p2.X < 0 || p2.Y < 0)
+                        PopupNote.IsOpen = false;
+                    else if (p2.Y < ButtonBriefNote.ActualHeight && p2.X > ButtonBriefNote.ActualWidth)
+                        PopupNote.IsOpen = false;
+                    else if (p2.Y >= ButtonBriefNote.ActualHeight)
+                    {
+                        var p3 = args.MouseDevice.GetPosition(PopupNoteGrid);
+                        if (p3.X > PopupNoteGrid.ActualWidth)
+                            PopupNote.IsOpen = false;
+                        if (p3.Y > PopupNoteGrid.ActualHeight)
+                            PopupNote.IsOpen = false;
+                    }
+                }
+            };
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
@@ -59,8 +98,9 @@ namespace PRM.Controls
             }
         }
 
-        private void BtnShowNote_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonShowNote_OnMouseEnter(object sender, MouseEventArgs e)
         {
+            PopupNote.IsOpen = false;
             PopupNote.IsOpen = true;
         }
     }
