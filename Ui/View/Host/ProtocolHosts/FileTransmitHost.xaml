@@ -1,0 +1,495 @@
+﻿<protocolHosts1:HostBase x:Class="PRM.View.Host.ProtocolHosts.FileTransmitHost"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+                           xmlns:protocolHosts1="clr-namespace:PRM.View.Host.ProtocolHosts"
+                           xmlns:transmitters="clr-namespace:PRM.Model.Protocol.FileTransmit.Transmitters"
+                           xmlns:transmissionController="clr-namespace:PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController"
+                           mc:Ignorable="d" 
+                           d:DataContext="{d:DesignInstance protocolHosts1:VmFileTransmitHost}"
+                           d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+    </UserControl.InputBindings>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <InputBindingCollection x:Key="Hotkeys">
+                <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+            </InputBindingCollection>
+            <protocolHosts1:WidthSub5 x:Key="WidthSub5"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid Background="{DynamicResource PrimaryMidBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+
+
+                <Button
+                    IsEnabled="{Binding CmdGoToPathPreviousEnable}"
+                                Style="{StaticResource ButtonBarPrimaryStyle}"
+                                attachProperty:VisionElement.OpacityAccent="0.9"
+                               Width="30"
+                               Command="{Binding CmdGoToPathPrevious}">
+                    <Path Stretch="Uniform" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                          Data="F1 M 1.015625 10.74707 L 8.242188 3.515625 L 13.691406 3.515625 L 8.392487 8.818359 L 18.994141 8.818359 L 18.994141 12.675781 L 8.392487 12.675781 L 13.691406 17.978516 L 8.242188 17.978516 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+
+
+                <Button Grid.Column="1"
+                            IsEnabled="{Binding CmdGoToPathFollowingEnable}"
+                            Style="{StaticResource ButtonBarPrimaryStyle}"
+                            attachProperty:VisionElement.OpacityAccent="0.9"
+                            Width="30"
+                            Command="{Binding CmdGoToPathFollowing}">
+                    <Path Stretch="Uniform" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                          Data="F1 M 18.994141 10.74707 L 11.767578 3.515625 L 6.318359 3.515625 L 11.617279 8.818359 L 1.015625 8.818359 L 1.015625 12.675781 L 11.617279 12.675781 L 6.318359 17.978516 L 11.767578 17.978516 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+
+
+
+                <Button Grid.Column="2"
+                                IsEnabled="{Binding CmdGoToPathParentEnable}"
+                                Style="{StaticResource ButtonBarPrimaryStyle}"
+                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                Width="30"
+                                Command="{Binding CmdGoToParent}">
+                    <Path Height="20" Stretch="Uniform" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                          Data="F1 M 10.009766 3.525391 L 17.241211 10.751953 L 17.241211 16.201172 L 11.938477 10.902252 L 11.938477 21.503906 L 8.081055 21.503906 L 8.081055 10.902252 L 2.77832 16.201172 L 2.77832 10.751953 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+
+                <TextBox Grid.Column="3" Text="{Binding CurrentPathEdit, UpdateSourceTrigger=PropertyChanged}" 
+                     Height="30"
+                     Margin="2"
+                     BorderBrush="{DynamicResource PrimaryLightBrush}" 
+                     BorderThickness="2"
+                     Background="Transparent"
+                     CaretBrush="{DynamicResource PrimaryTextBrush}"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
+                     VerticalAlignment="Center" VerticalContentAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding Path=CmdGoToPathCurrent}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
+            </Grid>
+
+
+
+
+            <Grid Grid.Row="1" Grid.Column="0">
+                <!--<Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Border BorderBrush="LightGray" Background="White" Margin="0 0 0 0" BorderThickness="0 0 1 0" MinWidth="100">
+                    <TreeView x:Name="TvFileExplorer"
+                              Width="Auto" 
+                              SelectedItemChanged="TvFileExplorer_OnSelectedItemChanged"
+                              PreviewMouseDoubleClick="TvFileExplorer_OnPreviewMouseDoubleClick"
+                              KeyUp="TvFileExplorer_OnKeyUp"
+                              Background="#FFFFFFFF"
+                              Foreground="#FFFFFFFF">
+                    </TreeView>
+                </Border>
+            </Grid>
+            <GridSplitter Grid.Row="0" Grid.Column="0" Width="3" VerticalAlignment="Stretch" Background="Transparent" Focusable="False"/>-->
+
+                <ListView x:Name="TvFileList" 
+                  Foreground="Black"
+                  Background="White"
+                  BorderBrush="Transparent"
+                  BorderThickness="0"
+                  FocusVisualStyle="{x:Null}"
+                  ItemsSource="{Binding RemoteItems}" 
+                  SelectedItem="{Binding SelectedRemoteItem}"
+                  SelectionChanged="TvFileList_OnSelectionChanged"
+                  PreviewMouseDown="TvFileList_OnPreviewMouseDown"
+                  MouseDoubleClick="TvFileList_OnMouseDoubleClick"
+                  PreviewKeyDown="TvFileList_OnKeyDown"
+                  PreviewMouseRightButtonDown="FileList_OnPreviewMouseRightButtonDown"
+                  GridViewColumnHeader.Click="ListViewColumnHeaderClick"
+                  >
+                    <ListView.InputBindings>
+                        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+                    </ListView.InputBindings>
+                    <ListView.Resources>
+                        <protocolHosts1:ByteLength2ReadableStringConverter x:Key="ByteLength2ReadableStringConverter"/>
+                        <Style TargetType="Grid" x:Key="HeaderGridStyle">
+                            <Setter Property="Height" Value="20" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+
+                        <Style TargetType="TextBlock" x:Key="HeaderTextBlockStyle">
+                            <Setter Property="Margin" Value="5,0,0,0" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+
+                        <Style TargetType="Path" x:Key="HeaderPathStyle">
+                            <Setter Property="StrokeThickness" Value="1" />
+                            <Setter Property="Fill" Value="Gray" />
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="5,0,5,0" />
+                            <Setter Property="SnapsToDevicePixels" Value="True" />
+                        </Style>
+
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewBackgroundInvertStyle}"></Style>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarBaseStyle}">
+                            <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"/>
+                            <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundTextBrush}"/>
+                        </Style>
+
+
+                        <DataTemplate x:Key="HeaderTemplateDefault">
+                            <Grid Style="{StaticResource HeaderGridStyle}">
+                                <TextBlock Text="{Binding }" Style="{StaticResource HeaderTextBlockStyle}" />
+                            </Grid>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="HeaderTemplateArrowUp">
+                            <Grid Style="{StaticResource HeaderGridStyle}">
+                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Style="{StaticResource HeaderPathStyle}" />
+                                <TextBlock Text="{Binding }" Style="{StaticResource HeaderTextBlockStyle}" />
+                            </Grid>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="HeaderTemplateArrowDown">
+                            <Grid Style="{StaticResource HeaderGridStyle}">
+                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0"  Style="{StaticResource HeaderPathStyle}" />
+                                <TextBlock Text="{Binding }" Style="{StaticResource HeaderTextBlockStyle}" />
+                            </Grid>
+                        </DataTemplate>
+
+
+                        <Style TargetType="GridViewColumnHeader" x:Key="GridViewColumnHeaderBaseStyle">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Margin" Value="0 0 0 10"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                        </Style>
+
+
+                        <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
+                            <GridViewColumn Width="Auto">
+                                <GridViewColumnHeader Content="{DynamicResource 'File Name'}" HorizontalContentAlignment="Left">
+                                    <GridViewColumnHeader.Style>
+                                        <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                                            <Setter Property="CommandParameter" Value="0"/>
+                                        </Style>
+                                    </GridViewColumnHeader.Style>
+                                </GridViewColumnHeader>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="transmitters:RemoteItem">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Icon}" Width="16"></Image>
+                                            <TextBlock Name="TbName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=TbRenaming}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <TextBox Name="TbRenaming" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_OnGotFocus"></TextBox>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+
+
+
+
+
+
+
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_last_update}" Width="Auto" DisplayMemberBinding="{Binding Path=LastUpdate}" >
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="CommandParameter" Value="4"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+
+
+
+
+
+
+
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_type}" Width="Auto" DisplayMemberBinding="{Binding Path=FileType}">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                                        <Setter Property="CommandParameter" Value="6"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+
+
+
+
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_size}">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                                        <Setter Property="CommandParameter" Value="2"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=ByteSize, Converter={StaticResource ByteLength2ReadableStringConverter}}" TextTrimming="CharacterEllipsis"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+
+
+            <!--<GridSplitter Grid.Row="1" Grid.Column="0" Height="10" HorizontalAlignment="Stretch" Background="Transparent" Focusable="False"/>-->
+
+
+            <Grid Grid.Row="2">
+                <ListView x:Name="ListViewTransmitTasks"
+                          Background="{DynamicResource  PrimaryMidBrush}" 
+                          ItemsSource="{Binding TransmitTasks}" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                          BorderThickness="0">
+                    <ListView.InputBindings>
+                        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+                    </ListView.InputBindings>
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TransmitTasks.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.Style>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{x:Null}" />
+                                    <Setter Property="BorderBrush" Value="{x:Null}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="transmissionController:TransmitTask">
+                            <Grid Margin="0 3"
+                                  HorizontalAlignment="Stretch" MinWidth="400" 
+                                  Width="{Binding ElementName=ListViewTransmitTasks, Path=ActualWidth, Converter={StaticResource WidthSub5}}">
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" SharedSizeGroup="TaskName"></ColumnDefinition>
+                                        <ColumnDefinition Width="200" SharedSizeGroup="TaskProgress"></ColumnDefinition>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="TaskOps"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G1"></ColumnDefinition>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G2"></ColumnDefinition>
+                                            <ColumnDefinition Width="50" SharedSizeGroup="G3"></ColumnDefinition>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G4"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock TextTrimming="CharacterEllipsis" 
+                                           Grid.Column="0"
+                                           Margin="5 0 10 0"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           HorizontalAlignment="Left" 
+                                           VerticalAlignment="Center" 
+                                           Text="{Binding TransmitItemNames, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemNames, Mode=OneWay}"
+                                           ></TextBlock>
+
+                                        <TextBlock TextTrimming="CharacterEllipsis" 
+                                           Grid.Column="1"
+                                           Margin="5 0"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           HorizontalAlignment="Right" 
+                                           VerticalAlignment="Center" 
+                                           Text="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
+                                           ></TextBlock>
+
+                                        <Label Grid.Column="2" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalContentAlignment="Center">→</Label>
+
+                                        <TextBlock TextTrimming="CharacterEllipsis" 
+                                           Grid.Column="3"
+                                           Margin="5 0"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           HorizontalAlignment="Left" 
+                                           VerticalAlignment="Center" 
+                                           Text="{Binding TransmitItemDstDirectoryPath, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemDstDirectoryPath, Mode=OneWay}"
+                                           ></TextBlock>
+                                    </Grid>
+
+                                    <Grid Grid.Row="0" Grid.Column="1" Margin="2 0">
+                                        <ProgressBar Height="20" Value="{Binding TransmittedPercentage, Mode=OneWay}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#1789C6" BorderBrush="Gray"></ProgressBar>
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding TransmittedPercentage, Mode=OneWay,StringFormat='\{0\}%'}" Foreground="White"></TextBlock>
+                                        <TextBlock HorizontalAlignment="Right" Margin="8 0" FontSize="10" VerticalAlignment="Center" Text="{Binding TransmitSpeed, Mode=OneWay}" Foreground="White"></TextBlock>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="2" Margin="2 0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button
+                                                Background="Transparent"
+                                                ToolTip="{DynamicResource 'Explore to...'}"
+                                                Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdShowTransmitDstPath}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ButtonBarPrimaryStyle}"
+                                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                                Width="25">
+                                                <Path Margin="2"
+                                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                                                      Stretch="Uniform" Data="F1 M 20 19.316406 C 20 19.498697 19.94466 19.658203 19.833984 19.794922 C 19.723307 19.931641 19.570312 20 19.375 20 C 19.205729 20 19.059244 19.93815 18.935547 19.814453 L 11.269531 12.158203 C 10.644531 12.672526 9.95931 13.066406 9.213867 13.339844 C 8.468424 13.613281 7.688802 13.75 6.875 13.75 C 6.243489 13.75 5.634766 13.66862 5.048828 13.505859 C 4.462891 13.3431 3.916016 13.111979 3.408203 12.8125 C 2.900391 12.513021 2.436523 12.15332 2.016602 11.733398 C 1.59668 11.313477 1.236979 10.849609 0.9375 10.341797 C 0.638021 9.833984 0.406901 9.287109 0.244141 8.701172 C 0.08138 8.115234 0 7.506511 0 6.875 C 0 6.24349 0.08138 5.634766 0.244141 5.048828 C 0.406901 4.462891 0.638021 3.916016 0.9375 3.408203 C 1.236979 2.900391 1.59668 2.436523 2.016602 2.016602 C 2.436523 1.59668 2.900391 1.23698 3.408203 0.9375 C 3.916016 0.638021 4.462891 0.406902 5.048828 0.244141 C 5.634766 0.081381 6.243489 0 6.875 0 C 7.50651 0 8.115234 0.081381 8.701172 0.244141 C 9.287109 0.406902 9.833984 0.638021 10.341797 0.9375 C 10.849609 1.23698 11.313477 1.59668 11.733398 2.016602 C 12.153319 2.436523 12.51302 2.900391 12.8125 3.408203 C 13.111979 3.916016 13.343099 4.462891 13.505859 5.048828 C 13.668619 5.634766 13.75 6.24349 13.75 6.875 C 13.75 7.688803 13.613281 8.468425 13.339844 9.213867 C 13.066406 9.959311 12.672525 10.644531 12.158203 11.269531 C 12.255858 11.367188 12.443033 11.552734 12.719727 11.826172 C 12.996419 12.099609 13.32845 12.425131 13.71582 12.802734 C 14.103189 13.180339 14.526366 13.595378 14.985352 14.047852 C 15.444335 14.500326 15.906574 14.959311 16.37207 15.424805 C 16.837564 15.8903 17.28841 16.3444 17.724609 16.787109 C 18.160807 17.229818 18.548176 17.630209 18.886719 17.988281 C 19.22526 18.346354 19.495441 18.644205 19.697266 18.881836 C 19.899088 19.119467 20 19.264322 20 19.316406 Z M 6.875 12.5 C 7.649739 12.5 8.378906 12.351889 9.0625 12.055664 C 9.746094 11.75944 10.341797 11.357422 10.849609 10.849609 C 11.357422 10.341797 11.759439 9.746094 12.055664 9.0625 C 12.351888 8.378906 12.5 7.64974 12.5 6.875 C 12.5 6.100261 12.351888 5.371094 12.055664 4.6875 C 11.759439 4.003906 11.357422 3.408203 10.849609 2.900391 C 10.341797 2.392578 9.746094 1.990561 9.0625 1.694336 C 8.378906 1.398113 7.649739 1.25 6.875 1.25 C 6.10026 1.25 5.371094 1.398113 4.6875 1.694336 C 4.003906 1.990561 3.408203 2.392578 2.900391 2.900391 C 2.392578 3.408203 1.99056 4.003906 1.694336 4.6875 C 1.398112 5.371094 1.25 6.100261 1.25 6.875 C 1.25 7.64974 1.398112 8.378906 1.694336 9.0625 C 1.99056 9.746094 2.392578 10.341797 2.900391 10.849609 C 3.408203 11.357422 4.003906 11.75944 4.6875 12.055664 C 5.371094 12.351889 6.10026 12.5 6.875 12.5 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Button>
+                                            <Button
+                                                Background="Transparent"
+                                                ToolTip="{DynamicResource Delete}"
+                                                Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdDeleteTransmitTask}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ButtonBarPrimaryStyle}"
+                                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                                Width="25">
+                                                <Path Margin="5" 
+                                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                                                      Stretch="Uniform" Data="F1 M 17.626953 3.251953 L 10.888672 10 L 17.626953 16.748047 L 16.748047 17.626953 L 10 10.888672 L 3.251953 17.626953 L 2.373047 16.748047 L 9.111328 10 L 2.373047 3.251953 L 3.251953 2.373047 L 10 9.111328 L 16.748047 2.373047 L 17.626953 3.251953 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <Grid Grid.Row="3" Height="30">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="-1">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
+                                <Setter Property="Background" Value="Yellow"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="2">
+                                <Setter Property="Background" Value="Red"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <TextBlock Margin="5 0" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" 
+                           Text="{Binding IoMessage}"
+                           Foreground="{DynamicResource PrimaryTextBrush}">
+                </TextBlock>
+            </Grid>
+        </Grid>
+
+
+
+
+
+
+
+
+
+        <Grid 
+            Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
+            <Grid Background="Black" Opacity="{Binding GridLoadingBgOpacity}"></Grid>
+            <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
+        </Grid>
+    </Grid>
+</protocolHosts1:HostBase>

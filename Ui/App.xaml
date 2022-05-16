@@ -1,0 +1,24 @@
+﻿<Application x:Class="Ui.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:prm="clr-namespace:PRM"
+             ShutdownMode="OnExplicitShutdown"
+             >
+    <Application.Resources>
+        <s:ApplicationLoader x:Name="Loader">
+            <s:ApplicationLoader.Bootstrapper>
+                <prm:Bootstrapper/>
+            </s:ApplicationLoader.Bootstrapper>
+            <s:ApplicationLoader.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Converter/Converter.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Theme/DefaultTheme.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Converter/Converter.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Default.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Markdown.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Icons/SVG.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="./Resources/Languages/en-us.xaml"></ResourceDictionary>
+            </s:ApplicationLoader.MergedDictionaries>
+        </s:ApplicationLoader>
+    </Application.Resources>
+</Application>

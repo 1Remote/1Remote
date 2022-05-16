@@ -48,7 +48,7 @@
 					<uap:Rotation Preference="landscapeFlipped"/>
 					<uap:Rotation Preference="portraitFlipped"/>
 				</uap:InitialRotationPreference>
-				<uap:LockScreen Notification="badge"  BadgeLogo="Images\BadgeLogo.png"/>
+				<uap:LockScreen Notification="badge" BadgeLogo="Images\BadgeLogo.png"/>
 				<uap:SplashScreen Image="Images\SplashScreen.png"/>
 			</uap:VisualElements>
 			<Extensions>

@@ -1,0 +1,245 @@
+﻿<UserControl x:Class="PRM.View.AboutPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:service="clr-namespace:PRM.Service"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:view="clr-namespace:PRM.View"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance view:AboutPageViewModel}"
+             Background="White"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
+        <Grid.Resources>
+            <system:Double x:Key="BottomHeight">40</system:Double>
+            <Style x:Key="RowGrid" TargetType="Grid">
+                <Setter Property="Height" Value="20"></Setter>
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <Thickness Bottom="15"></Thickness>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Opacity" Value="0.9"></Setter>
+                <Setter Property="Margin" Value="0 0 20 0"></Setter>
+            </Style>
+            <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                <Setter Property="FontSize" Value="16"></Setter>
+                <Setter Property="FontWeight" Value="Bold"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                <Setter Property="TextAlignment" Value="Left"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="0 10 0 10"></Setter>
+            </Style>
+
+            <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                        <Setter Property="TextBlock.TextDecorations">
+                            <Setter.Value>
+                                <TextDecorationCollection>
+                                    <TextDecoration Location="Underline" />
+                                </TextDecorationCollection>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        <Grid>
+            <Grid.Margin>
+                <Thickness Top="0" Bottom="{StaticResource BottomHeight}"></Thickness>
+            </Grid.Margin>
+
+            <ScrollViewer
+                x:Name="ScrollViewerMain"
+                Margin="0 3 0 4"
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalScrollBarVisibility="Auto">
+
+                <Grid Margin="20 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Image Source="/Resources/Image/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Grid.IsSharedSizeScope="True">
+                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:AppPathHelper.APP_DISPLAY_NAME}" Margin="0 10 0 0"></TextBlock>
+                                <Grid Style="{StaticResource RowGrid}">
+                                    <TextBlock Text="Your personal remote manager!"></TextBlock>
+                                </Grid>
+                                <Grid Style="{StaticResource RowGrid}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Version"></TextBlock>
+                                    <TextBlock Grid.Column="1"  Name="TbVersion" Text="0.0.0.0" Margin="0"></TextBlock>
+                                </Grid>
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid" BasedOn="{StaticResource RowGrid}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=TbNewVersion,Path=Text}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Update" Margin="0"/>
+                                    <TextBlock Grid.Column="1" Margin="0">
+                                        <Hyperlink Name="HyperlinkUpdate" NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            <Grid>
+                                                <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding NewVersion}" Foreground="{Binding ElementName=HyperlinkUpdate, Path=Foreground}" />
+                                                <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
+                                                      Fill="Red"
+                                                      Stretch="Uniform"
+                                                      Width="6"
+                                                      Margin="0 0 -3 0"
+                                                      VerticalAlignment="Top" HorizontalAlignment="Right">
+                                                </Path>
+                                            </Grid>
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Author"></TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <Grid Width="32" Height="32">
+                                    <Image Source="pack://application:,,,/Resources/Image/Logo/author_avatar.jpg" Width="32"></Image>
+                                </Grid>
+                                <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            Shawn
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="mailto::veckshawn@gmail.com?subject=PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            (veckshawn@gmail.com)
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <Grid Grid.Column="1">
+                        <StackPanel Orientation="Vertical" Margin="20 0 0 0">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support"></TextBlock>
+                                <StackPanel>
+                                    <Grid Style="{StaticResource RowGrid}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                    How to use
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Make contributions"></TextBlock>
+                                <StackPanel>
+                                    <Grid Style="{StaticResource RowGrid}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                    Bug report
+                                                </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                    Github
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Included Components"></TextBlock>
+                                <StackPanel>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/cyd01/KiTTY
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/ButchersBoy/Dragablz
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/drogoganor/ColorPickerWPF
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/VShawn/VariableKeywordMatcher" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/VShawn/VariableKeywordMatcher
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/praeclarum/sqlite-net
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/AlexAkulov/putty-color-themes
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/xiangyuecn/RSA-csharp
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/robinrodricks/FluentFTP" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/robinrodricks/FluentFTP
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/sshnet/SSH.NET" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/sshnet/SSH.NET
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/icsharpcode/AvalonEdit" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/icsharpcode/AvalonEdit
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid VerticalAlignment="Bottom" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
+            <Button Padding="0 1 0 0" Width="80" Height="30" Content="{DynamicResource Close}" Command="{Binding CmdClose}"></Button>
+        </Grid>
+    </Grid>
+</UserControl>

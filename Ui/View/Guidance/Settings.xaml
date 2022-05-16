@@ -1,0 +1,250 @@
+﻿<UserControl x:Class="PRM.View.Guidance.Settings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.View.Guidance"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             xmlns:service="clr-namespace:PRM.Service"
+             Background="{DynamicResource PrimaryMidBrush}"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance local:GuidanceWindow}"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid Margin="0 10 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8" Opacity="0.8">
+            <StackPanel>
+                <TextBlock Margin="0 10 0 0"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="WrapWithOverflow"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   Text="{DynamicResource guidance_feature_start_setting1}">
+                </TextBlock>
+                <TextBlock FontSize="16"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="WrapWithOverflow"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   Text="{DynamicResource guidance_feature_start_setting2}">
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Left" Margin="140 10 0 0">
+            <Grid.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Opacity" Value="0.8"></Setter>
+                    <Setter Property="FontSize" Value="14"></Setter>
+                </Style>
+                <Style TargetType="TextBlock" x:Key="TextBlockTitleColumn" BasedOn="{StaticResource TextBlockBase}">
+                    <Setter Property="Opacity" Value="0.8"></Setter>
+                    <Setter Property="FontSize" Value="14"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Width" Value="201"></Setter>
+                    <Setter Property="Margin" Value="0 0 10 0"></Setter>
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                </Style>
+                <Style TargetType="StackPanel" x:Key="StackPanelTitleColumn">
+                    <Setter Property="Orientation" Value="Horizontal"></Setter>
+                    <Setter Property="Width" Value="201"></Setter>
+                    <Setter Property="Margin" Value="0 0 10 0"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                </Style>
+                <Style TargetType="Grid" x:Key="Row">
+                    <Setter Property="Margin" Value="0 10"></Setter>
+                </Style>
+            </Grid.Resources>
+            <StackPanel Grid.IsSharedSizeScope="True" Margin="8">
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource system_options_general_start_when_win_login}">
+                    </TextBlock>
+                    <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
+                </Grid>
+
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource system_options_general_start_minimized}">
+                    </TextBlock>
+                    <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
+                </Grid>
+
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Style="{StaticResource StackPanelTitleColumn}">
+                        <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                   Margin="0"
+                                   Width="Auto" Text="{DynamicResource Theme}">
+                        </TextBlock>
+                        <Grid Width="16" Margin="5 0 0 0" Opacity="0.8" HorizontalAlignment="Right">
+                            <Path Data="M512 96C229.696 96 0 325.696 0 608c0 90.368 30.304 174.496 85.344 236.896 55.264 62.624 129.152 97.12 208.128 97.12 81.568 0 161.536-36.832 231.264-106.592l2.272-2.496c65.792-81.472 132.896-121.056 205.088-121.056 46.72 0 89.216 15.872 126.688 29.92 30.336 11.328 56.576 21.12 81.216 21.12C1024 762.912 1024 654.336 1024 608c0-282.304-229.696-512-512-512z m428 602.912c-13.088 0-35.296-8.288-58.784-17.088-40.48-15.136-90.848-33.952-149.12-33.952-92.352 0-175.328 46.944-253.76 143.456-57.184 56.704-121.056 86.688-184.832 86.688-60.352 0-117.216-26.784-160.128-75.456C88.64 751.872 64 682.784 64 608 64 360.96 264.96 160 512 160s448 200.96 448 448c0 27.328-1.952 90.912-20 90.912z m-203.296-182.848a64 64 0 1 0 128 0 64 64 0 1 0-128 0z m-343.68-202.688a64 64 0 1 0 128 0 64 64 0 1 0-128 0z m215.68 26.688a64 64 0 1 0 128 0 64 64 0 1 0-128 0z m-381.312 112a64 64 0 1 0 128 0 64 64 0 1 0-128 0zM182.4 698.752a96 96 0 1 0 192 0 96 96 0 1 0-192 0z"
+                                  Stroke="{DynamicResource PrimaryTextBrush}"
+                                  Fill="{DynamicResource PrimaryTextBrush}"
+                                  StrokeThickness="0" Stretch="Uniform" />
+                        </Grid>
+                    </StackPanel>
+                    <ComboBox Grid.Column="1"
+                              Foreground="{DynamicResource PrimaryTextBrush}"
+                              Background="{DynamicResource PrimaryMidBrush}"
+                              Height="20"
+                              attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                              attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
+                              ItemsSource="{Binding SettingsPageViewModel.ThemeList}"
+                              SelectedItem="{Binding SettingsPageViewModel.ThemeName}">
+                    </ComboBox>
+                </Grid>
+                <!--<Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
+                    <CheckBox Grid.Column="1" 
+                                      IsChecked="{Binding SettingsPageViewModel.ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"
+                                      VerticalAlignment="Center" Width="200"
+                                      HorizontalAlignment="Left"></CheckBox>
+                </Grid>-->
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Style="{StaticResource StackPanelTitleColumn}">
+                        <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                   Margin="0"
+                                   Width="Auto" Text="{DynamicResource 'User profile'}">
+                        </TextBlock>
+                        <Grid Width="16" Margin="5 0 0 0" Opacity="0.8" HorizontalAlignment="Right">
+                            <Path Data="M932.551111 54.983111H91.420444c-20.224 0-36.579556 16.355556-36.579555 36.579556v841.159111c0 20.195556 16.355556 36.551111 36.579555 36.551111h841.130667c20.224 0 36.579556-16.327111 36.579556-36.551111V91.562667c0-20.224-16.355556-36.579556-36.579556-36.579556z m-45.710222 832H137.130667V137.272889h749.710222v749.710222zM489.130667 384.142222h210.289777a9.159111 9.159111 0 0 0 9.130667-9.159111v-54.840889a9.159111 9.159111 0 0 0-9.130667-9.159111h-210.289777a9.159111 9.159111 0 0 0-9.159111 9.159111v54.840889c0 5.034667 4.124444 9.159111 9.159111 9.159111z m0 164.579556h210.289777a9.159111 9.159111 0 0 0 9.130667-9.159111v-54.840889a9.159111 9.159111 0 0 0-9.130667-9.159111h-210.289777a9.159111 9.159111 0 0 0-9.159111 9.159111v54.840889c0 5.034667 4.124444 9.159111 9.159111 9.159111z m0 164.551111h210.289777a9.159111 9.159111 0 0 0 9.130667-9.130667v-54.869333a9.159111 9.159111 0 0 0-9.130667-9.130667h-210.289777a9.159111 9.159111 0 0 0-9.159111 9.130667v54.869333c0 5.034667 4.124444 9.130667 9.159111 9.130667zM315.420444 347.591111a45.710222 45.710222 0 1 0 91.420445 0 45.710222 45.710222 0 0 0-91.420445 0z m0 164.579556a45.710222 45.710222 0 1 0 91.420445 0 45.710222 45.710222 0 0 0-91.420445 0z m0 164.579555a45.710222 45.710222 0 1 0 91.420445 0 45.710222 45.710222 0 0 0-91.420445 0z"
+                                  Stroke="{DynamicResource PrimaryTextBrush}"
+                                  Fill="{DynamicResource PrimaryTextBrush}"
+                                  StrokeThickness="0" Stretch="Uniform" />
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Border Padding="5" Margin="0 0 0 3"  BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,5" EndPoint="5,0" MappingMode="Absolute">
+                                    <LinearGradientBrush.GradientStops>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0.2"/>
+                                        <GradientStop Color="Transparent" Offset="0.4"/>
+                                        <GradientStop Color="Transparent" Offset="0.6"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0.8"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="1"/>
+                                    </LinearGradientBrush.GradientStops>
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <CheckBox Foreground="{DynamicResource PrimaryTextBrush}" 
+                                      IsChecked="{Binding SettingsPageViewModel.ProfileModeIsPortable}"
+                                      IsEnabled="{Binding SettingsPageViewModel.ProfileModeIsEnabled, Mode=OneTime}">
+                                <StackPanel Orientation="Horizontal" Margin="0">
+                                    <Grid Width="16" Margin="5 0 0 0" Opacity="0.8">
+                                        <Path Data="M760 432V144c0-17.7-14.3-32-32-32H296c-17.7 0-32 14.3-32 32v288c-66.2 0-120 52.1-120 116v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-24.3 21.6-44 48.1-44H759.9c26.5 0 48.1 19.7 48.1 44v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-63.9-53.8-116-120-116z m-424 0V184h352v248H336z"
+                                      Stroke="{DynamicResource PrimaryTextBrush}"
+                                      Fill="{DynamicResource PrimaryTextBrush}"
+                                      StrokeThickness="0" Stretch="Uniform" />
+                                    </Grid>
+                                    <StackPanel Margin="5 0 0 0">
+                                        <TextBlock Width="250"
+                                               HorizontalAlignment="Left"
+                                               TextWrapping="WrapWithOverflow"
+                                               Text="{DynamicResource 'Portable mode'}"
+                                               ToolTip="{DynamicResource 'Portable mode'}"/>
+                                        <TextBlock Width="250"
+                                               HorizontalAlignment="Left"
+                                               TextWrapping="WrapWithOverflow"
+                                               FontSize="12" Opacity="0.5" 
+                                               Text="{DynamicResource 'Profile is saved where executable is located'}"
+                                               ToolTip="{DynamicResource 'Profile is saved where executable is located'}"
+                                    />
+                                    </StackPanel>
+                                </StackPanel>
+                            </CheckBox>
+                        </Border>
+
+                        <Border Padding="5" Margin="0 3 0 0" BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,5" EndPoint="5,0" MappingMode="Absolute">
+                                    <LinearGradientBrush.GradientStops>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0.2"/>
+                                        <GradientStop Color="Transparent" Offset="0.4"/>
+                                        <GradientStop Color="Transparent" Offset="0.6"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="0.8"/>
+                                        <GradientStop Color="{DynamicResource PrimaryTextColor}" Offset="1"/>
+                                    </LinearGradientBrush.GradientStops>
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <CheckBox Foreground="{DynamicResource PrimaryTextBrush}" 
+                                  IsChecked="{Binding SettingsPageViewModel.ProfileModeIsPortable, Converter={StaticResource ConverterBoolInverse}}"
+                                  IsEnabled="{Binding SettingsPageViewModel.ProfileModeIsEnabled, Mode=OneTime}">
+                                <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Stretch">
+                                    <Grid Width="16" Margin="5 0 0 0" Opacity="0.8">
+                                        <Path Data="M213.333333 597.333333h597.333334V170.666667H213.333333v426.666666z m0 85.333334v170.666666h597.333334v-170.666666H213.333333zM170.666667 85.333333h682.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v768a42.666667 42.666667 0 0 1-42.666667 42.666667H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667V128a42.666667 42.666667 0 0 1 42.666667-42.666667z m469.333333 640h85.333333v85.333334h-85.333333v-85.333334z"
+                                      Stroke="{DynamicResource PrimaryTextBrush}"
+                                      Fill="{DynamicResource PrimaryTextBrush}"
+                                      StrokeThickness="0" Stretch="Uniform" />
+                                    </Grid>
+
+                                    <StackPanel Margin="5 0 0 0">
+                                        <TextBlock Width="250"
+                                               HorizontalAlignment="Left"
+                                               TextWrapping="WrapWithOverflow"
+                                               Text="{DynamicResource 'Install for current windows account'}"
+                                               ToolTip="{DynamicResource 'Install for current windows account'}"
+                                    />
+                                        <TextBlock Width="250"
+                                               HorizontalAlignment="Left"
+                                               TextWrapping="WrapWithOverflow"
+                                               FontSize="12" Opacity="0.5"
+                                               Text="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
+                                               ToolTip="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
+                                    />
+                                    </StackPanel>
+                                </StackPanel>
+                            </CheckBox>
+                        </Border>
+                    </StackPanel>
+                    <!--<ComboBox Grid.Column="1" Name="ComboBoxUserProfileMode" 
+                              IsEnabled="{Binding SettingsPageViewModel.ProFileModeIsEnabled, Mode=OneTime}"
+                              SelectedIndex="{Binding SettingsPageViewModel.ProFileMode, Converter={StaticResource ConverterEProFileMode}}"
+                              Foreground="{DynamicResource PrimaryTextBrush}"
+                              Background="{DynamicResource PrimaryMidBrush}"
+                              Height="20"
+                              attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                              attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}">
+                        <ComboBoxItem Content="Save to current folder(Portable)"></ComboBoxItem>
+                        <ComboBoxItem Content="Save to AppData"></ComboBoxItem>
+                    </ComboBox>-->
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
