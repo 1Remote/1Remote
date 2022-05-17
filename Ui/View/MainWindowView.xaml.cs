@@ -59,6 +59,16 @@ namespace PRM.View
 
             // Startup Location
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+
+
+            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == true)
+            {
+                this.Visibility = Visibility.Collapsed;
+                this.WindowState = WindowState.Minimized;
+                this.ShowInTaskbar = false;
+            }
 
             BtnClose.Click += (sender, args) =>
             {
