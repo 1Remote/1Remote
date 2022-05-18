@@ -135,5 +135,11 @@ namespace PRM.View.Editor
                 vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
             PopupLogoSelectorClose();
         }
+
+        private void ButtonShowNote_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupNote.IsOpen = false;
+            PopupNote.IsOpen = true;
+        }
     }
 }

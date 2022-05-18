@@ -9,8 +9,8 @@
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-             xmlns:view="clr-namespace:PRM.View"
              xmlns:editor="clr-namespace:PRM.View.Editor"
+             xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
              Background="White"
@@ -73,7 +73,7 @@
 
         <Grid>
             <Grid.Resources>
-                <Style TargetType="TextBlock">
+                <Style TargetType="TextBlock" x:Key="RowHeader">
                     <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                     <Setter Property="MinWidth" Value="150"></Setter>
                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -110,42 +110,102 @@
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
 
                         <Grid>
-                            <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">
+                            <controls:GridWith4Columns VerticalAlignment="Top" MinHeight="60">
                                 <Grid Margin="40 0" Grid.Column="3">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Note}"
-                                                   HorizontalAlignment="Center"
-                                                   TextAlignment="Center"
-                                                   Width="Auto"
-                                                   Margin="0"
-                                        ></TextBlock>
-                                        <TextBox TextWrapping="Wrap" 
+                                        <Grid>
+                                            <!--icon button show note-->
+                                            <Button
+                                                    Name="ButtonShowNote"
+                                                    Width="20" Height="20"
+                                                    Background="Transparent"
+                                                    attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                    attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                                    Foreground="{DynamicResource BackgroundTextBrush}"
+                                                    attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                                                    attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                    Opacity="0.7"
+                                                    ToolTip="{DynamicResource Preview}"
+                                                    attachProperty:VisionElement.Opacity="0.8"
+                                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                                    Click="ButtonShowNote_OnClick">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                                        <Style.Triggers>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <MultiDataTrigger.Setters>
+                                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                </MultiDataTrigger.Setters>
+                                                            </MultiDataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <Grid Width="16">
+                                                    <Path Data="{StaticResource NoteGeometry}"
+                                                        Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                        Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                        StrokeThickness="0" Stretch="Uniform" />
+                                                </Grid>
+                                            </Button>
+
+                                            <Popup Name="PopupNote" 
+                                                   Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
+                                                   AllowsTransparency="True"
+                                                   PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
+                                                <Border Padding="0 0 4 4" Background="Transparent"
+                                                        Name="PopupNoteGrid">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                                                    </Border.Effect>
+                                                    <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
+                                                        <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
+                                                        </wpf:MarkdownViewer>
+                                                    </Border>
+                                                </Border>
+                                            </Popup>
+
+                                            <TextBlock Text="{DynamicResource Note}"
+                                                       HorizontalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       Width="Auto"
+                                                       Margin="0"
+                                            ></TextBlock>
+                                        </Grid>
+
+                                        <TextBox TextWrapping="Wrap" Width="Auto"
                                                  TextAlignment="Left" Height="220" Margin="0 5"
                                                  VerticalContentAlignment="Top"
                                                  AcceptsReturn="True"
                                                  AcceptsTab="True"
+                                                 Tag="&#13;## Markdown support&#13;&#160;&#160;&#160;&#160;&#160;- write your note here&#13;&#160;&#160;&#160;&#160;&#160;- ![pic](http://x/structure.png)&#13;&#160;&#160;&#160;&#160;&#160;- [link](http://x/readme.md)" xml:space="preserve"
                                                  Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <TextBlock></TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </controls:GridWith4Columns>
 
                             <StackPanel Orientation="Vertical">
                                 <controls:GridWith4Columns>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Name}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:AutoCompleteComboBox Grid.Column="1"
                                                            Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
                                                            Selections="{Binding NameSelections}"/>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource Tags}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Tags}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
                                                  Tags="{Binding Server.Tags, Mode=TwoWay}"
                                                  TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns Margin="0">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource Logo}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Logo}" Style="{StaticResource RowHeader}"></TextBlock>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                                         <Grid Name="GridLogo" Width="64" Height="64"
@@ -265,7 +325,7 @@
 
 
                                 <controls:GridWith4Columns Margin="0 15">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_before_connected}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
                                      Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
                                      ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
@@ -277,7 +337,7 @@
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_after_disconnected}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
                                      Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
                                      ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
