@@ -113,9 +113,9 @@
                 <!--brief note -->
                 <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
                     <!--text button show note-->
-                    <Button Name="BtnShowNote"
+                    <Button Name="ButtonBriefNote"
                             HorizontalContentAlignment="Left"
-                            Click="BtnShowNote_OnClick"
+                            MouseEnter="ButtonShowNote_OnMouseEnter"
                             attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                             Background="{DynamicResource BackgroundBrush}"
                             Foreground="{DynamicResource BackgroundTextBrush}">
@@ -143,6 +143,7 @@
 
                     <!--icon button show note-->
                     <Button
+                        Name="ButtonShowNote"
                         Width="20" Height="20"
                         Background="Transparent"
                         attachProperty:VisionElement.BackgroundAccent="Transparent"
@@ -154,7 +155,7 @@
                         Opacity="0.7"
                         attachProperty:VisionElement.Opacity="0.8"
                         attachProperty:VisionElement.OpacityAccent="0.9"
-                        Click="BtnShowNote_OnClick"
+                        MouseEnter="ButtonShowNote_OnMouseEnter"
                         >
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -182,11 +183,12 @@
 
 
 
-                    <Popup Name="PopupNote"
-                           Visibility="{Binding ElementName=BtnShowNote, Path=Visibility}"
+                    <Popup Name="PopupNote" 
+                           Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
                            AllowsTransparency="True"
                            PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                        <Border Padding="0 0 4 4">
+                        <Border Padding="0 0 4 4" Background="Transparent"
+                                Name="PopupNoteGrid">
                             <Border.Effect>
                                 <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                             </Border.Effect>

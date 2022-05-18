@@ -326,13 +326,13 @@
                                         </Grid>
                                     </Border>
                                 </Popup>
+                            </Grid>
+                        </Grid>
 
-
-
-
-                                <Button 
+                        <Grid Grid.Row="1" RowSpan="2" VerticalAlignment="Bottom" Margin="0 0 0 25">
+                            <Button 
                                     Width="16" Height="16"
-                                    Name="BtnShowNote"
+                                    Name="ButtonShowNote"
                                     Background="Transparent"
                                     attachProperty:VisionElement.BackgroundAccent="Transparent"
                                     attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
@@ -342,29 +342,29 @@
                                     attachProperty:VisionElement.Opacity="0.8"
                                     attachProperty:VisionElement.OpacityAccent="0.9"
                                     Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
-                                    Click="BtnShowNote_OnClick">
-                                    <Grid Width="14">
-                                        <Path Data="{StaticResource NoteGeometry}"
+                                    >
+                                <Grid Width="14">
+                                    <Path Data="{StaticResource NoteGeometry}"
                                               Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                               StrokeThickness="0" Stretch="Uniform" />
-                                    </Grid>
-                                </Button>
+                                </Grid>
+                            </Button>
 
-                                <Popup Name="PopupNote"
+                            <Popup Name="PopupNote"
                                         AllowsTransparency="True"
-                                        PlacementTarget="{Binding ElementName=BtnShowNote}" StaysOpen="False">
-                                    <Border Padding="0 0 4 4">
-                                        <Border.Effect>
-                                            <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                                        </Border.Effect>
-                                        <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
-                                            <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
-                                            </wpf:MarkdownViewer>
-                                        </Border>
+                                        PlacementTarget="{Binding ElementName=ButtonShowNote}" StaysOpen="False">
+                                <Border Padding="0 0 4 4" Background="Transparent"
+                                        Name="PopupNoteGrid">
+                                    <Border.Effect>
+                                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                                    </Border.Effect>
+                                    <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
+                                        <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
+                                        </wpf:MarkdownViewer>
                                     </Border>
-                                </Popup>
-                            </Grid>
+                                </Border>
+                            </Popup>
                         </Grid>
                     </Grid>
                 </Border>
