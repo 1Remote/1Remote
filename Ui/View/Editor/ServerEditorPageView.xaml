@@ -157,16 +157,10 @@
                                                    Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
                                                    AllowsTransparency="True"
                                                    PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                                                <Border Padding="0 0 4 4" Background="Transparent"
-                                                        Name="PopupNoteGrid">
-                                                    <Border.Effect>
-                                                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                                                    </Border.Effect>
-                                                    <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
-                                                        <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
-                                                        </wpf:MarkdownViewer>
-                                                    </Border>
-                                                </Border>
+                                                <controls:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                                                            Server="{Binding Server, Mode=OneWay}"
+                                                                            EditEnable="False"
+                                                                            CloseEnable="False"/>
                                             </Popup>
 
                                             <TextBlock Text="{DynamicResource Note}"
@@ -184,7 +178,6 @@
                                                  AcceptsTab="True"
                                                  Tag="&#13;## Markdown support&#13;&#160;&#160;&#160;&#160;&#160;- write your note here&#13;&#160;&#160;&#160;&#160;&#160;- ![pic](http://x/structure.png)&#13;&#160;&#160;&#160;&#160;&#160;- [link](http://x/readme.md)" xml:space="preserve"
                                                  Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                        <TextBlock></TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </controls:GridWith4Columns>

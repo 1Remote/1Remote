@@ -187,16 +187,10 @@
                            Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
                            AllowsTransparency="True"
                            PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                        <Border Padding="0 0 4 4" Background="Transparent"
-                                Name="PopupNoteGrid">
-                            <Border.Effect>
-                                <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                            </Border.Effect>
-                            <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
-                                <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
-                                </wpf:MarkdownViewer>
-                            </Border>
-                        </Border>
+                        <local:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                                    Server="{Binding Server, Mode=OneWay}"
+                                                    EditEnable="True"
+                                                    CloseEnable="False"/>
                     </Popup>
                 </Grid>
 

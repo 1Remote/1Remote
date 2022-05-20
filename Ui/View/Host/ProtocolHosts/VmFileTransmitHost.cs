@@ -625,7 +625,7 @@ namespace PRM.View.Host.ProtocolHosts
                                 var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
                                 var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, fi!.Directory!.FullName, ris);
                                 AddTransmitTask(t);
-                                t.StartTransmitAsync();
+                                t.StartTransmitAsync(this.RemoteItems);
                                 t.OnTaskEnd += (status, exception) =>
                                 {
                                     var item = t.Items.FirstOrDefault();
@@ -633,7 +633,12 @@ namespace PRM.View.Host.ProtocolHosts
                                     {
                                         // set read only
                                         File.SetAttributes(item.DstPath, FileAttributes.ReadOnly);
-                                        System.Diagnostics.Process.Start(item.DstPath);
+                                        var psi = new System.Diagnostics.ProcessStartInfo
+                                        {
+                                            UseShellExecute = true,
+                                            FileName = item.DstPath
+                                        };
+                                        System.Diagnostics.Process.Start(psi);
                                     }
                                 };
                             }
@@ -783,7 +788,7 @@ namespace PRM.View.Host.ProtocolHosts
                         var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
                         var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, destinationDirectoryPath, ris);
                         AddTransmitTask(t);
-                        t.StartTransmitAsync();
+                        t.StartTransmitAsync(this.RemoteItems);
                     }
                 });
             }
@@ -881,7 +886,7 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, CurrentPath, fis.ToArray(), dis.ToArray());
                 AddTransmitTask(t);
-                t.StartTransmitAsync();
+                t.StartTransmitAsync(this.RemoteItems);
             }
         }
 

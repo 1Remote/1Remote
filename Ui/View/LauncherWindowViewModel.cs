@@ -455,8 +455,6 @@ namespace PRM.View
         }
 
 
-
-
         public void SetHotKey()
         {
             if (this.View is LauncherWindowView window)
@@ -577,7 +575,6 @@ namespace PRM.View
                 RaisePropertyChanged(nameof(GridNoteVisibility));
             }
         }
-
         #endregion
     }
 }

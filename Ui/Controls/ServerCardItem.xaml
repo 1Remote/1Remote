@@ -9,6 +9,7 @@
              xmlns:view="clr-namespace:PRM.View"
              xmlns:model="clr-namespace:PRM.Model"
              xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+             xmlns:controls="clr-namespace:PRM.Controls"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -354,16 +355,10 @@
                             <Popup Name="PopupNote"
                                         AllowsTransparency="True"
                                         PlacementTarget="{Binding ElementName=ButtonShowNote}" StaysOpen="False">
-                                <Border Padding="0 0 4 4" Background="Transparent"
-                                        Name="PopupNoteGrid">
-                                    <Border.Effect>
-                                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                                    </Border.Effect>
-                                    <Border CornerRadius="{StaticResource DefaultCornerRadius}" Padding="4" Background="{DynamicResource PrimaryMidBrush}">
-                                        <wpf:MarkdownViewer Width="400" Height="300" Background="{DynamicResource PrimaryMidBrush}" Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding Server.Note}">
-                                        </wpf:MarkdownViewer>
-                                    </Border>
-                                </Border>
+                                <controls:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                                            Server="{Binding Server, Mode=OneWay}"
+                                                            EditEnable="True"
+                                                            CloseEnable="False"/>
                             </Popup>
                         </Grid>
                     </Grid>

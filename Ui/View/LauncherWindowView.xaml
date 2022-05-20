@@ -10,6 +10,7 @@
                   xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                   xmlns:s="https://github.com/canton7/Stylet"
                   xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+                  xmlns:controls="clr-namespace:PRM.Controls"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -129,8 +130,8 @@
 
 
 
-                        <Button Grid.Row="0" Grid.Column="1"  Grid.RowSpan="2" 
-                                ToolTip="{DynamicResource Note}"
+                        <Grid Grid.Row="0" Grid.Column="1"  Grid.RowSpan="2" Background="Transparent" ToolTip="press '←' key to show/hide Note">
+                            <Button
                                 Background="Transparent"
                                 attachProperty:VisionElement.BackgroundAccent="Transparent"
                                 attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
@@ -140,23 +141,24 @@
                                 attachProperty:VisionElement.OpacityAccent="0.9"
                                 Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
                                 Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType= view:LauncherWindowView}, Path=DataContext.CmdShowNoteField}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                    <Setter Property="Margin" Value="5 0 0 0"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.IsShowNoteFieldEnabled}" Value="False">
-                                            <Setter Property="IsEnabled" Value="False"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid Width="16">
-                                <Path Data="{StaticResource NoteGeometry}"
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                        <Setter Property="Margin" Value="5 0 0 0"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.IsShowNoteFieldEnabled}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Grid Width="16">
+                                    <Path Data="{StaticResource NoteGeometry}"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                       StrokeThickness="0" Stretch="Uniform" />
-                            </Grid>
-                        </Button>
+                                </Grid>
+                            </Button>
+                        </Grid>
 
                         <TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                                Text="{Binding Server.ProtocolDisplayName}"
@@ -479,70 +481,18 @@
         </Border>
 
         <!--Note 显示备注-->
-        <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" MinWidth="100" Visibility="{Binding GridNoteVisibility}">
-            <Border CornerRadius="{StaticResource LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}" 
-                    Width="{Binding NoteWidth}" Height="{Binding GridNoteHeight}" 
-                    MinWidth="200"
-                    MinHeight="200" VerticalAlignment="Top">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="10" />
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <Border Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource LauncherGridKeywordHeight}"
-                            BorderThickness="0 0 0 1">
-                        <Border.BorderBrush>
-                            <SolidColorBrush Color="{DynamicResource PrimaryTextColor}" Opacity="0.5"></SolidColorBrush>
-                        </Border.BorderBrush>
-                        <Border.CornerRadius>
-                            <CornerRadius TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
-                        </Border.CornerRadius>
-                        <Grid>
-                            <TextBlock Text="{DynamicResource Note}" 
-                                       FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
-
-
-                            <Button Width="20" Height="20"
-                                        Style="{StaticResource ButtonBarPrimaryStyle}"
-                                        Background="Transparent"
-                                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                        HorizontalAlignment="Right"
-                                        attachProperty:VisionElement.Opacity="0.5"
-                                        attachProperty:VisionElement.OpacityAccent="0.9"
-                                        Command="{Binding CmdHideNoteField}" 
-                                        Margin="0 0 10 0">
-                                <Grid Width="12">
-                                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="2" Stretch="Uniform" />
-                                </Grid>
-                            </Button>
-                        </Grid>
-                    </Border>
-
-
-                    <Border Grid.Row="1" Background="{DynamicResource PrimaryMidBrush}">
-                        <Border.CornerRadius>
-                            <CornerRadius BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
-                        </Border.CornerRadius>
-                        <FrameworkElement.CommandBindings>
-                            <CommandBinding Command="{x:Static wpf:Commands.Hyperlink}" Executed="OpenHyperlink" />
-                            <CommandBinding Command="{x:Static wpf:Commands.Image}" Executed="ClickOnImage" />
-                        </FrameworkElement.CommandBindings>
-                        <Grid Margin="10">
-                            <wpf:MarkdownViewer Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding SelectedItem.Server.Note}">
-                            </wpf:MarkdownViewer>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
+        <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" Visibility="{Binding GridNoteVisibility}">
+            <Grid
+                Width="{Binding NoteWidth}" 
+                Height="{Binding GridNoteHeight}" 
+                MinWidth="200" 
+                MinHeight="200">
+                <controls:NoteDisplayAndEditor Server="{Binding SelectedItem.Server, Mode=OneWay}"
+                                           EditEnable="True"
+                                           CloseEnable="True"
+                                           CommandOnCloseRequest="{Binding CmdHideNoteField, Mode=OneWay}"
+                                           ></controls:NoteDisplayAndEditor>
+            </Grid>
         </Border>
     </Grid>
 </styles:WindowChromeBase>

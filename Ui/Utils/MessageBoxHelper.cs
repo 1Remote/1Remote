@@ -17,17 +17,20 @@ namespace PRM.Utils
                 title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
             if (useNativeBox)
             {
-                return MessageBoxResult.Yes == MessageBox.Show(content, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                bool ret = false;
+                ret = MessageBoxResult.Yes == MessageBox.Show(content, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                return ret;
             }
             else
             {
-                var ret = IoC.Get<IWindowManager>().ShowMessageBox(content, title, buttons: MessageBoxButton.YesNo,
-                    buttonLabels: new Dictionary<MessageBoxResult, string>()
-                    {
+                bool ret = false;
+                ret = MessageBoxResult.Yes == IoC.Get<IWindowManager>().ShowMessageBox(content, title, buttons: MessageBoxButton.YesNo,
+                buttonLabels: new Dictionary<MessageBoxResult, string>()
+                {
                     { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
                     { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
-                    }, icon: MessageBoxImage.Question);
-                return ret == MessageBoxResult.Yes;
+                }, icon: MessageBoxImage.Question);
+                return ret;
             }
         }
 

@@ -373,7 +373,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
-        public async void StartTransmitAsync()
+        public async void StartTransmitAsync(IEnumerable<RemoteItem> remoteItems)
         {
             _trans = _transOrg.Clone();
             Debug.Assert(_trans != null);
@@ -390,7 +390,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                     {
                         ScanTransmitItems();
 
-                        if (CheckExistedFiles())
+                        if (CheckExistedFiles(remoteItems))
                         {
                             RunTransmit();
                             SimpleLogHelper.Debug($"{nameof(TransmitTask)}: OnTaskEnd?.Invoke({TransmitTaskStatus}, null); ");
@@ -489,11 +489,15 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             return false;
         }
 
-        private bool CheckExistedFileHostToServer(TransmitItem item)
+        private bool CheckExistedFileHostToServer(TransmitItem item, IEnumerable<RemoteItem> remoteItem)
         {
             if (!item.IsDirectory)
+            {
+                if (remoteItem.Any(x => x.IsDirectory == false && x.Name == item.ItemName))
+                    return true;
                 if (_trans?.Exists(item.DstPath) == true)
                     return true;
+            }
             return false;
         }
 
@@ -501,7 +505,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         /// check if any same name file exited, return if can continue transmit.
         /// </summary>
         /// <returns></returns>
-        private bool CheckExistedFiles()
+        private bool CheckExistedFiles(IEnumerable<RemoteItem> remoteItems)
         {
             // check if existed
             int existedFiles = 0;
@@ -517,7 +521,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                         }
                     case ETransmissionType.HostToServer:
                         {
-                            if (CheckExistedFileHostToServer(item))
+                            if (CheckExistedFileHostToServer(item, remoteItems))
                                 ++existedFiles;
                             break;
                         }
@@ -526,7 +530,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
             if (existedFiles > 0
             && false == MessageBoxHelper.Confirm(_languageService.Translate("file_transmit_host_warning_same_names", existedFiles.ToString()),
-                _languageService.Translate("file_transmit_host_warning_same_names_title")))
+                _languageService.Translate("file_transmit_host_warning_same_names_title"), useNativeBox: true))
             {
                 return false;
             }
