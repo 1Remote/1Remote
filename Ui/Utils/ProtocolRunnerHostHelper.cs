@@ -21,14 +21,15 @@ namespace PRM.Utils
         /// get a selected runner, or default runner. some protocol i.e. 'APP' will return null.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="server"></param>
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static Runner GetRunner(PrmContext context, string protocolName, string? assignRunnerName = null)
+        public static Runner GetRunner(PrmContext context, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
-                SimpleLogHelper.Fatal($"we don't have a protocol named: {protocolName}");
+                SimpleLogHelper.Warning($"we don't have a protocol named: {protocolName}");
                 return new InternalDefaultRunner(protocolName);
             }
 
@@ -39,16 +40,10 @@ namespace PRM.Utils
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var runnerName = assignRunnerName;
-            if (string.IsNullOrEmpty(runnerName))
-                runnerName = p.SelectedRunnerName;
-            var r = p.Runners.FirstOrDefault(x => x.Name == runnerName);
-            if (r == null)
-            {
-                SimpleLogHelper.Fatal($"{protocolName} does not have a runner name == the selection '{p.SelectedRunnerName}'!");
-                r = p.Runners.FirstOrDefault();
-            }
-
+            var r = p.Runners.FirstOrDefault(x => x.Name == assignRunnerName);
+            r ??= p.Runners.FirstOrDefault(x => x.Name == server.SelectedRunnerName);
+            r ??= p.Runners.FirstOrDefault(x => x.Name == p.SelectedRunnerName);
+            r ??= p.Runners.FirstOrDefault();
             return r ?? new InternalDefaultRunner(protocolName);
         }
 
@@ -121,19 +116,16 @@ namespace PRM.Utils
         /// <summary>
         /// get host for a ProtocolBase, can return null
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="server"></param>
-        /// <param name="runner">指定使用哪个 runner 来启动 session，可以为空</param>
         /// <returns></returns>
         public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
-                case RDP:
-                    {
-                        return GetRdpInternalHost(context, server, runner);
-                    }
+                //case RDP:
+                //    {
+                //        return GetRdpInternalHost(context, server, runner);
+                //    }
                 case SSH ssh:
                     {
                         Debug.Assert(runner is KittyRunner);
@@ -192,6 +184,7 @@ namespace PRM.Utils
                 default:
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
+            return null;
         }
     }
 }

@@ -92,7 +92,7 @@ namespace PRM.Model.Protocol.Base
         }
 
 
-        private List<string> _tags = new List<string>();
+        private List<string>? _tags = new List<string>();
         public List<string> Tags
         {
             get
@@ -102,10 +102,20 @@ namespace PRM.Model.Protocol.Base
                     _tags = new List<string>() { GroupName };
                     GroupName = string.Empty;
                 }
-                _tags = _tags.Distinct().OrderBy(x => x).ToList();
+                else if (_tags == null)
+                {
+                    _tags = new List<string>();
+                }
+                _tags = _tags.Distinct()?.OrderBy(x => x)?.ToList();
                 return _tags;
             }
-            set => SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
+            set
+            {
+                if (value == null)
+                    SetAndNotifyIfChanged(ref _tags, new List<string>());
+                else
+                    SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
+            }
         }
 
         private string _iconBase64 = "";
@@ -175,6 +185,13 @@ namespace PRM.Model.Protocol.Base
         {
             get => _note;
             set => SetAndNotifyIfChanged(ref _note, value);
+        }
+
+        private string _selectedRunnerName = "";
+        public string SelectedRunnerName
+        {
+            get => _selectedRunnerName;
+            set => SetAndNotifyIfChanged(ref _selectedRunnerName, value);
         }
 
 
@@ -262,7 +279,7 @@ namespace PRM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.Tags = new List<string>(this.Tags);
+            clone.Tags = (this.Tags == null) ? null: new List<string>(this.Tags);
             return clone;
         }
 

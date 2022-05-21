@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,7 @@ using PRM.Controls;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Model.ProtocolRunner;
 using PRM.Service;
 using PRM.View.Editor.Forms;
 using Shawn.Utils;
@@ -24,8 +26,9 @@ namespace PRM.View.Editor
         public bool IsAddMode => _serversInBuckEdit == null && Server.Id == 0;
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer;
+        private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
 
-        #region single edit
+        #region individual edit
         /// <summary>
         /// to remember original protocol's options, for restore use
         /// </summary>
@@ -33,6 +36,7 @@ namespace PRM.View.Editor
         {
             _globalData = globalData;
             _dataService = dataService;
+
             Server = (ProtocolBase)server.Clone();
             if (isDuplicate)
             {
@@ -40,11 +44,27 @@ namespace PRM.View.Editor
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = "";
+
+            // init protocol list for single add / edit mode
+            {
+                // reflect remote protocols
+                ProtocolList = ProtocolBase.GetAllSubInstance();
+                // set selected protocol
+                try
+                {
+                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
+                }
+                catch (Exception)
+                {
+                    SelectedProtocol = ProtocolList.First();
+                }
+            }
+
             Init();
         }
         #endregion
 
-        #region Buck edit
+        #region buck edit
         /// <summary>
         /// to remember original protocols' options, for restore use
         /// </summary>
@@ -77,60 +97,73 @@ namespace PRM.View.Editor
 
 
             // find the common base class
-            var types = new List<Type>();
-            foreach (var server in serverBases)
             {
-                if (types.All(x => x != server.GetType()))
-                    types.Add(server.GetType());
-            }
+                var types = new List<Type>();
+                foreach (var server in serverBases)
+                {
+                    if (types.All(x => x != server.GetType()))
+                        types.Add(server.GetType());
+                }
 
-            var type = types.First();
-            for (int i = 1; i < types.Count; i++)
-            {
-                type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
+                var type = types.First();
+                for (int i = 1; i < types.Count; i++)
+                {
+                    type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
+                }
+
+                Debug.Assert(type.IsSubclassOf(typeof(ProtocolBase)));
+                _sharedTypeInBuckEdit = type;
             }
-            Debug.Assert(type.IsSubclassOf(typeof(ProtocolBase)));
-            _sharedTypeInBuckEdit = type;
 
             // copy the same value properties
-            // set the different options to `ServerEditorDifferentOptions` or null
-            var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var property in properties)
             {
-                if (property.SetMethod?.IsPublic != true || property.SetMethod.IsAbstract != false) continue;
-                var x = serverBases.Select(x => property.GetValue(x)).ToArray();
-                if (x.Distinct().Count() <= 1) continue;
-                if (property.PropertyType == typeof(string))
-                    property.SetValue(Server, Server.ServerEditorDifferentOptions);
-                else
-                    property.SetValue(Server, null);
+                // set the different options to `ServerEditorDifferentOptions` or null
+                var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var property in properties)
+                {
+                    if (property.SetMethod?.IsPublic != true || property.SetMethod.IsAbstract != false) continue;
+                    var x = serverBases.Select(x => property.GetValue(x)).ToArray();
+                    if (x.Distinct().Count() <= 1) continue;
+                    if (property.PropertyType == typeof(string))
+                        property.SetValue(Server, Server.ServerEditorDifferentOptions);
+                    else
+                        property.SetValue(Server, null);
+                }
             }
 
             // tags
-            _sharedTagsInBuckEdit = new List<string>(); // remember the common tags
-            bool isAllTagsSameFlag = true;
-            for (var i = 0; i < serverBases.Length; i++)
             {
-                foreach (var tagName in serverBases[i].Tags)
+                _sharedTagsInBuckEdit = new List<string>(); // remember the common tags
+                bool isAllTagsSameFlag = true;
+                for (var i = 0; i < serverBases.Length; i++)
                 {
-                    if (serverBases.All(x => x.Tags.Contains(tagName)))
+                    foreach (var tagName in serverBases[i].Tags)
                     {
-                        _sharedTagsInBuckEdit.Add(tagName);
-                    }
-                    else
-                    {
-                        isAllTagsSameFlag = false;
+                        if (serverBases.All(x => x.Tags.Contains(tagName)))
+                        {
+                            _sharedTagsInBuckEdit.Add(tagName);
+                        }
+                        else
+                        {
+                            isAllTagsSameFlag = false;
+                        }
                     }
                 }
+
+                var tags = new List<string>();
+                if (isAllTagsSameFlag == false)
+                    tags.Add(Server.ServerEditorDifferentOptions);
+                tags.AddRange(_sharedTagsInBuckEdit);
+                Server.Tags = tags;
             }
-            Server.Tags = new List<string>(_sharedTagsInBuckEdit.Count + 1);
-            if (isAllTagsSameFlag == false)
-                Server.Tags.Add(Server.ServerEditorDifferentOptions);
-            Server.Tags.AddRange(_sharedTagsInBuckEdit);
 
             _orgServer = Server.Clone();
             // init ui
-            ReflectProtocolEditControl(_sharedTypeInBuckEdit);
+            {
+                if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
+                    UpdateRunners(_serversInBuckEdit.First().Protocol);
+                ReflectProtocolEditControl(_sharedTypeInBuckEdit);
+            }
 
             Init();
         }
@@ -140,23 +173,6 @@ namespace PRM.View.Editor
 
         private void Init()
         {
-            ProtocolList.Clear();
-            // init protocol list for single add / edit mode
-            if (IsBuckEdit == false)
-            {
-                // reflect remote protocols
-                ProtocolList = ProtocolBase.GetAllSubInstance();
-                // set selected protocol
-                try
-                {
-                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
-                }
-                catch (Exception)
-                {
-                    SelectedProtocol = ProtocolList.First();
-                }
-            }
-
             // decrypt pwd
             var s = Server;
             _dataService.DecryptToConnectLevel(ref s);
@@ -174,6 +190,7 @@ namespace PRM.View.Editor
             set => SetAndNotifyIfChanged(ref _server, value);
         }
 
+        public ObservableCollection<string> Runners { get; } = new ObservableCollection<string>();
 
         private ProtocolBase _selectedProtocol = new RDP();
         public ProtocolBase SelectedProtocol
@@ -188,6 +205,7 @@ namespace PRM.View.Editor
                     {
                         if (_orgServer.GetType() == Server.GetType())
                             _orgServer.Update(Server);
+                        UpdateRunners(_selectedProtocol.Protocol);
                         UpdateServerWhenProtocolChanged(SelectedProtocol.GetType());
                         ReflectProtocolEditControl(SelectedProtocol.GetType());
                     }
@@ -279,7 +297,6 @@ namespace PRM.View.Editor
                             {
                                 server.Tags.Add(tag);
                             }
-
                             server.Tags = server.Tags.Distinct().ToList();
                         }
 
@@ -444,6 +461,30 @@ namespace PRM.View.Editor
             {
                 SimpleLogHelper.Error(e);
                 throw;
+            }
+        }
+
+        private void UpdateRunners(string protocolName)
+        {
+            var selectedRunner = Server.SelectedRunnerName;
+            Runners.Clear();
+            if (_protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName))
+            {
+                var c = _protocolConfigurationService.ProtocolConfigs[protocolName];
+                Runners.Add("Follow the global settings");
+                foreach (var runner in c.Runners)
+                {
+                    Runners.Add(runner.Name);
+                }
+                if (IsBuckEdit && _orgServer.SelectedRunnerName == _orgServer.ServerEditorDifferentOptions)
+                {
+                    Runners.Add(_orgServer.ServerEditorDifferentOptions);
+                }
+                Server.SelectedRunnerName = Runners.Any(x => x == selectedRunner) ? selectedRunner : Runners.First();
+            }
+            else
+            {
+                Server.SelectedRunnerName = "";
             }
         }
     }
