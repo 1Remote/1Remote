@@ -132,7 +132,7 @@ namespace PRM.View.Settings.ProtocolConfig
                         {
                             Runners.Add(runner);
                         }
-                        if (Runners.All(x => x.Name != SelectedRunner.Name))
+                        if (Runners.All(x => x.Name != SelectedRunner?.Name))
                         {
                             SelectedRunner = c.Runners.First();
                         }

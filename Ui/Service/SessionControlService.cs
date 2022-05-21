@@ -200,7 +200,7 @@ namespace PRM.Service
             // open SFTP when SSH is connected.
             if (server is SSH { OpenSftpOnConnected: true } ssh)
             {
-                var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, SFTP.ProtocolName);
+                var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, server, SFTP.ProtocolName);
                 var sftp = new SFTP
                 {
                     ColorHex = ssh.ColorHex,
@@ -212,6 +212,7 @@ namespace PRM.Service
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
+                Debug.Assert(tmpRunner != null);
                 this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
 
@@ -301,7 +302,7 @@ namespace PRM.Service
             // run script before connected
             server.RunScriptBeforeConnect();
 
-            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server.Protocol, assignRunnerName)!;
+            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
             switch (server)
             {
                 case RdpApp remoteApp:
@@ -333,11 +334,6 @@ namespace PRM.Service
 
             this.ConnectWithTab(server, runner, assignTabToken ?? "");
             SimpleLogHelper.Debug($@"Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
-        }
-
-        private void OnProtocolClose(string connectionId)
-        {
-            this.CloseProtocolHostAsync(connectionId);
         }
 
         public void AddTab(TabWindowBase tab)
@@ -510,6 +506,13 @@ namespace PRM.Service
             SimpleLogHelper.Debug($@"MoveProtocolHostToTab: Moved host({host.GetHashCode()}) to tab({tab.GetHashCode()})", $@"Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
         }
 
+        private void OnProtocolClose(string connectionId)
+        {
+            this.CloseProtocolHostAsync(connectionId);
+        }
+
+        #region Mark CloseProtocol
+
         public void CloseProtocolHostAsync(string connectionId)
         {
             CloseProtocolHostAsync(new[] { connectionId });
@@ -622,8 +625,9 @@ namespace PRM.Service
             }
         }
 
+        #endregion
 
-        #region Clean up
+        #region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
             while (_hostToBeDispose.TryDequeue(out var host))

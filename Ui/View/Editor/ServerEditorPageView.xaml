@@ -21,56 +21,6 @@
             <system:Double x:Key="TopHeight">20</system:Double>
             <system:Double x:Key="BottomHeight">40</system:Double>
         </Grid.Resources>
-
-        <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    ToolTip="{Binding Title}"
-                    RenderTransformOrigin="0.5,0.5" 
-                    Margin="0,35,-130,0" Background="{DynamicResource AccentMidBrush}">
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
-                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Title}" Value="">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ProtocolList.Count}" Value="0">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-            <StackPanel.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="42.671"/>
-                    <TranslateTransform X="15.43885806483096" Y="16.392014547605541"/>
-                </TransformGroup>
-            </StackPanel.RenderTransform>
-            <StackPanel.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="10" Direction="0" ShadowDepth="2" Opacity="0.7" RenderingBias="Performance">
-                </DropShadowEffect>
-            </StackPanel.Effect>
-            <TextBlock Name="TbServerType" Opacity="0.9"
-                       FontWeight="Bold" Text="{DynamicResource server_editor_bulk_editing}" 
-                       Margin="0 5"
-                       Width="100"
-                       TextAlignment="Center"
-                       Foreground="{DynamicResource AccentTextBrush}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock.FontSize>
-                    <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
-                        <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
-                        <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
-                        <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
-                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"></Binding>
-                        <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"></Binding>
-                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"></Binding>
-                    </MultiBinding>
-                </TextBlock.FontSize>
-            </TextBlock>
-        </StackPanel>
-
         <Grid>
             <Grid.Resources>
                 <Style TargetType="TextBlock" x:Key="RowHeader">
@@ -291,10 +241,10 @@
                                                             </Border.Style>
                                                         </Border>
                                                         <ListView BorderThickness="0"
-                                                              SelectionChanged="Selector_OnSelectionChanged"
-                                                              MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                              ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
-                                                              Background="Transparent">
+                                                                  SelectionChanged="Selector_OnSelectionChanged"
+                                                                  MouseDoubleClick="LogoList_OnMouseDoubleClick"
+                                                                  ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
+                                                                  Background="Transparent">
                                                             <ListView.ItemsPanel>
                                                                 <ItemsPanelTemplate>
                                                                     <WrapPanel Orientation="Horizontal" 
@@ -320,28 +270,47 @@
                                 <controls:GridWith4Columns Margin="0 15">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_before_connected}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                     Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                     ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
-                                     Tag="{DynamicResource server_editor_cmd_before_connected_tag}"/>
+                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
+                                             ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
+                                             Tag="{DynamicResource server_editor_cmd_before_connected_tag}"/>
                                     <Button Grid.Column="2" 
-                                    Margin="5 0 0 0" 
-                                    VerticalAlignment="Stretch"
-                                    Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
+                                            Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_after_disconnected}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                     Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                     ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
-                                     Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
-                                    <Button Grid.Column="2" 
-                                    Margin="5 0 0 0" 
-                                    VerticalAlignment="Stretch"
-                                    Click="ButtonTryCommandAfterDisconnected_OnClick" 
-                                    Style="{StaticResource ButtonPrimaryStyle}" 
-                                    Content="{DynamicResource Test}"></Button>
+                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
+                                             ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
+                                             Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
+                                    <Button Grid.Column="2"
+                                            Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandAfterDisconnected_OnClick" 
+                                            Style="{StaticResource ButtonPrimaryStyle}" 
+                                            Content="{DynamicResource Test}"></Button>
                                 </controls:GridWith4Columns>
+
+                                <controls:GridWith4Columns>
+                                    <controls:GridWith4Columns.Style>
+                                        <Style TargetType="controls:GridWith4Columns">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Runners.Count}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </controls:GridWith4Columns.Style>
+                                    <TextBlock Grid.Column="0" Text="TXT:selected runner" Style="{StaticResource RowHeader}"></TextBlock>
+
+                                    <ComboBox Grid.Column="1" 
+                                              ItemsSource="{Binding Runners, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedItem="{Binding Server.SelectedRunnerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    </ComboBox>
+                                </controls:GridWith4Columns>
+
                                 <ContentControl Content="{Binding ProtocolEditControl}"></ContentControl>
                             </StackPanel>
                         </Grid>
@@ -349,6 +318,58 @@
                 </Grid>
             </ScrollViewer>
         </Grid>
+
+
+        <!-- bulk editing flag-->
+        <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    ToolTip="{Binding Title}"
+                    RenderTransformOrigin="0.5,0.5" 
+                    Margin="0,35,-130,0" Background="{DynamicResource AccentMidBrush}">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Title}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ProtocolList.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="42.671"/>
+                    <TranslateTransform X="15.43885806483096" Y="16.392014547605541"/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
+            <StackPanel.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="10" Direction="0" ShadowDepth="2" Opacity="0.7" RenderingBias="Performance">
+                </DropShadowEffect>
+            </StackPanel.Effect>
+            <TextBlock Name="TbServerType" Opacity="0.9"
+                       FontWeight="Bold" Text="{DynamicResource server_editor_bulk_editing}" 
+                       Margin="0 5"
+                       Width="100"
+                       TextAlignment="Center"
+                       Foreground="{DynamicResource AccentTextBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock.FontSize>
+                    <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"></Binding>
+                    </MultiBinding>
+                </TextBlock.FontSize>
+            </TextBlock>
+        </StackPanel>
+
 
         <Grid VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource TopHeight}">
