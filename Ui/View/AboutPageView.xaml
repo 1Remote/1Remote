@@ -85,7 +85,7 @@
                                         <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="Version"></TextBlock>
-                                    <TextBlock Grid.Column="1"  Name="TbVersion" Text="0.0.0.0" Margin="0"></TextBlock>
+                                    <TextBlock Grid.Column="1"  Name="TbVersion" Text="{Binding CurrentVersion}" Margin="0"></TextBlock>
                                 </Grid>
                                 <Grid>
                                     <Grid.Style>
