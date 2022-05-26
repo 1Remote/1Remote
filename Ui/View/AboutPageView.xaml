@@ -149,7 +149,7 @@
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM/wiki" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     How to use
                                                 </Hyperlink>
                                             </TextBlock>
@@ -163,12 +163,12 @@
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM/issues" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     Bug report
                                                 </Hyperlink>
                                             </TextBlock>
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     Github
                                                 </Hyperlink>
                                             </TextBlock>

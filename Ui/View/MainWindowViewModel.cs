@@ -259,17 +259,17 @@ namespace PRM.View
             var title = new System.Windows.Forms.ToolStripMenuItem(AppPathHelper.APP_DISPLAY_NAME);
             title.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM");
             };
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/wiki");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/wiki");
             };
             var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
             exit.Click += (sender, args) => this.RequestClose();

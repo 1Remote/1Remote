@@ -166,7 +166,7 @@
                     </Hyperlink>
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" 
+                    <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" 
                                controls1:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>

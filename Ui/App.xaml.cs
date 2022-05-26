@@ -59,7 +59,7 @@ namespace Ui
         public static void Close(int exitCode = 0)
         {
             _namedPipeHelper?.Dispose();
-            IoC.Get<SessionControlService>().Release();
+            IoC.Get<SessionControlService>()?.Release();
             IoC.Get<LauncherWindowView>()?.Close();
             IoC.Get<MainWindowView>()?.Close();
             Environment.Exit(exitCode);
