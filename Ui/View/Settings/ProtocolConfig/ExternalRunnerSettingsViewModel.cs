@@ -152,7 +152,7 @@ public class ExternalRunnerSettingsViewModel
             {
                 try
                 {
-                    Clipboard.SetText(
+                    Clipboard.SetDataObject(
                         $@"
 Runner for {ExternalRunner.OwnerProtocolName}
 
