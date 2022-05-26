@@ -491,8 +491,8 @@ namespace PRM.View
 
         public void OpenSessionAndHide()
         {
-            HideMe();
             var item = SelectedItem;
+            HideMe();
             if (item?.Id != null)
             {
                 GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);

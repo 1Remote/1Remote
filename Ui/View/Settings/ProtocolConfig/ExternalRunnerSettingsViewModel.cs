@@ -163,7 +163,7 @@ Runner for {ExternalRunner.OwnerProtocolName}
                         );
                     if (MessageBoxHelper.Confirm($"You runner({ExternalRunner.Name}) is copied to clipboard, do you want to share to Github?", "Share "))
                     {
-                        HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/wiki/Share-your-favorite-runner");
+                        HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/wiki/Share-your-favorite-runner");
                     }
                 }
                 catch

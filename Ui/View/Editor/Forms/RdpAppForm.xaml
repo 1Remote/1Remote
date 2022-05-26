@@ -80,7 +80,7 @@
                     <StackPanel>
                         <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource BackgroundTextBrush}" Text="Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'."></TextBlock>
                         <TextBlock>
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp#how-to-use" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM/wiki/Protocol:-RemoteApp#how-to-use" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                     check how to config.
                                 </Hyperlink>
                         </TextBlock>

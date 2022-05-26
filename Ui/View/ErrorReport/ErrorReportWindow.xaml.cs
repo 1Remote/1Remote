@@ -168,7 +168,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
             }
             catch
             {

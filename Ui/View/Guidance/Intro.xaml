@@ -51,7 +51,7 @@
                 </Grid>
                 <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static service:AppPathHelper.APP_NAME}"></TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
-                    <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
+                    <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/1Remote/PRemoteM">https://github.com/1Remote/PRemoteM</Hyperlink>
                 </TextBlock>
             </StackPanel>
         </Grid>
