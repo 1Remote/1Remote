@@ -54,6 +54,11 @@ namespace Ui
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
+
+            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == true)
+            {
+                IoC.Get<MainWindowView>().ShowInTaskbar = false;
+            }
         }
 
         public static void Close(int exitCode = 0)

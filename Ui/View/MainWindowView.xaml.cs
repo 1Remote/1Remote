@@ -67,7 +67,6 @@ namespace PRM.View
             {
                 this.Visibility = Visibility.Collapsed;
                 this.WindowState = WindowState.Minimized;
-                this.ShowInTaskbar = false;
             }
 
             BtnClose.Click += (sender, args) =>
