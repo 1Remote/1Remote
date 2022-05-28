@@ -1,0 +1,2 @@
+googletrans==3.1.0a0
+httpcore==0.9.1

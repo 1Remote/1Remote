@@ -151,10 +151,10 @@
                 </Grid>
 
                 <Popup Name="PopupMenu"
-                   AllowsTransparency="True"
-                   IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}"
-                   StaysOpen="False"
-                   PlacementTarget="{Binding ElementName=CbPopForMenu}">
+                       AllowsTransparency="True"
+                       IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}"
+                       StaysOpen="False"
+                       PlacementTarget="{Binding ElementName=CbPopForMenu}">
                     <Border Padding="0 0 4 4">
                         <Border.Effect>
                             <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>

@@ -43,9 +43,10 @@ namespace PRM.Service
 
         private void AddStaticLanguageResources(string code)
         {
+            code = code.ToLower();
+            if (code.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
+                code = code.Replace(".xaml", "");
             var path = ResourceUriHelper.GetUriPathFromCurrentAssembly($"Resources/Languages/{code}.xaml");
-            if(code .EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
-                path = ResourceUriHelper.GetUriPathFromCurrentAssembly($"Resources/Languages/{code}");
             if (LanguageCode2Name.ContainsKey(code)) return;
             var r = GetResourceDictionaryByXamlUri(path);
             Debug.Assert(r != null);

@@ -268,18 +268,6 @@
 		<Page Update="Resources\Icons\SVG.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
-		<Page Update="Resources\Languages\de-de.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Resources\Languages\en-us.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Resources\Languages\fr-fr.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Resources\Languages\zh-cn.xaml">
-			<SubType>Designer</SubType>
-		</Page>
 		<Page Update="Resources\Theme\Markdown.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		  <SubType>Designer</SubType>
