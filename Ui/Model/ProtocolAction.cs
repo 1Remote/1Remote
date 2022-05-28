@@ -70,7 +70,7 @@ namespace PRM.Model
                     {
                         try
                         {
-                            Clipboard.SetText($"{protocolServerWithAddrPortBase.Address}:{protocolServerWithAddrPortBase.GetPort()}");
+                            Clipboard.SetDataObject($"{protocolServerWithAddrPortBase.Address}:{protocolServerWithAddrPortBase.GetPort()}");
                         }
                         catch (Exception)
                         {
@@ -85,7 +85,7 @@ namespace PRM.Model
                    {
                        try
                        {
-                           Clipboard.SetText(tmp.UserName);
+                           Clipboard.SetDataObject(tmp.UserName);
                        }
                        catch (Exception)
                        {
@@ -100,7 +100,7 @@ namespace PRM.Model
                     {
                         try
                         {
-                            Clipboard.SetText(IoC.Get<DataService>().DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                            Clipboard.SetDataObject(IoC.Get<DataService>().DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
                         }
                         catch (Exception)
                         {
