@@ -28,11 +28,10 @@ namespace PRM.Service
         {
             _applicationResourceDictionary = applicationResourceDictionary;
             // add static language resources
-            AddStaticLanguageResources("en-us");
-            AddStaticLanguageResources("zh-cn");
-            AddStaticLanguageResources("de-de");
-            AddStaticLanguageResources("fr-fr");
-            AddStaticLanguageResources("pt-br");
+            foreach (var file in LanguagesResources.Files)
+            {
+                AddStaticLanguageResources(file);
+            }
         }
 
         public void AddXamlLanguageResources(string code, string fullName)
@@ -44,8 +43,9 @@ namespace PRM.Service
 
         private void AddStaticLanguageResources(string code)
         {
-            //var path = $"pack://application:,,,/PRM.Core;component/Languages/{code}.xaml";
             var path = ResourceUriHelper.GetUriPathFromCurrentAssembly($"Resources/Languages/{code}.xaml");
+            if(code .EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
+                path = ResourceUriHelper.GetUriPathFromCurrentAssembly($"Resources/Languages/{code}");
             if (LanguageCode2Name.ContainsKey(code)) return;
             var r = GetResourceDictionaryByXamlUri(path);
             Debug.Assert(r != null);

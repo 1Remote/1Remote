@@ -134,7 +134,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                Clipboard.SetText(TbErrorInfo.Text);
+                Clipboard.SetDataObject(TbErrorInfo.Text);
                 var sb = new Storyboard();
                 sb.AddFadeOut(1);
                 sb.Begin(IconCopyDone);
