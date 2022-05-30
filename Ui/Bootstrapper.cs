@@ -15,6 +15,7 @@ using PRM.View.Guidance;
 using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
@@ -22,15 +23,56 @@ using Ui;
 
 namespace PRM
 {
-    public class Bootstrapper : Bootstrapper<MainWindowViewModel>
+    public class Bootstrapper : Bootstrapper<LauncherWindowViewModel>
     {
         private readonly AppInit _appInit = new();
+        private readonly DesktopResolutionWatcher _desktopResolutionWatcher = new();
+
+        public Bootstrapper()
+        {
+            OnlyOneAppInstanceCheck();
+        }
+
+        #region OnlyOneAppInstanceCheck
+#if FOR_MICROSOFT_STORE_ONLY
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+#else
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+#endif
+        public void OnlyOneAppInstanceCheck()
+        {
+            if (_namedPipeHelper.IsServer == false)
+            {
+                try
+                {
+                    _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
+                    Environment.Exit(0);
+                }
+                catch
+                {
+                    Environment.Exit(1);
+                }
+            }
+            else
+            {
+                _namedPipeHelper.OnMessageReceived += message =>
+                {
+                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
+                    if (message == "ActivateMe")
+                    {
+                        IoC.Get<MainWindowViewModel>()?.ShowMe(true);
+                    }
+                };
+            }
+        }
+
+        #endregion
+
         protected override void OnStart()
         {
             // Step1
             // This is called just after the application is started, but before the IoC container is set up.
             // Set up things like logging, etc
-
             _appInit.InitOnStart();
         }
 
@@ -40,6 +82,7 @@ namespace PRM
             // Configure the IoC container in here
             builder.Bind<IDataService>().And<DataService>().To<DataService>();
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
+            builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
             builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
             builder.Bind<Configuration>().ToInstance(_appInit.Configuration);
@@ -73,6 +116,11 @@ namespace PRM
             // Configure your services, etc, in here
             IoC.Init(this.Container);
             _appInit.InitOnConfigure();
+            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+            {
+                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+                IoC.Get<TaskTrayService>().TaskTrayInit();
+            };
         }
 
         protected override void OnLaunch()
@@ -86,9 +134,16 @@ namespace PRM
             _appInit.InitOnLaunch();
         }
 
+
         protected override void OnExit(ExitEventArgs e)
         {
-            // Called on Application.Exit
+            _namedPipeHelper?.Dispose();
+            IoC.Get<SessionControlService>()?.Release();
+            if (IoC.Get<LauncherWindowViewModel>()?.View != null)
+                IoC.Get<LauncherWindowViewModel>()?.RequestClose();
+            if (IoC.Get<MainWindowViewModel>()?.View != null)
+                IoC.Get<MainWindowViewModel>().RequestClose();
+            IoC.Get<TaskTrayService>().TaskTrayDispose();
         }
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)

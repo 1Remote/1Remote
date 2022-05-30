@@ -25,6 +25,16 @@ using Ui;
 
 namespace PRM.View
 {
+    public enum EnumMainWindowPage
+    {
+        List,
+        About,
+        SettingsGeneral,
+        SettingsData,
+        SettingsLauncher,
+        SettingsTheme,
+        SettingsRunners,
+    }
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
         private readonly IWindowManager _wm;
@@ -80,16 +90,9 @@ namespace PRM.View
             ShowList();
         }
 
+
         protected override void OnViewLoaded()
         {
-            var desktopResolutionWatcher = new DesktopResolutionWatcher();
-            desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
-            {
-                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
-                TaskTrayInit();
-            };
-            TaskTrayInit();
-            
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
                 Execute.OnUIThread(() =>
@@ -98,11 +101,11 @@ namespace PRM.View
                     {
                         var pvm = IoC.Get<ProcessingRingViewModel>();
                         pvm.ProcessingRingMessage = msg;
-                        TopLevelViewModel = pvm;
+                        this.TopLevelViewModel = pvm;
                     }
                     else
                     {
-                        TopLevelViewModel = null;
+                        this.TopLevelViewModel = null;
                     }
                 });
             };
@@ -113,7 +116,7 @@ namespace PRM.View
                 Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == id));
                 var server = _appData.VmItemList.First(x => x.Server.Id == id).Server;
                 EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);
-                ActivateMe();
+                ShowMe();
             });
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
@@ -124,7 +127,7 @@ namespace PRM.View
                     Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
                 };
                 EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server);
-                ActivateMe();
+                ShowMe();
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
@@ -135,9 +138,8 @@ namespace PRM.View
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases);
                 else
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
-                ActivateMe();
+                ShowMe();
             };
-
 
             if (this.View is Window window)
             {
@@ -145,13 +147,10 @@ namespace PRM.View
                 var source = HwndSource.FromHwnd(myWindowHandle);
                 source.AddHook(WndProc);
             }
-
-            _wm.ShowWindow(IoC.Get<LauncherWindowViewModel>());
         }
 
         protected override void OnClose()
         {
-            TaskTrayDispose();
             App.Close();
         }
 
@@ -179,7 +178,10 @@ namespace PRM.View
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
                     ShowSetting = true;
-                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
+                    ShowAbout = false;
+                    EditorViewModel = null;
+                    if (this.View != null)
+                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }
@@ -192,7 +194,10 @@ namespace PRM.View
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
                     ShowAbout = true;
-                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
+                    ShowSetting = false;
+                    EditorViewModel = null;
+                    if (this.View != null)
+                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }
@@ -206,7 +211,8 @@ namespace PRM.View
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
                     this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
+                    if (this.View != null)
+                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }
@@ -215,97 +221,58 @@ namespace PRM.View
 
 
 
-        #region TaskTray
 
-        private static System.Windows.Forms.NotifyIcon? _taskTrayIcon = null;
-        private void TaskTrayInit()
+        public void ShowMe(bool isForceActivate = false, EnumMainWindowPage? goPage = null)
         {
-            TaskTrayDispose();
-            Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
-            _taskTrayIcon = new System.Windows.Forms.NotifyIcon
+            if (goPage != null)
             {
-                Text = AppPathHelper.APP_DISPLAY_NAME,
-                Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
-                BalloonTipText = "",
-                Visible = true
-            };
-            ReloadTaskTrayContextMenu();
-            GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
-            _taskTrayIcon.MouseDoubleClick += (sender, e) =>
-            {
-                if (e.Button == System.Windows.Forms.MouseButtons.Left)
+                switch (goPage)
                 {
-                    ActivateMe();
+                    case EnumMainWindowPage.List:
+                        ShowList();
+                        break;
+                    case EnumMainWindowPage.About:
+                        CmdGoAboutPage?.Execute();
+                        break;
+                    case EnumMainWindowPage.SettingsGeneral:
+                    case EnumMainWindowPage.SettingsData:
+                    case EnumMainWindowPage.SettingsRunners:
+                    case EnumMainWindowPage.SettingsLauncher:
+                    case EnumMainWindowPage.SettingsTheme:
+                        SettingViewModel.ShowPage((EnumMainWindowPage)goPage);
+                        CmdGoSysOptionsPage?.Execute();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(goPage), goPage, null);
                 }
-            };
-        }
-
-        private static void TaskTrayDispose()
-        {
-            if (_taskTrayIcon != null)
-            {
-                _taskTrayIcon.Visible = false;
-                _taskTrayIcon.Dispose();
-                _taskTrayIcon = null;
             }
-        }
 
-
-        private void ReloadTaskTrayContextMenu()
-        {
-            // rebuild TaskTrayContextMenu while language changed
-            if (_taskTrayIcon == null) return;
-
-            var title = new System.Windows.Forms.ToolStripMenuItem(AppPathHelper.APP_DISPLAY_NAME);
-            title.Click += (sender, args) =>
-            {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM");
-            };
-            var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
-            linkHowToUse.Click += (sender, args) =>
-            {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/wiki");
-            };
-            var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
-            linkFeedback.Click += (sender, args) =>
-            {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
-            };
-            var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
-            exit.Click += (sender, args) => this.RequestClose();
-            _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
-            _taskTrayIcon.ContextMenuStrip.Items.Add(title);
-            _taskTrayIcon.ContextMenuStrip.Items.Add("-");
-            _taskTrayIcon.ContextMenuStrip.Items.Add(linkHowToUse);
-            _taskTrayIcon.ContextMenuStrip.Items.Add(linkFeedback);
-            _taskTrayIcon.ContextMenuStrip.Items.Add(exit);
-
-            // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
-            System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-        }
-        #endregion
-
-
-        public void ActivateMe(bool isForceActivate = false)
-        {
             if (this.View is Window window)
             {
                 if (window.WindowState == WindowState.Minimized)
                     window.WindowState = WindowState.Normal;
                 if (isForceActivate)
                     HideMe();
+                if (window.ShowInTaskbar == false)
+                {
+                    Execute.OnUIThread(() =>
+                    {
+                        window.ShowInTaskbar = true;
+                        window.Topmost = true;
+                        window.Activate();
+                        window.Topmost = false;
+                        window.Focus();
+                    });
+                }
+            }
+            else
+            {
                 Execute.OnUIThread(() =>
                 {
-                    window.Visibility = Visibility.Visible;
-                    window.Topmost = true;
-                    window.ShowInTaskbar = true;
-                    window.Activate();
-                    window.Topmost = false;
-                    window.Focus();
+                    IoC.Get<IWindowManager>().ShowWindow(this);
                 });
             }
         }
-
 
         public void HideMe()
         {
@@ -316,7 +283,10 @@ namespace PRM.View
                 Execute.OnUIThread(() =>
                 {
                     window.ShowInTaskbar = false;
+                    window.Hide();
                     window.Visibility = Visibility.Hidden;
+                    // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
+                    System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
                 });
             }
         }
@@ -340,16 +310,22 @@ namespace PRM.View
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_DEVICECHANGE = 0x0219;
-            if (msg == WM_DEVICECHANGE)
+            try
             {
-                foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
+                if (msg == WM_DEVICECHANGE)
                 {
-                    if (host is AxMsRdpClient09Host rdp)
+                    foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
                     {
-                        SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
-                        rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
+                        if (host is AxMsRdpClient09Host rdp)
+                        {
+                            SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
+                            rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
+                        }
                     }
                 }
+            }
+            finally
+            {
             }
             return IntPtr.Zero;
         }
