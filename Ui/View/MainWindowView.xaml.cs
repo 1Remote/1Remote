@@ -63,12 +63,13 @@ namespace PRM.View
             this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
 
 
-            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == true)
-            {
-                this.Visibility = Visibility.Collapsed;
-                this.WindowState = WindowState.Minimized;
-                this.ShowInTaskbar = false;
-            }
+            //if (IoC.Get<ConfigurationService>().General.AppStartMinimized == true)
+            //{
+            //    this.Hide();
+            //    this.Visibility = Visibility.Collapsed;
+            //    this.WindowState = WindowState.Minimized;
+            //    this.ShowInTaskbar = false;
+            //}
 
             BtnClose.Click += (sender, args) =>
             {

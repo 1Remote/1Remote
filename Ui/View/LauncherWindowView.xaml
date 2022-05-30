@@ -15,8 +15,11 @@
                   ResizeMode="NoResize"
                   WindowStyle="None"
                   SizeToContent="WidthAndHeight"
+                  ShowInTaskbar="False"
                   Background="Transparent"
                   mc:Ignorable="d"
+                  MinWidth="100"
+                  MinHeight="100"
                   d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
                   Title="LauncherWindowView">
     <WindowChrome.WindowChrome>
@@ -482,17 +485,13 @@
 
         <!--Note 显示备注-->
         <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" Visibility="{Binding GridNoteVisibility}">
-            <Grid
-                Width="{Binding NoteWidth}" 
-                Height="{Binding GridNoteHeight}" 
-                MinWidth="200" 
-                MinHeight="200">
-                <controls:NoteDisplayAndEditor Server="{Binding SelectedItem.Server, Mode=OneWay}"
-                                           EditEnable="True"
-                                           CloseEnable="True"
-                                           CommandOnCloseRequest="{Binding CmdHideNoteField, Mode=OneWay}"
-                                           ></controls:NoteDisplayAndEditor>
-            </Grid>
+                <controls:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
+                                               Height="{Binding GridNoteHeight}" 
+                                               Server="{Binding SelectedItem.Server, Mode=OneWay}"
+                                               EditEnable="True"
+                                               CloseEnable="True"
+                                               CommandOnCloseRequest="{Binding CmdHideNoteField, Mode=OneWay}"
+                ></controls:NoteDisplayAndEditor>
         </Border>
     </Grid>
 </styles:WindowChromeBase>

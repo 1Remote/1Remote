@@ -156,7 +156,7 @@ namespace PRM.View
         public double GridNoteHeight
         {
             get => _gridNoteHeight;
-            set => SetAndNotifyIfChanged(ref _gridNoteHeight, value);
+            set => SetAndNotifyIfChanged(ref _gridNoteHeight, value + 20);
         }
 
         private double _noteWidth = 500;
@@ -178,20 +178,16 @@ namespace PRM.View
         public LauncherWindowViewModel()
         {
             ReCalcWindowHeight(false);
-            RebuildVmServerList();
             IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
             RebuildVmServerList();
-            CalcNoteFieldVisibility();
         }
 
         protected override void OnViewLoaded()
         {
             HideMe();
-            SetHotKey();
-            CalcNoteFieldVisibility();
-            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
             if (this.View is LauncherWindowView window)
             {
+                SetHotKey();
                 _gridMenuActions = window.GridMenuActions;
                 _keywordHeight = (double)window.FindResource("LauncherGridKeywordHeight");
                 _listAreaWidth = (double)window.FindResource("LauncherListAreaWidth");
@@ -199,10 +195,10 @@ namespace PRM.View
                 _actionListItemHeight = (double)window.FindResource("LauncherActionListItemHeight");
                 _outlineCornerRadius = (double)window.FindResource("LauncherOutlineCornerRadius");
                 _noteField = window.NoteField;
-                window.ShowActivated = true;
-                window.ShowInTaskbar = false;
                 window.Deactivated += (s, a) => { HideMe(); };
                 window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
+                CalcVisibleByFilter();
+                CalcNoteFieldVisibility();
             }
         }
 
@@ -404,13 +400,10 @@ namespace PRM.View
 
                 if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
                 if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false) return;
-                if (window.Visibility == Visibility.Visible) return;
 
                 lock (this)
                 {
                     window.WindowState = WindowState.Normal;
-                    if (window.Visibility == Visibility.Visible) return;
-
                     Filter = "";
                     CalcVisibleByFilter();
                     // show position
@@ -434,6 +427,10 @@ namespace PRM.View
                     window.TbKeyWord.Focus();
                 }
             }
+            else
+            {
+                IoC.Get<IWindowManager>().ShowWindow(this);
+            }
         }
 
 
@@ -441,22 +438,24 @@ namespace PRM.View
         {
             if (this.View is LauncherWindowView window)
             {
-                if (window.Visibility != Visibility.Visible) return;
                 lock (this)
                 {
-                    if (window.Visibility != Visibility.Visible) return;
-                    window.Visibility = Visibility.Hidden;
-                    window.Hide();
-                    window.GridMenuActions.Visibility = Visibility.Hidden;
-                    this.Filter = "";
+                    Execute.OnUIThread(() =>
+                    {
+                        window.Hide();
+                        this.Filter = "";
+                        window.GridMenuActions.Visibility = Visibility.Hidden;
+                        // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
+                        System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+                    });
                 }
-                SimpleLogHelper.Debug("Call HideMe()");
             }
         }
 
 
         public void SetHotKey()
         {
+            GlobalEventHelper.OnLauncherHotKeyChanged -= SetHotKey;
             if (this.View is LauncherWindowView window)
             {
                 GlobalHotkeyHooker.Instance.Unregist(window);
@@ -467,7 +466,6 @@ namespace PRM.View
                 {
                     case GlobalHotkeyHooker.RetCode.Success:
                         break;
-
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                         {
                             var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_registered_fail")}: {r.Item2}";
@@ -486,6 +484,7 @@ namespace PRM.View
                         throw new ArgumentOutOfRangeException(r.Item1.ToString());
                 }
             }
+            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
         }
 
 

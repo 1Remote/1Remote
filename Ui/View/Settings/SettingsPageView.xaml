@@ -8,7 +8,7 @@
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:service="clr-namespace:PRM.Service"
-             xmlns:protocolConfig1="clr-namespace:PRM.View.Settings.ProtocolConfig"
+             xmlns:protocolConfig="clr-namespace:PRM.View.Settings.ProtocolConfig"
              xmlns:settings="clr-namespace:PRM.View.Settings"
              xmlns:converter="clr-namespace:Shawn.Utils.WpfResources.Converter;assembly=Shawn.Utils.WpfResources"
              mc:Ignorable="d"
@@ -230,7 +230,7 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Name="TabItemQuick" Header="{DynamicResource Launcher}">
+            <TabItem Name="TabItemLauncher" Header="{DynamicResource Launcher}">
                 <StackPanel Margin="0 20 20 0" >
 
 
@@ -556,8 +556,8 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="{DynamicResource Protocol}">
-                <protocolConfig1:ProtocolRunnerSettingsPage Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
+            <TabItem Name="TabItemRunners" Header="{DynamicResource Protocol}">
+                <protocolConfig:ProtocolRunnerSettingsPage Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
             </TabItem>
 
         </TabControl>

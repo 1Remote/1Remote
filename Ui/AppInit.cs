@@ -20,6 +20,7 @@ using PRM.View.Settings.ProtocolConfig;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 using Ui;
 
 namespace PRM
@@ -70,7 +71,6 @@ namespace PRM
         public void InitOnStart()
         {
             Debug.Assert(App.ResourceDictionary != null);
-            App.OnlyOneAppInstanceCheck();
 
             LanguageService = new LanguageService(App.ResourceDictionary);
             LanguageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
@@ -140,10 +140,6 @@ namespace PRM
                         {
                             isPortableMode = true;
                         }
-                        //else if (appDataProfilePathExisted)
-                        //{
-                        //    isPortableMode = false;
-                        //}
                         else
                         {
                             // portable 配置文件不存在，无论 app_data 的配置是否存在都进引导
@@ -266,28 +262,23 @@ namespace PRM
             _dbConnectionStatus = context.InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
+            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
+
 
         public void InitOnLaunch()
         {
-
             if (_dbConnectionStatus != EnumDbStatus.OK)
             {
                 string error = _dbConnectionStatus.GetErrorInfo();
                 MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                IoC.Get<MainWindowViewModel>().CmdGoSysOptionsPage.Execute("Data");
-                IoC.Get<MainWindowViewModel>().ActivateMe();
+                IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
             }
-
-
-            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
+            else if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
                 || _isNewUser)
             {
-                IoC.Get<MainWindowViewModel>().ActivateMe();
+                IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
-
-            // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
-            System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
         }
     }
 }

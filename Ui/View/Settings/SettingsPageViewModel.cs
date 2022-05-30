@@ -19,7 +19,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.View.Settings
 {
-    public class SettingsPageViewModel : NotifyPropertyChangedBase
+    public class SettingsPageViewModel : NotifyPropertyChangedBaseScreen
     {
         private readonly PrmContext _context;
         private LanguageService _languageService => IoC.Get<LanguageService>();
@@ -41,6 +41,14 @@ namespace PRM.View.Settings
             ValidateDbStatusAndShowMessageBox(false);
         }
 
+        protected override void OnViewLoaded()
+        {
+            if (this.View is Window window)
+            {
+
+            }
+        }
+
         public void SetLanguage(string languageCode = "")
         {
             if (string.IsNullOrEmpty(languageCode) == false
@@ -48,6 +56,36 @@ namespace PRM.View.Settings
                 && _languageService.SetLanguage(languageCode))
             {
                 _configurationService.General.CurrentLanguageCode = languageCode;
+            }
+        }
+
+        public void ShowPage(EnumMainWindowPage page)
+        {
+            if (this.View is SettingsPageView view)
+            {
+                switch (page)
+                {
+                    case EnumMainWindowPage.SettingsGeneral:
+                        view.TabItemGeneral.IsSelected = true;
+                        break;
+                    case EnumMainWindowPage.SettingsData:
+                        view.TabItemDataBase.IsSelected = true;
+                        break;
+                    case EnumMainWindowPage.SettingsRunners:
+                        view.TabItemRunners.IsSelected = true;
+                        break;
+                    case EnumMainWindowPage.SettingsLauncher:
+                        view.TabItemLauncher.IsSelected = true;
+                        break;
+                    case EnumMainWindowPage.SettingsTheme:
+                        view.TabItemTheme.IsSelected = true;
+                        break;
+                    case EnumMainWindowPage.List:
+                    case EnumMainWindowPage.About:
+                    default:
+                        CmdSaveAndGoBack.Execute();
+                        break;
+                }
             }
         }
 
