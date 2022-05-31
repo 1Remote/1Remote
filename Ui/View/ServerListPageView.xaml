@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
+             xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:service="clr-namespace:PRM.Service"
              xmlns:model="clr-namespace:PRM.Model"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
@@ -337,12 +338,15 @@
                             <Setter.Value>
                                 <ItemsPanelTemplate>
                                     <!--<WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>-->
-                                    <controls:VirtualizingWrapPanel 
+                                    <controls2:VirtualizingWrapPanel 
                                         IsVirtualizing="True"
                                         ScrollUnit="Pixel"
                                         VirtualizationMode="Recycling"
-                                        CacheLengthUnit="Item"
-                                        Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
+                                        CanHorizontallyScroll="False"
+                                        MouseWheelDelta="1"
+                                        MouseWheelDeltaItem="1"
+                                        CacheLengthUnit="Pixel"
+                                        Orientation="Vertical" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
