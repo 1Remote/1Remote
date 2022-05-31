@@ -253,17 +253,15 @@ namespace PRM.View
                     window.WindowState = WindowState.Normal;
                 if (isForceActivate)
                     HideMe();
-                if (window.ShowInTaskbar == false)
+                Execute.OnUIThread(() =>
                 {
-                    Execute.OnUIThread(() =>
-                    {
-                        window.ShowInTaskbar = true;
-                        window.Topmost = true;
-                        window.Activate();
-                        window.Topmost = false;
-                        window.Focus();
-                    });
-                }
+                    window.Show();
+                    window.ShowInTaskbar = true;
+                    window.Topmost = true;
+                    window.Activate();
+                    window.Topmost = false;
+                    window.Focus();
+                });
             }
             else
             {
