@@ -247,4 +247,5 @@
     <s:String x:Key="Profile is saved where executable is located">プロファイルは実行可能ファイルが配置されている場所に保存されます</s:String>
     <s:String x:Key="Install for current windows account">現在のWindowsアカウント用にインストール</s:String>
     <s:String x:Key="Profile is saved in your Windows AppData folder">プロファイルはWindowsAppDataフォルダーに保存されます</s:String>
+    <s:String x:Key="Selected runner">選ばれたランナー</s:String>
 </ResourceDictionary>

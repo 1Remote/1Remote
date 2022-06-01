@@ -340,7 +340,8 @@
                                     <!--<WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>-->
                                     <controls2:VirtualizingWrapPanel 
                                         IsVirtualizing="True"
-                                        ScrollUnit="Pixel"
+                                        ScrollUnit="Item"
+                                        SpacingMode="None"
                                         VirtualizationMode="Recycling"
                                         CanHorizontallyScroll="False"
                                         MouseWheelDelta="1"
@@ -486,6 +487,10 @@
                          ItemsSource="{Binding ServerListItems}"
                          Margin="0 2 0 0" BorderThickness="0" Background="Transparent"
                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                         VirtualizingPanel.CacheLengthUnit="Item"
+                         VirtualizingPanel.CacheLength="5"
+                         VirtualizingPanel.ScrollUnit="Item"
+                         VirtualizingPanel.IsVirtualizing="True"
                          Style="{DynamicResource ServerListStyle}">
                 </ListBox>
 
