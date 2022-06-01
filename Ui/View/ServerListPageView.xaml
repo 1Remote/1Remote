@@ -345,7 +345,7 @@
                                         CanHorizontallyScroll="False"
                                         MouseWheelDelta="1"
                                         MouseWheelDeltaItem="1"
-                                        CacheLengthUnit="Pixel"
+                                        CacheLengthUnit="Item"
                                         Orientation="Vertical" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
                                 </ItemsPanelTemplate>
                             </Setter.Value>
