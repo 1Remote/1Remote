@@ -122,10 +122,10 @@ namespace PRM.Utils
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
-                //case RDP:
-                //    {
-                //        return GetRdpInternalHost(context, server, runner);
-                //    }
+                case RDP:
+                    {
+                        return GetRdpInternalHost(context, server, runner);
+                    }
                 case SSH ssh:
                     {
                         Debug.Assert(runner is KittyRunner);
