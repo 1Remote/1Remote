@@ -247,4 +247,5 @@
     <s:String x:Key="Profile is saved where executable is located">配置文件保存在可执行文件所在文件夹</s:String>
     <s:String x:Key="Install for current windows account">为当前 Windows 用户配置</s:String>
     <s:String x:Key="Profile is saved in your Windows AppData folder">配置文件保存在 Windows AppData 文件夹</s:String>
+    <s:String x:Key="Selected runner">指定Runner</s:String>
 </ResourceDictionary>

@@ -247,4 +247,5 @@
     <s:String x:Key="Profile is saved where executable is located">Le profil est enregistré là où est situé</s:String>
     <s:String x:Key="Install for current windows account">Installer pour le compte Windows actuel</s:String>
     <s:String x:Key="Profile is saved in your Windows AppData folder">Le profil est enregistré dans votre dossier Windows AppData</s:String>
+    <s:String x:Key="Selected runner">Coureur sélectionné</s:String>
 </ResourceDictionary>

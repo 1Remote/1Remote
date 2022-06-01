@@ -14,46 +14,55 @@
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
 		<StartupObject>Ui.App</StartupObject>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
 	  <DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
+	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|AnyCPU'">
 		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;DEV;</DefineConstants>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|x86'">
 	  <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 	  <DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;DEV;</DefineConstants>
+	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DefineConstants>TRACE;</DefineConstants>
 		<Optimize>True</Optimize>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
 	  <DefineConstants>TRACE;</DefineConstants>
 	  <Optimize>True</Optimize>
+	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
 		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<Optimize>True</Optimize>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x86'">
 	  <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 	  <DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 	  <Optimize>True</Optimize>
+	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<ItemGroup>

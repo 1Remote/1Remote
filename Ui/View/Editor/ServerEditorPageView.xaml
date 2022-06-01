@@ -303,7 +303,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </controls:GridWith4Columns.Style>
-                                    <TextBlock Grid.Column="0" Text="TXT:selected runner" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Selected runner'}" Style="{StaticResource RowHeader}"></TextBlock>
 
                                     <ComboBox Grid.Column="1" 
                                               ItemsSource="{Binding Runners, UpdateSourceTrigger=PropertyChanged}"

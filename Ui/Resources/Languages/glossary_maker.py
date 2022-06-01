@@ -1,6 +1,7 @@
 import csv
-from math import fabs
+import math
 import os
+from os import path
 import copy
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
@@ -41,7 +42,7 @@ class glossary:
 
     def load_csv(self, csv_file_name: str, encoding: str = 'utf-8'):
         lines = []  # [[key, english_word, a, b, c, d], [key1, w1, ...], ...]
-        with open(csv_file_name, encoding=encoding)as f:
+        with open(csv_file_name, mode='r', encoding=encoding)as f:
             reader = csv.reader(f)
             for row in reader:
                 lines.append(row)
@@ -65,23 +66,31 @@ class glossary:
 
     def do_translate(self, translator: Translator):
         for column in self.columns:
+            print('processing ', column[0])
             for row in range(len(column)):
                 if row <= self.ROW_LANG_NAME:
                     continue
                 # 没有内容时才进行翻译
                 if column[row] == '':
+                    print('translating to [', column[0], ']: ', self.english_words[row])
                     txt = translator.translate(Special_Marks_to_Characters_in_XAML(self.english_words[row]), dest=column[self.ROW_LANG_CODE_GOOGLE]).text
                     column[row] = txt
-                else:
-                    column[row] = ''
 
     def merge_columns(self, src):
-        assert len(self.keys) == len(src.keys)
-        assert len(self.columns) == len(src.columns)
-        for col in range(len(self.columns)):
-            for row in range(len(self.columns[col])):
-                if self.columns[col][row] == '':
-                    self.columns[col][row] = src.columns[col][row]
+        self_languages = [column[self.ROW_TITLE] for column in self.columns]
+        src_languages = [column[self.ROW_TITLE] for column in src.columns]
+        for src_col in range(len(src.columns)):
+            if src_languages[src_col] not in self_languages:
+                continue
+            self_col = self_languages.index(src_languages[src_col])
+            for src_row in range(len(src.columns[src_col])):
+                if src.columns[src_col][src_row] == '':
+                    continue
+                if src.keys[src_row] not in self.keys:
+                    continue
+                self_row = self.keys.index(src.keys[src_row])
+                if self.columns[self_col][self_row] == '':
+                    self.columns[self_col][self_row] = src.columns[src_col][src_row]
 
     def clear_content_rows(self):
         for column in self.columns:
@@ -137,10 +146,13 @@ if __name__ == '__main__':
 
     # translate
     t = g.clone()
+    if path.exists(CSV_FILE_NAME + '_translated_by_google.csv'):
+        google_translated = glossary()
+        google_translated.load_csv(CSV_FILE_NAME + '_translated_by_google.csv')
+        t.merge_columns(google_translated)
     t.do_translate(translator)
     t.save_csv(CSV_FILE_NAME + '_translated_by_google.csv')
     g.merge_columns(t)
-    g.save_csv(CSV_FILE_NAME + '_translated_full.csv')
     g.save_to_xaml()
 
     # save xaml
