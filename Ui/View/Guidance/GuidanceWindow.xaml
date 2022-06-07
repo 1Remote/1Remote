@@ -141,7 +141,7 @@
                           Height="20" Width="150" />
             </StackPanel>
             <TextBlock>
-                <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/1Remote/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
+                <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/1Remote/PRemoteM/wiki/Help-wanted-Translation" FontSize="10">
                     <Hyperlink.Style>
                         <Style TargetType="{x:Type Hyperlink}">
                             <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
