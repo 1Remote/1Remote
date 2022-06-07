@@ -6,6 +6,7 @@ using PRM.Model.Protocol.Base;
 using PRM.Model.ProtocolRunner;
 using PRM.Model.ProtocolRunner.Default;
 using PRM.Service;
+using PRM.View;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
@@ -60,8 +61,18 @@ namespace PRM.Model
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
                 }
 
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false); }));
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false); }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
+                {
+                    if(GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                        IoC.Get<MainWindowViewModel>()?.ShowMe();
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false);
+                }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                {
+                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                        IoC.Get<MainWindowViewModel>()?.ShowMe();
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false);
+                }));
             };
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {

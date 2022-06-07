@@ -22,7 +22,10 @@ namespace Ui
 
         public static void Close(int exitCode = 0)
         {
-            Application.Current.Shutdown(exitCode);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Application.Current.Shutdown(exitCode);
+            });
         }
     }
 }
