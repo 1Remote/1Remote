@@ -472,12 +472,12 @@ namespace PRM.View
                     string? tabName = (string?)o;
                     if (tabName is TAB_TAGS_LIST_NAME or TAB_ALL_NAME)
                     {
-                        _tagFilters.Clear();
-                        RaisePropertyChanged(nameof(TagFilters));
-                        SelectedTabName = tabName;
-                        RaisePropertyChanged(nameof(SelectedTabName));
                         if (tabName is not TAB_ALL_NAME)
                             TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
+                        else
+                            TagFilters = new List<TagFilter>();
+                        SelectedTabName = tabName;
+                        RaisePropertyChanged(nameof(SelectedTabName));
                     }
                     else if (string.IsNullOrEmpty(tabName) == false)
                         TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };

@@ -249,12 +249,12 @@ namespace PRM.View
 
             if (this.View is Window window)
             {
-                if (window.WindowState == WindowState.Minimized)
-                    window.WindowState = WindowState.Normal;
-                if (isForceActivate)
-                    HideMe();
                 Execute.OnUIThread(() =>
                 {
+                    if (window.WindowState == WindowState.Minimized)
+                        window.WindowState = WindowState.Normal;
+                    if (isForceActivate)
+                        HideMe();
                     window.Show();
                     window.ShowInTaskbar = true;
                     window.Topmost = true;
@@ -367,11 +367,11 @@ namespace PRM.View
             }
         }
 
-        public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords, bool InvokeOnFilterChanged = true)
+        public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
         {
             if (tags?.Count == 1 && tags.First().TagName is ServerListPageViewModel.TAB_TAGS_LIST_NAME)
             {
-                _mainFilterString = "";
+                _mainFilterString = ServerListPageViewModel.TAB_TAGS_LIST_NAME;
                 RaisePropertyChanged(nameof(MainFilterString));
             }
             else

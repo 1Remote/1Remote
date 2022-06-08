@@ -100,6 +100,9 @@
                                             <Setter Property="IsEnabled" Value="True"></Setter>
                                         </MultiDataTrigger.Setters>
                                     </MultiDataTrigger>
+                                    <DataTrigger Binding="{Binding MainFilterString}" Value="{x:Static  view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBox.Style>
