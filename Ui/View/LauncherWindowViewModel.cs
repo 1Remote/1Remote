@@ -20,6 +20,7 @@ using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
 using Markdig.Wpf;
+using PRM.Controls.NoteDisplay;
 using PRM.Model.Protocol.Base;
 using XamlReader = System.Windows.Markup.XamlReader;
 
@@ -544,7 +545,7 @@ namespace PRM.View
             Visibility newVisibility;
             if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
                 newVisibility = Visibility.Collapsed;
-            else if (string.IsNullOrEmpty(SelectedItem?.Server?.Note?.Trim()) == false)
+            else if (ConverterNoteToVisibility.IsVisible(SelectedItem?.Server?.Note))
                 newVisibility = Visibility.Visible;
             else
                 newVisibility = Visibility.Collapsed;

@@ -12,6 +12,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Newtonsoft.Json;
+using PRM.Controls;
+using PRM.Controls.NoteDisplay;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
@@ -525,7 +527,19 @@ namespace PRM.View
         public Visibility GridNoteVisibility
         {
             get => _gridNoteVisibility;
-            set => this.SetAndNotifyIfChanged(ref this._gridNoteVisibility, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref this._gridNoteVisibility, value))
+                {
+                    foreach (var item in ServerListItems.Where(x=>x.HoverNoteDisplayControl != null))
+                    {
+                        if (item.HoverNoteDisplayControl is NoteIcon ni)
+                        {
+                            ni.IsBriefNoteShown = value == Visibility.Visible;
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

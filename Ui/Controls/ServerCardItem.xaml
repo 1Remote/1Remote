@@ -10,6 +10,7 @@
              xmlns:model="clr-namespace:PRM.Model"
              xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
              xmlns:controls="clr-namespace:PRM.Controls"
+             xmlns:noteDisplay="clr-namespace:PRM.Controls.NoteDisplay"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -355,7 +356,7 @@
                             <Popup Name="PopupNote"
                                         AllowsTransparency="True"
                                         PlacementTarget="{Binding ElementName=ButtonShowNote}" StaysOpen="False">
-                                <controls:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                <noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
                                                             Server="{Binding Server, Mode=OneWay}"
                                                             EditEnable="True"
                                                             CloseEnable="False"/>

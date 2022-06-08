@@ -7,29 +7,15 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:model="clr-namespace:PRM.Model"
-             xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
-    <UserControl.Resources>
-        <local:ConverterNoteToSingleLineNote x:Key="ConverterNoteToSingleLineNote" />
-    </UserControl.Resources>
     <Grid FocusVisualStyle="{x:Null}">
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
             <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
         </Grid.InputBindings>
         <Grid Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
-        <!--<Grid Opacity="0.4">
-            <Grid.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0.9,0">
-                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.2"></GradientStop>
-                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.7"></GradientStop>
-                    <GradientStop Color="Transparent" Offset="0.9"></GradientStop>
-                </LinearGradientBrush>
-            </Grid.Background>
-        </Grid>-->
         <Grid>
             <Grid.Margin>
                 <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
@@ -112,86 +98,7 @@
 
                 <!--brief note -->
                 <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
-                    <!--text button show note-->
-                    <Button Name="ButtonBriefNote"
-                            HorizontalContentAlignment="Left"
-                            MouseEnter="ButtonShowNote_OnMouseEnter"
-                            attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
-                            Background="{DynamicResource BackgroundBrush}"
-                            Foreground="{DynamicResource BackgroundTextBrush}">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Collapsed">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Grid>
-                            <TextBlock Margin="5" HorizontalAlignment="Left" MaxWidth="400"
-                                       Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
-                                       TextWrapping="NoWrap"
-                                       Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
-                                       TextTrimming="CharacterEllipsis"></TextBlock>
-                        </Grid>
-                    </Button>
-
-                    <!--icon button show note-->
-                    <Button
-                        Name="ButtonShowNote"
-                        Width="20" Height="20"
-                        Background="Transparent"
-                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                        Foreground="{DynamicResource BackgroundTextBrush}"
-                        attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
-                        attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
-                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Opacity="0.7"
-                        attachProperty:VisionElement.Opacity="0.8"
-                        attachProperty:VisionElement.OpacityAccent="0.9"
-                        MouseEnter="ButtonShowNote_OnMouseEnter"
-                        >
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Style.Triggers>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.GridNoteVisibility}" Value="Collapsed"></Condition>
-                                        </MultiDataTrigger.Conditions>
-                                        <MultiDataTrigger.Setters>
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                        </MultiDataTrigger.Setters>
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Grid Width="16">
-                            <Path Data="{StaticResource NoteGeometry}"
-                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      StrokeThickness="0" Stretch="Uniform" />
-                        </Grid>
-                    </Button>
-
-
-
-                    <Popup Name="PopupNote" 
-                           Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
-                           AllowsTransparency="True"
-                           PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                        <local:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
-                                                    Server="{Binding Server, Mode=OneWay}"
-                                                    EditEnable="True"
-                                                    CloseEnable="False"/>
-                    </Popup>
+                    <ContentControl Content="{Binding HoverNoteDisplayControl}" Background="Red"></ContentControl>
                 </Grid>
 
                 <!--address-->
