@@ -11,6 +11,7 @@
                   xmlns:s="https://github.com/canton7/Stylet"
                   xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
                   xmlns:controls="clr-namespace:PRM.Controls"
+                  xmlns:noteDisplay="clr-namespace:PRM.Controls.NoteDisplay"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -485,13 +486,13 @@
 
         <!--Note 显示备注-->
         <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" Visibility="{Binding GridNoteVisibility}">
-                <controls:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
+                <noteDisplay:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
                                                Height="{Binding GridNoteHeight}" 
                                                Server="{Binding SelectedItem.Server, Mode=OneWay}"
                                                EditEnable="True"
                                                CloseEnable="True"
                                                CommandOnCloseRequest="{Binding CmdHideNoteField, Mode=OneWay}"
-                ></controls:NoteDisplayAndEditor>
+                ></noteDisplay:NoteDisplayAndEditor>
         </Border>
     </Grid>
 </styles:WindowChromeBase>

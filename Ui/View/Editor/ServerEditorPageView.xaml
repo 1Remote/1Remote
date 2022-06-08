@@ -11,6 +11,7 @@
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:editor="clr-namespace:PRM.View.Editor"
              xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+             xmlns:noteDisplay="clr-namespace:PRM.Controls.NoteDisplay"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
              Background="White"
@@ -107,7 +108,7 @@
                                                    Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
                                                    AllowsTransparency="True"
                                                    PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                                                <controls:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                                <noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
                                                                             Server="{Binding Server, Mode=OneWay}"
                                                                             EditEnable="False"
                                                                             CloseEnable="False"/>

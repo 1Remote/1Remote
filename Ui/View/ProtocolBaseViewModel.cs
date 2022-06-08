@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
+using PRM.Controls;
+using PRM.Controls.NoteDisplay;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
@@ -19,6 +21,10 @@ namespace PRM.View
         {
             Debug.Assert(psb != null);
             Server = psb;
+            if (ConverterNoteToVisibility.IsVisible(Server.Note))
+            {
+                HoverNoteDisplayControl = new NoteIcon(this.Server);
+            }
         }
 
         public object OrgDisplayNameControl => new TextBlock() { Text = Server?.DisplayName, };
@@ -38,6 +44,13 @@ namespace PRM.View
         {
             get => _subTitleControl ??= OrgSubTitleControl;
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
+        }
+
+        private object? _hoverNoteDisplayControl = null;
+        public object? HoverNoteDisplayControl
+        {
+            get => _hoverNoteDisplayControl;
+            set => SetAndNotifyIfChanged(ref _hoverNoteDisplayControl, value);
         }
 
         private bool _isSelected;
@@ -89,6 +102,7 @@ namespace PRM.View
         }
 
         private List<ProtocolAction>? _actions;
+
         public List<ProtocolAction>? Actions
         {
             get => _actions;
