@@ -49,6 +49,11 @@ namespace PRM.View
                     IoC.Get<SettingsPageViewModel>().ListPageIsCardView = value;
                     RaisePropertyChanged();
                 }
+                if (value == true)
+                {
+                    _briefNoteVisibility = Visibility.Visible;
+                    BriefNoteVisibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -104,6 +109,26 @@ namespace PRM.View
         public bool IsAnySelected => ServerListItems.Any(x => x.IsSelected == true);
 
         private string _filterString = "";
+
+
+        private Visibility _briefNoteVisibility;
+        public Visibility BriefNoteVisibility
+        {
+            get => _briefNoteVisibility;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref this._briefNoteVisibility, value))
+                {
+                    foreach (var item in ServerListItems.Where(x => x.HoverNoteDisplayControl != null))
+                    {
+                        if (item.HoverNoteDisplayControl is NoteIcon ni)
+                        {
+                            ni.IsBriefNoteShown = value == Visibility.Visible;
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         public ServerListPageViewModel(PrmContext context, GlobalData appData)
@@ -113,7 +138,12 @@ namespace PRM.View
             AppData.VmItemListDataChanged += RebuildVmServerList;
             RebuildVmServerList();
 
-            GridNoteVisibility = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
+            {
+                var showNoteFieldInListView = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView;
+                // Make sure the update do triggered the first time assign a value 
+                _briefNoteVisibility = showNoteFieldInListView == false ? Visibility.Visible : Visibility.Collapsed;
+                BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
+            }
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
                 {
@@ -504,7 +534,7 @@ namespace PRM.View
                 {
                     IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = false;
                     IoC.Get<ConfigurationService>().Save();
-                    GridNoteVisibility = Visibility.Collapsed;
+                    BriefNoteVisibility = Visibility.Collapsed;
                 });
             }
         }
@@ -518,27 +548,8 @@ namespace PRM.View
                 {
                     IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = true;
                     IoC.Get<ConfigurationService>().Save();
-                    GridNoteVisibility = Visibility.Visible;
+                    BriefNoteVisibility = Visibility.Visible;
                 });
-            }
-        }
-
-        private Visibility _gridNoteVisibility = Visibility.Visible;
-        public Visibility GridNoteVisibility
-        {
-            get => _gridNoteVisibility;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref this._gridNoteVisibility, value))
-                {
-                    foreach (var item in ServerListItems.Where(x=>x.HoverNoteDisplayControl != null))
-                    {
-                        if (item.HoverNoteDisplayControl is NoteIcon ni)
-                        {
-                            ni.IsBriefNoteShown = value == Visibility.Visible;
-                        }
-                    }
-                }
             }
         }
 

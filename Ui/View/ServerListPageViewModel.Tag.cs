@@ -33,7 +33,7 @@ namespace PRM.View
                 if (SetAndNotifyIfChanged(ref _tagFilters, value))
                 {
                     string tagName;
-                    if (_tagFilters.Count == 1)
+                    if (_tagFilters.Count == 1 && _tagFilters.First().IsIncluded)
                     {
                         tagName = _tagFilters.First().TagName;
                     }
@@ -46,10 +46,18 @@ namespace PRM.View
                         tagName = TAB_NONE_SELECTED;
                     }
 
-                    if (_tagFilters.Count > 0 && TagFilters.All(x => AppData.TagList.Any(tag => tag.Name == x.TagName)))
+
+                    if (_tagFilters.Count == 1
+                        && _tagFilters[0].IsIncluded == true
+                        && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == _tagFilters[0].TagName))
                     {
                         // 如果 tag 过滤器已经在 tab 上显示了，就不显示  tag on the top
-                        IsTagFiltersShown = (false == TagFilters.All(x => x.IsIncluded == true && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == x.TagName)));
+                        IsTagFiltersShown = false;
+                    }
+                    else if (_tagFilters.Count > 0)
+                    {
+                        // 如果 tag 过滤器已经在 tab 上显示了，就不显示  tag on the top
+                        IsTagFiltersShown = true;
                     }
                     else
                     {

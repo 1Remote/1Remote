@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:model="clr-namespace:PRM.Model"
@@ -59,7 +58,9 @@
 
                 <!--icon-->
                 <Grid Grid.Column="2" Width="30" HorizontalAlignment="Center" Margin="5 0">
-                    <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                    <Image Source="{Binding Server.IconImg}" 
+                           RenderOptions.BitmapScalingMode="LowQuality"
+                           Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                 </Grid>
 
                 <!--display name-->

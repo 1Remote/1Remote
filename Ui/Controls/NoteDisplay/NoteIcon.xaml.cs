@@ -74,7 +74,7 @@ namespace PRM.Controls.NoteDisplay
             if (ButtonBriefNote.ActualWidth > 0)
             {
                 var p2 = args.MouseDevice.GetPosition(ButtonBriefNote);
-                SimpleLogHelper.Debug($"ButtonBriefNote: {p2.X}, {p2.Y}, h= {ButtonBriefNote.ActualHeight}, w= {ButtonBriefNote.ActualWidth}");
+                //SimpleLogHelper.Debug($"ButtonBriefNote: {p2.X}, {p2.Y}, h= {ButtonBriefNote.ActualHeight}, w= {ButtonBriefNote.ActualWidth}");
                 if (p2.X < 0 || p2.Y < 0)
                     PopupNote.IsOpen = false;
                 else if (p2.Y < ButtonBriefNote.ActualHeight && p2.X > ButtonBriefNote.ActualWidth)
