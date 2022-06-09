@@ -8,9 +8,6 @@
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:model="clr-namespace:PRM.Model"
-             xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-             xmlns:controls="clr-namespace:PRM.Controls"
-             xmlns:noteDisplay="clr-namespace:PRM.Controls.NoteDisplay"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -24,13 +21,14 @@
             </Grid.InputBindings>
 
             <!-- Card Bottom Layer - with shadow effect -->
+            <!--
             <Border CornerRadius="5" BorderThickness="0" 
                     Background="Black" 
                     Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
-            </Border>
+            </Border>-->
 
 
             <Grid Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
@@ -49,40 +47,10 @@
                           Background="{Binding Server.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
-                        <Image Source="{Binding Server.IconImg, Mode=OneWay}" Width="110" Height="110"
+                        <Image Source="{Binding Server.IconImg, Mode=OneWay}" 
+                               RenderOptions.BitmapScalingMode="LowQuality"
+                               Width="80" Height="80"
                                Stretch="UniformToFill">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Setter Property="RenderTransform">
-                                        <Setter.Value>
-                                            <TransformGroup>
-                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="65" CenterY="65"></ScaleTransform>
-                                                <RotateTransform Angle="0"></RotateTransform>
-                                            </TransformGroup>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
-                                            <Setter Property="RenderTransform">
-                                                <Setter.Value>
-                                                    <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
-                                                    </TransformGroup>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                            <Setter Property="RenderTransform">
-                                                <Setter.Value>
-                                                    <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
-                                                    </TransformGroup>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
                         </Image>
                     </Grid>
 
@@ -280,12 +248,9 @@
                                           Stretch="Uniform" />
                                 </Button>
                                 <Popup Name="PopupCardSettingMenu"
-                                   AllowsTransparency="True"
-                                   PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
+                                       AllowsTransparency="True"
+                                       PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
                                     <Border Padding="0 0 4 4">
-                                        <Border.Effect>
-                                            <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                                        </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                                             <ListBox ItemsSource="{Binding Actions}" BorderThickness="0">
                                                 <ListBox.Style>
@@ -332,35 +297,7 @@
                         </Grid>
 
                         <Grid Grid.Row="1" RowSpan="2" VerticalAlignment="Bottom" Margin="0 0 0 25">
-                            <Button 
-                                    Width="16" Height="16"
-                                    Name="ButtonShowNote"
-                                    Background="Transparent"
-                                    attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                    attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                                    Margin="5 0 0 0"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                                    attachProperty:VisionElement.Opacity="0.8"
-                                    attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
-                                    >
-                                <Grid Width="14">
-                                    <Path Data="{StaticResource NoteGeometry}"
-                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                              StrokeThickness="0" Stretch="Uniform" />
-                                </Grid>
-                            </Button>
-
-                            <Popup Name="PopupNote"
-                                        AllowsTransparency="True"
-                                        PlacementTarget="{Binding ElementName=ButtonShowNote}" StaysOpen="False">
-                                <noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
-                                                            Server="{Binding Server, Mode=OneWay}"
-                                                            EditEnable="True"
-                                                            CloseEnable="False"/>
-                            </Popup>
+                            <ContentControl Content="{Binding HoverNoteDisplayControl}" Background="Red"></ContentControl>
                         </Grid>
                     </Grid>
                 </Border>

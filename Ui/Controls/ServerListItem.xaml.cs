@@ -43,6 +43,10 @@ namespace PRM.Controls
         public ServerListItem()
         {
             InitializeComponent();
+            PopupCardSettingMenu.Closed += (sender, args) =>
+            {
+                ProtocolBaseViewModel.Actions = null;
+            };
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
@@ -53,11 +57,11 @@ namespace PRM.Controls
 
         private void ServerMenuButton_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupCardSettingMenu.IsOpen = false;
             if (sender is Button { CommandParameter: ProtocolAction afs })
             {
                 afs.Run();
             }
+            PopupCardSettingMenu.IsOpen = false;
         }
     }
 }

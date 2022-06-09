@@ -204,7 +204,7 @@
                                 <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0 10 0">
                                     <TextBlock Text="{DynamicResource Note}" 
                                                Margin="25 0 0 0" 
-                                               Visibility="{Binding GridNoteVisibility}" 
+                                               Visibility="{Binding BriefNoteVisibility}" 
                                                Foreground="{DynamicResource BackgroundTextBrush}"
                                                VerticalAlignment="Center"></TextBlock>
                                     <Grid HorizontalAlignment="Left" Margin="1 0">
@@ -214,7 +214,7 @@
                                             attachProperty:VisionElement.BackgroundAccent="Transparent"
                                             attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
                                             HorizontalAlignment="Right"
-                                            Visibility="{Binding GridNoteVisibility}"
+                                            Visibility="{Binding BriefNoteVisibility}"
                                             Foreground="{DynamicResource BackgroundTextBrush}"
                                             attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
                                             attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
@@ -244,7 +244,7 @@
                                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding GridNoteVisibility}" Value="Visible">
+                                                        <DataTrigger Binding="{Binding BriefNoteVisibility}" Value="Visible">
                                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
