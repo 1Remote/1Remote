@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PRM.Model;
+using System.Windows.Interop;
 using PRM.Service;
+using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -21,6 +20,12 @@ namespace PRM.View
         {
             _vm = vm;
             InitializeComponent();
+            Loaded += (sender, args) =>
+            {
+                var myWindowHandle = new WindowInteropHelper(this).Handle;
+                var source = HwndSource.FromHwnd(myWindowHandle);
+                source?.AddHook(HookUSBDeviceRedirect);
+            };
         }
 
 
@@ -146,13 +151,13 @@ namespace PRM.View
                             _vm.AddSelectedIndexOnVisibilityItems(-1);
                             return;
                         case Key.Left:
-                            if(IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
+                            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
                                 _vm.CmdShowNoteField?.Execute();
                             else
                                 _vm.CmdHideNoteField?.Execute();
                             return;
                         case Key.PageUp:
-                    _vm.AddSelectedIndexOnVisibilityItems(-5);
+                            _vm.AddSelectedIndexOnVisibilityItems(-5);
                             return;
                     }
                     e.Handled = false;
@@ -240,6 +245,35 @@ namespace PRM.View
         private void ClickOnImage(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             MessageBox.Show($"URL: {e.Parameter}");
+        }
+
+
+
+        /// <summary>
+        /// Redirect USB Device
+        /// </summary>
+        /// <returns></returns>
+        private IntPtr HookUSBDeviceRedirect(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+            try
+            {
+                if (msg == WM_DEVICECHANGE)
+                {
+                    foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
+                    {
+                        if (host is AxMsRdpClient09Host rdp)
+                        {
+                            SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
+                            rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+            }
+            return IntPtr.Zero;
         }
     }
 }

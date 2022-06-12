@@ -140,13 +140,6 @@ namespace PRM.View
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
                 ShowMe();
             };
-
-            if (this.View is Window window)
-            {
-                var myWindowHandle = new WindowInteropHelper(window).Handle;
-                var source = HwndSource.FromHwnd(myWindowHandle);
-                source.AddHook(WndProc);
-            }
         }
 
         protected override void OnClose()
@@ -299,33 +292,6 @@ namespace PRM.View
                     this.RequestClose();
                 });
             }
-        }
-
-        /// <summary>
-        /// Redirect USB Device
-        /// </summary>
-        /// <returns></returns>
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            const int WM_DEVICECHANGE = 0x0219;
-            try
-            {
-                if (msg == WM_DEVICECHANGE)
-                {
-                    foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
-                    {
-                        if (host is AxMsRdpClient09Host rdp)
-                        {
-                            SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
-                            rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
-                        }
-                    }
-                }
-            }
-            finally
-            {
-            }
-            return IntPtr.Zero;
         }
 
 
