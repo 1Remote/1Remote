@@ -233,7 +233,7 @@ namespace PRM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _enableClipboard, value);
         }
 
-        private bool? _enableDiskDrives = true;
+        private bool? _enableDiskDrives = false;
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
