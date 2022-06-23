@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shawn.Utils.WpfResources", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ui", "Ui\Ui.csproj", "{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{78EDE729-3B4A-454F-ADC8-5823898FC05C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{78EDE729-3B4A-454F-ADC8-5823898FC05C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,8 +173,8 @@ Global
 		{EFCF9D57-12F3-4860-B902-7361BE62272C}.StoreRelease|x64.Build.0 = Release|Any CPU
 		{EFCF9D57-12F3-4860-B902-7361BE62272C}.StoreRelease|x86.ActiveCfg = Release|Any CPU
 		{EFCF9D57-12F3-4860-B902-7361BE62272C}.StoreRelease|x86.Build.0 = Release|Any CPU
-		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|Any CPU.ActiveCfg = Release|x86
-		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|Any CPU.Build.0 = Release|x86
+		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|Any CPU.Build.0 = Debug|x86
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|x64.Build.0 = Debug|Any CPU
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.Debug|x86.ActiveCfg = Debug|x86

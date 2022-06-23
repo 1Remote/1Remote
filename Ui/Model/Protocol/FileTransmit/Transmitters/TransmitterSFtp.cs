@@ -17,35 +17,34 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         public readonly int Port;
         public readonly string Username;
         public readonly string Password;
-        public readonly string SshKey;
+        public readonly string SshKeyPath;
         private SftpClient? _sftp = null;
 
-        public TransmitterSFtp(string host, int port, string username, string password)
-        {
-            Hostname = host;
-            Port = port;
-            Username = username;
-            Password = password;
-            SshKey = "";
-            InitClient();
-            //CheckMeAlive();
-        }
 
-        public TransmitterSFtp(string host, int port, string username, byte[] ppk)
+        public TransmitterSFtp(string host, int port, string username, string key, bool keyIsPassword)
         {
             Hostname = host;
             Port = port;
             Username = username;
-            Password = "";
-            SshKey = Encoding.ASCII.GetString(ppk);
+            if (keyIsPassword)
+            {
+                Password = key;
+                SshKeyPath = "";
+            }
+            else
+            {
+                Password = "";
+                SshKeyPath = key;
+            }
             InitClient();
-            //CheckMeAlive();
         }
 
         ~TransmitterSFtp()
         {
-            _sftp?.Dispose();
-            //_timerKeepAlive.Stop();
+            lock (this)
+            {
+                _sftp?.Dispose();
+            }
         }
 
         public void Conn()
@@ -67,9 +66,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         public ITransmitter Clone()
         {
             if (!string.IsNullOrWhiteSpace(Password))
-                return new TransmitterSFtp(Hostname, Port, Username, Password);
+                return new TransmitterSFtp(Hostname, Port, Username, Password, true);
             else
-                return new TransmitterSFtp(Hostname, Port, Username, Encoding.ASCII.GetBytes(SshKey));
+                return new TransmitterSFtp(Hostname, Port, Username, SshKeyPath, false);
         }
 
         public RemoteItem? Get(string path)
@@ -303,12 +302,21 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     _sftp?.Dispose();
                     if (string.IsNullOrEmpty(Password))
                     {
-                        var pkf = new PrivateKeyFile(new MemoryStream(Encoding.ASCII.GetBytes(SshKey)), Password);
-                        _sftp = new SftpClient(Hostname, Port, Username, pkf);
+                        var connectionInfo = new ConnectionInfo(Hostname, Port, Username,
+                            new AuthenticationMethod[]
+                            {
+                                new PrivateKeyAuthenticationMethod(Username, new PrivateKeyFile(SshKeyPath)),
+                            });
+                        _sftp = new SftpClient(connectionInfo);
                     }
                     else
                     {
-                        _sftp = new SftpClient(Hostname, Port, Username, Password);
+                        var connectionInfo = new ConnectionInfo(Hostname, Port, Username,
+                            new AuthenticationMethod[]
+                            {
+                                new PasswordAuthenticationMethod(Username, Password),
+                            });
+                        _sftp = new SftpClient(connectionInfo);
                     }
                     //_sftp.KeepAliveInterval = new TimeSpan(0, 0, 10);
                     _sftp.Connect();
