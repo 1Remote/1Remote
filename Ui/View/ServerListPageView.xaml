@@ -840,7 +840,9 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <CheckBox Grid.Column="3" Name="CbPopForInExport" Width="30">
+                    <CheckBox Grid.Column="3"
+                              Name="CbPopForInExport" 
+                              Width="30">
                         <CheckBox.Template>
                             <ControlTemplate>
                                 <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">

@@ -31,7 +31,7 @@ using Stylet;
 
 namespace PRM.View
 {
-    public partial class ServerListPageViewModel : NotifyPropertyChangedBase
+    public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
     {
         public PrmContext Context { get; }
         public GlobalData AppData { get; }
@@ -92,6 +92,7 @@ namespace PRM.View
                 }
             }
         }
+
 
         public bool IsSelectedAll
         {
@@ -256,6 +257,8 @@ namespace PRM.View
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
+                    if (this.View is ServerListPageView view)
+                        view.CbPopForInExport.IsChecked = false;
                     GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where(x => x.IsIncluded == true).Select(x => x.TagName).ToList());
                 });
             }
@@ -270,6 +273,8 @@ namespace PRM.View
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
+                    if (this.View is ServerListPageView view)
+                        view.CbPopForInExport.IsChecked = false;
                     if (Context?.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
@@ -296,6 +301,8 @@ namespace PRM.View
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
+                    if (this.View is ServerListPageView view)
+                        view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
                     if (path == null) return;
                     GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));

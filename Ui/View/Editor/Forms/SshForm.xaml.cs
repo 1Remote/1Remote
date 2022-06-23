@@ -59,6 +59,11 @@ namespace PRM.View.Editor.Forms
                 if (_vm is SSH ssh)
                     ssh.PrivateKey = "";
             }
+            else
+            {
+                if (_vm is SSH ssh)
+                    ssh.Password = "";
+            }
         }
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)

@@ -43,10 +43,7 @@ namespace PRM.View.Settings
 
         protected override void OnViewLoaded()
         {
-            if (this.View is Window window)
-            {
-
-            }
+            ShowPage(_initPage);
         }
 
         public void SetLanguage(string languageCode = "")
@@ -59,6 +56,8 @@ namespace PRM.View.Settings
             }
         }
 
+
+        private EnumMainWindowPage _initPage = EnumMainWindowPage.SettingsGeneral;
         public void ShowPage(EnumMainWindowPage page)
         {
             if (this.View is SettingsPageView view)
@@ -86,6 +85,10 @@ namespace PRM.View.Settings
                         CmdSaveAndGoBack.Execute();
                         break;
                 }
+            }
+            else
+            {
+                _initPage = page;
             }
         }
 

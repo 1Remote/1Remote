@@ -66,11 +66,11 @@ namespace PRM.Model.Protocol
             int port = this.GetPort();
             var username = this.UserName;
             var password = IoC.Get<DataService>().DecryptOrReturnOriginalString(this.Password);
-            var sshKey = this.PrivateKey;
-            if (sshKey == "")
-                return new TransmitterSFtp(hostname, port, username, password);
+            var sshKeyPath = this.PrivateKey;
+            if (sshKeyPath == "")
+                return new TransmitterSFtp(hostname, port, username, password, true);
             else
-                return new TransmitterSFtp(hostname, port, username, Encoding.ASCII.GetBytes(sshKey));
+                return new TransmitterSFtp(hostname, port, username, sshKeyPath, false);
         }
 
         public string GetStartupPath()
