@@ -16,14 +16,14 @@ namespace PRM.Service
 #if DEBUG
         public const string APP_NAME = $"{AppName}_Debug";
 #if FOR_MICROSOFT_STORE_ONLY
-        public const string APP_DISPLAY_NAME = $"{_appName}(Store)_Debug";
+        public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)_Debug";
 #else
         public const string APP_DISPLAY_NAME = APP_NAME;
 #endif
 #else
         public const string APP_NAME = $"{AppName}";
 #if FOR_MICROSOFT_STORE_ONLY
-        public const string APP_DISPLAY_NAME = $"{_appName}(Store)";
+        public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)";
 #else
         public const string APP_DISPLAY_NAME = APP_NAME;
 #endif

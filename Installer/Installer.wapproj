@@ -29,7 +29,8 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateKeyFile>Installer_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Shawn_Microsoft_Store_Installer_Key_20220107.pfx</PackageCertificateKeyFile>
+    <EntryPointProjectUniqueName>..\Ui\Ui.csproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -85,8 +86,14 @@
     <Content Include="Images\Square44x44Logo.targetsize-256.png" />
     <Content Include="Images\Square44x44Logo.targetsize-32.png" />
     <Content Include="Images\Square44x44Logo.targetsize-48.png" />
-    <None Include="Installer_TemporaryKey.pfx" />
+    <None Include="Shawn_Microsoft_Store_Installer_Key_20220107.pfx" />
     <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ui\Ui.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

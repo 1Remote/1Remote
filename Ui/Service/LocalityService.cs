@@ -134,7 +134,11 @@ namespace PRM.Service
 
         public RdpLocalSetting? RdpLocalityGet(string key)
         {
-            return _localitySettings.RdpLocalitys.GetValueOrDefault(key);
+            if (_localitySettings.RdpLocalitys.TryGetValue(key, out var v))
+            {
+                return v;
+            }
+            return null;
         }
 
         public void RdpLocalityUpdate(string key, bool isFullScreen, int fullScreenIndex = -1)

@@ -204,12 +204,15 @@ namespace PRM.Utils
 
         public static async Task<bool> IsSelfStartByStartupTask(string appName)
         {
-            StartupTask startupTask = await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
+            StartupTask startupTask = StartupTask.GetAsync(appName).GetResults(); // Pass the task ID you specified in the appxmanifest file
             switch (startupTask.State)
             {
                 case StartupTaskState.Enabled:
                 case StartupTaskState.EnabledByPolicy:
                     return true;
+                case StartupTaskState.Disabled:
+                case StartupTaskState.DisabledByUser:
+                case StartupTaskState.DisabledByPolicy:
                 default:
                     return false;
             }
@@ -217,17 +220,18 @@ namespace PRM.Utils
 
         public static async void SetSelfStartByStartupTask(bool isSetSelfStart, string appName)
         {
-            var result = await StartupTask.GetAsync(appName);
+            var result = StartupTask.GetAsync(appName);
+            var task = result.GetResults();
             Debug.WriteLine($"SetSelfStartByStartupTask: GetAsync(appName).GetResults() now = {result}");
 
-            StartupTask startupTask = await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
+            StartupTask startupTask = StartupTask.GetAsync(appName).GetResults(); // Pass the task ID you specified in the appxmanifest file
             switch (startupTask.State)
             {
                 case StartupTaskState.Disabled:
                     if (isSetSelfStart)
                     {
                         // Task is disabled but can be enabled.
-                        StartupTaskState newState = await startupTask.RequestEnableAsync(); // ensure that you are on a UI thread when you call RequestEnableAsync()
+                        StartupTaskState newState = startupTask.RequestEnableAsync().GetResults(); // ensure that you are on a UI thread when you call RequestEnableAsync()
                         Debug.WriteLine("Request to enable startup, result = {0}", newState);
                     }
 
@@ -248,7 +252,7 @@ namespace PRM.Utils
                 case StartupTaskState.Enabled:
                     if (isSetSelfStart == false)
                     {
-                        result.Disable();
+                        task.Disable();
                     }
                     break;
             }
