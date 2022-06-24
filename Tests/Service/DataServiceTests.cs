@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Model;
 using PRM.Model.DAO;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Resources.Icons;
 using PRM.Service;
-using Shawn.Utils;
+using Shawn.Utils.Wpf.Image;
 
-namespace PRemoteM.Tests.Service
+namespace Tests.Service
 {
     [TestClass()]
     public class DataServiceTests

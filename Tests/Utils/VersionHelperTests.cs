@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shawn.Utils;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using static Shawn.Utils.VersionHelper;
 
-namespace TestsShawn.Utils
+namespace Tests.Utils
 {
     [TestClass()]
     public class VersionHelperTests

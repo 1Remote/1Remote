@@ -184,7 +184,7 @@ namespace PRM.Service
             return str;
         }
 
-        private string Encrypt(string str)
+        public string Encrypt(string str)
         {
             return Encrypt(_rsa, str);
         }

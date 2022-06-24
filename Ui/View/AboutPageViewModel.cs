@@ -28,9 +28,6 @@ namespace PRM.View
 
 
             CurrentVersion = AppVersion.Version;
-#if FOR_MICROSOFT_STORE_ONLY
-            CurrentVersion = ConfigurationService.AppName + "(Store)";
-#endif
         }
 
         ~AboutPageViewModel()
