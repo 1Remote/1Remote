@@ -15,19 +15,6 @@ namespace PRM.View.Editor.Forms
         {
             InitializeComponent();
 
-            GridUserName.Visibility = Visibility.Collapsed;
-            GridPwd.Visibility = Visibility.Collapsed;
-            GridPrivateKey.Visibility = Visibility.Collapsed;
-
-
-            if (vm.GetType() == typeof(SSH)
-                || vm.GetType().BaseType == typeof(ProtocolBaseWithAddressPortUserPwd))
-            {
-                GridPrivateKey.Visibility =
-                GridUserName.Visibility =
-                    GridPwd.Visibility =  Visibility.Visible;
-            }
-
             if (vm.GetType() == typeof(SSH))
             {
                 CbUsePrivateKey.IsChecked = false;
@@ -62,7 +49,10 @@ namespace PRM.View.Editor.Forms
             else
             {
                 if (_vm is SSH ssh)
+                {
                     ssh.Password = "";
+                    //ssh.OpenSftpOnConnected = false;
+                }
             }
         }
 

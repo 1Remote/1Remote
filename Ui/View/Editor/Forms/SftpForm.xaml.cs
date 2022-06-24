@@ -44,6 +44,11 @@ namespace PRM.View.Editor.Forms
                 if (_vm is SFTP sftp)
                     sftp.PrivateKey = "";
             }
+            else
+            {
+                if (_vm is SFTP sftp)
+                    sftp.Password = "";
+            }
         }
     }
 }

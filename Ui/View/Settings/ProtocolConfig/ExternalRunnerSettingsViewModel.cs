@@ -20,19 +20,11 @@ public class ExternalRunnerSettingsViewModel
     private readonly ILanguageService _languageService;
     public ExternalRunner ExternalRunner { get; }
 
-    //public ExternalRunnerSettingsViewModel(ILanguageService languageService)
-    //{
-    //    ExternalRunner = new ExternalRunner("");
-    //    _languageService = languageService;
-    //}
-
     public ExternalRunnerSettingsViewModel(ExternalRunner externalRunner, ILanguageService languageService)
     {
         ExternalRunner = externalRunner;
         _languageService = languageService;
     }
-
-
 
 
     private RelayCommand? _cmdSelectDbPath;
