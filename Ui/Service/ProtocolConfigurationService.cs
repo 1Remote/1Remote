@@ -155,10 +155,11 @@ namespace PRM.Service
                 if (SFTP.ProtocolName == protocolName)
                 {
                     if (c.Runners.All(x => x.Name != "WinSCP"))
-                        c.Runners.Add(new ExternalRunner("WinSCP", protocolName)
+                        c.Runners.Add(new ExternalRunnerForSSH("WinSCP", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
                             Arguments = @"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%",
+                            ArgumentsForPrivateKey = @"sftp://%PRM_USERNAME%@%PRM_HOSTNAME%:%PRM_PORT% /privatekey=%PRM_SSH_PRIVATE_KEY_PATH%",
                         });
                 }
             }

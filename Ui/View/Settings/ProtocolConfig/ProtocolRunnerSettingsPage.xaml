@@ -124,11 +124,15 @@
             <protocolConfig:KittyRunnerSettings Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
         </DataTemplate>
 
+        <protocolConfig:ConverterExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ConverterExternalRunner2Vm>
 
 
 
+        <DataTemplate DataType="{x:Type runner:ExternalRunnerForSSH}">
+            <protocolConfig:ExternalSshRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalSshRunnerSettings>
+        </DataTemplate>
 
-        <protocolConfig:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ExternalRunner2Vm>
+
         <DataTemplate DataType="{x:Type runner:ExternalRunner}">
             <protocolConfig:ExternalRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalRunnerSettings>
         </DataTemplate>

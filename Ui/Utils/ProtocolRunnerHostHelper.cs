@@ -61,6 +61,16 @@ namespace PRM.Utils
 
             var exePath = er.ExePath;
             var args = er.Arguments;
+            if (runner is ExternalRunnerForSSH runnerForSsh)
+            {
+                switch (protocolServerBase)
+                {
+                    case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
+                    case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
+                        args = runnerForSsh.ArgumentsForPrivateKey;
+                        break;
+                }
+            }
             if (!File.Exists(exePath))
             {
                 MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");

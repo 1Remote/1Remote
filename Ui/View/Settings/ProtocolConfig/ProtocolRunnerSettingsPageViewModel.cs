@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using PRM.Controls;
+using PRM.Model.Protocol;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
 using PRM.Utils;
@@ -103,6 +103,10 @@ namespace PRM.View.Settings.ProtocolConfig
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
+                        if (SelectedProtocol == SSH.ProtocolName || SelectedProtocol == SFTP.ProtocolName)
+                        {
+                            newRunner = new ExternalRunnerForSSH(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
+                        }
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
                     }

@@ -99,5 +99,7 @@ namespace PRM.Model.ProtocolRunner
         /// </summary>
         [JsonIgnore]
         public List<string> MarcoNames { get; set; } = new();
+
+        public Dictionary<string, string> Params = new Dictionary<string, string>();
     }
 }

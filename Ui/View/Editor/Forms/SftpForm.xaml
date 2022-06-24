@@ -69,14 +69,13 @@
             </Grid.Style>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
-                <StackPanel>
-                    <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource 'Use private key'}"
-                                  Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
-                    <Grid>
-                    </Grid>
-                </StackPanel>
+                <CheckBox Name="CbUsePrivateKey" 
+                          Content="{DynamicResource 'Use private key'}" 
+                          Checked="CbUsePrivateKey_OnChecked"
+                          Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
             </StackPanel>
         </Grid>
+
 
         <Grid>
             <Grid.Style>
@@ -89,17 +88,28 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
-                </Grid>
-                <Button Content="{DynamicResource Select}" 
-                        Margin="5 0 0 0"
-                        Click="ButtonOpenPrivateKey_OnClick" 
-                        Style="{StaticResource ButtonPrimaryStyle}"
-                        VerticalAlignment="Stretch">
-                </Button>
+
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
+                    </Grid>
+                    <Button Content="{DynamicResource Select}" 
+                            Margin="5 0 0 0"
+                            Click="ButtonOpenPrivateKey_OnClick" 
+                            Style="{StaticResource ButtonPrimaryStyle}"
+                            VerticalAlignment="Stretch">
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <TextBlock Text="{DynamicResource 'Supports the OpenSSH format key only with the internal SFTP client.'}" Opacity="0.7"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <TextBlock Text="{DynamicResource 'Supports the OpenSSH format key and Putty-key with WinSCP.'}" Opacity="0.7"></TextBlock>
+                </StackPanel>
             </StackPanel>
         </Grid>
 
