@@ -324,7 +324,7 @@ namespace PRM.View.Host.ProtocolHosts
 
                 if (DateTime.Now > endTime && _exeHandles.Count > 0)
                     return;
-                _timer.Start();
+                _timer?.Start();
             };
             _timer.Start();
         }

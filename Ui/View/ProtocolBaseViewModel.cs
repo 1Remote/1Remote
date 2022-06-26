@@ -102,7 +102,6 @@ namespace PRM.View
         }
 
         private List<ProtocolAction>? _actions;
-
         public List<ProtocolAction>? Actions
         {
             get => _actions;

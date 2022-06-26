@@ -184,6 +184,16 @@ namespace PRM.View.Host.ProtocolHosts
             ParentWindowResize_StartWatch();
             Task.Factory.StartNew(() =>
             {
+                Thread.Sleep(500);
+                lock (this)
+                {
+                    ReSizeRdpToControlSize();
+                }
+                Thread.Sleep(1000);
+                lock (this)
+                {
+                    ReSizeRdpToControlSize();
+                }
                 Thread.Sleep(1000);
                 lock (this)
                 {
