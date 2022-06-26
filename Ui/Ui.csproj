@@ -15,42 +15,33 @@
 		<LangVersion>latest</LangVersion>
 		<StartupObject>Ui.App</StartupObject>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-	  <DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
-	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE;</DefineConstants>
 		<Optimize>True</Optimize>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-	  <DefineConstants>TRACE;</DefineConstants>
-	  <Optimize>True</Optimize>
-	  <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='StoreDebug'">
-		<TargetFramework>net48</TargetFramework>
-		<DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;DEV;</DefineConstants>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|'=='StoreRelease'">
-		<TargetFramework>net48</TargetFramework>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
+		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<Optimize>True</Optimize>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x86'">
+		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
+		<Optimize>True</Optimize>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
@@ -82,10 +73,6 @@
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="MSTSCLib">
 			<HintPath>..\lib\MSTSCLib.dll</HintPath>
-		</Reference>
-		<Reference Include="Windows" Condition="'$(Configuration)'=='StoreRelease'">
-			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
-			<IsWinMDFile>true</IsWinMDFile>
 		</Reference>
 	</ItemGroup>
 

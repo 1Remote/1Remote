@@ -93,7 +93,7 @@ namespace PRM.Model.Protocol.Base
 
 
         private List<string>? _tags = new List<string>();
-        public List<string> Tags
+        public List<string>? Tags
         {
             get
             {

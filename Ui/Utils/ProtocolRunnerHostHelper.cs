@@ -194,7 +194,6 @@ namespace PRM.Utils
                 default:
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
-            return null;
         }
     }
 }

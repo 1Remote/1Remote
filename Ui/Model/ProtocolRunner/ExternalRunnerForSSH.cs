@@ -15,7 +15,6 @@ namespace PRM.Model.ProtocolRunner
         }
 
 
-        private string _argumentsForPrivateKey = "";
         public string ArgumentsForPrivateKey
         {
             get => Params.ContainsKey(nameof(ArgumentsForPrivateKey)) ? Params[nameof(ArgumentsForPrivateKey)] : "";

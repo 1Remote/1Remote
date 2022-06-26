@@ -437,13 +437,23 @@ namespace PRM.Service
         /// <returns></returns>
         private TabWindowBase GetOrCreateTabWindow(string assignTabToken = "")
         {
+            if (string.IsNullOrEmpty(assignTabToken) == false && _token2TabWindows.ContainsKey(assignTabToken) == false)
+            {
+                return CreateNewTabWindow();
+            }
             if (string.IsNullOrEmpty(assignTabToken) == false && _token2TabWindows.ContainsKey(assignTabToken))
+            {
                 return _token2TabWindows[assignTabToken];
+            }
             // return the latest tab window.
             else if (_token2TabWindows.ContainsKey(_lastTabToken))
+            {
                 return _token2TabWindows[_lastTabToken];
+            }
             else if (_token2TabWindows.IsEmpty == false)
+            {
                 return _token2TabWindows.Last().Value;
+            }
             // create new TabWindowBase
             return CreateNewTabWindow();
         }

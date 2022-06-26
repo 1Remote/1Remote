@@ -113,12 +113,15 @@ namespace PRM.Service
             {
                 var jsonStr = File.ReadAllText(file, Encoding.UTF8);
                 var c = JsonConvert.DeserializeObject<ProtocolSettings>(jsonStr);
-                foreach (var runner in c.Runners)
-                {
-                    runner.OwnerProtocolName = protocolName;
-                }
                 if (c != null)
+                {
+                    foreach (var runner in c.Runners)
+                    {
+                        runner.OwnerProtocolName = protocolName;
+                    }
+
                     return c;
+                }
             }
 
             return null;
