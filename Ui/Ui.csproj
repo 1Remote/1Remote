@@ -8,7 +8,7 @@
 		<RootNamespace>PRM</RootNamespace>
 		<AssemblyName>PRemoteM</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
-		<Configurations>Debug;Release;StoreDebug;StoreRelease</Configurations>
+		<Configurations>Debug;Release;StoreRelease</Configurations>
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>

@@ -3,7 +3,7 @@
 English | [中文](https://github.com/1Remote/PRemoteM/wiki/Intro-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
 
 [![version](https://img.shields.io/github/v/release/1Remote/premotem?color=Green&include_prereleases)](https://github.com/1Remote/PRemoteM/releases)
-[![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
+[![codebeat badge](https://codebeat.co/badges/93f34fa5-f6e3-476d-a80b-93d3b801e7bf)](https://codebeat.co/projects/github-com-1remote-premotem-dev_net6)
 [![issues](https://img.shields.io/github/issues/1Remote/premotem)](https://github.com/1Remote/PRemoteM/issues)
 [![license](https://img.shields.io/github/license/1Remote/premotem?color=blue)](https://github.com/1Remote/PRemoteM/blob/dev/LICENSE)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
