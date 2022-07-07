@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using PRM.Model;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
@@ -139,6 +140,11 @@ namespace PRM.Controls.NoteDisplay
         private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
         {
             CommandOnCloseRequest?.Execute();
+        }
+
+        private void TbMarkdown_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

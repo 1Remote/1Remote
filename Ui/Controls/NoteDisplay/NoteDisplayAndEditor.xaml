@@ -100,13 +100,14 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
 
-
                             <TextBox Name="TbMarkdown" TextWrapping="Wrap" Width="Auto"
-                                     TextAlignment="Left" Height="220" Margin="0 5"
-                                     VerticalContentAlignment="Top"
-                                     AcceptsReturn="True"
-                                     AcceptsTab="True"
-                                     Tag="&#13;## Markdown support&#13;&#160;&#160;&#160;&#160;&#160;- write your note here&#13;&#160;&#160;&#160;&#160;&#160;- ![pic](http://x/structure.png)&#13;&#160;&#160;&#160;&#160;&#160;- [link](http://x/readme.md)" xml:space="preserve"></TextBox>
+                                     MouseWheel="TbMarkdown_OnMouseWheel"
+                                         TextAlignment="Left" Margin="0 5"
+                                         VerticalContentAlignment="Top"
+                                         AcceptsReturn="True"
+                                         AcceptsTab="True"
+                                         Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve">
+                            </TextBox>
 
 
                             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">

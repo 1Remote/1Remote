@@ -124,10 +124,11 @@
 
                                         <TextBox TextWrapping="Wrap" Width="Auto"
                                                  TextAlignment="Left" Height="220" Margin="0 5"
+                                                 MouseWheel="TextBoxMarkdown_OnMouseWheel"
                                                  VerticalContentAlignment="Top"
                                                  AcceptsReturn="True"
                                                  AcceptsTab="True"
-                                                 Tag="&#13;## Markdown support&#13;&#160;&#160;&#160;&#160;&#160;- write your note here&#13;&#160;&#160;&#160;&#160;&#160;- ![pic](http://x/structure.png)&#13;&#160;&#160;&#160;&#160;&#160;- [link](http://x/readme.md)" xml:space="preserve"
+                                                 Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve"
                                                  Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </StackPanel>
                                 </Grid>
