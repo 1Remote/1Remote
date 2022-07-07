@@ -25,6 +25,7 @@ namespace PRM.View
                 _checkUpdateTimer.Interval = 1000 * 3600; // next time check,  eta 3600s
                 checker.CheckUpdateAsync();
             };
+            checker.CheckUpdateAsync();
 
 
             CurrentVersion = AppVersion.Version;

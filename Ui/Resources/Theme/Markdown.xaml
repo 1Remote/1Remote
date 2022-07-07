@@ -20,7 +20,7 @@
         <Setter Property="FontFamily" Value="Consolas, Lucida Sans Typewriter, Courier New" />
     </Style>
     <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.Heading1StyleKey}">
-        <Setter Property="FontSize" Value="42" />
+        <Setter Property="FontSize" Value="26" />
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>

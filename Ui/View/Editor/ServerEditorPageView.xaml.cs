@@ -141,5 +141,10 @@ namespace PRM.View.Editor
             PopupNote.IsOpen = false;
             PopupNote.IsOpen = true;
         }
+
+        private void TextBoxMarkdown_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

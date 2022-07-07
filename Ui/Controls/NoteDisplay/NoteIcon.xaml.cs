@@ -112,6 +112,26 @@ namespace PRM.Controls.NoteDisplay
             }
             PopupNote.IsOpen = false;
             PopupNote.IsOpen = true;
+            this.MouseMove -= OnMouseMove;
+            this.MouseMove += OnMouseMove;
+        }
+
+        private void ButtonBriefNote_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (PopupNoteContent.Content is not NoteDisplayAndEditor)
+            {
+                PopupNoteContent.Content = new NoteDisplayAndEditor()
+                {
+                    Server = Server,
+                    Width = 400,
+                    Height = 300,
+                    EditEnable = true,
+                    CloseEnable = false,
+                };
+            }
+            PopupNote.IsOpen = false;
+            PopupNote.IsOpen = true;
+            this.MouseMove -= OnMouseMove;
             this.MouseMove += OnMouseMove;
         }
     }

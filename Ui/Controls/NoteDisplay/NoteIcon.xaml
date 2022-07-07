@@ -20,6 +20,7 @@
                 MouseEnter="ButtonShowNote_OnMouseEnter"
                 attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                 Background="{DynamicResource BackgroundBrush}"
+                Click="ButtonBriefNote_OnClick"
                 Foreground="{DynamicResource BackgroundTextBrush}">
             <Grid>
                 <TextBlock Margin="5" 
@@ -34,6 +35,7 @@
 
         <!--icon button show note-->
         <Button Name="ButtonShowNote"
+                Click="ButtonBriefNote_OnClick"
                 Width="20" Height="20"
                 Background="Transparent"
                 Style="{StaticResource ButtonBarPrimaryStyle}"
