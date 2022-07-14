@@ -28,7 +28,7 @@ namespace PRM.View.Host
     public abstract class TabWindowBase : WindowChromeBase
     {
         protected TabWindowViewModel Vm;
-        private TabablzControl _tabablzControl = null!;
+        private TabablzControl? _tabablzControl = null!;
         public string Token => Vm.Token;
 
         private IntPtr _myHandle = IntPtr.Zero;
@@ -239,6 +239,8 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             var tabContentBorderWithColor = (Thickness)this.Resources["TabContentBorderWithColor"];
             var tabContentBorderWithOutColor = (Thickness)this.Resources["TabContentBorderWithOutColor"];
             var trapezoidHeight = (double)this.Resources["TitleBarHeight"];
+            if (_tabablzControl == null)
+                return new Size(800, 600);
             if (withoutBorderColor)
                 return new Size()
                 {
