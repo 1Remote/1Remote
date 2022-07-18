@@ -29,6 +29,7 @@ namespace PRM.View.Host.ProtocolHosts
         {
             ReConn();
         }
+
         public override void ReConn()
         {
             Debug.Assert(_rdpClient != null);
@@ -43,7 +44,7 @@ namespace PRM.View.Host.ProtocolHosts
             RdpHost.Visibility = System.Windows.Visibility.Collapsed;
             GridLoading.Visibility = System.Windows.Visibility.Visible;
             GridMessageBox.Visibility = System.Windows.Visibility.Collapsed;
-            RdpDispose();
+            RdpClientDispose();
 
             Status = ProtocolHostStatus.NotInit;
 
@@ -144,7 +145,7 @@ namespace PRM.View.Host.ProtocolHosts
                 }
                 else
                 {
-                    RdpDispose();
+                    RdpClientDispose();
                     base.OnClosed?.Invoke(base.ConnectionId);
                 }
             }

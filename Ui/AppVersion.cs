@@ -6,7 +6,7 @@ namespace PRM
     {
         public const uint Major = 0;
         public const uint Minor = 7;
-        public const uint Patch = 0;
+        public const uint Patch = 1;
         public const uint Build = 0;
         public const string PreRelease = ""; // e.g. "alpha" "beta.2"
 
