@@ -294,7 +294,7 @@ namespace PRM.Model.Protocol.Base
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Error(e);
             }
         }
 
@@ -309,7 +309,7 @@ namespace PRM.Model.Protocol.Base
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Error(e);
             }
         }
 

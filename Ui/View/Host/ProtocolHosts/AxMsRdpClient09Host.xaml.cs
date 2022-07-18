@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
-using AxMSTSCLib;
 using MSTSCLib;
 using PRM.Model;
 using PRM.Model.Protocol;
@@ -28,9 +25,9 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 ((IMsRdpExtendedSettings)axHost.GetOcx()).set_Property(propertyName, ref value);
             }
-            catch (Exception ee)
+            catch (Exception e)
             {
-                SimpleLogHelper.Error(ee);
+                SimpleLogHelper.Error(e);
             }
         }
     }
@@ -82,24 +79,17 @@ namespace PRM.View.Host.ProtocolHosts
 
         ~AxMsRdpClient09Host()
         {
-            Console.WriteLine($"Release {this.GetType().Name}({this.GetHashCode()})");
+            SimpleLogHelper.Debug($"Release {this.GetType().Name}({this.GetHashCode()})");
             Dispose();
         }
 
         public void Dispose()
         {
-            Console.WriteLine($"Dispose {this.GetType().Name}({this.GetHashCode()})");
+            SimpleLogHelper.Debug($"Dispose {this.GetType().Name}({this.GetHashCode()})");
             Dispatcher.Invoke(() =>
             {
-                try
-                {
-                    GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
-                }
-                catch
-                {
-                }
-
-                RdpDispose();
+                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
+                RdpClientDispose();
                 _resizeEndTimer?.Dispose();
                 GC.SuppressFinalize(this);
             });
@@ -109,6 +99,7 @@ namespace PRM.View.Host.ProtocolHosts
         {
             lock (this)
             {
+                // 全屏模式下客户端机器发生了屏幕分辨率改变，则将RDP还原到窗口模式（仿照 MSTSC 的逻辑）
                 if (_rdpClient?.FullScreen == true)
                 {
                     _rdpClient.FullScreen = false;
@@ -116,11 +107,14 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
+        /// <summary>
+        /// init server connection info: user name\ psw \ port \ LoadBalanceInfo...
+        /// </summary>
         private void RdpInitServerInfo()
         {
             #region server info
             Debug.Assert(_rdpClient != null);
-            // server info
+            // server connection info: user name\ psw \ port ...
             _rdpClient.Server = _rdpSettings.Address;
             _rdpClient.Domain = _rdpSettings.Domain;
             _rdpClient.UserName = _rdpSettings.UserName;
@@ -175,7 +169,7 @@ namespace PRM.View.Host.ProtocolHosts
             _rdpClient.AdvancedSettings7.ConnectToAdministerServer = _rdpSettings.IsAdministrativePurposes == true;
         }
 
-        private void CreateRdp()
+        private void CreateRdpClient()
         {
             lock (this)
             {
@@ -547,8 +541,8 @@ namespace PRM.View.Host.ProtocolHosts
             try
             {
                 Status = ProtocolHostStatus.Initializing;
-                RdpDispose();
-                CreateRdp();
+                RdpClientDispose();
+                CreateRdpClient();
                 RdpInitServerInfo();
                 RdpInitStatic();
                 RdpInitConnBar();
@@ -583,10 +577,7 @@ namespace PRM.View.Host.ProtocolHosts
                 Status = ProtocolHostStatus.Connecting;
                 GridLoading.Visibility = Visibility.Visible;
                 RdpHost.Visibility = Visibility.Collapsed;
-                Task.Factory.StartNew(() =>
-                {
-                    _rdpClient.Connect();
-                });
+                _rdpClient.Connect();
             }
             catch (Exception e)
             {
@@ -660,23 +651,10 @@ namespace PRM.View.Host.ProtocolHosts
         {
             lock (_resizeEndLocker)
             {
-                try
-                {
-                    _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
-                }
-                finally
-                {
-                    _resizeEndTimer.Elapsed += ResizeEndTimerOnElapsed;
-                }
-
-                try
-                {
-                    base.SizeChanged -= WindowSizeChanged;
-                }
-                finally
-                {
-                    base.SizeChanged += WindowSizeChanged;
-                }
+                _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
+                _resizeEndTimer.Elapsed += ResizeEndTimerOnElapsed;
+                base.SizeChanged -= WindowSizeChanged;
+                base.SizeChanged += WindowSizeChanged;
             }
         }
 
@@ -684,22 +662,9 @@ namespace PRM.View.Host.ProtocolHosts
         {
             lock (_resizeEndLocker)
             {
-                try
-                {
-                    _resizeEndTimer.Stop();
-                    _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    base.SizeChanged -= WindowSizeChanged;
-                }
-                catch
-                {
-                }
+                _resizeEndTimer.Stop();
+                _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
+                base.SizeChanged -= WindowSizeChanged;
             }
         }
 
@@ -718,15 +683,11 @@ namespace PRM.View.Host.ProtocolHosts
                 {
                     _previousWidth = (uint)e.NewSize.Width;
                     _previousHeight = (uint)e.NewSize.Height;
-                    try
+                    Dispatcher.Invoke(() =>
                     {
                         _resizeEndTimer?.Stop();
                         _resizeEndTimer?.Start();
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                    });
                 }
             }
         }
@@ -742,28 +703,15 @@ namespace PRM.View.Host.ProtocolHosts
         #endregion WindowOnResizeEnd
 
 
-        private void RdpDispose()
+        private void RdpClientDispose()
         {
-            try
-            {
-                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
-            }
-            catch
-            {
-                // ignored
-            }
+            GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
             lock (this)
             {
-                try
-                {
-                    if (_rdpClient?.Connected > 0)
-                        _rdpClient.Disconnect();
-                    _rdpClient?.Dispose();
-                }
-                finally
-                {
-                    _rdpClient = null;
-                }
+                if (_rdpClient?.Connected > 0)
+                    _rdpClient.Disconnect();
+                _rdpClient?.Dispose();
+                _rdpClient = null;
             }
             SimpleLogHelper.Debug("RDP Host: _rdpClient.Dispose()");
         }
@@ -791,20 +739,23 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 try
                 {
-                    _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
-                    var newScaleFactor = _primaryScaleFactor;
-                    if (this._rdpSettings.IsScaleFactorFollowSystem == false && this._rdpSettings.ScaleFactorCustomValue != null)
-                        newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                    if (_rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                    Dispatcher.Invoke(() =>
                     {
-                        SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                        _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
-                        _lastScaleFactor = newScaleFactor;
-                    }
+                        _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
+                        var newScaleFactor = _primaryScaleFactor;
+                        if (this._rdpSettings.IsScaleFactorFollowSystem == false && this._rdpSettings.ScaleFactorCustomValue != null)
+                            newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
+                        if (_rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                        {
+                            SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
+                            _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                            _lastScaleFactor = newScaleFactor;
+                        }
+                    });
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    SimpleLogHelper.Error(e);
                 }
             }
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentFTP;
+using Shawn.Utils;
 
 namespace PRM.Model.Protocol.FileTransmit.Transmitters
 {
@@ -279,7 +280,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    SimpleLogHelper.Error(e);
                 }
             };
             _timerKeepAlive.Start();

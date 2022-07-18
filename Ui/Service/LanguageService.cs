@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using PRM.Model;
+using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
@@ -66,7 +67,7 @@ namespace PRM.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Error(e);
             }
             return null;
         }
@@ -84,7 +85,7 @@ namespace PRM.Service
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Error(e);
             }
             return null;
         }
