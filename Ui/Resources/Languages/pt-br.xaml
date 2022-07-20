@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <s:String x:Key="﻿key">pt-br</s:String>
+    <s:String x:Key="key">pt-br</s:String>
     <s:String x:Key="language_code-ISO">pt-BR</s:String>
     <s:String x:Key="language_code-google">pt</s:String>
     <s:String x:Key="language_name">Portuguese (pt-BR)</s:String>
