@@ -85,14 +85,16 @@ namespace PRM.View.Host.ProtocolHosts
 
         public void Dispose()
         {
-            SimpleLogHelper.Debug($"Dispose {this.GetType().Name}({this.GetHashCode()})");
+            SimpleLogHelper.Debug($"Disposing {this.GetType().Name}({this.GetHashCode()})");
             Dispatcher.Invoke(() =>
             {
+                Grid?.Children?.Clear();
                 GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
                 RdpClientDispose();
                 _resizeEndTimer?.Dispose();
-                GC.SuppressFinalize(this);
+                //GC.SuppressFinalize(this);
             });
+            SimpleLogHelper.Debug($"Dispose done {this.GetType().Name}({this.GetHashCode()})");
         }
 
         private void OnScreenResolutionChanged()
@@ -316,7 +318,9 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 _rdpClient.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
-
+#if FOR_MICROSOFT_STORE_ONLY
+            _rdpClient.AdvancedSettings8.BitmapPersistence = 0;
+#endif
             #endregion Redirect
         }
 
@@ -590,10 +594,6 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void Close()
         {
-            this.Dispatcher.Invoke(() =>
-            {
-                Grid?.Children?.Clear();
-            });
             this.Dispose();
             base.Close();
         }

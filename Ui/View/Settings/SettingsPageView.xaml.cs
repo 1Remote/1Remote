@@ -91,11 +91,6 @@ namespace PRM.View.Settings
             var code = fi.Name.ReplaceLast(fi.Extension, "");
             IoC.Get<ILanguageService>().AddXamlLanguageResources(code, fi.FullName);
         }
-
-        private void ButtonOpenLog_OnClick(object sender, RoutedEventArgs e)
-        {
-            SelectFileHelper.OpenInExplorerAndSelect(SimpleLogHelper.LogFileName);
-        }
     }
 
     /// <summary>
