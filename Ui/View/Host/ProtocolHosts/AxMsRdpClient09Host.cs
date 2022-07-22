@@ -39,6 +39,10 @@ namespace PRM.View.Host.ProtocolHosts
                 SimpleLogHelper.Warning($"RDP Host: Call ReConn, but current status = " + Status);
                 return;
             }
+            else
+            {
+                SimpleLogHelper.Warning($"RDP Host: Call ReConn");
+            }
             Status = ProtocolHostStatus.WaitingForReconnect;
 
             RdpHost.Visibility = System.Windows.Visibility.Collapsed;
