@@ -318,9 +318,6 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 _rdpClient.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
-#if FOR_MICROSOFT_STORE_ONLY
-            _rdpClient.AdvancedSettings8.BitmapPersistence = 0;
-#endif
             #endregion Redirect
         }
 
@@ -418,6 +415,10 @@ namespace PRM.View.Host.ProtocolHosts
             }
 
             #endregion Display
+
+            // 2022.07.23 try to fix the rdp error code 4360, ref: https://forum.asg-rd.com/showthread.php?tid=11016&page=2
+            _rdpClient.AdvancedSettings8.BitmapPersistence = 0;
+            _rdpClient.AdvancedSettings8.CachePersistenceActive = 0;
 
             SimpleLogHelper.Debug($"RDP Host: Display init end: RDP.DesktopWidth = {_rdpClient.DesktopWidth}, RDP.DesktopWidth = {_rdpClient.DesktopWidth},");
         }
