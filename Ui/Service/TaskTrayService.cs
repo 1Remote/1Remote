@@ -4,13 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Forms;
 using PRM.Model;
 using PRM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Ui;
+using Application = System.Windows.Application;
 
 namespace PRM.Service
 {
@@ -26,24 +27,29 @@ namespace PRM.Service
         private System.Windows.Forms.NotifyIcon? _taskTrayIcon = null;
         public void TaskTrayInit()
         {
-            TaskTrayDispose();
             Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
-            _taskTrayIcon = new System.Windows.Forms.NotifyIcon
+            _taskTrayIcon ??= new System.Windows.Forms.NotifyIcon
             {
                 Text = AppPathHelper.APP_DISPLAY_NAME,
                 Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
                 BalloonTipText = "",
                 Visible = true
             };
+            _taskTrayIcon.Visible = false;
             ReloadTaskTrayContextMenu();
+            GlobalEventHelper.OnLanguageChanged -= ReloadTaskTrayContextMenu;
             GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
-            _taskTrayIcon.MouseDoubleClick += (sender, e) =>
+            _taskTrayIcon.MouseDoubleClick -= TaskTrayIconOnMouseDoubleClick;
+            _taskTrayIcon.MouseDoubleClick += TaskTrayIconOnMouseDoubleClick;
+            _taskTrayIcon.Visible = true;
+        }
+
+        private void TaskTrayIconOnMouseDoubleClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                {
-                    IoC.Get<MainWindowViewModel>()?.ShowMe();
-                }
-            };
+                IoC.Get<MainWindowViewModel>()?.ShowMe();
+            }
         }
 
         public void TaskTrayDispose()
