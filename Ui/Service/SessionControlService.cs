@@ -327,7 +327,7 @@ namespace PRM.Service
                     {
                         // check if screens are in different scale factors
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-                        // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                        // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of internal runner.
                         if (rdp.MstscModeEnabled == true
                             || (server.ThisTimeConnWithFullScreen()
                                 && Screen.AllScreens.Length > 1

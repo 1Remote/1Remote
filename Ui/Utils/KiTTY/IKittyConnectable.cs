@@ -270,11 +270,7 @@ reload=yes
 
         public static string GetKittyExeFullName()
         {
-#if DEBUG
-            const string kittyExeName = "kitty_portable_PRemoteM_debug.exe";
-#else
-            const string kittyExeName = "kitty_portable_PRemoteM.exe";
-#endif
+            string kittyExeName = $"kitty_portable_{AppPathHelper.APP_NAME}.exe";
             if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
                 Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
             var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, kittyExeName);

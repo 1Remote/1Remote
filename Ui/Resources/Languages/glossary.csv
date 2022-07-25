@@ -2,9 +2,9 @@ key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp
 language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP
 language_code-google,en,zh-CN,cs,de,fr,pt,ja
 language_name,English (en-US),简体中文 (zh-CN),čeština,Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP)
-messagebox_title_warning,PRemoteM Warning,PRemoteM 警告,PRemoteM – varování,PRemoteM Warnung,PRemoteM Warning,PRemoteM Warning,PRemoteM Warning
-messagebox_title_error,PRemoteM Error,PRemoteM 错误,PRemoteM – chyba,PRemoteM Fehler,PRemoteM Erreur,PRemoteM Error,PRemoteM Error
-messagebox_title_info,PRemoteM Info,PRemoteM 提示,PRemoteM – informace,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Info
+messagebox_title_warning,1Remote Warning,1Remote 警告,1Remote – varování,1Remote Warnung,1Remote Warning,1Remote Warning,1Remote Warning
+messagebox_title_error,1Remote Error,1Remote 错误,1Remote – chyba,1Remote Fehler,1Remote Erreur,1Remote Error,1Remote Error
+messagebox_title_info,1Remote Info,1Remote 提示,1Remote – informace,1Remote Info,1Remote Info,1Remote Info,1Remote Info
 OK,OK,确定,OK,OK,OK,OK,OK
 Exit,Exit,退出,Ukončit,Beenden,Sortir,Sair,
 Close,Close,关闭,Zavřít,Schließen,Fermer,Fechar,
@@ -190,7 +190,7 @@ server_editor_remote_app_fullname,App Path,服务端路径,Popis umístění apl
 server_editor_remote_app_fullname_tag,Full exe path on the server (e.g. C:\Apps\hello.exe),被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）,Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe),vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe),Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe),Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe),
 about_page_how_to_use,How to use,帮助,Jak používat,Handbuch im Github Wiki,Comment utiliser,Como usar,
 about_page_feedback,Feedback,提意见/需求,Podněty vývojářům,,Retour,Dê seu feedback,
-guidance_introduce,PRemoteM allows you to open a remote session at any time and anywhere.,PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面,PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit PRemoteM können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,
+guidance_introduce,1Remote allows you to open a remote session at any time and anywhere.,1Remote 为您管理远程会话，帮您通过启动器快速打开远程桌面,1Remote umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit 1Remote können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,1Remote vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O 1Remote permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,
 guidance_feature_launcher_key,call the launcher by,快速呼出启动器,zavolat spouštěč prostřednictvím,Rufen Sie den Launcher auf mit,Appeler le lanceur par,chame os atalhos por,
 guidance_feature_launcher_select,select item by,选择项目,vybrat položku prostřednictvím,Server auswählen mit,Sélectionner l'élément par,selecionar item por,
 guidance_feature_launcher_connect,connect by,启动会话,připojit prostřednictvím,verbinden mit,Se connecter par,conectar por,
@@ -201,7 +201,7 @@ guidance_feature_start_setting2,You are able to change this setting later in Opt
 word_oops,Oops...,哎哟喂...,Jejda…,Upps...,,OOPAA...,
 error_report_unexpected_error_occurred,Unexpected error occurred. Error info is shown below:,程序发生了一些未知错误，详细信息如下：,Došlo k neočekávané chybě. Informace o chybě viz níže:,Unerwarteter Fehler ist aufgetreten. Die Fehlerinformation wird unten angezeigt:,Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :,Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:,
 error_report_to_clipboard,Copy to clipboard,保存到剪贴板,Zkopírovat do schránky,In die Zwischenablage kopieren,Copier dans le presse-papier,Copiar para área de transferência,
-error_report_please_help_us_improve,Please help us improve PRemoteM by reporting this error.,请通过反馈这个错误来帮助我们改进 PRemoteM。,Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, PRemoteM zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.,Ajude-nos a melhorar o PRemoteM relatando este erro.,
+error_report_please_help_us_improve,Please help us improve 1Remote by reporting this error.,请通过反馈这个错误来帮助我们改进 1Remote。,Prosíme pomozte nám 1Remote vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, 1Remote zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer 1Remote en signalant cette erreur.,Ajude-nos a melhorar o 1Remote relatando este erro.,
 error_report_how_help_us_improve,Simply copy the error message and choose a way to report it.,只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）,Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.,"Kopieren Sie einfach die Fehlermeldung und wählen Sie eine der Möglichkeiten, diese zu melden.",Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.,Basta copiar a mensagem de erro e escolher uma forma de relatar.,
 error_report_send_by_email,Send by e-mail,通过邮件,Poslat e-mailem e-mail,Per E-Mail senden,Envoyé par email,Enviar por email,
 error_report_send_by_github,Send by GitHub,通过GitHub,Poslat prostřednictvím portálu GitHub,Senden über Github,Envoyer par GitHub,Enviar pelo GitHub,
@@ -213,8 +213,8 @@ New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo
 New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,
 Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,,,Não pode estar vazio!,
 Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,
-Hosting this exe in PRemoteM tab view?,Hosting this exe in PRemoteM tab windowView?,将该 exe 集成到 PRemoteM 的 tab 视图中?,Hostovat tento spustitelný soubor v PRemoteM panelu windowView?,,,Hospedar este .exe na guia do PRemoteM?,
-Caution: some exe can not be hosted in PRemoteM.,"Caution: some exe can not be hosted by PRemoteM, please test by your self.",警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.",,"Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.",
+Hosting this exe in 1Remote tab view?,Hosting this exe in 1Remote tab windowView?,将该 exe 集成到 1Remote 的 tab 视图中?,Hostovat tento spustitelný soubor v 1Remote panelu windowView?,,,Hospedar este .exe na guia do 1Remote?,
+Caution: some exe can not be hosted in 1Remote.,"Caution: some exe can not be hosted by 1Remote, please test by your self.",警告: 某些应用程序无法被集成到 1Remote 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí 1Remote nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by 1Remote, please test by your self.",,"Atenção: alguns .exe não podem ser hospedados pelo 1Remote, por favor teste por conta própria.",
 Show environment variables,Show environment variables,显示环境变量,Zobrazit proměnné prostředí,Show umgebungsvariablen,,Mostrar variáveis de ambiente,
 How to select the specified monitors,How to select the specified monitors,如何选择指定的显示器,Jak vybrat zadané monitory,So wählen Sie die angegebenen Monitore aus,,Como selecionar os monitores especificados,
 mstsc.exe mode,mstsc.exe mode,mstsc.exe 模式,režim využívající mstsc.exe,,,modo mstsc.exe,
@@ -233,20 +233,20 @@ write permissions alert,"We don't have write permissions for the `{0}` directory
 Please try:
 1. run as administrator
 2. change directory or file permissions 
-3. move PRemoteM to another folder","我们没有路径 `{0}` 的写入权限！
+3. move 1Remote to another folder","我们没有路径 `{0}` 的写入权限！
 请尝试用以下方法修复问题：
 1. 使用管理员权限运行程序
 2. 修改路径的权限设置 
-3. 将 PRemoteM 移动到其他目录","
+3. 将 1Remote 移动到其他目录","
 Chybí oprávnění pro zápis do složky „{0}“!
 Vyzkoušejte:
 1. spustit coby správce
 2. upravit práva na souboru a/nebo složce
-3. přesunout PRemoteM do jiné složky",,,"Não temos permissões de gravação para o diretório `{0}`!
+3. přesunout 1Remote do jiné složky",,,"Não temos permissões de gravação para o diretório `{0}`!
 Por favor, tente:
 1. `Executar como administrador`
 2. Alterar as permissões de diretório/arquivo 
-3. Mover o PREmoteM para outra pasta",
+3. Mover o 1Remote para outra pasta",
 Follow system,Follow system(Supported server: Windows Server 2012 R2 and above),跟随系统(服务器要求Windows Server 2012 R2及以上),Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější),Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher),Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior),
 Scale,Scale,缩放,Měřítko,,,Tamanho,
 tag_tooltips,Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list,鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表,Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných,,,Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão,

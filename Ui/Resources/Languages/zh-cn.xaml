@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">zh-CN</s:String>
     <s:String x:Key="language_code-google">zh-CN</s:String>
     <s:String x:Key="language_name">简体中文 (zh-CN)</s:String>
-    <s:String x:Key="messagebox_title_warning">PRemoteM 警告</s:String>
-    <s:String x:Key="messagebox_title_error">PRemoteM 错误</s:String>
-    <s:String x:Key="messagebox_title_info">PRemoteM 提示</s:String>
+    <s:String x:Key="messagebox_title_warning">1Remote 警告</s:String>
+    <s:String x:Key="messagebox_title_error">1Remote 错误</s:String>
+    <s:String x:Key="messagebox_title_info">1Remote 提示</s:String>
     <s:String x:Key="OK">确定</s:String>
     <s:String x:Key="Exit">退出</s:String>
     <s:String x:Key="Close">关闭</s:String>
@@ -191,7 +191,7 @@
     <s:String x:Key="server_editor_remote_app_fullname_tag">被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）</s:String>
     <s:String x:Key="about_page_how_to_use">帮助</s:String>
     <s:String x:Key="about_page_feedback">提意见/需求</s:String>
-    <s:String x:Key="guidance_introduce">PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面</s:String>
+    <s:String x:Key="guidance_introduce">1Remote 为您管理远程会话，帮您通过启动器快速打开远程桌面</s:String>
     <s:String x:Key="guidance_feature_launcher_key">快速呼出启动器</s:String>
     <s:String x:Key="guidance_feature_launcher_select">选择项目</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">启动会话</s:String>
@@ -202,7 +202,7 @@
     <s:String x:Key="word_oops">哎哟喂...</s:String>
     <s:String x:Key="error_report_unexpected_error_occurred">程序发生了一些未知错误，详细信息如下：</s:String>
     <s:String x:Key="error_report_to_clipboard">保存到剪贴板</s:String>
-    <s:String x:Key="error_report_please_help_us_improve">请通过反馈这个错误来帮助我们改进 PRemoteM。</s:String>
+    <s:String x:Key="error_report_please_help_us_improve">请通过反馈这个错误来帮助我们改进 1Remote。</s:String>
     <s:String x:Key="error_report_how_help_us_improve">只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）</s:String>
     <s:String x:Key="error_report_send_by_email">通过邮件</s:String>
     <s:String x:Key="error_report_send_by_github">通过GitHub</s:String>
@@ -214,8 +214,8 @@
     <s:String x:Key="New runner name">新增 runner 名</s:String>
     <s:String x:Key="Can not be empty!">不能为空！</s:String>
     <s:String x:Key="Hosting">集成</s:String>
-    <s:String x:Key="Hosting this exe in PRemoteM tab view?">将该 exe 集成到 PRemoteM 的 tab 视图中?</s:String>
-    <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。</s:String>
+    <s:String x:Key="Hosting this exe in 1Remote tab view?">将该 exe 集成到 1Remote 的 tab 视图中?</s:String>
+    <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">警告: 某些应用程序无法被集成到 1Remote 中，请自行测试。</s:String>
     <s:String x:Key="Show environment variables">显示环境变量</s:String>
     <s:String x:Key="How to select the specified monitors">如何选择指定的显示器</s:String>
     <s:String x:Key="mstsc.exe mode">mstsc.exe 模式</s:String>
@@ -230,7 +230,7 @@
     <s:String x:Key="Add environment variables">添加环境变量</s:String>
     <s:String x:Key="Selected">选中</s:String>
     <s:String x:Key="Custom">定制</s:String>
-    <s:String x:Key="write permissions alert">我们没有路径 `{0}` 的写入权限！&#10;请尝试用以下方法修复问题：&#10;1. 使用管理员权限运行程序&#10;2. 修改路径的权限设置 &#10;3. 将 PRemoteM 移动到其他目录</s:String>
+    <s:String x:Key="write permissions alert">我们没有路径 `{0}` 的写入权限！&#10;请尝试用以下方法修复问题：&#10;1. 使用管理员权限运行程序&#10;2. 修改路径的权限设置 &#10;3. 将 1Remote 移动到其他目录</s:String>
     <s:String x:Key="Follow system">跟随系统(服务器要求Windows Server 2012 R2及以上)</s:String>
     <s:String x:Key="Scale">缩放</s:String>
     <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>

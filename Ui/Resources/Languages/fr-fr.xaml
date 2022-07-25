@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">fr-FR</s:String>
     <s:String x:Key="language_code-google">fr</s:String>
     <s:String x:Key="language_name">Français (fr-FR)</s:String>
-    <s:String x:Key="messagebox_title_warning">PRemoteM Warning</s:String>
-    <s:String x:Key="messagebox_title_error">PRemoteM Erreur</s:String>
-    <s:String x:Key="messagebox_title_info">PRemoteM Info</s:String>
+    <s:String x:Key="messagebox_title_warning">1Remote Warning</s:String>
+    <s:String x:Key="messagebox_title_error">1Remote Erreur</s:String>
+    <s:String x:Key="messagebox_title_info">1Remote Info</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">Sortir</s:String>
     <s:String x:Key="Close">Fermer</s:String>
@@ -191,7 +191,7 @@
     <s:String x:Key="server_editor_remote_app_fullname_tag">Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe)</s:String>
     <s:String x:Key="about_page_how_to_use">Comment utiliser</s:String>
     <s:String x:Key="about_page_feedback">Retour</s:String>
-    <s:String x:Key="guidance_introduce">PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.</s:String>
+    <s:String x:Key="guidance_introduce">1Remote vous permet d'ouvrir une session à distance à tout moment et de n'importe où.</s:String>
     <s:String x:Key="guidance_feature_launcher_key">Appeler le lanceur par</s:String>
     <s:String x:Key="guidance_feature_launcher_select">Sélectionner l'élément par</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">Se connecter par</s:String>
@@ -202,7 +202,7 @@
     <s:String x:Key="word_oops">Oops...</s:String>
     <s:String x:Key="error_report_unexpected_error_occurred">Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :</s:String>
     <s:String x:Key="error_report_to_clipboard">Copier dans le presse-papier</s:String>
-    <s:String x:Key="error_report_please_help_us_improve">Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.</s:String>
+    <s:String x:Key="error_report_please_help_us_improve">Veuillez nous aider à améliorer 1Remote en signalant cette erreur.</s:String>
     <s:String x:Key="error_report_how_help_us_improve">Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.</s:String>
     <s:String x:Key="error_report_send_by_email">Envoyé par email</s:String>
     <s:String x:Key="error_report_send_by_github">Envoyer par GitHub</s:String>
@@ -214,8 +214,8 @@
     <s:String x:Key="New runner name">New runner name</s:String>
     <s:String x:Key="Can not be empty!">Ne peux pas être vide!</s:String>
     <s:String x:Key="Hosting">Hosting</s:String>
-    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hébergement de cet exe dans l'onglet PRemoteM windowView ?</s:String>
-    <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Attention : certains exe ne peuvent pas être hébergés par PRemoteM, veuillez tester par vous-même.</s:String>
+    <s:String x:Key="Hosting this exe in 1Remote tab view?">Hébergement de cet exe dans la fenêtre de l'onglet 1RemoteView ?</s:String>
+    <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Attention : certains exe ne peuvent pas être hébergés par 1Remote, veuillez tester par vous-même.</s:String>
     <s:String x:Key="Show environment variables">Afficher les variables d'environnement</s:String>
     <s:String x:Key="How to select the specified monitors">Comment sélectionner les moniteurs spécifiés</s:String>
     <s:String x:Key="mstsc.exe mode">mode mstsc.exe</s:String>
@@ -225,12 +225,12 @@
     <s:String x:Key="Additional settings">Paramètres additionnels</s:String>
     <s:String x:Key="Helper">Assistant</s:String>
     <s:String x:Key="Preview">Aperçu</s:String>
-    <s:String x:Key="Preview rdp file">Prévisualiser le fichier rdp</s:String>
+    <s:String x:Key="Preview rdp file">Aperçu du fichier rdp</s:String>
     <s:String x:Key="Check monitor number">Vérifier le numéro du moniteur</s:String>
     <s:String x:Key="Add environment variables">Ajouter des variables d'environnement</s:String>
     <s:String x:Key="Selected">Choisi</s:String>
     <s:String x:Key="Custom">Coutume</s:String>
-    <s:String x:Key="write permissions alert">Nous n'avons pas les droits d'écriture pour le répertoire `{0}` !&#10;S'il vous plaît essayez:&#10;1. exécuter en tant qu'administrateur&#10;2. modifier les autorisations de répertoire ou de fichier&#10;3. déplacer PRemoteM dans un autre dossier</s:String>
+    <s:String x:Key="write permissions alert">Nous n'avons pas les droits d'écriture pour le répertoire `{0}` !&#10;S'il vous plaît essayez:&#10;1. exécuter en tant qu'administrateur&#10;2. modifier les autorisations de répertoire ou de fichier&#10;3. déplacer 1Remote vers un autre dossier</s:String>
     <s:String x:Key="Follow system">Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur)</s:String>
     <s:String x:Key="Scale">Échelle</s:String>
     <s:String x:Key="tag_tooltips">Clic gauche : définir ce tag comme filtre{0}Ctrl + clic gauche : ajouter ce tag à la liste d'inclusion {0}Ctrl + clic droit : ajouter ce tag à la liste d'exclusion</s:String>

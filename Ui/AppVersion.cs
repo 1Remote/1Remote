@@ -16,9 +16,8 @@ namespace PRM
 
         public static readonly string[] UpdateUrls =
         {
+            "https://github.com/1Remote/1Remote",
             "https://github.com/1Remote/PRemoteM",
-            "https://github.com/VShawn/PRemoteM",
-            "https://gitee.com/vshawn/PRemoteM"
         };
     }
 }
