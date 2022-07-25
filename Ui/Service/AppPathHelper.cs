@@ -12,7 +12,7 @@ namespace PRM.Service
 {
     public class AppPathHelper
     {
-        private const string AppName = "PRemoteM";
+        private const string AppName = "1Remote";
 #if DEBUG
         public const string APP_NAME = $"{AppName}_Debug";
 #if FOR_MICROSOFT_STORE_ONLY

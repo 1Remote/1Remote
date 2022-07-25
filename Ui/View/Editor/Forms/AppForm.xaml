@@ -45,11 +45,11 @@
             </StackPanel>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in 1 tab view?'}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
                 <CheckBox IsChecked="{Binding RunWithHosting}">
-                    <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                    <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
                 </CheckBox>
             </StackPanel>
         </Grid>

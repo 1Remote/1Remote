@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">cs-CZ</s:String>
     <s:String x:Key="language_code-google">cs</s:String>
     <s:String x:Key="language_name">čeština</s:String>
-    <s:String x:Key="messagebox_title_warning">PRemoteM – varování</s:String>
-    <s:String x:Key="messagebox_title_error">PRemoteM – chyba</s:String>
-    <s:String x:Key="messagebox_title_info">PRemoteM – informace</s:String>
+    <s:String x:Key="messagebox_title_warning">1Remote – varování</s:String>
+    <s:String x:Key="messagebox_title_error">1Remote – chyba</s:String>
+    <s:String x:Key="messagebox_title_info">1Remote – informace</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">Ukončit</s:String>
     <s:String x:Key="Close">Zavřít</s:String>
@@ -191,7 +191,7 @@
     <s:String x:Key="server_editor_remote_app_fullname_tag">Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe)</s:String>
     <s:String x:Key="about_page_how_to_use">Jak používat</s:String>
     <s:String x:Key="about_page_feedback">Podněty vývojářům</s:String>
-    <s:String x:Key="guidance_introduce">PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.</s:String>
+    <s:String x:Key="guidance_introduce">1Remote umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.</s:String>
     <s:String x:Key="guidance_feature_launcher_key">zavolat spouštěč prostřednictvím</s:String>
     <s:String x:Key="guidance_feature_launcher_select">vybrat položku prostřednictvím</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">připojit prostřednictvím</s:String>
@@ -202,7 +202,7 @@
     <s:String x:Key="word_oops">Jejda…</s:String>
     <s:String x:Key="error_report_unexpected_error_occurred">Došlo k neočekávané chybě. Informace o chybě viz níže:</s:String>
     <s:String x:Key="error_report_to_clipboard">Zkopírovat do schránky</s:String>
-    <s:String x:Key="error_report_please_help_us_improve">Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.</s:String>
+    <s:String x:Key="error_report_please_help_us_improve">Prosíme pomozte nám 1Remote vylepšit nahlášením této chyby.</s:String>
     <s:String x:Key="error_report_how_help_us_improve">Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.</s:String>
     <s:String x:Key="error_report_send_by_email">Poslat e-mailem e-mail</s:String>
     <s:String x:Key="error_report_send_by_github">Poslat prostřednictvím portálu GitHub</s:String>
@@ -214,8 +214,8 @@
     <s:String x:Key="New runner name">Název pro nový spouštěč</s:String>
     <s:String x:Key="Can not be empty!">Je třeba vyplnit!</s:String>
     <s:String x:Key="Hosting">Hostování</s:String>
-    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hostovat tento spustitelný soubor v PRemoteM panelu windowView?</s:String>
-    <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.</s:String>
+    <s:String x:Key="Hosting this exe in 1Remote tab view?">Hostovat tento spustitelný soubor v 1Remote panelu windowView?</s:String>
+    <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Upozornění: hostování některých spustitelných souborů pomocí 1Remote nefunguje – je třeba si vyzkoušet.</s:String>
     <s:String x:Key="Show environment variables">Zobrazit proměnné prostředí</s:String>
     <s:String x:Key="How to select the specified monitors">Jak vybrat zadané monitory</s:String>
     <s:String x:Key="mstsc.exe mode">režim využívající mstsc.exe</s:String>
@@ -230,7 +230,7 @@
     <s:String x:Key="Add environment variables">Přidat proměnné prostředí</s:String>
     <s:String x:Key="Selected">Vybráno</s:String>
     <s:String x:Key="Custom">Uživatelsky určené</s:String>
-    <s:String x:Key="write permissions alert">&#10;Chybí oprávnění pro zápis do složky „{0}“!&#10;Vyzkoušejte:&#10;1. spustit coby správce&#10;2. upravit práva na souboru a/nebo složce&#10;3. přesunout PRemoteM do jiné složky</s:String>
+    <s:String x:Key="write permissions alert">&#10;Chybí oprávnění pro zápis do složky „{0}“!&#10;Vyzkoušejte:&#10;1. spustit coby správce&#10;2. upravit práva na souboru a/nebo složce&#10;3. přesunout 1Remote do jiné složky</s:String>
     <s:String x:Key="Follow system">Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější)</s:String>
     <s:String x:Key="Scale">Měřítko</s:String>
     <s:String x:Key="tag_tooltips">Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných</s:String>

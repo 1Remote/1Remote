@@ -6,7 +6,7 @@
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
 		<RootNamespace>PRM</RootNamespace>
-		<AssemblyName>PRemoteM</AssemblyName>
+		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease</Configurations>
 		<TargetFramework>net6.0-windows</TargetFramework>

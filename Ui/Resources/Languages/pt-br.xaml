@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">pt-BR</s:String>
     <s:String x:Key="language_code-google">pt</s:String>
     <s:String x:Key="language_name">Portuguese (pt-BR)</s:String>
-    <s:String x:Key="messagebox_title_warning">PRemoteM Warning</s:String>
-    <s:String x:Key="messagebox_title_error">PRemoteM Error</s:String>
-    <s:String x:Key="messagebox_title_info">PRemoteM Info</s:String>
+    <s:String x:Key="messagebox_title_warning">1Remote Warning</s:String>
+    <s:String x:Key="messagebox_title_error">1Remote Error</s:String>
+    <s:String x:Key="messagebox_title_info">1Remote Info</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">Sair</s:String>
     <s:String x:Key="Close">Fechar</s:String>
@@ -191,7 +191,7 @@
     <s:String x:Key="server_editor_remote_app_fullname_tag">Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe)</s:String>
     <s:String x:Key="about_page_how_to_use">Como usar</s:String>
     <s:String x:Key="about_page_feedback">Dê seu feedback</s:String>
-    <s:String x:Key="guidance_introduce">O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.</s:String>
+    <s:String x:Key="guidance_introduce">O 1Remote permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.</s:String>
     <s:String x:Key="guidance_feature_launcher_key">chame os atalhos por</s:String>
     <s:String x:Key="guidance_feature_launcher_select">selecionar item por</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">conectar por</s:String>
@@ -202,7 +202,7 @@
     <s:String x:Key="word_oops">OOPAA...</s:String>
     <s:String x:Key="error_report_unexpected_error_occurred">Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:</s:String>
     <s:String x:Key="error_report_to_clipboard">Copiar para área de transferência</s:String>
-    <s:String x:Key="error_report_please_help_us_improve">Ajude-nos a melhorar o PRemoteM relatando este erro.</s:String>
+    <s:String x:Key="error_report_please_help_us_improve">Ajude-nos a melhorar o 1Remote relatando este erro.</s:String>
     <s:String x:Key="error_report_how_help_us_improve">Basta copiar a mensagem de erro e escolher uma forma de relatar.</s:String>
     <s:String x:Key="error_report_send_by_email">Enviar por email</s:String>
     <s:String x:Key="error_report_send_by_github">Enviar pelo GitHub</s:String>
@@ -214,8 +214,8 @@
     <s:String x:Key="New runner name">Novo nome do agente</s:String>
     <s:String x:Key="Can not be empty!">Não pode estar vazio!</s:String>
     <s:String x:Key="Hosting">Hospedar</s:String>
-    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hospedar este .exe na guia do PRemoteM?</s:String>
-    <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.</s:String>
+    <s:String x:Key="Hosting this exe in 1Remote tab view?">Hospedar este .exe na guia do 1Remote?</s:String>
+    <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Atenção: alguns .exe não podem ser hospedados pelo 1Remote, por favor teste por conta própria.</s:String>
     <s:String x:Key="Show environment variables">Mostrar variáveis de ambiente</s:String>
     <s:String x:Key="How to select the specified monitors">Como selecionar os monitores especificados</s:String>
     <s:String x:Key="mstsc.exe mode">modo mstsc.exe</s:String>
@@ -230,7 +230,7 @@
     <s:String x:Key="Add environment variables">Adicionar variáveis de ambiente</s:String>
     <s:String x:Key="Selected">Selecionado</s:String>
     <s:String x:Key="Custom">Personalizado</s:String>
-    <s:String x:Key="write permissions alert">Não temos permissões de gravação para o diretório `{0}`!&#10;Por favor, tente:&#10;1. `Executar como administrador`&#10;2. Alterar as permissões de diretório/arquivo &#10;3. Mover o PREmoteM para outra pasta</s:String>
+    <s:String x:Key="write permissions alert">Não temos permissões de gravação para o diretório `{0}`!&#10;Por favor, tente:&#10;1. `Executar como administrador`&#10;2. Alterar as permissões de diretório/arquivo &#10;3. Mover o 1Remote para outra pasta</s:String>
     <s:String x:Key="Follow system">Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior)</s:String>
     <s:String x:Key="Scale">Tamanho</s:String>
     <s:String x:Key="tag_tooltips">Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão</s:String>

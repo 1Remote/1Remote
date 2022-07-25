@@ -166,7 +166,7 @@
                     </Hyperlink>
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://github.com/1Remote/PRemoteM/wiki/%5BProtocol%5D--Protocol-Runners" TextDecorations="{x:Null}" 
+                    <Hyperlink NavigateUri="https://github.com/1Remote/1Remote/wiki/%5BProtocol%5D--Protocol-Runners" TextDecorations="{x:Null}" 
                                controls1:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>
@@ -280,7 +280,7 @@
             </Grid>
 
 
-            <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+            <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in 1Remote tab view?'}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
@@ -288,7 +288,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Hosting'}"></TextBlock>
                 <CheckBox Grid.Column="1" IsChecked="{Binding ExternalRunner.RunWithHosting}">
-                    <TextBlock Foreground="{DynamicResource AccentMidBrush}" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                    <TextBlock Foreground="{DynamicResource AccentMidBrush}" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
                 </CheckBox>
             </Grid>
         </StackPanel>

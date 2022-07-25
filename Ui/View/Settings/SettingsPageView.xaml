@@ -157,7 +157,7 @@
                         <TextBlock Grid.Column="1" Margin="0 0 0 0" TextAlignment="Left" TextWrapping="WrapWithOverflow">
                             <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True"
                                        MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
-                                       NavigateUri="https://github.com/1Remote/PRemoteM/wiki/Help-wanted-Translation" FontSize="12">
+                                       NavigateUri="https://github.com/1Remote/1Remote/wiki/Help-wanted-Translation" FontSize="12">
                                 <Hyperlink.Style>
                                     <Style TargetType="{x:Type Hyperlink}">
                                         <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>

@@ -7,6 +7,7 @@
                   xmlns:s="https://github.com/canton7/Stylet"
                   xmlns:view="clr-namespace:PRM.View"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                  xmlns:service="clr-namespace:PRM.Service"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -14,7 +15,7 @@
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Style="{StaticResource WindowChromeBaseBaseStyle}"
-                  Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
+                  Title="{x:Static service:AppPathHelper.APP_NAME}" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
