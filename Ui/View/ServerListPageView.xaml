@@ -872,17 +872,24 @@
                            StaysOpen="False"
                            AllowsTransparency="True"
                            PlacementTarget="{Binding ElementName=CbPopForInExport}">
-                        <Border Padding="0 0 4 4">
-                            <Border.Effect>
-                                <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                            </Border.Effect>
-                            <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
-                                <StackPanel>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Add}" Command="{Binding CmdAdd}"></Button>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Import}" Command="{Binding CmdImportFromJson}"></Button>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Command="{Binding CmdImportFromCsv}"></Button>
-                                </StackPanel>
-                            </Grid>
+
+                        <Border CornerRadius="5" Background="{DynamicResource PrimaryDarkBrush}">
+                            <StackPanel Orientation="Vertical">
+                                <MenuItem Header="{DynamicResource Add}" Command="{Binding CmdAdd}">
+                                    <MenuItem.Icon>
+                                        <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                              Stretch="Uniform" Name="Path"
+                                              Margin="2" Fill="{DynamicResource PrimaryTextBrush}"></Path>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator Style="{StaticResource SeparatorBaseStyle}"/>
+                                <MenuItem Header="{DynamicResource Import}" Command="{Binding CmdImportFromJson}">
+                                    <MenuItem.Icon>
+                                        <Path UseLayoutRounding="True" Data="{StaticResource GeometryCopy}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="{DynamicResource import_from_csv}" Command="{Binding CmdImportFromCsv}"></MenuItem>
+                            </StackPanel>
                         </Border>
                     </Popup>
                 </Grid>
