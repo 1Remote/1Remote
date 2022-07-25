@@ -231,7 +231,7 @@
 
                                     <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
                                                                Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
-                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalSshRunnerSettings}}}"
+                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
                                                                Tag="Value e.g. %PRM_USERNAME%"
                                                                ToolTip="Value e.g. %PRM_USERNAME%"/>
 
@@ -245,7 +245,7 @@
                                             Opacity="0.8"
                                             attachProperty:VisionElement.Opacity="0.6"
                                             attachProperty:VisionElement.OpacityAccent="1"
-                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalSshRunnerSettings}}}" 
+                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}" 
                                             CommandParameter="{Binding }"
                                             Margin="0 0 10 0">
                                         <Grid Height="10" Width="8">

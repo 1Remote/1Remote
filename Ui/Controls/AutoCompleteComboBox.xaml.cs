@@ -14,7 +14,24 @@ namespace PRM.Controls
         public Action<KeyEventArgs>? OnPreviewKeyDownAction;
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
+            base.OnPreviewKeyDown(e);
             OnPreviewKeyDownAction?.Invoke(e);
+        }
+
+        protected override void OnDropDownOpened(EventArgs e)
+        {
+            base.OnDropDownOpened(e);
+
+            TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
+            tb.Select(tb.Text.Length, 0);
+        }
+
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
+            base.OnSelectionChanged(e);
+
+            TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
+            tb.Select(tb.Text.Length, 0);
         }
     }
     public partial class AutoCompleteComboBox : UserControl
@@ -64,11 +81,14 @@ namespace PRM.Controls
                 o.Selections4Show = new ObservableCollection<string>(o.Selections.Where(x => x.IndexOf(newValue, StringComparison.OrdinalIgnoreCase) >= 0));
                 if (o.Selections4Show?.Count() > 0)
                 {
-                    o.CbContent.IsDropDownOpen = true;
+                    if (o.CbContent.IsDropDownOpen == false)
+                    {
+                        o.CbContent.IsDropDownOpen = true;
+                        o.CbContent.SelectedIndex = 0;
+                    }
                 }
                 else
                 {
-                    o.Selections4Show = new ObservableCollection<string>(o.Selections);
                     o.CbContent.IsDropDownOpen = false;
                 }
             }
@@ -117,6 +137,7 @@ namespace PRM.Controls
         {
             InitializeComponent();
             Grid.DataContext = this;
+            CbContent.IsTextSearchEnabled = false;
             CbContent.OnPreviewKeyDownAction += HandleUpDown;
         }
 
