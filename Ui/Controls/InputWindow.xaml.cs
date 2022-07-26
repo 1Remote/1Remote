@@ -73,10 +73,6 @@ namespace PRM.Controls
             {
                 okButton_Click(sender, new RoutedEventArgs());
             }
-            else
-            {
-                TestValidator();
-            }
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
@@ -108,7 +104,13 @@ namespace PRM.Controls
                     return false;
                 }
             }
+            alert.Visibility = Visibility.Collapsed;
             return true;
+        }
+
+        private void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            TestValidator();
         }
     }
 }
