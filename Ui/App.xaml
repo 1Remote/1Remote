@@ -4,6 +4,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:prm="clr-namespace:PRM"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit"
              ShutdownMode="OnExplicitShutdown"
              >
     <Application.Resources>
@@ -19,6 +20,15 @@
                 <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Markdown.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Icons/SVG.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Languages/en-us.xaml"></ResourceDictionary>
+                <ResourceDictionary>
+                    <Style TargetType="{x:Type avalonEdit:CompletionWindow}">
+                        <Setter Property="WindowStyle" Value="None"></Setter>
+                        <Setter Property="ResizeMode" Value="NoResize"></Setter>
+                        <Setter Property="BorderThickness" Value="0"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                    </Style>
+                </ResourceDictionary>
             </s:ApplicationLoader.MergedDictionaries>
         </s:ApplicationLoader>
     </Application.Resources>

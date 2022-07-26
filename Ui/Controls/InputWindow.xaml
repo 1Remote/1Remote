@@ -15,7 +15,9 @@
                    Foreground="Red"/>
         <TextBox x:Name="textBox" Height="30" Margin="5"
                  Text="" TextWrapping="Wrap" Padding="5"
-                 VerticalAlignment="Center" HorizontalAlignment="Stretch" KeyDown="textBox_KeyDown"/>
+                 VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                 TextChanged="TextBox_OnTextChanged"
+                 KeyDown="textBox_KeyDown"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="okButton" Content="{DynamicResource Done}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="okButton_Click"/>

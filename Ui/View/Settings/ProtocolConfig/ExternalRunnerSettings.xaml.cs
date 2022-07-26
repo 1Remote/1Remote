@@ -13,13 +13,7 @@ namespace PRM.View.Settings.ProtocolConfig
         public ExternalRunnerSettings()
         {
             InitializeComponent();
-            TextEditor.TextArea.TextEntering += (sender, args) =>
-            {
-                if (args.Text.IndexOf("\n", StringComparison.Ordinal) >= 0
-                   || args.Text.IndexOf("\r", StringComparison.Ordinal) >= 0)
-                    args.Handled = true;
-            };
-            TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
+            base.InitBindableAvalonEditor(TextEditor);
         }
     }
 }

@@ -49,7 +49,7 @@
                         CornerRadius="10" BorderThickness="0">
         </Border>
         <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding ExternalRunner.Name}" Margin="5"></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding ExternalRunner.Name, UpdateSourceTrigger=PropertyChanged}" Margin="5"></TextBlock>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Width="25" Height="25" Tag="{Binding}"
                         Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -155,7 +155,7 @@
                                            x:Name="TextEditor"
                                            WordWrap="False"
                                            Background="Transparent"
-                                           Text="{Binding ExternalRunner.Arguments}"
+                                           Text="{Binding ExternalRunner.Arguments, UpdateSourceTrigger=PropertyChanged}"
                                            SyntaxHighlighting="PowerShell"
                                            FontSize="{DynamicResource TextFontSize}">
                 </controls:BindableAvalonEditor>
@@ -213,7 +213,7 @@
                                            x:Name="TextEditorForSshWithPrivateKey"
                                            WordWrap="False"
                                            Background="Transparent"
-                                           Text="{Binding ExternalRunnerForSSH.ArgumentsForPrivateKey}"
+                                           Text="{Binding ExternalRunnerForSSH.ArgumentsForPrivateKey, UpdateSourceTrigger=PropertyChanged}"
                                            SyntaxHighlighting="PowerShell"
                                            FontSize="{DynamicResource TextFontSize}">
                 </controls:BindableAvalonEditor>
