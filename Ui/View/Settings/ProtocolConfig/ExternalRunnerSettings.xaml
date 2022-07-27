@@ -8,6 +8,7 @@
                             xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                             xmlns:protocolConfig="clr-namespace:PRM.View.Settings.ProtocolConfig"
                             xmlns:converter="clr-namespace:Shawn.Utils.WpfResources.Converter;assembly=Shawn.Utils.WpfResources"
+                            xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit"
                             mc:Ignorable="d" 
                             d:DataContext="{d:DesignInstance protocolConfig:ExternalRunnerSettingsViewModel}"
                             d:DesignHeight="450" d:DesignWidth="800">
@@ -118,12 +119,6 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
-                <!--<TextBox Grid.Column="1" 
-                        Text="{Binding ExternalRunner.Arguments}"
-                        ToolTip="{Binding ExternalRunner.Arguments}"
-                        TextWrapping="Wrap"
-                        Tag="e.g. sftp://username:password@example.com:22/"
-                        VerticalContentAlignment="Center"></TextBox>-->
                 <Border Grid.Column="1">
                     <Border.Style>
                         <Style TargetType="Border">
