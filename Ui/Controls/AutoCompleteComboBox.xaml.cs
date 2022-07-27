@@ -14,7 +14,7 @@ namespace PRM.Controls
         public Action<KeyEventArgs>? OnPreviewKeyDownAction;
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            base.OnPreviewKeyDown(e);
+            //base.OnPreviewKeyDown(e);
             OnPreviewKeyDownAction?.Invoke(e);
         }
 
