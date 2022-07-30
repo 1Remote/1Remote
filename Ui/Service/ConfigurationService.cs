@@ -79,19 +79,20 @@ namespace PRM.Service
 
     public class ThemeConfig
     {
-        public string ThemeName = "Default";
-        public string PrimaryMidColor = "#102b3e";
-        public string PrimaryLightColor = "#445a68";
-        public string PrimaryDarkColor = "#0c2230";
-        public string PrimaryTextColor = "#ffffff";
+        public string ThemeName = "Dark";
 
-        public string AccentMidColor = "#e83d61";
-        public string AccentLightColor = "#ed6884";
-        public string AccentDarkColor = "#b5304c";
-        public string AccentTextColor = "#ffffff";
+        public string PrimaryMidColor = "#323233";
+        public string PrimaryLightColor = "#474748";
+        public string PrimaryDarkColor = "#2d2d2d";
+        public string PrimaryTextColor = "#cccccc";
 
-        public string BackgroundColor = "#ced8e1";
-        public string BackgroundTextColor = "#000000";
+        public string AccentMidColor = "#FF007ACC";
+        public string AccentLightColor = "#FF32A7F4";
+        public string AccentDarkColor = "#FF0061A3";
+        public string AccentTextColor = "#FFFFFFFF";
+
+        public string BackgroundColor = "#1e1e1e";
+        public string BackgroundTextColor = "#cccccc";
     }
 
     public class Configuration

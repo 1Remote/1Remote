@@ -54,7 +54,7 @@ namespace PRM.Service
                 BackgroundColor = "#1e1e1e",
                 BackgroundTextColor = "#cccccc",
             });
-            Themes.Add("Default", new Theme()
+            Themes.Add("PRemoteM", new Theme()
             {
                 PrimaryMidColor = "#102b3e",
                 PrimaryLightColor = "#445a68",
