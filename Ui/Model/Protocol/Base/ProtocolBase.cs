@@ -92,29 +92,22 @@ namespace PRM.Model.Protocol.Base
         }
 
 
-        private List<string>? _tags = new List<string>();
-        public List<string>? Tags
+        private List<string> _tags = new List<string>();
+        public List<string> Tags
         {
             get
             {
-                if (string.IsNullOrEmpty(GroupName) == false && (_tags == null || _tags.Count == 0))
+                if (string.IsNullOrEmpty(GroupName) == false && _tags.Count == 0)
                 {
                     _tags = new List<string>() { GroupName };
                     GroupName = string.Empty;
                 }
-                else if (_tags == null)
-                {
-                    _tags = new List<string>();
-                }
-                _tags = _tags.Distinct()?.OrderBy(x => x)?.ToList();
+                _tags = _tags.Distinct().OrderBy(x => x).ToList();
                 return _tags;
             }
             set
             {
-                if (value == null)
-                    SetAndNotifyIfChanged(ref _tags, new List<string>());
-                else
-                    SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
+                SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
             }
         }
 
