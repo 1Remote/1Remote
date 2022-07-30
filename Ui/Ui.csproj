@@ -53,6 +53,12 @@
 			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
 			<IsWinMDFile>true</IsWinMDFile>
 		</Reference>
+		<None Update="x64\SQLite.Interop.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="x86\SQLite.Interop.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -265,11 +271,11 @@
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="Resources\Icons\SVG.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="Resources\Theme\Markdown.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		  <SubType>Designer</SubType>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="Resources\Theme\Default.xaml">
 			<SubType>Designer</SubType>
@@ -351,8 +357,8 @@
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\ProtocolConfig\ExternalSshRunnerSettings.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		  <SubType>Designer</SubType>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\ProtocolConfig\ExternalRunnerSettings.xaml">
 			<SubType>Designer</SubType>
