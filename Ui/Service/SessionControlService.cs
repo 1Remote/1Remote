@@ -604,8 +604,15 @@ namespace PRM.Service
                     host.ProtocolServer.RunScriptAfterDisconnected();
                     PrintCacheCount();
 
+#if NETFRAMEWORK
+                    foreach (var kv in _token2TabWindows.ToArray())
+                    {
+                        var key = kv.Key;
+                        var tab = kv.Value;
+#else
                     foreach (var (key, tab) in _token2TabWindows.ToArray())
                     {
+#endif
                         var tabItemVm = tab.GetViewModel().Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId);
                         // remove items from tab
                         if (tabItemVm != null)
@@ -629,8 +636,15 @@ namespace PRM.Service
                     }
 
                     // hide full
+#if NETFRAMEWORK
+                    foreach (var kv in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
+                    {
+                        var key = kv.Key;
+                        var full = kv.Value;
+#else
                     foreach (var (key, full) in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
                     {
+#endif
                         if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
@@ -681,9 +695,9 @@ namespace PRM.Service
             }
         }
 
-        #endregion
+#endregion
 
-        #region Clean up CloseProtocol
+#region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
             while (_hostToBeDispose.TryDequeue(out var host))
@@ -713,8 +727,10 @@ namespace PRM.Service
         private void CloseEmptyWindows()
         {
             int closeCount = 0;
-            foreach (var (key, tab) in _token2TabWindows.ToArray())
+            foreach (var kv in _token2TabWindows.ToArray())
             {
+                var key = kv.Key;
+                var tab = kv.Value;
                 if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing tab({tab.GetHashCode()})");
@@ -724,8 +740,10 @@ namespace PRM.Service
                 }
             }
 
-            foreach (var (key, full) in _connectionId2FullScreenWindows.ToArray())
+            foreach (var kv in _connectionId2FullScreenWindows.ToArray())
             {
+                var key = kv.Key;
+                var full = kv.Value;
                 if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing full(hash = {full.GetHashCode()})");
@@ -779,7 +797,7 @@ namespace PRM.Service
                 }
             }
         }
-        #endregion
+#endregion
 
         private void PrintCacheCount([CallerMemberName] string callMember = "")
         {

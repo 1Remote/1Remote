@@ -9,7 +9,12 @@
 		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease</Configurations>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='StoreDebug'">net48</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net48</TargetFramework>
+		<!--<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>-->
+		<!--<TargetFramework>net48</TargetFramework>-->
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
@@ -29,19 +34,32 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
-		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<Optimize>True</Optimize>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x86'">
-		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<Optimize>True</Optimize>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(Configuration)'=='StoreRelease'">
+		<Reference Include="System.Runtime.WindowsRuntime">
+			<HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
+		</Reference>
+		<Reference Include="Windows">
+			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
+			<IsWinMDFile>true</IsWinMDFile>
+		</Reference>
+		<None Update="x64\SQLite.Interop.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="x86\SQLite.Interop.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
@@ -253,11 +271,11 @@
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="Resources\Icons\SVG.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="Resources\Theme\Markdown.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		  <SubType>Designer</SubType>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="Resources\Theme\Default.xaml">
 			<SubType>Designer</SubType>
@@ -339,8 +357,8 @@
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\ProtocolConfig\ExternalSshRunnerSettings.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		  <SubType>Designer</SubType>
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\ProtocolConfig\ExternalRunnerSettings.xaml">
 			<SubType>Designer</SubType>
