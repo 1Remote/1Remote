@@ -8,6 +8,7 @@ using PRM.Model.Protocol.Base;
 using PRM.Service;
 using PRM.View;
 using Shawn.Utils;
+using Stylet;
 
 namespace PRM.Model
 {
@@ -86,8 +87,11 @@ namespace PRM.Model
                 var serverAbstract = server;
                 try
                 {
-                    _dataService.DecryptToRamLevel(ref serverAbstract);
-                    tmp.Add(new ProtocolBaseViewModel(serverAbstract));
+                    Execute.OnUIThread(() =>
+                    {
+                        _dataService.DecryptToRamLevel(ref serverAbstract);
+                        tmp.Add(new ProtocolBaseViewModel(serverAbstract));
+                    });
                 }
                 catch (Exception e)
                 {
