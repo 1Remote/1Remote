@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using PRM.Service;
+using _1RM.Service;
 
 namespace Tests
 {

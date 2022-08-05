@@ -5,10 +5,10 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using Dapper;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.Model.DAO.Dapper
+namespace _1RM.Model.DAO.Dapper
 {
     public class DapperDataBase : IDataBase
     {

@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PRM.Utils.RdpFile
+namespace _1RM.Utils.RdpFile
 {
     /// <summary>
     /// REF:

@@ -3,9 +3,9 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Animation;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
-using PRM.Model.ProtocolRunner;
-using PRM.Utils;
+using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -13,7 +13,7 @@ using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 public class ExternalRunnerSettingsViewModel
 {
@@ -56,11 +56,11 @@ public class ExternalRunnerSettingsViewModel
                     {
                         if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
                         {
-                            ExternalRunner.Arguments = "sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
+                            ExternalRunner.Arguments = "sftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%:%RM_PORT%";
                         }
                         if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
-                            ExternalRunner.Arguments = "ftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
+                            ExternalRunner.Arguments = "ftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%:%RM_PORT%";
                         }
                         ExternalRunner.RunWithHosting = true;
                     }
@@ -68,33 +68,33 @@ public class ExternalRunnerSettingsViewModel
                     {
                         if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
                         {
-                            ExternalRunner.Arguments = "sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%";
+                            ExternalRunner.Arguments = "sftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%";
                         }
                         if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
-                            ExternalRunner.Arguments = "ftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%";
+                            ExternalRunner.Arguments = "ftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%";
                         }
-                        ExternalRunner.Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto";
+                        ExternalRunner.Arguments = @"%RM_HOSTNAME%::%RM_PORT% -password=%RM_PASSWORD% -scale=auto";
                         ExternalRunner.RunWithHosting = false;
                     }
                     else if (name == "VpxClient.exe".ToLower())
                     {
-                        ExternalRunner.Arguments = @"-s %PRM_HOSTNAME% -u %PRM_USERNAME% -p %PRM_PASSWORD%";
+                        ExternalRunner.Arguments = @"-s %RM_HOSTNAME% -u %RM_USERNAME% -p %RM_PASSWORD%";
                         ExternalRunner.RunWithHosting = true;
                     }
                     else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
                     {
-                        ExternalRunner.Arguments = @"-ssh %PRM_HOSTNAME% -P %PRM_PORT% -l %PRM_USERNAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+                        ExternalRunner.Arguments = @"-ssh %RM_HOSTNAME% -P %RM_PORT% -l %RM_USERNAME% -pw %RM_PASSWORD% -%RM_SSH_VERSION% -cmd ""%RM_STARTUP_AUTO_COMMAND%""";
                         ExternalRunner.RunWithHosting = true;
                     }
                     else if (name == "tvnviewer.exe".ToLower())
                     {
-                        ExternalRunner.Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto";
+                        ExternalRunner.Arguments = @"%RM_HOSTNAME%::%RM_PORT% -password=%RM_PASSWORD% -scale=auto";
                         ExternalRunner.RunWithHosting = true;
                     }
                     else if (name == "vncviewer.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
                     {
-                        ExternalRunner.Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto";
+                        ExternalRunner.Arguments = @"%RM_HOSTNAME%::%RM_PORT% -password=%RM_PASSWORD% -scale=auto";
                         ExternalRunner.RunWithHosting = false;
                     }
                 }

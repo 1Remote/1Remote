@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
-using PRM.Service;
-using PRM.View;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
+using _1RM.View;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class ProtocolAction : NotifyPropertyChangedBase
     {

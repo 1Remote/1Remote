@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Resources.Icons
+namespace _1RM.Resources.Icons
 {
     public class ServerIcons
     {

@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Model;
-using PRM.View;
+using _1RM.Model;
+using _1RM.View;
 using Shawn.Utils;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     /// <summary>
     /// Interaction logic for ServerListItem.xaml

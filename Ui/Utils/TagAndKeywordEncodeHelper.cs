@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using VariableKeywordMatcher.Model;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class TagAndKeywordEncodeHelper
     {

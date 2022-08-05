@@ -9,7 +9,7 @@ using System.Text;
 #pragma warning disable CS8603
 #pragma warning disable CS8625
 
-namespace PRM.Utils.RdpFile
+namespace _1RM.Utils.RdpFile
 {
     [Serializable()]
     internal sealed class DataProtection

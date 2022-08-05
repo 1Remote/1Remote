@@ -2,10 +2,10 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using PRM.Utils;
+using _1RM.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public enum HotkeyModifierKeys
     {

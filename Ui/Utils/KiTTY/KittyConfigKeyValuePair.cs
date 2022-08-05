@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.Win32;
 
-namespace PRM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY
 {
     public class KittyConfigKeyValuePair
     {

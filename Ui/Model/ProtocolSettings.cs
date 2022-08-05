@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
-using PRM.Model.ProtocolRunner;
+using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class ProtocolSettings
     {

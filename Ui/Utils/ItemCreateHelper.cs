@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using PRM.Model.DAO;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 // ReSharper disable once InconsistentlySynchronizedField
 // ReSharper disable InconsistentlySynchronizedField
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public class ItemCreateHelper
     {

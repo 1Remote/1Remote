@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PRM.Controls;
-using PRM.Model.Protocol;
-using PRM.Model.ProtocolRunner;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Controls;
+using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View.Settings.ProtocolConfig
+namespace _1RM.View.Settings.ProtocolConfig
 {
     public class ProtocolRunnerSettingsPageViewModel : NotifyPropertyChangedBase
     {

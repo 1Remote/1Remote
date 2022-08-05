@@ -5,11 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils;
-using Ui;
 
-namespace PRM.View.Guidance
+namespace _1RM.View.Guidance
 {
     public class GuidanceWindowViewModel : NotifyPropertyChangedBase
     {

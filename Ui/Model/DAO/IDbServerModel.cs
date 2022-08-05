@@ -1,6 +1,6 @@
-﻿using PRM.Model.Protocol.Base;
+﻿using _1RM.Model.Protocol.Base;
 
-namespace PRM.Model.DAO
+namespace _1RM.Model.DAO
 {
     public interface IDataBaseServer
     {

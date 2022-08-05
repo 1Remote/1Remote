@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using PRM.Service;
+using _1RM.Service;
 
-namespace PRM.Model.DAO
+namespace _1RM.Model.DAO
 {
     public enum EnumDbStatus
     {

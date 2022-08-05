@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
-using PRM.Controls;
-using PRM.Controls.NoteDisplay;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Controls;
+using _1RM.Controls.NoteDisplay;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {

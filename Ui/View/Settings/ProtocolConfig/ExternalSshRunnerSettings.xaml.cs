@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
-using PRM.Model.Protocol.FileTransmit;
-using PRM.Service;
+using _1RM.Model.Protocol.FileTransmit;
+using _1RM.Service;
 
-namespace PRM.View.Settings.ProtocolConfig
+namespace _1RM.View.Settings.ProtocolConfig
 {
     public partial class ExternalSshRunnerSettings : ExternalRunnerSettingsBase
     {

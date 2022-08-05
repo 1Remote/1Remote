@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Stylet;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public abstract class NotifyPropertyChangedBaseScreen: Screen, INotifyPropertyChanged
     {

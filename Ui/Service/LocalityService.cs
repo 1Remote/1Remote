@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
+using _1RM.Model.Protocol;
 using Shawn.Utils;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public enum EnumServerOrderBy
     {

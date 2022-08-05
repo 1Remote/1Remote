@@ -2,12 +2,12 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Data;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Utils.KiTTY;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.View.Editor.Forms
+namespace _1RM.View.Editor.Forms
 {
     public partial class SshForm : FormBase
     {

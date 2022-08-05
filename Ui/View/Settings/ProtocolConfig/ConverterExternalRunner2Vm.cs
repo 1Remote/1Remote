@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Data;
-using PRM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner;
 using Shawn.Utils.Interface;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 public class ConverterExternalRunner2Vm : IValueConverter
 {

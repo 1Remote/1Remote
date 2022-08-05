@@ -1,10 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Utils.KiTTY;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     public class Telnet : ProtocolBaseWithAddressPort, IKittyConnectable
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public class GridWith4Columns : Grid
     {

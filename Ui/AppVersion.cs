@@ -1,6 +1,6 @@
 using Shawn.Utils;
 
-namespace PRM
+namespace _1RM
 {
     public static class AppVersion
     {

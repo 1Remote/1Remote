@@ -4,13 +4,13 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using PRM.Model;
-using PRM.Service;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.View.Settings;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
-namespace PRM.View.Guidance
+namespace _1RM.View.Guidance
 {
     /// <summary>
     /// GuidanceWindow.xaml 的交互逻辑

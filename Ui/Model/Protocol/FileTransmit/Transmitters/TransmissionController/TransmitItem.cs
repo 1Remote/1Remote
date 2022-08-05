@@ -2,7 +2,7 @@
 using System.IO;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
+namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 {
     public class TransmitItem : NotifyPropertyChangedBase
     {

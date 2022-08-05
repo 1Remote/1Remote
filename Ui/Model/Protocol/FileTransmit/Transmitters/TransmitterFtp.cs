@@ -6,7 +6,7 @@ using System.Threading;
 using FluentFTP;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol.FileTransmit.Transmitters
+namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 {
     public class TransmitterFtp : ITransmitter
     {

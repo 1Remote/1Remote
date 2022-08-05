@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
+using _1RM.Model.Protocol;
 using Shawn.Utils;
 
-namespace PRM.Model.ProtocolRunner
+namespace _1RM.Model.ProtocolRunner
 {
     public class ExternalRunnerForSSH : ExternalRunner
     {

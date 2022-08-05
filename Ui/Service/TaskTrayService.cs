@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PRM.Model;
-using PRM.View;
+using _1RM.Model;
+using _1RM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
-using Ui;
 using Application = System.Windows.Application;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class TaskTrayService
     {

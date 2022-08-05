@@ -10,11 +10,11 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
-using PRM.Model;
-using PRM.Model.Protocol.FileTransmit;
-using PRM.Model.Protocol.FileTransmit.Transmitters;
-using PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
-using PRM.Utils;
+using _1RM.Model;
+using _1RM.Model.Protocol.FileTransmit;
+using _1RM.Model.Protocol.FileTransmit.Transmitters;
+using _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -25,7 +25,7 @@ using ListView = System.Windows.Controls.ListView;
 using ListViewItem = System.Windows.Controls.ListViewItem;
 using MessageBox = System.Windows.MessageBox;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {

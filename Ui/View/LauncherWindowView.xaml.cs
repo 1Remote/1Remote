@@ -4,14 +4,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using PRM.Service;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Service;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class LauncherWindowView : WindowChromeBase
     {

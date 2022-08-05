@@ -4,15 +4,15 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.View.Host;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.View.Host;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY
 {
     public interface IKittyConnectable
     {

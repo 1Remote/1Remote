@@ -6,7 +6,7 @@ using System.Windows;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY
 {
     public static class PuttyThemes
     {

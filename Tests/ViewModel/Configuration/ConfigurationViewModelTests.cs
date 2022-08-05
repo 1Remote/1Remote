@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.Protocol;
-using PRM.Resources.Icons;
-using PRM.Service;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
+using _1RM.Resources.Icons;
+using _1RM.Service;
+using _1RM.View.Settings;
 using Shawn.Utils.Wpf.Image;
 
 namespace Tests.ViewModel.Configuration
@@ -16,7 +16,7 @@ namespace Tests.ViewModel.Configuration
     public class ConfigurationViewModelTests
     {
         private DataService _dataService = null;
-        private PRM.Service.Configuration _cfg = null;
+        private _1RM.Service.Configuration _cfg = null;
         private ConfigurationService _configurationService = null;
         private RDP _rdp = null;
         private SSH _ssh = null;
@@ -117,7 +117,7 @@ namespace Tests.ViewModel.Configuration
                 _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(AppPathHelper.Instance.SqliteDbDefaultPath));
                 MockData();
                 _dataService.Database_CloseConnection();
-                _cfg = new PRM.Service.Configuration();
+                _cfg = new _1RM.Service.Configuration();
                 _configurationService = new ConfigurationService(_cfg, new KeywordMatchService());
             }
         }

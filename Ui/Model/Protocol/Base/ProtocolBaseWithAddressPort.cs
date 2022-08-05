@@ -1,6 +1,6 @@
 ﻿using Shawn.Utils;
 
-namespace PRM.Model.Protocol.Base
+namespace _1RM.Model.Protocol.Base
 {
     public abstract class ProtocolBaseWithAddressPort : ProtocolBase
     {
@@ -12,7 +12,7 @@ namespace PRM.Model.Protocol.Base
 
         private string _address = "";
 
-        [OtherName(Name = "PRM_HOSTNAME")]
+        [OtherName(Name = "RM_HOSTNAME")]
         public string Address
         {
             get => _address;
@@ -28,7 +28,7 @@ namespace PRM.Model.Protocol.Base
 
         private string _port = "3389";
 
-        [OtherName(Name = "PRM_PORT")]
+        [OtherName(Name = "RM_PORT")]
         public string Port
         {
             get => _port;
