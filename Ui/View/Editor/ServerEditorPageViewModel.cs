@@ -4,18 +4,18 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using PRM.Controls;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Service;
-using PRM.View.Editor.Forms;
+using _1RM.Controls;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Service;
+using _1RM.View.Editor.Forms;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View.Editor
+namespace _1RM.View.Editor
 {
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {

@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
-using PRM.Model.DAO;
-using PRM.Model.DAO.Dapper;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
 
     public class DataService : IDataService

@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public class ComboboxWithKeyInvoke : ComboBox
     {

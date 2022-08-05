@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
-		<RootNamespace>PRM</RootNamespace>
+		<RootNamespace>_1RM</RootNamespace>
 		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease</Configurations>
@@ -18,7 +18,7 @@
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
-		<StartupObject>Ui.App</StartupObject>
+		<StartupObject>_1RM.App</StartupObject>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<PlatformTarget>AnyCPU</PlatformTarget>

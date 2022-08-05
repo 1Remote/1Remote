@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using PRM.Controls;
-using PRM.Model;
-using PRM.Model.Protocol.Base;
-using PRM.Utils;
+using _1RM.Controls;
+using _1RM.Model;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View
+namespace _1RM.View
 {
 
     public partial class ServerListPageViewModel

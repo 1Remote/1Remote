@@ -9,21 +9,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Newtonsoft.Json;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View;
-using PRM.View.Guidance;
-using PRM.View.Settings;
-using PRM.View.Settings.ProtocolConfig;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View;
+using _1RM.View.Guidance;
+using _1RM.View.Settings;
+using _1RM.View.Settings.ProtocolConfig;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
-using Ui;
 
-namespace PRM
+namespace _1RM
 {
     internal class AppInit
     {
@@ -78,28 +77,6 @@ namespace PRM
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
                 var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
-                // 读取旧版本配置信息 TODO remove after 2023.01.01
-                {
-                    string iniPath = portablePaths.ProfileIniPath;
-                    string dbDefaultPath = portablePaths.SqliteDbDefaultPath;
-                    if (File.Exists(iniPath) == false)
-                    {
-                        iniPath = appDataPaths.ProfileIniPath;
-                        dbDefaultPath = appDataPaths.SqliteDbDefaultPath;
-                    }
-                    if (File.Exists(iniPath) == true)
-                    {
-                        try
-                        {
-                            Configuration = ConfigurationService.LoadFromIni(iniPath, dbDefaultPath);
-                        }
-                        finally
-                        {
-                            File.Delete(iniPath);
-                        }
-                    }
-                }
-
                 bool isPortableMode = false;
                 {
                     _isNewUser = false;

@@ -5,20 +5,19 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
-using Ui;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class MainWindowView : WindowChromeBase
     {

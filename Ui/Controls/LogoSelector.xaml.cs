@@ -14,7 +14,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Utils.KiTTY;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
     public class SSH : ProtocolBaseWithAddressPortUserPwd, IKittyConnectable
@@ -16,12 +16,12 @@ namespace PRM.Model.Protocol
             base.Port = "22";
         }
 
-        [OtherName(Name = "PRM_SESSION_NAME")]
+        [OtherName(Name = "RM_SESSION_NAME")]
         public string SessionName => this.GetSessionName();
 
         private string _privateKey = "";
 
-        [OtherName(Name = "PRM_SSH_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "RM_SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -30,7 +30,7 @@ namespace PRM.Model.Protocol
 
         private int? _sshVersion = 2;
 
-        [OtherName(Name = "PRM_SSH_VERSION")]
+        [OtherName(Name = "RM_SSH_VERSION")]
         public int? SshVersion
         {
             get => _sshVersion;
@@ -39,7 +39,7 @@ namespace PRM.Model.Protocol
 
         private string _startupAutoCommand = "";
 
-        [OtherName(Name = "PRM_STARTUP_AUTO_COMMAND")]
+        [OtherName(Name = "RM_STARTUP_AUTO_COMMAND")]
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
@@ -107,7 +107,7 @@ namespace PRM.Model.Protocol
 
             //var arg = $@" -load ""{serverBase.SessionName}"" {serverBase.Address} -P {serverBase.Port} -l {serverBase.UserName} -pw {serverBase.Password} -{(int)serverBase.SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
 
-            var template = $@" -load ""%PRM_SESSION_NAME%"" %PRM_HOSTNAME% -P %PRM_PORT% -l %PRM_USERNAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+            var template = $@" -load ""%RM_SESSION_NAME%"" %RM_HOSTNAME% -P %RM_PORT% -l %RM_USERNAME% -pw %RM_PASSWORD% -%RM_SSH_VERSION% -cmd ""%RM_STARTUP_AUTO_COMMAND%""";
             var arg = OtherNameAttributeExtensions.Replace(ssh, template);
             return " " + arg;
         }

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PRM.View.Guidance
+namespace _1RM.View.Guidance
 {
     /// <summary>
     /// Settings.xaml 的交互逻辑

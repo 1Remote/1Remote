@@ -7,23 +7,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Editor;
-using PRM.View.Host.ProtocolHosts;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Editor;
+using _1RM.View.Host.ProtocolHosts;
+using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
-using Ui;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public enum EnumMainWindowPage
     {

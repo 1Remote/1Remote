@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Utils.mRemoteNG
+namespace _1RM.Utils.mRemoteNG
 {
     public static class MRemoteNgImporter
     {

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -16,7 +16,7 @@ using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace PRM.View.Settings
+namespace _1RM.View.Settings
 {
     public partial class SettingsPageView : UserControl
     {

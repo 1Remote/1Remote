@@ -7,14 +7,14 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class ProtocolConfigurationService
     {
@@ -143,16 +143,16 @@ namespace PRM.Service
                         c.Runners.Add(new ExternalRunner("UltraVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
-                            Arguments = @"%PRM_HOSTNAME%:%PRM_PORT% -password %PRM_PASSWORD%",
+                            Arguments = @"%RM_HOSTNAME%:%RM_PORT% -password %RM_PASSWORD%",
                             RunWithHosting = false,
                         });
                     if (c.Runners.All(x => x.Name != "TightVNC"))
                         c.Runners.Add(new ExternalRunner("TightVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
-                            Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto",
+                            Arguments = @"%RM_HOSTNAME%::%RM_PORT% -password=%RM_PASSWORD% -scale=auto",
                             RunWithHosting = true,
-                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PRM_PASSWORD%") }),
+                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%RM_PASSWORD%") }),
                         });
                 }
                 if (SFTP.ProtocolName == protocolName)
@@ -161,8 +161,8 @@ namespace PRM.Service
                         c.Runners.Add(new ExternalRunnerForSSH("WinSCP", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
-                            Arguments = @"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%",
-                            ArgumentsForPrivateKey = @"sftp://%PRM_USERNAME%@%PRM_HOSTNAME%:%PRM_PORT% /privatekey=%PRM_SSH_PRIVATE_KEY_PATH%",
+                            Arguments = @"sftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%:%RM_PORT%",
+                            ArgumentsForPrivateKey = @"sftp://%RM_USERNAME%@%RM_HOSTNAME%:%RM_PORT% /privatekey=%RM_SSH_PRIVATE_KEY_PATH%",
                         });
                 }
             }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json;
-using PRM.Utils.KiTTY;
+using _1RM.Utils.KiTTY;
 
-namespace PRM.Model.ProtocolRunner.Default
+namespace _1RM.Model.ProtocolRunner.Default
 {
     public class KittyRunner : InternalDefaultRunner
     {

@@ -1,4 +1,4 @@
-﻿namespace PRM.Model.ProtocolRunner.Default
+﻿namespace _1RM.Model.ProtocolRunner.Default
 {
     public class InternalDefaultRunner : Runner
     {

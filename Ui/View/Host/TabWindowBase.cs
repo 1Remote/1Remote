@@ -9,10 +9,10 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -20,10 +20,10 @@ using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using MessageBox = System.Windows.MessageBox;
-using ProtocolHostType = PRM.View.Host.ProtocolHosts.ProtocolHostType;
+using ProtocolHostType = _1RM.View.Host.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public abstract class TabWindowBase : WindowChromeBase
     {

@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Service;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public partial class FullScreenWindowView : Window
     {

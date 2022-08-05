@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.Utils.RdpFile;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     public sealed class RdpApp : ProtocolBaseWithAddressPortUserPwd
     {

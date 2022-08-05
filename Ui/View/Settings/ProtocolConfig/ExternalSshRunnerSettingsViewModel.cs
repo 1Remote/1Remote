@@ -2,15 +2,15 @@
 using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
-using PRM.Model.ProtocolRunner;
-using PRM.Utils;
+using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 public class ExternalSshRunnerSettingsViewModel : ExternalRunnerSettingsViewModel
 {

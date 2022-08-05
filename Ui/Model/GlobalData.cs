@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.View;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.View;
 using Shawn.Utils;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {

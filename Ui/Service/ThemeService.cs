@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class Theme
     {

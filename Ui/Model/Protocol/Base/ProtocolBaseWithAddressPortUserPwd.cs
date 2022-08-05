@@ -1,6 +1,6 @@
 ﻿using Shawn.Utils;
 
-namespace PRM.Model.Protocol.Base
+namespace _1RM.Model.Protocol.Base
 {
     public abstract class ProtocolBaseWithAddressPortUserPwd : ProtocolBaseWithAddressPort
     {
@@ -11,7 +11,7 @@ namespace PRM.Model.Protocol.Base
         #region Conn
 
         private string _userName = "Administrator";
-        [OtherName(Name = "PRM_USERNAME")]
+        [OtherName(Name = "RM_USERNAME")]
         public string UserName
         {
             get => _userName;
@@ -19,7 +19,7 @@ namespace PRM.Model.Protocol.Base
         }
 
         private string _password = "";
-        [OtherName(Name = "PRM_PASSWORD")]
+        [OtherName(Name = "RM_PASSWORD")]
         public string Password
         {
             get => _password;

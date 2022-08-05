@@ -5,14 +5,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using PRM.Model;
-using PRM.Resources.Icons;
-using PRM.Utils;
+using _1RM.Model;
+using _1RM.Resources.Icons;
+using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.View.Editor
+namespace _1RM.View.Editor
 {
     public partial class ServerEditorPageView : UserControl
     {

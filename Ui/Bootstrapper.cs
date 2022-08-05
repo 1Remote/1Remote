@@ -4,24 +4,21 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.DAO.Dapper;
-using PRM.Service;
-using PRM.View;
-using PRM.View.Editor;
-using PRM.View.ErrorReport;
-using PRM.View.Guidance;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.View;
+using _1RM.View.Editor;
+using _1RM.View.ErrorReport;
+using _1RM.View.Guidance;
+using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
-using Ui;
 
-namespace PRM
+namespace _1RM
 {
     public class Bootstrapper : Bootstrapper<LauncherWindowViewModel>
     {

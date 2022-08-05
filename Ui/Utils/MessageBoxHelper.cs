@@ -7,7 +7,7 @@ using System.Windows;
 using Shawn.Utils.Interface;
 using Stylet;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class MessageBoxHelper
     {

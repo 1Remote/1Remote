@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public partial class InputWindow : Window
     {

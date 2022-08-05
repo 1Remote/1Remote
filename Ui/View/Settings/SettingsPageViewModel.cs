@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using com.github.xiangyuecn.rsacsharp;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.View.Settings
+namespace _1RM.View.Settings
 {
     public class SettingsPageViewModel : NotifyPropertyChangedBaseScreen
     {

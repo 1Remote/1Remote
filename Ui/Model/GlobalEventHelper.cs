@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public static class GlobalEventHelper
     {

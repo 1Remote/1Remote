@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using PRM.Model;
+using _1RM.Model;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class LanguageService : ILanguageService
     {

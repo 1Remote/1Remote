@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.Protocol.FileTransmit;
 
-namespace PRM.View.Editor.Forms
+namespace _1RM.View.Editor.Forms
 {
     public partial class FTPForm : FormBase
     {

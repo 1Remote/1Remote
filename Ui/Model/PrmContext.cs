@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
-using PRM.Model.DAO;
-using PRM.Service;
+using _1RM.Model.DAO;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
-using static PRM.Service.LanguageService;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class PrmContext : NotifyPropertyChangedBase
     {

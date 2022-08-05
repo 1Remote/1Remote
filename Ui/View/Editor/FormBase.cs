@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.View.Editor
+namespace _1RM.View.Editor
 {
     public abstract class FormBase : UserControl
     {

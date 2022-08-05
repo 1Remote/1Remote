@@ -12,16 +12,16 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Newtonsoft.Json;
-using PRM.Controls;
-using PRM.Controls.NoteDisplay;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Resources.Icons;
-using PRM.Service;
-using PRM.Utils;
-using PRM.Utils.mRemoteNG;
-using PRM.View.Settings;
+using _1RM.Controls;
+using _1RM.Controls.NoteDisplay;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Resources.Icons;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.Utils.mRemoteNG;
+using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -29,7 +29,7 @@ using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
     {

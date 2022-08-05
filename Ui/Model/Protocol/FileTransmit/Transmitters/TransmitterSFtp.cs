@@ -9,7 +9,7 @@ using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol.FileTransmit.Transmitters
+namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 {
     public class TransmitterSFtp : ITransmitter
     {

@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Win32;
 using Shawn.Utils;
 
-namespace PRM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY
 {
     public class KittyConfig
     {

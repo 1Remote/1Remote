@@ -9,23 +9,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MSTSCLib;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
-using PRM.Utils;
-using PRM.View;
-using PRM.View.Host;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Utils;
+using _1RM.View;
+using _1RM.View.Host;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
+using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
 
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class SessionControlService
     {

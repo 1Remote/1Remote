@@ -5,9 +5,9 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using PRM.Model;
+using _1RM.Model;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class ServerListPageView
     {

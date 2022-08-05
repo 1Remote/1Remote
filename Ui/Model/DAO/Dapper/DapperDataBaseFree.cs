@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.Model.DAO.Dapper
+namespace _1RM.Model.DAO.Dapper
 {
     /// <summary>
     /// DapperDb no occupation version

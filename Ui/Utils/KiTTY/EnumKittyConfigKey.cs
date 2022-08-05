@@ -1,4 +1,4 @@
-﻿namespace PRM.Utils.KiTTY
+﻿namespace _1RM.Utils.KiTTY
 {
     public enum EnumKittyConfigKey
     {

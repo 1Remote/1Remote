@@ -1,10 +1,10 @@
 ﻿using System.Timers;
 using System.Windows.Input;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public class AboutPageViewModel : NotifyPropertyChangedBase
     {

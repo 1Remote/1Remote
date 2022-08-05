@@ -5,15 +5,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IDisposable
     {

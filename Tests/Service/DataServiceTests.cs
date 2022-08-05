@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Model.DAO;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Resources.Icons;
-using PRM.Service;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Resources.Icons;
+using _1RM.Service;
 using Shawn.Utils.Wpf.Image;
 
 namespace Tests.Service

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PRM.Model.ProtocolRunner.Default;
+using _1RM.Model.ProtocolRunner.Default;
 
-namespace PRM.View.Settings.ProtocolConfig
+namespace _1RM.View.Settings.ProtocolConfig
 {
     public partial class KittyRunnerSettings : UserControl
     {

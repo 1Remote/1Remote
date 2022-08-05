@@ -4,7 +4,7 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 /// <summary>
 /// for auto completion

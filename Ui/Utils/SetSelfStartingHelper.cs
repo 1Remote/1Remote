@@ -11,13 +11,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.Service;
+using _1RM.Service;
 #if STORE_UWP_METHOD
 using Windows.ApplicationModel;
 #endif
 
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class SetSelfStartingHelper
     {

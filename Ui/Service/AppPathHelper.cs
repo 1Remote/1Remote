@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.View.Guidance;
+using _1RM.View.Guidance;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class AppPathHelper
     {
@@ -69,8 +69,6 @@ namespace PRM.Service
 
         public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".json");
-        [Obsolete]
-        public string ProfileIniPath => Path.Combine(BaseDirPath, APP_NAME + ".ini");
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");

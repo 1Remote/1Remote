@@ -1,6 +1,6 @@
-﻿using PRM.Service;
+﻿using _1RM.Service;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public partial class TabWindowView : TabWindowBase
     {

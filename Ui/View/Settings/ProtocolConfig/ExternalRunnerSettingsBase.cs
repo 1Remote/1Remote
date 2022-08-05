@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using Newtonsoft.Json.Bson;
-using PRM.Controls;
+using _1RM.Controls;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 public abstract class ExternalRunnerSettingsBase : UserControl
 {

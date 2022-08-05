@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
-using PRM.Model.DAO;
-using PRM.Utils;
+using _1RM.Model.DAO;
+using _1RM.Utils;
 using Shawn.Utils;
 using VariableKeywordMatcher.Provider.DirectMatch;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class EngagementSettings
     {
@@ -202,66 +202,6 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
-        }
-
-
-
-        // TODO remove after 2023.01.01
-        [Obsolete]
-        public static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
-        {
-            var cfg = new Configuration();
-            var ini = new Ini(iniPath);
-
-            {
-                const string sectionName = "General";
-                cfg.General.AppStartAutomatically = ini.GetValue("AppStartAutomatically".ToLower(), sectionName, cfg.General.AppStartAutomatically);
-                cfg.General.AppStartMinimized = ini.GetValue("AppStartMinimized".ToLower(), sectionName, cfg.General.AppStartMinimized);
-#if FOR_MICROSOFT_STORE_ONLY
-                Task.Factory.StartNew(async () =>
-                {
-                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask(AppPathHelper.APP_NAME);
-                });
-#endif
-            }
-
-            {
-                uint modifiers = 0;
-                uint key = 0;
-                if (ini.GetValue("Enable", "Launcher", "") == "")
-                {
-                    cfg.Launcher.LauncherEnabled = ini.GetValue("Enable".ToLower(), "Launcher", cfg.Launcher.LauncherEnabled);
-                    modifiers = ini.GetValue("HotKeyModifiers".ToLower(), "Launcher", modifiers);
-                    key = ini.GetValue("HotKeyKey".ToLower(), "Launcher", key);
-                    cfg.Launcher.HotKeyModifiers = (HotkeyModifierKeys)modifiers;
-                    cfg.Launcher.HotKeyKey = (Key)key;
-                    if (cfg.Launcher.HotKeyModifiers == HotkeyModifierKeys.None || cfg.Launcher.HotKeyKey == Key.None)
-                    {
-                        cfg.Launcher.HotKeyModifiers = HotkeyModifierKeys.Alt;
-                        cfg.Launcher.HotKeyKey = Key.M;
-                    }
-                }
-            }
-
-            cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", dbDefaultPath);
-
-            {
-                const string sectionName = "Theme";
-                cfg.Theme.ThemeName = ini.GetValue("(PrmColorThemeName".ToLower(), sectionName, cfg.Theme.ThemeName);
-                cfg.Theme.PrimaryMidColor = ini.GetValue("(PrimaryMidColor".ToLower(), sectionName, cfg.Theme.PrimaryMidColor);
-                cfg.Theme.PrimaryLightColor = ini.GetValue("(PrimaryLightColor".ToLower(), sectionName, cfg.Theme.PrimaryLightColor);
-                cfg.Theme.PrimaryDarkColor = ini.GetValue("(PrimaryDarkColor".ToLower(), sectionName, cfg.Theme.PrimaryDarkColor);
-                cfg.Theme.PrimaryTextColor = ini.GetValue("(PrimaryTextColor".ToLower(), sectionName, cfg.Theme.PrimaryTextColor);
-                cfg.Theme.AccentMidColor = ini.GetValue("(AccentMidColor".ToLower(), sectionName, cfg.Theme.AccentMidColor);
-                cfg.Theme.AccentLightColor = ini.GetValue("(AccentLightColor".ToLower(), sectionName, cfg.Theme.AccentLightColor);
-                cfg.Theme.AccentDarkColor = ini.GetValue("(AccentDarkColor".ToLower(), sectionName, cfg.Theme.AccentDarkColor);
-                cfg.Theme.AccentTextColor = ini.GetValue("(AccentTextColor".ToLower(), sectionName, cfg.Theme.AccentTextColor);
-                cfg.Theme.BackgroundColor = ini.GetValue("(BackgroundColor".ToLower(), sectionName, cfg.Theme.BackgroundColor);
-                cfg.Theme.BackgroundTextColor = ini.GetValue("(BackgroundTextColor".ToLower(), sectionName, cfg.Theme.BackgroundTextColor);
-            }
-
-            return cfg;
         }
     }
 }

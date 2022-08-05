@@ -10,21 +10,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
-using Ui;
 using Markdig.Wpf;
-using PRM.Controls.NoteDisplay;
-using PRM.Model.Protocol.Base;
+using _1RM.Controls.NoteDisplay;
+using _1RM.Model.Protocol.Base;
 using XamlReader = System.Windows.Markup.XamlReader;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public class LauncherWindowViewModel : NotifyPropertyChangedBaseScreen
     {

@@ -11,7 +11,7 @@ using VariableKeywordMatcher.Provider.DirectMatch;
 using VariableKeywordMatcher.Provider.DiscreteMatch;
 using VariableKeywordMatcher.Provider.InitialsMatch;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class MatchProviderInfo : NotifyPropertyChangedBase
     {

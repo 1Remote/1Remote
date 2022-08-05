@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PRM.Model;
-using PRM.Service;
+using _1RM.Model;
+using _1RM.Service;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Controls;
 
-namespace PRM.View.Settings.ProtocolConfig
+namespace _1RM.View.Settings.ProtocolConfig
 {
     public partial class ProtocolRunnerSettingsPage : UserControl
     {

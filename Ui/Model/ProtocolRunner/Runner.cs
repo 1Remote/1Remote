@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using JsonKnownTypes;
 using Newtonsoft.Json;
-using PRM.Model.ProtocolRunner.Default;
+using _1RM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
 
-namespace PRM.Model.ProtocolRunner
+namespace _1RM.Model.ProtocolRunner
 {
     [JsonConverter(typeof(JsonKnownTypesConverter<Runner>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     [JsonKnownType(typeof(Runner), nameof(Runner))]

@@ -2,14 +2,14 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using Shawn.Utils.Wpf;
 using VncSharpCore;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public sealed partial class VncHost : HostBase
     {

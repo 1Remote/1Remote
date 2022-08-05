@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using AxMSTSCLib;
 using MSTSCLib;
-using PRM.Model.Protocol;
-using PRM.Service;
+using _1RM.Model.Protocol;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class AxMsRdpClient09Host : HostBase, IDisposable
     {

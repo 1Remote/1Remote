@@ -1,13 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using PRM;
-using PRM.Service;
-using PRM.View;
-using Shawn.Utils;
-using Shawn.Utils.Wpf;
 
-namespace Ui
+namespace _1RM
 {
     public partial class App : Application
     {

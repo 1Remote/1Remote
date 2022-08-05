@@ -5,14 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 using Stylet;
 
-namespace PRM.Model.Protocol.Base
+namespace _1RM.Model.Protocol.Base
 {
     //[JsonConverter(typeof(JsonKnownTypesConverter<ProtocolBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     //[JsonKnownType(typeof(ProtocolBaseWithAddressPort), nameof(ProtocolBaseWithAddressPort))]

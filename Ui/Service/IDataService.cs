@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using com.github.xiangyuecn.rsacsharp;
-using PRM.Model.DAO;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol.Base;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public interface IDataService
     {
