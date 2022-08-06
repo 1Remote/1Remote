@@ -6,17 +6,23 @@ namespace _1RM.Model.DAO.Dapper
 {
     public class Server : IDataBaseServer
     {
-        public int Id { get; set; }
+        public const string TABLE_NAME = "Servers";
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        public string Id { get; set; }
         public string Protocol { get; set; } = "";
         public string ClassVersion { get; set; } = "";
-        public string JsonConfigString { get; set; } = "";
+        public string Json { get; set; } = "";
 
         public ProtocolBase? ToProtocolServerBase()
         {
             return ItemCreateHelper.CreateFromDbOrm(this);
         }
-
-        public int GetId()
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        public string GetId()
         {
             return Id;
         }
@@ -33,7 +39,7 @@ namespace _1RM.Model.DAO.Dapper
 
         public string GetJson()
         {
-            return JsonConfigString;
+            return Json;
         }
     }
 
@@ -45,7 +51,7 @@ namespace _1RM.Model.DAO.Dapper
             {
                 Id = s.Id,
                 ClassVersion = s.ClassVersion,
-                JsonConfigString = s.ToJsonString(),
+                Json = s.ToJsonString(),
                 Protocol = s.Protocol,
             };
             return ret;

@@ -26,8 +26,8 @@ namespace _1RM.Service
         public void Database_InsertServer(IEnumerable<ProtocolBase> servers);
         public bool Database_UpdateServer(ProtocolBase org);
         public bool Database_UpdateServer(IEnumerable<ProtocolBase> servers);
-        public bool Database_DeleteServer(int id);
-        public bool Database_DeleteServer(IEnumerable<int> ids);
+        public bool Database_DeleteServer(string id);
+        public bool Database_DeleteServer(IEnumerable<string> ids);
         public List<ProtocolBase> Database_GetServers();
     }
 }

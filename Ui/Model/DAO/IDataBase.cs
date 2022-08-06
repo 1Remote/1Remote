@@ -39,14 +39,14 @@ namespace _1RM.Model.DAO
         /// <summary>
         /// insert and return id
         /// </summary>
-        /// <param name="server"></param>
+        /// <param name="protocolBase"></param>
         /// <returns></returns>
-        int AddServer(ProtocolBase server);
+        string AddServer(ProtocolBase protocolBase);
         /// <summary>
         /// insert and return count
         /// </summary>
         /// <returns></returns>
-        int AddServer(IEnumerable<ProtocolBase> servers);
+        int AddServer(IEnumerable<ProtocolBase> protocolBases);
 
         /// <summary>
         /// update server by id
@@ -58,8 +58,8 @@ namespace _1RM.Model.DAO
         /// delete server by id, if id lower than 0 delete all data.
         /// </summary>
         /// <param name="id"></param>
-        bool DeleteServer(int id);
-        bool DeleteServer(IEnumerable<int> ids);
+        bool DeleteServer(string id);
+        bool DeleteServer(IEnumerable<string> ids);
 
         string? GetConfig(string key);
 

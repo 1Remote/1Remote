@@ -276,11 +276,11 @@ namespace _1RM.Service
             }
         }
 
-        private void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName)
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
-            if (serverId <= 0)
+            if (string.IsNullOrEmpty(serverId))
             {
                 var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)

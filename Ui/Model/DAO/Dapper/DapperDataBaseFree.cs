@@ -36,19 +36,19 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override int AddServer(ProtocolBase server)
+        public override string AddServer(ProtocolBase protocolBase)
         {
             OpenConnection();
-            var ret = base.AddServer(server);
+            var ret = base.AddServer(protocolBase);
             CloseConnection();
             return ret;
         }
 
         /// <inheritdoc />
-        public override int AddServer(IEnumerable<ProtocolBase> servers)
+        public override int AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
             OpenConnection();
-            var ret = base.AddServer(servers);
+            var ret = base.AddServer(protocolBases);
             CloseConnection();
             return ret;
         }
@@ -72,7 +72,7 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override bool DeleteServer(int id)
+        public override bool DeleteServer(string id)
         {
             OpenConnection();
             var ret = base.DeleteServer(id);
@@ -82,7 +82,7 @@ namespace _1RM.Model.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override bool DeleteServer(IEnumerable<int> ids)
+        public override bool DeleteServer(IEnumerable<string> ids)
         {
             OpenConnection();
             var ret = base.DeleteServer(ids);

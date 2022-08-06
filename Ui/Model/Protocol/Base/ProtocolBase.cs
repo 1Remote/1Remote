@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using _1RM.Service;
+using NUlid;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -40,10 +41,13 @@ namespace _1RM.Model.Protocol.Base
 
         public abstract bool IsOnlyOneInstance();
 
-        private int _id = 0;
+        private string _id = string.Empty;
 
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
         [JsonIgnore]
-        public int Id
+        public string Id
         {
             get => _id;
             set => SetAndNotifyIfChanged(ref _id, value);

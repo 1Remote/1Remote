@@ -14,7 +14,7 @@ namespace _1RM.View
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
 
-        public int Id => Server?.Id ?? 0;
+        public string Id => Server.Id;
 
         public ProtocolBase Server { get; }
         public ProtocolBaseViewModel(ProtocolBase psb)

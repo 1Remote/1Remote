@@ -81,7 +81,8 @@ namespace _1RM.Model
             }
             // read from db
             var tmp = new List<ProtocolBaseViewModel>();
-            foreach (var server in _dataService.Database_GetServers())
+            var dbServers = _dataService.Database_GetServers();
+            foreach (var server in dbServers)
             {
                 var serverAbstract = server;
                 try
@@ -120,7 +121,7 @@ namespace _1RM.Model
 
         public void AddServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
         {
-            if (_dataService == null || protocolServers == null || !protocolServers.Any())
+            if (_dataService == null)
             {
                 return;
             }
@@ -135,7 +136,7 @@ namespace _1RM.Model
         public void UpdateServer(ProtocolBase protocolServer, bool doInvoke = true)
         {
             if (_dataService == null) return;
-            Debug.Assert(protocolServer.Id > 0);
+            Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
             UnselectAllServers();
             _dataService.Database_UpdateServer(protocolServer);
             int i = VmItemList.Count;
@@ -159,7 +160,7 @@ namespace _1RM.Model
 
         public void UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
         {
-            if (_dataService == null || protocolServers == null || !protocolServers.Any())
+            if (_dataService == null)
             {
                 return;
             }
@@ -169,13 +170,12 @@ namespace _1RM.Model
                     ReloadServerList();
         }
 
-        public void DeleteServer(int id, bool doInvoke = true)
+        public void DeleteServer(string id, bool doInvoke = true)
         {
             if (_dataService == null)
             {
                 return;
             }
-            Debug.Assert(id > 0);
             if (_dataService.Database_DeleteServer(id))
             {
                 if (doInvoke)
@@ -183,9 +183,9 @@ namespace _1RM.Model
             }
         }
 
-        public void DeleteServer(IEnumerable<int> ids, bool doInvoke = true)
+        public void DeleteServer(IEnumerable<string> ids, bool doInvoke = true)
         {
-            if (_dataService == null || ids == null || !ids.Any())
+            if (_dataService == null)
             {
                 return;
             }

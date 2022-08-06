@@ -296,7 +296,7 @@ namespace _1RM.Service
 
         public bool Database_UpdateServer(ProtocolBase org)
         {
-            Debug.Assert(org.Id > 0);
+            Debug.Assert(string.IsNullOrEmpty(org.Id) == false);
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);
@@ -316,12 +316,12 @@ namespace _1RM.Service
             return _dataBase.UpdateServer(cloneList);
         }
 
-        public bool Database_DeleteServer(int id)
+        public bool Database_DeleteServer(string id)
         {
             return _dataBase.DeleteServer(id);
         }
 
-        public bool Database_DeleteServer(IEnumerable<int> ids)
+        public bool Database_DeleteServer(IEnumerable<string> ids)
         {
             return _dataBase.DeleteServer(ids);
         }

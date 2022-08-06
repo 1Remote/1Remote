@@ -4,7 +4,10 @@ namespace _1RM.Model.DAO
 {
     public interface IDataBaseServer
     {
-        int GetId();
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        string GetId();
 
         string GetProtocol();
 

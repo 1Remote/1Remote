@@ -317,7 +317,7 @@ namespace _1RM.View
                                 var server = ItemCreateHelper.CreateFromJsonString(json.ToString()!);
                                 if (server != null)
                                 {
-                                    server.Id = 0;
+                                    server.Id = string.Empty;
                                     list.Add(server);
                                 }
                             }
@@ -395,7 +395,7 @@ namespace _1RM.View
             {
                 return _cmdDelete ??= new RelayCommand((o) =>
                 {
-                    if (o is int id)
+                    if (o is string id)
                     {
                         GlobalEventHelper.OnRequestDeleteServer?.Invoke(id);
                     }

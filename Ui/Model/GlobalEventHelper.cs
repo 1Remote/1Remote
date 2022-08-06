@@ -8,7 +8,7 @@ namespace _1RM.Model
 {
     public static class GlobalEventHelper
     {
-        public delegate void OnServerConnectDelegate(long serverId, string assignTabToken = "", string assignRunnerName = "");
+        public delegate void OnServerConnectDelegate(string serverId, string assignTabToken = "", string assignRunnerName = "");
 
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
@@ -33,7 +33,7 @@ namespace _1RM.Model
         /// <param name="serverId">server id, if id == 0 goto add page</param>
         /// <param name="isDuplicateMode">is duplicate? works only id above 0</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnRequestGoToServerEditPageDelegate(int serverId, bool isDuplicateMode = false, bool showAnimation = true);
+        public delegate void OnRequestGoToServerEditPageDelegate(string serverId, bool isDuplicateMode = false, bool showAnimation = true);
         /// <summary>
         /// Go to server edit by server id
         /// param1 int: server id
@@ -45,7 +45,7 @@ namespace _1RM.Model
         public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolBase> servers, bool showAnimation = true);
         public static OnRequestGoToServerMultipleEditPageDelegate? OnRequestGoToServerMultipleEditPage { get; set; } = null;
 
-        public delegate void OnRequestDeleteServerDelegate(int serverId);
+        public delegate void OnRequestDeleteServerDelegate(string serverId);
         public static OnRequestDeleteServerDelegate? OnRequestDeleteServer { get; set; } = null;
 
         /// <summary>

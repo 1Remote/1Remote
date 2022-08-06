@@ -7,6 +7,7 @@ using System.Linq;
 using Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using NUlid;
 
 namespace _1RM.Model.DAO.Dapper
 {
@@ -81,21 +82,23 @@ namespace _1RM.Model.DAO.Dapper
         public virtual void InitTables()
         {
             _dbConnection?.Execute(@"
-CREATE TABLE IF NOT EXISTS `Server` (
-  `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `Protocol` VARCHAR,
-  `ClassVersion` VARCHAR,
-  `JsonConfigString` VARCHAR
-);");
-            _dbConnection?.Execute(@"
-BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS `Config` (
-  `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `Key` VARCHAR,
-  `Value` VARCHAR
+CREATE TABLE IF NOT EXISTS `Configs` (
+    `Key` VARCHAR PRIMARY KEY
+                  UNIQUE,
+    `Value` VARCHAR NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS `uk_key` ON `Config`(`Key`);
-COMMIT TRANSACTION;
+");
+
+
+            _dbConnection?.Execute(@$"
+            CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
+                `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
+                                                            NOT NULL
+                                                            UNIQUE,
+                `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
+                `{nameof(Server.ClassVersion)}` VARCHAR NOT NULL,
+                `{nameof(Server.Json)}`     TEXT         NOT NULL
+            );
 ");
         }
 
@@ -104,7 +107,7 @@ COMMIT TRANSACTION;
             Debug.Assert(id > 0);
             var dbServer =
                 _dbConnection?.QueryFirstOrDefault<Server>(
-                    $"SELECT * FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
+                    $"SELECT * FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
                     new { Id = id });
             return dbServer?.ToProtocolServerBase();
         }
@@ -112,36 +115,42 @@ COMMIT TRANSACTION;
         public virtual List<ProtocolBase>? GetServers()
         {
 #pragma warning disable CS8619
-            return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+            return _dbConnection?.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
 #pragma warning restore CS8619
         }
 
 
-        static readonly string SqlInsert = $@"INSERT INTO `{nameof(Server)}`
-(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`)
+        static readonly string SqlInsert = $@"INSERT INTO `{Server.TABLE_NAME}`
+(`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
 VALUES
-(@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)});";
-        public virtual int AddServer(ProtocolBase server)
+(@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
+
+        public virtual string AddServer(ProtocolBase protocolBase)
         {
-            Debug.Assert(server.Id == 0);
-            var ret = _dbConnection?.Execute(SqlInsert, server.ToDbServer());
-            return ret > 0 ? (_dbConnection?.QuerySingle<int>("SELECT LAST_INSERT_ROWID();") ?? 0) : 0;
+            var server = protocolBase.ToDbServer();
+            server.Id = Ulid.NewUlid().ToString();
+            var ret = _dbConnection?.Execute(SqlInsert, server);
+            return ret > 0 ? server.Id : string.Empty;
         }
 
-        public virtual int AddServer(IEnumerable<ProtocolBase> servers)
+        public virtual int AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
-            var dbss = servers.Select(x => x.ToDbServer());
-            return _dbConnection?.Execute(SqlInsert, dbss) > 0 ? servers.Count() : 0;
+            var rng = new NUlid.Rng.MonotonicUlidRng();
+            var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
+            foreach (var s in servers)
+            {
+                s.Id = Ulid.NewUlid(rng).ToString();
+            }
+            return _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
         }
 
-        static readonly string SqlUpdate = $@"UPDATE Server SET
+        static readonly string SqlUpdate = $@"UPDATE `{Server.TABLE_NAME}` SET
 `{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
-`{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)}
+`{nameof(Server.Json)}` = @{nameof(Server.Json)}
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual bool UpdateServer(ProtocolBase server)
         {
-            Debug.Assert(server.Id > 0);
             return _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
         }
 
@@ -152,25 +161,25 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return ret > 0;
         }
 
-        public virtual bool DeleteServer(int id)
+        public virtual bool DeleteServer(string id)
         {
-            return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+            return _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
         }
 
-        public virtual bool DeleteServer(IEnumerable<int> ids)
+        public virtual bool DeleteServer(IEnumerable<string> ids)
         {
-            return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
+            return _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
         }
 
         public virtual string? GetConfig(string key)
         {
-            var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{nameof(Config)}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
+            var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                 new { Key = key, });
             return config?.Value;
         }
 
-        private static readonly string SqlInsertConfig = $@"INSERT INTO `{nameof(Config)}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
-        private static readonly string SqlUpdateConfig = $@"UPDATE `{nameof(Config)}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+        private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
+        private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
         public virtual void SetConfig(string key, string value)
         {
             if (GetConfig(key) != null)
