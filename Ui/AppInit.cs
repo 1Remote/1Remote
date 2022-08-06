@@ -85,6 +85,14 @@ namespace _1RM
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                     bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
+                    // 当前目录没有写权限 while forcePortable == true
+                    if (forcePortable && !permissionForPortable)
+                    {
+                        MessageBox.Show(LanguageService.Translate("write permissions alert", Environment.CurrentDirectory),
+                            LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                        Environment.Exit(-1);
+                    }
+
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
                     if (permissionForPortable == false                          // 当前目录没有写权限时，只能用 AppData 模式

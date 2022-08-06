@@ -111,7 +111,7 @@ namespace _1RM.View
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
                 if (Context.DataService == null) return;
-                if (id <= 0) return;
+                if (string.IsNullOrEmpty(id)) return;
                 Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == id));
                 var server = _appData.VmItemList.First(x => x.Server.Id == id).Server;
                 EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);

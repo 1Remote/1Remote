@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using com.github.xiangyuecn.rsacsharp;
@@ -16,18 +17,22 @@ namespace Tests.Service
     [TestClass()]
     public class DataServiceTests
     {
-        private DataService _dataService = null;
-        private RDP _rdp = null;
-        private SSH _ssh = null;
-        private VNC _vnc = null;
-        private LocalApp _app = null;
-        private string _dbPath;
-        private string _ppkPath;
+        private DataService? _dataService = null;
+        private RDP? _rdp = null;
+        private SSH? _ssh = null;
+        private VNC? _vnc = null;
+        private LocalApp? _app = null;
+        private string? _dbPath;
+        private string? _ppkPath;
 
         [TestMethod()]
         public void DataServiceTest()
         {
             Init();
+
+            Debug.Assert(_dataService != null);
+            Debug.Assert(_dbPath != null);
+            Debug.Assert(_ppkPath != null);
             _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(_dbPath));
             Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.OK);
 
@@ -188,7 +193,7 @@ namespace Tests.Service
                 Assert.IsTrue(data.All(x => x.Id != _rdp.Id));
 
 
-                _dataService.Database_DeleteServer(new List<int>(){_rdp.Id, _ssh.Id});
+                _dataService.Database_DeleteServer(new List<string>(){_rdp.Id, _ssh.Id});
                 data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 2);
                 Assert.IsTrue(data.All(x => x.Id != _ssh.Id));

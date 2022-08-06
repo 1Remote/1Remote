@@ -23,7 +23,7 @@ namespace _1RM.View.Editor
         private readonly GlobalData _globalData;
         private readonly IDataService _dataService;
 
-        public bool IsAddMode => _serversInBuckEdit == null && Server.Id == 0;
+        public bool IsAddMode => _serversInBuckEdit == null && string.IsNullOrEmpty(Server.Id);
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer;
         private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
@@ -40,7 +40,7 @@ namespace _1RM.View.Editor
             Server = (ProtocolBase)server.Clone();
             if (isDuplicate)
             {
-                Server.Id = 0; // set id = 0 and turn into edit mode
+                Server.Id = string.Empty; // set id to empty so that we turn into edit mode
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = "";
@@ -304,7 +304,7 @@ namespace _1RM.View.Editor
                         _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
-                    else if (Server.Id > 0)
+                    else if (string.IsNullOrEmpty(Server.Id) == false)
                     {
                         _globalData.UpdateServer(Server);
                     }
