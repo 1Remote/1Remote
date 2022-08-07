@@ -11,6 +11,29 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.Service
 {
+    public class MockLanguageService : ILanguageService
+    {
+        public void AddXamlLanguageResources(string code, string fullName)
+        {
+            return;
+        }
+
+        public string Translate(Enum e)
+        {
+            return e.ToString();
+        }
+
+        public string Translate(string key)
+        {
+            return key;
+        }
+
+        public string Translate(string key, params object[] parameters)
+        {
+            return key;
+        }
+    }
+
     public class LanguageService : ILanguageService
     {
         private string _languageCode = "en-us";

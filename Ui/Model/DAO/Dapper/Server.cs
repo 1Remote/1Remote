@@ -7,10 +7,11 @@ namespace _1RM.Model.DAO.Dapper
     public class Server : IDataBaseServer
     {
         public const string TABLE_NAME = "Servers";
+
         /// <summary>
         /// ULID since 1Remote
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string Protocol { get; set; } = "";
         public string ClassVersion { get; set; } = "";
         public string Json { get; set; } = "";

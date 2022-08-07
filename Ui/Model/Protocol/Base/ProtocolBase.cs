@@ -5,13 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
-using _1RM.Service;
-using NUlid;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
-using Stylet;
 
 namespace _1RM.Model.Protocol.Base
 {
@@ -26,7 +23,7 @@ namespace _1RM.Model.Protocol.Base
     //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
     public abstract class ProtocolBase : NotifyPropertyChangedBase
     {
-        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options");
+        [JsonIgnore] public static string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options");
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
         {
@@ -66,16 +63,6 @@ namespace _1RM.Model.Protocol.Base
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
-        /// <summary>
-        /// this is for old db to new db. do not remove until 2022.05!
-        /// </summary>
-        [Obsolete]
-        public string DispName
-        {
-            get => DisplayName;
-            set => DisplayName = value;
-        }
-
         private string _displayName = "";
         public string DisplayName
         {
@@ -87,25 +74,11 @@ namespace _1RM.Model.Protocol.Base
         public string SubTitle => GetSubTitle();
 
 
-        private string _groupName = "";
-        [Obsolete]
-        public string GroupName
-        {
-            get => _groupName;
-            set => SetAndNotifyIfChanged(ref _groupName, value);
-        }
-
-
         private List<string> _tags = new List<string>();
         public List<string> Tags
         {
             get
             {
-                if (string.IsNullOrEmpty(GroupName) == false && _tags.Count == 0)
-                {
-                    _tags = new List<string>() { GroupName };
-                    GroupName = string.Empty;
-                }
                 _tags = _tags.Distinct().OrderBy(x => x).ToList();
                 return _tags;
             }
@@ -276,7 +249,7 @@ namespace _1RM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.Tags = (this.Tags == null) ? null: new List<string>(this.Tags);
+            clone.Tags = new List<string>(this.Tags);
             return clone;
         }
 
@@ -316,7 +289,7 @@ namespace _1RM.Model.Protocol.Base
         /// <param name="context"></param>
         public virtual void ConnectPreprocess(PrmContext context)
         {
-            if (context?.DataService == null) return;
+            if (context.DataService == null) return;
             var s = this;
             context.DataService.DecryptToRamLevel(ref s);
             context.DataService.DecryptToConnectLevel(ref s);

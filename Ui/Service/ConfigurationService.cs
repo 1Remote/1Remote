@@ -63,7 +63,7 @@ namespace _1RM.Service
 
     public class DatabaseConfig
     {
-        public const DatabaseType DatabaseType = Model.DAO.DatabaseType.Sqlite;
+        public const DatabaseType DATABASE_TYPE = Model.DAO.DatabaseType.Sqlite;
 
         private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
         public string SqliteDatabasePath
