@@ -81,25 +81,27 @@ namespace _1RM.Model.DAO.Dapper
 
         public virtual void InitTables()
         {
-            _dbConnection?.Execute(@"
-CREATE TABLE IF NOT EXISTS `Configs` (
-    `Key` VARCHAR PRIMARY KEY
+            _dbConnection?.Execute(@$"
+CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
+    `{nameof(Config.Key)}` VARCHAR PRIMARY KEY
                   UNIQUE,
-    `Value` VARCHAR NOT NULL
+    `{nameof(Config.Value)}` VARCHAR NOT NULL
 );
 ");
 
 
             _dbConnection?.Execute(@$"
-            CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
-                `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
-                                                            NOT NULL
-                                                            UNIQUE,
-                `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
-                `{nameof(Server.ClassVersion)}` VARCHAR NOT NULL,
-                `{nameof(Server.Json)}`     TEXT         NOT NULL
-            );
+CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
+    `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
+                                                NOT NULL
+                                                UNIQUE,
+    `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
+    `{nameof(Server.ClassVersion)}` VARCHAR NOT NULL,
+    `{nameof(Server.Json)}`     TEXT         NOT NULL
+);
 ");
+
+            // TODO 建一个连接时间表
         }
 
         public virtual ProtocolBase? GetServer(int id)
@@ -178,18 +180,13 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return config?.Value;
         }
 
-        private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
-        private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+        //private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
+        //private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+
+        private static readonly string SqlInsertOrUpdateConfig = $@"INSERT OR REPLACE INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
         public virtual void SetConfig(string key, string value)
         {
-            if (GetConfig(key) != null)
-            {
-                _dbConnection?.Execute(SqlUpdateConfig, new { Key = key, Value = value, });
-            }
-            else
-            {
-                _dbConnection?.Execute(SqlInsertConfig, new { Key = key, Value = value, });
-            }
+            _dbConnection?.Execute(SqlInsertOrUpdateConfig, new { Key = key, Value = value, });
         }
 
         public virtual string GetProtocolTemplate(string key)
@@ -206,16 +203,16 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             if (_dbConnection == null)
                 return false;
-            var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
-            var existedPublic = GetConfig("RSA_PublicKey") != null;
-            CloseConnection();
-            OpenConnection();
+            //var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
+            //var existedPublic = GetConfig("RSA_PublicKey") != null;
             var data = servers.Select(x => x.ToDbServer());
             using var tran = _dbConnection.BeginTransaction();
             try
             {
-                _dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
-                _dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
+                _dbConnection.Execute(SqlInsertOrUpdateConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
+                _dbConnection.Execute(SqlInsertOrUpdateConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
+                //_dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
+                //_dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
                 if (data.Any())
                     _dbConnection?.Execute(SqlUpdate, data, tran);
                 tran.Commit();
@@ -232,6 +229,17 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual void SetRsaPrivateKeyPath(string privateKeyPath)
         {
             SetConfig("RSA_PrivateKeyPath", privateKeyPath);
+        }
+
+        public bool UpdateServerLastConnectTime(string id, DateTime time)
+        {
+            const string sql = @$"INSERT OR REPLACE INTO `{ServerConnectTime.TABLE_NAME}` 
+(`{nameof(ServerConnectTime.Id)}`, `{nameof(ServerConnectTime.Timestamp)}`) 
+VALUES
+(@{nameof(ServerConnectTime.Id)}, @{nameof(ServerConnectTime.Timestamp)}) 
+WHERE `{nameof(ServerConnectTime.Id)}`= @{nameof(ServerConnectTime.Id)};";
+            // TODO 保留最近 50 条
+            throw new NotImplementedException();
         }
     }
 }

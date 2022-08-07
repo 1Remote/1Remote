@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using _1RM;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using _1RM.Model;
 using _1RM.Model.DAO;
@@ -8,6 +9,7 @@ using _1RM.Model.Protocol;
 using _1RM.Resources.Icons;
 using _1RM.Service;
 using _1RM.View.Settings;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Image;
 
 namespace Tests.ViewModel.Configuration
@@ -15,14 +17,14 @@ namespace Tests.ViewModel.Configuration
     [TestClass()]
     public class ConfigurationViewModelTests
     {
-        private DataService _dataService = null;
-        private _1RM.Service.Configuration _cfg = null;
-        private ConfigurationService _configurationService = null;
-        private RDP _rdp = null;
-        private SSH _ssh = null;
-        private VNC _vnc = null;
-        private LocalApp _app = null;
-        private string _ppkPath;
+        private DataService _dataService = null!;
+        private _1RM.Service.Configuration _cfg = null!;
+        private ConfigurationService _configurationService = null!;
+        private RDP _rdp = null!;
+        private SSH _ssh = null!;
+        private VNC _vnc = null!;
+        private LocalApp _app = null!;
+        private string _ppkPath = "";
 
         [TestMethod()]
         public void ConfigurationViewModelTest()
@@ -40,10 +42,13 @@ namespace Tests.ViewModel.Configuration
 
             var gd = new GlobalData(_configurationService);
             var ctx = new PrmContext(new ProtocolConfigurationService(), gd);
-            if(File.Exists(AppPathHelper.Instance.ProfileJsonPath))
+
+
+
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
                 File.Delete(AppPathHelper.Instance.ProfileJsonPath);
             _configurationService.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-            ctx.InitSqliteDb();
+            ctx.InitSqliteDb(_configurationService.Database.SqliteDatabasePath, new DataService());
             SettingsPageViewModel vm = new SettingsPageViewModel(ctx, gd);
             vm.GenRsa(_ppkPath);
             vm.CleanRsa().Wait();

@@ -16,7 +16,7 @@ namespace _1RM.View.Editor.Forms
             if (vm.GetType() == typeof(SFTP))
             {
                 CbUsePrivateKey.IsChecked = false;
-                if (((SFTP)vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (((SFTP)vm).PrivateKey == ProtocolBase.ServerEditorDifferentOptions)
                 {
                     CbUsePrivateKey.IsChecked = null;
                 }

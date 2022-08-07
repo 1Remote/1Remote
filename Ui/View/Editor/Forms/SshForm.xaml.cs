@@ -18,7 +18,7 @@ namespace _1RM.View.Editor.Forms
             if (vm.GetType() == typeof(SSH))
             {
                 CbUsePrivateKey.IsChecked = false;
-                if (((SSH)vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (((SSH)vm).PrivateKey == ProtocolBase.ServerEditorDifferentOptions)
                 {
                     CbUsePrivateKey.IsChecked = null;
                 }

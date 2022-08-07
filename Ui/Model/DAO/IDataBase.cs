@@ -75,9 +75,11 @@ namespace _1RM.Model.DAO
         /// <param name="privateKeyPath"></param>
         /// <param name="publicKey"></param>
         /// <param name="servers">已加密或已解密的数据</param>
-        public bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
+        bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
 
-        public void SetRsaPrivateKeyPath(string privateKeyPath);
+        void SetRsaPrivateKeyPath(string privateKeyPath);
+
+        bool UpdateServerLastConnectTime(string id, DateTime time);
     }
 
 

@@ -33,7 +33,7 @@ namespace _1RM.Model
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
         /// <param name="sqlitePath"></param>
-        public EnumDbStatus InitSqliteDb(string sqlitePath = "")
+        public EnumDbStatus InitSqliteDb(string sqlitePath = "", IDataService? newDataService = null)
         {
             if (string.IsNullOrWhiteSpace(sqlitePath))
             {
@@ -51,8 +51,10 @@ namespace _1RM.Model
                 return EnumDbStatus.AccessDenied;
             }
 
-            
-            DataService = IoC.Get<IDataService>();
+            if (newDataService != null)
+                DataService = newDataService;
+            else
+                DataService = IoC.Get<IDataService>();
             DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
             var ret = DataService.Database_SelfCheck();
             if (ret == EnumDbStatus.OK)
