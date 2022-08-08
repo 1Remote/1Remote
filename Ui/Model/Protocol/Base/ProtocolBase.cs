@@ -107,7 +107,12 @@ namespace PRM.Model.Protocol.Base
             }
             set
             {
-                SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
+                // bulk edit 时可能会传入 null
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (value == null)
+                    SetAndNotifyIfChanged(ref _tags, new List<string>());
+                else
+                    SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
             }
         }
 
@@ -272,7 +277,7 @@ namespace PRM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.Tags = (this.Tags == null) ? null: new List<string>(this.Tags);
+            clone.Tags = (this.Tags == null) ? null : new List<string>(this.Tags);
             return clone;
         }
 
