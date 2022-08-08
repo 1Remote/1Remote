@@ -84,7 +84,12 @@ namespace _1RM.Model.Protocol.Base
             }
             set
             {
-                SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
+                // bulk edit 时可能会传入 null
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (value == null)
+                    SetAndNotifyIfChanged(ref _tags, new List<string>());
+                else
+                    SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
             }
         }
 
