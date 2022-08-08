@@ -8,6 +8,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.View;
 using Shawn.Utils;
+using Stylet;
 
 namespace _1RM.Model
 {
@@ -87,8 +88,11 @@ namespace _1RM.Model
                 var serverAbstract = server;
                 try
                 {
-                    _dataService.DecryptToRamLevel(ref serverAbstract);
-                    tmp.Add(new ProtocolBaseViewModel(serverAbstract));
+                    Execute.OnUIThread(() =>
+                    {
+                        _dataService.DecryptToRamLevel(ref serverAbstract);
+                        tmp.Add(new ProtocolBaseViewModel(serverAbstract));
+                    });
                 }
                 catch (Exception e)
                 {
