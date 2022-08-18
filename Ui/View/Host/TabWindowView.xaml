@@ -90,7 +90,8 @@
                                       Background="{DynamicResource PrimaryMidBrush}"
                                       SnapsToDevicePixels="true"
                                       Height="{StaticResource TitleBarHeight}"
-                                      controls:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
+                                      controls:MouseMiddleClick.MouseMiddleDown="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
+                                      controls:MouseMiddleClick.MouseMiddleDownParameter="{Binding Content.ConnectionId}"
                                       VerticalAlignment="Bottom">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">
