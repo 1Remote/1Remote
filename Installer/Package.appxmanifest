@@ -11,7 +11,7 @@
 	<Identity
 	  Name="16536Shawn.V.Workshop.PRemoteM"
 	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
-	  Version="1.0.55.0" />
+	  Version="1.0.56.0" />
 
 	<Properties>
 		<DisplayName>PRemoteM</DisplayName>
