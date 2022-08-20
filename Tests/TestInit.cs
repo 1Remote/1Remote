@@ -29,8 +29,8 @@ namespace Tests
                     return new _1RM.Service.Configuration();
                 if (type == typeof(_1RM.Service.ConfigurationService))
                     return new ConfigurationService(new Configuration(), new KeywordMatchService());
-                if (type == typeof(PrmContext))
-                    return new PrmContext(new ProtocolConfigurationService(), new GlobalData(new ConfigurationService(new _1RM.Service.Configuration(), new KeywordMatchService())));
+                if (type == typeof(AppDataContext))
+                    return new AppDataContext(new ProtocolConfigurationService(), new GlobalData(new ConfigurationService(new _1RM.Service.Configuration(), new KeywordMatchService())));
                 return null;
             };
         }

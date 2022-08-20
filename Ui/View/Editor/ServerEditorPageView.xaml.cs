@@ -18,7 +18,7 @@ namespace _1RM.View.Editor
     {
         private BitmapSource? _oldLogo;
 
-        public ServerEditorPageView(PrmContext context)
+        public ServerEditorPageView(AppDataContext context)
         {
             this.Loaded += (sender, args) =>
             {

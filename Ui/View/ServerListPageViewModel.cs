@@ -33,7 +33,7 @@ namespace _1RM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
     {
-        public PrmContext Context { get; }
+        public AppDataContext Context { get; }
         public GlobalData AppData { get; }
 
 
@@ -132,7 +132,7 @@ namespace _1RM.View
         }
         #endregion
 
-        public ServerListPageViewModel(PrmContext context, GlobalData appData)
+        public ServerListPageViewModel(AppDataContext context, GlobalData appData)
         {
             Context = context;
             AppData = appData;

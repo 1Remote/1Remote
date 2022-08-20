@@ -292,7 +292,7 @@ namespace _1RM.Model.Protocol.Base
         /// run before connect, decrypt all fields
         /// </summary>
         /// <param name="context"></param>
-        public virtual void ConnectPreprocess(PrmContext context)
+        public virtual void ConnectPreprocess(AppDataContext context)
         {
             if (context.DataService == null) return;
             var s = this;

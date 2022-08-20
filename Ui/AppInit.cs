@@ -76,7 +76,9 @@ namespace _1RM
             #region Portable mode or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
-                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
+                var appDataPaths = new AppPathHelper(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
+
                 bool isPortableMode = false;
                 {
                     _isNewUser = false;
@@ -140,7 +142,6 @@ namespace _1RM
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
-                        AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
                     }
 
                     // 自动创建标志文件
@@ -151,7 +152,7 @@ namespace _1RM
                             if (isPortableMode)
                             {
                                 if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
-                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData"); 
+                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData");
                                 if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
                                     File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                             }
@@ -243,8 +244,7 @@ namespace _1RM
         public void InitOnConfigure()
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
-            var context = IoC.Get<PrmContext>();
-            _dbConnectionStatus = context.InitSqliteDb();
+            _dbConnectionStatus = IoC.Get<AppDataContext>().InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
             IoC.Get<TaskTrayService>().TaskTrayInit();
@@ -253,6 +253,14 @@ namespace _1RM
 
         public void InitOnLaunch()
         {
+            IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded+= () =>
+            {
+                if (_isNewUser)
+                {
+                    // import form PRemoteM db
+                    PrmTransferHelper.Run();
+                }
+            };
             if (_dbConnectionStatus != EnumDbStatus.OK)
             {
                 string error = _dbConnectionStatus.GetErrorInfo();

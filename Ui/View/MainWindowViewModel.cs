@@ -37,7 +37,7 @@ namespace _1RM.View
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
         private readonly IWindowManager _wm;
-        public PrmContext Context { get; }
+        public AppDataContext Context { get; }
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
@@ -81,7 +81,7 @@ namespace _1RM.View
         #endregion Properties
 
 
-        public MainWindowViewModel(PrmContext context, IWindowManager wm, GlobalData appData)
+        public MainWindowViewModel(AppDataContext context, IWindowManager wm, GlobalData appData)
         {
             Context = context;
             _wm = wm;
@@ -89,7 +89,7 @@ namespace _1RM.View
             ShowList();
         }
 
-
+        public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
@@ -139,6 +139,8 @@ namespace _1RM.View
                     EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
                 ShowMe();
             };
+
+            OnMainWindowViewLoaded?.Invoke();
         }
 
         protected override void OnClose()

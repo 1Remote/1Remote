@@ -112,7 +112,7 @@ namespace _1RM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                var ds = IoC.Get<PrmContext>().DataService;
+                var ds = IoC.Get<AppDataContext>().DataService;
                 if (ds != null)
                 {
                     File.WriteAllText(rdpFile, rdp.ToRdpConfig(ds).ToString());
