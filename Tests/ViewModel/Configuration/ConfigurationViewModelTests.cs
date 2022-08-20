@@ -41,7 +41,7 @@ namespace Tests.ViewModel.Configuration
             _dataService.Database_CloseConnection();
 
             var gd = new GlobalData(_configurationService);
-            var ctx = new PrmContext(new ProtocolConfigurationService(), gd);
+            var ctx = new AppDataContext(new ProtocolConfigurationService(), gd);
 
 
 

@@ -37,7 +37,7 @@ namespace _1RM.Model.Protocol
             return 3;
         }
 
-        public string GetPuttyConnString(PrmContext _)
+        public string GetPuttyConnString(AppDataContext _)
         {
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }
@@ -65,7 +65,7 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(PrmContext context)
+        public string GetExeArguments(AppDataContext context)
         {
             return GetPuttyConnString(context);
         }

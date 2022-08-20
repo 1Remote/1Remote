@@ -25,7 +25,7 @@ namespace _1RM.Utils
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static Runner GetRunner(PrmContext context, ProtocolBase server, string protocolName, string? assignRunnerName = null)
+        public static Runner GetRunner(AppDataContext context, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
@@ -55,7 +55,7 @@ namespace _1RM.Utils
         /// <param name="protocolServerBase"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
+        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(AppDataContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
         {
             if (runner is not ExternalRunner er) return null;
 
@@ -115,7 +115,7 @@ namespace _1RM.Utils
 
         }
 
-        public static HostBase GetRdpInternalHost(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        public static HostBase GetRdpInternalHost(AppDataContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             Debug.Assert(server is RDP);
@@ -127,7 +127,7 @@ namespace _1RM.Utils
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner)
+        public static HostBase? GetHostForInternalRunner(AppDataContext context, ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)

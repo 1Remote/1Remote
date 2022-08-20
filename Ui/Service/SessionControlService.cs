@@ -29,11 +29,11 @@ namespace _1RM.Service
 {
     public class SessionControlService
     {
-        private readonly PrmContext _context;
+        private readonly AppDataContext _context;
         private readonly ConfigurationService _configurationService;
         private readonly GlobalData _appData;
 
-        public SessionControlService(PrmContext context, ConfigurationService configurationService, GlobalData appData)
+        public SessionControlService(AppDataContext context, ConfigurationService configurationService, GlobalData appData)
         {
             _context = context;
             _configurationService = configurationService;

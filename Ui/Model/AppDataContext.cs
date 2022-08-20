@@ -8,7 +8,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Model
 {
-    public class PrmContext : NotifyPropertyChangedBase
+    public class AppDataContext : NotifyPropertyChangedBase
     {
         public readonly ProtocolConfigurationService ProtocolConfigurationService;
 
@@ -21,7 +21,7 @@ namespace _1RM.Model
 
         private readonly GlobalData _appData;
 
-        public PrmContext(ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
+        public AppDataContext(ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
         {
             ProtocolConfigurationService = protocolConfigurationService;
             _appData = appData;

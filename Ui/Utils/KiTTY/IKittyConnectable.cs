@@ -16,7 +16,7 @@ namespace _1RM.Utils.KiTTY
 {
     public interface IKittyConnectable
     {
-        string GetPuttyConnString(PrmContext context);
+        string GetPuttyConnString(AppDataContext context);
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolBase'
         /// </summary>
@@ -24,7 +24,7 @@ namespace _1RM.Utils.KiTTY
         ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
         string GetExeFullPath();
-        string GetExeArguments(PrmContext context);
+        string GetExeArguments(AppDataContext context);
     }
 
     public static class PuttyConnectableExtension

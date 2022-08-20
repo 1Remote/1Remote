@@ -21,7 +21,7 @@ namespace _1RM.View.Settings
 {
     public class SettingsPageViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly PrmContext _context;
+        private readonly AppDataContext _context;
         private LanguageService _languageService => IoC.Get<LanguageService>();
         private LauncherService _launcherService => IoC.Get<LauncherService>();
         private ThemeService _themeService => IoC.Get<ThemeService>();
@@ -29,13 +29,13 @@ namespace _1RM.View.Settings
         private readonly GlobalData _appData;
 
 
-        public SettingsPageViewModel(PrmContext context, GlobalData appData)
+        public SettingsPageViewModel(AppDataContext context, GlobalData appData)
         {
             _context = context;
             _appData = appData;
             _context.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(PrmContext.DataService))
+                if (args.PropertyName == nameof(AppDataContext.DataService))
                     ValidateDbStatusAndShowMessageBox(false);
             };
             ValidateDbStatusAndShowMessageBox(false);
@@ -328,7 +328,7 @@ namespace _1RM.View.Settings
             GlobalEventHelper.ShowProcessingRing?.Invoke(stop ? Visibility.Collapsed : Visibility.Visible, _languageService.Translate("system_options_data_security_info_data_processing"));
         }
 
-        private const string PrivateKeyFileExt = ".prpk";
+        private const string PrivateKeyFileExt = ".pem";
         public void GenRsa(string privateKeyPath = "")
         {
             if (_context.DataService == null) return;
@@ -337,7 +337,8 @@ namespace _1RM.View.Settings
                 var path = SelectFileHelper.OpenFile(
                     selectedFileName: AppPathHelper.APP_DISPLAY_NAME + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     checkFileExists: false,
-                    filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                    initialDirectory: AppPathHelper.Instance.BaseDirPath,
+                    filter: $"RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;
                 privateKeyPath = path;
             }

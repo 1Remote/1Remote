@@ -85,7 +85,7 @@ namespace _1RM.Model.Protocol
             return 1;
         }
 
-        public string GetPuttyConnString(PrmContext context)
+        public string GetPuttyConnString(AppDataContext context)
         {
             var ssh = (this.Clone() as SSH)!;
             ssh.ConnectPreprocess(context);
@@ -120,12 +120,12 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(PrmContext context)
+        public string GetExeArguments(AppDataContext context)
         {
             return GetPuttyConnString(context);
         }
 
-        public override void ConnectPreprocess(PrmContext context)
+        public override void ConnectPreprocess(AppDataContext context)
         {
             base.ConnectPreprocess(context);
             StartupAutoCommand = StartupAutoCommand.Replace(@"""", @"\""");

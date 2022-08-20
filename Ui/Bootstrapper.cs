@@ -87,7 +87,7 @@ namespace _1RM
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);
             builder.Bind<ProtocolConfigurationService>().ToSelf().InSingletonScope();
-            builder.Bind<PrmContext>().ToSelf().InSingletonScope();
+            builder.Bind<AppDataContext>().ToSelf().InSingletonScope();
 
             builder.Bind<MainWindowView>().ToSelf().InSingletonScope();
             builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();

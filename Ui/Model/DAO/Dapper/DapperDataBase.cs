@@ -28,6 +28,8 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
+        public IDbConnection? Connection => _dbConnection;
+
         public virtual void OpenConnection()
         {
             if (string.IsNullOrWhiteSpace(_connectionString))
@@ -67,8 +69,6 @@ namespace _1RM.Model.DAO.Dapper
                 _dbConnection = null;
                 OpenConnection();
             }
-
-            InitTables();
         }
 
         public virtual bool IsConnected()
