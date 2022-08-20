@@ -36,7 +36,6 @@ namespace _1RM.View
     }
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
-        private readonly IWindowManager _wm;
         public AppDataContext Context { get; }
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
@@ -84,7 +83,6 @@ namespace _1RM.View
         public MainWindowViewModel(AppDataContext context, IWindowManager wm, GlobalData appData)
         {
             Context = context;
-            _wm = wm;
             _appData = appData;
             ShowList();
         }
