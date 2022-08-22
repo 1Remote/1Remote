@@ -276,37 +276,8 @@ namespace _1RM.Service
             }
         }
 
-        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
         {
-            #region START MULTIPLE SESSION
-            // if serverId <= 0, then start multiple sessions
-            if (string.IsNullOrEmpty(serverId))
-            {
-                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
-                foreach (var item in list)
-                {
-                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
-                }
-                return;
-            }
-            #endregion
-
-            Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == serverId));
-            _configurationService.Engagement.ConnectCount++;
-            _configurationService.Save();
-            // clear selected state
-            _appData.UnselectAllServers();
-
-            var server = _appData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId)?.Server;
-            if (server == null)
-            {
-                SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
-                return;
-            }
-
-            // update the last conn time
-            // TODO remember connection time in the localstorage
-            server.LastConnTime = DateTime.Now;
             Debug.Assert(_context.DataService != null);
             _context.DataService.Database_UpdateServer(server);
 
@@ -349,6 +320,41 @@ namespace _1RM.Service
 
             this.ConnectWithTab(server, runner, assignTabToken ?? "");
             PrintCacheCount();
+        }
+
+        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName)
+        {
+            #region START MULTIPLE SESSION
+            // if serverId <= 0, then start multiple sessions
+            if (string.IsNullOrEmpty(serverId))
+            {
+                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
+                foreach (var item in list)
+                {
+                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
+                }
+                return;
+            }
+            #endregion
+
+            Debug.Assert(_appData.VmItemList.Any(x => x.Id == serverId));
+            _configurationService.Engagement.ConnectCount++;
+            _configurationService.Save();
+            // clear selected state
+            _appData.UnselectAllServers();
+
+            var vmServer = _appData.VmItemList.FirstOrDefault(x => x.Id == serverId);
+            if (vmServer?.Server == null)
+            {
+                SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
+                return;
+            }
+
+            // update the last conn time
+            ConnectTimeRecorder.UpdateAndSave(vmServer.Id);
+            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Id);
+
+            ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName);
         }
 
         public void AddTab(TabWindowBase tab)

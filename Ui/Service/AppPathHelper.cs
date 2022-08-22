@@ -73,6 +73,7 @@ namespace _1RM.Service
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");
         public string LocalityJsonPath => Path.Combine(BaseDirPath, "Locality.json");
+        public string ConnectTimeRecord => Path.Combine(BaseDirPath, "ConnectTimeRecord.json");
 
 
 

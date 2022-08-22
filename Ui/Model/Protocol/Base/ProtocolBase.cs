@@ -74,6 +74,7 @@ namespace _1RM.Model.Protocol.Base
         public string SubTitle => GetSubTitle();
 
 
+        // ReSharper disable once ArrangeObjectCreationWhenTypeEvident
         private List<string> _tags = new List<string>();
         public List<string> Tags
         {
@@ -89,7 +90,7 @@ namespace _1RM.Model.Protocol.Base
                 if (value == null)
                     SetAndNotifyIfChanged(ref _tags, new List<string>());
                 else
-                    SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
+                    SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
             }
         }
 
@@ -132,13 +133,6 @@ namespace _1RM.Model.Protocol.Base
         {
             get => _colorHex;
             set => SetAndNotifyIfChanged(ref _colorHex, value);
-        }
-
-        private DateTime _lastConnTime = DateTime.MinValue;
-        public DateTime LastConnTime
-        {
-            get => _lastConnTime;
-            set => SetAndNotifyIfChanged(ref _lastConnTime, value);
         }
 
         private string _commandBeforeConnected = "";

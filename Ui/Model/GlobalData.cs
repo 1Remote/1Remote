@@ -17,6 +17,7 @@ namespace _1RM.Model
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
+            ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
         }
 
@@ -91,7 +92,11 @@ namespace _1RM.Model
                     Execute.OnUIThread(() =>
                     {
                         _dataService.DecryptToRamLevel(ref serverAbstract);
-                        tmp.Add(new ProtocolBaseViewModel(serverAbstract));
+                        var vm = new ProtocolBaseViewModel(serverAbstract)
+                        {
+                            LastConnectTime = ConnectTimeRecorder.Get(serverAbstract.Id)
+                        };
+                        tmp.Add(vm);
                     });
                 }
                 catch (Exception e)
@@ -101,6 +106,7 @@ namespace _1RM.Model
             }
 
             VmItemList = tmp;
+            ConnectTimeRecorder.Cleanup(VmItemList.Select(x => x.Id));
             ReadTagsFromServers();
             VmItemListDataChanged?.Invoke();
         }
@@ -144,9 +150,9 @@ namespace _1RM.Model
             UnselectAllServers();
             _dataService.Database_UpdateServer(protocolServer);
             int i = VmItemList.Count;
-            if (VmItemList.Any(x => x.Server.Id == protocolServer.Id))
+            if (VmItemList.Any(x => x.Id == protocolServer.Id))
             {
-                var old = VmItemList.First(x => x.Server.Id == protocolServer.Id);
+                var old = VmItemList.First(x => x.Id == protocolServer.Id);
                 if (old.Server != protocolServer)
                 {
                     i = VmItemList.IndexOf(old);

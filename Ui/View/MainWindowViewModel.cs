@@ -110,8 +110,8 @@ namespace _1RM.View
             {
                 if (Context.DataService == null) return;
                 if (string.IsNullOrEmpty(id)) return;
-                Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == id));
-                var server = _appData.VmItemList.First(x => x.Server.Id == id).Server;
+                Debug.Assert(_appData.VmItemList.Any(x => x.Id == id));
+                var server = _appData.VmItemList.First(x => x.Id == id).Server;
                 EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);
                 ShowMe();
             });
