@@ -71,10 +71,10 @@ namespace _1RM.View
             set
             {
                 _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(GetOrderedVmProtocolServers(value, ServerOrderBy));
-                ServerListItems.CollectionChanged += (sender, args) =>
-                {
-                    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(ServerListItems);
-                };
+                //ServerListItems.CollectionChanged += (sender, args) =>
+                //{
+                //    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(ServerListItems);
+                //};
                 RaisePropertyChanged();
             }
         }
@@ -196,33 +196,21 @@ namespace _1RM.View
             }
         }
 
-        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IEnumerable<ProtocolBaseViewModel>? servers, EnumServerOrderBy orderBy)
+        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IReadOnlyCollection<ProtocolBaseViewModel>? servers, EnumServerOrderBy orderBy)
         {
+            // ReSharper disable once PossibleMultipleEnumeration
             if (servers == null || servers.Any() == false) return new List<ProtocolBaseViewModel>();
 
-            switch (orderBy)
+            return orderBy switch
             {
-                case EnumServerOrderBy.ProtocolAsc:
-                    return servers.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Server.Id);
-
-                case EnumServerOrderBy.ProtocolDesc:
-                    return servers.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Server.Id);
-
-                case EnumServerOrderBy.NameAsc:
-                    return servers.OrderBy(x => x.Server.DisplayName).ThenBy(x => x.Server.Id);
-
-                case EnumServerOrderBy.NameDesc:
-                    return servers.OrderByDescending(x => x.Server.DisplayName).ThenBy(x => x.Server.Id);
-
-                case EnumServerOrderBy.AddressAsc:
-                    return servers.OrderBy(x => x.Server.SubTitle).ThenBy(x => x.Server.Id);
-
-                case EnumServerOrderBy.AddressDesc:
-                    return servers.OrderByDescending(x => x.Server.SubTitle).ThenBy(x => x.Server.Id);
-
-                default:
-                    return servers.OrderBy(x => x.Server.Id);
-            }
+                EnumServerOrderBy.ProtocolAsc => servers.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Id),
+                EnumServerOrderBy.ProtocolDesc => servers.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Id),
+                EnumServerOrderBy.NameAsc => servers.OrderBy(x => x.Server.DisplayName).ThenBy(x => x.Id),
+                EnumServerOrderBy.NameDesc => servers.OrderByDescending(x => x.Server.DisplayName).ThenBy(x => x.Id),
+                EnumServerOrderBy.AddressAsc => servers.OrderBy(x => x.Server.SubTitle).ThenBy(x => x.Id),
+                EnumServerOrderBy.AddressDesc => servers.OrderByDescending(x => x.Server.SubTitle).ThenBy(x => x.Id),
+                _ => servers.OrderBy(x => x.Id)
+            };
         }
 
         public void CalcVisibleByFilter(string filterString)

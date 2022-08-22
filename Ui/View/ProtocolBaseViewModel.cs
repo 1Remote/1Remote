@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
 using _1RM.Controls;
@@ -6,6 +7,7 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using NUlid;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
@@ -61,6 +63,14 @@ namespace _1RM.View
         {
             get => _isSelected;
             set => SetAndNotifyIfChanged(ref _isSelected, value);
+        }
+
+
+        private DateTime _lastConnectTime = DateTime.MinValue;
+        public DateTime LastConnectTime
+        {
+            get => _lastConnectTime;
+            set => SetAndNotifyIfChanged(ref _lastConnectTime, value);
         }
 
         #region CMD

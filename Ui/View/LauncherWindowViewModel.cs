@@ -205,7 +205,7 @@ namespace _1RM.View
 
         private void RebuildVmServerList()
         {
-            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
 
             Execute.OnUIThread(() =>
             {
@@ -234,7 +234,7 @@ namespace _1RM.View
                 // show server list
                 else
                 {
-                    var tmp = _serverListItemHeight * VmServerList.Count();
+                    var tmp = _serverListItemHeight * VmServerList.Count;
                     GridSelectionsHeight = Math.Min(tmp, maxSelectionHeight);
                     GridMainHeight = _keywordHeight + GridSelectionsHeight;
                 }
@@ -374,7 +374,7 @@ namespace _1RM.View
             {
                 Execute.OnUIThread(() =>
                 {
-                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.Server.LastConnTime));
+                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
                 });
             }
             ReCalcWindowHeight(false);

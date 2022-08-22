@@ -110,9 +110,11 @@ namespace _1RM.Service
                     // read from db
                     foreach (var server in dbServers)
                     {
-                        var serverAbstract = server;
-                        DataService.DecryptToConnectLevel(rsa, ref serverAbstract);
-                        IoC.Get<GlobalData>().AddServer(serverAbstract);
+                        if (server is { } p)
+                        {
+                            DataService.DecryptToConnectLevel(rsa, ref p);
+                            IoC.Get<GlobalData>().AddServer(p);
+                        }
                     }
                 }
 
