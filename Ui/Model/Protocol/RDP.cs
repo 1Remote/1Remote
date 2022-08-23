@@ -78,8 +78,8 @@ namespace _1RM.Model.Protocol
     // ReSharper disable once InconsistentNaming
     public sealed class RDP : ProtocolBaseWithAddressPortUserPwd
     {
-        public const string PROTOCOL_NAME = "RDP";
-        public RDP() : base(PROTOCOL_NAME, "RDP.V1", "RDP")
+        public static string ProtocolName = "RDP";
+        public RDP() : base(ProtocolName, "RDP.V1", "RDP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";

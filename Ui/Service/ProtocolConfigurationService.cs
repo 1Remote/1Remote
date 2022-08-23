@@ -53,12 +53,15 @@ namespace _1RM.Service
             var protocolConfigs = new Dictionary<string, ProtocolSettings>();
 
             // build-in protocol
-            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Internal VNC"));
-            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Internal KiTTY"));
-            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Internal KiTTY"));
-            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Internal SFTP"));
-            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Internal FTP"));
-
+            //protocolConfigs.Add(RDP.ProtocolName, InitProtocol(protocolFolderName, new RDP(), new InternalDefaultRunner(RDP.ProtocolName), $"Built-in AxMsRdpClient"));
+            //protocolConfigs[RDP.ProtocolName].Runners.Clear();
+            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Built-in AxMsRdpClient", RDP.ProtocolName));
+            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Mstsc.exe", RDP.ProtocolName));
+            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
+            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
+            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
+            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
+            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
 
             //// custom protocol
@@ -171,6 +174,7 @@ namespace _1RM.Service
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
                 c.Runners.Insert(0, defaultRunner);
             }
+            // 最后赋值，确保无论是从配置加载的还是上面初始化的 InternalDefaultRunner 名称正确
             c.Runners.First(x => x is InternalDefaultRunner).Name = defaultRunnerName;
             return c;
         }

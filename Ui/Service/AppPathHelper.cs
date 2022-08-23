@@ -38,8 +38,7 @@ namespace _1RM.Service
 
         private static bool WritePermissionCheck(string path, bool isFile)
         {
-            bool flag = false;
-            flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
+            var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             return flag;
         }
 

@@ -57,11 +57,11 @@ namespace _1RM.Service
         private string _lastTabToken = "";
 
         private readonly object _dictLock = new object();
-        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new();
-        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new();
-        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new();
-        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new();
-        private readonly ConcurrentQueue<Window> _windowToBeDispose = new();
+        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new ConcurrentDictionary<string, TabWindowBase>();
+        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
+        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
+        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
+        private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
 
         public int TabWindowCount => _token2TabWindows.Count;
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
@@ -70,10 +70,10 @@ namespace _1RM.Service
         {
             var serverId = server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId.ToString()))
+            if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId))
             {
-                SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId.ToString()}");
-                if (_connectionId2Hosts[serverId.ToString()].ParentWindow is TabWindowBase t)
+                SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
+                if (_connectionId2Hosts[serverId].ParentWindow is TabWindowBase t)
                 {
                     var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
@@ -81,10 +81,10 @@ namespace _1RM.Service
                     t.Show();
                     t.Activate();
                 }
-                if (_connectionId2Hosts[serverId.ToString()].ParentWindow != null)
+                if (_connectionId2Hosts[serverId].ParentWindow != null)
                 {
-                    if (_connectionId2Hosts[serverId.ToString()].Status != ProtocolHostStatus.Connected)
-                        _connectionId2Hosts[serverId.ToString()].ReConn();
+                    if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
+                        _connectionId2Hosts[serverId].ReConn();
                 }
                 return true;
             }
