@@ -10,6 +10,7 @@ using _1RM.View;
 using _1RM.View.Editor;
 using _1RM.View.ErrorReport;
 using _1RM.View.Guidance;
+using _1RM.View.Launcher;
 using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -93,6 +94,7 @@ namespace _1RM
             builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowView>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerSelectionsViewModel>().ToSelf().InSingletonScope();
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf();
             builder.Bind<ServerListPageViewModel>().ToSelf();

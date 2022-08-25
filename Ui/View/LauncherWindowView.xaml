@@ -3,15 +3,10 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:system="clr-namespace:System;assembly=mscorlib"
                   xmlns:view="clr-namespace:_1RM.View"
-                  xmlns:model="clr-namespace:_1RM.Model"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                  xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-                  xmlns:s="https://github.com/canton7/Stylet"
-                  xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-                  xmlns:controls="clr-namespace:_1RM.Controls"
                   xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
+                  xmlns:s="https://github.com/canton7/Stylet"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -27,18 +22,24 @@
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <system:Double x:Key="LauncherGridKeywordHeight">46</system:Double>
-        <system:Double x:Key="LauncherListAreaWidth">400</system:Double>
-        <system:Double x:Key="LauncherServerListItemHeight">40</system:Double>
-        <system:Double x:Key="LauncherActionListItemHeight">35</system:Double>
+        <!--<system:Double x:Key="LauncherActionListItemHeight">35</system:Double>
         <system:Double x:Key="LauncherOutlineCornerRadius">8</system:Double>
-        <CornerRadius x:Key="LauncherOutlineCornerRadiusObj" TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}" BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
+        <CornerRadius x:Key="LauncherOutlineCornerRadiusObj" TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}" BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>-->
 
-        <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+        <!--<VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
             <VisualBrush.Visual>
                 <Grid VerticalAlignment="Center">
                     <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
                     <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>-->
+
+        <VisualBrush x:Key="HintTextForQuickConnect" TileMode="None" Stretch="None" AlignmentX="Left">
+            <VisualBrush.Visual>
+                <Grid VerticalAlignment="Center">
+                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
+                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
@@ -47,262 +48,6 @@
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
         </Style>
 
-        <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-            <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="AllowDrop" Value="true" />
-            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
-            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Background" Value="Transparent" />
-            <Style.Triggers>
-                <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Background" Value="{StaticResource HintText}" />
-                </Trigger>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="Background" Value="{StaticResource HintText}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
-            <Grid Height="{StaticResource LauncherServerListItemHeight}">
-                <Grid VerticalAlignment="Center" Width="{StaticResource LauncherListAreaWidth}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5" SharedSizeGroup="A"></ColumnDefinition>
-                        <ColumnDefinition Width="30" SharedSizeGroup="B"></ColumnDefinition>
-                        <ColumnDefinition Width="5" SharedSizeGroup="C"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid Grid.Column="1">
-                        <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                    </Grid>
-
-                    <Grid Grid.Column="3" VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-
-                        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding DisplayNameControl}">
-                            <ContentControl.Resources>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="FontSize" Value="18"></Setter>
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Resources>
-                        </ContentControl>
-
-                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.7" Content="{Binding SubTitleControl}">
-                            <ContentControl.Resources>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="FontSize" Value="12"></Setter>
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Resources>
-                        </ContentControl>
-
-
-
-                        <Grid Grid.Row="0" Grid.Column="1"  Grid.RowSpan="2" Background="Transparent" ToolTip="press '←' key to show/hide Note">
-                            <Button
-                                Background="Transparent"
-                                attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                attachProperty:VisionElement.Opacity="0.8"
-                                attachProperty:VisionElement.OpacityAccent="0.9"
-                                Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
-                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType= view:LauncherWindowView}, Path=DataContext.CmdShowNoteField}">
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                        <Setter Property="Margin" Value="5 0 0 0"></Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.IsShowNoteFieldEnabled}" Value="False">
-                                                <Setter Property="IsEnabled" Value="False"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Grid Width="16">
-                                    <Path Data="{StaticResource NoteGeometry}"
-                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                      StrokeThickness="0" Stretch="Uniform" />
-                                </Grid>
-                            </Button>
-                        </Grid>
-
-                        <TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
-                               Text="{Binding Server.ProtocolDisplayName}"
-                               FontSize="16" FontWeight="Bold"
-                               HorizontalAlignment="Right"
-                               Margin="5 0 10 0"
-                               Opacity="0.3"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               VerticalAlignment="Center"></TextBlock>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </DataTemplate>
-
-        <Style  x:Key="ListBoxItemStyleForServer" TargetType="ListBoxItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Grid>
-                            <Grid x:Name="GridColor" Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
-                            <Border x:Name="GridContainer">
-                                <!-- highlight selected item 高亮选中项-->
-                                <!--<Border.CornerRadius>
-                                                <CornerRadius
-                                                    TopLeft="{StaticResource CornerRadius}"
-                                                    TopRight="{StaticResource CornerRadius}"
-                                                    BottomRight="{StaticResource CornerRadius}"
-                                                    BottomLeft="{StaticResource CornerRadius}" />
-                                            </Border.CornerRadius>-->
-                            </Border>
-                            <Grid x:Name="GridColorOnSelected" 
-                                              Visibility="Collapsed"
-                                              Width="40" HorizontalAlignment="Left" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
-                            <ContentPresenter x:Name="ContentPresenter"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style  x:Key="ListBoxItemStyleForAction" TargetType="ListBoxItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Grid>
-                            <Grid x:Name="GridColor" Opacity="0.4"></Grid>
-                            <Border x:Name="GridContainer"></Border>
-                            <Grid x:Name="GridColorOnSelected" Visibility="Collapsed" Width="40" HorizontalAlignment="Left" ></Grid>
-                            <ContentPresenter x:Name="ContentPresenter"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-            <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBox}">
-                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
-                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" 
-                                          Background="{DynamicResource PrimaryMidBrush}"
-                                          attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
-                                          attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
-                                          Style="{StaticResource ScrollViewAccentStyle}">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyleForServer}"></Setter>
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel 
-                            IsVirtualizing="True"
-                            ScrollUnit="Pixel"
-                            VirtualizationMode="Recycling"
-                            CacheLengthUnit="Item"/>
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SearchBoxActionList" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate DataType="model:ProtocolAction">
-                        <Grid Height="{StaticResource LauncherActionListItemHeight}">
-                            <Grid VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="5"></ColumnDefinition>
-                                    <ColumnDefinition Width="30"></ColumnDefinition>
-                                    <ColumnDefinition Width="5"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Row="0" Grid.Column="1"></Grid>
-                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" 
-                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"
-                                           FontSize="14" VerticalAlignment="Center">
-                                </TextBlock>
-                            </Grid>
-                        </Grid>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyleForAction}"></Setter>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -312,171 +57,28 @@
         </Grid.ColumnDefinitions>
 
 
-        <Border Name="BorderMainContent" Padding="20" Background="Transparent">
+        <Border Name="BorderMainContent" Padding="10 0" Background="Transparent">
             <StackPanel>
-                <Border CornerRadius="{StaticResource LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}">
+                <Border CornerRadius="{x:Static view:LauncherWindowViewModel.LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" />
                     </Border.Effect>
 
-                    <Grid Clip="{Binding GridMainClip}" Width="{StaticResource LauncherListAreaWidth}" Height="{Binding GridMainHeight}">
-                        <Grid Name="GridSelections" VerticalAlignment="Top">
+
+
+
+
+                    <Grid Clip="{Binding GridMainClip}" Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" Height="{Binding GridMainHeight}">
+                        <ContentControl MouseUp="WinTitleBar_OnMouseUp"
+                                        s:View.Model="{Binding ServerSelectionsViewModel}"></ContentControl>
+
+                        <Grid VerticalAlignment="Top">
                             <StackPanel>
-                                <Grid Name="GridKeyword" VerticalAlignment="Top" Height="{StaticResource LauncherGridKeywordHeight}">
-                                    <TextBox Name="TbKeyWord"
-                                             PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
-                                            Margin="10 0 0 0"
-                                            Foreground="{DynamicResource PrimaryTextBrush}"
-                                            CaretBrush="{DynamicResource PrimaryTextBrush}"
-                                            Height="44"
-                                            FontSize="18"
-                                            Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
-                                            VerticalContentAlignment="Center"
-                                            Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
-
-                                    <Grid Height="40" HorizontalAlignment="Right" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
-                                        <Grid.Resources>
-                                            <view:ConverterTagName x:Key="ConverterTagName" />
-                                        </Grid.Resources>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Style.Triggers>
-                                                    <DataTrigger Value="0" Binding="{Binding TagFilters.Count}">
-                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                    </DataTrigger>
-                                                    <DataTrigger Value="{x:Null}" Binding="{Binding TagFilters.Count}">
-                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="model:TagFilter">
-                                                    <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
-                                                        <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
-                                                            <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
-                                                                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
-                                                                <TextBlock.Resources>
-                                                                    <Style TargetType="TextBlock">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding IsExcluded}" Value="True">
-                                                                                <Setter Property="TextDecorations">
-                                                                                    <Setter.Value>
-                                                                                        <TextDecorationCollection>
-                                                                                            <TextDecoration Location="Strikethrough">
-                                                                                                <TextDecoration.Pen>
-                                                                                                    <Pen Brush="{DynamicResource PrimaryMidBrush}" Thickness="3"></Pen>
-                                                                                                </TextDecoration.Pen>
-                                                                                            </TextDecoration>
-                                                                                        </TextDecorationCollection>
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Resources>
-                                                            </TextBlock>
-                                                        </Grid>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </Grid>
-
-
+                                <Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
                                     <Grid Width="50" Height="40" HorizontalAlignment="Right" Cursor="SizeAll"
-                                            Background="Transparent"
-                                            PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
+                                          Background="Transparent"
+                                          PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
                                 </Grid>
-
-
-                                <ListBox x:Name="ListBoxSelections"
-                                    Height="{Binding GridSelectionsHeight}"
-                                    VerticalAlignment="Top"
-                                    BorderThickness="0"
-                                    PreviewMouseRightButtonDown="ListBoxSelections_OnMouseRightButtonDown"
-                                    PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
-                                    SelectedIndex="{Binding SelectedIndex}"
-                                    ItemsSource="{Binding VmServerList}"
-                                    Style="{StaticResource SearchBoxSelectionList}">
-                                </ListBox>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Name="GridMenuActions" Visibility="Hidden" VerticalAlignment="Top">
-                            <StackPanel Background="{DynamicResource PrimaryMidBrush}">
-                                <Grid Margin="0 5" Width="{StaticResource LauncherListAreaWidth}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="40"></ColumnDefinition>
-                                        <ColumnDefinition Width="30"></ColumnDefinition>
-                                        <ColumnDefinition Width="5"></ColumnDefinition>
-                                        <ColumnDefinition Width="*"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Grid Grid.Row="0" Grid.Column="0" Background="{DynamicResource PrimaryMidBrush}" MouseDown="ButtonActionBack_OnMouseDown">
-                                        <Path Margin="2" Fill="{DynamicResource PrimaryLightBrush}" Height="25" Data="F1 M 16.591797 2.431641 L 9.023438 10 L 16.591797 17.568359 L 14.238281 19.931641 L 4.306641 10 L 14.238281 0.068359 L 16.591797 2.431641 Z " Stretch="Uniform"></Path>
-                                    </Grid>
-
-                                    <Grid Grid.Row="0" Grid.Column="1">
-                                        <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                                    </Grid>
-
-                                    <Grid Grid.Column="3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"></RowDefinition>
-                                            <RowDefinition Height="Auto"></RowDefinition>
-                                        </Grid.RowDefinitions>
-
-                                        <Grid Grid.Row="0" Grid.Column="0">
-                                            <TextBlock TextTrimming="CharacterEllipsis"
-                                            FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}"
-                                            VerticalAlignment="Center"
-                                            Text="{Binding SelectedItem.Server.DisplayName}"></TextBlock>
-                                        </Grid>
-
-                                        <Grid Grid.Row="1" Grid.Column="0" Opacity="0.5">
-                                            <TextBlock TextTrimming="CharacterEllipsis"
-                                            FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}"
-                                            VerticalAlignment="Top"
-                                            Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
-                                        </Grid>
-
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
-                                                Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
-                                                FontSize="18" FontWeight="Bold"
-                                                Foreground="{DynamicResource PrimaryMidBrush}"
-                                                Opacity="0.4"
-                                                HorizontalAlignment="Right"
-                                                Margin="10 0"
-                                                VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
-                                                Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
-                                                FontSize="18" FontWeight="Bold"
-                                                Foreground="{DynamicResource PrimaryTextBrush}"
-                                                Opacity="0.2"
-                                                HorizontalAlignment="Right"
-                                                Margin="10 0"
-                                                VerticalAlignment="Center"></TextBlock>
-                                    </Grid>
-                                </Grid>
-                                <ListBox x:Name="ListBoxActions"
-                                PreviewMouseRightButtonDown="ListBoxActions_OnMouseRightButtonDown"
-                                PreviewMouseDoubleClick="ListBoxActions_OnMouseDoubleClick"
-                                Style="{StaticResource SearchBoxActionList}"
-                                BorderThickness="0"
-                                SelectedIndex="{Binding SelectedActionIndex}"
-                                ItemsSource="{Binding Actions}">
-                                </ListBox>
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -485,13 +87,13 @@
         </Border>
 
         <!--Note 显示备注-->
-        <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" Visibility="{Binding GridNoteVisibility}">
+        <Border Name="NoteField" Grid.Column="1" Padding="10 0" Visibility="{Binding  ServerSelectionsViewModel.GridNoteVisibility}">
                 <noteDisplay:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
                                                Height="{Binding GridNoteHeight}" 
-                                               Server="{Binding SelectedItem.Server, Mode=OneWay}"
+                                               Server="{Binding ServerSelectionsViewModel.SelectedItem.Server, Mode=OneWay}"
                                                EditEnable="True"
                                                CloseEnable="True"
-                                               CommandOnCloseRequest="{Binding CmdHideNoteField, Mode=OneWay}"
+                                               CommandOnCloseRequest="{Binding ServerSelectionsViewModel.CmdHideNoteField, Mode=OneWay}"
                 ></noteDisplay:NoteDisplayAndEditor>
         </Border>
     </Grid>
