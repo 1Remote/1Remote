@@ -420,7 +420,7 @@ namespace PRM.View.Host.ProtocolHosts
             _rdpClient.AdvancedSettings8.BitmapPersistence = 0;
             _rdpClient.AdvancedSettings8.CachePersistenceActive = 0;
 
-            SimpleLogHelper.Debug($"RDP Host: Display init end: RDP.DesktopWidth = {_rdpClient.DesktopWidth}, RDP.DesktopWidth = {_rdpClient.DesktopWidth},");
+            SimpleLogHelper.Debug($"RDP Host: Display init end: RDP.DesktopWidth = {_rdpClient.DesktopWidth}, RDP.DesktopHeight = {_rdpClient.DesktopHeight},");
         }
 
         private void RdpInitPerformance()
@@ -677,7 +677,7 @@ namespace PRM.View.Host.ProtocolHosts
                 && _canAutoResizeByWindowSizeChanged
                 && this._rdpSettings.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
-                // start a time, resize RDP after 500ms
+                // start a timer to resize RDP after 500ms
                 var nw = (uint)e.NewSize.Width;
                 var nh = (uint)e.NewSize.Height;
                 if (nw != _previousWidth || nh != _previousHeight)
@@ -722,7 +722,7 @@ namespace PRM.View.Host.ProtocolHosts
         /// <summary>
         /// set remote resolution to _rdpClient size if is AutoResize
         /// </summary>
-        private void ReSizeRdpToControlSize()
+        private void ReSizeRdpToControlSize(bool focus = false)
         {
             if (_flagHasConnected
                 && _rdpClient?.FullScreen == false
@@ -730,11 +730,11 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 var nw = (uint)(_rdpClient?.Width ?? 0);
                 var nh = (uint)(_rdpClient?.Height ?? 0);
-                SetRdpResolution(nw, nh);
+                SetRdpResolution(nw, nh, focus);
             }
         }
 
-        private void SetRdpResolution(uint w, uint h)
+        private void SetRdpResolution(uint w, uint h, bool focus = false)
         {
             if (w > 0 && h > 0)
             {
@@ -746,7 +746,7 @@ namespace PRM.View.Host.ProtocolHosts
                         var newScaleFactor = _primaryScaleFactor;
                         if (this._rdpSettings.IsScaleFactorFollowSystem == false && this._rdpSettings.ScaleFactorCustomValue != null)
                             newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                        if (_rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                        if (focus || _rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
                         {
                             SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
                             _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
