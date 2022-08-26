@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using PRM.Model.Protocol.Base;
@@ -205,10 +206,8 @@ namespace PRM.Model.Protocol
                 if (value != null)
                 {
                     @new = (uint)value;
-                    if (@new > 300)
-                        @new = 300;
-                    if (@new < 100)
-                        @new = 100;
+                    if (@new > 300 || @new < 100)
+                        throw new ValidationException();
                 }
                 SetAndNotifyIfChanged(ref _scaleFactorCustomValue, @new);
             }
