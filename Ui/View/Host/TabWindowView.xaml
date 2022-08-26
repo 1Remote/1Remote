@@ -49,8 +49,6 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-            <system:Double x:Key="TitleBarHeight">30</system:Double>
-            <system:Double x:Key="TrapezoidHeight">30</system:Double>
             <Thickness x:Key="TabContentBorderWithColor">5,0,5,5</Thickness>
             <Thickness x:Key="TabContentBorderWithOutColor">0,0,0,0</Thickness>
             <!--Tab header content DataTemplate-->
@@ -81,7 +79,7 @@
                 <Setter Property="Margin" Value="0" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
+                <Setter Property="Height" Value="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -89,7 +87,7 @@
                             <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True" 
                                       Background="{DynamicResource PrimaryMidBrush}"
                                       SnapsToDevicePixels="true"
-                                      Height="{StaticResource TitleBarHeight}"
+                                      Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
                                       controls:MouseMiddleClick.MouseMiddleDown="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
                                       controls:MouseMiddleClick.MouseMiddleDownParameter="{Binding Content.ConnectionId}"
                                       VerticalAlignment="Bottom">
@@ -113,7 +111,7 @@
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Border Name="DragablzHeaderItemBorder"></Border>
-                                <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                                <Grid Name="Trapezoid" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
@@ -214,7 +212,7 @@
             <Style x:Key="DragablzTabHeaderItemHolderStryle" TargetType="{x:Type dragablz:DragablzItemsControl}">
                 <Setter Property="HorizontalAlignment" Value="Left" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
-                <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
+                <Setter Property="Height" Value="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -227,11 +225,11 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItemsControl}">
                             <Grid Background="{DynamicResource PrimaryMidBrush}"
-                                  Height="{StaticResource TitleBarHeight}">
-                                <Grid Height="{StaticResource TitleBarHeight}" VerticalAlignment="Bottom">
+                                  Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}">
+                                <Grid Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Bottom">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                                   Width="{TemplateBinding ActualWidth}"
-                                                  Height="{StaticResource TitleBarHeight}"
+                                                  Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
                                                   VerticalAlignment="Bottom"
                                                   VerticalContentAlignment="Bottom"
                                                   controls:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
@@ -243,7 +241,7 @@
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Bottom"
                                                         Width="{TemplateBinding ItemsPresenterWidth}"
-                                                        Height="{StaticResource TitleBarHeight}" />
+                                                        Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
                                     </ScrollViewer>
                                 </Grid>
                             </Grid>
@@ -257,7 +255,7 @@
                 <!--Add button to left of header items-->
                 <Setter Property="HeaderPrefixContent">
                     <Setter.Value>
-                        <Grid Margin="5 0" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                        <Grid Margin="5 0" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
                             <Grid Width="24" Height="24" VerticalAlignment="Center">
                                 <Image Source="/Resources/Image/Logo/logo64.png"></Image>
                             </Grid>
@@ -276,7 +274,7 @@
 
                             <Grid Background="{DynamicResource PrimaryMidBrush}">
                                 <Button Width="25" 
-                                        Height="{StaticResource TrapezoidHeight}"
+                                        Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
                                         HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" >
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -304,7 +302,7 @@
                                       PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" 
                                       Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
-                                <Button Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center"
+                                <Button Grid.Column="0" Width="25" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         attachProperty:VisionElement.Opacity="0.5"
                                         attachProperty:VisionElement.OpacityAccent="0.9"

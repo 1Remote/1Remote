@@ -27,6 +27,8 @@ namespace PRM.View.Host
 {
     public abstract class TabWindowBase : WindowChromeBase
     {
+        public const double TITLE_BAR_HEIGHT = 30;
+
         protected TabWindowViewModel Vm;
         private TabablzControl? _tabablzControl = null!;
         public string Token => Vm.Token;
@@ -187,7 +189,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
         }
 
 
-        protected void Init(TabablzControl tabablzControl)
+        protected virtual void Init(TabablzControl tabablzControl)
         {
             _tabablzControl = tabablzControl;
             this.Activated += (sender, args) =>
@@ -195,30 +197,38 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 this.StopFlashingWindow();
             };
 
+            this.MinWidth = this.MinHeight = 300;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Width = _localityService.TabWindowWidth;
             this.Height = _localityService.TabWindowHeight;
             // check the current screen size
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
-            if (this.Width >= screenEx.VirtualWorkingArea.Width)
-                this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
-            if (this.Height >= screenEx.VirtualWorkingArea.Height)
-                this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
-            this.MinWidth = this.MinHeight = 300;
 
-            
-            if (_localityService.TabWindowLeft >= screenEx.VirtualWorkingArea.X 
-                && _localityService.TabWindowLeft <= screenEx.VirtualWorkingArea.X + screenEx.VirtualWorkingArea.Width
-                && _localityService.TabWindowTop >= screenEx.VirtualWorkingArea.Y 
-                && _localityService.TabWindowTop <= screenEx.VirtualWorkingArea.Y + screenEx.VirtualWorkingArea.Height)
+            var leftTopOfCurrentScreen = new Point(screenEx.VirtualWorkingArea.X, screenEx.VirtualWorkingArea.Y);
+            var rightBottomOfCurrentScreen = new Point(screenEx.VirtualWorkingArea.X + screenEx.VirtualWorkingArea.Width, screenEx.VirtualWorkingArea.Y + screenEx.VirtualWorkingArea.Height);
+            if (_localityService.TabWindowTop <= leftTopOfCurrentScreen.Y - TITLE_BAR_HEIGHT                                // check if the title bar outside the screen.
+                || _localityService.TabWindowTop > rightBottomOfCurrentScreen.Y                                             // check if the title bar outside the screen.
+                || _localityService.TabWindowLeft > rightBottomOfCurrentScreen.X                                            // check if the title bar outside the screen.
+                || _localityService.TabWindowLeft + _localityService.TabWindowWidth < leftTopOfCurrentScreen.X              // check if the title bar outside the screen.
+                || _localityService.TabWindowTop + _localityService.TabWindowHeight / 2 < leftTopOfCurrentScreen.Y          // check if the center of tab window local in current screen
+                || _localityService.TabWindowTop + _localityService.TabWindowHeight / 2 > rightBottomOfCurrentScreen.Y      // check if the center of tab window local in current screen
+                || _localityService.TabWindowLeft + _localityService.TabWindowWidth / 2 < leftTopOfCurrentScreen.X          // check if the center of tab window local in current screen
+                || _localityService.TabWindowLeft + _localityService.TabWindowWidth / 2 > rightBottomOfCurrentScreen.X      // check if the center of tab window local in current screen
+               )
             {
-                this.Top = _localityService.TabWindowTop;
-                this.Left = _localityService.TabWindowLeft;
+                // default width & height
+                if (this.Width >= screenEx.VirtualWorkingArea.Width)
+                    this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
+                if (this.Height >= screenEx.VirtualWorkingArea.Height)
+                    this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
+                // default top & left
+                this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
             }
             else
             {
-                this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+                this.Top = _localityService.TabWindowTop;
+                this.Left = _localityService.TabWindowLeft;
             }
 
             InitSizeChanged();
@@ -258,25 +268,23 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
         public Size GetTabContentSize(bool withoutBorderColor)
         {
-            Debug.Assert(this.Resources["TitleBarHeight"] != null);
             Debug.Assert(this.Resources["TabContentBorderWithColor"] != null);
             Debug.Assert(this.Resources["TabContentBorderWithOutColor"] != null);
             var tabContentBorderWithColor = (Thickness)this.Resources["TabContentBorderWithColor"];
             var tabContentBorderWithOutColor = (Thickness)this.Resources["TabContentBorderWithOutColor"];
-            var trapezoidHeight = (double)this.Resources["TitleBarHeight"];
             if (_tabablzControl == null)
                 return new Size(800, 600);
             if (withoutBorderColor)
                 return new Size()
                 {
                     Width = _tabablzControl.ActualWidth - tabContentBorderWithOutColor.Left - tabContentBorderWithOutColor.Right,
-                    Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorderWithOutColor.Top - tabContentBorderWithOutColor.Bottom,
+                    Height = _tabablzControl.ActualHeight - TITLE_BAR_HEIGHT - tabContentBorderWithOutColor.Top - tabContentBorderWithOutColor.Bottom,
                 };
             else
                 return new Size()
                 {
                     Width = _tabablzControl.ActualWidth - tabContentBorderWithColor.Left - tabContentBorderWithColor.Right,
-                    Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorderWithColor.Top - tabContentBorderWithColor.Bottom,
+                    Height = _tabablzControl.ActualHeight - TITLE_BAR_HEIGHT - tabContentBorderWithColor.Top - tabContentBorderWithColor.Bottom,
                 };
         }
 
