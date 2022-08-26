@@ -381,7 +381,6 @@
 
         <ContentControl 
             PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
-            MouseUp="WinTitleBar_OnMouseUp"
             PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
             s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
 

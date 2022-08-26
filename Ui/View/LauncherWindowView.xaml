@@ -69,18 +69,7 @@
 
 
                     <Grid Clip="{Binding GridMainClip}" Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" Height="{Binding GridMainHeight}">
-                        <ContentControl MouseUp="WinTitleBar_OnMouseUp"
-                                        s:View.Model="{Binding ServerSelectionsViewModel}"></ContentControl>
-
-                        <Grid VerticalAlignment="Top">
-                            <StackPanel>
-                                <Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
-                                    <Grid Width="50" Height="40" HorizontalAlignment="Right" Cursor="SizeAll"
-                                          Background="Transparent"
-                                          PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
+                        <ContentControl s:View.Model="{Binding ServerSelectionsViewModel}"></ContentControl>
                     </Grid>
                 </Border>
             </StackPanel>

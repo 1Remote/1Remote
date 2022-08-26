@@ -74,7 +74,6 @@ namespace _1RM.View.ErrorReport
         private void Init()
         {
             WinGrid.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
-            WinGrid.MouseUp += WinTitleBar_OnMouseUp;
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             IconCopyDone.Opacity = IconSaveDone.Opacity = 0;

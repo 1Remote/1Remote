@@ -299,7 +299,10 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Column="1" MouseDown="WinTitleBar_OnPreviewMouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource PrimaryMidBrush}"></Grid>
+                                <Grid Grid.Column="1" 
+                                      MouseDown="WinTitleBar_OnPreviewMouseDown" 
+                                      PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" 
+                                      Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
                                 <Button Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"

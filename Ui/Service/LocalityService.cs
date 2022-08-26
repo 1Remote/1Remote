@@ -28,6 +28,8 @@ namespace _1RM.Service
     {
         public double MainWindowWidth = 800;
         public double MainWindowHeight = 530;
+        public double TabWindowTop = -1;
+        public double TabWindowLeft = -1;
         public double TabWindowWidth = 800;
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
@@ -73,6 +75,32 @@ namespace _1RM.Service
                 if (Math.Abs(_localitySettings.MainWindowHeight - value) > 0.001)
                 {
                     _localitySettings.MainWindowHeight = value;
+                    Save();
+                }
+            }
+        }
+
+        public double TabWindowTop
+        {
+            get => _localitySettings.TabWindowTop;
+            set
+            {
+                if (Math.Abs(_localitySettings.TabWindowTop - value) > 0.001)
+                {
+                    _localitySettings.TabWindowTop = value;
+                    Save();
+                }
+            }
+        }
+
+        public double TabWindowLeft
+        {
+            get => _localitySettings.TabWindowLeft;
+            set
+            {
+                if (Math.Abs(_localitySettings.TabWindowLeft - value) > 0.001)
+                {
+                    _localitySettings.TabWindowLeft = value;
                     Save();
                 }
             }
