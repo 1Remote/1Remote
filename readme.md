@@ -41,7 +41,7 @@ Use one of the following methods to install the application:
 ### Requirements
 
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
-- [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
+- [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
 
 P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use PRemoteM in Win7.
 
