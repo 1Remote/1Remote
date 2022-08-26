@@ -187,23 +187,12 @@ namespace _1RM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
             ParentWindowResize_StartWatch();
+            _resizeEndTimer?.Stop();
+            _resizeEndTimer?.Start();
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(500);
-                lock (this)
-                {
-                    ReSizeRdpToControlSize();
-                }
-                Thread.Sleep(1000);
-                lock (this)
-                {
-                    ReSizeRdpToControlSize();
-                }
-                Thread.Sleep(1000);
-                lock (this)
-                {
-                    ReSizeRdpToControlSize();
-                }
+                Thread.Sleep(5000);
+                _resizeEndTimer?.Stop();
             });
         }
 
@@ -244,11 +233,11 @@ namespace _1RM.View.Host.ProtocolHosts
                     case null:
                     case ERdpWindowResizeMode.AutoResize:
                     case ERdpWindowResizeMode.FixedFullScreen:
-                        SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
+                        SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height, true);
                         break;
                     case ERdpWindowResizeMode.Stretch:
                     case ERdpWindowResizeMode.Fixed:
-                        SetRdpResolution((uint)(_rdpSettings.RdpWidth ?? 800), (uint)(_rdpSettings.RdpHeight ?? 600));
+                        SetRdpResolution((uint)(_rdpSettings.RdpWidth ?? 800), (uint)(_rdpSettings.RdpHeight ?? 600), true);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

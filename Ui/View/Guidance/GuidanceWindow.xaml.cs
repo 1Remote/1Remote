@@ -28,7 +28,6 @@ namespace _1RM.View.Guidance
             Grid2.Visibility = Visibility.Collapsed;
 
             WinGrid.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
-            WinGrid.MouseUp += WinTitleBar_OnMouseUp;
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             Closing += (sender, args) =>

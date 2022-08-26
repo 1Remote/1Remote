@@ -115,6 +115,12 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
+
+            this.OnDragEnd += () =>
+            {
+                _localityService.TabWindowTop = this.Top;
+                _localityService.TabWindowLeft = this.Left;
+            };
         }
 
         private void InitWindowStateChanged()
@@ -135,6 +141,8 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 if (this.WindowState != WindowState.Minimized)
                 {
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
+                    _localityService.TabWindowTop = this.Top;
+                    _localityService.TabWindowLeft = this.Left;
                     _localityService.TabWindowHeight = this.Height;
                     _localityService.TabWindowWidth = this.Width;
                     _localityService.TabWindowState = this.WindowState;
@@ -197,12 +205,29 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             if (this.Height >= screenEx.VirtualWorkingArea.Height)
                 this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
             this.MinWidth = this.MinHeight = 300;
-            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+
+            
+            if (_localityService.TabWindowLeft >= screenEx.VirtualWorkingArea.X 
+                && _localityService.TabWindowLeft <= screenEx.VirtualWorkingArea.X + screenEx.VirtualWorkingArea.Width
+                && _localityService.TabWindowTop >= screenEx.VirtualWorkingArea.Y 
+                && _localityService.TabWindowTop <= screenEx.VirtualWorkingArea.Y + screenEx.VirtualWorkingArea.Height)
+            {
+                this.Top = _localityService.TabWindowTop;
+                this.Left = _localityService.TabWindowLeft;
+            }
+            else
+            {
+                this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+            }
 
             InitSizeChanged();
             InitWindowStateChanged();
             InitClosed();
+
+
+            _localityService.TabWindowTop = this.Top;
+            _localityService.TabWindowLeft = this.Left;
         }
 
         protected virtual void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
