@@ -95,6 +95,7 @@ namespace _1RM
             builder.Bind<LauncherWindowView>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowViewModel>().ToSelf().InSingletonScope();
             builder.Bind<ServerSelectionsViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<QuickConnectionViewModel>().ToSelf().InSingletonScope();
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf();
             builder.Bind<ServerListPageViewModel>().ToSelf();

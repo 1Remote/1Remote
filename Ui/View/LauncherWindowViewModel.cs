@@ -39,8 +39,15 @@ namespace _1RM.View
         public const double MAX_SELECTION_HEIGHT = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * MAX_SERVER_COUNT;
         public const double MAX_WINDOW_HEIGHT = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + MAX_SELECTION_HEIGHT;
 
+        private Visibility _serverSelectionsViewVisibility = Visibility.Visible;
+        public Visibility ServerSelectionsViewVisibility
+        {
+            get => _serverSelectionsViewVisibility;
+            set => SetAndNotifyIfChanged(ref _serverSelectionsViewVisibility, value);
+        }
 
-        public ServerSelectionsViewModel? ServerSelectionsViewModel { get; private set; } = null;
+        public ServerSelectionsViewModel ServerSelectionsViewModel { get; } = IoC.Get<ServerSelectionsViewModel>();
+        public QuickConnectionViewModel QuickConnectionViewModel { get;  } = IoC.Get<QuickConnectionViewModel>();
 
 
         #region properties
@@ -87,6 +94,7 @@ namespace _1RM.View
         public double GridNoteHeight { get; }
 
         private double _noteWidth = 500;
+
         public double NoteWidth
         {
             get => _noteWidth;
@@ -105,7 +113,10 @@ namespace _1RM.View
             HideMe();
             if (this.View is LauncherWindowView window)
             {
-                ServerSelectionsViewModel = IoC.Get<ServerSelectionsViewModel>();
+                ServerSelectionsViewModel.Init(this);
+                QuickConnectionViewModel.Init(this);
+
+                ServerSelectionsViewVisibility = Visibility.Visible;
                 ReSetWindowHeight(false);
                 SetHotKey();
                 ServerSelectionsViewModel.NoteField = window.NoteField;
@@ -166,7 +177,7 @@ namespace _1RM.View
                     // show position
                     var p = ScreenInfoEx.GetMouseSystemPosition();
                     var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
-                    window.Top = screenEx.VirtualWorkingAreaCenter.Y - GridMainHeight / 2;
+                    window.Top = screenEx.VirtualWorkingAreaCenter.Y - GridMainHeight / 2 - 40; // 40: margin of BorderMainContent
                     window.Left = screenEx.VirtualWorkingAreaCenter.X - window.BorderMainContent.ActualWidth / 2;
 
                     var noteWidth = (screenEx.VirtualWorkingArea.Width - window.BorderMainContent.ActualWidth - 100) / 2;
@@ -204,7 +215,15 @@ namespace _1RM.View
                         {
                             ServerSelectionsViewModel.Filter = "";
                             ServerSelectionsViewModel.GridMenuActions.Visibility = Visibility.Hidden;
+                            ServerSelectionsViewVisibility = Visibility.Visible;
+                            ServerSelectionsViewModel.CalcNoteFieldVisibility();
                         }
+
+                        if (QuickConnectionViewModel != null)
+                        {
+                            QuickConnectionViewModel.Filter = "";
+                        }
+
                         // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
                         System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
                     });
@@ -245,6 +264,28 @@ namespace _1RM.View
                 }
             }
             GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
+        }
+
+        public void ToggleQuickConnection()
+        {
+            if (ServerSelectionsViewModel == null || QuickConnectionViewModel == null)
+                return;
+            if (ServerSelectionsViewVisibility == Visibility.Collapsed)
+            {
+                ServerSelectionsViewVisibility = Visibility.Visible;
+                Execute.OnUIThread(() =>
+                {
+                    ServerSelectionsViewModel.TbKeyWord.Focus();
+                });
+            }
+            else
+            {
+                ServerSelectionsViewVisibility = Visibility.Collapsed;
+                Execute.OnUIThread(() =>
+                {
+                    QuickConnectionViewModel.TbKeyWord.Focus();
+                });
+            }
         }
     }
 }

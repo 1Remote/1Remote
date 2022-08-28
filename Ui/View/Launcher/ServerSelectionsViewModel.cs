@@ -24,18 +24,25 @@ namespace _1RM.View.Launcher
     {
         public FrameworkElement GridMenuActions { get; private set; } = new Grid();
         public TextBox TbKeyWord { get; private set; } = new TextBox();
-        private readonly LauncherWindowViewModel _launcherWindowViewModel;
+        private LauncherWindowViewModel? _launcherWindowViewModel;
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
-        public ServerSelectionsViewModel(LauncherWindowViewModel launcherWindowViewModel)
+        public ServerSelectionsViewModel()
+        {
+        }
+
+        public void Init(LauncherWindowViewModel launcherWindowViewModel)
         {
             _launcherWindowViewModel = launcherWindowViewModel;
         }
+
+
         protected override void OnViewLoaded()
         {
             if (this.View is ServerSelectionsView window)
             {
                 GridMenuActions = window.GridMenuActions;
+                GridMenuActions.Focus();
                 TbKeyWord = window.TbKeyWord;
                 CalcNoteFieldVisibility();
             }
@@ -278,7 +285,7 @@ namespace _1RM.View.Launcher
                     VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
                 });
             }
-            _launcherWindowViewModel.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight(false);
         }
 
 
@@ -333,7 +340,7 @@ namespace _1RM.View.Launcher
 
         public void CalcNoteFieldVisibility()
         {
-            if (_launcherWindowViewModel.TabMode != 0)
+            if (_launcherWindowViewModel?.TabMode != 0)
             {
                 GridNoteVisibility = Visibility.Collapsed;
                 return;
@@ -372,7 +379,7 @@ namespace _1RM.View.Launcher
                 RaisePropertyChanged(nameof(GridNoteVisibility));
             }
 
-            _launcherWindowViewModel.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight(false);
         }
         #endregion
     }

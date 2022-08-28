@@ -13,49 +13,13 @@ namespace _1RM.View.Editor
     /// </summary>
     public partial class PasswordPopupDialogView : WindowChromeBase
     {
-        public List<ProtocolBaseViewModel> ProtocolList { get; }
+        private readonly PasswordPopupDialogViewModel _vm;
         public ProtocolBaseWithAddressPortUserPwd Result { get; } = new FTP();
-        public PasswordPopupDialogView(List<ProtocolBaseViewModel> protocolList)
+        public PasswordPopupDialogView(PasswordPopupDialogViewModel vm)
         {
-            ProtocolList = protocolList;
-
+            _vm = vm;
             InitializeComponent();
-
-            BtnClose.Click += (sender, args) =>
-            {
-                this.DialogResult = false;
-                this.Close();
-            };
-
             DataContext = this;
-        }
-
-
-        /// <summary>
-        /// validate whether all fields are correct to save
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool CanSave()
-        {
-            if (!string.IsNullOrEmpty(Result.UserName))
-                return true;
-            return false;
-        }
-
-
-        private RelayCommand? _cmdSave;
-        public RelayCommand CmdSave
-        {
-            get
-            {
-                if (_cmdSave != null) return _cmdSave;
-                _cmdSave = new RelayCommand((o) =>
-                {
-                    this.DialogResult = true;
-                    this.Close();
-                }, o => CanSave());
-                return _cmdSave;
-            }
         }
     }
 }

@@ -8,12 +8,15 @@ namespace _1RM.Model
 {
     public static class GlobalEventHelper
     {
-        public delegate void OnServerConnectDelegate(string serverId, string assignTabToken = "", string assignRunnerName = "");
+        public delegate void OnRequestQuickConnectDelegate(ProtocolBase server, string assignTabToken = "", string assignRunnerName = "");
+        public static OnRequestQuickConnectDelegate? OnRequestQuickConnect { get; set; } = null;
 
+
+        public delegate void OnRequestServerConnectDelegate(string serverId, string assignTabToken = "", string assignRunnerName = "");
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
         /// </summary>
-        public static OnServerConnectDelegate? OnRequestServerConnect { get; set; } = null;
+        public static OnRequestServerConnectDelegate? OnRequestServerConnect { get; set; } = null;
 
 
         /// <summary>
@@ -22,7 +25,6 @@ namespace _1RM.Model
         /// <param name="presetTagNames">preset tag names</param>
         /// <param name="showAnimation">show in animation?</param>
         public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, bool showAnimation = true);
-
         public static OnGoToServerAddPageDelegate? OnGoToServerAddPage { get; set; } = null;
 
 

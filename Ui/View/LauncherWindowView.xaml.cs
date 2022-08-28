@@ -62,28 +62,9 @@ namespace _1RM.View
         }
 
 
-        private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                var url = e?.Parameter?.ToString();
-                if (url != null)
-                {
-                    HyperlinkHelper.OpenUriBySystem(url);
-                }
-            }
-            catch (Exception ex)
-            {
-                SimpleLogHelper.Error(ex);
-            }
-        }
 
-        private void ClickOnImage(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            MessageBox.Show($"URL: {e.Parameter}");
-        }
-
-
+        private const uint WP_SYSTEMMENU = 0x02;
+        private const uint WM_SYSTEMMENU = 0xa4;
 
         /// <summary>
         /// Redirect USB Device
@@ -91,6 +72,13 @@ namespace _1RM.View
         /// <returns></returns>
         private IntPtr HookUSBDeviceRedirect(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
+            if (((msg == WM_SYSTEMMENU) && (wParam.ToInt32() == WP_SYSTEMMENU)) || msg == 165)
+            {
+                //ShowContextMenu();
+                handled = true;
+                return IntPtr.Zero;
+            }
+
             const int WM_DEVICECHANGE = 0x0219;
             if (msg == WM_DEVICECHANGE)
             {
