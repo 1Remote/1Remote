@@ -39,6 +39,7 @@ namespace _1RM.Service
             _configurationService = configurationService;
             _appData = appData;
             GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
+            GlobalEventHelper.OnRequestQuickConnect += this.ShowRemoteHost;
         }
 
         public void Release()
