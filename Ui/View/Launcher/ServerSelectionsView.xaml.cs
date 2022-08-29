@@ -154,9 +154,10 @@ namespace _1RM.View.Launcher
                         case Key.PageUp:
                             AddSelectedIndexOnVisibilityItems(-5);
                             return;
-                        //case Key.Tab:
-                        //    _vm.ShowQuickConnectActionsList();
-                        //    return;
+
+                        case Key.Tab:
+                            _lvm.ToggleQuickConnection();
+                            return;
                     }
                     e.Handled = false;
                 }

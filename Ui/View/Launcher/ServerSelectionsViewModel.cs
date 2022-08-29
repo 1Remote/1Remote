@@ -36,6 +36,7 @@ namespace _1RM.View.Launcher
             if (this.View is ServerSelectionsView window)
             {
                 GridMenuActions = window.GridMenuActions;
+                GridMenuActions.Focus();
                 TbKeyWord = window.TbKeyWord;
                 CalcNoteFieldVisibility();
             }

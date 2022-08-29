@@ -56,11 +56,12 @@
 
         <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
             <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}">
-                <Grid VerticalAlignment="Center" Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
+                <Grid VerticalAlignment="Center" 
+                      Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5" SharedSizeGroup="A"></ColumnDefinition>
-                        <ColumnDefinition Width="30" SharedSizeGroup="B"></ColumnDefinition>
-                        <ColumnDefinition Width="5" SharedSizeGroup="C"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
@@ -290,18 +291,19 @@
     <Grid>
 
         <Grid VerticalAlignment="Top">
-            <StackPanel>
+            <StackPanel Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Name="GridKeyword" VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
                     <TextBox Name="TbKeyWord"
-                                             PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
-                                             Margin="10 0 0 0"
-                                             Foreground="{DynamicResource PrimaryTextBrush}"
-                                             CaretBrush="{DynamicResource PrimaryTextBrush}"
-                                             Height="44"
-                                             FontSize="18"
-                                             Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
-                                             VerticalContentAlignment="Center"
-                                             Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
+                             IsTabStop="True"
+                             PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
+                             Margin="10 0 0 0"
+                             Foreground="{DynamicResource PrimaryTextBrush}"
+                             CaretBrush="{DynamicResource PrimaryTextBrush}"
+                             Height="44"
+                             FontSize="18"
+                             Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalContentAlignment="Center"
+                             Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                     <Grid Height="40" HorizontalAlignment="Right">
                         <Grid.Resources>
@@ -360,6 +362,7 @@
                 </Grid>
 
                 <ListBox x:Name="ListBoxSelections"
+                         Grid.IsSharedSizeScope="True"
                          Height="{Binding GridSelectionsHeight}"
                          VerticalAlignment="Top"
                          BorderThickness="0"
@@ -434,6 +437,7 @@
                                    VerticalAlignment="Center"></TextBlock>
                     </Grid>
                 </Grid>
+
                 <ListBox x:Name="ListBoxActions"
                          Height="{Binding GridSelectionsHeight}"
                          PreviewMouseRightButtonDown="ListBoxActions_OnMouseRightButtonDown"
