@@ -1,53 +1,33 @@
 ﻿<styles:WindowChromeBase x:Class="_1RM.View.LauncherWindowView"
-                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:view="clr-namespace:_1RM.View"
-                  xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                  xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
-                  xmlns:s="https://github.com/canton7/Stylet"
-                  WindowStartupLocation="CenterScreen"
-                  ResizeMode="NoResize"
-                  WindowStyle="None"
-                  SizeToContent="WidthAndHeight"
-                  ShowInTaskbar="False"
-                  Background="Transparent"
-                  mc:Ignorable="d"
-                  MinWidth="100"
-                  MinHeight="100"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:system="clr-namespace:System;assembly=mscorlib"
+                         xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+                         xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+                         xmlns:view="clr-namespace:_1RM.View"
+                         xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
+                         WindowStartupLocation="CenterScreen"
+                         ResizeMode="NoResize"
+                         WindowStyle="None"
+                         SizeToContent="WidthAndHeight"
+                         ShowInTaskbar="False"
+                         Background="Transparent"
+                         mc:Ignorable="d"
+                         MinWidth="100"
+                         MinHeight="100"
                   d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
                   Title="LauncherWindowView">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <!--<system:Double x:Key="LauncherActionListItemHeight">35</system:Double>
-        <system:Double x:Key="LauncherOutlineCornerRadius">8</system:Double>
-        <CornerRadius x:Key="LauncherOutlineCornerRadiusObj" TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}" BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>-->
-
-        <!--<VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
-            <VisualBrush.Visual>
-                <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
-                </Grid>
-            </VisualBrush.Visual>
-        </VisualBrush>-->
-
-        <VisualBrush x:Key="HintTextForQuickConnect" TileMode="None" Stretch="None" AlignmentX="Left">
-            <VisualBrush.Visual>
-                <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
-                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
-                </Grid>
-            </VisualBrush.Visual>
-        </VisualBrush>
-
         <Style TargetType="FlowDocument">
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
         </Style>
-
     </Window.Resources>
 
     <Grid>
@@ -57,33 +37,60 @@
         </Grid.ColumnDefinitions>
 
 
-        <Border Name="BorderMainContent" Padding="10 0" Background="Transparent">
-            <StackPanel>
+        <Border Name="BorderMainContent" Padding="10 40">
+            <StackPanel MinHeight="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
                 <Border CornerRadius="{x:Static view:LauncherWindowViewModel.LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="10" />
                     </Border.Effect>
 
-
-
-
-
                     <Grid Clip="{Binding GridMainClip}" Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" Height="{Binding GridMainHeight}">
-                        <ContentControl s:View.Model="{Binding ServerSelectionsViewModel}"></ContentControl>
+                        <ContentControl Name="ServerSelectionsView" 
+                                        IsTabStop="False"
+                                        Visibility="{Binding ServerSelectionsViewVisibility}"
+                                        s:View.Model="{Binding ServerSelectionsViewModel}"
+                                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></ContentControl>
+
+                        <ContentControl s:View.Model="{Binding QuickConnectionViewModel}"
+                                        IsTabStop="False"
+                                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=ServerSelectionsView, Path=Visibility}" Value="Visible">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+
+                        <Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
+                            <Button Click="{s:Action ToggleQuickConnection}" HorizontalAlignment="Right">x</Button>
+                        </Grid>
                     </Grid>
                 </Border>
             </StackPanel>
         </Border>
 
         <!--Note 显示备注-->
-        <Border Name="NoteField" Grid.Column="1" Padding="10 0" Visibility="{Binding  ServerSelectionsViewModel.GridNoteVisibility}">
-                <noteDisplay:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
-                                               Height="{Binding GridNoteHeight}" 
-                                               Server="{Binding ServerSelectionsViewModel.SelectedItem.Server, Mode=OneWay}"
-                                               EditEnable="True"
-                                               CloseEnable="True"
-                                               CommandOnCloseRequest="{Binding ServerSelectionsViewModel.CmdHideNoteField, Mode=OneWay}"
-                ></noteDisplay:NoteDisplayAndEditor>
+        <Border Name="NoteField" Grid.Column="1" Padding="10 40" Visibility="{Binding  ServerSelectionsViewModel.GridNoteVisibility}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=ServerSelectionsView, Path=Visibility}" Value="Collapsed">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <noteDisplay:NoteDisplayAndEditor Width="{Binding NoteWidth}" 
+                                              Height="{Binding GridNoteHeight}" 
+                                              Server="{Binding ServerSelectionsViewModel.SelectedItem.Server, Mode=OneWay}"
+                                              EditEnable="True"
+                                              CloseEnable="True"
+                                              CommandOnCloseRequest="{Binding ServerSelectionsViewModel.CmdHideNoteField, Mode=OneWay}"
+            ></noteDisplay:NoteDisplayAndEditor>
         </Border>
     </Grid>
 </styles:WindowChromeBase>
