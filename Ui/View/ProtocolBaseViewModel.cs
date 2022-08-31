@@ -7,6 +7,8 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource;
+using Newtonsoft.Json;
 using NUlid;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -15,14 +17,21 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
+        [JsonIgnore] public readonly string DataSourceId;
+        public bool IsEditable { get; }
+        public bool IsViewable { get; }
 
         public string Id => Server.Id;
 
         public ProtocolBase Server { get; }
-        public ProtocolBaseViewModel(ProtocolBase psb)
+        public ProtocolBaseViewModel(ProtocolBase psb, IDataSource dataSource)
         {
             Debug.Assert(psb != null);
             Server = psb;
+            psb.DataSourceId =
+            DataSourceId = dataSource.GetDataSourceId();
+            IsViewable = IsEditable = dataSource.IsWritable();
+
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
                 HoverNoteDisplayControl = new NoteIcon(this.Server);

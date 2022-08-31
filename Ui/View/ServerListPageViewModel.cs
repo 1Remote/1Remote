@@ -27,13 +27,13 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
-
+using _1RM.Service.DataSource;
 
 namespace _1RM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
     {
-        public AppDataContext Context { get; }
+        public DataSourceService SourceService { get; }
         public GlobalData AppData { get; }
 
 
@@ -132,9 +132,9 @@ namespace _1RM.View
         }
         #endregion
 
-        public ServerListPageViewModel(AppDataContext context, GlobalData appData)
+        public ServerListPageViewModel(DataSourceService sourceService, GlobalData appData)
         {
-            Context = context;
+            SourceService = sourceService;
             AppData = appData;
             AppData.VmItemListDataChanged += RebuildVmServerList;
             RebuildVmServerList();
@@ -263,7 +263,6 @@ namespace _1RM.View
                 {
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
-                    if (Context?.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
@@ -272,8 +271,12 @@ namespace _1RM.View
                     foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
                     {
                         var serverBase = (ProtocolBase)vs.Server.Clone();
-                        Context.DataService.DecryptToConnectLevel(ref serverBase);
-                        list.Add(serverBase);
+                        var dataSource = SourceService.GetDataSource(serverBase.DataSourceId);
+                        if (dataSource != null)
+                        {
+                            dataSource.DecryptToConnectLevel(ref serverBase);
+                            list.Add(serverBase);
+                        }
                     }
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
                 });
@@ -430,7 +433,7 @@ namespace _1RM.View
         {
             get
             {
-                Debug.Assert(Context != null);
+                Debug.Assert(SourceService != null);
                 return _cmdCancelSelected ??= new RelayCommand((o) => { AppData.UnselectAllServers(); });
             }
         }

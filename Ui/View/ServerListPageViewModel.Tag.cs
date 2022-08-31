@@ -84,7 +84,7 @@ namespace _1RM.View
         {
             if (o == null)
                 return;
-            if (Context?.DataService == null) return;
+            if (SourceService?.DataService == null) return;
             string newTagName = string.Empty;
             if (o is Tag obj && AppData.TagList.Any(x => x.Name == obj.Name))
             {
@@ -184,7 +184,7 @@ namespace _1RM.View
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    if (Context?.DataService == null) return;
+                    if (SourceService?.DataService == null) return;
                     if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
@@ -219,7 +219,7 @@ namespace _1RM.View
             {
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
-                    if (Context?.DataService == null) return;
+                    if (SourceService?.DataService == null) return;
                     var obj = o as Tag;
                     if (obj == null)
                         return;
@@ -270,7 +270,7 @@ namespace _1RM.View
             {
                 return _cmdTagConnect ??= new RelayCommand((o) =>
                 {
-                    if (Context?.DataService == null) return;
+                    if (SourceService?.DataService == null) return;
                     if (!(o is Tag obj))
                         return;
                     foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
@@ -294,7 +294,7 @@ namespace _1RM.View
             {
                 return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
                 {
-                    if (Context?.DataService == null) return;
+                    if (SourceService?.DataService == null) return;
                     if (!(o is Tag obj))
                         return;
 

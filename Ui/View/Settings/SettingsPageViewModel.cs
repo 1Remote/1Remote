@@ -16,12 +16,13 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using _1RM.Service.DataSource;
 
 namespace _1RM.View.Settings
 {
     public class SettingsPageViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly AppDataContext _context;
+        private readonly DataSourceService _sourceService;
         private LanguageService _languageService => IoC.Get<LanguageService>();
         private LauncherService _launcherService => IoC.Get<LauncherService>();
         private ThemeService _themeService => IoC.Get<ThemeService>();
@@ -29,13 +30,13 @@ namespace _1RM.View.Settings
         private readonly GlobalData _appData;
 
 
-        public SettingsPageViewModel(AppDataContext context, GlobalData appData)
+        public SettingsPageViewModel(DataSourceService sourceService, GlobalData appData)
         {
-            _context = context;
+            _sourceService = sourceService;
             _appData = appData;
-            _context.PropertyChanged += (sender, args) =>
+            _sourceService.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(AppDataContext.DataService))
+                if (args.PropertyName == nameof(DataSourceService.DataService))
                     ValidateDbStatusAndShowMessageBox(false);
             };
             ValidateDbStatusAndShowMessageBox(false);
@@ -109,7 +110,7 @@ namespace _1RM.View.Settings
                 return _cmdSaveAndGoBack ??= new RelayCommand((o) =>
                 {
                     // check if Db is ok
-                    var res = _context.DataService?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
+                    var res = _sourceService.DataService?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
                     if (res != EnumDbStatus.OK)
                     {
                         MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
@@ -118,7 +119,7 @@ namespace _1RM.View.Settings
 
 
                     _configurationService.Save();
-                    _context.ProtocolConfigurationService.Save();
+                    _sourceService.ProtocolConfigurationService.Save();
                     IoC.Get<MainWindowViewModel>().ShowList();
                 });
             }
@@ -291,9 +292,9 @@ namespace _1RM.View.Settings
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
             // validate rsa key
-            var res = (_context.DataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
-            DbRsaPublicKey = _context.DataService?.Database_GetPublicKey() ?? "";
-            DbRsaPrivateKeyPath = _context.DataService?.Database_GetPrivateKeyPath() ?? "";
+            var res = (_sourceService.DataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
+            DbRsaPublicKey = _sourceService.DataService?.Database_GetPublicKey() ?? "";
+            DbRsaPrivateKeyPath = _sourceService.DataService?.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
             if (showAlert == false) return true;
             MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
@@ -331,7 +332,7 @@ namespace _1RM.View.Settings
         private const string PrivateKeyFileExt = ".pem";
         public void GenRsa(string privateKeyPath = "")
         {
-            if (_context.DataService == null) return;
+            if (_sourceService.DataService == null) return;
             if (string.IsNullOrEmpty(privateKeyPath))
             {
                 var path = SelectFileHelper.OpenFile(
@@ -366,7 +367,7 @@ namespace _1RM.View.Settings
                     }
 
                     var ss = _appData.VmItemList.Select(x => x.Server);
-                    if (_context.DataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
+                    if (_sourceService.DataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
                         OnRsaProgress(true);
@@ -403,7 +404,7 @@ namespace _1RM.View.Settings
             {
                 return _cmdClearRsaKey ??= new RelayCommand((o) =>
                 {
-                    if (_context.DataService == null) return;
+                    if (_sourceService.DataService == null) return;
                     if (_clearingRsa) return;
                     _clearingRsa = true;
                     // validate rsa key
@@ -422,7 +423,7 @@ namespace _1RM.View.Settings
         {
             var t = new Task(() =>
             {
-                if (_context.DataService == null) return;
+                if (_sourceService.DataService == null) return;
                 OnRsaProgress(false);
                 lock (this)
                 {
@@ -431,7 +432,7 @@ namespace _1RM.View.Settings
                     File.Copy(DbPath, DbPath + ".back", true);
 
                     var ss = _appData.VmItemList.Select(x => x.Server);
-                    if (_context.DataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
+                    if (_sourceService.DataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
                         OnRsaProgress(true);
@@ -465,7 +466,7 @@ namespace _1RM.View.Settings
             {
                 return _cmdSelectRsaPrivateKey ??= new RelayCommand((o) =>
                 {
-                    if (_context.DataService == null) return;
+                    if (_sourceService.DataService == null) return;
                     if (string.IsNullOrEmpty(DbRsaPrivateKeyPath)) return;
                     lock (this)
                     {
@@ -473,11 +474,11 @@ namespace _1RM.View.Settings
                             initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
                             filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                         if (path == null) return;
-                        var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
+                        var pks = RSA.CheckPrivatePublicKeyMatch(path, _sourceService.DataService.Database_GetPublicKey());
                         if (pks == RSA.EnumRsaStatus.NoError)
                         {
                             // update private key only
-                            _context.DataService.Database_UpdatePrivateKeyPathOnly(path);
+                            _sourceService.DataService.Database_UpdatePrivateKeyPathOnly(path);
                             ValidateDbStatusAndShowMessageBox();
                         }
                         else
@@ -516,7 +517,7 @@ namespace _1RM.View.Settings
                     {
                         try
                         {
-                            _context.InitSqliteDb(path);
+                            _sourceService.InitSqliteDb(path);
                             _appData.ReloadServerList();
                             _configurationService.Database.SqliteDatabasePath = path;
                             RaisePropertyChanged(nameof(DbPath));
@@ -526,7 +527,7 @@ namespace _1RM.View.Settings
                         catch (Exception ee)
                         {
                             _configurationService.Database.SqliteDatabasePath = oldDbPath;
-                            _context.InitSqliteDb(oldDbPath);
+                            _sourceService.InitSqliteDb(oldDbPath);
                             SimpleLogHelper.Warning(ee);
                             MessageBoxHelper.ErrorAlert(_languageService.Translate("system_options_data_security_error_can_not_open"));
                         }
@@ -545,7 +546,7 @@ namespace _1RM.View.Settings
             {
                 return _cmdDbMigrate ??= new RelayCommand((o) =>
                 {
-                    if (_context.DataService == null) return;
+                    if (_sourceService.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(filter: "Sqlite Database|*.db", initialDirectory: new FileInfo(DbPath).DirectoryName, selectedFileName: new FileInfo(DbPath).Name);
                     if (path == null) return;
                     var oldDbPath = DbPath;
@@ -555,10 +556,10 @@ namespace _1RM.View.Settings
                     {
                         if (IoPermissionHelper.HasWritePermissionOnFile(path))
                         {
-                            this._context.DataService.Database_CloseConnection();
+                            this._sourceService.DataService.Database_CloseConnection();
                             File.Copy(oldDbPath, path);
                             Thread.Sleep(500);
-                            this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                            this._sourceService.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
                             // this._app_appData.ReloadServerList();
                             _configurationService.Database.SqliteDatabasePath = path;
@@ -572,7 +573,7 @@ namespace _1RM.View.Settings
                         SimpleLogHelper.Error(ee);
                         File.Delete(path);
                         _configurationService.Database.SqliteDatabasePath = oldDbPath;
-                        this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(oldDbPath));
+                        this._sourceService.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(oldDbPath));
                         MessageBoxHelper.ErrorAlert(_languageService.Translate("system_options_data_security_error_can_not_open"));
                     }
                     RaisePropertyChanged(nameof(DbPath));

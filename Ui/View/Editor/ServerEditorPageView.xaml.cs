@@ -5,8 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using _1RM.Model;
 using _1RM.Resources.Icons;
+using _1RM.Service.DataSource;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -18,7 +18,7 @@ namespace _1RM.View.Editor
     {
         private BitmapSource? _oldLogo;
 
-        public ServerEditorPageView(AppDataContext context)
+        public ServerEditorPageView(DataSourceService sourceService)
         {
             this.Loaded += (sender, args) =>
             {

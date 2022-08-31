@@ -23,19 +23,19 @@ using Shawn.Utils.Wpf;
 using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
-
+using _1RM.Service.DataSource;
 
 namespace _1RM.Service
 {
     public class SessionControlService
     {
-        private readonly AppDataContext _context;
+        private readonly DataSourceService _sourceService;
         private readonly ConfigurationService _configurationService;
         private readonly GlobalData _appData;
 
-        public SessionControlService(AppDataContext context, ConfigurationService configurationService, GlobalData appData)
+        public SessionControlService(DataSourceService sourceService, ConfigurationService configurationService, GlobalData appData)
         {
-            _context = context;
+            _sourceService = sourceService;
             _configurationService = configurationService;
             _appData = appData;
             GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
@@ -102,9 +102,10 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            if (_context.DataService != null)
+            var dataSource = _sourceService.GetDataSource(rdp.DataSourceId);
+            if (dataSource != null)
             {
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context.DataService).ToString());
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig(dataSource).ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -149,9 +150,10 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            if (_context.DataService != null)
+            var dataSource = _sourceService.GetDataSource(remoteApp.DataSourceId);
+            if (dataSource != null)
             {
-                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context.DataService).ToString());
+                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(dataSource).ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -188,9 +190,11 @@ namespace _1RM.Service
 
         private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
         {
+            var datSource = _sourceService.GetDataSource(server.DataSourceId);
+            if (datSource == null) return;
             CleanupProtocolsAndWindows();
             // fullscreen normally
-            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
+            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(datSource, server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
@@ -204,13 +208,15 @@ namespace _1RM.Service
 
         private void ConnectWithTab(ProtocolBase server, Runner runner, string assignTabToken)
         {
+            var dataSource = _sourceService.GetDataSource(server.DataSourceId);
+            if (dataSource == null) return;
             lock (_dictLock)
             {
                 CleanupProtocolsAndWindows();
                 // open SFTP when SSH is connected.
                 if (server is SSH { OpenSftpOnConnected: true } ssh)
                 {
-                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, server, SFTP.ProtocolName);
+                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, SFTP.ProtocolName);
                     var sftp = new SFTP
                     {
                         ColorHex = ssh.ColorHex,
@@ -232,25 +238,25 @@ namespace _1RM.Service
                 {
                     case InternalDefaultRunner:
                         {
-                            server.ConnectPreprocess(_context);
+                            server.ConnectPreprocess(dataSource);
                             if (server is RDP)
                             {
                                 tab = this.GetOrCreateTabWindow(assignTabToken);
                                 if (tab == null)
                                     return;
                                 var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(server.ColorHex) == true);
-                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(_context, server, runner, size.Width, size.Height);
+                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(server, runner, size.Width, size.Height);
                             }
                             else
                             {
-                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
+                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(dataSource, server, runner);
                             }
 
                             break;
                         }
                     case ExternalRunner:
                         {
-                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, server, runner);
+                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_sourceService, server, runner);
                             // if host is null, could be run without integrate
                             break;
                         }
@@ -279,9 +285,6 @@ namespace _1RM.Service
 
         private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
         {
-            Debug.Assert(_context.DataService != null);
-            _context.DataService.Database_UpdateServer(server);
-
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
@@ -289,7 +292,7 @@ namespace _1RM.Service
             // run script before connected
             server.RunScriptBeforeConnect();
 
-            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
+            var runner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, server.Protocol, assignRunnerName)!;
             switch (server)
             {
                 case RdpApp remoteApp:

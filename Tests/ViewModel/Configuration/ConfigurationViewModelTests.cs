@@ -8,6 +8,7 @@ using _1RM.Model.DAO;
 using _1RM.Model.Protocol;
 using _1RM.Resources.Icons;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.View.Settings;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Image;
@@ -41,7 +42,7 @@ namespace Tests.ViewModel.Configuration
             _dataService.Database_CloseConnection();
 
             var gd = new GlobalData(_configurationService);
-            var ctx = new AppDataContext(new ProtocolConfigurationService(), gd);
+            var ctx = new DataSourceService(new ProtocolConfigurationService(), gd);
 
 
 
