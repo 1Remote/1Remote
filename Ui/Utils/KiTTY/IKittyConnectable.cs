@@ -4,19 +4,19 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.View.Host;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using _1RM.Service.DataSource;
 
 namespace _1RM.Utils.KiTTY
 {
     public interface IKittyConnectable
     {
-        string GetPuttyConnString(AppDataContext context);
+        string GetPuttyConnString(IDataSource source);
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolBase'
         /// </summary>
@@ -24,7 +24,7 @@ namespace _1RM.Utils.KiTTY
         ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
         string GetExeFullPath();
-        string GetExeArguments(AppDataContext context);
+        string GetExeArguments(IDataSource source);
     }
 
     public static class PuttyConnectableExtension

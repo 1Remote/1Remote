@@ -21,6 +21,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
+using _1RM.Service.DataSource;
 
 namespace _1RM
 {
@@ -244,7 +245,8 @@ namespace _1RM
         public void InitOnConfigure()
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
-            _dbConnectionStatus = IoC.Get<AppDataContext>().InitSqliteDb();
+            _dbConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
+            // todo 初始化其他数据源
             IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
             IoC.Get<TaskTrayService>().TaskTrayInit();

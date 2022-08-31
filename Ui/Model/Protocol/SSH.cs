@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
+using _1RM.Service.DataSource;
 
 namespace _1RM.Model.Protocol
 {
@@ -85,10 +86,10 @@ namespace _1RM.Model.Protocol
             return 1;
         }
 
-        public string GetPuttyConnString(AppDataContext context)
+        public string GetPuttyConnString(IDataSource sourceService)
         {
             var ssh = (this.Clone() as SSH)!;
-            ssh.ConnectPreprocess(context);
+            ssh.ConnectPreprocess(sourceService);
 
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
@@ -120,14 +121,14 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(AppDataContext context)
+        public string GetExeArguments(IDataSource source)
         {
-            return GetPuttyConnString(context);
+            return GetPuttyConnString(source);
         }
 
-        public override void ConnectPreprocess(AppDataContext context)
+        public override void ConnectPreprocess(IDataSource source)
         {
-            base.ConnectPreprocess(context);
+            base.ConnectPreprocess(source);
             StartupAutoCommand = StartupAutoCommand.Replace(@"""", @"\""");
         }
     }

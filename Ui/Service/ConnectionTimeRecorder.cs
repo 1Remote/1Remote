@@ -36,19 +36,24 @@ namespace _1RM.Service
         /// <summary>
         /// Update the connect time of id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="serverId"></param>
         /// <param name="time"></param>
-        public static void UpdateAndSave(string id, long time = 0)
+        /// <param name="sourceId"></param>
+        public static void UpdateAndSave(string serverId, long time = 0, string sourceId = "")
         {
+            if (string.IsNullOrEmpty(sourceId) == false)
+                serverId += "_src" + sourceId;
             if (time == 0)
                 time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            ConnectTimeData.AddOrUpdate(id, time, (s, l) => time);
+            ConnectTimeData.AddOrUpdate(serverId, time, (s, l) => time);
             Save();
         }
 
-        public static DateTime Get(string id)
+        public static DateTime Get(string serverId, string sourceId = "")
         {
-            if (ConnectTimeData.TryGetValue(id, out var ut))
+            if(string.IsNullOrEmpty(sourceId) == false)
+                serverId += "_src" + sourceId;
+            if (ConnectTimeData.TryGetValue(serverId, out var ut))
             {
                 DateTimeOffset dto = DateTimeOffset.FromUnixTimeMilliseconds(ut);
                 return dto.LocalDateTime;
@@ -62,6 +67,19 @@ namespace _1RM.Service
             foreach (var junk in junks)
             {
                 ConnectTimeData.Remove(junk.Key, out _);
+            }
+        }
+
+        public static void Cleanup()
+        {
+            if (ConnectTimeData.Count > 100)
+            {
+                var ordered = ConnectTimeData.OrderByDescending(x => x.Value).ToList();
+                var junks = ordered.Where(x => x.Value > ordered[100].Value);
+                foreach (var junk in junks)
+                {
+                    ConnectTimeData.Remove(junk.Key, out _);
+                }
             }
         }
     }

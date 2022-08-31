@@ -10,6 +10,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.View.Editor.Forms;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -21,7 +22,7 @@ namespace _1RM.View.Editor
     {
         //private readonly PrmContext _context;
         private readonly GlobalData _globalData;
-        private readonly IDataService _dataService;
+        private readonly IDataSource _dataService;
 
         public bool IsAddMode => _serversInBuckEdit == null && string.IsNullOrEmpty(Server.Id);
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
@@ -32,7 +33,7 @@ namespace _1RM.View.Editor
         /// <summary>
         /// to remember original protocol's options, for restore use
         /// </summary>
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ProtocolBase server, bool isDuplicate = false)
+        public ServerEditorPageViewModel(GlobalData globalData, IDataSource dataService, ProtocolBase server, bool isDuplicate = false)
         {
             _globalData = globalData;
             _dataService = dataService;
@@ -75,7 +76,7 @@ namespace _1RM.View.Editor
         private readonly Type? _sharedTypeInBuckEdit = null;
         private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
 
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, IEnumerable<ProtocolBase> servers)
+        public ServerEditorPageViewModel(GlobalData globalData, IDataSource dataService, IEnumerable<ProtocolBase> servers)
         {
             _globalData = globalData;
             _dataService = dataService;

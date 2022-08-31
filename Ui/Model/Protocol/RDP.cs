@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 
@@ -393,7 +394,7 @@ namespace _1RM.Model.Protocol
         /// To rdp file object
         /// </summary>
         /// <returns></returns>
-        public RdpConfig ToRdpConfig(IDataService dataService)
+        public RdpConfig ToRdpConfig(IDataSource dataService)
         {
             var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, dataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
             {

@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using _1RM.Model;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.View;
 using _1RM.View.Editor;
 using _1RM.View.ErrorReport;
-using _1RM.View.Guidance;
 using _1RM.View.Launcher;
 using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
 
@@ -88,7 +84,7 @@ namespace _1RM
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);
             builder.Bind<ProtocolConfigurationService>().ToSelf().InSingletonScope();
-            builder.Bind<AppDataContext>().ToSelf().InSingletonScope();
+            builder.Bind<DataSourceService>().ToSelf().InSingletonScope();
 
             builder.Bind<MainWindowView>().ToSelf().InSingletonScope();
             builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();

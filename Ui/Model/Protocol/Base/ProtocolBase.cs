@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
+using _1RM.Service.DataSource;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -285,13 +286,12 @@ namespace _1RM.Model.Protocol.Base
         /// <summary>
         /// run before connect, decrypt all fields
         /// </summary>
-        /// <param name="context"></param>
-        public virtual void ConnectPreprocess(AppDataContext context)
+        /// <param name="source"></param>
+        public virtual void ConnectPreprocess(IDataSource source)
         {
-            if (context.DataService == null) return;
             var s = this;
-            context.DataService.DecryptToRamLevel(ref s);
-            context.DataService.DecryptToConnectLevel(ref s);
+            source.DecryptToRamLevel(ref s);
+            source.DecryptToConnectLevel(ref s);
         }
 
         public static List<ProtocolBase> GetAllSubInstance()
@@ -308,5 +308,8 @@ namespace _1RM.Model.Protocol.Base
         {
             return false;
         }
+
+        [JsonIgnore]
+        public string DataSourceId = "";
     }
 }

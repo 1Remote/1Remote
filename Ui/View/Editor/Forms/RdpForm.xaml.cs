@@ -10,11 +10,11 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using Shawn.Utils;
+using _1RM.Service.DataSource;
 
 namespace _1RM.View.Editor.Forms
 {
@@ -104,6 +104,8 @@ namespace _1RM.View.Editor.Forms
         {
             if (_vm is RDP rdp)
             {
+                var dataSource = IoC.Get<DataSourceService>().GetDataSource(rdp.DataSourceId);
+                if (dataSource == null) return;
                 var tmp = Path.GetTempPath();
                 var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
                 var invalid = new string(Path.GetInvalidFileNameChars()) +
@@ -112,13 +114,10 @@ namespace _1RM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                var ds = IoC.Get<AppDataContext>().DataService;
-                if (ds != null)
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig(dataSource).ToString());
+                var p = new Process
                 {
-                    File.WriteAllText(rdpFile, rdp.ToRdpConfig(ds).ToString());
-                    var p = new Process
-                    {
-                        StartInfo =
+                    StartInfo =
                         {
                             FileName = "cmd.exe",
                             UseShellExecute = false,
@@ -127,11 +126,10 @@ namespace _1RM.View.Editor.Forms
                             RedirectStandardError = true,
                             CreateNoWindow = true
                         }
-                    };
-                    p.Start();
-                    p.StandardInput.WriteLine($"notepad " + rdpFile);
-                    p.StandardInput.WriteLine("exit");
-                }
+                };
+                p.Start();
+                p.StandardInput.WriteLine($"notepad " + rdpFile);
+                p.StandardInput.WriteLine("exit");
             }
         }
     }

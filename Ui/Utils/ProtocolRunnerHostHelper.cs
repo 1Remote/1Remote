@@ -4,11 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.Utils.KiTTY;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -20,20 +21,20 @@ namespace _1RM.Utils
         /// <summary>
         /// get a selected runner, or default runner. some protocol i.e. 'APP' will return null.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="protocolConfigurationService"></param>
         /// <param name="server"></param>
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static Runner GetRunner(AppDataContext context, ProtocolBase server, string protocolName, string? assignRunnerName = null)
+        public static Runner GetRunner(ProtocolConfigurationService protocolConfigurationService, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
-            if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+            if (protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
                 SimpleLogHelper.Warning($"we don't have a protocol named: {protocolName}");
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
+            var p = protocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
                 SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
@@ -51,11 +52,11 @@ namespace _1RM.Utils
         /// get a host for the runner if RunWithHosting == true, or start the runner if RunWithHosting == false.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="context"></param>
+        /// <param name="sourceService"></param>
         /// <param name="protocolServerBase"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(AppDataContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
+        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(DataSourceService sourceService, T protocolServerBase, Runner runner) where T : ProtocolBase
         {
             if (runner is not ExternalRunner er) return null;
 
@@ -115,7 +116,7 @@ namespace _1RM.Utils
 
         }
 
-        public static HostBase GetRdpInternalHost(AppDataContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        public static HostBase GetRdpInternalHost(ProtocolBase server, Runner runner, double width = 0, double height = 0)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             Debug.Assert(server is RDP);
@@ -127,21 +128,21 @@ namespace _1RM.Utils
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(AppDataContext context, ProtocolBase server, Runner runner)
+        public static HostBase? GetHostForInternalRunner(IDataSource dataSource, ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
                 case RDP:
                     {
-                        return GetRdpInternalHost(context, server, runner);
+                        return GetRdpInternalHost(server, runner);
                     }
                 case SSH ssh:
                     {
                         Debug.Assert(runner is KittyRunner);
                         var kitty = (KittyRunner)runner;
                         ssh.InstallKitty();
-                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(dataSource))
                         {
                             RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey),
                             RunAfterConnected = () => ssh.DelKittySessionConfig()
@@ -153,7 +154,7 @@ namespace _1RM.Utils
                         Debug.Assert(runner is KittyRunner);
                         var kitty = (KittyRunner)runner;
                         telnet.InstallKitty();
-                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(dataSource))
                         {
                             RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""),
                             RunAfterConnected = () => telnet.DelKittySessionConfig()

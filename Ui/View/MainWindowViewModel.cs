@@ -11,6 +11,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using _1RM.View.Host.ProtocolHosts;
@@ -36,7 +37,7 @@ namespace _1RM.View
     }
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
-        public AppDataContext Context { get; }
+        public DataSourceService SourceService { get; }
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
@@ -80,9 +81,9 @@ namespace _1RM.View
         #endregion Properties
 
 
-        public MainWindowViewModel(AppDataContext context, IWindowManager wm, GlobalData appData)
+        public MainWindowViewModel(DataSourceService sourceService, IWindowManager wm, GlobalData appData)
         {
-            Context = context;
+            SourceService = sourceService;
             _appData = appData;
             ShowList();
         }
@@ -108,33 +109,38 @@ namespace _1RM.View
             };
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
-                if (Context.DataService == null) return;
+                if (SourceService.LocalDataSource == null) return;
                 if (string.IsNullOrEmpty(id)) return;
                 Debug.Assert(_appData.VmItemList.Any(x => x.Id == id));
                 var server = _appData.VmItemList.First(x => x.Id == id).Server;
-                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);
+                EditorViewModel = new ServerEditorPageViewModel(_appData, SourceService.LocalDataSource, server, isDuplicate);
                 ShowMe();
             });
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
             {
-                if (Context.DataService == null) return;
+                // TODO 选择数据源新增
+                var source = SourceService.GetDataSource("");
+                if (source == null) return;
                 var server = new RDP
                 {
                     Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
                 };
-                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server);
+                EditorViewModel = new ServerEditorPageViewModel(_appData, source, server);
                 ShowMe();
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                if (Context.DataService == null) return;
+                // TODO 选择数据源新增
+                var source = SourceService.GetDataSource("");
+                if (source == null) return;
                 var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+                // TODO 将这些数据都在外部解密
                 if (serverBases.Length > 1)
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases);
+                    EditorViewModel = new ServerEditorPageViewModel(_appData, source, serverBases);
                 else
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
+                    EditorViewModel = new ServerEditorPageViewModel(_appData, source, serverBases.First());
                 ShowMe();
             };
 

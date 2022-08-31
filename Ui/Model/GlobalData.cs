@@ -6,6 +6,7 @@ using System.Linq;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.View;
 using Shawn.Utils;
 using Stylet;
@@ -21,16 +22,15 @@ namespace _1RM.Model
             ReloadServerList();
         }
 
-        private IDataService? _dataService;
+        private IDataService? _localDataService;
         private readonly ConfigurationService _configurationService;
 
-        public void SetDbOperator(IDataService dataService)
+        public void SetDbOperator(IDataSource dataService)
         {
-            _dataService = dataService;
+            _localDataService = dataService;
         }
 
 
-        public bool TagListDoInvokeSelectedTabName = true;
         private ObservableCollection<Tag> _tagList = new ObservableCollection<Tag>();
         public ObservableCollection<Tag> TagList
         {
@@ -64,9 +64,7 @@ namespace _1RM.Model
                 }
             }
 
-            TagListDoInvokeSelectedTabName = false;
             TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            TagListDoInvokeSelectedTabName = true;
         }
 
         private void SaveOnPinnedChanged()
@@ -77,13 +75,13 @@ namespace _1RM.Model
 
         public void ReloadServerList()
         {
-            if (_dataService == null)
+            if (_localDataService == null)
             {
                 return;
             }
             // read from db
             var tmp = new List<ProtocolBaseViewModel>();
-            var dbServers = _dataService.Database_GetServers();
+            var dbServers = _localDataService.Database_GetServers();
             foreach (var server in dbServers)
             {
                 var serverAbstract = server;
@@ -91,8 +89,8 @@ namespace _1RM.Model
                 {
                     Execute.OnUIThread(() =>
                     {
-                        _dataService.DecryptToRamLevel(ref serverAbstract);
-                        var vm = new ProtocolBaseViewModel(serverAbstract)
+                        _localDataService.DecryptToRamLevel(ref serverAbstract);
+                        var vm = new ProtocolBaseViewModel(serverAbstract, _localDataService)
                         {
                             LastConnectTime = ConnectTimeRecorder.Get(serverAbstract.Id)
                         };
@@ -106,7 +104,7 @@ namespace _1RM.Model
             }
 
             VmItemList = tmp;
-            ConnectTimeRecorder.Cleanup(VmItemList.Select(x => x.Id));
+            ConnectTimeRecorder.Cleanup();
             ReadTagsFromServers();
             VmItemListDataChanged?.Invoke();
         }
@@ -119,36 +117,36 @@ namespace _1RM.Model
             }
         }
 
-        public void AddServer(ProtocolBase protocolServer, bool doInvoke = true)
+        public void AddServer(ProtocolBase protocolServer, bool doInvokeReload = true)
         {
-            if (_dataService == null) return;
-            _dataService.Database_InsertServer(protocolServer);
-            if (doInvoke)
+            if (_localDataService == null) return;
+            _localDataService.Database_InsertServer(protocolServer);
+            if (doInvokeReload)
             {
                 ReloadServerList();
             }
         }
 
-        public void AddServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
+        public void AddServer(IEnumerable<ProtocolBase> protocolServers, bool doInvokeReload = true)
         {
-            if (_dataService == null)
+            if (_localDataService == null)
             {
                 return;
             }
 
-            _dataService.Database_InsertServer(protocolServers);
-            if (doInvoke)
+            _localDataService.Database_InsertServer(protocolServers);
+            if (doInvokeReload)
             {
                 ReloadServerList();
             }
         }
 
-        public void UpdateServer(ProtocolBase protocolServer, bool doInvoke = true)
+        public void UpdateServer(ProtocolBase protocolServer, bool doInvokeReload = true)
         {
-            if (_dataService == null) return;
+            if (_localDataService == null) return;
             Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
             UnselectAllServers();
-            _dataService.Database_UpdateServer(protocolServer);
+            _localDataService.Database_UpdateServer(protocolServer);
             int i = VmItemList.Count;
             if (VmItemList.Any(x => x.Id == protocolServer.Id))
             {
@@ -161,48 +159,48 @@ namespace _1RM.Model
                 }
             }
 
-            if (doInvoke)
+            if (doInvokeReload)
             {
                 ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();
             }
         }
 
-        public void UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
+        public void UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool doInvokeReload = true)
         {
-            if (_dataService == null)
+            if (_localDataService == null)
             {
                 return;
             }
 
-            if (_dataService.Database_UpdateServer(protocolServers))
-                if (doInvoke)
+            if (_localDataService.Database_UpdateServer(protocolServers))
+                if (doInvokeReload)
                     ReloadServerList();
         }
 
-        public void DeleteServer(string id, bool doInvoke = true)
+        public void DeleteServer(string id, bool doInvokeReload = true)
         {
-            if (_dataService == null)
+            if (_localDataService == null)
             {
                 return;
             }
-            if (_dataService.Database_DeleteServer(id))
+            if (_localDataService.Database_DeleteServer(id))
             {
-                if (doInvoke)
+                if (doInvokeReload)
                     ReloadServerList();
             }
         }
 
-        public void DeleteServer(IEnumerable<string> ids, bool doInvoke = true)
+        public void DeleteServer(IEnumerable<string> ids, bool doInvokeReload = true)
         {
-            if (_dataService == null)
+            if (_localDataService == null)
             {
                 return;
             }
 
-            if (_dataService.Database_DeleteServer(ids))
+            if (_localDataService.Database_DeleteServer(ids))
             {
-                if (doInvoke)
+                if (doInvokeReload)
                     ReloadServerList();
             }
         }

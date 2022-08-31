@@ -3,6 +3,7 @@ using System.IO;
 using _1RM;
 using _1RM.Model;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils.Interface;
 
 namespace Tests
@@ -29,8 +30,8 @@ namespace Tests
                     return new _1RM.Service.Configuration();
                 if (type == typeof(_1RM.Service.ConfigurationService))
                     return new ConfigurationService(new Configuration(), new KeywordMatchService());
-                if (type == typeof(AppDataContext))
-                    return new AppDataContext(new ProtocolConfigurationService(), new GlobalData(new ConfigurationService(new _1RM.Service.Configuration(), new KeywordMatchService())));
+                if (type == typeof(DataSourceService))
+                    return new DataSourceService(new ProtocolConfigurationService(), new GlobalData(new ConfigurationService(new _1RM.Service.Configuration(), new KeywordMatchService())));
                 return null;
             };
         }
