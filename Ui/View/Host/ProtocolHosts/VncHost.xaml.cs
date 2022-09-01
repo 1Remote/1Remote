@@ -6,6 +6,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils.Wpf;
 using VncSharpCore;
 
@@ -83,7 +84,7 @@ namespace _1RM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncBase.GetPort();
-            Vnc.GetPassword = () => IoC.Get<DataService>().DecryptOrReturnOriginalString(_vncBase.Password);
+            Vnc.GetPassword = () => _vncBase.GetDataSource()?.DecryptOrReturnOriginalString(_vncBase.Password) ?? _vncBase.Password;
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try

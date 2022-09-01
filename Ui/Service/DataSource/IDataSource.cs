@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.Model;
 using _1RM.View;
+using com.github.xiangyuecn.rsacsharp;
+using Shawn.Utils;
+using Stylet;
 
 namespace _1RM.Service.DataSource;
 
@@ -15,7 +23,7 @@ public interface IDataSource : IDataService
     /// 返回数据源的 ID 
     /// </summary>
     /// <returns></returns>
-    public string GetDataSourceId();
+    public string DataSourceId { get; }
 
     /// <summary>
     /// 返回服务器信息(服务器信息已指向数据源)
@@ -23,15 +31,300 @@ public interface IDataSource : IDataService
     /// <returns></returns>
     public IEnumerable<ProtocolBaseViewModel> GetServers();
 
-    public bool IsReadable();
-    public bool IsWritable();
+    public bool IsReadable { get; }
+    public bool IsWritable { get; }
 
-    public long LastUpdateTimestamp { get; }
-    public long DataSourceUpdateTimestamp { get; set; }
+    public abstract long LastReadFromDataSourceTimestamp { get; }
+    public abstract long DataSourceLatestDataTimestamp { get; set; }
 
     /// <summary>
     /// 定期检查数据源的最后更新时间戳，大于 LastUpdateTimestamp 则返回 true
     /// </summary>
     /// <returns></returns>
-    public bool NeedReload();
+    public abstract bool NeedRead();
+}
+
+public abstract class DatabaseSource : IDataSource
+{
+    public string DataSourceId { get; }
+    protected readonly DataSourceModel DataSourceModel;
+
+    protected DatabaseSource(string id, DataSourceModel dataSourceModel)
+    {
+        DataSourceId = id;
+        DataSourceModel = dataSourceModel;
+    }
+
+    public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
+
+    protected bool _isReadable;
+    bool IDataSource.IsReadable => _isReadable;
+    protected bool _isWritable;
+    bool IDataSource.IsWritable => _isWritable;
+
+
+    public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
+    public virtual long DataSourceLatestDataTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
+    public virtual bool NeedRead()
+    {
+        return LastReadFromDataSourceTimestamp < DataSourceLatestDataTimestamp;
+    }
+
+    public IEnumerable<ProtocolBaseViewModel> GetServers()
+    {
+        if (NeedRead())
+        {
+            var protocols = Database_GetServers();
+            CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
+            foreach (var protocol in protocols)
+            {
+                try
+                {
+                    var serverAbstract = protocol;
+                    Execute.OnUIThread(() =>
+                    {
+                        this.DecryptToRamLevel(ref serverAbstract);
+                        var vm = new ProtocolBaseViewModel(serverAbstract, this)
+                        {
+                            LastConnectTime = ConnectTimeRecorder.Get(serverAbstract.Id, this.DataSourceId)
+                        };
+                        CachedProtocols.Add(vm);
+                    });
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Info(e);
+                }
+            }
+
+            LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+        }
+
+        return CachedProtocols;
+    }
+
+    public abstract IDataBase GetDataBase();
+
+    public bool Database_OpenConnection()
+    {
+        var dataBase = GetDataBase();
+        // open db or create db.
+        Debug.Assert(dataBase != null);
+        dataBase.OpenConnection(DataSourceModel.DatabaseType, DataSourceModel.GetConnectionString());
+        dataBase.InitTables();
+
+        // check database rsa encrypt
+        var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
+        if (!string.IsNullOrWhiteSpace(privateKeyPath)
+            && File.Exists(privateKeyPath))
+        {
+            _rsa = new RSA(File.ReadAllText(Database_GetPrivateKeyPath()), true);
+        }
+        else
+        {
+            _rsa = null;
+        }
+        return true;
+    }
+
+    public virtual void Database_CloseConnection()
+    {
+        var dataBase = GetDataBase();
+        Debug.Assert(dataBase != null);
+        if (dataBase.IsConnected())
+            dataBase.CloseConnection();
+    }
+
+    public virtual EnumDbStatus Database_SelfCheck()
+    {
+        var dataBase = GetDataBase();
+        dataBase?.OpenConnection();
+        // check connection
+        if (dataBase?.IsConnected() != true)
+            return EnumDbStatus.NotConnected;
+
+        // validate encryption
+        var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
+        if (string.IsNullOrWhiteSpace(privateKeyPath))
+        {
+            // no encrypt
+            return EnumDbStatus.OK;
+        }
+        var publicKey = dataBase.Get_RSA_PublicKey();
+        var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
+        switch (pks)
+        {
+            case RSA.EnumRsaStatus.CannotReadPrivateKeyFile:
+                return EnumDbStatus.RsaPrivateKeyNotFound;
+            case RSA.EnumRsaStatus.PrivateKeyFormatError:
+                return EnumDbStatus.RsaPrivateKeyFormatError;
+            case RSA.EnumRsaStatus.PublicKeyFormatError:
+                return EnumDbStatus.DataIsDamaged;
+            case RSA.EnumRsaStatus.PrivateAndPublicMismatch:
+                return EnumDbStatus.RsaNotMatched;
+            case RSA.EnumRsaStatus.NoError:
+                break;
+        }
+        return EnumDbStatus.OK;
+    }
+
+
+    protected RSA? _rsa = null;
+    public virtual string Database_GetPublicKey()
+    {
+        return GetDataBase()?.Get_RSA_PublicKey() ?? "";
+    }
+
+    public abstract string Database_GetPrivateKeyPath();
+
+    public virtual RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolBase> servers)
+    {
+        var dataBase = GetDataBase();
+        Debug.Assert(dataBase != null);
+
+        // clear rsa key
+        if (string.IsNullOrEmpty(privateKeyPath))
+        {
+            Debug.Assert(_rsa != null);
+            Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
+
+            // decrypt
+            var cloneList = new List<ProtocolBase>();
+            foreach (var server in servers)
+            {
+                var tmp = (ProtocolBase)server.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                DecryptToConnectLevel(ref tmp);
+                cloneList.Add(tmp);
+            }
+
+            // update 
+            if (dataBase.SetRsa("", "", cloneList))
+            {
+                _rsa = null;
+            }
+            return RSA.EnumRsaStatus.NoError;
+        }
+        // set rsa key
+        else
+        {
+            Debug.Assert(_rsa == null);
+            Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == true);
+
+
+            var pks = RSA.KeyCheck(privateKeyContent, true);
+            if (pks != RSA.EnumRsaStatus.NoError)
+                return pks;
+            var rsa = new RSA(privateKeyContent, true);
+
+            // encrypt
+            var cloneList = new List<ProtocolBase>();
+            foreach (var server in servers)
+            {
+                var tmp = (ProtocolBase)server.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                rsa?.EncryptToDatabaseLevel(ref tmp);
+                cloneList.Add(tmp);
+            }
+
+            // update 
+            if (dataBase.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
+            {
+                dataBase.Set_RSA_SHA1(rsa.Sign("SHA1", AppPathHelper.APP_NAME));
+                _rsa = rsa;
+            }
+            return RSA.EnumRsaStatus.NoError;
+        }
+    }
+    public virtual RSA.EnumRsaStatus Database_UpdatePrivateKeyPathOnly(string privateKeyPath)
+    {
+        Debug.Assert(_rsa != null);
+        Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
+        Debug.Assert(File.Exists(privateKeyPath));
+
+        var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, Database_GetPublicKey());
+        if (pks == RSA.EnumRsaStatus.NoError)
+        {
+            GetDataBase()?.Set_RSA_PrivateKeyPath(privateKeyPath);
+        }
+        return pks;
+    }
+
+    public virtual string DecryptOrReturnOriginalString(string originalString)
+    {
+        return _rsa?.DecryptOrReturnOriginalString(originalString) ?? originalString;
+    }
+
+    public virtual void EncryptToDatabaseLevel(ref ProtocolBase server)
+    {
+        _rsa?.EncryptToDatabaseLevel(ref server);
+    }
+
+    public virtual void DecryptToRamLevel(ref ProtocolBase server)
+    {
+        _rsa?.DecryptToConnectLevel(ref server);
+    }
+
+    public virtual void DecryptToConnectLevel(ref ProtocolBase server)
+    {
+        _rsa?.DecryptToConnectLevel(ref server);
+    }
+
+    public void Database_InsertServer(ProtocolBase server)
+    {
+        var tmp = (ProtocolBase)server.Clone();
+        tmp.SetNotifyPropertyChangedEnabled(false);
+        EncryptToDatabaseLevel(ref tmp);
+        GetDataBase()?.AddServer(tmp);
+    }
+
+    public void Database_InsertServer(IEnumerable<ProtocolBase> servers)
+    {
+        var cloneList = new List<ProtocolBase>();
+        foreach (var server in servers)
+        {
+            var tmp = (ProtocolBase)server.Clone();
+            tmp.SetNotifyPropertyChangedEnabled(false);
+            EncryptToDatabaseLevel(ref tmp);
+            cloneList.Add(tmp);
+        }
+        GetDataBase()?.AddServer(cloneList);
+    }
+
+    public bool Database_UpdateServer(ProtocolBase org)
+    {
+        Debug.Assert(string.IsNullOrEmpty(org.Id) == false);
+        var tmp = (ProtocolBase)org.Clone();
+        tmp.SetNotifyPropertyChangedEnabled(false);
+        EncryptToDatabaseLevel(ref tmp);
+        return GetDataBase()?.UpdateServer(tmp) == true;
+    }
+
+    public bool Database_UpdateServer(IEnumerable<ProtocolBase> servers)
+    {
+        var cloneList = new List<ProtocolBase>();
+        foreach (var server in servers)
+        {
+            var tmp = (ProtocolBase)server.Clone();
+            tmp.SetNotifyPropertyChangedEnabled(false);
+            EncryptToDatabaseLevel(ref tmp);
+            cloneList.Add(tmp);
+        }
+        return GetDataBase()?.UpdateServer(cloneList) == true;
+    }
+
+    public bool Database_DeleteServer(string id)
+    {
+        return _isWritable && GetDataBase()?.DeleteServer(id) == true;
+    }
+
+    public bool Database_DeleteServer(IEnumerable<string> ids)
+    {
+        return _isWritable && GetDataBase()?.DeleteServer(ids) == true;
+    }
+
+    public List<ProtocolBase> Database_GetServers()
+    {
+        return GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+    }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using _1RM.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
@@ -17,7 +18,7 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
-        [JsonIgnore] public readonly string DataSourceId;
+        public string DataSourceName { get; }
         public bool IsEditable { get; }
         public bool IsViewable { get; }
 
@@ -28,10 +29,9 @@ namespace _1RM.View
         {
             Debug.Assert(psb != null);
             Server = psb;
-            psb.DataSourceId =
-            DataSourceId = dataSource.GetDataSourceId();
-            IsViewable = IsEditable = dataSource.IsWritable();
-
+            // TODO how it works with a tmp server?
+            psb.DataSourceId = dataSource.DataSourceId;
+            IsViewable = IsEditable = dataSource.IsWritable;
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
                 HoverNoteDisplayControl = new NoteIcon(this.Server);

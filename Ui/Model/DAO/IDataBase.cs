@@ -78,8 +78,6 @@ namespace _1RM.Model.DAO
         bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
 
         void SetRsaPrivateKeyPath(string privateKeyPath);
-
-        bool UpdateServerLastConnectTime(string id, DateTime time);
     }
 
 
@@ -89,6 +87,12 @@ namespace _1RM.Model.DAO
         {
             return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
         }
+        public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password)
+        {
+            return $"server={host};port={port};database={dbName};Character Set=utf8;Uid={user};password={password};";
+        }
+
+
 
         private static string TryGetConfig(this IDataBase iDataBase, string key)
         {

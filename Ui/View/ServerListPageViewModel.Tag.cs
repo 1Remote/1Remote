@@ -82,11 +82,11 @@ namespace _1RM.View
         /// <param name="action"></param>
         private void FilterTagsControl(object? o, TagFilter.FilterTagsControlAction action)
         {
-            if (o == null)
+            if (o is not Tag obj)
                 return;
-            if (SourceService?.DataService == null) return;
+
             string newTagName = string.Empty;
-            if (o is Tag obj && AppData.TagList.Any(x => x.Name == obj.Name))
+            if (AppData.TagList.Any(x => x.Name == obj.Name))
             {
                 newTagName = obj.Name;
             }
@@ -184,7 +184,6 @@ namespace _1RM.View
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    if (SourceService?.DataService == null) return;
                     if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
@@ -219,10 +218,9 @@ namespace _1RM.View
             {
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
-                    if (SourceService?.DataService == null) return;
-                    var obj = o as Tag;
-                    if (obj == null)
+                    if (o is not Tag obj)
                         return;
+
                     string oldTagName = obj.Name;
                     string newTagName = InputWindow.InputBox(IoC.Get<ILanguageService>().Translate("Tags"), IoC.Get<ILanguageService>().Translate("Tags"), obj.Name);
                     newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
@@ -270,9 +268,9 @@ namespace _1RM.View
             {
                 return _cmdTagConnect ??= new RelayCommand((o) =>
                 {
-                    if (SourceService?.DataService == null) return;
-                    if (!(o is Tag obj))
+                    if (o is not Tag obj)
                         return;
+
                     foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
@@ -294,8 +292,7 @@ namespace _1RM.View
             {
                 return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
                 {
-                    if (SourceService?.DataService == null) return;
-                    if (!(o is Tag obj))
+                    if (o is not Tag obj)
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();

@@ -48,8 +48,8 @@ namespace Tests.ViewModel.Configuration
 
             if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
                 File.Delete(AppPathHelper.Instance.ProfileJsonPath);
-            _configurationService.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-            ctx.InitSqliteDb(_configurationService.Database.SqliteDatabasePath, new DataService());
+            _configurationService.DataSource.LocalDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+            ctx.InitSqliteDb(_configurationService.DataSource.LocalDatabasePath, new DataService());
             SettingsPageViewModel vm = new SettingsPageViewModel(ctx, gd);
             vm.GenRsa(_ppkPath);
             vm.CleanRsa().Wait();

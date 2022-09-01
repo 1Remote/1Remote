@@ -9,6 +9,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -52,6 +53,7 @@ namespace _1RM.View.Host.ProtocolHosts
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
         private AxMsRdpClient9NotSafeForScriptingEx? _rdpClient = null;
+        private readonly IDataSource? _dataSource;
         private readonly RDP _rdpSettings;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%
@@ -73,6 +75,8 @@ namespace _1RM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
 
             _rdpSettings = rdp;
+            // tmp session may get a null source.
+            _dataSource = IoC.Get<DataSourceService>().GetDataSource(_rdpSettings.DataSourceId);
             InitRdp(width, height);
             GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
         }
@@ -136,7 +140,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdpClient.GetOcx();
-            secured.ClearTextPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpSettings.Password);
+            secured.ClearTextPassword = _dataSource?.DecryptOrReturnOriginalString(_rdpSettings.Password) ?? _rdpSettings.Password;
             _rdpClient.FullScreenTitle = _rdpSettings.DisplayName + " - " + _rdpSettings.SubTitle;
 
             #endregion server info
@@ -525,7 +529,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     case EGatewayLogonMethod.Password:
                         _rdpClient.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdpClient.TransportSettings2.GatewayUsername = _rdpSettings.GatewayUserName;
-                        _rdpClient.TransportSettings2.GatewayPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpSettings.GatewayPassword);
+                        _rdpClient.TransportSettings2.GatewayPassword = _dataSource?.DecryptOrReturnOriginalString(_rdpSettings.GatewayPassword) ?? _rdpSettings.GatewayPassword;
                         break;
 
                     default:

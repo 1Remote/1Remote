@@ -7,6 +7,7 @@ using System.Linq;
 using Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using MySql.Data.MySqlClient;
 using NUlid;
 
 namespace _1RM.Model.DAO.Dapper
@@ -24,7 +25,8 @@ namespace _1RM.Model.DAO.Dapper
             lock (this)
             {
                 _dbConnection.Close();
-                SQLiteConnection.ClearAllPools();
+                if (_databaseType == DatabaseType.Sqlite)
+                    SQLiteConnection.ClearAllPools();
             }
         }
 
@@ -41,10 +43,23 @@ namespace _1RM.Model.DAO.Dapper
                 if (_dbConnection == null)
                 {
                     _dbConnection?.Close();
-                    if (_databaseType == DatabaseType.Sqlite)
-                        _dbConnection = new SQLiteConnection(_connectionString);
-                    else
-                        throw new NotImplementedException(_databaseType.ToString() + " not supported!");
+                    switch (_databaseType)
+                    {
+                        case DatabaseType.MySql:
+                            _dbConnection = new MySqlConnection(_connectionString);
+                            break;
+                        case DatabaseType.Sqlite:
+                            _dbConnection = new SQLiteConnection(_connectionString);
+                            break;
+                        //case DatabaseType.SqlServer:
+                        //    break;
+                        //case DatabaseType.PostgreSQL:
+                        //    break;
+                        //case DatabaseType.Oracle:
+                        //    break;
+                        default:
+                            throw new NotImplementedException(_databaseType.ToString() + " not supported!");
+                    }
                 }
                 _dbConnection.Open();
             }
@@ -65,7 +80,8 @@ namespace _1RM.Model.DAO.Dapper
 
                 _dbConnection?.Close();
                 _dbConnection?.Dispose();
-                SQLiteConnection.ClearAllPools();
+                if (_databaseType == DatabaseType.Sqlite)
+                    SQLiteConnection.ClearAllPools();
                 _dbConnection = null;
                 OpenConnection();
             }
@@ -100,8 +116,6 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 ");
-
-            // TODO 建一个连接时间表
         }
 
         public virtual ProtocolBase? GetServer(int id)
@@ -229,17 +243,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual void SetRsaPrivateKeyPath(string privateKeyPath)
         {
             SetConfig("RSA_PrivateKeyPath", privateKeyPath);
-        }
-
-        public bool UpdateServerLastConnectTime(string id, DateTime time)
-        {
-            const string sql = @$"INSERT OR REPLACE INTO `{ServerConnectTime.TABLE_NAME}` 
-(`{nameof(ServerConnectTime.Id)}`, `{nameof(ServerConnectTime.Timestamp)}`) 
-VALUES
-(@{nameof(ServerConnectTime.Id)}, @{nameof(ServerConnectTime.Timestamp)}) 
-WHERE `{nameof(ServerConnectTime.Id)}`= @{nameof(ServerConnectTime.Id)};";
-            // TODO 保留最近 50 条
-            throw new NotImplementedException();
         }
     }
 }

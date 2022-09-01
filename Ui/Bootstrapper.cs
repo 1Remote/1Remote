@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Threading;
 using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.View;
@@ -74,7 +76,7 @@ namespace _1RM
         {
             // Step2
             // Configure the IoC container in here
-            builder.Bind<IDataService>().And<DataService>().To<DataService>();
+            builder.Bind<IDataBase>().To<DapperDataBaseFree>();
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();

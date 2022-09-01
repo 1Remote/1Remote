@@ -7,9 +7,9 @@ namespace _1RM.Service
 {
     public interface IDataService
     {
-        public IDataBase DB();
+        public IDataBase GetDataBase();
 
-        public bool Database_OpenConnection(DatabaseType type, string newConnectionString);
+        public bool Database_OpenConnection();
         public void Database_CloseConnection();
         public EnumDbStatus Database_SelfCheck();
         public string Database_GetPublicKey();
