@@ -6,6 +6,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.View;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -63,7 +64,7 @@ namespace _1RM.Model
 
                 actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
                 {
-                    if(GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
                         IoC.Get<MainWindowViewModel>()?.ShowMe();
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false);
                 }));
@@ -111,7 +112,7 @@ namespace _1RM.Model
                     {
                         try
                         {
-                            Clipboard.SetDataObject(IoC.Get<DataService>().DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                            Clipboard.SetDataObject(server.GetDataSource()?.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
                         }
                         catch (Exception)
                         {
@@ -122,7 +123,7 @@ namespace _1RM.Model
 
             actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
             {
-                GlobalEventHelper.OnRequestDeleteServer?.Invoke(server.Id);
+                GlobalEventHelper.OnRequestDeleteServer?.Invoke(server);
             }));
 
             #endregion Build Actions

@@ -3,6 +3,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol.FileTransmit;
 using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils;
 
 namespace _1RM.Model.Protocol
@@ -52,7 +53,7 @@ namespace _1RM.Model.Protocol
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = IoC.Get<DataService>().DecryptOrReturnOriginalString(this.Password);
+            var password = this.GetDataSource()?.DecryptOrReturnOriginalString(this.Password) ?? this.Password;
             return new TransmitterFtp(hostname, port, username, password);
         }
 

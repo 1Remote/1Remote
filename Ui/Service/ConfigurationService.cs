@@ -61,20 +61,20 @@ namespace _1RM.Service
         public List<string> EnabledMatchers = new List<string>();
     }
 
-    public class DatabaseConfig
+    public class DataSourceConfig
     {
-        public const DatabaseType DATABASE_TYPE = Model.DAO.DatabaseType.Sqlite;
-
-        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
-        public string SqliteDatabasePath
+        private string _localDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
+        public string LocalDatabasePath
         {
             get
             {
-                Debug.Assert(string.IsNullOrEmpty(_sqliteDatabasePath) == false);
-                return _sqliteDatabasePath;
+                Debug.Assert(string.IsNullOrEmpty(_localDatabasePath) == false);
+                return _localDatabasePath;
             }
-            set => _sqliteDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
+            set => _localDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
         }
+
+
     }
 
     public class ThemeConfig
@@ -100,7 +100,7 @@ namespace _1RM.Service
         public GeneralConfig General { get; set; } = new GeneralConfig();
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
-        public DatabaseConfig Database { get; set; } = new DatabaseConfig();
+        public DataSourceConfig DataSource { get; set; } = new DataSourceConfig();
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
@@ -116,7 +116,7 @@ namespace _1RM.Service
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
-        public DatabaseConfig Database => _cfg.Database;
+        public DataSourceConfig DataSource => _cfg.DataSource;
         public ThemeConfig Theme => _cfg.Theme;
         public EngagementSettings Engagement => _cfg.Engagement;
         /// <summary>

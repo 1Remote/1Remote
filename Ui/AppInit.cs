@@ -230,7 +230,7 @@ namespace _1RM
             }
             else
             {
-                Configuration.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                Configuration.DataSource.LocalDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
             KeywordMatchService = new KeywordMatchService();

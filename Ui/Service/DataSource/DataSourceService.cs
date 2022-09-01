@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using _1RM.Model;
 using _1RM.Model.DAO;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.Model;
 using _1RM.View;
+using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Service.DataSource
 {
-    public class DataSourceService
+    public class DataSourceService : NotifyPropertyChangedBase
     {
         private readonly GlobalData _appData;
 
@@ -17,7 +20,7 @@ namespace _1RM.Service.DataSource
             _appData = appData;
         }
 
-        public SqliteDataSource? LocalDataSource { get; private set; } = null;
+        public SqliteDatabaseSource? LocalDataSource { get; private set; } = null;
 
         public Dictionary<string, IDataSource> AdditionalSources = new Dictionary<string, IDataSource>();
 
@@ -52,7 +55,7 @@ namespace _1RM.Service.DataSource
         {
             if (string.IsNullOrWhiteSpace(sqlitePath))
             {
-                sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
+                sqlitePath = IoC.Get<ConfigurationService>().DataSource.LocalDatabasePath;
                 var fi = new FileInfo(sqlitePath);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
@@ -65,14 +68,30 @@ namespace _1RM.Service.DataSource
                 LocalDataSource = null;
                 return EnumDbStatus.AccessDenied;
             }
-
-            LocalDataSource = new SqliteDataSource(sqlitePath);
-            LocalDataSource.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
+            //Ulid.NewUlid(rng).ToString();
+            LocalDataSource = new SqliteDatabaseSource("", new SqliteModel("")
+            {
+                Path = sqlitePath
+            });
+            LocalDataSource.Database_OpenConnection();
             var ret = LocalDataSource.Database_SelfCheck();
+            RaisePropertyChanged(nameof(LocalDataSource));
             // TODO 
-            //if (ret == EnumDbStatus.OK)
-            //    _appData.SetDbOperator(LocalDataSource);
+            if (ret == EnumDbStatus.OK)
+                _appData.SetDbOperator(this);
             return ret;
+        }
+    }
+
+    public static class DataSourceServiceExtend
+    {
+        public static IDataSource? GetDataSource(this ProtocolBase protocol)
+        {
+            return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSourceId);
+        }
+        public static IDataSource? GetDataSource(this ProtocolBaseViewModel protocol)
+        {
+            return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSourceId);
         }
     }
 }

@@ -48,8 +48,6 @@ namespace _1RM.View
 
         public ServerSelectionsViewModel ServerSelectionsViewModel { get; } = IoC.Get<ServerSelectionsViewModel>();
         public QuickConnectionViewModel QuickConnectionViewModel { get;  } = IoC.Get<QuickConnectionViewModel>();
-        public QuickConnectionViewModel? QuickConnectionViewModel { get; private set; } = null;
-
 
         #region properties
 
@@ -117,8 +115,6 @@ namespace _1RM.View
                 ServerSelectionsViewModel.Init(this);
                 QuickConnectionViewModel.Init(this);
 
-                ServerSelectionsViewVisibility = Visibility.Visible;
-                QuickConnectionViewModel = IoC.Get<QuickConnectionViewModel>();
                 ServerSelectionsViewVisibility = Visibility.Visible;
                 ReSetWindowHeight(false);
                 SetHotKey();

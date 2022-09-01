@@ -146,11 +146,12 @@ namespace _1RM.View
                 BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
             }
             if (GlobalEventHelper.OnRequestDeleteServer == null)
-                GlobalEventHelper.OnRequestDeleteServer += id =>
+                GlobalEventHelper.OnRequestDeleteServer += server =>
                 {
-                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                    if (string.IsNullOrEmpty(server.Id) == false
+                        && true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
-                        AppData.DeleteServer(id);
+                        AppData.DeleteServer(server);
                     }
                 };
 
@@ -377,23 +378,6 @@ namespace _1RM.View
             }
         }
 
-
-
-        private RelayCommand? _cmdDelete;
-        public RelayCommand CmdDelete
-        {
-            get
-            {
-                return _cmdDelete ??= new RelayCommand((o) =>
-                {
-                    if (o is string id)
-                    {
-                        GlobalEventHelper.OnRequestDeleteServer?.Invoke(id);
-                    }
-                });
-            }
-        }
-
         private RelayCommand? _cmdDeleteSelected;
         public RelayCommand CmdDeleteSelected
         {
@@ -405,8 +389,8 @@ namespace _1RM.View
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
-                        var ids = ss.Select(x => x.Id);
-                        AppData.DeleteServer(ids);
+                        var servers = ss.Select(x => x.Server);
+                        AppData.DeleteServer(servers);
                     }
                 }, o => ServerListItems.Any(x => x.IsSelected == true));
             }

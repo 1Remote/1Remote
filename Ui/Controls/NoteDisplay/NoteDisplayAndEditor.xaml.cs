@@ -121,7 +121,7 @@ namespace _1RM.Controls.NoteDisplay
             if (Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();
-                IoC.Get<GlobalData>().UpdateServer(Server, doInvoke: false);
+                IoC.Get<GlobalData>().UpdateServer(Server, doInvokeReload: false);
                 EndEdit();
             }
         }
