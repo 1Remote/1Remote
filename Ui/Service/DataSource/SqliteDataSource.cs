@@ -27,13 +27,16 @@ namespace _1RM.Service.DataSource
         public SqliteDatabaseSource(string dataSourceId, SqliteModel model) : base(dataSourceId, model)
         {
             _dataBase = IoC.Get<IDataBase>();
+            var fi = new FileInfo(model.Path);
+            _isWritable = fi.IsReadOnly == false;
+            _isReadable = true;
         }
 
         public override IDataBase GetDataBase()
         {
             return _dataBase;
         }
-        
+
 
         public override string Database_GetPrivateKeyPath()
         {

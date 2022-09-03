@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource;
 using _1RM.Utils;
 using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
@@ -62,6 +64,7 @@ namespace _1RM.Service
 
         private static void StartTask()
         {
+            var dataBase = new DapperDataBaseFree();
             try
             {
                 var dbPath = Path.Join(AppPathHelper.Instance.BaseDirPath, "PRemoteM.db");
@@ -72,8 +75,7 @@ namespace _1RM.Service
                         return;
                 }
 
-                var dataBase = new DapperDataBaseFree();
-                dataBase.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(dbPath));
+                dataBase.OpenNewConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(dbPath));
 
                 // check connection
                 if (dataBase.IsConnected() != true)
@@ -103,22 +105,23 @@ namespace _1RM.Service
                     rsa = null;
                 }
 
-
+                var localSource = IoC.Get<DataSourceService>().LocalDataSource;
+                Debug.Assert(localSource != null);
+                // read from PRemoteM db
                 var dbServers = dataBase.Connection?.Query<PrmServer>($"SELECT * FROM `Server`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
-                if (dbServers != null)
+                if (dbServers?.Count > 0)
                 {
-                    // read from db
+                    var servers = new List<ProtocolBase>();
                     foreach (var server in dbServers)
                     {
                         if (server is { } p)
                         {
-                            DataService.DecryptToConnectLevel(rsa, ref p);
-                            IoC.Get<GlobalData>().AddServer(p);
+                            rsa.DecryptToConnectLevel(ref p);
+                            servers.Add(p);
                         }
                     }
+                    localSource.Database_InsertServer(servers);
                 }
-
-                dataBase.CloseConnection();
             }
             catch (Exception e)
             {
@@ -126,6 +129,7 @@ namespace _1RM.Service
             }
             finally
             {
+                dataBase.CloseConnection();
                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
             }
         }

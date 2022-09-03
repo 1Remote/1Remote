@@ -178,6 +178,11 @@ namespace _1RM.View
                     {
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
+
+                    if (vs.HoverNoteDisplayControl is NoteIcon ni)
+                    {
+                        ni.IsBriefNoteShown = BriefNoteVisibility == Visibility.Visible;
+                    }
                 }
                 _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
                 CalcVisibleByFilter(_filterString);
@@ -313,7 +318,9 @@ namespace _1RM.View
                                     list.Add(server);
                                 }
                             }
-                            AppData.AddServer(list);
+                            // TODO select datasource
+                            IoC.Get<DataSourceService>().LocalDataSource?.Database_InsertServer(list);
+                            AppData.ReloadServerList();
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
@@ -353,7 +360,8 @@ namespace _1RM.View
                             var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                             if (list?.Count > 0)
                             {
-                                AppData.AddServer(list);
+                                IoC.Get<DataSourceService>().LocalDataSource?.Database_InsertServer(list);
+                                AppData.ReloadServerList();
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>
                                 {

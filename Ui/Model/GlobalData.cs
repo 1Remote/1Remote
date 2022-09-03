@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
@@ -15,11 +16,25 @@ namespace _1RM.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
+        private readonly Timer _timer;
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
             ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
+
+            _timer = new Timer(5 * 1000)
+            {
+                AutoReset = false,
+            };
+            _timer.Elapsed += TimerOnElapsed;
+            _timer.Start();
+        }
+
+        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+        {
+            ReloadServerList();
+            _timer.Start();
         }
 
         private DataSourceService? _sourceService;
@@ -79,11 +94,15 @@ namespace _1RM.Model
             {
                 return;
             }
-            // read from db
-            VmItemList = _sourceService.GetServers();
-            ConnectTimeRecorder.Cleanup();
-            ReadTagsFromServers();
-            VmItemListDataChanged?.Invoke();
+
+            if (_sourceService.NeedRead())
+            {
+                // read from db
+                VmItemList = _sourceService.GetServers();
+                ConnectTimeRecorder.Cleanup();
+                ReadTagsFromServers();
+                VmItemListDataChanged?.Invoke();
+            }
         }
 
         public void UnselectAllServers()
@@ -94,29 +113,15 @@ namespace _1RM.Model
             }
         }
 
-        public void AddServer(ProtocolBase protocolServer, bool doInvokeReload = true)
+        public void AddServer(ProtocolBase protocolServer)
         {
             // TODO Assign data source
             if (_sourceService?.LocalDataSource == null) return;
             _sourceService.LocalDataSource.Database_InsertServer(protocolServer);
-            if (doInvokeReload)
-            {
-                ReloadServerList();
-            }
+            ReloadServerList();
         }
 
-        public void AddServer(IEnumerable<ProtocolBase> protocolServers, bool doInvokeReload = true)
-        {
-            // TODO Assign data source
-            if (_sourceService?.LocalDataSource == null) return;
-            _sourceService.LocalDataSource.Database_InsertServer(protocolServers);
-            if (doInvokeReload)
-            {
-                ReloadServerList();
-            }
-        }
-
-        public void UpdateServer(ProtocolBase protocolServer, bool doInvokeReload = true)
+        public void UpdateServer(ProtocolBase protocolServer)
         {
             Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
             if (_sourceService == null) return;
@@ -136,14 +141,14 @@ namespace _1RM.Model
                 }
             }
 
-            if (doInvokeReload)
-            {
-                ReadTagsFromServers();
-                VmItemListDataChanged?.Invoke();
-            }
+            ReloadServerList();
+            //{
+            //    ReadTagsFromServers();
+            //    VmItemListDataChanged?.Invoke();
+            //}
         }
 
-        public void UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool doInvokeReload = true)
+        public void UpdateServer(IEnumerable<ProtocolBase> protocolServers)
         {
             if (_sourceService == null) return;
             var groupedServers = protocolServers.GroupBy(x => x.DataSourceId);
@@ -153,11 +158,10 @@ namespace _1RM.Model
                 if (source?.IsWritable == true)
                     source.Database_UpdateServer(groupedServer);
             }
-            if (doInvokeReload)
-                ReloadServerList();
+            ReloadServerList();
         }
 
-        public void DeleteServer(ProtocolBase protocolServer, bool doInvokeReload = true)
+        public void DeleteServer(ProtocolBase protocolServer)
         {
             if (_sourceService == null) return;
             Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
@@ -166,12 +170,11 @@ namespace _1RM.Model
             if (source == null || source.IsWritable == false) return;
             if (source.Database_DeleteServer(protocolServer.Id))
             {
-                if (doInvokeReload)
-                    ReloadServerList();
+                ReloadServerList();
             }
         }
 
-        public void DeleteServer(IEnumerable<ProtocolBase> protocolServers, bool doInvokeReload = true)
+        public void DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
             if (_sourceService == null) return;
             var groupedServers = protocolServers.GroupBy(x => x.DataSourceId);
@@ -181,8 +184,7 @@ namespace _1RM.Model
                 if (source?.IsWritable == true)
                     source.Database_DeleteServer(groupedServer.Select(x => x.Id));
             }
-            if (doInvokeReload)
-                ReloadServerList();
+            ReloadServerList();
         }
 
         #endregion Server Data

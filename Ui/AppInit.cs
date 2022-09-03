@@ -12,11 +12,8 @@ using Newtonsoft.Json;
 using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Service;
-using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Guidance;
-using _1RM.View.Settings;
-using _1RM.View.Settings.ProtocolConfig;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -88,12 +85,16 @@ namespace _1RM
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                     bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
-                    // 当前目录没有写权限 while forcePortable == true
-                    if (forcePortable && !permissionForPortable)
+                    if (forcePortable && permissionForPortable == false)
                     {
-                        MessageBox.Show(LanguageService.Translate("write permissions alert", Environment.CurrentDirectory),
-                            LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                        Environment.Exit(-1);
+                        var paths = new AppPathHelper(Environment.CurrentDirectory);
+                        WritePermissionCheck(paths.BaseDirPath, false);
+                        WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
+                        WritePermissionCheck(paths.ProfileJsonPath, true);
+                        WritePermissionCheck(paths.LogFilePath, true);
+                        WritePermissionCheck(paths.SqliteDbDefaultPath, true);
+                        WritePermissionCheck(paths.KittyDirPath, false);
+                        WritePermissionCheck(paths.LocalityJsonPath, true);
                     }
 
                     bool profileModeIsPortable = false;
@@ -214,7 +215,7 @@ namespace _1RM
                 SimpleLogHelper.LogFileName = AppPathHelper.Instance.LogFilePath;
             }
 
-            // 读取配置
+            // read profile
             if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
             {
                 try

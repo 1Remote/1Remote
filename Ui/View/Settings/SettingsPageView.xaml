@@ -380,7 +380,7 @@
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
                             <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>
-                            <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>-->
+                            <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdLocalDatabaseMigrate}"></Button>-->
                         </StackPanel>
                     </Grid>
 

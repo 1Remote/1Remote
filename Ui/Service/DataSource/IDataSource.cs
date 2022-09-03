@@ -14,6 +14,8 @@ namespace _1RM.Service.DataSource;
 
 public interface IDataSource : IDataService
 {
+    public string GetName();
+
     /// <summary>
     /// 已缓存的服务器信息
     /// </summary>
@@ -35,7 +37,7 @@ public interface IDataSource : IDataService
     public bool IsWritable { get; }
 
     public abstract long LastReadFromDataSourceTimestamp { get; }
-    public abstract long DataSourceLatestDataTimestamp { get; set; }
+    public abstract long DataSourceDataUpdateTimestamp { get; set; }
 
     /// <summary>
     /// 定期检查数据源的最后更新时间戳，大于 LastUpdateTimestamp 则返回 true
@@ -55,52 +57,69 @@ public abstract class DatabaseSource : IDataSource
         DataSourceModel = dataSourceModel;
     }
 
+    public string GetName()
+    {
+        return DataSourceModel.Name;
+    }
+
     public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
 
-    protected bool _isReadable;
+    protected bool _isReadable = true;
     bool IDataSource.IsReadable => _isReadable;
-    protected bool _isWritable;
+    protected bool _isWritable = true;
     bool IDataSource.IsWritable => _isWritable;
 
 
     public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
-    public virtual long DataSourceLatestDataTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
+    public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+    private DateTime _lastCheckUpdateTime = DateTime.MinValue;
+
     public virtual bool NeedRead()
     {
-        return LastReadFromDataSourceTimestamp < DataSourceLatestDataTimestamp;
+        var dataBase = GetDataBase();
+        dataBase?.OpenConnection();
+        if (dataBase?.IsConnected() == true)
+        {
+            if (_lastCheckUpdateTime.AddSeconds(DataSourceService.CHECK_UPDATE_PERIOD) < DateTime.Now)
+            {
+                DataSourceDataUpdateTimestamp = dataBase.DataUpdateTimestamp;
+            }
+            return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
+        }
+        return false;
     }
+
 
     public IEnumerable<ProtocolBaseViewModel> GetServers()
     {
-        if (NeedRead())
+        lock (this)
         {
-            var protocols = Database_GetServers();
-            CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
-            foreach (var protocol in protocols)
+            if (NeedRead())
             {
-                try
+                LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var protocols = Database_GetServers();
+                CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
+                foreach (var protocol in protocols)
                 {
-                    var serverAbstract = protocol;
-                    Execute.OnUIThread(() =>
+                    try
                     {
+                        var serverAbstract = protocol;
                         this.DecryptToRamLevel(ref serverAbstract);
-                        var vm = new ProtocolBaseViewModel(serverAbstract, this)
+                        Execute.OnUIThreadSync(() =>
                         {
-                            LastConnectTime = ConnectTimeRecorder.Get(serverAbstract.Id, this.DataSourceId)
-                        };
-                        CachedProtocols.Add(vm);
-                    });
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Info(e);
+                            var vm = new ProtocolBaseViewModel(serverAbstract, this);
+                            CachedProtocols.Add(vm);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Info(e);
+                    }
                 }
             }
 
-            LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            return CachedProtocols;
         }
-
-        return CachedProtocols;
     }
 
     public abstract IDataBase GetDataBase();
@@ -110,7 +129,7 @@ public abstract class DatabaseSource : IDataSource
         var dataBase = GetDataBase();
         // open db or create db.
         Debug.Assert(dataBase != null);
-        dataBase.OpenConnection(DataSourceModel.DatabaseType, DataSourceModel.GetConnectionString());
+        dataBase.OpenNewConnection(DataSourceModel.DatabaseType, DataSourceModel.GetConnectionString());
         dataBase.InitTables();
 
         // check database rsa encrypt
@@ -199,7 +218,7 @@ public abstract class DatabaseSource : IDataSource
             }
 
             // update 
-            if (dataBase.SetRsa("", "", cloneList))
+            if (dataBase.SetConfigRsa("", "", cloneList))
             {
                 _rsa = null;
             }
@@ -228,9 +247,8 @@ public abstract class DatabaseSource : IDataSource
             }
 
             // update 
-            if (dataBase.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
+            if (dataBase.SetConfigRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
             {
-                dataBase.Set_RSA_SHA1(rsa.Sign("SHA1", AppPathHelper.APP_NAME));
                 _rsa = rsa;
             }
             return RSA.EnumRsaStatus.NoError;

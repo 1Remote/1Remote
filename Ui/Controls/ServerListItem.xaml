@@ -99,7 +99,7 @@
 
                 <!--brief note -->
                 <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
-                    <ContentControl Content="{Binding HoverNoteDisplayControl}" Background="Red"></ContentControl>
+                    <ContentControl Content="{Binding HoverNoteDisplayControl}"></ContentControl>
                 </Grid>
 
                 <!--address-->

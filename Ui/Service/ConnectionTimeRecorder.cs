@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using _1RM.Model.Protocol.Base;
 using Newtonsoft.Json;
 
 namespace _1RM.Service
@@ -39,20 +40,18 @@ namespace _1RM.Service
         /// <param name="serverId"></param>
         /// <param name="time"></param>
         /// <param name="sourceId"></param>
-        public static void UpdateAndSave(string serverId, long time = 0, string sourceId = "")
+        public static void UpdateAndSave(ProtocolBase server, long time = 0)
         {
-            if (string.IsNullOrEmpty(sourceId) == false)
-                serverId += "_src" + sourceId;
+            var serverId = $"{server.Id}_src{server.DataSourceId}";
             if (time == 0)
                 time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             ConnectTimeData.AddOrUpdate(serverId, time, (s, l) => time);
             Save();
         }
 
-        public static DateTime Get(string serverId, string sourceId = "")
+        public static DateTime Get(ProtocolBase server)
         {
-            if(string.IsNullOrEmpty(sourceId) == false)
-                serverId += "_src" + sourceId;
+            var serverId = $"{server.Id}_src{server.DataSourceId}";
             if (ConnectTimeData.TryGetValue(serverId, out var ut))
             {
                 DateTimeOffset dto = DateTimeOffset.FromUnixTimeMilliseconds(ut);
