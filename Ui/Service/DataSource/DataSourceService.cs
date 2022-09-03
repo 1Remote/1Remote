@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Timers;
 using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
@@ -15,6 +17,8 @@ namespace _1RM.Service.DataSource
     {
         private readonly GlobalData _appData;
 
+        public const int CHECK_UPDATE_PERIOD = 5;
+
         public DataSourceService(GlobalData appData)
         {
             _appData = appData;
@@ -24,10 +28,17 @@ namespace _1RM.Service.DataSource
 
         public Dictionary<string, IDataSource> AdditionalSources = new Dictionary<string, IDataSource>();
 
+        public bool NeedRead()
+        {
+            if (LocalDataSource?.NeedRead() == true)
+                return true;
+            return AdditionalSources.Any(x => x.Value.NeedRead() == true);
+        }
+
         public List<ProtocolBaseViewModel> GetServers()
         {
             var ret = new List<ProtocolBaseViewModel>(100);
-            if(LocalDataSource != null)
+            if (LocalDataSource != null)
                 ret.AddRange(LocalDataSource.GetServers());
             foreach (var dataSource in AdditionalSources)
             {
@@ -41,7 +52,7 @@ namespace _1RM.Service.DataSource
         {
             if (string.IsNullOrEmpty(sourceId) && LocalDataSource != null)
                 return LocalDataSource;
-            else if(AdditionalSources.ContainsKey(sourceId))
+            if (AdditionalSources.ContainsKey(sourceId))
                 return AdditionalSources[sourceId];
             return null;
         }

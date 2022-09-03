@@ -44,7 +44,7 @@ namespace _1RM.Service.DataSource
             try
             {
                 var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password);
-                db.OpenConnection(DatabaseType.MySql, str);
+                db.OpenNewConnection(DatabaseType.MySql, str);
                 return db.IsConnected();
             }
             finally

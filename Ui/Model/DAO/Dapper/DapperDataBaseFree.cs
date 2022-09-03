@@ -101,45 +101,39 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override void SetConfig(string key, string value)
+        public override bool SetConfig(string key, string value)
         {
             OpenConnection();
-            base.SetConfig(key, value);
-            CloseConnection();
-        }
-
-        /// <inheritdoc />
-        public override string GetProtocolTemplate(string key)
-        {
-            OpenConnection();
-            var ret = base.GetProtocolTemplate(key);
+            var ret = base.SetConfig(key, value);
             CloseConnection();
             return ret;
         }
 
         /// <inheritdoc />
-        public override void SetProtocolTemplate(string key, string value)
+        public override bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
         {
             OpenConnection();
-            base.SetProtocolTemplate(key, value);
-            CloseConnection();
-        }
-
-        /// <inheritdoc />
-        public override bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
-        {
-            OpenConnection();
-            var ret = base.SetRsa(privateKeyPath, publicKey, servers);
+            var ret = base.SetConfigRsa(privateKeyPath, publicKey, servers);
             CloseConnection();
             return ret;
         }
 
-        /// <inheritdoc />
-        public override void SetRsaPrivateKeyPath(string privateKeyPath)
+        public override long DataUpdateTimestamp
         {
-            OpenConnection();
-            SetRsaPrivateKeyPath(privateKeyPath);
-            CloseConnection();
+            get
+            {
+                OpenConnection();
+                var ret = base.DataUpdateTimestamp;
+                CloseConnection();
+                return ret;
+            }
+            set
+            {
+                OpenConnection();
+                base.DataUpdateTimestamp = value;
+                CloseConnection();
+            }
         }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using MySql.Data.MySqlClient;
 using NUlid;
 
@@ -65,7 +66,7 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public virtual void OpenConnection(DatabaseType type, string newConnectionString)
+        public virtual void OpenNewConnection(DatabaseType type, string newConnectionString)
         {
             lock (this)
             {
@@ -146,6 +147,8 @@ VALUES
             var server = protocolBase.ToDbServer();
             server.Id = Ulid.NewUlid().ToString();
             var ret = _dbConnection?.Execute(SqlInsert, server);
+            if (ret > 0)
+                SetDataUpdateTimestamp();
             return ret > 0 ? server.Id : string.Empty;
         }
 
@@ -157,7 +160,10 @@ VALUES
             {
                 s.Id = Ulid.NewUlid(rng).ToString();
             }
-            return _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
+            var ret = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
+            if (ret > 0)
+                SetDataUpdateTimestamp();
+            return ret;
         }
 
         static readonly string SqlUpdate = $@"UPDATE `{Server.TABLE_NAME}` SET
@@ -167,24 +173,39 @@ VALUES
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual bool UpdateServer(ProtocolBase server)
         {
-            return _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+            var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+            if (ret)
+                SetDataUpdateTimestamp();
+            return ret;
         }
 
         public virtual bool UpdateServer(IEnumerable<ProtocolBase> servers)
         {
             var dbss = servers.Select(x => x.ToDbServer());
-            var ret = _dbConnection?.Execute(SqlUpdate, dbss);
-            return ret > 0;
+            var ret = _dbConnection?.Execute(SqlUpdate, dbss) > 0;
+            if (ret)
+                SetDataUpdateTimestamp();
+            return ret;
         }
 
         public virtual bool DeleteServer(string id)
         {
-            return _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+            if (_dbConnection == null)
+                return false;
+            var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+            if (ret)
+                SetDataUpdateTimestamp();
+            return ret;
         }
 
         public virtual bool DeleteServer(IEnumerable<string> ids)
         {
-            return _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
+            if (_dbConnection == null)
+                return false;
+            var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
+            if (ret)
+                SetDataUpdateTimestamp();
+            return ret;
         }
 
         public virtual string? GetConfig(string key)
@@ -194,39 +215,29 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return config?.Value;
         }
 
-        //private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
-        //private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+        private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
+        private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
 
-        private static readonly string SqlInsertOrUpdateConfig = $@"INSERT OR REPLACE INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
-        public virtual void SetConfig(string key, string value)
+        public virtual bool SetConfig(string key, string value)
         {
-            _dbConnection?.Execute(SqlInsertOrUpdateConfig, new { Key = key, Value = value, });
+            var existed = GetConfig("UpdateTimestamp") != null;
+            return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
         }
 
-        public virtual string GetProtocolTemplate(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SetProtocolTemplate(string key, string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
+        public virtual bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
         {
             if (_dbConnection == null)
                 return false;
-            //var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
-            //var existedPublic = GetConfig("RSA_PublicKey") != null;
             var data = servers.Select(x => x.ToDbServer());
             using var tran = _dbConnection.BeginTransaction();
             try
             {
-                _dbConnection.Execute(SqlInsertOrUpdateConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
-                _dbConnection.Execute(SqlInsertOrUpdateConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
-                //_dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
-                //_dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
+
+                var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
+                var existedPublic = GetConfig("RSA_PublicKey") != null;
+
+                _dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
+                _dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
                 if (data.Any())
                     _dbConnection?.Execute(SqlUpdate, data, tran);
                 tran.Commit();
@@ -240,9 +251,29 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return true;
         }
 
-        public virtual void SetRsaPrivateKeyPath(string privateKeyPath)
+        private void SetDataUpdateTimestamp()
         {
-            SetConfig("RSA_PrivateKeyPath", privateKeyPath);
+            DataUpdateTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        }
+
+        public virtual long DataUpdateTimestamp
+        {
+            get
+            {
+                var val = GetConfig("UpdateTimestamp");
+                if (val != null
+                    && long.TryParse(val, out var t))
+                    return t;
+                SetConfig("UpdateTimestamp", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString());
+                return 0;
+            }
+            set
+            {
+                var timestamp = value;
+                if (value <= 0)
+                    timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                SetConfig("UpdateTimestamp", timestamp.ToString());
+            }
         }
     }
 }

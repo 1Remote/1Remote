@@ -355,8 +355,8 @@ namespace _1RM.Service
             }
 
             // update the last conn time
-            ConnectTimeRecorder.UpdateAndSave(vmServer.Id);
-            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Id);
+            ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
+            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
 
             ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName);
         }
@@ -705,9 +705,9 @@ namespace _1RM.Service
             }
         }
 
-#endregion
+        #endregion
 
-#region Clean up CloseProtocol
+        #region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
             while (_hostToBeDispose.TryDequeue(out var host))
@@ -807,7 +807,7 @@ namespace _1RM.Service
                 }
             }
         }
-#endregion
+        #endregion
 
         private void PrintCacheCount([CallerMemberName] string callMember = "")
         {

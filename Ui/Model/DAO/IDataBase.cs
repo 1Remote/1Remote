@@ -23,7 +23,7 @@ namespace _1RM.Model.DAO
         void CloseConnection();
 
         void OpenConnection();
-        void OpenConnection(DatabaseType type, string newConnectionString);
+        void OpenNewConnection(DatabaseType type, string newConnectionString);
 
         bool IsConnected();
 
@@ -63,11 +63,7 @@ namespace _1RM.Model.DAO
 
         string? GetConfig(string key);
 
-        void SetConfig(string key, string value);
-
-        string GetProtocolTemplate(string key);
-
-        void SetProtocolTemplate(string key, string value);
+        bool SetConfig(string key, string value);
 
         /// <summary>
         /// set rsa encryption and encrypt or decrypt the data.
@@ -75,9 +71,9 @@ namespace _1RM.Model.DAO
         /// <param name="privateKeyPath"></param>
         /// <param name="publicKey"></param>
         /// <param name="servers">已加密或已解密的数据</param>
-        bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
+        bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
 
-        void SetRsaPrivateKeyPath(string privateKeyPath);
+        abstract long DataUpdateTimestamp { get; set; }
     }
 
 
@@ -123,16 +119,6 @@ namespace _1RM.Model.DAO
             {
                 SimpleLogHelper.Error(e);
             }
-        }
-
-        public static string Get_RSA_SHA1(this IDataBase iDataBase)
-        {
-            return iDataBase.TryGetConfig("RSA_SHA1");
-        }
-
-        public static void Set_RSA_SHA1(this IDataBase iDataBase, string value)
-        {
-            iDataBase.TrySetConfig("RSA_SHA1", value);
         }
 
         public static string Get_RSA_PublicKey(this IDataBase iDataBase)
