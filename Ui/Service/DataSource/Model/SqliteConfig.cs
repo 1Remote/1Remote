@@ -7,7 +7,7 @@ using _1RM.Model.DAO;
 
 namespace _1RM.Service.DataSource.Model
 {
-    public class SqliteModel : DataSourceModel
+    public class SqliteConfig : DataSourceConfigBase
     {
         private string _path = "";
         public string Path
@@ -16,7 +16,7 @@ namespace _1RM.Service.DataSource.Model
             set => SetAndNotifyIfChanged(ref _path, value);
         }
 
-        public SqliteModel(string name) : base(name)
+        public SqliteConfig(string name) : base(name)
         {
         }
 

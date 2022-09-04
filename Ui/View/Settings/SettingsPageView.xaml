@@ -11,6 +11,7 @@
              xmlns:protocolConfig="clr-namespace:_1RM.View.Settings.ProtocolConfig"
              xmlns:settings="clr-namespace:_1RM.View.Settings"
              xmlns:converter="clr-namespace:Shawn.Utils.WpfResources.Converter;assembly=Shawn.Utils.WpfResources"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance settings:SettingsPageViewModel}"
              Background="White"
@@ -365,6 +366,8 @@
             <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
 
                 <StackPanel Margin="0 20 20 0" >
+
+                    <ContentControl s:View.Model="{Binding VM}" Height="600"></ContentControl>
 
                     <TextBlock Text="{DynamicResource system_options_data_security_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
 

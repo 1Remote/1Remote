@@ -4,14 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO;
+using JsonKnownTypes;
+using Newtonsoft.Json;
 using Shawn.Utils;
 
 namespace _1RM.Service.DataSource.Model
 {
-    public abstract class DataSourceModel : NotifyPropertyChangedBase
-    {
 
-        protected DataSourceModel(string name)
+    [JsonConverter(typeof(JsonKnownTypesConverter<DataSourceConfigBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
+    [JsonKnownType(typeof(MysqlConfig), nameof(MysqlConfig))]
+    [JsonKnownType(typeof(SqliteConfig), nameof(SqliteConfig))]
+    public abstract class DataSourceConfigBase : NotifyPropertyChangedBase
+    {
+        protected DataSourceConfigBase(string name)
         {
             _name = name;
         }

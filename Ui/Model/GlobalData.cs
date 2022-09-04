@@ -33,6 +33,7 @@ namespace _1RM.Model
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
+            // TODO 当打开设置、Launcher 时，不再定时 reload 数据
             ReloadServerList();
             _timer.Start();
         }
