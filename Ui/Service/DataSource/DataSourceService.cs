@@ -80,7 +80,7 @@ namespace _1RM.Service.DataSource
                 return EnumDbStatus.AccessDenied;
             }
             //Ulid.NewUlid(rng).ToString();
-            LocalDataSource = new SqliteDatabaseSource("", new SqliteModel("")
+            LocalDataSource = new SqliteDatabaseSource("", new SqliteConfig("")
             {
                 Path = sqlitePath
             });

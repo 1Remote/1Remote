@@ -24,10 +24,10 @@ namespace _1RM.Service.DataSource
     {
         private readonly IDataBase _dataBase;
 
-        public SqliteDatabaseSource(string dataSourceId, SqliteModel model) : base(dataSourceId, model)
+        public SqliteDatabaseSource(string dataSourceId, SqliteConfig configBase) : base(dataSourceId, configBase)
         {
             _dataBase = IoC.Get<IDataBase>();
-            var fi = new FileInfo(model.Path);
+            var fi = new FileInfo(configBase.Path);
             _isWritable = fi.IsReadOnly == false;
             _isReadable = true;
         }

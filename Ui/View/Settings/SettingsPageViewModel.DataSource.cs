@@ -18,6 +18,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service.DataSource;
+using _1RM.View.Settings.DataSource;
 
 namespace _1RM.View.Settings
 {
@@ -292,7 +293,7 @@ namespace _1RM.View.Settings
             }
         }
 
-
+        public object VM { get; set; } = new DataSourceViewModel();
 
         private RelayCommand? _cmdLocalDatabaseMigrate;
         public RelayCommand CmdLocalDatabaseMigrate

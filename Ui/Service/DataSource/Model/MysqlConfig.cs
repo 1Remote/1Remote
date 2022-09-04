@@ -7,7 +7,7 @@ using _1RM.Model.DAO;
 
 namespace _1RM.Service.DataSource.Model
 {
-    public class MysqlModel : DataSourceModel
+    public class MysqlConfig : DataSourceConfigBase
     {
         private string _host = "127.0.0.1";
         private int _port = 3306;
@@ -45,7 +45,7 @@ namespace _1RM.Service.DataSource.Model
             set => SetAndNotifyIfChanged(ref _password, value);
         }
 
-        public MysqlModel(string name) : base(name)
+        public MysqlConfig(string name) : base(name)
         {
         }
 
