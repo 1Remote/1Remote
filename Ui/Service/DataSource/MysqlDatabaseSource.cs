@@ -23,7 +23,7 @@ namespace _1RM.Service.DataSource
     {
         private readonly IDataBase _dataBase;
 
-        public MysqlDatabaseSource(string dataSourceId, MysqlConfig configBase) : base(dataSourceId, configBase)
+        public MysqlDatabaseSource(string dataSourceId, MysqlConfig config) : base(dataSourceId, config)
         {
             _dataBase = IoC.Get<IDataBase>();
         }

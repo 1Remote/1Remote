@@ -22,14 +22,15 @@ namespace _1RM.Service.DataSource
 {
     public partial class SqliteDatabaseSource : DatabaseSource
     {
-        private readonly IDataBase _dataBase;
+        private readonly IDataBase _dataBase = IoC.Get<IDataBase>();
 
-        public SqliteDatabaseSource(string dataSourceId, SqliteConfig configBase) : base(dataSourceId, configBase)
+        public SqliteDatabaseSource(string dataSourceId, SqliteConfig config) : base(dataSourceId, config)
         {
-            _dataBase = IoC.Get<IDataBase>();
-            var fi = new FileInfo(configBase.Path);
+            var fi = new FileInfo(config.Path);
             _isWritable = fi.IsReadOnly == false;
             _isReadable = true;
+            Database_OpenConnection();
+            Database_CloseConnection();
         }
 
         public override IDataBase GetDataBase()

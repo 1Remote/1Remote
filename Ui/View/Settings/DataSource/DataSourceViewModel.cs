@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Settings.DataSource

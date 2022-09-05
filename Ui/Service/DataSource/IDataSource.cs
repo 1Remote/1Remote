@@ -52,17 +52,17 @@ namespace _1RM.Service.DataSource
     public abstract class DatabaseSource : IDataSource
     {
         public string DataSourceId { get; }
-        protected readonly Model.DataSourceConfigBase DataSourceConfigBase;
+        public Model.DataSourceConfigBase DataSourceConfig;
 
-        protected DatabaseSource(string id, Model.DataSourceConfigBase dataSourceConfigBase)
+        protected DatabaseSource(string id, Model.DataSourceConfigBase dataSourceConfig)
         {
             DataSourceId = id;
-            DataSourceConfigBase = dataSourceConfigBase;
+            DataSourceConfig = dataSourceConfig;
         }
 
         public string GetName()
         {
-            return DataSourceConfigBase.Name;
+            return DataSourceConfig.Name;
         }
 
         public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
@@ -83,11 +83,7 @@ namespace _1RM.Service.DataSource
             dataBase?.OpenConnection();
             if (dataBase?.IsConnected() == true)
             {
-                if (_lastCheckUpdateTime.AddSeconds(DataSourceService.CHECK_UPDATE_PERIOD) < DateTime.Now)
-                {
-                    DataSourceDataUpdateTimestamp = dataBase.DataUpdateTimestamp;
-                }
-
+                DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
                 return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
             }
 
@@ -99,27 +95,26 @@ namespace _1RM.Service.DataSource
         {
             lock (this)
             {
-                if (NeedRead())
+                if (LastReadFromDataSourceTimestamp >= DataSourceDataUpdateTimestamp) return CachedProtocols;
+
+                LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var protocols = Database_GetServers();
+                CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
+                foreach (var protocol in protocols)
                 {
-                    LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    var protocols = Database_GetServers();
-                    CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
-                    foreach (var protocol in protocols)
+                    try
                     {
-                        try
+                        var serverAbstract = protocol;
+                        this.DecryptToRamLevel(ref serverAbstract);
+                        Execute.OnUIThreadSync(() =>
                         {
-                            var serverAbstract = protocol;
-                            this.DecryptToRamLevel(ref serverAbstract);
-                            Execute.OnUIThreadSync(() =>
-                            {
-                                var vm = new ProtocolBaseViewModel(serverAbstract, this);
-                                CachedProtocols.Add(vm);
-                            });
-                        }
-                        catch (Exception e)
-                        {
-                            SimpleLogHelper.Info(e);
-                        }
+                            var vm = new ProtocolBaseViewModel(serverAbstract, this);
+                            CachedProtocols.Add(vm);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Info(e);
                     }
                 }
 
@@ -134,7 +129,7 @@ namespace _1RM.Service.DataSource
             var dataBase = GetDataBase();
             // open db or create db.
             Debug.Assert(dataBase != null);
-            dataBase.OpenNewConnection(DataSourceConfigBase.DatabaseType, DataSourceConfigBase.GetConnectionString());
+            dataBase.OpenNewConnection(DataSourceConfig.DatabaseType, DataSourceConfig.GetConnectionString());
             dataBase.InitTables();
 
             // check database rsa encrypt

@@ -12,7 +12,7 @@
         <settings:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></settings:StringIsEmpty2BoolConverter>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid IsSharedSizeScope="True">
         <StackPanel Margin="0 20 20 0" >
 
             <TextBlock Text="{DynamicResource system_options_data_security_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
@@ -25,11 +25,10 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
-                <TextBox Grid.Column="1" Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
+                <TextBox Grid.Column="1" Text="{Binding SqliteConfig.Path, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding SqliteConfig.Path, Mode=OneWay}"></TextBox>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>
-                    <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdLocalDatabaseMigrate}"></Button>-->
                 </StackPanel>
             </Grid>
 
@@ -81,6 +80,7 @@
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Name="TbPublicKey" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
                 <TextBox Grid.Column="1" Text="{Binding DbRsaPublicKey, Mode=OneWay}" 
                                      VerticalContentAlignment="Center" 
+                                     HorizontalAlignment="Left" MinWidth="280"
                                      TextWrapping="Wrap" Height="200" MaxWidth="500"
                                      Focusable="False"
                                      IsReadOnly="True"></TextBox>

@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="_1RM.View.Settings.DataSource.MysqlSettingView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
+      xmlns:settings="clr-namespace:_1RM.View.Settings"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:MysqlSettingViewModel}">
+    <UserControl.Resources>
+        <settings:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></settings:StringIsEmpty2BoolConverter>
+    </UserControl.Resources>
+
+    <Grid IsSharedSizeScope="True">
+        <StackPanel Margin="0 20 20 0" >
+
+            <TextBlock Text="{DynamicResource system_options_data_security_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="TXT: Connection Name"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding MysqlConfig.Name, Mode=OneWay}"></TextBox>
+            </Grid>
+
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Hostname}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding MysqlConfig.Host}"></TextBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{DynamicResource Port}" Style="{StaticResource TextBlockTitleColumn}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding MysqlConfig.Port}"></TextBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{DynamicResource User}" Style="{StaticResource TextBlockTitleColumn}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding MysqlConfig.UserName}"></TextBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{DynamicResource Password}" Style="{StaticResource TextBlockTitleColumn}"></TextBlock>
+                <TextBox Grid.Column="1" Text="{Binding MysqlConfig.Password}"></TextBox>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
