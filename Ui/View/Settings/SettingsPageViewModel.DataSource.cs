@@ -293,8 +293,6 @@ namespace _1RM.View.Settings
             }
         }
 
-        public object VM { get; set; } = new DataSourceViewModel();
-
         private RelayCommand? _cmdLocalDatabaseMigrate;
         public RelayCommand CmdLocalDatabaseMigrate
         {
@@ -345,6 +343,8 @@ namespace _1RM.View.Settings
                 });
             }
         }
+
+        public object VM { get; set; } = new DataSourceViewModel();
 
 
         #endregion

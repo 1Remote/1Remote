@@ -17,6 +17,7 @@ namespace _1RM.Model
     public class GlobalData : NotifyPropertyChangedBase
     {
         private readonly Timer _timer;
+        private bool _isTimerStopFlag = false;
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
@@ -35,7 +36,8 @@ namespace _1RM.Model
         {
             // TODO 当打开设置、Launcher 时，不再定时 reload 数据
             ReloadServerList();
-            _timer.Start();
+            if (_isTimerStopFlag == false)
+                _timer.Start();
         }
 
         private DataSourceService? _sourceService;
@@ -189,5 +191,17 @@ namespace _1RM.Model
         }
 
         #endregion Server Data
+
+        public void StopTick()
+        {
+            _timer.Stop();
+            _isTimerStopFlag = true;
+        }
+        public void StartTick()
+        {
+            _isTimerStopFlag = false;
+            ReloadServerList();
+            _timer.Start();
+        }
     }
 }

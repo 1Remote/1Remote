@@ -73,7 +73,8 @@ namespace _1RM.Model.DAO
         /// <param name="servers">已加密或已解密的数据</param>
         bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
 
-        abstract long DataUpdateTimestamp { get; set; }
+        void SetDataUpdateTimestamp(long time = -1);
+        long GetDataUpdateTimestamp();
     }
 
 

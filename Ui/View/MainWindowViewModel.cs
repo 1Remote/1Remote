@@ -72,11 +72,17 @@ namespace _1RM.View
         public bool ShowSetting
         {
             get => _showSetting;
-            set => SetAndNotifyIfChanged(ref _showSetting, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _showSetting, value))
+                {
+                    if(_showSetting == true)
+                        _appData.StopTick();
+                    else
+                        _appData.StartTick();
+                }
+            }
         }
-
-
-
 
         #endregion Properties
 

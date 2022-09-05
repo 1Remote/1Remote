@@ -17,11 +17,7 @@ namespace _1RM.Model.Protocol
             base.Port = "22";
         }
 
-        [OtherName(Name = "RM_SESSION_NAME")]
-        public string SessionName => this.GetSessionName();
-
         private string _privateKey = "";
-
         [OtherName(Name = "RM_SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
