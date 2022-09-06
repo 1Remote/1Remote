@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using com.github.xiangyuecn.rsacsharp;
 using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
@@ -18,6 +18,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service.DataSource;
+using _1RM.View.Settings.DataSource;
 
 namespace _1RM.View.Settings
 {
@@ -35,12 +36,12 @@ namespace _1RM.View.Settings
         {
             _dataSourceService = dataSourceService;
             _appData = appData;
-            _dataSourceService.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(DataSourceService.LocalDataSource))
-                    ValidateDbStatusAndShowMessageBox(false);
-            };
-            ValidateDbStatusAndShowMessageBox(false);
+            //_dataSourceService.PropertyChanged += (sender, args) =>
+            //{
+            //    if (args.PropertyName == nameof(DataSourceService.LocalDataSource))
+            //        ValidateDbStatusAndShowMessageBox(false);
+            //};
+            //ValidateDbStatusAndShowMessageBox(false);
         }
 
         protected override void OnViewLoaded()
@@ -58,6 +59,13 @@ namespace _1RM.View.Settings
             }
         }
 
+
+        private INotifyPropertyChanged _selectedViewModel = new DataSourceViewModel();
+        public INotifyPropertyChanged SelectedViewModel
+        {
+            get => _selectedViewModel;
+            set => _selectedViewModel = value;
+        }
 
         private EnumMainWindowPage _initPage = EnumMainWindowPage.SettingsGeneral;
         public void ShowPage(EnumMainWindowPage page)

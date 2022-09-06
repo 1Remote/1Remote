@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
@@ -30,30 +32,48 @@ namespace _1RM.View.Settings.DataSource
         private readonly DataSourceViewModel _dataSourceViewModel;
         public MysqlSettingViewModel(DataSourceViewModel dataSourceViewModel, MysqlConfig? mysqlConfig = null)
         {
-            _orgMysqlConfig = mysqlConfig;
             _dataSourceViewModel = dataSourceViewModel;
+            _orgMysqlConfig = mysqlConfig;
+            if (_orgMysqlConfig != null)
+            {
+                Name = _orgMysqlConfig.Name;
+                Host = _orgMysqlConfig.Host;
+                Port = _orgMysqlConfig.Port.ToString();
+                DatabaseName = _orgMysqlConfig.DatabaseName;
+                UserName = _orgMysqlConfig.UserName;
+                Password = _orgMysqlConfig.Password;
+            }
+            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
         }
 
-        //private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
-        //{
-        //    // validate rsa key
-        //    var res = _databaseSource.Database_SelfCheck();
-        //    if (res == EnumDbStatus.OK)
-        //    {
-        //        return true;
-        //    }
-        //    if (showAlert == false) return true;
-        //    MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
-        //    return false;
-        //}
+        ~MysqlSettingViewModel()
+        {
+            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
+        }
 
-        //protected override void OnViewLoaded()
-        //{
-        //    if (OrgMysqlConfig == null)
-        //    {
-        //        Name = string.Empty;
-        //    }
-        //}
+        private INotifyPropertyChanged? _topLevelViewModel;
+        public INotifyPropertyChanged? TopLevelViewModel
+        {
+            get => _topLevelViewModel;
+            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
+        }
+
+        private void ShowProcessingRing(Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (visibility == Visibility.Visible)
+                {
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
+        }
 
 
         private string _name = "";
@@ -168,6 +188,51 @@ namespace _1RM.View.Settings.DataSource
                 return _cmdCancel ??= new RelayCommand((o) =>
                 {
                     this.RequestClose(false);
+                });
+            }
+        }
+
+
+
+        private RelayCommand? _cmdTestConnection;
+        public RelayCommand CmdTestConnection
+        {
+            get
+            {
+                return _cmdTestConnection ??= new RelayCommand((o) =>
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
+
+                            var config = new MysqlConfig(Name)
+                            {
+                                Host = Host,
+                                Port = int.Parse(_port),
+                                DatabaseName = DatabaseName,
+                                UserName = UserName,
+                                Password = Password
+                            };
+                            if (MysqlDatabaseSource.TestConnection(config))
+                            {
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success!"));
+                            }
+                            else
+                            {
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed!"));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBoxHelper.ErrorAlert(e.Message);
+                        }
+                        finally
+                        {
+                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                        }
+                    });
                 });
             }
         }

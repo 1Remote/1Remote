@@ -12,6 +12,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
+using MySql.Data.MySqlClient;
 using NUlid;
 using NUlid.Rng;
 using Shawn.Utils;
@@ -38,12 +39,18 @@ namespace _1RM.Service.DataSource
             throw new NotImplementedException();
         }
 
+        public static bool TestConnection(MysqlConfig config)
+        {
+            return TestConnection(config.Host, config.Port, config.DatabaseName, config.UserName, config.Password);
+        }
         public static bool TestConnection(string host, int port, string dbName, string userName, string password)
         {
-            var db = new DapperDataBaseFree();
+            var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password);
+            var db = IoC.Get<IDataBase>();
             try
             {
-                var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password);
+                var dbConnection = new MySqlConnection(str);
+                dbConnection.Open();
                 db.OpenNewConnection(DatabaseType.MySql, str);
                 return db.IsConnected();
             }

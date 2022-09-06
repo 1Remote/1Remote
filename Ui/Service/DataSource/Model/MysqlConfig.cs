@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO;
+using Newtonsoft.Json;
 
 namespace _1RM.Service.DataSource.Model
 {
@@ -54,7 +55,9 @@ namespace _1RM.Service.DataSource.Model
             return DbExtensions.GetMysqlConnectionString(_host, _port, _databaseName, _userName, _password);
         }
 
+        [JsonIgnore]
         public override DatabaseType DatabaseType => DatabaseType.MySql;
-        public override string Description => $"{UserName}@{Host}:{Port}";
+
+        [JsonIgnore] public override string Description => $"server={Host};port={Port};database={DatabaseName};Uid={UserName};...";
     }
 }

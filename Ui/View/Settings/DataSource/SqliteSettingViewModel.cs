@@ -47,26 +47,36 @@ namespace _1RM.View.Settings.DataSource
                 }
             }
 
-            GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
+            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
+        }
+
+        private INotifyPropertyChanged? _topLevelViewModel;
+        public INotifyPropertyChanged? TopLevelViewModel
+        {
+            get => _topLevelViewModel;
+            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
+        }
+
+        private void ShowProcessingRing(Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
             {
-                Execute.OnUIThread(() =>
+                if (visibility == Visibility.Visible)
                 {
-                    if (visibility == Visibility.Visible)
-                    {
-                        var pvm = IoC.Get<ProcessingRingViewModel>();
-                        pvm.ProcessingRingMessage = msg;
-                        this.TopLevelViewModel = pvm;
-                    }
-                    else
-                    {
-                        this.TopLevelViewModel = null;
-                    }
-                });
-            };
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
         }
 
         ~SqliteSettingViewModel()
         {
+            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
             _databaseSource?.Database_CloseConnection();
         }
 
@@ -92,13 +102,6 @@ namespace _1RM.View.Settings.DataSource
             return false;
         }
 
-
-        private INotifyPropertyChanged? _topLevelViewModel;
-        public INotifyPropertyChanged? TopLevelViewModel
-        {
-            get => _topLevelViewModel;
-            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
-        }
 
         public bool NameWritable { get; } = true;
         private string _name = "";
@@ -191,9 +194,10 @@ namespace _1RM.View.Settings.DataSource
             if (string.IsNullOrEmpty(privateKeyPath))
             {
                 var path = SelectFileHelper.OpenFile(
-                    selectedFileName: AppPathHelper.APP_DISPLAY_NAME + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     checkFileExists: false,
                     initialDirectory: AppPathHelper.Instance.BaseDirPath,
+                    title:"TXT: 选择 RSA 密钥或创建一个新的密钥",
+                    selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     filter: $"RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;
                 privateKeyPath = path;

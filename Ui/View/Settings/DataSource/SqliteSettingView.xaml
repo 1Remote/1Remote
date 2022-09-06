@@ -38,10 +38,23 @@
             BorderBrush="{DynamicResource PrimaryLightBrush}"
             BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
         <Grid IsSharedSizeScope="True">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TopLevelViewModel, Mode=OneWay}" Value="{x:Null}">
+                            <Setter Property="Effect" Value="{x:Null}"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
             <StackPanel Margin="20 0" >
-
                 <TextBlock Text="SQLite" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
@@ -73,8 +86,8 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                     <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Margin="0" Command="{Binding CmdGenRsaKey}"
-                                Content="{DynamicResource system_options_data_security_rsa_encrypt}">
+                        <Button Margin="0 5 0 15" Command="{Binding CmdGenRsaKey}"
+                                Content="TXT: 加密数据库中数据">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                     <Setter Property="IsEnabled" Value="False"></Setter>
@@ -86,8 +99,8 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Margin="10 0 0 0" Command="{Binding CmdClearRsaKey}"
-                                Content="{DynamicResource system_options_data_security_rsa_decrypt}">
+                        <Button Margin="10 5 0 15" Command="{Binding CmdClearRsaKey}"
+                                Content="TXT: 解密数据库中数据">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                     <Style.Triggers>
