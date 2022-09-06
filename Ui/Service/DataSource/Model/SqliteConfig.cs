@@ -26,5 +26,6 @@ namespace _1RM.Service.DataSource.Model
         }
 
         public override DatabaseType DatabaseType => DatabaseType.Sqlite;
+        public override string Description => Path;
     }
 }

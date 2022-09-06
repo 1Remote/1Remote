@@ -71,7 +71,7 @@
                         Style="{StaticResource ButtonBarPrimaryStyle}"
                         attachProperty:VisionElement.Opacity="0.5"
                         attachProperty:VisionElement.OpacityAccent="0.9"
-                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPage}}, Path=DataContext.CmdDeleteRunner}" CommandParameter="{Binding ExternalRunner.Name}"
+                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPageView}}, Path=DataContext.CmdDeleteRunner}" CommandParameter="{Binding ExternalRunner.Name}"
                         Margin="0 0 5 0">
                     <Grid Width="12" Height="12">
                         <Path Data="{StaticResource GeometryCloseCross}"
@@ -155,7 +155,7 @@
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" Margin="5 0">
-                    <Hyperlink Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPage}}}" 
+                    <Hyperlink Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPageView}}}" 
                                TextDecorations="{x:Null}" >
                         (i)
                     </Hyperlink>

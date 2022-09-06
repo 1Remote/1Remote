@@ -358,6 +358,10 @@
 		<Page Update="View\ServerListPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="View\Settings\DataSource\SqliteSettingView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
+		</Page>
 		<Page Update="View\Settings\DataSource\MysqlSettingView.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		  <SubType>Designer</SubType>
@@ -372,7 +376,7 @@
 		<Page Update="View\Settings\ProtocolConfig\KittyRunnerSettings.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPage.xaml">
+		<Page Update="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\SettingsPageView.xaml">
