@@ -557,7 +557,7 @@
             </TabItem>
 
             <TabItem Name="TabItemRunners" Header="{DynamicResource Protocol}">
-                <protocolConfig:ProtocolRunnerSettingsPage Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
+                <protocolConfig:ProtocolRunnerSettingsPageView Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
             </TabItem>
 
         </TabControl>

@@ -7,9 +7,9 @@ using Shawn.Utils.Wpf.Controls;
 
 namespace _1RM.View.Settings.ProtocolConfig
 {
-    public partial class ProtocolRunnerSettingsPage : UserControl
+    public partial class ProtocolRunnerSettingsPageView : UserControl
     {
-        public ProtocolRunnerSettingsPage()
+        public ProtocolRunnerSettingsPageView()
         {
             InitializeComponent();
             var vm = new ProtocolRunnerSettingsPageViewModel(IoC.Get<ProtocolConfigurationService>(), IoC.Get<ILanguageService>());
