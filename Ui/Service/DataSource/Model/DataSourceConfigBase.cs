@@ -36,8 +36,11 @@ namespace _1RM.Service.DataSource.Model
         }
 
         public abstract string GetConnectionString();
+
+        [JsonIgnore]
         public abstract DatabaseType DatabaseType { get; }
 
+        [JsonIgnore]
         public abstract string Description { get; }
         public object Clone()
         {

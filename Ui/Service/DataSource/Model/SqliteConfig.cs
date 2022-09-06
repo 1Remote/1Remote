@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO;
+using Newtonsoft.Json;
 
 namespace _1RM.Service.DataSource.Model
 {
@@ -25,7 +26,9 @@ namespace _1RM.Service.DataSource.Model
             return DbExtensions.GetSqliteConnectionString(Path);
         }
 
+        [JsonIgnore]
         public override DatabaseType DatabaseType => DatabaseType.Sqlite;
+        [JsonIgnore]
         public override string Description => Path;
     }
 }
