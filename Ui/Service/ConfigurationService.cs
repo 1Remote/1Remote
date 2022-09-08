@@ -65,17 +65,7 @@ namespace _1RM.Service
 
     public class DataSourcesConfig
     {
-        private string _localDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
-        public string LocalDatabasePath
-        {
-            get
-            {
-                Debug.Assert(string.IsNullOrEmpty(_localDatabasePath) == false);
-                return _localDatabasePath;
-            }
-            set => _localDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
-        }
-
+        public SqliteConfig LocalDataSourceConfig { get; set; } = new SqliteConfig(DataSourceService.LOCAL_DATA_SOURCE_NAME, "./" + AppPathHelper.APP_NAME + ".db");
         public List<DataSourceConfigBase> AdditionalDataSourceConfigs { get; set; } = new List<DataSourceConfigBase>();
     }
 
@@ -106,6 +96,12 @@ namespace _1RM.Service
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
+
+        public static Configuration Load(string path)
+        {
+            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+            return tmp ?? new Configuration();
+        }
     }
 
     public class ConfigurationService
@@ -204,6 +200,14 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
+        }
+
+
+        public static ConfigurationService Load(string path, KeywordMatchService keywordMatchService)
+        {
+            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+            var config = tmp ?? new Configuration();
+            return new ConfigurationService(config, keywordMatchService);
         }
     }
 }

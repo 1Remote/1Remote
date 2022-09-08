@@ -64,7 +64,7 @@ namespace _1RM.View.Settings
         public INotifyPropertyChanged SelectedViewModel
         {
             get => _selectedViewModel;
-            set => _selectedViewModel = value;
+            set => SetAndNotifyIfChanged(ref _selectedViewModel, value);
         }
 
         private EnumMainWindowPage _initPage = EnumMainWindowPage.SettingsGeneral;

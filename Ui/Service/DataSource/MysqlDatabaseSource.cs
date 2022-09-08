@@ -24,7 +24,7 @@ namespace _1RM.Service.DataSource
     {
         private readonly IDataBase _dataBase;
 
-        public MysqlDatabaseSource(string dataSourceId, MysqlConfig config) : base(dataSourceId, config)
+        public MysqlDatabaseSource(MysqlConfig config) : base(config)
         {
             _dataBase = IoC.Get<IDataBase>();
         }
@@ -49,10 +49,14 @@ namespace _1RM.Service.DataSource
             var db = IoC.Get<IDataBase>();
             try
             {
-                var dbConnection = new MySqlConnection(str);
-                dbConnection.Open();
+                //var dbConnection = new MySqlConnection(str);
+                //dbConnection.Open();
                 db.OpenNewConnection(DatabaseType.MySql, str);
                 return db.IsConnected();
+            }
+            catch
+            {
+                return false;
             }
             finally
             {

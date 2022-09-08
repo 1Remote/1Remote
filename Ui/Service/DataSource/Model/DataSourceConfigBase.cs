@@ -28,6 +28,30 @@ namespace _1RM.Service.DataSource.Model
             };
         }
 
+        public void SetStatus(bool isOk, string msg)
+        {
+            IsOk = isOk;
+            StatusInfo = msg;
+        }
+
+        private bool _isOk = false;
+        [JsonIgnore]
+        public bool IsOk
+        {
+            get => _isOk;
+            set => SetAndNotifyIfChanged(ref _isOk, value);
+        }
+
+
+        private string _statusInfo = "";
+        [JsonIgnore]
+        public string StatusInfo
+        {
+            get => _statusInfo;
+            set => SetAndNotifyIfChanged(ref _statusInfo, value);
+        }
+
+
         private string _name;
         public string Name
         {

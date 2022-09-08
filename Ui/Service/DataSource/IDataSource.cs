@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
@@ -28,7 +29,7 @@ namespace _1RM.Service.DataSource
         /// 返回数据源的 ID 
         /// </summary>
         /// <returns></returns>
-        public string DataSourceId { get; }
+        public string DataSourceName { get; }
 
         /// <summary>
         /// 返回服务器信息(服务器信息已指向数据源)
@@ -51,12 +52,11 @@ namespace _1RM.Service.DataSource
 
     public abstract class DatabaseSource : IDataSource
     {
-        public string DataSourceId { get; }
+        public string DataSourceName => DataSourceConfig.Name;
         public Model.DataSourceConfigBase DataSourceConfig;
 
-        protected DatabaseSource(string id, Model.DataSourceConfigBase dataSourceConfig)
+        protected DatabaseSource(Model.DataSourceConfigBase dataSourceConfig)
         {
-            DataSourceId = id;
             DataSourceConfig = dataSourceConfig;
         }
 
@@ -75,7 +75,6 @@ namespace _1RM.Service.DataSource
 
         public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
         public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        private DateTime _lastCheckUpdateTime = DateTime.MinValue;
 
         public virtual bool NeedRead()
         {
@@ -157,37 +156,64 @@ namespace _1RM.Service.DataSource
 
         public virtual EnumDbStatus Database_SelfCheck()
         {
+            EnumDbStatus ret = EnumDbStatus.NotConnected;
             var dataBase = GetDataBase();
-            dataBase?.OpenConnection();
+            try
+            {
+                dataBase?.OpenNewConnection(DataSourceConfig.DatabaseType, DataSourceConfig.GetConnectionString());
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                ret = EnumDbStatus.NotConnected;
+            }
+
             // check connection
             if (dataBase?.IsConnected() != true)
-                return EnumDbStatus.NotConnected;
-
-            // validate encryption
-            var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
-            if (string.IsNullOrWhiteSpace(privateKeyPath))
             {
-                // no encrypt
-                return EnumDbStatus.OK;
+                ret = EnumDbStatus.NotConnected;
+            }
+            else
+            {
+                dataBase.InitTables();
+
+                // validate encryption
+                var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
+                if (string.IsNullOrWhiteSpace(privateKeyPath))
+                {
+                    // no encrypt
+                    ret = EnumDbStatus.OK;
+                }
+                else
+                {
+                    var publicKey = dataBase.Get_RSA_PublicKey();
+                    var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
+                    switch (pks)
+                    {
+                        case RSA.EnumRsaStatus.CannotReadPrivateKeyFile:
+                            return EnumDbStatus.RsaPrivateKeyNotFound;
+                        case RSA.EnumRsaStatus.PrivateKeyFormatError:
+                            return EnumDbStatus.RsaPrivateKeyFormatError;
+                        case RSA.EnumRsaStatus.PublicKeyFormatError:
+                            return EnumDbStatus.DataIsDamaged;
+                        case RSA.EnumRsaStatus.PrivateAndPublicMismatch:
+                            return EnumDbStatus.RsaNotMatched;
+                        case RSA.EnumRsaStatus.NoError:
+                            break;
+                    }
+                }
             }
 
-            var publicKey = dataBase.Get_RSA_PublicKey();
-            var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
-            switch (pks)
+            if (ret == EnumDbStatus.OK)
             {
-                case RSA.EnumRsaStatus.CannotReadPrivateKeyFile:
-                    return EnumDbStatus.RsaPrivateKeyNotFound;
-                case RSA.EnumRsaStatus.PrivateKeyFormatError:
-                    return EnumDbStatus.RsaPrivateKeyFormatError;
-                case RSA.EnumRsaStatus.PublicKeyFormatError:
-                    return EnumDbStatus.DataIsDamaged;
-                case RSA.EnumRsaStatus.PrivateAndPublicMismatch:
-                    return EnumDbStatus.RsaNotMatched;
-                case RSA.EnumRsaStatus.NoError:
-                    break;
+                var servers = GetServers();
+                DataSourceConfig.SetStatus(true, $"{servers.Count()} servers");
             }
-
-            return EnumDbStatus.OK;
+            else
+            {
+                DataSourceConfig.SetStatus(false, ret.GetErrorInfo());
+            }
+            return ret;
         }
 
 

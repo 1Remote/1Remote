@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
-             xmlns:model="clr-namespace:_1RM.Service.DataSource.Model"
-             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:DataSourceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -93,12 +91,12 @@
         <Style TargetType="{x:Type DataGridCell}">
             <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
             <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
-                    <Setter Property="BorderThickness" Value="0"></Setter>
-                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
-                    <Setter Property="FontSize" Value="14"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -124,12 +122,45 @@
                   HorizontalContentAlignment="Stretch" 
                   ColumnWidth="*"
                   IsReadOnly="True"
-                  ItemsSource="{Binding SourceConfigs}" 
-                  SelectedItem="{Binding SelectedSource}">
+                  ItemsSource="{Binding SourceConfigs}" >
             <DataGrid.Columns>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Background="Transparent" Cursor="Hand" ToolTip="{Binding StatusInfo}">
+                                <Path Height="16" Width="16" UseLayoutRounding="True" 
+                                      Data="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z" 
+                                      Fill="Green" Stretch="Uniform">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsOk}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                                <Path Height="16" Width="16" UseLayoutRounding="True" 
+                                      Data="M512 981.333333C251.733333 981.333333 42.666667 772.266667 42.666667 512S251.733333 42.666667 512 42.666667s469.333333 209.066667 469.333333 469.333333-209.066667 469.333333-469.333333 469.333333z m0-409.6l98.133333 98.133334c8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8 17.066667-17.066667 17.066667-42.666667 0-59.733334L571.733333 512l98.133334-98.133333c8.533333-8.533333 12.8-17.066667 12.8-29.866667 0-12.8-4.266667-21.333333-12.8-29.866667-8.533333-8.533333-17.066667-12.8-29.866667-12.8-12.8 0-21.333333 4.266667-29.866667 12.8L512 452.266667 413.866667 354.133333C405.333333 345.6 396.8 341.333333 384 341.333333c-12.8 0-21.333333 4.266667-29.866667 12.8-8.533333 8.533333-12.8 17.066667-12.8 29.866667 0 12.8 4.266667 21.333333 12.8 29.866667l98.133334 98.133333-98.133334 98.133333c-17.066667 17.066667-17.066667 42.666667 0 59.733334 8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8l98.133333-98.133334z" 
+                                      Fill="Red" Stretch="Uniform">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsOk}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Width="100" IsReadOnly="True" Header="{DynamicResource Name}" Binding="{Binding Name}"/>
-                <DataGridTextColumn Width="*" IsReadOnly="True" Header="TXT: Type" Binding="{Binding DatabaseType}"/>
-                <DataGridTextColumn Width="2*" IsReadOnly="True" Header="TXT: Address" Binding="{Binding Description}"/>
+                <DataGridTextColumn Width="Auto" Header="TXT: Type" Binding="{Binding DatabaseType}"/>
+                <DataGridTextColumn Width="2*" Header="TXT: Address" Binding="{Binding Description}"/>
 
                 <DataGridTemplateColumn Width="0.5*" MinWidth="100">
                     <DataGridTemplateColumn.CellTemplate>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,21 +19,23 @@ namespace _1RM.Service.DataSource
         private readonly GlobalData _appData;
 
         public const int CHECK_UPDATE_PERIOD = 5;
+        public const string LOCAL_DATA_SOURCE_NAME = "Local";
 
         public DataSourceService(GlobalData appData)
         {
             _appData = appData;
+
         }
 
         public SqliteDatabaseSource? LocalDataSource { get; private set; } = null;
 
-        public Dictionary<string, IDataSource> AdditionalSources = new Dictionary<string, IDataSource>();
+        private readonly ConcurrentDictionary<string, IDataSource> _additionalSources = new ConcurrentDictionary<string, IDataSource>();
 
         public bool NeedRead()
         {
             if (LocalDataSource?.NeedRead() == true)
                 return true;
-            return AdditionalSources.Any(x => x.Value.NeedRead() == true);
+            return _additionalSources.Any(x => x.Value.NeedRead() == true);
         }
 
         public List<ProtocolBaseViewModel> GetServers()
@@ -40,7 +43,7 @@ namespace _1RM.Service.DataSource
             var ret = new List<ProtocolBaseViewModel>(100);
             if (LocalDataSource != null)
                 ret.AddRange(LocalDataSource.GetServers());
-            foreach (var dataSource in AdditionalSources)
+            foreach (var dataSource in _additionalSources)
             {
                 var pbs = dataSource.Value.GetServers();
                 ret.AddRange(pbs);
@@ -52,8 +55,8 @@ namespace _1RM.Service.DataSource
         {
             if (string.IsNullOrEmpty(sourceId) && LocalDataSource != null)
                 return LocalDataSource;
-            if (AdditionalSources.ContainsKey(sourceId))
-                return AdditionalSources[sourceId];
+            if (_additionalSources.ContainsKey(sourceId))
+                return _additionalSources[sourceId];
             return null;
         }
 
@@ -61,36 +64,91 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
-        /// <param name="sqlitePath"></param>
-        public EnumDbStatus InitLocalDataSource(string sqlitePath = "")
+        public EnumDbStatus InitLocalDataSource(SqliteConfig? sqliteConfig = null)
         {
-            if (string.IsNullOrWhiteSpace(sqlitePath))
+            if (sqliteConfig == null)
             {
-                sqlitePath = IoC.Get<ConfigurationService>().DataSource.LocalDatabasePath;
-                var fi = new FileInfo(sqlitePath);
+                sqliteConfig = IoC.Get<ConfigurationService>().DataSource.LocalDataSourceConfig;
+                if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
+                    sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                var fi = new FileInfo(sqliteConfig.Path);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
             }
 
             LocalDataSource?.Database_CloseConnection();
-
-            if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
+            sqliteConfig.Name = LOCAL_DATA_SOURCE_NAME;
+            if (!IoPermissionHelper.HasWritePermissionOnFile(sqliteConfig.Path))
             {
                 LocalDataSource = null;
                 return EnumDbStatus.AccessDenied;
             }
-            //Ulid.NewUlid(rng).ToString();
-            LocalDataSource = new SqliteDatabaseSource("", new SqliteConfig("")
-            {
-                Path = sqlitePath
-            });
+            LocalDataSource = new SqliteDatabaseSource(sqliteConfig);
             LocalDataSource.Database_OpenConnection();
             var ret = LocalDataSource.Database_SelfCheck();
             RaisePropertyChanged(nameof(LocalDataSource));
-            // TODO 
             if (ret == EnumDbStatus.OK)
+            {
+                // TODO No need
                 _appData.SetDbOperator(this);
+            }
+
             return ret;
+        }
+
+        /// <summary>
+        /// TODO: need ASYNC support！
+        /// </summary>
+        public EnumDbStatus AddOrUpdateDataSource(DataSourceConfigBase config)
+        {
+            {
+                if (config is SqliteConfig { Name: LOCAL_DATA_SOURCE_NAME } sqliteConfig)
+                {
+                    return InitLocalDataSource(sqliteConfig);
+                }
+            }
+
+            if (_additionalSources.ContainsKey(config.Name))
+            {
+                _additionalSources[config.Name].Database_CloseConnection();
+            }
+
+            switch (config)
+            {
+                case SqliteConfig sqliteConfig:
+                    {
+                        var s = new SqliteDatabaseSource(sqliteConfig);
+                        var ret = s.Database_SelfCheck();
+                        if (ret == EnumDbStatus.OK)
+                        {
+                            _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                        }
+                        return ret;
+                    }
+                case MysqlConfig mysqlConfig:
+                    {
+                        var s = new MysqlDatabaseSource(mysqlConfig);
+                        var ret = s.Database_SelfCheck();
+                        if (ret == EnumDbStatus.OK)
+                        {
+                            _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                        }
+                        return ret;
+                    }
+                default:
+                    throw new NotSupportedException($"{config.GetType()} is not a supported type");
+            }
+        }
+
+        public void RemoveDataSource(string name)
+        {
+            if (name == LOCAL_DATA_SOURCE_NAME)
+                return;
+            else if (_additionalSources.ContainsKey(name))
+            {
+                _additionalSources[name].Database_CloseConnection();
+                _additionalSources.TryRemove(name, out _);
+            }
         }
     }
 

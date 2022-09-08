@@ -24,7 +24,7 @@ namespace _1RM.Service.DataSource
     {
         private readonly IDataBase _dataBase = IoC.Get<IDataBase>();
 
-        public SqliteDatabaseSource(string dataSourceId, SqliteConfig config) : base(dataSourceId, config)
+        public SqliteDatabaseSource(SqliteConfig config) : base(config)
         {
             var fi = new FileInfo(config.Path);
             _isWritable = fi.IsReadOnly == false;

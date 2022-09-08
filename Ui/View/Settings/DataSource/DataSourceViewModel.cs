@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using _1RM.Controls;
 using _1RM.Service;
+using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using Shawn.Utils;
@@ -19,22 +20,20 @@ namespace _1RM.View.Settings.DataSource
     public class DataSourceViewModel : NotifyPropertyChangedBase
     {
         private readonly ConfigurationService _configurationService;
-
+        private readonly DataSourceService _dataSourceService;
 
         public DataSourceViewModel()
         {
             _configurationService = IoC.Get<ConfigurationService>();
-            LocalSource = new SqliteConfig("Default")
-            {
-                Path = _configurationService.DataSource.LocalDatabasePath
-            };
-            _sourceConfigs.Add(LocalSource);
+            LocalSourceConfig = _configurationService.DataSource.LocalDataSourceConfig;
+            _sourceConfigs.Add(LocalSourceConfig);
 
             foreach (var config in _configurationService.DataSource.AdditionalDataSourceConfigs)
             {
                 _sourceConfigs.Add(config);
             }
-            _selectedSource = LocalSource;
+
+            _dataSourceService = IoC.Get<DataSourceService>();
         }
 
 
@@ -45,14 +44,7 @@ namespace _1RM.View.Settings.DataSource
         });
 
 
-        public SqliteConfig LocalSource { get; }
-
-        private DataSourceConfigBase _selectedSource;
-        public DataSourceConfigBase SelectedSource
-        {
-            get => _selectedSource;
-            set => SetAndNotifyIfChanged(ref _selectedSource, value);
-        }
+        public SqliteConfig LocalSourceConfig { get; }
 
         private ObservableCollection<DataSourceConfigBase> _sourceConfigs = new ObservableCollection<DataSourceConfigBase>();
         public ObservableCollection<DataSourceConfigBase> SourceConfigs
@@ -124,6 +116,7 @@ namespace _1RM.View.Settings.DataSource
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
                                     _configurationService.Save();
+                                    _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
                                 }
                                 break;
                             }
@@ -133,11 +126,12 @@ namespace _1RM.View.Settings.DataSource
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
                                     _configurationService.Save();
+                                    _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
                                 }
                                 break;
                             }
                         default:
-                            throw new NotSupportedException($"{o} is not a supported type");
+                            throw new NotSupportedException($"{o?.GetType()} is not a supported type");
                     }
                 });
             }
@@ -155,14 +149,17 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdDelete ??= new RelayCommand((o) =>
                 {
-                    if (o is DataSourceConfigBase configBase && configBase != LocalSource)
+                    if (o is DataSourceConfigBase configBase && configBase != LocalSourceConfig)
                     {
                         if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                         {
                             if (_configurationService.DataSource.AdditionalDataSourceConfigs.Contains(configBase))
+                            {
                                 _configurationService.DataSource.AdditionalDataSourceConfigs.Remove(configBase);
-                            SourceConfigs.Remove(configBase);
                                 _configurationService.Save();
+                            }
+                            SourceConfigs.Remove(configBase);
+                            _dataSourceService.RemoveDataSource(configBase.Name);
                         }
                     }
                 });
