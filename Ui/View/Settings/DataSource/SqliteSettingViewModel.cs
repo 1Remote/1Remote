@@ -41,7 +41,7 @@ namespace _1RM.View.Settings.DataSource
                 Path = _orgSqliteConfig.Path;
                 ValidateDbStatusAndShowMessageBox(false);
                 // disable name editing of LocalSource
-                if (dataSourceViewModel.LocalSource == sqliteConfig)
+                if (dataSourceViewModel.LocalSourceConfig == sqliteConfig)
                 {
                     NameWritable = false;
                 }
@@ -133,7 +133,7 @@ namespace _1RM.View.Settings.DataSource
                     NewConfig.Path = value;
                     if (string.IsNullOrEmpty(Path) == false && File.Exists(Path))
                     {
-                        _databaseSource = new SqliteDatabaseSource("tmp", NewConfig);
+                        _databaseSource = new SqliteDatabaseSource(NewConfig);
                     }
                 }
             }
@@ -196,7 +196,7 @@ namespace _1RM.View.Settings.DataSource
                 var path = SelectFileHelper.OpenFile(
                     checkFileExists: false,
                     initialDirectory: AppPathHelper.Instance.BaseDirPath,
-                    title:"TXT: 选择 RSA 密钥或创建一个新的密钥",
+                    title: "TXT: 选择 RSA 密钥或创建一个新的密钥",
                     selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     filter: $"RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;
@@ -388,7 +388,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = newPath;
                             _databaseSource?.Database_CloseConnection();
-                            _databaseSource = new SqliteDatabaseSource("", NewConfig);
+                            _databaseSource = new SqliteDatabaseSource(NewConfig);
                             if (File.Exists(newPath) == false)
                             {
                                 _databaseSource.Database_OpenConnection();
@@ -406,7 +406,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             _databaseSource?.Database_CloseConnection();
-                            _databaseSource = new SqliteDatabaseSource("", NewConfig);
+                            _databaseSource = new SqliteDatabaseSource(NewConfig);
                             //_configurationService.DataSource.LocalDatabasePath = oldPath;
                             //_dataSourceService.InitLocalDataSource(oldPath);
                             SimpleLogHelper.Warning(ee);

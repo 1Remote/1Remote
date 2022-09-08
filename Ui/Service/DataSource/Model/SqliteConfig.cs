@@ -14,10 +14,14 @@ namespace _1RM.Service.DataSource.Model
         public string Path
         {
             get => _path;
-            set => SetAndNotifyIfChanged(ref _path, value);
+            set
+            {
+                var newValue = value.Replace(Environment.CurrentDirectory, ".");
+                SetAndNotifyIfChanged(ref _path, newValue);
+            }
         }
 
-        public SqliteConfig(string name) : base(name)
+        public SqliteConfig(string name, string path = "") : base(name)
         {
         }
 

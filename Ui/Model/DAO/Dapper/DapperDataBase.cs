@@ -32,7 +32,7 @@ namespace _1RM.Model.DAO.Dapper
 
         public IDbConnection? Connection => _dbConnection;
 
-        public virtual void OpenConnection()
+        public void OpenConnection()
         {
             if (string.IsNullOrWhiteSpace(_connectionString))
                 return;
@@ -65,7 +65,7 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public virtual void OpenNewConnection(DatabaseType type, string newConnectionString)
+        public void OpenNewConnection(DatabaseType type, string newConnectionString)
         {
             lock (this)
             {
@@ -99,9 +99,10 @@ namespace _1RM.Model.DAO.Dapper
         {
             _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
-    `{nameof(Config.Key)}` VARCHAR PRIMARY KEY
-                  UNIQUE,
-    `{nameof(Config.Value)}` VARCHAR NOT NULL
+    `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
+                                        NOT NULL
+                                        UNIQUE,
+    `{nameof(Config.Value)}` TEXT NOT NULL
 );
 ");
 
@@ -109,10 +110,10 @@ CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
             _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
-                                                NOT NULL
-                                                UNIQUE,
+                                             NOT NULL
+                                             UNIQUE,
     `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
-    `{nameof(Server.ClassVersion)}` VARCHAR NOT NULL,
+    `{nameof(Server.ClassVersion)}` VARCHAR (32) NOT NULL,
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 ");

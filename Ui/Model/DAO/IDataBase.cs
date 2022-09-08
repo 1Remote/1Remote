@@ -86,7 +86,7 @@ namespace _1RM.Model.DAO
         }
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password)
         {
-            return $"server={host};port={port};database={dbName};Character Set=utf8;Uid={user};password={password};";
+            return $"server={host};port={port};database={dbName};Character Set=utf8;Uid={user};password={password};Connect Timeout=5;";
         }
 
 

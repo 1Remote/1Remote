@@ -32,7 +32,7 @@ namespace _1RM.View
             Server = psb;
             // TODO how it works with a tmp server?
             DataSourceName = dataSource.GetName();
-            psb.DataSourceId = dataSource.DataSourceId;
+            psb.DataSourceId = dataSource.DataSourceName;
             IsViewable = IsEditable = dataSource.IsWritable;
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {

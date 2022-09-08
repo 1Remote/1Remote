@@ -98,10 +98,11 @@ namespace _1RM.Model
                 return;
             }
 
-            if (_sourceService.NeedRead())
+            var tmp = _sourceService.GetServers();
+            if (tmp.Count != VmItemList.Count || _sourceService.NeedRead())
             {
                 // read from db
-                VmItemList = _sourceService.GetServers();
+                VmItemList = tmp;
                 ConnectTimeRecorder.Cleanup();
                 ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();
@@ -134,7 +135,7 @@ namespace _1RM.Model
             source.Database_UpdateServer(protocolServer);
             int i = VmItemList.Count;
             {
-                var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceId == source.DataSourceId);
+                var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceId == source.DataSourceName);
                 if (old != null
                     && old.Server != protocolServer)
                 {

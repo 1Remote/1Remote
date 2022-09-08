@@ -19,6 +19,7 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM
 {
@@ -215,39 +216,43 @@ namespace _1RM
                 SimpleLogHelper.LogFileName = AppPathHelper.Instance.LogFilePath;
             }
 
+
+            KeywordMatchService = new KeywordMatchService();
             // read profile
-            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == false)
             {
-                try
-                {
-                    var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.ProfileJsonPath));
-                    if (tmp != null)
-                        Configuration = tmp;
-                }
-                catch
-                {
-                    // ignored
-                }
+                Configuration.DataSource.LocalDataSourceConfig = new SqliteConfig(DataSourceService.LOCAL_DATA_SOURCE_NAME, AppPathHelper.Instance.SqliteDbDefaultPath);
+                ConfigurationService = new ConfigurationService(Configuration, KeywordMatchService);
             }
             else
             {
-                Configuration.DataSource.LocalDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService = ConfigurationService.Load(AppPathHelper.Instance.ProfileJsonPath, KeywordMatchService);
+            }
+            // make sure path is not empty
+            if (string.IsNullOrWhiteSpace(ConfigurationService.DataSource.LocalDataSourceConfig.Path))
+            {
+                ConfigurationService.DataSource.LocalDataSourceConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
-            KeywordMatchService = new KeywordMatchService();
-            ConfigurationService = new ConfigurationService(Configuration, KeywordMatchService);
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }
 
         private bool _isNewUser = false;
-        private EnumDbStatus _dbConnectionStatus;
+        private EnumDbStatus _localDataConnectionStatus;
 
         public void InitOnConfigure()
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
-            _dbConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
-            // todo 初始化其他数据源
+
+            // Init data sources
+            _localDataConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
+            foreach (var config in ConfigurationService!.DataSource.AdditionalDataSourceConfigs)
+            {
+                IoC.Get<DataSourceService>().AddOrUpdateDataSource(config);
+            }
+
+
             IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
             IoC.Get<TaskTrayService>().TaskTrayInit();
@@ -264,9 +269,9 @@ namespace _1RM
                     PrmTransferHelper.Run();
                 }
             };
-            if (_dbConnectionStatus != EnumDbStatus.OK)
+            if (_localDataConnectionStatus != EnumDbStatus.OK)
             {
-                string error = _dbConnectionStatus.GetErrorInfo();
+                string error = _localDataConnectionStatus.GetErrorInfo();
                 MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
             }
