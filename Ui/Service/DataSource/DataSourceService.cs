@@ -51,9 +51,9 @@ namespace _1RM.Service.DataSource
             return ret;
         }
 
-        public IDataSource? GetDataSource(string sourceId)
+        public IDataSource? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)
         {
-            if (string.IsNullOrEmpty(sourceId) && LocalDataSource != null)
+            if (string.IsNullOrEmpty(sourceId) || sourceId == LOCAL_DATA_SOURCE_NAME)
                 return LocalDataSource;
             if (_additionalSources.ContainsKey(sourceId))
                 return _additionalSources[sourceId];
@@ -156,11 +156,11 @@ namespace _1RM.Service.DataSource
     {
         public static IDataSource? GetDataSource(this ProtocolBase protocol)
         {
-            return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSourceId);
+            return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSourceName);
         }
         public static IDataSource? GetDataSource(this ProtocolBaseViewModel protocol)
         {
-            return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSourceId);
+            return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSourceName);
         }
     }
 }

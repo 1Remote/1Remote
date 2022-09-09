@@ -38,6 +38,7 @@ namespace _1RM.View
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
         public DataSourceService SourceService { get; }
+        public ConfigurationService ConfigurationService { get; }
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
@@ -87,10 +88,11 @@ namespace _1RM.View
         #endregion Properties
 
 
-        public MainWindowViewModel(DataSourceService sourceService, IWindowManager wm, GlobalData appData)
+        public MainWindowViewModel(GlobalData appData, DataSourceService sourceService, ConfigurationService configurationService)
         {
-            SourceService = sourceService;
             _appData = appData;
+            SourceService = sourceService;
+            ConfigurationService = configurationService;
             ShowList();
         }
 
@@ -125,9 +127,22 @@ namespace _1RM.View
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
             {
-                // TODO 选择数据源新增
-                var source = SourceService.GetDataSource("");
+                // select save to which source
+                IDataSource? source = null;
+                if (ConfigurationService.DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                {
+                    var vm = new DataSourceSelectorViewModel();
+                    if (IoC.Get<IWindowManager>().ShowDialog(vm) != true)
+                        return;
+                    source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                }
+                else
+                {
+                    source = SourceService.GetDataSource();
+                }
                 if (source == null) return;
+
+
                 var server = new RDP
                 {
                     Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)

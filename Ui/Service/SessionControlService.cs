@@ -102,7 +102,7 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            var dataSource = _sourceService.GetDataSource(rdp.DataSourceId);
+            var dataSource = _sourceService.GetDataSource(rdp.DataSourceName);
             if (dataSource != null)
             {
                 File.WriteAllText(rdpFile, rdp.ToRdpConfig(dataSource).ToString());
@@ -150,7 +150,7 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            var dataSource = _sourceService.GetDataSource(remoteApp.DataSourceId);
+            var dataSource = _sourceService.GetDataSource(remoteApp.DataSourceName);
             if (dataSource != null)
             {
                 File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(dataSource).ToString());
@@ -190,7 +190,7 @@ namespace _1RM.Service
 
         private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
         {
-            var datSource = _sourceService.GetDataSource(server.DataSourceId);
+            var datSource = _sourceService.GetDataSource(server.DataSourceName);
             if (datSource == null) return;
             CleanupProtocolsAndWindows();
             // fullscreen normally
@@ -208,7 +208,7 @@ namespace _1RM.Service
 
         private void ConnectWithTab(ProtocolBase server, Runner runner, string assignTabToken)
         {
-            var dataSource = _sourceService.GetDataSource(server.DataSourceId);
+            var dataSource = _sourceService.GetDataSource(server.DataSourceName);
             if (dataSource == null) return;
             lock (_dictLock)
             {

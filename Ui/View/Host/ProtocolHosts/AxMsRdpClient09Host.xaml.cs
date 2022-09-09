@@ -76,7 +76,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _rdpSettings = rdp;
             // tmp session may get a null source.
-            _dataSource = IoC.Get<DataSourceService>().GetDataSource(_rdpSettings.DataSourceId);
+            _dataSource = IoC.Get<DataSourceService>().GetDataSource(_rdpSettings.DataSourceName);
             InitRdp(width, height);
             GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
         }
