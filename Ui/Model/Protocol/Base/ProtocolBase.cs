@@ -310,6 +310,6 @@ namespace _1RM.Model.Protocol.Base
         }
 
         [JsonIgnore]
-        public string DataSourceId = "";
+        public string DataSourceName = "";
     }
 }

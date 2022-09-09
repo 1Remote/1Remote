@@ -129,13 +129,13 @@ namespace _1RM.Model
         {
             Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
             if (_sourceService == null) return;
-            var source = _sourceService.GetDataSource(protocolServer.DataSourceId);
+            var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
             if (source == null || source.IsWritable == false) return;
             UnselectAllServers();
             source.Database_UpdateServer(protocolServer);
             int i = VmItemList.Count;
             {
-                var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceId == source.DataSourceName);
+                var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                 if (old != null
                     && old.Server != protocolServer)
                 {
@@ -155,10 +155,10 @@ namespace _1RM.Model
         public void UpdateServer(IEnumerable<ProtocolBase> protocolServers)
         {
             if (_sourceService == null) return;
-            var groupedServers = protocolServers.GroupBy(x => x.DataSourceId);
+            var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
             foreach (var groupedServer in groupedServers)
             {
-                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceId);
+                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceName);
                 if (source?.IsWritable == true)
                     source.Database_UpdateServer(groupedServer);
             }
@@ -170,7 +170,7 @@ namespace _1RM.Model
             if (_sourceService == null) return;
             Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
             if (_sourceService == null) return;
-            var source = _sourceService.GetDataSource(protocolServer.DataSourceId);
+            var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
             if (source == null || source.IsWritable == false) return;
             if (source.Database_DeleteServer(protocolServer.Id))
             {
@@ -181,10 +181,10 @@ namespace _1RM.Model
         public void DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
             if (_sourceService == null) return;
-            var groupedServers = protocolServers.GroupBy(x => x.DataSourceId);
+            var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
             foreach (var groupedServer in groupedServers)
             {
-                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceId);
+                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceName);
                 if (source?.IsWritable == true)
                     source.Database_DeleteServer(groupedServer.Select(x => x.Id));
             }

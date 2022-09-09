@@ -25,6 +25,8 @@ namespace _1RM.View.Settings.DataSource
         public DataSourceViewModel()
         {
             _configurationService = IoC.Get<ConfigurationService>();
+            _dataSourceService = IoC.Get<DataSourceService>();
+
             LocalSourceConfig = _configurationService.DataSource.LocalDataSourceConfig;
             _sourceConfigs.Add(LocalSourceConfig);
 
@@ -32,8 +34,6 @@ namespace _1RM.View.Settings.DataSource
             {
                 _sourceConfigs.Add(config);
             }
-
-            _dataSourceService = IoC.Get<DataSourceService>();
         }
 
 

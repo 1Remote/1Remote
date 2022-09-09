@@ -277,7 +277,7 @@ namespace _1RM.View
                     foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
                     {
                         var serverBase = (ProtocolBase)vs.Server.Clone();
-                        var dataSource = SourceService.GetDataSource(serverBase.DataSourceId);
+                        var dataSource = SourceService.GetDataSource(serverBase.DataSourceName);
                         if (dataSource != null)
                         {
                             dataSource.DecryptToConnectLevel(ref serverBase);

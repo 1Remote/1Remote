@@ -20,50 +20,62 @@ namespace _1RM.View.Editor
 {
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
-        //private readonly PrmContext _context;
         private readonly GlobalData _globalData;
-        private readonly IDataSource _dataService;
+        private readonly IDataSource? _addToDataSource = null; // target data source in add mode 
 
         public bool IsAddMode => _serversInBuckEdit == null && string.IsNullOrEmpty(Server.Id);
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
-        private readonly ProtocolBase _orgServer;
+        private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
         private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
 
-        #region individual edit
+
+
+        public static ServerEditorPageViewModel Add(GlobalData globalData, IDataSource addToDataSource, List<string>? presetTagNames = null)
+        {
+            var server = new RDP
+            {
+                Tags = presetTagNames?.Count == 0 ? new List<string>() : new List<string>(presetTagNames!),
+                DataSourceName = addToDataSource.DataSourceName,
+            };
+            return new ServerEditorPageViewModel(globalData, server, addToDataSource);
+        }
+
+        public static ServerEditorPageViewModel Duplicate(GlobalData globalData, IDataSource dataSource, ProtocolBase server)
+        {
+            return new ServerEditorPageViewModel(globalData, server, dataSource);
+        }
+
+        public static ServerEditorPageViewModel Edit(GlobalData globalData, ProtocolBase server)
+        {
+            return new ServerEditorPageViewModel(globalData, server);
+        }
+
+        public static ServerEditorPageViewModel BuckEdit(GlobalData globalData, IEnumerable<ProtocolBase> servers)
+        {
+            return new ServerEditorPageViewModel(globalData, servers);
+        }
+
         /// <summary>
-        /// to remember original protocol's options, for restore use
+        /// Add or Edit or Duplicate
         /// </summary>
-        public ServerEditorPageViewModel(GlobalData globalData, IDataSource dataService, ProtocolBase server, bool isDuplicate = false)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, IDataSource? addToDataSource = null)
         {
             _globalData = globalData;
-            _dataService = dataService;
+            _addToDataSource = addToDataSource;
+
+            IoC.Get<DataSourceService>().GetDataSource(server.DataSourceName)?.DecryptToConnectLevel(ref server);
 
             Server = (ProtocolBase)server.Clone();
-            if (isDuplicate)
+            if (addToDataSource != null)
             {
-                Server.Id = string.Empty; // set id to empty so that we turn into edit mode
+                Server.DataSourceName = addToDataSource.GetName();
+                Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             _orgServer = (ProtocolBase)Server.Clone();
-            Title = "";
-
-            // init protocol list for single add / edit mode
-            {
-                // reflect remote protocols
-                ProtocolList = ProtocolBase.GetAllSubInstance();
-                // set selected protocol
-                try
-                {
-                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
-                }
-                catch (Exception)
-                {
-                    SelectedProtocol = ProtocolList.First();
-                }
-            }
-
+            Title = ""; // TODO show data source name.
             Init();
         }
-        #endregion
+
 
         #region buck edit
         /// <summary>
@@ -76,11 +88,18 @@ namespace _1RM.View.Editor
         private readonly Type? _sharedTypeInBuckEdit = null;
         private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
 
-        public ServerEditorPageViewModel(GlobalData globalData, IDataSource dataService, IEnumerable<ProtocolBase> servers)
+        private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
             _globalData = globalData;
-            _dataService = dataService;
             var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+            // decrypt
+            for (int i = 0; i < serverBases.Length; i++)
+            {
+                // decrypt pwd
+                var s = Server;
+                IoC.Get<DataSourceService>().GetDataSource(s.DataSourceName)?.DecryptToConnectLevel(ref s);
+            }
+
             // must be bulk edit
             Debug.Assert(serverBases.Length > 1);
             // init title
@@ -174,9 +193,22 @@ namespace _1RM.View.Editor
 
         private void Init()
         {
-            // decrypt pwd
-            var s = Server;
-            _dataService.DecryptToConnectLevel(ref s);
+            // init protocol list for single add / edit mode
+            if (IsAddMode)
+            {
+                // reflect remote protocols
+                ProtocolList = ProtocolBase.GetAllSubInstance();
+                // set selected protocol
+                try
+                {
+                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
+                }
+                catch (Exception)
+                {
+                    SelectedProtocol = ProtocolList.First();
+                }
+            }
+
             NameSelections = _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
             TagSelections = _globalData.TagList.Select(x => x.Name).ToList();
         }

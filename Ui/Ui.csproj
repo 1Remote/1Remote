@@ -315,6 +315,10 @@
 		<Page Update="View\Editor\Forms\VncForm.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="View\Editor\DataSourceSelectorView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
+		</Page>
 		<Page Update="View\Editor\ServerEditorPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
