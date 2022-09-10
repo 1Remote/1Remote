@@ -129,10 +129,10 @@
     <s:String x:Key="Tags">Tags</s:String>
     <s:String x:Key="server_editor_tags_tag">Can enter multiple, separated by ','</s:String>
     <s:String x:Key="Logo">Logo</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">Before cmd</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">Run before connecting by cmd.exe (e.g. 'C:\openVpn.bat' will run 'cmd.exe C:\openVpn.bat')</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">After cmd</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">Run after disconnecting by cmd.exe (e.g. 'C:\closeVpn.bat' will run 'cmd.exe C:\closeVpn.bat')</s:String>
+    <s:String x:Key="Script before connect">Script before connect</s:String>
+    <s:String x:Key="Script after disconnected">Script after disconnected</s:String>
+    <s:String x:Key="Run bat before connect">Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat')</s:String>
+    <s:String x:Key="Run bat after disconnected">Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat')</s:String>
     <s:String x:Key="Hostname">Hostname</s:String>
     <s:String x:Key="Target">Target</s:String>
     <s:String x:Key="Port">Port</s:String>

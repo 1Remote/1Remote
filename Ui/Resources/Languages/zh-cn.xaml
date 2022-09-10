@@ -129,10 +129,10 @@
     <s:String x:Key="Tags">标签</s:String>
     <s:String x:Key="server_editor_tags_tag">可以输入多个，用 ',' 分隔</s:String>
     <s:String x:Key="Logo">图标</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">连接前cmd</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">启动会话前用cmd运行脚本(如：'C:\\openVpn.bat' 将执行 'cmd.exe C:\\openVpn.bat')</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">断开后cmd</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">关闭会话后用cmd运行脚本(如：'C:\\closeVpn.bat' 将运行 'cmd.exe C:\\closeVpn.bat')</s:String>
+    <s:String x:Key="Script before connect">会话连接前运行脚本</s:String>
+    <s:String x:Key="Script after disconnected">会话关闭后运行脚本</s:String>
+    <s:String x:Key="Run bat before connect">连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）</s:String>
+    <s:String x:Key="Run bat after disconnected">关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）</s:String>
     <s:String x:Key="Hostname">地址</s:String>
     <s:String x:Key="Target">目标</s:String>
     <s:String x:Key="Port">端口</s:String>

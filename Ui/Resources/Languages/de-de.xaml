@@ -129,10 +129,10 @@
     <s:String x:Key="Tags">Etikett</s:String>
     <s:String x:Key="server_editor_tags_tag">Kann mehrere eingeben, getrennt durch ','</s:String>
     <s:String x:Key="Logo">Logo</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">App vorher starten</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">Vor Verbinden durch cmd.exe ausführen (z. B. 'C:\\openVpn.bat' führt 'cmd.exe C:\\openVpn.bat' aus)</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">App nachher starten</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">Nach Beendigung durch cmd.exe ausführen (z. B. 'C:\\closeVpn.bat' wird 'cmd.exe C:\\closeVpn.bat' ausführen)</s:String>
+    <s:String x:Key="Script before connect">Skript vor dem Verbinden</s:String>
+    <s:String x:Key="Script after disconnected">Skript nach dem Trennen</s:String>
+    <s:String x:Key="Run bat before connect">Führen Sie bat vor dem Verbinden aus (z. B. führen Sie 'C:\OpenSshTunneling.bat' aus)</s:String>
+    <s:String x:Key="Run bat after disconnected">Fledermaus ausführen, nachdem die Verbindung getrennt wurde (z. B. 'C:\CloseSshTunneling.bat' ausführen)</s:String>
     <s:String x:Key="Hostname">Hostname</s:String>
     <s:String x:Key="Target">Ziel</s:String>
     <s:String x:Key="Port">Hafen</s:String>

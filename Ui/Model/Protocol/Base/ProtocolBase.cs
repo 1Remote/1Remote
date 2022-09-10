@@ -277,7 +277,7 @@ namespace PRM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.Tags = (this.Tags == null) ? null : new List<string>(this.Tags);
+            clone.Tags = (this.Tags?.Count > 0) ? new List<string>(this.Tags) : new List<string>();
             return clone;
         }
 
@@ -287,7 +287,7 @@ namespace PRM.Model.Protocol.Base
             {
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
-                    WinCmdRunner.RunCmdAsync(CommandBeforeConnected);
+                    WinCmdRunner.RunScriptFileSync(CommandBeforeConnected);
                 }
             }
             catch (Exception e)

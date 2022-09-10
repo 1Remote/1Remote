@@ -129,10 +129,10 @@
     <s:String x:Key="Tags">Mots clés</s:String>
     <s:String x:Key="server_editor_tags_tag">Peut entrer plusieurs, séparés par ','</s:String>
     <s:String x:Key="Logo">Logo</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">Avant la connexion cmd</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">Exécuter avant de se connecter via cmd.exe (exemple : 'C:\\openVpn.bat', exécuter 'cmd.exe C:\\openVpn.bat')</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">Après le lancement de cmd</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">Exécuté après avoir été déconnecté par cmd.exe (exemple : 'C:\\closeVpn.bat', exécuter 'cmd.exe C:\\closeVpn.bat')</s:String>
+    <s:String x:Key="Script before connect">Script avant connexion</s:String>
+    <s:String x:Key="Script after disconnected">Script après déconnexion</s:String>
+    <s:String x:Key="Run bat before connect">Exécutez bat avant de vous connecter (par exemple, exécutez 'C:\OpenSshTunneling.bat')</s:String>
+    <s:String x:Key="Run bat after disconnected">Exécutez bat après la déconnexion (par exemple, exécutez 'C:\CloseSshTunneling.bat')</s:String>
     <s:String x:Key="Hostname">Nom d'hôte</s:String>
     <s:String x:Key="Target">Cibler</s:String>
     <s:String x:Key="Port">Port</s:String>
