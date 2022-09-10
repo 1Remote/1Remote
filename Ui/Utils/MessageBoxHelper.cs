@@ -58,18 +58,23 @@ namespace PRM.Utils
 
         private static void Alert(string title, string content, MessageBoxImage icon, bool useNativeBox)
         {
-            if (useNativeBox)
+            Execute.OnUIThreadSync(() =>
             {
-                MessageBox.Show(content, title, MessageBoxButton.OK, icon);
-            }
-            else
-                IoC.Get<IWindowManager>().ShowMessageBox(content, title,
-                    buttonLabels: new Dictionary<MessageBoxResult, string>()
-                    {
-                    { MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK") },
-                    { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
-                    { MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK") },
-                    }, icon: icon);
+                if (useNativeBox)
+                {
+                    MessageBox.Show(content, title, MessageBoxButton.OK, icon);
+                }
+                else
+                {
+                    IoC.Get<IWindowManager>().ShowMessageBox(content, title,
+                        buttonLabels: new Dictionary<MessageBoxResult, string>()
+                        {
+                            {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
+                            {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
+                            {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
+                        }, icon: icon);
+                }
+            });
         }
     }
 }

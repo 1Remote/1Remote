@@ -129,10 +129,10 @@
     <s:String x:Key="Tags">タグ</s:String>
     <s:String x:Key="server_editor_tags_tag">'、'で区切って複数入力できます</s:String>
     <s:String x:Key="Logo">ロゴ</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">cmdの前</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">cmd.exeで接続する前に実行します（例：「C：\openVpn.bat」は「cmd.exeC：\ openVpn.bat」を実行します）</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">cmd後</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">cmd.exeで切断した後に実行します（例：「C：\closeVpn.bat」は「cmd.exeC：\ closeVpn.bat」を実行します）</s:String>
+    <s:String x:Key="Script before connect">接続前のスクリプト</s:String>
+    <s:String x:Key="Script after disconnected">切断後のスクリプト</s:String>
+    <s:String x:Key="Run bat before connect">接続する前にバットを実行します (例: 'C:\OpenSshTunneling.bat' を実行)</s:String>
+    <s:String x:Key="Run bat after disconnected">切断後にバットを実行します (例: 'C:\CloseSshTunneling.bat' を実行)</s:String>
     <s:String x:Key="Hostname">ホスト名</s:String>
     <s:String x:Key="Target">目標</s:String>
     <s:String x:Key="Port">ポート</s:String>

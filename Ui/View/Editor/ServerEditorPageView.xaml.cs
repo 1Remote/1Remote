@@ -102,33 +102,6 @@ namespace PRM.View.Editor
             LogoSelector.SetImg((BitmapSource)(((ListView)sender).SelectedItem));
         }
 
-        private void ButtonTryCommandBeforeConnected_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (this.DataContext is ServerEditorPageViewModel vm)
-                TryCmd(vm.Server.CommandBeforeConnected);
-        }
-
-        private void ButtonTryCommandAfterDisconnected_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (this.DataContext is ServerEditorPageViewModel vm)
-                TryCmd(vm.Server.CommandAfterDisconnected);
-        }
-
-        private void TryCmd(string cmd)
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(cmd))
-                {
-                    WinCmdRunner.RunCmdAsync(cmd);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBoxHelper.ErrorAlert(ex.Message);
-            }
-        }
-
         private void LogoList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (this.DataContext is ServerEditorPageViewModel vm)

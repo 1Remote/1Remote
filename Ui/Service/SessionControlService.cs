@@ -695,9 +695,9 @@ namespace PRM.Service
             }
         }
 
-#endregion
+        #endregion
 
-#region Clean up CloseProtocol
+        #region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
             while (_hostToBeDispose.TryDequeue(out var host))
@@ -797,7 +797,7 @@ namespace PRM.Service
                 }
             }
         }
-#endregion
+        #endregion
 
         private void PrintCacheCount([CallerMemberName] string callMember = "")
         {
