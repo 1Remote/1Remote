@@ -9,6 +9,7 @@ using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.Protocol.FileTransmit;
+using Stylet;
 
 namespace PRM.View.Host.ProtocolHosts
 {
@@ -60,7 +61,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void FocusOnMe()
         {
-            Dispatcher.Invoke(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 TvFileList.Focus();
             });
