@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">Je možné zadat vícero, oddělovaných „,“ (čárkou)</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Script before connect">Skript před připojením</s:String>
+    <s:String x:Key="Hide script window">Skrýt okno skriptu (nedoporučuje se, pokud skript trvá dlouho)</s:String>
     <s:String x:Key="Script after disconnected">Skript po odpojení</s:String>
     <s:String x:Key="Run bat before connect">Spusťte bat před připojením (např. spusťte 'C:\OpenSshTunneling.bat')</s:String>
     <s:String x:Key="Run bat after disconnected">Spustit bat po odpojení (např. spustit 'C:\CloseSshTunneling.bat')</s:String>

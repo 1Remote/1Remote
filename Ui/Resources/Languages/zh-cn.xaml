@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">可以输入多个，用 ',' 分隔</s:String>
     <s:String x:Key="Logo">图标</s:String>
     <s:String x:Key="Script before connect">会话连接前运行脚本</s:String>
+    <s:String x:Key="Hide script window">隐藏脚本运行窗口（长耗时脚本不推荐勾选）</s:String>
     <s:String x:Key="Script after disconnected">会话关闭后运行脚本</s:String>
     <s:String x:Key="Run bat before connect">连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）</s:String>
     <s:String x:Key="Run bat after disconnected">关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）</s:String>

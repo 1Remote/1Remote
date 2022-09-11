@@ -314,41 +314,60 @@ namespace PRM.Service
             if (this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
 
-            // run script before connected
-            server.RunScriptBeforeConnect();
-
-            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
-            switch (server)
+            Task.Factory.StartNew(() =>
             {
-                case RdpApp remoteApp:
-                    this.ConnectRemoteApp(remoteApp);
-                    return;
-                case RDP rdp:
-                    {
-                        // check if screens are in different scale factors
-                        int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-                        // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-                        if (rdp.MstscModeEnabled == true
-                            || (server.ThisTimeConnWithFullScreen()
-                                && Screen.AllScreens.Length > 1
-                                && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                                && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)))
-                        {
-                            this.ConnectRdpByMstsc(rdp);
-                            return;
-                        }
-                        // rdp full screen
-                        if (server.ThisTimeConnWithFullScreen())
-                        {
-                            this.ConnectWithFullScreen(server, runner);
-                            return;
-                        }
-                        break;
-                    }
-            }
+                try
+                {
+                    // run script before connected
+                    server.RunScriptBeforeConnect();
 
-            this.ConnectWithTab(server, runner, assignTabToken ?? "");
-            PrintCacheCount();
+                    var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
+                    switch (server)
+                    {
+                        case RdpApp remoteApp:
+                            this.ConnectRemoteApp(remoteApp);
+                            return;
+                        case RDP rdp:
+                            {
+                                // check if screens are in different scale factors
+                                int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                                // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                                if (rdp.MstscModeEnabled == true
+                                    || (server.ThisTimeConnWithFullScreen()
+                                        && Screen.AllScreens.Length > 1
+                                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                                        && Screen.AllScreens
+                                            .Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100))
+                                            .Any(factor2 => factor != factor2)))
+                                {
+                                    this.ConnectRdpByMstsc(rdp);
+                                    return;
+                                }
+
+                                // rdp full screen
+                                if (server.ThisTimeConnWithFullScreen())
+                                {
+                                    Execute.OnUIThread(() =>
+                                    {
+                                        this.ConnectWithFullScreen(server, runner);
+                                    });
+                                    return;
+                                }
+                                break;
+                            }
+                    }
+                    Execute.OnUIThread(() =>
+                    {
+                        this.ConnectWithTab(server, runner, assignTabToken ?? "");
+                        PrintCacheCount();
+                    });
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    throw;
+                }
+            });
         }
 
         public void AddTab(TabWindowBase tab)
@@ -456,7 +475,7 @@ namespace PRM.Service
         private TabWindowBase? GetOrCreateTabWindow(string assignTabToken = "")
         {
             TabWindowBase? ret = null;
-            lock (_dictLock)
+            Execute.OnUIThreadSync(() =>
             {
                 if (_token2TabWindows.ContainsKey(assignTabToken))
                 {
@@ -477,16 +496,17 @@ namespace PRM.Service
                 }
 
                 ret ??= CreateNewTabWindow();
-                return ret;
-            }
+            });
+            return ret;
         }
 
         private TabWindowBase? CreateNewTabWindow()
         {
-            lock (_dictLock)
+            TabWindowView? tab = null;
+            Execute.OnUIThreadSync(() =>
             {
                 var token = DateTime.Now.Ticks.ToString();
-                var tab = new TabWindowView(token, IoC.Get<LocalityService>());
+                tab = new TabWindowView(token, IoC.Get<LocalityService>());
                 Debug.Assert(!_token2TabWindows.ContainsKey(token));
                 Debug.Assert(!string.IsNullOrEmpty(token));
                 _token2TabWindows.TryAdd(token, tab);
@@ -502,6 +522,7 @@ namespace PRM.Service
                     tab.Width = screenEx.VirtualWorkingArea.Width;
                     tab.Height = screenEx.VirtualWorkingArea.Height;
                 }
+
                 tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
                 tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
                 tab.Show();
@@ -518,11 +539,12 @@ namespace PRM.Service
 
                 if (loopCount > 50)
                 {
-                    MessageBoxHelper.ErrorAlert("Can not open a new TebWindow for the session! Check you permissions and antivirus plz.");
-                    return null;
+                    MessageBoxHelper.ErrorAlert(
+                        "Can not open a new TebWindow for the session! Check you permissions and antivirus plz.");
+                    tab = null;
                 }
-                return tab;
-            }
+            });
+            return tab;
         }
 
         private void MoveProtocolHostToTab(string connectionId)

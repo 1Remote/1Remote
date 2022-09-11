@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
@@ -168,14 +169,39 @@ namespace PRM.Model.Protocol.Base
         public string CommandBeforeConnected
         {
             get => _commandBeforeConnected;
-            set => SetAndNotifyIfChanged(ref _commandBeforeConnected, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _commandBeforeConnected, value))
+                {
+                    if (string.IsNullOrWhiteSpace(value) == false && File.Exists(value) == false)
+                    {
+                        throw new FileNotFoundException(value);
+                    }
+                }
+            }
+        }
+
+        private bool _hideCommandBeforeConnectedWindow = false;
+        public bool HideCommandBeforeConnectedWindow
+        {
+            get => _hideCommandBeforeConnectedWindow;
+            set => SetAndNotifyIfChanged(ref _hideCommandBeforeConnectedWindow, value);
         }
 
         private string _commandAfterDisconnected = "";
         public string CommandAfterDisconnected
         {
             get => _commandAfterDisconnected;
-            set => SetAndNotifyIfChanged(ref _commandAfterDisconnected, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _commandAfterDisconnected, value))
+                {
+                    if (string.IsNullOrWhiteSpace(value) == false && File.Exists(value) == false)
+                    {
+                        throw new FileNotFoundException(value);
+                    }
+                }
+            }
         }
 
         private string _note = "";
@@ -186,6 +212,7 @@ namespace PRM.Model.Protocol.Base
         }
 
         private string _selectedRunnerName = "";
+
         public string SelectedRunnerName
         {
             get => _selectedRunnerName;
@@ -198,9 +225,7 @@ namespace PRM.Model.Protocol.Base
         /// </summary>
         public bool Update(ProtocolBase copyFromObj, Type? levelType = null)
         {
-            var baseType = levelType;
-            if (baseType == null)
-                baseType = this.GetType();
+            var baseType = levelType ?? this.GetType();
             var myType = this.GetType();
             var yourType = copyFromObj.GetType();
             while (myType != null && myType != baseType)
@@ -285,9 +310,9 @@ namespace PRM.Model.Protocol.Base
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
+                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected) && File.Exists(CommandBeforeConnected))
                 {
-                    WinCmdRunner.RunScriptFileSync(CommandBeforeConnected);
+                    WinCmdRunner.RunScriptFile(CommandBeforeConnected, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
                 }
             }
             catch (Exception e)
@@ -300,9 +325,9 @@ namespace PRM.Model.Protocol.Base
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
+                if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected) && File.Exists(CommandAfterDisconnected))
                 {
-                    WinCmdRunner.RunCmdAsync(CommandAfterDisconnected);
+                    WinCmdRunner.RunScriptFile(CommandAfterDisconnected, isAsync: true, isHideWindow: true);
                 }
             }
             catch (Exception e)

@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">Kann mehrere eingeben, getrennt durch ','</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Script before connect">Skript vor dem Verbinden</s:String>
+    <s:String x:Key="Hide script window">Skriptfenster ausblenden (nicht empfohlen, da das Skript lange dauert)</s:String>
     <s:String x:Key="Script after disconnected">Skript nach dem Trennen</s:String>
     <s:String x:Key="Run bat before connect">Führen Sie bat vor dem Verbinden aus (z. B. führen Sie 'C:\OpenSshTunneling.bat' aus)</s:String>
     <s:String x:Key="Run bat after disconnected">Fledermaus ausführen, nachdem die Verbindung getrennt wurde (z. B. 'C:\CloseSshTunneling.bat' ausführen)</s:String>

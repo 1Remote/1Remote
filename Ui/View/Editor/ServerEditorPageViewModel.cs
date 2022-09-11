@@ -549,7 +549,7 @@ namespace PRM.View.Editor
                         {
                             if (!string.IsNullOrWhiteSpace(cmd))
                             {
-                                WinCmdRunner.RunScriptFileSync(cmd, isHideWindow: false);
+                                WinCmdRunner.RunScriptFile(cmd, isHideWindow: false);
                             }
                         }
                         catch (Exception ex)
