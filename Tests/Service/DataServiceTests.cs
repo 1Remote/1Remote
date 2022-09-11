@@ -213,8 +213,6 @@ namespace Tests.Service
             var r = new Random(DateTime.Now.Millisecond);
             _rdp = new RDP()
             {
-                CommandAfterDisconnected = "rdp",
-                CommandBeforeConnected = "zzzz",
                 DisplayName = "RDP test",
                 UserName = "username",
                 Password = "password",
@@ -224,8 +222,6 @@ namespace Tests.Service
             };
             _ssh = new SSH()
             {
-                CommandAfterDisconnected = "zxcvdafg",
-                CommandBeforeConnected = "fhjfgj",
                 DisplayName = "Ssh test",
                 UserName = "username",
                 Password = "password",
@@ -236,8 +232,6 @@ namespace Tests.Service
             };
             _vnc = new VNC()
             {
-                CommandAfterDisconnected = "asdasd123",
-                CommandBeforeConnected = "xczcasdas",
                 DisplayName = "VNC test",
                 UserName = "username",
                 Password = "password",
@@ -247,8 +241,6 @@ namespace Tests.Service
             _app = new LocalApp()
             {
                 Arguments = "123",
-                CommandAfterDisconnected = "cxxxx",
-                CommandBeforeConnected = "zzzz",
                 DisplayName = "AppTest",
                 ExePath = "xxxx.exe",
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),

@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">Podem ser inseridos vários, separados por ','</s:String>
     <s:String x:Key="Logo">Logotipo</s:String>
     <s:String x:Key="Script before connect">Script antes de conectar</s:String>
+    <s:String x:Key="Hide script window">Ocultar janela de script (não recomendado para script demorado)</s:String>
     <s:String x:Key="Script after disconnected">Script depois de desconectado</s:String>
     <s:String x:Key="Run bat before connect">Execute bat antes de conectar (por exemplo, execute 'C:\OpenSshTunneling.bat')</s:String>
     <s:String x:Key="Run bat after disconnected">Execute bat depois de desconectado (por exemplo, execute 'C:\CloseSshTunneling.bat')</s:String>

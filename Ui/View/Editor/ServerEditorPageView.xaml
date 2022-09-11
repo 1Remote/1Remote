@@ -197,10 +197,10 @@
                                 </Grid>
 
 
-                                <controls:GridWith4Columns Margin="0 15">
+                                <controls:GridWith4Columns Margin="0 15 0 0">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script before connect'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
+                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat before connect'}"
                                              Tag="{DynamicResource 'Run bat before connect'}"/>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -218,10 +218,21 @@
                                     </StackPanel>
                                 </controls:GridWith4Columns>
 
+                                <controls:GridWith4Columns Margin="0 5 0 15">
+                                    <CheckBox Grid.Column="1"
+                                              VerticalContentAlignment="Top"
+                                              IsChecked="{Binding Server.HideCommandBeforeConnectedWindow}" 
+                                              ToolTip="{DynamicResource 'Hide script window'}">
+                                        <TextBlock Text="{DynamicResource 'Hide script window'}"
+                                                   TextWrapping="WrapWithOverflow" 
+                                                   Opacity="0.5"></TextBlock>
+                                    </CheckBox>
+                                </controls:GridWith4Columns>
+
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
+                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat after disconnected'}"
                                              Tag="{DynamicResource 'Run bat after disconnected'}"></TextBox>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal">

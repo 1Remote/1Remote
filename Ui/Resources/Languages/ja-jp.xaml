@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">'、'で区切って複数入力できます</s:String>
     <s:String x:Key="Logo">ロゴ</s:String>
     <s:String x:Key="Script before connect">接続前のスクリプト</s:String>
+    <s:String x:Key="Hide script window">スクリプト ウィンドウを非表示にする (スクリプトに時間がかかる場合はお勧めしません)</s:String>
     <s:String x:Key="Script after disconnected">切断後のスクリプト</s:String>
     <s:String x:Key="Run bat before connect">接続する前にバットを実行します (例: 'C:\OpenSshTunneling.bat' を実行)</s:String>
     <s:String x:Key="Run bat after disconnected">切断後にバットを実行します (例: 'C:\CloseSshTunneling.bat' を実行)</s:String>

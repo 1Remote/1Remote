@@ -130,6 +130,7 @@
     <s:String x:Key="server_editor_tags_tag">Can enter multiple, separated by ','</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Script before connect">Script before connect</s:String>
+    <s:String x:Key="Hide script window">Hide script window(not recommended for script take long time)</s:String>
     <s:String x:Key="Script after disconnected">Script after disconnected</s:String>
     <s:String x:Key="Run bat before connect">Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat')</s:String>
     <s:String x:Key="Run bat after disconnected">Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat')</s:String>
