@@ -34,7 +34,12 @@ namespace _1RM.Model
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
-            // TODO 当打开设置、Launcher 时，不再定时 reload 数据
+            if (IoC.Get<MainWindowViewModel>().IsShownList() == false
+                || IoC.Get<LauncherWindowViewModel>().IsActive)
+            {
+                return;
+            }
+
             ReloadServerList();
             if (_isTimerStopFlag == false)
                 _timer.Start();
@@ -93,16 +98,15 @@ namespace _1RM.Model
 
         public void ReloadServerList()
         {
-            if (_sourceService?.LocalDataSource == null)
+            if (_sourceService == null)
             {
                 return;
             }
 
-            var tmp = _sourceService.GetServers();
-            if (tmp.Count != VmItemList.Count || _sourceService.NeedRead())
+            if (_sourceService.NeedRead())
             {
                 // read from db
-                VmItemList = tmp;
+                VmItemList = _sourceService.GetServers();
                 ConnectTimeRecorder.Cleanup();
                 ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();
@@ -117,11 +121,9 @@ namespace _1RM.Model
             }
         }
 
-        public void AddServer(ProtocolBase protocolServer)
+        public void AddServer(ProtocolBase protocolServer, IDataSource dataSource)
         {
-            // TODO Assign data source
-            if (_sourceService?.LocalDataSource == null) return;
-            _sourceService.LocalDataSource.Database_InsertServer(protocolServer);
+            dataSource.Database_InsertServer(protocolServer);
             ReloadServerList();
         }
 
@@ -146,10 +148,6 @@ namespace _1RM.Model
             }
 
             ReloadServerList();
-            //{
-            //    ReadTagsFromServers();
-            //    VmItemListDataChanged?.Invoke();
-            //}
         }
 
         public void UpdateServer(IEnumerable<ProtocolBase> protocolServers)

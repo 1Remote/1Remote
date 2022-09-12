@@ -27,15 +27,17 @@ namespace _1RM.Model
         public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, bool showAnimation = true);
         public static OnGoToServerAddPageDelegate? OnGoToServerAddPage { get; set; } = null;
 
+        public delegate void OnRequestGoToServerDuplicatePageDelegate(ProtocolBase server, bool showAnimation = true);
+        public static OnRequestGoToServerDuplicatePageDelegate? OnRequestGoToServerDuplicatePage { get; set; } = null;
 
 
         /// <summary>
-        /// Go to server edit by server id, if id == 0 goto add page
+        /// Go to server edit or duplicate
         /// </summary>
-        /// <param name="serverId">server id, if id == 0 goto add page</param>
         /// <param name="isDuplicateMode">is duplicate? works only id above 0</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnRequestGoToServerEditPageDelegate(string serverId, bool isDuplicateMode = false, bool showAnimation = true);
+        public delegate void OnRequestGoToServerEditPageDelegate(ProtocolBase server, bool isDuplicateMode = false, bool showAnimation = true);
+
         /// <summary>
         /// Go to server edit by server id
         /// param1 int: server id

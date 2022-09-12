@@ -29,5 +29,7 @@ namespace _1RM.Service
         public bool Database_DeleteServer(string id);
         public bool Database_DeleteServer(IEnumerable<string> ids);
         public List<ProtocolBase> Database_GetServers();
+
+        public int Database_GetServersCount();
     }
 }

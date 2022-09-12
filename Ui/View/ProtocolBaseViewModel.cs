@@ -106,7 +106,7 @@ namespace _1RM.View
             {
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(Server.Id, false, true);
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: Server, showAnimation: true);
                 });
             }
         }
@@ -118,7 +118,7 @@ namespace _1RM.View
             {
                 return _cmdDuplicateServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(Server.Id, true, true);
+                    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: Server, showAnimation: true);
                 });
             }
         }

@@ -206,8 +206,7 @@ namespace _1RM.Service.DataSource
 
             if (ret == EnumDbStatus.OK)
             {
-                var servers = GetServers();
-                DataSourceConfig.SetStatus(true, $"{servers.Count()} servers");
+                DataSourceConfig.SetStatus(true, $"{Database_GetServersCount()} servers");
             }
             else
             {
@@ -380,6 +379,12 @@ namespace _1RM.Service.DataSource
         public List<ProtocolBase> Database_GetServers()
         {
             return GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+        }
+
+        public int Database_GetServersCount()
+        {
+            var s = GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+            return s.Count;
         }
     }
 }
