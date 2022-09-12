@@ -24,7 +24,6 @@ namespace _1RM.Service.DataSource
         public DataSourceService(GlobalData appData)
         {
             _appData = appData;
-
         }
 
         public SqliteDatabaseSource? LocalDataSource { get; private set; } = null;
@@ -33,22 +32,29 @@ namespace _1RM.Service.DataSource
 
         public bool NeedRead()
         {
-            if (LocalDataSource?.NeedRead() == true)
-                return true;
-            return _additionalSources.Any(x => x.Value.NeedRead() == true);
+            var ret = LocalDataSource?.NeedRead() ?? false;
+            // TODO 需要一套机制，当某个数据源连接失败后，就停止读取它的 NeedRead 信息
+            foreach (var additionalSource in _additionalSources)
+            {
+                ret |= additionalSource.Value.NeedRead();
+            }
+            return ret;
         }
 
         public List<ProtocolBaseViewModel> GetServers()
         {
-            var ret = new List<ProtocolBaseViewModel>(100);
-            if (LocalDataSource != null)
-                ret.AddRange(LocalDataSource.GetServers());
-            foreach (var dataSource in _additionalSources)
+            lock (this)
             {
-                var pbs = dataSource.Value.GetServers();
-                ret.AddRange(pbs);
+                var ret = new List<ProtocolBaseViewModel>(100);
+                if (LocalDataSource != null)
+                    ret.AddRange(LocalDataSource.GetServers());
+                foreach (var dataSource in _additionalSources)
+                {
+                    var pbs = dataSource.Value.GetServers();
+                    ret.AddRange(pbs);
+                }
+                return ret; 
             }
-            return ret;
         }
 
         public IDataSource? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)

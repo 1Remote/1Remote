@@ -73,7 +73,22 @@ namespace _1RM.View.Editor
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = ""; // TODO show data source name.
-            Init();
+
+
+            // reflect remote protocols
+            ProtocolList = ProtocolBase.GetAllSubInstance();
+            // set selected protocol
+            try
+            {
+                SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
+            }
+            catch (Exception)
+            {
+                SelectedProtocol = ProtocolList.First();
+            }
+
+            Debug.Assert(IsBuckEdit == false);
+            Debug.Assert(IsAddMode == (addToDataSource != null));
         }
 
 
@@ -90,6 +105,7 @@ namespace _1RM.View.Editor
 
         private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
+            _addToDataSource = null;
             _globalData = globalData;
             var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
             // decrypt
@@ -178,40 +194,17 @@ namespace _1RM.View.Editor
             }
 
             _orgServer = Server.Clone();
-            // init ui
-            {
-                if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
-                    UpdateRunners(_serversInBuckEdit.First().Protocol);
-                ReflectProtocolEditControl(_sharedTypeInBuckEdit);
-            }
 
-            Init();
+            Debug.Assert(IsBuckEdit == true);
+            Debug.Assert(_sharedTypeInBuckEdit != null);
+
+            // init ui
+            if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
+                UpdateRunners(_serversInBuckEdit.First().Protocol);
+            ReflectProtocolEditControl(_sharedTypeInBuckEdit);
         }
 
         #endregion
-
-
-        private void Init()
-        {
-            // init protocol list for single add / edit mode
-            if (IsAddMode)
-            {
-                // reflect remote protocols
-                ProtocolList = ProtocolBase.GetAllSubInstance();
-                // set selected protocol
-                try
-                {
-                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
-                }
-                catch (Exception)
-                {
-                    SelectedProtocol = ProtocolList.First();
-                }
-            }
-
-            NameSelections = _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _globalData.TagList.Select(x => x.Name).ToList();
-        }
 
         public string Title { get; set; }
 
@@ -265,11 +258,11 @@ namespace _1RM.View.Editor
         /// <summary>
         /// suggested name for name field
         /// </summary>
-        public List<string> NameSelections { get; set; } = new List<string>();
+        public List<string> NameSelections => _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
         /// <summary>
         /// suggested tag for tag field
         /// </summary>
-        public List<string> TagSelections { get; set; } = new List<string>();
+        public List<string> TagSelections => _globalData.TagList.Select(x => x.Name).ToList();
 
         private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
@@ -280,8 +273,10 @@ namespace _1RM.View.Editor
                 _cmdSave = new RelayCommand((o) =>
                 {
                     // bulk edit
-                    if (IsBuckEdit == true && _sharedTypeInBuckEdit != null && _serversInBuckEdit != null)
+                    if (IsBuckEdit == true)
                     {
+                        Debug.Assert(_sharedTypeInBuckEdit != null);
+                        Debug.Assert(_serversInBuckEdit != null);
                         // copy the same value properties
                         var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var property in properties)
@@ -337,14 +332,14 @@ namespace _1RM.View.Editor
                         _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
-                    else if (string.IsNullOrEmpty(Server.Id) == false)
+                    else if (IsAddMode == false && string.IsNullOrEmpty(Server.Id) == false)
                     {
                         _globalData.UpdateServer(Server);
                     }
                     // add
-                    else
+                    else if (IsAddMode && _addToDataSource != null)
                     {
-                        _globalData.AddServer(Server);
+                        _globalData.AddServer(Server, _addToDataSource);
                     }
                     IoC.Get<MainWindowViewModel>().ShowList();
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));

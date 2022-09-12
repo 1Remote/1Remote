@@ -139,14 +139,14 @@
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Name}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:AutoCompleteComboBox Grid.Column="1"
                                                            Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
-                                                           Selections="{Binding NameSelections}"/>
+                                                           Selections="{Binding NameSelections, Mode=OneTime}"/>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Tags}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
                                                  Tags="{Binding Server.Tags, Mode=TwoWay}"
-                                                 TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
+                                                 TagsForSelect="{Binding TagSelections, Mode=OneTime}"></controls:TagsEditor>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns Margin="0">

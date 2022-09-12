@@ -115,17 +115,36 @@ namespace _1RM.View
                     }
                 });
             };
-            GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
+            {
+                // select save to which source
+                IDataSource? source = null;
+                if (ConfigurationService.DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                {
+                    var vm = new DataSourceSelectorViewModel();
+                    if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                        return;
+                    source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                }
+                else
+                {
+                    source = SourceService.LocalDataSource;
+                }
+                if (source == null) return;
+                EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
+                ShowMe();
+            };
+
+            GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isDuplicate, isInAnimationShow) =>
             {
                 if (SourceService.LocalDataSource == null) return;
-                if (string.IsNullOrEmpty(id)) return;
-                Debug.Assert(_appData.VmItemList.Any(x => x.Id == id));
-                var server = _appData.VmItemList.First(x => x.Id == id).Server;
-                EditorViewModel = new ServerEditorPageViewModel(_appData, SourceService.LocalDataSource, server, isDuplicate);
+                var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSourceName == serverToEdit.DataSourceName)?.Server;
+                if (server == null) return;
+                EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
                 ShowMe();
-            });
+            };
 
-            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerAddPage += (tagNames, isInAnimationShow) =>
             {
                 // select save to which source
                 IDataSource? source = null;
@@ -142,26 +161,21 @@ namespace _1RM.View
                 }
                 if (source == null) return;
 
-
-                var server = new RDP
-                {
-                    Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
-                };
-                EditorViewModel = new ServerEditorPageViewModel(_appData, source, server);
+                EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
                 ShowMe();
-            });
+            };
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                // TODO 选择数据源新增
-                var source = SourceService.GetDataSource("");
-                if (source == null) return;
                 var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
-                // TODO 将这些数据都在外部解密
                 if (serverBases.Length > 1)
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, source, serverBases);
-                else
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, source, serverBases.First());
+                {
+                    EditorViewModel = ServerEditorPageViewModel.BuckEdit(_appData, serverBases);
+                }
+                else if (serverBases.Length == 1)
+                {
+                    EditorViewModel = ServerEditorPageViewModel.Edit(_appData, serverBases.First());
+                }
                 ShowMe();
             };
 
