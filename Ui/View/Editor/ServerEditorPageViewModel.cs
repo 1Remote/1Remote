@@ -507,7 +507,7 @@ namespace PRM.View.Editor
                 {
                     lock (this)
                     {
-                        var path = SelectFileHelper.OpenFile(title: "TXT: select a script", filter: $"script|*.bat;*.ps1;*.vbs;*.py|*|*.*");
+                        var path = SelectFileHelper.OpenFile(title: "Select a script", filter: $"script|*.bat;*.cmd;*.ps1;*.py|*|*.*");
                         if (path == null || File.Exists(path) == false) return;
                         if (o?.ToString()?.ToLower() == "before")
                         {
@@ -549,7 +549,10 @@ namespace PRM.View.Editor
                         {
                             if (!string.IsNullOrWhiteSpace(cmd))
                             {
-                                WinCmdRunner.RunScriptFile(cmd, isHideWindow: false);
+                                var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
+                                if(string.IsNullOrEmpty(tuple.Item2) == false)
+                                    MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                                WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
                             }
                         }
                         catch (Exception ex)

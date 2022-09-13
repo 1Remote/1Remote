@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -169,16 +170,7 @@ namespace PRM.Model.Protocol.Base
         public string CommandBeforeConnected
         {
             get => _commandBeforeConnected;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _commandBeforeConnected, value))
-                {
-                    if (string.IsNullOrWhiteSpace(value) == false && File.Exists(value) == false)
-                    {
-                        throw new FileNotFoundException(value);
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _commandBeforeConnected, value);
         }
 
         private bool _hideCommandBeforeConnectedWindow = false;
@@ -192,16 +184,7 @@ namespace PRM.Model.Protocol.Base
         public string CommandAfterDisconnected
         {
             get => _commandAfterDisconnected;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _commandAfterDisconnected, value))
-                {
-                    if (string.IsNullOrWhiteSpace(value) == false && File.Exists(value) == false)
-                    {
-                        throw new FileNotFoundException(value);
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _commandAfterDisconnected, value);
         }
 
         private string _note = "";
@@ -310,14 +293,16 @@ namespace PRM.Model.Protocol.Base
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected) && File.Exists(CommandBeforeConnected))
+                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
-                    WinCmdRunner.RunScriptFile(CommandBeforeConnected, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
+                    var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandBeforeConnected);
+                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
+                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
             }
         }
 
@@ -325,14 +310,16 @@ namespace PRM.Model.Protocol.Base
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected) && File.Exists(CommandAfterDisconnected))
+                if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
-                    WinCmdRunner.RunScriptFile(CommandAfterDisconnected, isAsync: true, isHideWindow: true);
+                    var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandAfterDisconnected);
+                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true, isHideWindow: true);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
+                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
             }
         }
 
