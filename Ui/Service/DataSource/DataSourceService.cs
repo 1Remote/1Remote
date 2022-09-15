@@ -3,12 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -16,14 +18,11 @@ namespace _1RM.Service.DataSource
 {
     public class DataSourceService : NotifyPropertyChangedBase
     {
-        private readonly GlobalData _appData;
-
         public const int CHECK_UPDATE_PERIOD = 5;
         public const string LOCAL_DATA_SOURCE_NAME = "Local";
 
-        public DataSourceService(GlobalData appData)
+        public DataSourceService()
         {
-            _appData = appData;
         }
 
         public SqliteDatabaseSource? LocalDataSource { get; private set; } = null;
@@ -41,19 +40,19 @@ namespace _1RM.Service.DataSource
             return ret;
         }
 
-        public List<ProtocolBaseViewModel> GetServers()
+        public List<ProtocolBaseViewModel> GetServers(bool focus)
         {
             lock (this)
             {
                 var ret = new List<ProtocolBaseViewModel>(100);
                 if (LocalDataSource != null)
-                    ret.AddRange(LocalDataSource.GetServers());
+                    ret.AddRange(LocalDataSource.GetServers(focus));
                 foreach (var dataSource in _additionalSources)
                 {
-                    var pbs = dataSource.Value.GetServers();
+                    var pbs = dataSource.Value.GetServers(focus);
                     ret.AddRange(pbs);
                 }
-                return ret; 
+                return ret;
             }
         }
 
@@ -93,56 +92,66 @@ namespace _1RM.Service.DataSource
             LocalDataSource.Database_OpenConnection();
             var ret = LocalDataSource.Database_SelfCheck();
             RaisePropertyChanged(nameof(LocalDataSource));
-            if (ret == EnumDbStatus.OK)
-            {
-                // TODO No need
-                _appData.SetDbOperator(this);
-            }
-
             return ret;
         }
+
+        public void AddOrUpdateDataSourceAsync(DataSourceConfigBase config)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                AddOrUpdateDataSource(config);
+            });
+        }
+
 
         /// <summary>
         /// TODO: need ASYNC support！
         /// </summary>
         public EnumDbStatus AddOrUpdateDataSource(DataSourceConfigBase config)
         {
+            if (config is SqliteConfig { Name: LOCAL_DATA_SOURCE_NAME } localConfig)
             {
-                if (config is SqliteConfig { Name: LOCAL_DATA_SOURCE_NAME } sqliteConfig)
-                {
-                    return InitLocalDataSource(sqliteConfig);
-                }
+                return InitLocalDataSource(localConfig);
             }
 
+            // remove the old source
             if (_additionalSources.ContainsKey(config.Name))
             {
                 _additionalSources[config.Name].Database_CloseConnection();
+                _additionalSources.TryRemove(config.Name, out _);
             }
 
-            switch (config)
+            try
             {
-                case SqliteConfig sqliteConfig:
-                    {
-                        var s = new SqliteDatabaseSource(sqliteConfig);
-                        var ret = s.Database_SelfCheck();
-                        if (ret == EnumDbStatus.OK)
+                switch (config)
+                {
+                    case SqliteConfig sqliteConfig:
                         {
-                            _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                            var s = new SqliteDatabaseSource(sqliteConfig);
+                            var ret = s.Database_SelfCheck();
+                            if (ret == EnumDbStatus.OK)
+                            {
+                                _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                            }
+                            return ret;
                         }
-                        return ret;
-                    }
-                case MysqlConfig mysqlConfig:
-                    {
-                        var s = new MysqlDatabaseSource(mysqlConfig);
-                        var ret = s.Database_SelfCheck();
-                        if (ret == EnumDbStatus.OK)
+                    case MysqlConfig mysqlConfig:
                         {
-                            _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                            var s = new MysqlDatabaseSource(mysqlConfig);
+                            var ret = s.Database_SelfCheck();
+                            if (ret == EnumDbStatus.OK)
+                            {
+                                _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
+                            }
+                            return ret;
                         }
-                        return ret;
-                    }
-                default:
-                    throw new NotSupportedException($"{config.GetType()} is not a supported type");
+                    default:
+                        throw new NotSupportedException($"{config.GetType()} is not a supported type");
+                }
+            }
+            finally
+            {
+                IoC.Get<GlobalData>().ReloadServerList(true);
             }
         }
 
