@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using _1RM.Service.DataSource;
 using Newtonsoft.Json;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -143,6 +145,13 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _commandBeforeConnected, value);
         }
 
+        private bool _hideCommandBeforeConnectedWindow = false;
+        public bool HideCommandBeforeConnectedWindow
+        {
+            get => _hideCommandBeforeConnectedWindow;
+            set => SetAndNotifyIfChanged(ref _hideCommandBeforeConnectedWindow, value);
+        }
+
         private string _commandAfterDisconnected = "";
         public string CommandAfterDisconnected
         {
@@ -158,6 +167,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _selectedRunnerName = "";
+
         public string SelectedRunnerName
         {
             get => _selectedRunnerName;
@@ -170,9 +180,7 @@ namespace _1RM.Model.Protocol.Base
         /// </summary>
         public bool Update(ProtocolBase copyFromObj, Type? levelType = null)
         {
-            var baseType = levelType;
-            if (baseType == null)
-                baseType = this.GetType();
+            var baseType = levelType ?? this.GetType();
             var myType = this.GetType();
             var yourType = copyFromObj.GetType();
             while (myType != null && myType != baseType)
@@ -259,12 +267,14 @@ namespace _1RM.Model.Protocol.Base
             {
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
-                    WinCmdRunner.RunCmdAsync(CommandBeforeConnected);
+                    var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandBeforeConnected);
+                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
+                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
             }
         }
 
@@ -274,12 +284,14 @@ namespace _1RM.Model.Protocol.Base
             {
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
-                    WinCmdRunner.RunCmdAsync(CommandAfterDisconnected);
+                    var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandAfterDisconnected);
+                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true, isHideWindow: true);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
+                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
             }
         }
 

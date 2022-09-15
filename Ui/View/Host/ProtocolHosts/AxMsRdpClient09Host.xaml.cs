@@ -14,6 +14,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
+using Stylet;
 using Color = System.Drawing.Color;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -90,14 +91,8 @@ namespace _1RM.View.Host.ProtocolHosts
         public void Dispose()
         {
             SimpleLogHelper.Debug($"Disposing {this.GetType().Name}({this.GetHashCode()})");
-            Dispatcher.Invoke(() =>
-            {
-                Grid?.Children?.Clear();
-                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
-                RdpClientDispose();
-                _resizeEndTimer?.Dispose();
-                //GC.SuppressFinalize(this);
-            });
+            _resizeEndTimer?.Dispose();
+            RdpClientDispose();
             SimpleLogHelper.Debug($"Dispose done {this.GetType().Name}({this.GetHashCode()})");
         }
 
@@ -688,7 +683,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     _previousWidth = (uint)e.NewSize.Width;
                     _previousHeight = (uint)e.NewSize.Height;
-                    Dispatcher.Invoke(() =>
+                    Execute.OnUIThreadSync(() =>
                     {
                         _resizeEndTimer?.Stop();
                         _resizeEndTimer?.Start();
@@ -713,10 +708,13 @@ namespace _1RM.View.Host.ProtocolHosts
             GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
             lock (this)
             {
-                if (_rdpClient?.Connected > 0)
-                    _rdpClient.Disconnect();
-                _rdpClient?.Dispose();
-                _rdpClient = null;
+                Execute.OnUIThreadSync(() =>
+                {
+                    if (_rdpClient?.Connected > 0)
+                        _rdpClient.Disconnect();
+                    _rdpClient?.Dispose();
+                    _rdpClient = null;
+                });
             }
             SimpleLogHelper.Debug("RDP Host: _rdpClient.Dispose()");
         }
@@ -742,26 +740,28 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             if (w > 0 && h > 0)
             {
-                try
+                Execute.OnUIThreadSync(() =>
                 {
-                    Dispatcher.Invoke(() =>
+                    try
                     {
                         _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
                         var newScaleFactor = _primaryScaleFactor;
-                        if (this._rdpSettings.IsScaleFactorFollowSystem == false && this._rdpSettings.ScaleFactorCustomValue != null)
+                        if (this._rdpSettings.IsScaleFactorFollowSystem == false &&
+                            this._rdpSettings.ScaleFactorCustomValue != null)
                             newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                        if (focus || _rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                        if (focus || _rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h ||
+                            newScaleFactor != _lastScaleFactor)
                         {
                             SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
                             _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                             _lastScaleFactor = newScaleFactor;
                         }
-                    });
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                    }
+                });
             }
         }
 
