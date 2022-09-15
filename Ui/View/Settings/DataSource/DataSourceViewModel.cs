@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using _1RM.Controls;
+using _1RM.Model;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
@@ -115,8 +117,13 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new SqliteSettingViewModel(this, sqliteConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
+                                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
                                     _configurationService.Save();
-                                    _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
+                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                    });
                                 }
                                 break;
                             }
@@ -125,8 +132,13 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new MysqlSettingViewModel(this, mysqlConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
+                                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
                                     _configurationService.Save();
-                                    _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
+                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                    });
                                 }
                                 break;
                             }

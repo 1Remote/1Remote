@@ -96,17 +96,17 @@ namespace _1RM.Model
             _configurationService.Save();
         }
 
-        public void ReloadServerList()
+        public void ReloadServerList(bool focus = false)
         {
             if (_sourceService == null)
             {
                 return;
             }
 
-            if (_sourceService.NeedRead())
+            if (focus || _sourceService.NeedRead())
             {
                 // read from db
-                VmItemList = _sourceService.GetServers();
+                VmItemList = _sourceService.GetServers(focus);
                 ConnectTimeRecorder.Cleanup();
                 ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();

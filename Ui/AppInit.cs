@@ -246,14 +246,13 @@ namespace _1RM
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
 
             // Init data sources
+            GlobalData.SetDbOperator(IoC.Get<DataSourceService>());
             _localDataConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
+            IoC.Get<GlobalData>().ReloadServerList();
             foreach (var config in ConfigurationService!.DataSource.AdditionalDataSourceConfigs)
             {
-                IoC.Get<DataSourceService>().AddOrUpdateDataSource(config);
+                IoC.Get<DataSourceService>().AddOrUpdateDataSourceAsync(config);
             }
-
-
-            IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
             IoC.Get<TaskTrayService>().TaskTrayInit();
         }

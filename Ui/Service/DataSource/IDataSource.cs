@@ -35,7 +35,7 @@ namespace _1RM.Service.DataSource
         /// 返回服务器信息(服务器信息已指向数据源)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ProtocolBaseViewModel> GetServers();
+        public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus);
 
         public bool IsReadable { get; }
         public bool IsWritable { get; }
@@ -90,11 +90,15 @@ namespace _1RM.Service.DataSource
         }
 
 
-        public IEnumerable<ProtocolBaseViewModel> GetServers()
+        public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus = false)
         {
             lock (this)
             {
-                if (LastReadFromDataSourceTimestamp >= DataSourceDataUpdateTimestamp) return CachedProtocols;
+                if (focus == false
+                    && LastReadFromDataSourceTimestamp >= DataSourceDataUpdateTimestamp)
+                {
+                    return CachedProtocols;
+                }
 
                 LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 var protocols = Database_GetServers();
@@ -116,7 +120,7 @@ namespace _1RM.Service.DataSource
                         SimpleLogHelper.Info(e);
                     }
                 }
-
+                DataSourceConfig.SetStatus(true, $"{CachedProtocols.Count} servers");
                 return CachedProtocols;
             }
         }

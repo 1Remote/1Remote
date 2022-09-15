@@ -28,6 +28,7 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using _1RM.Service.DataSource;
+using _1RM.View.Editor;
 
 namespace _1RM.View
 {
@@ -298,6 +299,22 @@ namespace _1RM.View
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
+                    // select save to which source
+                    IDataSource? source = null;
+                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                    {
+                        var vm = new DataSourceSelectorViewModel();
+                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                            return;
+                        source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                    }
+                    else
+                    {
+                        source = SourceService.LocalDataSource;
+                    }
+                    if (source == null) return;
+
+
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
@@ -318,8 +335,7 @@ namespace _1RM.View
                                     list.Add(server);
                                 }
                             }
-                            // TODO select datasource
-                            IoC.Get<DataSourceService>().LocalDataSource?.Database_InsertServer(list);
+                            source.Database_InsertServer(list);
                             AppData.ReloadServerList();
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
@@ -350,6 +366,22 @@ namespace _1RM.View
             {
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
+                    // select save to which source
+                    IDataSource? source = null;
+                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                    {
+                        var vm = new DataSourceSelectorViewModel();
+                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                            return;
+                        source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                    }
+                    else
+                    {
+                        source = SourceService.LocalDataSource;
+                    }
+                    if (source == null) return;
+
+
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
                     GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
@@ -360,7 +392,7 @@ namespace _1RM.View
                             var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                             if (list?.Count > 0)
                             {
-                                IoC.Get<DataSourceService>().LocalDataSource?.Database_InsertServer(list);
+                                source.Database_InsertServer(list);
                                 AppData.ReloadServerList();
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>

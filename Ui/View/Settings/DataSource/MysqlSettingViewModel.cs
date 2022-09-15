@@ -147,21 +147,21 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (_orgMysqlConfig != null)
                     {
-                        _orgMysqlConfig.Name = Name;
-                        _orgMysqlConfig.Host = Host;
+                        _orgMysqlConfig.Name = Name.Trim();
+                        _orgMysqlConfig.Host = Host.Trim();
                         _orgMysqlConfig.Port = int.Parse(_port);
-                        _orgMysqlConfig.DatabaseName = DatabaseName;
-                        _orgMysqlConfig.UserName = UserName;
+                        _orgMysqlConfig.DatabaseName = DatabaseName.Trim();
+                        _orgMysqlConfig.UserName = UserName.Trim();
                         _orgMysqlConfig.Password = Password;
                     }
                     else
                     {
-                        NewConfig = new MysqlConfig(Name)
+                        NewConfig = new MysqlConfig(Name.Trim())
                         {
-                            Host = Host,
+                            Host = Host.Trim(),
                             Port = int.Parse(_port),
-                            DatabaseName = DatabaseName,
-                            UserName = UserName,
+                            DatabaseName = DatabaseName.Trim(),
+                            UserName = UserName.Trim(),
                             Password = Password
                         };
                     }
@@ -174,7 +174,15 @@ namespace _1RM.View.Settings.DataSource
                          && string.IsNullOrWhiteSpace(Host) == false
                          && string.IsNullOrWhiteSpace(DatabaseName) == false
                          && string.IsNullOrWhiteSpace(UserName) == false
-                         && string.IsNullOrWhiteSpace(Password) == false));
+                         && string.IsNullOrWhiteSpace(Password) == false
+                         && (Name != _orgMysqlConfig?.Name
+                            || Host != _orgMysqlConfig?.Host
+                            || Port != _orgMysqlConfig?.Port.ToString()
+                            || DatabaseName != _orgMysqlConfig?.DatabaseName
+                            || UserName != _orgMysqlConfig?.UserName
+                            || Password != _orgMysqlConfig?.Password
+                            )
+                        ));
             }
         }
 
