@@ -61,78 +61,6 @@
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
 
                         <Grid>
-                            <controls:GridWith4Columns VerticalAlignment="Top" MinHeight="60">
-                                <Grid Margin="40 0" Grid.Column="3">
-                                    <StackPanel>
-                                        <Grid>
-                                            <!--icon button show note-->
-                                            <Button
-                                                    Name="ButtonShowNote"
-                                                    Width="20" Height="20"
-                                                    Background="Transparent"
-                                                    attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                                    attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                                    Foreground="{DynamicResource BackgroundTextBrush}"
-                                                    attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
-                                                    attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
-                                                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                    Opacity="0.7"
-                                                    ToolTip="{DynamicResource Preview}"
-                                                    attachProperty:VisionElement.Opacity="0.8"
-                                                    attachProperty:VisionElement.OpacityAccent="0.9"
-                                                    Click="ButtonShowNote_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                                        <Setter Property="Visibility" Value="Hidden"></Setter>
-                                                        <Style.Triggers>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
-                                                                </MultiDataTrigger.Conditions>
-                                                                <MultiDataTrigger.Setters>
-                                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                                </MultiDataTrigger.Setters>
-                                                            </MultiDataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                                <Grid Width="16">
-                                                    <Path Data="{StaticResource NoteGeometry}"
-                                                        Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                        Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                        StrokeThickness="0" Stretch="Uniform" />
-                                                </Grid>
-                                            </Button>
-
-                                            <Popup Name="PopupNote" 
-                                                   Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
-                                                   AllowsTransparency="True"
-                                                   PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
-                                                <noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
-                                                                            Server="{Binding Server, Mode=OneWay}"
-                                                                            EditEnable="False"
-                                                                            CloseEnable="False"/>
-                                            </Popup>
-
-                                            <TextBlock Text="{DynamicResource Note}"
-                                                       HorizontalAlignment="Center"
-                                                       TextAlignment="Center"
-                                                       Width="Auto"
-                                                       Margin="0"
-                                            ></TextBlock>
-                                        </Grid>
-
-                                        <TextBox TextWrapping="Wrap" Width="Auto"
-                                                 TextAlignment="Left" Height="220" Margin="0 5"
-                                                 MouseWheel="TextBoxMarkdown_OnMouseWheel"
-                                                 VerticalContentAlignment="Top"
-                                                 AcceptsReturn="True"
-                                                 AcceptsTab="True"
-                                                 Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve"
-                                                 Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                    </StackPanel>
-                                </Grid>
-                            </controls:GridWith4Columns>
 
                             <StackPanel Orientation="Vertical">
                                 <controls:GridWith4Columns>
@@ -269,30 +197,57 @@
                                 </Grid>
 
 
-                                <controls:GridWith4Columns Margin="0 15">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_before_connected}" Style="{StaticResource RowHeader}"></TextBlock>
+                                <controls:GridWith4Columns Margin="0 15 0 0">
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Script before connect'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                             ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
-                                             Tag="{DynamicResource server_editor_cmd_before_connected_tag}"/>
-                                    <Button Grid.Column="2" 
-                                            Margin="5 0 0 0" 
-                                            VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
+                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                             ToolTip="{DynamicResource 'Run bat before connect'}"
+                                             Tag="{DynamicResource 'Run bat before connect'}"/>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <Button Margin="5 0 0 0" 
+                                                VerticalAlignment="Stretch"
+                                                Command="{Binding CmdSelectScript}" CommandParameter="before"
+                                                Style="{StaticResource ButtonPrimaryStyle}" 
+                                                Content="{DynamicResource Select}"></Button>
+
+                                        <Button Margin="5 0 0 0" 
+                                                VerticalAlignment="Stretch"
+                                                Command="{Binding CmdTestScript}" CommandParameter="before"
+                                                Style="{StaticResource ButtonPrimaryStyle}" 
+                                                Content="{DynamicResource Test}"></Button>
+                                    </StackPanel>
+                                </controls:GridWith4Columns>
+
+                                <controls:GridWith4Columns Margin="0 5 0 15">
+                                    <CheckBox Grid.Column="1"
+                                              VerticalContentAlignment="Top"
+                                              IsChecked="{Binding Server.HideCommandBeforeConnectedWindow}" 
+                                              ToolTip="{DynamicResource 'Hide script window'}">
+                                        <TextBlock Text="{DynamicResource 'Hide script window'}"
+                                                   TextWrapping="WrapWithOverflow" 
+                                                   Opacity="0.5"></TextBlock>
+                                    </CheckBox>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_after_disconnected}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                             ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
-                                             Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
-                                    <Button Grid.Column="2"
-                                            Margin="5 0 0 0" 
-                                            VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandAfterDisconnected_OnClick" 
-                                            Style="{StaticResource ButtonPrimaryStyle}" 
-                                            Content="{DynamicResource Test}"></Button>
+                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                             ToolTip="{DynamicResource 'Run bat after disconnected'}"
+                                             Tag="{DynamicResource 'Run bat after disconnected'}"></TextBox>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <Button Margin="5 0 0 0" 
+                                                VerticalAlignment="Stretch"
+                                                Command="{Binding CmdSelectScript}" CommandParameter="after"
+                                                Style="{StaticResource ButtonPrimaryStyle}" 
+                                                Content="{DynamicResource Select}"></Button>
+
+                                        <Button Margin="5 0 0 0" 
+                                                VerticalAlignment="Stretch"
+                                                Command="{Binding CmdTestScript}" CommandParameter="after"
+                                                Style="{StaticResource ButtonPrimaryStyle}" 
+                                                Content="{DynamicResource Test}"></Button>
+                                    </StackPanel>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
@@ -317,6 +272,78 @@
                             </StackPanel>
                         </Grid>
                     </StackPanel>
+
+
+                    <controls:GridWith4Columns VerticalAlignment="Top" MinHeight="60">
+                        <Grid Margin="40 25" Grid.Column="2" Grid.ColumnSpan="2">
+                            <StackPanel>
+                                <Grid>
+                                    <!--icon button show note-->
+                                    <Button Name="ButtonShowNote"
+                                            Width="20" Height="20"
+                                            Background="Transparent"
+                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                            Foreground="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
+                                            attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                                            Opacity="0.7"
+                                            ToolTip="{DynamicResource Preview}"
+                                            attachProperty:VisionElement.Opacity="0.8"
+                                            attachProperty:VisionElement.OpacityAccent="0.9"
+                                            Click="ButtonShowNote_OnClick">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}" Value="Visible"></Condition>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Grid Width="16">
+                                            <Path Data="{StaticResource NoteGeometry}"
+                                                        Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                        Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                        StrokeThickness="0" Stretch="Uniform" />
+                                        </Grid>
+                                    </Button>
+
+                                    <Popup Name="PopupNote" 
+                                                   AllowsTransparency="True"
+                                                   PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
+                                        <noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
+                                                                            Server="{Binding Server, Mode=OneWay}"
+                                                                            EditEnable="False"
+                                                                            CloseEnable="False"/>
+                                    </Popup>
+
+                                    <TextBlock Text="{DynamicResource Note}"
+                                                       HorizontalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       Width="Auto"
+                                                       Margin="0"
+                                            ></TextBlock>
+                                </Grid>
+
+                                <TextBox TextWrapping="Wrap" Width="Auto"
+                                                 TextAlignment="Left" Height="150" Margin="0 5"
+                                                 MouseWheel="TextBoxMarkdown_OnMouseWheel"
+                                                 VerticalContentAlignment="Top"
+                                                 AcceptsReturn="True"
+                                                 AcceptsTab="True"
+                                                 Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve"
+                                                 Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            </StackPanel>
+                        </Grid>
+                    </controls:GridWith4Columns>
                 </Grid>
             </ScrollViewer>
         </Grid>

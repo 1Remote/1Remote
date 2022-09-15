@@ -9,6 +9,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol.FileTransmit;
+using Stylet;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -60,7 +61,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void FocusOnMe()
         {
-            Dispatcher.Invoke(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 TvFileList.Focus();
             });

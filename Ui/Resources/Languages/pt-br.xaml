@@ -129,10 +129,11 @@
     <s:String x:Key="Tags">Marcações</s:String>
     <s:String x:Key="server_editor_tags_tag">Podem ser inseridos vários, separados por ','</s:String>
     <s:String x:Key="Logo">Logotipo</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">Antes do cmd</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">Execute antes de conectar por cmd.exe (ex.: 'C:\openVpn.bat' will executará 'cmd.exe C:\openVpn.bat')</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">Após cmd</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">Executar após desconectar por cmd.exe (ex.: 'C:\closeVpn.bat' will executará 'cmd.exe C:\closeVpn.bat')</s:String>
+    <s:String x:Key="Script before connect">Script antes de conectar</s:String>
+    <s:String x:Key="Hide script window">Ocultar janela de script (não recomendado para script demorado)</s:String>
+    <s:String x:Key="Script after disconnected">Script depois de desconectado</s:String>
+    <s:String x:Key="Run bat before connect">Execute bat antes de conectar (por exemplo, execute 'C:\OpenSshTunneling.bat')</s:String>
+    <s:String x:Key="Run bat after disconnected">Execute bat depois de desconectado (por exemplo, execute 'C:\CloseSshTunneling.bat')</s:String>
     <s:String x:Key="Hostname">Hospedeiro</s:String>
     <s:String x:Key="Target">Alvo</s:String>
     <s:String x:Key="Port">Porta</s:String>

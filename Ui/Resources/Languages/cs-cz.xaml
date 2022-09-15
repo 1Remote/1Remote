@@ -129,10 +129,11 @@
     <s:String x:Key="Tags">Štítky</s:String>
     <s:String x:Key="server_editor_tags_tag">Je možné zadat vícero, oddělovaných „,“ (čárkou)</s:String>
     <s:String x:Key="Logo">Logo</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected">Příkaz před</s:String>
-    <s:String x:Key="server_editor_cmd_before_connected_tag">Spustit před připojením prostřednictvím cmd.exe (např. „C:\openVpn.bat“ spustí „cmd.exe C:\openVpn.bat“)</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected">Příkaz po</s:String>
-    <s:String x:Key="server_editor_cmd_after_disconnected_tag">Spustit po odpojení prostřednictvím cmd.exe (např. „C:\closeVpn.bat“ spustí „cmd.exe C:\closeVpn.bat“)</s:String>
+    <s:String x:Key="Script before connect">Skript před připojením</s:String>
+    <s:String x:Key="Hide script window">Skrýt okno skriptu (nedoporučuje se, pokud skript trvá dlouho)</s:String>
+    <s:String x:Key="Script after disconnected">Skript po odpojení</s:String>
+    <s:String x:Key="Run bat before connect">Spusťte bat před připojením (např. spusťte 'C:\OpenSshTunneling.bat')</s:String>
+    <s:String x:Key="Run bat after disconnected">Spustit bat po odpojení (např. spustit 'C:\CloseSshTunneling.bat')</s:String>
     <s:String x:Key="Hostname">Název stroje</s:String>
     <s:String x:Key="Target">Cíl</s:String>
     <s:String x:Key="Port">Port</s:String>
