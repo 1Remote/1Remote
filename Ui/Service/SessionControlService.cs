@@ -259,19 +259,26 @@ namespace PRM.Service
 
                 if (host != null)
                 {
-                    tab ??= this.GetOrCreateTabWindow(assignTabToken);
-                    if (tab == null)
-                        return;
-                    tab.Show();
+                    Execute.OnUIThreadSync(() =>
+                    {
+                        tab ??= this.GetOrCreateTabWindow(assignTabToken);
+                        if (tab == null)
+                            return;
+                        tab.Show();
 
-                    // get display area size for host
-                    Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-                    host.OnClosed += OnProtocolClose;
-                    host.OnFullScreen2Window += this.MoveProtocolHostToTab;
-                    tab.AddItem(new TabItemViewModel(host, server.DisplayName));
-                    _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-                    host.Conn();
-                    tab.Activate();
+                        // get display area size for host
+                        Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
+                        host.OnClosed += OnProtocolClose;
+                        host.OnFullScreen2Window += this.MoveProtocolHostToTab;
+                        tab.AddItem(new TabItemViewModel(host, server.DisplayName));
+                        _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+                        host.Conn();
+                        if (tab.WindowState == WindowState.Minimized)
+                        {
+                            tab.WindowState = WindowState.Normal;
+                        }
+                        tab.Activate();
+                    });
                 }
             }
         }
