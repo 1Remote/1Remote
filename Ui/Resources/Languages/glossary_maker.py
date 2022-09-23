@@ -139,7 +139,9 @@ if __name__ == '__main__':
     g.load_csv(CSV_FILE_NAME + '.csv')
     # g.save_csv(CSV_FILE_NAME + '.csv')
 
-    translator = Translator()
+    http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
+    proxies = {'http': http_proxy, 'https': http_proxy}
+    translator = Translator(proxies=proxies)
     # print(translator.translate('hi\r\nsun rise', dest='de').text)
 
     # translate
