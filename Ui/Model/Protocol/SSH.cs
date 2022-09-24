@@ -4,6 +4,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM.Model.Protocol
 {
@@ -82,7 +83,7 @@ namespace _1RM.Model.Protocol
             return 1;
         }
 
-        public string GetPuttyConnString(IDataSource sourceService)
+        public string GetPuttyConnString(DataSourceBase sourceService)
         {
             var ssh = (this.Clone() as SSH)!;
             ssh.ConnectPreprocess(sourceService);
@@ -117,12 +118,12 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(IDataSource source)
+        public string GetExeArguments(DataSourceBase source)
         {
             return GetPuttyConnString(source);
         }
 
-        public override void ConnectPreprocess(IDataSource source)
+        public override void ConnectPreprocess(DataSourceBase source)
         {
             base.ConnectPreprocess(source);
             StartupAutoCommand = StartupAutoCommand.Replace(@"""", @"\""");

@@ -64,7 +64,7 @@ namespace _1RM
         public ConfigurationService? ConfigurationService;
         public ThemeService? ThemeService;
         public GlobalData GlobalData = null!;
-        public Configuration Configuration = new();
+        public Configuration newConfiguration = new();
 
         public void InitOnStart()
         {
@@ -141,7 +141,7 @@ namespace _1RM
                     if (_isNewUser)
                     {
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, Configuration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
@@ -219,19 +219,37 @@ namespace _1RM
 
             KeywordMatchService = new KeywordMatchService();
             // read profile
-            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == false)
+            try
             {
-                Configuration.DataSource.LocalDataSourceConfig = new SqliteConfig(DataSourceService.LOCAL_DATA_SOURCE_NAME, AppPathHelper.Instance.SqliteDbDefaultPath);
-                ConfigurationService = new ConfigurationService(Configuration, KeywordMatchService);
+                if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == true)
+                {
+                    ConfigurationService = ConfigurationService.Load(AppPathHelper.Instance.ProfileJsonPath, KeywordMatchService);
+                }
+                else
+                {
+                    newConfiguration.DataSource.LocalDataSource = new SqliteSource()
+                    {
+                        DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
+                        Path = AppPathHelper.Instance.SqliteDbDefaultPath
+                    };
+                    ConfigurationService = new ConfigurationService(newConfiguration, KeywordMatchService);
+                }
             }
-            else
+            catch (Exception e)
             {
-                ConfigurationService = ConfigurationService.Load(AppPathHelper.Instance.ProfileJsonPath, KeywordMatchService);
+                SimpleLogHelper.Error(e);
+
+                newConfiguration.DataSource.LocalDataSource = new SqliteSource()
+                {
+                    DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
+                    Path = AppPathHelper.Instance.SqliteDbDefaultPath
+                };
+                ConfigurationService = new ConfigurationService(newConfiguration, KeywordMatchService);
             }
             // make sure path is not empty
-            if (string.IsNullOrWhiteSpace(ConfigurationService.DataSource.LocalDataSourceConfig.Path))
+            if (string.IsNullOrWhiteSpace(ConfigurationService.DataSource.LocalDataSource.Path))
             {
-                ConfigurationService.DataSource.LocalDataSourceConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService.DataSource.LocalDataSource.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
@@ -260,7 +278,7 @@ namespace _1RM
 
         public void InitOnLaunch()
         {
-            IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded+= () =>
+            IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
             {
                 if (_isNewUser)
                 {

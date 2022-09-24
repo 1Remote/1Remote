@@ -11,12 +11,13 @@ using _1RM.View.Host;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM.Utils.KiTTY
 {
     public interface IKittyConnectable
     {
-        string GetPuttyConnString(IDataSource source);
+        string GetPuttyConnString(DataSourceBase source);
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolBase'
         /// </summary>
@@ -24,7 +25,7 @@ namespace _1RM.Utils.KiTTY
         ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
         string GetExeFullPath();
-        string GetExeArguments(IDataSource source);
+        string GetExeArguments(DataSourceBase source);
     }
 
     public static class PuttyConnectableExtension

@@ -11,6 +11,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.View.Editor.Forms;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -21,7 +22,7 @@ namespace _1RM.View.Editor
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
-        private readonly IDataSource? _addToDataSource = null; // target data source in add mode 
+        private readonly DataSourceBase? _addToDataSource = null; // target data source in add mode 
 
         public bool IsAddMode => _serversInBuckEdit == null && string.IsNullOrEmpty(Server.Id);
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
@@ -30,7 +31,7 @@ namespace _1RM.View.Editor
 
 
 
-        public static ServerEditorPageViewModel Add(GlobalData globalData, IDataSource addToDataSource, List<string>? presetTagNames = null)
+        public static ServerEditorPageViewModel Add(GlobalData globalData, DataSourceBase addToDataSource, List<string>? presetTagNames = null)
         {
             var server = new RDP
             {
@@ -40,7 +41,7 @@ namespace _1RM.View.Editor
             return new ServerEditorPageViewModel(globalData, server, addToDataSource);
         }
 
-        public static ServerEditorPageViewModel Duplicate(GlobalData globalData, IDataSource dataSource, ProtocolBase server)
+        public static ServerEditorPageViewModel Duplicate(GlobalData globalData, DataSourceBase dataSource, ProtocolBase server)
         {
             return new ServerEditorPageViewModel(globalData, server, dataSource);
         }
@@ -58,7 +59,7 @@ namespace _1RM.View.Editor
         /// <summary>
         /// Add or Edit or Duplicate
         /// </summary>
-        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, IDataSource? addToDataSource = null)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase? addToDataSource = null)
         {
             _globalData = globalData;
             _addToDataSource = addToDataSource;
@@ -68,7 +69,7 @@ namespace _1RM.View.Editor
             Server = (ProtocolBase)server.Clone();
             if (addToDataSource != null)
             {
-                Server.DataSourceName = addToDataSource.GetName();
+                Server.DataSourceName = addToDataSource.DataSourceName;
                 Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             _orgServer = (ProtocolBase)Server.Clone();

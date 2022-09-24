@@ -6,13 +6,32 @@ namespace _1RM.Model.DAO
 {
     public enum EnumDbStatus
     {
-        OK,
+        NotConnectedYet,
         AccessDenied,
+        LostConnection,
+
         RsaPrivateKeyNotFound,
         RsaPrivateKeyFormatError,
         RsaNotMatched,
-        NotConnected,
-        DataIsDamaged
+        DataIsDamaged,
+
+        OK,
+    }
+
+
+    public enum EnumConnectionStatus
+    {
+        NotConnectedYet, // Die
+        AccessDenied, // Die
+        CanConnect, // To LostConnection OR DisConnected
+        LostConnection, // Die
+    }
+    public enum EnumEncryptionStatus
+    {
+        NonEncryption,
+        RsaPrivateKeyNotFound, // Die
+        RsaPrivateKeyMismatch, // Die
+        DataIsDamaged // Die
     }
 
     public static class EnumConnectResultErrorInfo
@@ -38,12 +57,14 @@ namespace _1RM.Model.DAO
                 case EnumDbStatus.OK:
                     break;
 
-                case EnumDbStatus.NotConnected:
+                case EnumDbStatus.NotConnectedYet:
                     return "database: NotConnected!";
 
                 case EnumDbStatus.DataIsDamaged:
                     return "database: Data is damaged!"; // todo translate
 
+                case EnumDbStatus.LostConnection:
+                    return "database: Lost Connection!";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }

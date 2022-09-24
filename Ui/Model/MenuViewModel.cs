@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.Model.DAO
+namespace _1RM.Model
 {
     public class MenuViewModel<T> : NotifyPropertyChangedBase
     {
         private readonly Action<T> _onClickItem;
-        private readonly T _valueItem;
+        private readonly T? _valueItem;
 
         public MenuViewModel(string header,
-            T item,
+            T? item,
             Action<T> onClickItem)
             : this(header, item, new List<MenuViewModel<T>>(), onClickItem)
         {
@@ -32,7 +27,7 @@ namespace _1RM.Model.DAO
 
 
         private MenuViewModel(string header,
-            T item,
+            T? item,
             List<MenuViewModel<T>> subItems,
             Action<T> onClickItem)
         {
@@ -61,7 +56,10 @@ namespace _1RM.Model.DAO
         {
             get
             {
-                return _menuItemCommand ??= new RelayCommand((o) => { _onClickItem(_valueItem); });
+                return _menuItemCommand ??= new RelayCommand((o) =>
+                {
+                    if (_valueItem != null) _onClickItem(_valueItem);
+                });
             }
         }
     }

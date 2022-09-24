@@ -10,6 +10,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils.KiTTY;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -128,7 +129,7 @@ namespace _1RM.Utils
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(IDataSource dataSource, ProtocolBase server, Runner runner)
+        public static HostBase? GetHostForInternalRunner(DataSourceBase dataSource, ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)

@@ -29,8 +29,8 @@ namespace _1RM.View.Settings.DataSource
             _configurationService = IoC.Get<ConfigurationService>();
             _dataSourceService = IoC.Get<DataSourceService>();
 
-            LocalSourceConfig = _configurationService.DataSource.LocalDataSourceConfig;
-            _sourceConfigs.Add(LocalSourceConfig);
+            LocalSource = _configurationService.DataSource.LocalDataSource;
+            _sourceConfigs.Add(LocalSource);
 
             foreach (var config in _configurationService.DataSource.AdditionalDataSourceConfigs)
             {
@@ -46,10 +46,10 @@ namespace _1RM.View.Settings.DataSource
         });
 
 
-        public SqliteConfig LocalSourceConfig { get; }
+        public SqliteSource LocalSource { get; }
 
-        private ObservableCollection<DataSourceConfigBase> _sourceConfigs = new ObservableCollection<DataSourceConfigBase>();
-        public ObservableCollection<DataSourceConfigBase> SourceConfigs
+        private ObservableCollection<DataSourceBase> _sourceConfigs = new ObservableCollection<DataSourceBase>();
+        public ObservableCollection<DataSourceBase> SourceConfigs
         {
             get => _sourceConfigs;
             set => SetAndNotifyIfChanged(ref _sourceConfigs, value);
@@ -76,8 +76,8 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new SqliteSettingViewModel(this);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    SourceConfigs.Add(vm.NewConfig);
-                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.NewConfig);
+                                    SourceConfigs.Add(vm.New);
+                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
                                     _configurationService.Save();
                                 }
                                 break;
@@ -87,8 +87,8 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new MysqlSettingViewModel(this);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    SourceConfigs.Add(vm.NewConfig);
-                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.NewConfig);
+                                    SourceConfigs.Add(vm.New);
+                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
                                     _configurationService.Save();
                                 }
                                 break;
@@ -112,7 +112,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     switch (o)
                     {
-                        case SqliteConfig sqliteConfig:
+                        case SqliteSource sqliteConfig:
                             {
                                 var vm = new SqliteSettingViewModel(this, sqliteConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
@@ -127,7 +127,7 @@ namespace _1RM.View.Settings.DataSource
                                 }
                                 break;
                             }
-                        case MysqlConfig mysqlConfig:
+                        case MysqlSource mysqlConfig:
                             {
                                 var vm = new MysqlSettingViewModel(this, mysqlConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
@@ -161,7 +161,7 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdDelete ??= new RelayCommand((o) =>
                 {
-                    if (o is DataSourceConfigBase configBase && configBase != LocalSourceConfig)
+                    if (o is DataSourceBase configBase && configBase != LocalSource)
                     {
                         if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                         {
@@ -171,7 +171,7 @@ namespace _1RM.View.Settings.DataSource
                                 _configurationService.Save();
                             }
                             SourceConfigs.Remove(configBase);
-                            _dataSourceService.RemoveDataSource(configBase.Name);
+                            _dataSourceService.RemoveDataSource(configBase.DataSourceName);
                         }
                     }
                 });

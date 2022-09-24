@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using _1RM.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
+using _1RM.Model.DAO;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Resources.Icons;
@@ -28,6 +29,7 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.View.Editor;
 
 namespace _1RM.View
@@ -300,13 +302,13 @@ namespace _1RM.View
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
                     // select save to which source
-                    IDataSource? source = null;
-                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                    DataSourceBase? source = null;
+                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
                             return;
-                        source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                     }
                     else
                     {
@@ -367,13 +369,13 @@ namespace _1RM.View
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
                     // select save to which source
-                    IDataSource? source = null;
-                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.IsOk == true))
+                    DataSourceBase? source = null;
+                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
                             return;
-                        source = SourceService.GetDataSource(vm.SelectedSourceConfig.Name);
+                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                     }
                     else
                     {

@@ -1,0 +1,103 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
+using Newtonsoft.Json;
+
+namespace _1RM.Service.DataSource.Model
+{
+    public class MysqlSource : DataSourceBase
+    {
+
+        private string _host = "127.0.0.1";
+        public string Host
+        {
+            get => _host;
+            set => SetAndNotifyIfChanged(ref _host, value);
+        }
+
+        private int _port = 3306;
+        public int Port
+        {
+            get => _port;
+            set => SetAndNotifyIfChanged(ref _port, value);
+        }
+
+        private string _databaseName = "1Remote";
+        public string DatabaseName
+        {
+            get => _databaseName;
+            set => SetAndNotifyIfChanged(ref _databaseName, value);
+        }
+
+        private string _userName = "";
+        public string UserName
+        {
+            get => _userName;
+            set => SetAndNotifyIfChanged(ref _userName, value);
+        }
+
+        private string _password = "";
+        public string Password
+        {
+            get => _password;
+            set => SetAndNotifyIfChanged(ref _password, value);
+        }
+
+        public MysqlSource() : base()
+        {
+        }
+
+        public override string GetConnectionString(int connectTimeOutSeconds = 5)
+        {
+            return DbExtensions.GetMysqlConnectionString(_host, _port, _databaseName, _userName, _password, connectTimeOutSeconds);
+        }
+
+        [JsonIgnore]
+        public override DatabaseType DatabaseType => DatabaseType.MySql;
+
+        [JsonIgnore] public override string Description => $"server={Host};port={Port};database={DatabaseName};Uid={UserName};...";
+
+
+
+
+        private readonly IDataBase _dataBase = new DapperDataBase();
+        public override IDataBase GetDataBase()
+        {
+            return _dataBase;
+        }
+
+        public override string Database_GetPrivateKeyPath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool TestConnection(MysqlSource config)
+        {
+            return TestConnection(config.Host, config.Port, config.DatabaseName, config.UserName, config.Password);
+        }
+        public static bool TestConnection(string host, int port, string dbName, string userName, string password)
+        {
+            var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password, 2);
+            var db = new DapperDataBase();
+            try
+            {
+                //var dbConnection = new MySqlConnection(str);
+                //dbConnection.Open();
+                db.OpenNewConnection(DatabaseType.MySql, str);
+                return db.IsConnected();
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                db.CloseConnection();
+            }
+        }
+    }
+}

@@ -10,6 +10,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -54,7 +55,7 @@ namespace _1RM.View.Host.ProtocolHosts
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
         private AxMsRdpClient9NotSafeForScriptingEx? _rdpClient = null;
-        private readonly IDataSource? _dataSource;
+        private readonly DataSourceBase? _dataSource;
         private readonly RDP _rdpSettings;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%

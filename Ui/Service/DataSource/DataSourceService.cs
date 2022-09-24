@@ -25,20 +25,9 @@ namespace _1RM.Service.DataSource
         {
         }
 
-        public SqliteDatabaseSource? LocalDataSource { get; private set; } = null;
+        public SqliteSource? LocalDataSource { get; private set; } = null;
 
-        private readonly ConcurrentDictionary<string, IDataSource> _additionalSources = new ConcurrentDictionary<string, IDataSource>();
-
-        public bool NeedRead()
-        {
-            var ret = LocalDataSource?.NeedRead() ?? false;
-            // TODO 需要一套机制，当某个数据源连接失败后，就停止读取它的 NeedRead 信息
-            foreach (var additionalSource in _additionalSources)
-            {
-                ret |= additionalSource.Value.NeedRead();
-            }
-            return ret;
-        }
+        public readonly ConcurrentDictionary<string, DataSourceBase> AdditionalSources = new ConcurrentDictionary<string, DataSourceBase>();
 
         public List<ProtocolBaseViewModel> GetServers(bool focus)
         {
@@ -47,7 +36,7 @@ namespace _1RM.Service.DataSource
                 var ret = new List<ProtocolBaseViewModel>(100);
                 if (LocalDataSource != null)
                     ret.AddRange(LocalDataSource.GetServers(focus));
-                foreach (var dataSource in _additionalSources)
+                foreach (var dataSource in AdditionalSources)
                 {
                     var pbs = dataSource.Value.GetServers(focus);
                     ret.AddRange(pbs);
@@ -56,12 +45,12 @@ namespace _1RM.Service.DataSource
             }
         }
 
-        public IDataSource? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)
+        public DataSourceBase? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)
         {
             if (string.IsNullOrEmpty(sourceId) || sourceId == LOCAL_DATA_SOURCE_NAME)
                 return LocalDataSource;
-            if (_additionalSources.ContainsKey(sourceId))
-                return _additionalSources[sourceId];
+            if (AdditionalSources.ContainsKey(sourceId))
+                return AdditionalSources[sourceId];
             return null;
         }
 
@@ -69,11 +58,11 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
-        public EnumDbStatus InitLocalDataSource(SqliteConfig? sqliteConfig = null)
+        public EnumDbStatus InitLocalDataSource(SqliteSource? sqliteConfig = null)
         {
             if (sqliteConfig == null)
             {
-                sqliteConfig = IoC.Get<ConfigurationService>().DataSource.LocalDataSourceConfig;
+                sqliteConfig = IoC.Get<ConfigurationService>().DataSource.LocalDataSource;
                 if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
                     sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
                 var fi = new FileInfo(sqliteConfig.Path);
@@ -82,20 +71,20 @@ namespace _1RM.Service.DataSource
             }
 
             LocalDataSource?.Database_CloseConnection();
-            sqliteConfig.Name = LOCAL_DATA_SOURCE_NAME;
+            sqliteConfig.DataSourceName = LOCAL_DATA_SOURCE_NAME;
             if (!IoPermissionHelper.HasWritePermissionOnFile(sqliteConfig.Path))
             {
                 LocalDataSource = null;
                 return EnumDbStatus.AccessDenied;
             }
-            LocalDataSource = new SqliteDatabaseSource(sqliteConfig);
-            LocalDataSource.Database_OpenConnection();
+            LocalDataSource = sqliteConfig;
             var ret = LocalDataSource.Database_SelfCheck();
+            LocalDataSource?.Database_CloseConnection();
             RaisePropertyChanged(nameof(LocalDataSource));
             return ret;
         }
 
-        public void AddOrUpdateDataSourceAsync(DataSourceConfigBase config)
+        public void AddOrUpdateDataSourceAsync(DataSourceBase config)
         {
             Task.Factory.StartNew(() =>
             {
@@ -107,47 +96,24 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// TODO: need ASYNC support！
         /// </summary>
-        public EnumDbStatus AddOrUpdateDataSource(DataSourceConfigBase config)
+        public EnumDbStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5)
         {
-            if (config is SqliteConfig { Name: LOCAL_DATA_SOURCE_NAME } localConfig)
-            {
-                return InitLocalDataSource(localConfig);
-            }
-
-            // remove the old source
-            if (_additionalSources.ContainsKey(config.Name))
-            {
-                _additionalSources[config.Name].Database_CloseConnection();
-                _additionalSources.TryRemove(config.Name, out _);
-            }
-
             try
             {
-                switch (config)
+                if (config is SqliteSource { DataSourceName: LOCAL_DATA_SOURCE_NAME } localConfig)
                 {
-                    case SqliteConfig sqliteConfig:
-                        {
-                            var s = new SqliteDatabaseSource(sqliteConfig);
-                            var ret = s.Database_SelfCheck();
-                            if (ret == EnumDbStatus.OK)
-                            {
-                                _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
-                            }
-                            return ret;
-                        }
-                    case MysqlConfig mysqlConfig:
-                        {
-                            var s = new MysqlDatabaseSource(mysqlConfig);
-                            var ret = s.Database_SelfCheck();
-                            if (ret == EnumDbStatus.OK)
-                            {
-                                _additionalSources.AddOrUpdate(config.Name, s, (name, source) => s);
-                            }
-                            return ret;
-                        }
-                    default:
-                        throw new NotSupportedException($"{config.GetType()} is not a supported type");
+                    return InitLocalDataSource(localConfig);
                 }
+
+                // remove the old one
+                if (AdditionalSources.TryRemove(config.DataSourceName, out var old))
+                {
+                    old?.Database_CloseConnection();
+                }
+
+                var ret = config.Database_SelfCheck();
+                AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
+                return ret;
             }
             finally
             {
@@ -159,21 +125,21 @@ namespace _1RM.Service.DataSource
         {
             if (name == LOCAL_DATA_SOURCE_NAME)
                 return;
-            else if (_additionalSources.ContainsKey(name))
+            else if (AdditionalSources.ContainsKey(name))
             {
-                _additionalSources[name].Database_CloseConnection();
-                _additionalSources.TryRemove(name, out _);
+                AdditionalSources[name].Database_CloseConnection();
+                AdditionalSources.TryRemove(name, out _);
             }
         }
     }
 
     public static class DataSourceServiceExtend
     {
-        public static IDataSource? GetDataSource(this ProtocolBase protocol)
+        public static DataSourceBase? GetDataSource(this ProtocolBase protocol)
         {
             return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSourceName);
         }
-        public static IDataSource? GetDataSource(this ProtocolBaseViewModel protocol)
+        public static DataSourceBase? GetDataSource(this ProtocolBaseViewModel protocol)
         {
             return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSourceName);
         }
