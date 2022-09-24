@@ -20,14 +20,14 @@ namespace _1RM.View.Editor
 
             Debug.Assert(_configurationService.DataSource.AdditionalDataSourceConfigs.Count > 0);
 
-            _sourceConfigs.Add(_configurationService.DataSource.LocalDataSourceConfig);
+            _sourceConfigs.Add(_configurationService.DataSource.LocalDataSource);
             _sourceConfigs.AddRange(_configurationService.DataSource.AdditionalDataSourceConfigs);
-            _selectedSourceConfig = _sourceConfigs.First();
+            _selectedSource = _sourceConfigs.First();
         }
 
 
-        private List<DataSourceConfigBase> _sourceConfigs = new List<DataSourceConfigBase>();
-        public List<DataSourceConfigBase> SourceConfigs
+        private List<DataSourceBase> _sourceConfigs = new List<DataSourceBase>();
+        public List<DataSourceBase> SourceConfigs
         {
             get => _sourceConfigs;
             set => SetAndNotifyIfChanged(ref _sourceConfigs, value);
@@ -36,11 +36,11 @@ namespace _1RM.View.Editor
 
 
 
-        private DataSourceConfigBase _selectedSourceConfig;
-        public DataSourceConfigBase SelectedSourceConfig
+        private DataSourceBase _selectedSource;
+        public DataSourceBase SelectedSource
         {
-            get => _selectedSourceConfig;
-            set => SetAndNotifyIfChanged(ref _selectedSourceConfig, value);
+            get => _selectedSource;
+            set => SetAndNotifyIfChanged(ref _selectedSource, value);
         }
 
 
@@ -51,9 +51,9 @@ namespace _1RM.View.Editor
             {
                 return _cmdSelect ??= new RelayCommand((o) =>
                 {
-                    if (o is DataSourceConfigBase selected)
+                    if (o is DataSourceBase selected)
                     {
-                        SelectedSourceConfig = selected;
+                        SelectedSource = selected;
                         this.RequestClose(true);
                     }
                 });

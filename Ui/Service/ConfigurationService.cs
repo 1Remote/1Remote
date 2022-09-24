@@ -65,8 +65,12 @@ namespace _1RM.Service
 
     public class DataSourcesConfig
     {
-        public SqliteConfig LocalDataSourceConfig { get; set; } = new SqliteConfig(DataSourceService.LOCAL_DATA_SOURCE_NAME, "./" + AppPathHelper.APP_NAME + ".db");
-        public List<DataSourceConfigBase> AdditionalDataSourceConfigs { get; set; } = new List<DataSourceConfigBase>();
+        public SqliteSource LocalDataSource { get; set; } = new SqliteSource()
+        {
+            DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
+            Path = "./" + AppPathHelper.APP_NAME + ".db"
+        };
+        public List<DataSourceBase> AdditionalDataSourceConfigs { get; set; } = new List<DataSourceBase>();
     }
 
     public class ThemeConfig
@@ -205,9 +209,17 @@ namespace _1RM.Service
 
         public static ConfigurationService Load(string path, KeywordMatchService keywordMatchService)
         {
-            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
-            var config = tmp ?? new Configuration();
-            return new ConfigurationService(config, keywordMatchService);
+            try
+            {
+                var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+                var config = tmp ?? new Configuration();
+                return new ConfigurationService(config, keywordMatchService);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

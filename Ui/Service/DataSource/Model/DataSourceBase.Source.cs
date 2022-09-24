@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
 using JsonKnownTypes;
@@ -13,83 +14,45 @@ using Newtonsoft.Json;
 using Shawn.Utils;
 using Stylet;
 
-namespace _1RM.Service.DataSource
+namespace _1RM.Service.DataSource.Model
 {
-    public interface IDataSource : IDataService
+    public abstract partial class DataSourceBase : NotifyPropertyChangedBase
     {
-        public string GetName();
+        protected bool _isReadable = true;
+        [JsonIgnore]
+        public bool IsReadable => _isReadable;
+        protected bool _isWritable = true;
+        [JsonIgnore]
+        public bool IsWritable => _isWritable;
 
         /// <summary>
         /// 已缓存的服务器信息
         /// </summary>
         [JsonIgnore]
-        public List<ProtocolBaseViewModel> CachedProtocols { get; }
+        public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
 
-        /// <summary>
-        /// 返回数据源的 ID 
-        /// </summary>
-        /// <returns></returns>
-        public string DataSourceName { get; }
+        [JsonIgnore]
+        public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
+        [JsonIgnore]
+        public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        public virtual bool NeedRead()
+        {
+            if (Status == EnumDbStatus.OK)
+            {
+                var dataBase = GetDataBase();
+                DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
+                return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
+            }
+            return false;
+        }
+
+
 
         /// <summary>
         /// 返回服务器信息(服务器信息已指向数据源)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus);
-
-        public bool IsReadable { get; }
-        public bool IsWritable { get; }
-
-        public abstract long LastReadFromDataSourceTimestamp { get; }
-        public abstract long DataSourceDataUpdateTimestamp { get; set; }
-
-        /// <summary>
-        /// 定期检查数据源的最后更新时间戳，大于 LastUpdateTimestamp 则返回 true
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool NeedRead();
-    }
-
-    public abstract class DatabaseSource : IDataSource
-    {
-        public string DataSourceName => DataSourceConfig.Name;
-        public Model.DataSourceConfigBase DataSourceConfig;
-
-        protected DatabaseSource(Model.DataSourceConfigBase dataSourceConfig)
-        {
-            DataSourceConfig = dataSourceConfig;
-        }
-
-        public string GetName()
-        {
-            return DataSourceConfig.Name;
-        }
-
-        public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
-
-        protected bool _isReadable = true;
-        bool IDataSource.IsReadable => _isReadable;
-        protected bool _isWritable = true;
-        bool IDataSource.IsWritable => _isWritable;
-
-
-        public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
-        public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-        public virtual bool NeedRead()
-        {
-            var dataBase = GetDataBase();
-            dataBase?.OpenConnection();
-            if (dataBase?.IsConnected() == true)
-            {
-                DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
-                return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
-            }
-
-            return false;
-        }
-
-
         public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus = false)
         {
             lock (this)
@@ -101,6 +64,11 @@ namespace _1RM.Service.DataSource
                 }
 
                 LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                if (Database_OpenConnection() == false)
+                {
+                    Status = EnumDbStatus.AccessDenied;
+                    return CachedProtocols;
+                }
                 var protocols = Database_GetServers();
                 CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
                 foreach (var protocol in protocols)
@@ -120,20 +88,37 @@ namespace _1RM.Service.DataSource
                         SimpleLogHelper.Info(e);
                     }
                 }
-                DataSourceConfig.SetStatus(true, $"{CachedProtocols.Count} servers");
+
+                Status = EnumDbStatus.OK;
                 return CachedProtocols;
             }
         }
 
         public abstract IDataBase GetDataBase();
 
-        public bool Database_OpenConnection()
+        public bool Database_OpenConnection(int connectTimeOutSeconds = 5)
         {
             var dataBase = GetDataBase();
             // open db or create db.
             Debug.Assert(dataBase != null);
-            dataBase.OpenNewConnection(DataSourceConfig.DatabaseType, DataSourceConfig.GetConnectionString());
+            dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
             dataBase.InitTables();
+            dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
+            if (dataBase.IsConnected())
+            {
+                if (Status != EnumDbStatus.NotConnectedYet)
+                {
+                    Status = EnumDbStatus.LostConnection;
+                }
+                else
+                {
+                    Status = EnumDbStatus.AccessDenied;
+                }
+            }
+            else
+            {
+                return false;
+            }
 
             // check database rsa encrypt
             var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
@@ -146,7 +131,6 @@ namespace _1RM.Service.DataSource
             {
                 _rsa = null;
             }
-
             return true;
         }
 
@@ -158,26 +142,32 @@ namespace _1RM.Service.DataSource
                 dataBase.CloseConnection();
         }
 
-        public virtual EnumDbStatus Database_SelfCheck()
+        public virtual EnumDbStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
-            EnumDbStatus ret = EnumDbStatus.NotConnected;
+            EnumDbStatus ret = EnumDbStatus.NotConnectedYet;
             var dataBase = GetDataBase();
-            try
+
+            if (dataBase.IsConnected() == false)
             {
-                dataBase?.OpenNewConnection(DataSourceConfig.DatabaseType, DataSourceConfig.GetConnectionString());
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                ret = EnumDbStatus.NotConnected;
+                try
+                {
+                    dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    if (Status != EnumDbStatus.NotConnectedYet)
+                    {
+                        ret = EnumDbStatus.LostConnection;
+                    }
+                    else
+                    {
+                        ret = EnumDbStatus.AccessDenied;
+                    }
+                }
             }
 
-            // check connection
-            if (dataBase?.IsConnected() != true)
-            {
-                ret = EnumDbStatus.NotConnected;
-            }
-            else
+            if (dataBase.IsConnected())
             {
                 dataBase.InitTables();
 
@@ -192,30 +182,19 @@ namespace _1RM.Service.DataSource
                 {
                     var publicKey = dataBase.Get_RSA_PublicKey();
                     var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
-                    switch (pks)
+                    ret = pks switch
                     {
-                        case RSA.EnumRsaStatus.CannotReadPrivateKeyFile:
-                            return EnumDbStatus.RsaPrivateKeyNotFound;
-                        case RSA.EnumRsaStatus.PrivateKeyFormatError:
-                            return EnumDbStatus.RsaPrivateKeyFormatError;
-                        case RSA.EnumRsaStatus.PublicKeyFormatError:
-                            return EnumDbStatus.DataIsDamaged;
-                        case RSA.EnumRsaStatus.PrivateAndPublicMismatch:
-                            return EnumDbStatus.RsaNotMatched;
-                        case RSA.EnumRsaStatus.NoError:
-                            break;
-                    }
+                        RSA.EnumRsaStatus.CannotReadPrivateKeyFile => EnumDbStatus.RsaPrivateKeyNotFound,
+                        RSA.EnumRsaStatus.PrivateKeyFormatError => EnumDbStatus.RsaPrivateKeyFormatError,
+                        RSA.EnumRsaStatus.PublicKeyFormatError => EnumDbStatus.DataIsDamaged,
+                        RSA.EnumRsaStatus.PrivateAndPublicMismatch => EnumDbStatus.RsaNotMatched,
+                        RSA.EnumRsaStatus.NoError => EnumDbStatus.OK,
+                        _ => throw new NotSupportedException()
+                    };
                 }
             }
 
-            if (ret == EnumDbStatus.OK)
-            {
-                DataSourceConfig.SetStatus(true, $"{Database_GetServersCount()} servers");
-            }
-            else
-            {
-                DataSourceConfig.SetStatus(false, ret.GetErrorInfo());
-            }
+            Status = ret;
             return ret;
         }
 

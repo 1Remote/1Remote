@@ -6,8 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using Newtonsoft.Json;
-using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -299,7 +300,7 @@ namespace _1RM.Model.Protocol.Base
         /// run before connect, decrypt all fields
         /// </summary>
         /// <param name="source"></param>
-        public virtual void ConnectPreprocess(IDataSource source)
+        public virtual void ConnectPreprocess(DataSourceBase source)
         {
             var s = this;
             source.DecryptToRamLevel(ref s);

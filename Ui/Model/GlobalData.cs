@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using _1RM.Model.DAO;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using Shawn.Utils;
 using Stylet;
@@ -103,7 +105,33 @@ namespace _1RM.Model
                 return;
             }
 
-            if (focus || _sourceService.NeedRead())
+
+            var needRead = false;
+            if (focus == false)
+            {
+                needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
+                foreach (var additionalSource in _sourceService.AdditionalSources)
+                {
+                    // 对于断线的数据源，隔一段时间后尝试重连
+                    if (additionalSource.Value.Status == EnumDbStatus.LostConnection
+                        //TODO && additionalSource.Value.GetConfig().StatueTime.AddHours(0.5) < DateTime.Now
+                        )
+                    {
+                        if (additionalSource.Value.Database_OpenConnection())
+                        {
+                            additionalSource.Value.Database_SelfCheck();
+                        }
+                        continue;
+                    }
+
+                    if (needRead == false)
+                    {
+                        needRead |= additionalSource.Value.NeedRead();
+                    }
+                }
+            }
+
+            if (focus || needRead)
             {
                 // read from db
                 VmItemList = _sourceService.GetServers(focus);
@@ -121,7 +149,7 @@ namespace _1RM.Model
             }
         }
 
-        public void AddServer(ProtocolBase protocolServer, IDataSource dataSource)
+        public void AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
             dataSource.Database_InsertServer(protocolServer);
             ReloadServerList();

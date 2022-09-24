@@ -26,28 +26,39 @@ namespace _1RM.View.Settings.DataSource
 {
     public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly SqliteConfig? _orgSqliteConfig = null;
-        public readonly SqliteConfig NewConfig = new SqliteConfig("");
-        private SqliteDatabaseSource? _databaseSource;
+        private readonly SqliteSource? _orgSqliteConfig = null;
+        public readonly SqliteSource New = new SqliteSource();
         private readonly DataSourceViewModel _dataSourceViewModel;
 
-        public SqliteSettingViewModel(DataSourceViewModel dataSourceViewModel, SqliteConfig? sqliteConfig = null)
+        public SqliteSettingViewModel(DataSourceViewModel dataSourceViewModel, SqliteSource? sqliteConfig = null)
         {
             _orgSqliteConfig = sqliteConfig;
+            _orgSqliteConfig?.Database_CloseConnection();
             _dataSourceViewModel = dataSourceViewModel;
             if (_orgSqliteConfig != null)
             {
-                Name = _orgSqliteConfig.Name;
+                Name = _orgSqliteConfig.DataSourceName;
                 Path = _orgSqliteConfig.Path;
-                ValidateDbStatusAndShowMessageBox(false);
                 // disable name editing of LocalSource
-                if (dataSourceViewModel.LocalSourceConfig == sqliteConfig)
+                if (dataSourceViewModel.LocalSource == sqliteConfig)
                 {
                     NameWritable = false;
                 }
             }
+        }
+        ~SqliteSettingViewModel()
+        {
+        }
 
+        protected override void OnViewLoaded()
+        {
             GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
+        }
+
+        protected override void OnClose()
+        {
+            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
+            New.Database_CloseConnection();
         }
 
         private INotifyPropertyChanged? _topLevelViewModel;
@@ -74,27 +85,15 @@ namespace _1RM.View.Settings.DataSource
             });
         }
 
-        ~SqliteSettingViewModel()
-        {
-            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
-            _databaseSource?.Database_CloseConnection();
-        }
-
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
-            if (_databaseSource == null)
-            {
-                if (showAlert)
-                    MessageBoxHelper.ErrorAlert(EnumDbStatus.NotConnected.GetErrorInfo());
-                return false;
-            }
-
+            return true;
             // validate rsa key
-            var res = _databaseSource.Database_SelfCheck();
+            var res = New.Database_SelfCheck();
             if (res == EnumDbStatus.OK)
             {
-                DbRsaPublicKey = _databaseSource.Database_GetPublicKey() ?? "";
-                DbRsaPrivateKeyPath = _databaseSource.Database_GetPrivateKeyPath() ?? "";
+                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
+                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
                 return true;
             }
             if (showAlert == false) return false;
@@ -112,10 +111,10 @@ namespace _1RM.View.Settings.DataSource
             {
                 if (NameWritable && SetAndNotifyIfChanged(ref _name, value))
                 {
-                    NewConfig.Name = value;
+                    New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgSqliteConfig && string.Equals(x.Name, _name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgSqliteConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
                 }
             }
@@ -129,12 +128,12 @@ namespace _1RM.View.Settings.DataSource
             {
                 if (SetAndNotifyIfChanged(ref _path, value))
                 {
-                    _databaseSource?.Database_CloseConnection();
-                    NewConfig.Path = value;
-                    if (string.IsNullOrEmpty(Path) == false && File.Exists(Path))
-                    {
-                        _databaseSource = new SqliteDatabaseSource(NewConfig);
-                    }
+                    New.Database_CloseConnection();
+                    New.Path = value;
+                    //if (string.IsNullOrEmpty(Path) == false && File.Exists(Path))
+                    //{
+                    //    New.Database_OpenConnection();
+                    //}
                 }
             }
         }
@@ -173,7 +172,7 @@ namespace _1RM.View.Settings.DataSource
                     }
                 }, o => string.IsNullOrWhiteSpace(Path) == false
                         && File.Exists(Path)
-                        && _databaseSource != null);
+                        && New.Status == EnumDbStatus.OK);
             }
         }
 
@@ -188,7 +187,7 @@ namespace _1RM.View.Settings.DataSource
         private const string PrivateKeyFileExt = ".pem";
         public void GenRsa(string privateKeyPath = "")
         {
-            if (_databaseSource == null)
+            if (New.Status != EnumDbStatus.OK)
                 return;
 
             if (string.IsNullOrEmpty(privateKeyPath))
@@ -227,8 +226,8 @@ namespace _1RM.View.Settings.DataSource
                         File.WriteAllText(privateKeyPath, privateKeyContent);
                     }
 
-                    var ss = _databaseSource.GetServers().Select(x => x.Server);
-                    if (_databaseSource.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
+                    var ss = New.GetServers().Select(x => x.Server);
+                    if (New.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
                         OnRsaProgress(true);
@@ -279,12 +278,12 @@ namespace _1RM.View.Settings.DataSource
                     }
                 }, o => string.IsNullOrWhiteSpace(Path) == false
                         && File.Exists(Path)
-                        && _databaseSource != null);
+                        && New.Status == EnumDbStatus.OK);
             }
         }
         public void CleanRsa()
         {
-            if (_databaseSource == null)
+            if (New.Status != EnumDbStatus.OK)
                 return;
 
             Task.Factory.StartNew(() =>
@@ -296,8 +295,8 @@ namespace _1RM.View.Settings.DataSource
                     Debug.Assert(File.Exists(Path));
                     File.Copy(Path, Path + ".back", true);
 
-                    var ss = _databaseSource.GetServers().Select(x => x.Server);
-                    if (_databaseSource.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
+                    var ss = New.GetServers().Select(x => x.Server);
+                    if (New.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
                         OnRsaProgress(true);
@@ -332,7 +331,7 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdSelectRsaPrivateKey ??= new RelayCommand((o) =>
                 {
-                    if (_databaseSource == null)
+                    if (New.Status != EnumDbStatus.OK)
                         return;
                     if (string.IsNullOrEmpty(DbRsaPrivateKeyPath)) return;
                     lock (this)
@@ -341,11 +340,11 @@ namespace _1RM.View.Settings.DataSource
                             initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
                             filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                         if (path == null) return;
-                        var pks = RSA.CheckPrivatePublicKeyMatch(path, _databaseSource.Database_GetPublicKey());
+                        var pks = RSA.CheckPrivatePublicKeyMatch(path, New.Database_GetPublicKey());
                         if (pks == RSA.EnumRsaStatus.NoError)
                         {
                             // update private key only
-                            _databaseSource.Database_UpdatePrivateKeyPathOnly(path);
+                            New.Database_UpdatePrivateKeyPathOnly(path);
                             ValidateDbStatusAndShowMessageBox();
                         }
                         else
@@ -355,7 +354,7 @@ namespace _1RM.View.Settings.DataSource
                     }
                 }, o => string.IsNullOrWhiteSpace(Path) == false
                         && File.Exists(Path)
-                        && _databaseSource != null);
+                        && New != null);
             }
         }
 
@@ -369,7 +368,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     var newPath = SelectFileHelper.OpenFile(
                         initialDirectory: string.IsNullOrWhiteSpace(Path) == false && File.Exists(Path) ? new FileInfo(Path).DirectoryName : "",
-                        filter: "Sqlite Database|*.db",
+                        filter: "SqliteSource Database|*.db",
                         checkFileExists: false);
                     if (newPath == null) return;
                     var oldPath = Path;
@@ -387,28 +386,11 @@ namespace _1RM.View.Settings.DataSource
                         try
                         {
                             Path = newPath;
-                            _databaseSource?.Database_CloseConnection();
-                            _databaseSource = new SqliteDatabaseSource(NewConfig);
-                            if (File.Exists(newPath) == false)
-                            {
-                                _databaseSource.Database_OpenConnection();
-                                _databaseSource.Database_CloseConnection();
-                            }
-                            //_databaseSource.DataSourceConfig = SqliteConfig;
-                            //_databaseSource.Database_OpenConnection();
-                            //_dataSourceService.InitLocalDataSource(path);
-                            //_appData.ReloadServerList();
-                            //_configurationService.DataSource.LocalDatabasePath = path;
-                            //_configurationService.Save();
                             ValidateDbStatusAndShowMessageBox();
                         }
                         catch (Exception ee)
                         {
                             Path = oldPath;
-                            _databaseSource?.Database_CloseConnection();
-                            _databaseSource = new SqliteDatabaseSource(NewConfig);
-                            //_configurationService.DataSource.LocalDatabasePath = oldPath;
-                            //_dataSourceService.InitLocalDataSource(oldPath);
                             SimpleLogHelper.Warning(ee);
                             MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"));
                         }
@@ -431,11 +413,11 @@ namespace _1RM.View.Settings.DataSource
 
                     if (_orgSqliteConfig != null)
                     {
-                        _orgSqliteConfig.Name = Name;
+                        _orgSqliteConfig.DataSourceName = Name;
                         _orgSqliteConfig.Path = Path;
                     }
 
-                    _databaseSource?.Database_CloseConnection();
+                    New.Database_CloseConnection();
                     this.RequestClose(true);
 
                 }, o => (
@@ -454,7 +436,7 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdCancel ??= new RelayCommand((o) =>
                 {
-                    _databaseSource?.Database_CloseConnection();
+                    New.Database_CloseConnection();
                     this.RequestClose(false);
                 });
             }

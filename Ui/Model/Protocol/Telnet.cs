@@ -4,6 +4,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM.Model.Protocol
 {
@@ -38,7 +39,7 @@ namespace _1RM.Model.Protocol
             return 3;
         }
 
-        public string GetPuttyConnString(IDataSource _)
+        public string GetPuttyConnString(DataSourceBase _)
         {
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }
@@ -66,7 +67,7 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(IDataSource sourceService)
+        public string GetExeArguments(DataSourceBase sourceService)
         {
             return GetPuttyConnString(sourceService);
         }

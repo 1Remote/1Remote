@@ -75,13 +75,12 @@ namespace _1RM
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
             // Step2
-            // Configure the IoC container in here
-            builder.Bind<IDataBase>().To<DapperDataBaseFree>();
+            // Configure the IoC container in here;
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
             builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
-            builder.Bind<Configuration>().ToInstance(_appInit.Configuration);
+            builder.Bind<Configuration>().ToInstance(_appInit.newConfiguration);
             builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationService);
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);

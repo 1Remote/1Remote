@@ -27,28 +27,38 @@ namespace _1RM.View.Settings.DataSource
 {
     public class MysqlSettingViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly MysqlConfig? _orgMysqlConfig = null;
-        public MysqlConfig NewConfig = new MysqlConfig("");
+        private readonly MysqlSource? _orgMysqlConfig = null;
+        public MysqlSource New = new MysqlSource();
         private readonly DataSourceViewModel _dataSourceViewModel;
-        public MysqlSettingViewModel(DataSourceViewModel dataSourceViewModel, MysqlConfig? mysqlConfig = null)
+        public MysqlSettingViewModel(DataSourceViewModel dataSourceViewModel, MysqlSource? mysqlConfig = null)
         {
             _dataSourceViewModel = dataSourceViewModel;
             _orgMysqlConfig = mysqlConfig;
             if (_orgMysqlConfig != null)
             {
-                Name = _orgMysqlConfig.Name;
+                Name = _orgMysqlConfig.DataSourceName;
                 Host = _orgMysqlConfig.Host;
                 Port = _orgMysqlConfig.Port.ToString();
                 DatabaseName = _orgMysqlConfig.DatabaseName;
                 UserName = _orgMysqlConfig.UserName;
                 Password = _orgMysqlConfig.Password;
             }
-            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
         }
 
         ~MysqlSettingViewModel()
         {
+        }
+
+
+        protected override void OnViewLoaded()
+        {
+            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
+        }
+
+        protected override void OnClose()
+        {
             GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
+            New.Database_CloseConnection();
         }
 
         private INotifyPropertyChanged? _topLevelViewModel;
@@ -86,7 +96,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (string.IsNullOrWhiteSpace(_name))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.Name, _name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
                 }
             }
@@ -147,7 +157,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (_orgMysqlConfig != null)
                     {
-                        _orgMysqlConfig.Name = Name.Trim();
+                        _orgMysqlConfig.DataSourceName = Name.Trim();
                         _orgMysqlConfig.Host = Host.Trim();
                         _orgMysqlConfig.Port = int.Parse(_port);
                         _orgMysqlConfig.DatabaseName = DatabaseName.Trim();
@@ -156,8 +166,9 @@ namespace _1RM.View.Settings.DataSource
                     }
                     else
                     {
-                        NewConfig = new MysqlConfig(Name.Trim())
+                        New = new MysqlSource()
                         {
+                            DataSourceName = Name.Trim(),
                             Host = Host.Trim(),
                             Port = int.Parse(_port),
                             DatabaseName = DatabaseName.Trim(),
@@ -175,7 +186,7 @@ namespace _1RM.View.Settings.DataSource
                          && string.IsNullOrWhiteSpace(DatabaseName) == false
                          && string.IsNullOrWhiteSpace(UserName) == false
                          && string.IsNullOrWhiteSpace(Password) == false
-                         && (Name != _orgMysqlConfig?.Name
+                         && (Name != _orgMysqlConfig?.DataSourceName
                             || Host != _orgMysqlConfig?.Host
                             || Port != _orgMysqlConfig?.Port.ToString()
                             || DatabaseName != _orgMysqlConfig?.DatabaseName
@@ -215,15 +226,16 @@ namespace _1RM.View.Settings.DataSource
                         {
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
 
-                            var config = new MysqlConfig(Name)
+                            var config = new MysqlSource()
                             {
+                                DataSourceName = Name,
                                 Host = Host,
                                 Port = int.Parse(_port),
                                 DatabaseName = DatabaseName,
                                 UserName = UserName,
                                 Password = Password
                             };
-                            if (MysqlDatabaseSource.TestConnection(config))
+                            if (MysqlSource.TestConnection(config))
                             {
                                 MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success!"));
                             }

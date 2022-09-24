@@ -20,19 +20,23 @@ namespace _1RM.Model.DAO.Dapper
         protected string _connectionString = "";
         protected DatabaseType _databaseType = DatabaseType.Sqlite;
 
-        public virtual void CloseConnection()
+        public override void CloseConnection()
         {
             lock (this)
             {
                 _dbConnection?.Close();
-                //if (_databaseType == DatabaseType.Sqlite)
-                //    SQLiteConnection.ClearAllPools();
+                if (_databaseType == DatabaseType.Sqlite)
+                {
+                    System.Data.SQLite.SQLiteConnection.ClearAllPools();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
             }
         }
 
         public IDbConnection? Connection => _dbConnection;
 
-        public void OpenConnection()
+        public override void OpenConnection()
         {
             if (string.IsNullOrWhiteSpace(_connectionString))
                 return;
@@ -65,7 +69,7 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public void OpenNewConnection(DatabaseType type, string newConnectionString)
+        public override void OpenNewConnection(DatabaseType type, string newConnectionString)
         {
             lock (this)
             {
@@ -87,7 +91,7 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public virtual bool IsConnected()
+        public override bool IsConnected()
         {
             lock (this)
             {
@@ -95,7 +99,7 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public virtual void InitTables()
+        public override void InitTables()
         {
             _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
@@ -119,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 ");
         }
 
-        public virtual ProtocolBase? GetServer(int id)
+        public override ProtocolBase? GetServer(int id)
         {
             lock (this)
             {
@@ -132,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        public virtual List<ProtocolBase>? GetServers()
+        public override List<ProtocolBase>? GetServers()
         {
             lock (this)
             {
@@ -148,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
 
-        public virtual string AddServer(ProtocolBase protocolBase)
+        public override string AddServer(ProtocolBase protocolBase)
         {
             lock (this)
             {
@@ -161,7 +165,7 @@ VALUES
             }
         }
 
-        public virtual int AddServer(IEnumerable<ProtocolBase> protocolBases)
+        public override int AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
             lock (this)
             {
@@ -183,7 +187,7 @@ VALUES
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
 `{nameof(Server.Json)}` = @{nameof(Server.Json)}
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
-        public virtual bool UpdateServer(ProtocolBase server)
+        public override bool UpdateServer(ProtocolBase server)
         {
             lock (this)
             {
@@ -194,7 +198,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual bool UpdateServer(IEnumerable<ProtocolBase> servers)
+        public override bool UpdateServer(IEnumerable<ProtocolBase> servers)
         {
             lock (this)
             {
@@ -206,7 +210,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual bool DeleteServer(string id)
+        public override bool DeleteServer(string id)
         {
             lock (this)
             {
@@ -219,7 +223,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual bool DeleteServer(IEnumerable<string> ids)
+        public override bool DeleteServer(IEnumerable<string> ids)
         {
             lock (this)
             {
@@ -232,7 +236,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual string? GetConfig(string key)
+        public override string? GetConfig(string key)
         {
             return GetConfigPrivate(key);
         }
@@ -250,7 +254,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
         private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
 
-        public virtual bool SetConfig(string key, string value)
+        public override bool SetConfig(string key, string value)
         {
             return SetConfigPrivate(key, value);
         }
@@ -264,7 +268,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
+        public override bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
         {
             lock (this)
             {
@@ -296,7 +300,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual void SetDataUpdateTimestamp(long time = -1)
+        public override void SetDataUpdateTimestamp(long time = -1)
         {
             lock (this)
             {
@@ -307,7 +311,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public virtual long GetDataUpdateTimestamp()
+        public override long GetDataUpdateTimestamp()
         {
             lock (this)
             {

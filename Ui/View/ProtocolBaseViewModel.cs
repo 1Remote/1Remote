@@ -10,6 +10,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using Newtonsoft.Json;
 using NUlid;
 using Shawn.Utils;
@@ -26,12 +27,12 @@ namespace _1RM.View
         public string Id => Server.Id;
 
         public ProtocolBase Server { get; }
-        public ProtocolBaseViewModel(ProtocolBase psb, IDataSource dataSource)
+        public ProtocolBaseViewModel(ProtocolBase psb, DataSourceBase dataSource)
         {
             Debug.Assert(psb != null);
             Server = psb;
             // TODO how it works with a tmp server?
-            DataSourceName = dataSource.GetName();
+            DataSourceName = dataSource.DataSourceName;
             psb.DataSourceName = dataSource.DataSourceName;
             IsViewable = IsEditable = dataSource.IsWritable;
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
