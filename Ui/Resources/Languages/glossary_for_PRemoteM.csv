@@ -1,236 +1,236 @@
-key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp
-language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP
-language_code-google,en,zh-CN,cs,de,fr,pt,ja
-language_name,English (en-US),简体中文 (zh-CN),čeština,Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP)
-messagebox_title_warning,PRemoteM Warning,PRemoteM 警告,PRemoteM – varování,PRemoteM Warnung,PRemoteM Warning,PRemoteM Warning,PRemoteM Warning
-messagebox_title_error,PRemoteM Error,PRemoteM 错误,PRemoteM – chyba,PRemoteM Fehler,PRemoteM Erreur,PRemoteM Error,PRemoteM Error
-messagebox_title_info,PRemoteM Info,PRemoteM 提示,PRemoteM – informace,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Info
-OK,OK,确定,OK,OK,OK,OK,OK
-Exit,Exit,退出,Ukončit,Beenden,Sortir,Sair,
-Close,Close,关闭,Zavřít,Schließen,Fermer,Fechar,
-Add,Add,添加,Přidat,Hinzufügen,Ajouter,Adicionar,
-Edit,Edit,编辑,Upravit,Bearbeiten,Edition,Editar,
-Save,Save,保存,Uložit,Speichern,Sauvegarder,Salvar,
-Save as...,Save as...,保存到...,Uložit jako…,Speichern als...,Sauvegarder sour...,Salvar como...,
-Back,Back,返回,Zpět,Zurück,Retour,Voltar,
-Delete,Delete,删除,Smazat,Löschen,Effacer,Deletar,
-Cancel,Cancel,取消,Storno,Abbrechen,Annuler,Cancelar,
-Select,Select,选择,Vybrat,Auswählen,Selectionner,Selecionar,
-Explore to...,Explore to...,定位到...,Prozkoumat v…,,Explorer...,Explorar como...,
-Previous,Previous,上一页,Předchozí,Zurück,Précédent,Anterior,
-Next,Next,下一页,Další,Weiter,Suivant,Próximo,
-Done,Done,完成,Hotovo,Fertig,Effectuée,OK,
-Reset,Reset,重置,Resetovat,Zurücksetzen,Réinitialiser,Redefinir,
-Import,Import,导入,Import,,Importer,Importar,
-Export,Export,导出,Export,,Exporter,Exportar,
-Name,Name,名称,Název,,Nom,Nome,
-File Name,File Name,文件名,Název souboru,Dateiname,Nom de fichier,Nome do arquivo,
-Test,Test,测试,Test,,,Teste,
-Reconnect,Reconnect,重新连接,Znovu připojit,Neu verbinden,Reconnecter,Reconectar,
-Dismiss,Dismiss,关闭,Zahodit,Schließen,Rejeter,Dispensar,
-Lock,Lock,锁定,Zamknout,Sperren,Verrouiller,Bloquear,
-Always on top,Always on top,置顶,Vždy na vrchu,,Garder au premier plan,Sempre no topo,
-Close all,Close all,全部关闭,Zavřít vše,Alle schließen,Tout fermer,Fechar tudo,
-Rename,Rename,重命名,Přejmenovat,Umbenennen,Renommer,Renomear,
-Connect,Connect,连接,Připojit,Verbinden,Connexion,Conectar,
-Connect (New window),Connect (New window),连接 (新窗口),Připojit (nové okno),Verbinden (Neues Fenster),Connexion (Nouvelle fenetre),Conectar (Nova janela),
-Note,Note,Note,Poznámka,Note,Note,Note,
-Share,Share,分享,Sdílet,,,,
-Copy,Copy,复制,Zkopírovat,,,,
-filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',
-Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),
-hotkey_already_registered,Hot key already registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,
-hotkey_registered_fail,Failed to register the hot key,快捷键注册失败,Klávesovou zkratku se nepodařilo zaregistrovat,Fehler bei der Hotkey Registrierung,Echec de l'enregistrement du raccourci clavier,Falha ao registrar a tecla de atalho,
-string_permission_denied,Permission denied,无操作权限,Oprávnění odepřeno,Zugriff verweigert,Permission refusée,Permissão negada,
-All,All,全部,Vše,Alle,Tous,Todos,
-Protocol,Protocol,协议,Protokol,Protokoll,,Protocolo,
-file_transmit_host_list_header_last_update,Last update,修改时间,Naposledy zaktualizováno,Letztes Update,Dernière mise à jour,Última atualização,
-file_transmit_host_list_header_type,Type,类型,Typ,Typ,,Tipo,
-file_transmit_host_list_header_size,Size,大小,Velikost,Größe,Taille,Tamanho,
-file_transmit_host_message_preview_over_size,"This item is over 1 MB, are you sure you want to open it?",文件超过 1 MB，确定要打开吗?,Tato položka má přes 1 MB – opravdu ji chcete otevírat?,"Das Bild ist über 1 MB groß, wirklich öffnen?","Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?",Este item tem mais de 1 MB. Tem certeza de que quer abrir?,
-file_transmit_host_message_files_download_to,Please select a folder to save to,将文件下载到所选文件夹,Vyberte složku do které uložit,Bitte wählen Sie den Speicherpfad aus,Veuillez sélectionner un dossier pour enregistrer les fichiers,Selecione uma pasta para salvar,
-file_transmit_host_message_files_download_to_dir,Use this folder,选择该文件夹,Použít tuto složku,Den Ordner verwenden,Utiliser ce dossier,Usar esta pasta,
-file_transmit_host_message_select_files_to_upload,Please select files to upload,请选择要上传的文件,Vyberte soubory k nahrání,Bitte die Dateien zum Hochladen auswählen,Veuillez sélectionner les fichiers à télécharger,Selecione os arquivos para fazer o upload,
-file_transmit_host_command_refresh,Refresh (F5),刷新(F5),Načíst znovu (F5),Aktualisieren (F5),Actualiser (F5),Atualizar (F5),
-file_transmit_host_command_create_folder,Create a folder,新建文件夹,Vytvořit složku,Ordner erstellen,Créer le dossier,Criar uma nova pasta,
-file_transmit_host_command_upload,Upload (Ctrl + V),上传(Ctrl + V),Nahrát (Ctrl + V),Upload (STRG + V),Télécharger (Ctrl + V),Enviar (Ctrl + V),
-file_transmit_host_command_select_files_upload,Select files to upload,选择文件上传,Vyberte soubory k nahrání,Dateien zum Hochladen auswählen,Sélectionnez les fichiers à télécharger,Selecione os arquivos para fazer o upload,
-file_transmit_host_command_select_folder_upload,Select a folder to upload,选择文件夹上传,Vyberte složku k nahrání,Ordner zum Hochladen auswählen,Sélectionnez le dossier à télécharger,Selecione uma pasta para fazer o upload,
-file_transmit_host_command_delete,Delete (Del),删除(Del),Smazat (Del),Löschen (ENTF),Supprimer (Suppr),Deletar (Del),
-file_transmit_host_command_save_to,Save to... (Ctrl + S),保存到...(Ctrl + S),Uložit do… (Ctrl + S),Speichern nach... (STRG + S),Enregistrer sous ... (Ctrl + S),Salvar como... (Ctrl + S),
-file_transmit_host_warning_same_names_title,Replace or cancel,替换或跳过,Nahradit nebo zrušit,Austauschen oder abbrechen,Remplacer ou annuler,Substituir ou cancelar,
-file_transmit_host_warning_same_names,The destination has {0} file(s) with the same name(s). Do you want to continue?,目标包含{0}个同名文件，需要替换吗？,Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?,Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?,La destination contient {0} fichiers portant les mêmes noms. Voulez-vous continuer?,O destino tem {0} arquivo(s) com o(s) mesmo(s) nome(s). Você quer continuar?,
-host_reconecting_info,Reconnecting...,正尝试重新连接...,Opětovné připojování…,Wiederverbinden...,Reconnexion ...,Reconectando...,
-Options,Options,设置,Předvolby,Optionen,,Opções,
-About,About,关于,O aplikaci,Über,À propos,Sobre,
-Toggle Cards/List,Toggle Cards/List,切换卡片/列表,Přepnout mezi kartami/seznamem,Karten/Liste umschalten,Basculer les Tuiles/Liste,Alternar Cartões/Lista,
-system_options_general_title,General,常规,Obecné,Allgemein,Général,Geral,
-Language,Language,语言,Jazyk,Sprache,Langue,Idioma,
-Startup,Startup,启动,Při startu,Start,Commencez,Inicialização,
-system_options_general_start_when_win_login,Run automatically at OS startup,开机自启动,Spouštět automaticky při přihlášení do systému,Mit dem Betriebssystem starten,Exécuter automatiquement au démarrage du système d'exploitation,Executar automaticamente na inicialização do SO,
-system_options_general_start_minimized,Start minimized,启动时最小化到托盘,Spouštět minimalizované,Minimiert starten,Démarrer minimisé,Iniciar minimizado,
-Confirm before closing,Confirm before closing,关闭远程会话前弹窗确认,Zavírat až po potvrzení,Bestätigen Sie vor dem Schließen,Confirmer avant de fermer,Confirme antes de fechar,
-system_options_general_log_file_path,Log file,日志文件,Soubor se záznamem událostí,Logdatei,Fichier journal,Arquivo de LOG,
-system_options_quick_description,"Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key",快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。,"Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter","Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.","La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée","A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter",
-system_options_quick_match_providers,Keyword-Matchers,关键词匹配器,Hledání shod s klíčovými slovy,,Mots clés correspondants,Correspondentes de palavras-chave,
-Launcher,Launcher,启动器,Spouštěč,Startprogramm,Lanceur,Atalhos,
-system_options_quick_launcher_enable,Enable the launcher,启用,Zapnout spouštěč,Aktiv,Activer,Ative os atalhos,
-system_options_quick_launcher_hotkey,Hot key,快捷键,Klávesová zkratka,Hotkey,Raccourci clavier,Tecla de atalho,
-system_options_data_security_title,Data & Security,数据与安全,Data a zabezpečení,Datenbank & Sicherheit,Sécurité des données,Dados & Segurança,
-system_options_data_security_database,Database,数据库,Databáze,Datenbank,Base de données,Base de dados,
-system_options_data_security_database_migrate,Migrate,移动,Přestěhovat,Migrieren,Migrer,Migrar,
-system_options_data_security_rsa_title,RSA encryption,RSA加密,RSA šifrování,RSA Verschlüsselung,Cryptage RSA,Criptografia RSA,
-system_options_data_security_rsa_encrypt,Encrypt,生成加密,Šifrovat,Verschlüsseln,Crypter,Criptografar,
-system_options_data_security_rsa_encrypt_dialog_title,Load an old key or select a path to save your current key,选择现有私钥或设置新私钥放置位置,Načtěte původní klíč nebo vyberte umístění pro uložení toho stávajícího,"Laden Sie einen alten RSA-Schlüssel oder wählen Sie den Pfad, um den RSA-Schlüssel zu öffnen.",Chargez une ancienne clé ou sélectionnez un chemin pour votre clé,Carregue uma chave antiga ou selecione um caminho para salvar sua chave atual,
-system_options_data_security_rsa_decrypt,Decrypt,清除加密,Rozšifrovat,Entschlüsseln,Décrypter,Descriptografar,
-system_options_data_security_rsa_public_key,Public key,公钥,Veřejný klíč,Öffentlicher Schlüssel,Clé publique,Chave pública,
-system_options_data_security_rsa_private_key_path,Private key path,私钥,Popis umístění veřejného klíče,Pfad zum privaten Schlüssel,Chemin de la clé privée,Caminho da chave privada,
-system_options_data_security_export_dialog_title,Caution: Your data will be saved unencrypted!,导出数据将以明文显示，请妥善保管！,Varování: vaše data budou uložena nešifrovaná!,Achtung: Ihre Daten werden unverschlüsselt gespeichert,Mise en garde : vos données seront enregistrées non cryptées !,Atenção: Seus dados serão salvos sem criptografia!,
-system_options_data_security_info_data_processing,Processing data. Do not close the app!,数据处理中，请勿关闭程序。,Zpracovávají se data. Nezavírejte aplikaci!,"Datenverarbeitung, Programm bitte nicht schließen.","Traitement des données, ne fermez pas l'application.",Processando dados. Não feche o aplicativo!,
-system_options_data_security_info_encrypt_private_key_warning,Protect your private key carefully! It's the only key that can decrypt your data!,请妥善保管私钥，丢失后数据将无法找回！,Svůj soukromý klíč si dobře opatrujte! Jedině pomocí něho se dostanete ke svým datům!,"Bewahren Sie Ihren privaten Schlüssel sorgfältig auf, er ist der einzige Weg um Ihre Daten zu entschlüsseln!","Protégez soigneusement votre clé privée, c'est la seule clé pour décrypter vos données !",Proteja sua chave privada com cuidado! É a única chave que pode descriptografar seus dados!,
-system_options_data_security_info_clear_rsa,Would you like to clear RSA encryption?,是否清除RSA加密?,Přejete si odstranit RSA šifrování?,Möchten Sie die RSA-Verschlüsselung aufheben?,Souhaitez-vous effacer le cryptage RSA ?,Deseja limpar a criptografia RSA?,
-system_options_data_security_error_can_not_open,Database: Permission denied for reading or the file is not a database or the file is an encrypted database!,数据库：所选文件已被占用或不是数据库或该数据库已被加密！,"Databáze: odepřeno oprávnění pro čtení nebo soubor není databází, případně je šifrovaná!",Datei ist keine Datenbank oder Datei ist eine verschlüsselte Datenbank!,Base de données : autorisation de lecture refusée ou le fichier n'est pas une base de données ou le fichier est une base de données cryptée !,Banco de dados: Permissão negada para leitura. Ou o arquivo não é um banco de dados ou o arquivo é um banco de dados criptografado!,
-string_database_error_permission_denied,Database: Permission denied for reading! Please check your password of db or the file occupation.,数据库：没有足够的权限读取，或数据库已被占用！,Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.,Datenbank: Berechtigung zum Lesen verweigert! Bitte überprüfen Sie Ihr Passwort der Datei.,Base de données : autorisation de lecture refusée! Veuillez vérifier le mot de passe du fichier.,"Banco de dados: Permissão negada para leitura! Por favor, verifique sua senha de db ou o local do arquivo.",
-string_database_error_rsa_private_key_format_error,Database: RSA private key is in an invalid format! Please select the correct key.,数据库：存储的 RSA 私钥文件格式错误，请重新选择！,Databáze: RSA soukromý klíč nemá platný formát! Vyberte správný klíč.,Datenbank: Der private RSA-Schlüssel hat ein falsches Format! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : la clé privée RSA est au format d'erreur! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA está em um formato inválido! Por favor, selecione a chave correta.",
-string_database_error_rsa_private_key_not_found,Database: Can't find the RSA private key! Please select the correct key.,数据库：无法找到数据库中存储的 RSA 私钥文件路径！,Databáze: Nedaří se nalézt RSA soukromý klíč! Vyberte správný klíč.,Datenbank: kann den privaten RSA-Schlüssel nicht finden! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : impossible de trouver la clé privée RSA! Veuillez sélectionner une clé correcte.,"Banco de dados: Não é possível encontrar a chave privada RSA! Por favor, selecione a chave correta.",
-string_database_error_rsa_private_key_not_match,Database: RSA private key does not match the public key! Please select the correct key.,数据库：存储的 RSA 私钥公钥不匹配，请重新选择！,Databáze: RSA soukromý klíč neodpovídá tomu veřejnému! Vyberte správný klíč.,Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA não corresponde à chave pública! Por favor, selecione a chave correta.",
-Theme,Theme,主题,Vzhled,Thema,Thème,Tema,
-Color,Color,颜色,Barva,Farbe,Couleur,Cor,
-Color1,Color1,主色,Barva1,Farbe1,Couleur1,Cor 1,
-Color2,Color2,副色,Barva2,Farbe2,Couleur2,Cor 2,
-Background,Background,背景色,Pozadí,Hintergrund,Arrière-plan,Fundo,
-Normal,Normal,常规,Normální,,,,
-Lighter,Lighter,亮色,Světlejší,Heller,Clair,Mouse em cima,
-Darker,Darker,暗色,Tmavší,Dunkler,Sombre,Fundo dos menus,
-Font,Font,字体,Písmo,Schriftart,Police de caractère,Cor da fonte,
-Font size,Font size,字体大小,Velikost písma,Schriftgröße,Taille de la police,Tamanho da fonte,
-Themes,Themes,主题,Motivy vzhledu,Farbthema,Thèmes,Temas,
-server_card_operate_duplicate,Duplicate,创建副本,Zduplikovat,Duplizieren,Dupliquer,Duplicado,
-server_card_operate_copy_address,Copy hostname to clipboard,复制地址到剪贴板,Zkopírovat název stroje do schránky,Server hostname in die Zwischenablage kopieren,Copier nom d'hôte dans le presse-papiers,Copie o nome do host para a área de transferência,
-server_card_operate_copy_username,Copy username to clipboard,复制用户名到剪贴板,Zkopírovat uživatelské jméno do schránky,Benutzername in die Zwischenablage kopieren,Copier le nom d'utilisateur dans le presse-papiers,Copiar nome de usuário para a área de transferência,
-server_card_operate_copy_password,Copy password to clipboard,复制密码到剪贴板,Zkopírovat heslo do schránky,Passwort in die Zwischenablage kopieren,Copier le mot de passe dans le presse-papiers,Copiar senha para a área de transferência,
-confirm_to_delete,Are you sure you want to delete?,确认要删除吗？,Opravdu chcete smazat?,Wirklich löschen?,Valider la suppression ?,Tem certeza de que deseja excluir?,
-confirm_to_delete_selected,Are you sure you want to delete all selected?,确认要删除所选全部项目吗？,Opravdu chcete vše vybrané smazat?,Wirklich alle markierten Einträge löschen?,Valider la suppression de toutes les sélections ?,Tem certeza de que deseja excluir todos os selecionados?,
-import_server_dialog_title,Select a file,选择导入文件,Vyberte soubor,Dateiauswahl,Sélectionner un fichier,Selecione um arquivo,
-import_from_json,from json,从 json,z json,von einer JSON-Datei,depuis json,de arquivo .json,
-import_from_csv,from mRemoteNG csv,从 mRemoteNG csv,z mRemoteNG csv,mRemoteNG CSV-Datei,depuis CSV mRemoteNG,do mRemoteNG .csv,
-import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",
-import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,
-server_editor_different_options,<different options>,<不同的值>,&lt;různé předvolby&gt;,,<Options différentes>,<opções diferentes>,
-server_editor_bulk_editing,Bulk editing,批量编辑,Hromadné upravování,,Modification groupée,Edição em massa,
-server_editor_bulk_editing_title,You are editing in bulk:,你正在批量编辑:,Hromadně upravujete:,,Vous modifiez en masse :,Você está editando em massa:,
-server_editor_multi_selected_count,Number of selected items:,选中数量：,Počet vybraných položek:,,Nombre d'éléments sélectionnés:,Número de itens selecionados:,
-server_editor_group_title_common,Common,常规,Společné,Allgemein,Commun,Frequente,
-Connection,Connection,连接,Připojení,Verbindung,,Conexão,
-server_editor_group_title_display,Display,显示,Zobrazení,Anzeige,Affichage,Tela,
-server_editor_group_title_advantage,Advantage,高级,Výhoda,Erweitert,Avantage,Vantagem,
-server_editor_group_title_gateway,RD Gateway Server,RD 网关服务器,Server brány vzdálených ploch,Remotedesktop-Gatewayserver,Serveur de passerelle RD,Servidor Gateway RD,
-Tags,Tags,标签,Štítky,Etikett,,Marcações,
-server_editor_tags_tag,"Can enter multiple, separated by ','","可以输入多个，用 ',' 分隔","Je možné zadat vícero, oddělovaných „,“ (čárkou)",,"Peut entrer plusieurs, séparés par ','","Podem ser inseridos vários, separados por ','",
-Logo,Logo,图标,Logo,,,Logotipo,
-Script before connect,Script before connect,会话连接前运行脚本,,,,,
-Hide script window,Hide script window(not recommended for script take long time),隐藏脚本运行窗口（长耗时脚本不推荐勾选）,,,,,
-Script after disconnected,Script after disconnected,会话关闭后运行脚本,,,,,
-Run bat before connect,Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat'),连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）,,,,,
-Run bat after disconnected,Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat'),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）,,,,,
-Hostname,Hostname,地址,Název stroje,,,Hospedeiro,
-Target,Target,目标,Cíl,,Cibler,,
-Port,Port,端口,Port,,,Porta,
-User,User,用户名,Uživatel,Benutzer,Utilisateur,Usuário,
-Password,Password,密码,Heslo,Passwort,Mot de passe,Senha,
-Use private key,Use private key,使用私钥连接,Použít soukromý klíč,Benutze privaten Schlüssel,utiliser la clé privée,Usar chave privada,
-Private key,Private key,私钥,Soukromý klíč,Privater Schlüssel,Clé privée,Chave privada,
-Open SFTP when connected,Open SFTP when connected,同时打开 SFTP,Při připojení otevřít SFTP,Öffnen Sie SFTP beim Anschluss,Ouvrir SFTP lorsqu'il est connecté,Abra o SFTP quando conectado,
-server_editor_display_full_screen_flag,Full screen remote desktop,全屏模式,Vzdálená plocha na celou obrazovku,Vollbild,Plein écran,Área de trabalho remota em tela cheia,
-server_editor_display_full_screen_flag_window,Disable,禁用,Vypnout,Deaktivieren,Désactiver,Desativar,
-server_editor_display_full_screen_flag_full_screen,Enable (single monitor),允许（单显示器）,Zapnout (jeden monitor),Aktivieren (Einzel-Monitor),Activer (moniteur unique),Ativar (monitor único),
-server_editor_display_full_screen_flag_all_screens,Enable (multi monitors),允许（所有显示器）,Zapnout (více monitorů),Aktivieren (alle Monitore),Activer (multi-moniteurs),Ativar (vários monitores),
-Display the connection bar when use the full screen,Display the connection bar when use the full screen,全屏时显示连接栏,Ukazovat lištu připojení v režimu na celou obrazovku,"Zeigen Sie die Anschlussleiste an, wenn Sie den vollständigen Bildschirm verwenden",Afficher la barre de connexion lors de l'utilisation de l'écran complet,Exibir a barra de conexão ao usar a tela cheia,
-New session always use full screen,New session always use full screen,启动会话时永远进入全屏模式,Nová relace bude vždy na celou obrazovku,Neue Sitzung Verwenden Sie immer den vollständigen Bildschirm,Connectez-vous en plein écran,Nova sessão sempre usará tela cheia,
-New session use full screen if the last session is full screen,New session use full screen if the last session is full screen,启动会话时根据上次会话决定是否进入全屏模式,Nová relace bude na celou obrazovku pokud ta předchozí také byla,"Neue Sitzung Vollbild Verwenden Sie den Vollbild, wenn die letzte Sitzung Vollbild ist",Nouvelle session Utilisez plein écran si la dernière session est en plein écran,Nova sessão usará tela cheia se a última sessão foi em tela cheia,
-Resolution,Resolution,分辨率,Rozlišení,Auflösung,Résolution,Resolução,
-Fit to window,Fit to window(Supported server: Windows Server 2012 R2 and above),适应窗口大小(服务器要求Windows Server 2012 R2及以上),Přizpůsobit oknu (podporovaný server: Windows Server 2012 R2 a novější),An Fenster anpassen(Unterstützter Server: Windows Server 2012 R2 und höher),Apte à la fenêtre(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Ajustar à janela (Servidor Compatível com Windows Server 2012 R2 e superior),
-Custom resolution (stretch),Custom resolution (stretch),自定义分辨率 (拉伸),Uživatelsky určené rozlišení (roztáhnout),Benutzerdefinierte Auflösung (Stretch),Résolution personnalisée (étirement),Resolução personalizada (esticar),
-Custom resolution (fixed),Custom resolution (fixed),自定义分辨率 (固定),Uživatelsky určené rozlišení (napevno),Benutzerdefinierte Auflösung (fixiert),Résolution personnalisée (fixe),Resolução personalizada (fixa),
-Full-screen resolution (stretch),Full-screen resolution (stretch),屏幕分辨率 (拉伸),Rozlišení v režimu celé obrazovky (roztáhnout),Vollbildauflösung (stretch),Résolution en plein écran (étirement),Resolução de tela cheia (esticar),
-Full-screen resolution (fixed),Full-screen resolution (fixed),屏幕分辨率 (固定),Rozlišení v režimu celé obrazovky (napevno),Vollbildauflösung (fixiert),Résolution en plein écran (fixe),Resolução de tela cheia (fixa),
-server_editor_display_rdp_performance,Performance,桌面体验,Kvalita/výkon,Leistung,,,
-server_editor_display_rdp_performance_auto,Auto (judged based on connection speed),自动（根据网速）,Automaticky (usouzeno na základě rychlosti připojení),Verbindungsqualität automatisch erkennen,Jugement automatique (par vitesse de connexion),Automático (com base na velocidade da conexão),
-server_editor_display_rdp_performance_high,High (32bit color with full feature support),高（32位色彩与所有特性）,Vysoká (32bit barvy a plná podpora vizuálních funkcí),Hoch (32bit Farbe mit voller Funktionsunterstützung),Élevé (couleur 32 bits avec prise en charge complète des fonctionnalités),Alta (cor de 32 bits com suporte completo a recursos),
-server_editor_display_rdp_performance_middle,Middle (16bit color with only font smoothing and desktop composition),中（16位色彩与字体平滑、桌面合成）,Střední (16bit barvy a pouze vyhlazování písma a kompozitor desktopu),Mittel (16bit Farbe mit nur Schriftglättung und Desktopaufbau),Milieu (couleur 16 bits avec uniquement le lissage de la police et la composition du bureau),Médio (cor de 16 bits com apenas suavização de fonte e composição da área de trabalho),
-server_editor_display_rdp_performance_low,Low (8bit color with no feature support),低（8位色彩无任何显示增强）,Nízká (8bit barvy bez vizuálních funkcí),Niedrig (8-Bit-Farbe ohne Unterstützung von Funktionen),Faible (couleur 8 bits sans prise en charge des fonctionnalités),Baixo (cor de 8 bits sem suporte a recursos),
-server_editor_advantage_admin,For administering a server,连接到会话以管理服务器,Pro správu serveru,,,Para administrar um servidor,
-server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Ressourcen,Ressources,Recursos,
-server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,
-server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,
-server_editor_advantage_disk_drives,Disk Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,
-server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,
-server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,,Désactivée,Desabilitado,
-server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,,Jouez en local,Rode localmente,
-server_editor_advantage_sounds_on_remote,Play on remote,在远程播放,Přehrávat na protějšku,,Jouer à distance,Rode remotamente,
-server_editor_advantage_audio_capture,Audio Capture,录音,Zachytávání zvuku,Audio Aufnahme,Capture audio,Captura de áudio,
-server_editor_advantage_ports,Ports,端口,Porty,,,Portas,
-server_editor_advantage_printers,Printers,打印机,Tiskárny,Drucker,Imprimantes,Impressoras,
-server_editor_advantage_smart_cards,Smart Cards,智能卡,Čipové karty,Smartcards,Carte à puce,Cartões inteligentes,
-server_editor_advantage_ssh_version,SSH Version,SSH Version,Verze SSH,,Version SSH,Versão SSH,
-server_editor_advantage_ssh_startup_auto_command,Auto command,自动命令,Automaticky spouštěný příkaz,Auto-Befehl,Commande automatique,Comando automático,
-server_editor_advantage_ssh_startup_auto_kitty_session_tip,Use external configuration by selecting a session file path for KiTTY,输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置,Použijte externí nastavení vybráním popisu umístění souboru s relací pro KiTTY,support external config by select a session file path of KiTTY,prendre en charge la configuration externe en sélectionnant un chemin de fichier de session de KiTTY,Use a configuração externa selecionando um caminho de arquivo de sessão para o KiTTY,
-server_editor_advantage_sftp_startup_path,Startup path,启动位置,Startovní umístění,Start-Pfad,Chemin de démarrage,Caminho de inicialização,
-server_editor_gateway_mode,Connection,连接设置,Připojení,Verbindung,,Conexão,
-server_editor_gateway_mode_automatically_detect,Automatically detect RD Gateway Server settings,自动检测RD网关服务器设置,Automaticky zjistit nastavení serveru brány ke vzdáleným plochám,RD-Gatewayservereinstellungen automatisch ermitteln,Détecter automatiquement les paramètres du serveur RD Gateway,Detectar automaticamente as configurações do Servidor RD Gateway,
-server_editor_gateway_mode_use_these,Use the following RD Gateway Server settings,使用下列RD网关服务器设置,Použít následující nastavení pro server brány ke vzdáleným plochám,Diese Einstellungen für RD-Gatewayserver verwenden,Utilisez les paramètres de serveur de passerelle Bureau à distance suivants,Use as seguintes configurações do Servidor RD Gateway,
-server_editor_gateway_mode_do_not_use,Do not use RD Gateway Server,不使用RD网关服务器,Nepoužívat server brány ke vzdáleným plochám,Keinen Remotedesktop-Gatewayserver verwenden,Ne pas utiliser de serveur de passerelle pour le Bureau à distance,Não use o Servidor RD Gateway,
-server_editor_gateway_server_host_name,Host Name,服务器地址,Název stroje,Servername,Nom d'hôte,Nome do Host,
-server_editor_gateway_logon_method,Logon Method,登录方法,Způsob přihlašování,Anmeldemethode,Méthode de connexion,Tipo de logon,
-server_editor_gateway_logon_method_psw,Password,账号密码,Heslo,Kennwort anfordern,Mot de passe,Senha,
-server_editor_gateway_logon_method_smart_card,Smart Card,智能卡,Čipová karta,Smartcard,Carte à puce,Cartão inteligente,
-server_editor_gateway_bypass_gateway_for_local_address,Bypass RD Gateway Server for local address,不对本地地址使用RD网关,Přemostit server brány ke vzdáleným plochám v případě přístupu na místní adresu,Remotedesktop-Gatewayserver für lokale Adressen umgehen,Contourner le serveur de passerelle RD pour l'adresse locale,Ignorar o servidor de RD Gateway para endereço local,
-server_editor_remote_app_name,App Name,程序名称,Název aplikace,Programm Name,Nom de l'application,Nome do APP,
-server_editor_remote_app_name_tag,Name of the app (e.g. hello),程序名称的名称（如 hello.exe）,Název aplikace (např. ahoj),Name des Programms (bspw. Hallo),nom de l'application (par exemple bonjour),Nome do aplicativo (ex.: kernel),
-server_editor_remote_app_fullname,App Path,服务端路径,Popis umístění aplikace,Pfad zum Programm,Chemin de l'application,Caminho do APP,
-server_editor_remote_app_fullname_tag,Full exe path on the server (e.g. C:\Apps\hello.exe),被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）,Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe),vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe),Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe),Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe),
-about_page_how_to_use,How to use,帮助,Jak používat,Handbuch im Github Wiki,Comment utiliser,Como usar,
-about_page_feedback,Feedback,提意见/需求,Podněty vývojářům,,Retour,Dê seu feedback,
-guidance_introduce,PRemoteM allows you to open a remote session at any time and anywhere.,PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面,PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit PRemoteM können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,
-guidance_feature_launcher_key,call the launcher by,快速呼出启动器,zavolat spouštěč prostřednictvím,Rufen Sie den Launcher auf mit,Appeler le lanceur par,chame os atalhos por,
-guidance_feature_launcher_select,select item by,选择项目,vybrat položku prostřednictvím,Server auswählen mit,Sélectionner l'élément par,selecionar item por,
-guidance_feature_launcher_connect,connect by,启动会话,připojit prostřednictvím,verbinden mit,Se connecter par,conectar por,
-guidance_feature_launcher_menu,menu by,弹出菜单,nabídka prostřednictvím,Menüaufruf mit,Menu par,menu por,
-guidance_feature_tab_demo,"Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...","可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体","Přesouvatelné, odtrhovatelné a ukotvitelné vzdálené relace pro RDP, SSH, VNC, sFTP …","Verschiebbare, zerteilbare, andockbare Remote-Sitzung für RDP, SSH, VNC, sFTP...","Session distante Fixable, Découpable et Ancrable pour RDP, SSH, VNC, sFTP ...","Janelas arrastáveis. Sessão remota feita com: RDP, SSH, VNC, sFTP...",
-guidance_feature_start_setting1,Please confirm some settings before first use.,开始使用前请确认一些配置,"Než začnete používat, potvrďte několik nastavení.",Bitte bestätigen Sie einige Einstellungen vor der Benutzung.,Veuillez confirmer certains paramètres avant de commencer.,Confirme algumas configurações antes do primeiro uso.,
-guidance_feature_start_setting2,You are able to change this setting later in Options.,这些配置稍后同样可以在设置界面中修改,Tato nastavení je možné změnit kdykoli později v Předvolbách.,Sie können diese Einstellung später in den Optionen ändern.,Vous pouvez modifier ce paramètre ultérieurement dans la page Options.,Você pode alterar essa configuração posteriormente em Opções.,
-word_oops,Oops...,哎哟喂...,Jejda…,Upps...,,OOPAA...,
-error_report_unexpected_error_occurred,Unexpected error occurred. Error info is shown below:,程序发生了一些未知错误，详细信息如下：,Došlo k neočekávané chybě. Informace o chybě viz níže:,Unerwarteter Fehler ist aufgetreten. Die Fehlerinformation wird unten angezeigt:,Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :,Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:,
-error_report_to_clipboard,Copy to clipboard,保存到剪贴板,Zkopírovat do schránky,In die Zwischenablage kopieren,Copier dans le presse-papier,Copiar para área de transferência,
-error_report_please_help_us_improve,Please help us improve PRemoteM by reporting this error.,请通过反馈这个错误来帮助我们改进 PRemoteM。,Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, PRemoteM zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.,Ajude-nos a melhorar o PRemoteM relatando este erro.,
-error_report_how_help_us_improve,Simply copy the error message and choose a way to report it.,只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）,Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.,"Kopieren Sie einfach die Fehlermeldung und wählen Sie eine der Möglichkeiten, diese zu melden.",Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.,Basta copiar a mensagem de erro e escolher uma forma de relatar.,
-error_report_send_by_email,Send by e-mail,通过邮件,Poslat e-mailem e-mail,Per E-Mail senden,Envoyé par email,Enviar por email,
-error_report_send_by_github,Send by GitHub,通过GitHub,Poslat prostřednictvím portálu GitHub,Senden über Github,Envoyer par GitHub,Enviar pelo GitHub,
-logo_selector_open_file_dialog_title,select a picture,选择图片,vyberte obrázek,Bild auswählen,sélectionner une image,selecione uma imagem,
-Default,Default,默认,Výchozí,,Défaut,Predefinição,
-Exe path,Exe path,Exe 路径,Popis umístění spustitelného souboru,,,Caminho .exe,
-Cmd parameter,CMD parameter,命令行参数,parametry pro příkaz,,CMD paramètre,Parâmetro CMD,
-New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo agente,
-New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,
-Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,,,Não pode estar vazio!,
-Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,
-Hosting this exe in PRemoteM tab view?,Hosting this exe in PRemoteM tab windowView?,将该 exe 集成到 PRemoteM 的 tab 视图中?,Hostovat tento spustitelný soubor v PRemoteM panelu windowView?,,,Hospedar este .exe na guia do PRemoteM?,
-Caution: some exe can not be hosted in PRemoteM.,"Caution: some exe can not be hosted by PRemoteM, please test by your self.",警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.",,"Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.",
-Show environment variables,Show environment variables,显示环境变量,Zobrazit proměnné prostředí,Show umgebungsvariablen,,Mostrar variáveis de ambiente,
-How to select the specified monitors,How to select the specified monitors,如何选择指定的显示器,Jak vybrat zadané monitory,So wählen Sie die angegebenen Monitore aus,,Como selecionar os monitores especificados,
-mstsc.exe mode,mstsc.exe mode,mstsc.exe 模式,režim využívající mstsc.exe,,,modo mstsc.exe,
-Enabled,Enabled,启用,Zapnuto,Aktiv,Activer,Habilitado,
-"In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.","In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters.",在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数,V tomto režimu bude RDP relace spuštěna jako „mstsc.exe xxxx.rdp“ v příkazovém řádku a je možné zadat více parametrů.,,,"Nesse modo, o RDP iniciará a sessão da forma 'mstsc.exe xxxx.rdp' no CMD, podendo oferecer mais parâmetros personalizados.",
-Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用,Pozn.: Tento režim bude automaticky zapnut pokud je na vašem počítači přítomno dva a více monitorů s různým měřítkem zobrazení a vybrali jste režim na celou obrazovku.,,,Nota: Este modo será ativado automaticamente se houver mais de 2 monitores com escala de exibição diferente em seu PC e você selecionou o modo de tela cheia.,
-Additional settings,Additional settings,额外指令,Další nastavení,,,Configurações adicionais,
-Helper,Helper,助手,Pomocné,,,Ajudante,
-Preview,Preview,预览,Náhled,,,Visualizar,
-Preview rdp file,Preview rdp file,预览RDP文件,Náhled rdp souboru,,,Visualizar arquivo RDP,
-Check monitor number,Check monitor number,查看显示器编号,Zkontrolovat počet monitorů,,,Verifique o número do monitor,
-Add environment variables,Add environment variables,添加环境变量,Přidat proměnné prostředí,Fügen Sie Umgebungsvariablen hinzu,,Adicionar variáveis de ambiente,
-Selected,Selected,选中,Vybráno,Ausgewählt,,Selecionado,
-Custom,Custom,定制,Uživatelsky určené,Benutzerdefiniert,Coutume,Personalizado,
-write permissions alert,"We don't have write permissions for the `{0}` directory!
+,key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp,ua-ua
+0,language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP,uk-UA
+1,language_code-google,en,zh-CN,cs,de,fr,pt,ja,uk
+2,language_name,English (en-US),简体中文 (zh-CN),čeština,Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP),Українська (uk-UA)
+3,messagebox_title_warning,PRemoteM Warning,PRemoteM 警告,PRemoteM – varování,PRemoteM Warnung,PRemoteM Warning,PRemoteM Warning,PRemoteM Warning,PRemoteM Увага
+4,messagebox_title_error,PRemoteM Error,PRemoteM 错误,PRemoteM – chyba,PRemoteM Fehler,PRemoteM Erreur,PRemoteM Error,PRemoteM Error,PRemoteM Помилка
+5,messagebox_title_info,PRemoteM Info,PRemoteM 提示,PRemoteM – informace,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Інформація
+6,OK,OK,确定,OK,OK,OK,OK,OK,ОК
+7,Exit,Exit,退出,Ukončit,Beenden,Sortir,Sair,,Вихід
+8,Close,Close,关闭,Zavřít,Schließen,Fermer,Fechar,,Закрити
+9,Add,Add,添加,Přidat,Hinzufügen,Ajouter,Adicionar,,Додати
+10,Edit,Edit,编辑,Upravit,Bearbeiten,Edition,Editar,,Редагувати
+11,Save,Save,保存,Uložit,Speichern,Sauvegarder,Salvar,,Зберігти
+12,Save as...,Save as...,保存到...,Uložit jako…,Speichern als...,Sauvegarder sour...,Salvar como...,,Зберігти як…
+13,Back,Back,返回,Zpět,Zurück,Retour,Voltar,,Назад
+14,Delete,Delete,删除,Smazat,Löschen,Effacer,Deletar,,Видалити
+15,Cancel,Cancel,取消,Storno,Abbrechen,Annuler,Cancelar,,Відмінити
+16,Select,Select,选择,Vybrat,Auswählen,Selectionner,Selecionar,,Виділити
+17,Explore to...,Explore to...,定位到...,Prozkoumat v…,,Explorer...,Explorar como...,,дослідити на
+18,Previous,Previous,上一页,Předchozí,Zurück,Précédent,Anterior,,Попередній
+19,Next,Next,下一页,Další,Weiter,Suivant,Próximo,,Наступний
+20,Done,Done,完成,Hotovo,Fertig,Effectuée,OK,,Успішно
+21,Reset,Reset,重置,Resetovat,Zurücksetzen,Réinitialiser,Redefinir,,Скинути
+22,Import,Import,导入,Import,,Importer,Importar,,Імпорт
+23,Export,Export,导出,Export,,Exporter,Exportar,,Експорт
+24,Name,Name,名称,Název,,Nom,Nome,,Назва
+25,File Name,File Name,文件名,Název souboru,Dateiname,Nom de fichier,Nome do arquivo,,Назва файлу
+26,Test,Test,测试,Test,,,Teste,,Тест
+27,Reconnect,Reconnect,重新连接,Znovu připojit,Neu verbinden,Reconnecter,Reconectar,,Повторно підключитися
+28,Dismiss,Dismiss,关闭,Zahodit,Schließen,Rejeter,Dispensar,,Зрозуміло
+29,Lock,Lock,锁定,Zamknout,Sperren,Verrouiller,Bloquear,,Заблокувати
+30,Always on top,Always on top,置顶,Vždy na vrchu,,Garder au premier plan,Sempre no topo,,Завжди зверху
+31,Close all,Close all,全部关闭,Zavřít vše,Alle schließen,Tout fermer,Fechar tudo,,Зачинити все
+32,Rename,Rename,重命名,Přejmenovat,Umbenennen,Renommer,Renomear,,Редагувати назву
+33,Connect,Connect,连接,Připojit,Verbinden,Connexion,Conectar,,Підключитись
+34,Connect (New window),Connect (New window),连接 (新窗口),Připojit (nové okno),Verbinden (Neues Fenster),Connexion (Nouvelle fenetre),Conectar (Nova janela),,Підключитись (у новому вікні)
+35,Note,Note,Note,Poznámka,Note,Note,Note,,Нотатка (Замітка)
+36,Share,Share,分享,Sdílet,,,,,Поділитись
+37,Copy,Copy,复制,Zkopírovat,,,,,Скопіювати
+38,filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',,Ключові слова або '#' + назва тегу
+39,Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),,Пошук (Сtrl + F)
+40,hotkey_already_registered,Hot key already registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,,Комбінація клавіш вже використовується
+41,hotkey_registered_fail,Failed to register the hot key,快捷键注册失败,Klávesovou zkratku se nepodařilo zaregistrovat,Fehler bei der Hotkey Registrierung,Echec de l'enregistrement du raccourci clavier,Falha ao registrar a tecla de atalho,,Помилка під час реєстрації комбінації клавіш
+42,string_permission_denied,Permission denied,无操作权限,Oprávnění odepřeno,Zugriff verweigert,Permission refusée,Permissão negada,,У дозволі відмовлено
+43,All,All,全部,Vše,Alle,Tous,Todos,,Всі
+44,Protocol,Protocol,协议,Protokol,Protokoll,,Protocolo,,Протокол
+45,file_transmit_host_list_header_last_update,Last update,修改时间,Naposledy zaktualizováno,Letztes Update,Dernière mise à jour,Última atualização,,Останнє оновлення
+46,file_transmit_host_list_header_type,Type,类型,Typ,Typ,,Tipo,,Тип
+47,file_transmit_host_list_header_size,Size,大小,Velikost,Größe,Taille,Tamanho,,Обсяг
+48,file_transmit_host_message_preview_over_size,"This item is over 1 MB, are you sure you want to open it?",文件超过 1 MB，确定要打开吗?,Tato položka má přes 1 MB – opravdu ji chcete otevírat?,"Das Bild ist über 1 MB groß, wirklich öffnen?","Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?",Este item tem mais de 1 MB. Tem certeza de que quer abrir?,,"Розмір обраного об'єкта перевищує 1МБ, чи ви впевнені в тому, що бажаете відкрити його?"
+49,file_transmit_host_message_files_download_to,Please select a folder to save to,将文件下载到所选文件夹,Vyberte složku do které uložit,Bitte wählen Sie den Speicherpfad aus,Veuillez sélectionner un dossier pour enregistrer les fichiers,Selecione uma pasta para salvar,,"Будь-ласка, оберіть директорію для збереження"
+50,file_transmit_host_message_files_download_to_dir,Use this folder,选择该文件夹,Použít tuto složku,Den Ordner verwenden,Utiliser ce dossier,Usar esta pasta,,Використовувати поточну директорію
+51,file_transmit_host_message_select_files_to_upload,Please select files to upload,请选择要上传的文件,Vyberte soubory k nahrání,Bitte die Dateien zum Hochladen auswählen,Veuillez sélectionner les fichiers à télécharger,Selecione os arquivos para fazer o upload,,"Будь-ласка, оберіть файли для завантаження"
+52,file_transmit_host_command_refresh,Refresh (F5),刷新(F5),Načíst znovu (F5),Aktualisieren (F5),Actualiser (F5),Atualizar (F5),,Оновити (F5)
+53,file_transmit_host_command_create_folder,Create a folder,新建文件夹,Vytvořit složku,Ordner erstellen,Créer le dossier,Criar uma nova pasta,,Створити директорію
+54,file_transmit_host_command_upload,Upload (Ctrl + V),上传(Ctrl + V),Nahrát (Ctrl + V),Upload (STRG + V),Télécharger (Ctrl + V),Enviar (Ctrl + V),,Завантажити (Ctrl + V)
+55,file_transmit_host_command_select_files_upload,Select files to upload,选择文件上传,Vyberte soubory k nahrání,Dateien zum Hochladen auswählen,Sélectionnez les fichiers à télécharger,Selecione os arquivos para fazer o upload,,Обрати файли для завантаження
+56,file_transmit_host_command_select_folder_upload,Select a folder to upload,选择文件夹上传,Vyberte složku k nahrání,Ordner zum Hochladen auswählen,Sélectionnez le dossier à télécharger,Selecione uma pasta para fazer o upload,,Оберати віддалену папку для завантаження
+57,file_transmit_host_command_delete,Delete (Del),删除(Del),Smazat (Del),Löschen (ENTF),Supprimer (Suppr),Deletar (Del),,Видалити (Del)
+58,file_transmit_host_command_save_to,Save to... (Ctrl + S),保存到...(Ctrl + S),Uložit do… (Ctrl + S),Speichern nach... (STRG + S),Enregistrer sous ... (Ctrl + S),Salvar como... (Ctrl + S),,Зберігти до… (Ctrl + S)
+59,file_transmit_host_warning_same_names_title,Replace or cancel,替换或跳过,Nahradit nebo zrušit,Austauschen oder abbrechen,Remplacer ou annuler,Substituir ou cancelar,,Замінити або відмінити
+60,file_transmit_host_warning_same_names,The destination has {0} file(s) with the same name(s). Do you want to continue?,目标包含{0}个同名文件，需要替换吗？,Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?,Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?,La destination contient {0} fichiers portant les mêmes noms. Voulez-vous continuer?,O destino tem {0} arquivo(s) com o(s) mesmo(s) nome(s). Você quer continuar?,,Маршрут призначення вже містить 0 файлів з однаковими іменами
+61,host_reconecting_info,Reconnecting...,正尝试重新连接...,Opětovné připojování…,Wiederverbinden...,Reconnexion ...,Reconectando...,,Повторне підключення
+62,Options,Options,设置,Předvolby,Optionen,,Opções,,Налаштування
+63,About,About,关于,O aplikaci,Über,À propos,Sobre,,Про додаток
+64,Toggle Cards/List,Toggle Cards/List,切换卡片/列表,Přepnout mezi kartami/seznamem,Karten/Liste umschalten,Basculer les Tuiles/Liste,Alternar Cartões/Lista,,Перемикач Картки/
+65,system_options_general_title,General,常规,Obecné,Allgemein,Général,Geral,,Загальн
+66,Language,Language,语言,Jazyk,Sprache,Langue,Idioma,,Мова
+67,Startup,Startup,启动,Při startu,Start,Commencez,Inicialização,,Запуск
+68,system_options_general_start_when_win_login,Run automatically at OS startup,开机自启动,Spouštět automaticky při přihlášení do systému,Mit dem Betriebssystem starten,Exécuter automatiquement au démarrage du système d'exploitation,Executar automaticamente na inicialização do SO,,Запускатися автоматично при авторизації в Windows
+69,system_options_general_start_minimized,Start minimized,启动时最小化到托盘,Spouštět minimalizované,Minimiert starten,Démarrer minimisé,Iniciar minimizado,,Відкрити зі схованим вікном
+70,Confirm before closing,Confirm before closing,关闭远程会话前弹窗确认,Zavírat až po potvrzení,Bestätigen Sie vor dem Schließen,Confirmer avant de fermer,Confirme antes de fechar,,Підтвердити перед закриттям
+71,system_options_general_log_file_path,Log file,日志文件,Soubor se záznamem událostí,Logdatei,Fichier journal,Arquivo de LOG,,Файл для збережння логів
+72,system_options_quick_description,"Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key",快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。,"Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter","Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.","La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée","A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter",,"Швидке підключення дозволяє вам відкривати панель для взаємодії з підключенням за допомогою комбінації клавіш, після цього ви можете вказати ключове слово для пошуку і обрав потрібне почати його натиснув на Enter."
+73,system_options_quick_match_providers,Keyword-Matchers,关键词匹配器,Hledání shod s klíčovými slovy,,Mots clés correspondants,Correspondentes de palavras-chave,,Збіг по ключовим словам
+74,Launcher,Launcher,启动器,Spouštěč,Startprogramm,Lanceur,Atalhos,,Лаунчер
+75,system_options_quick_launcher_enable,Enable the launcher,启用,Zapnout spouštěč,Aktiv,Activer,Ative os atalhos,,Увімкнути лаунчер
+76,system_options_quick_launcher_hotkey,Hot key,快捷键,Klávesová zkratka,Hotkey,Raccourci clavier,Tecla de atalho,,Комбінація клавіш вже використовується
+77,system_options_data_security_title,Data & Security,数据与安全,Data a zabezpečení,Datenbank & Sicherheit,Sécurité des données,Dados & Segurança,,Данные и безопасность
+78,system_options_data_security_database,Database,数据库,Databáze,Datenbank,Base de données,Base de dados,,База даних
+79,system_options_data_security_database_migrate,Migrate,移动,Přestěhovat,Migrieren,Migrer,Migrar,,Міграція
+80,system_options_data_security_rsa_title,RSA encryption,RSA加密,RSA šifrování,RSA Verschlüsselung,Cryptage RSA,Criptografia RSA,,RSA шифрування
+81,system_options_data_security_rsa_encrypt,Encrypt,生成加密,Šifrovat,Verschlüsseln,Crypter,Criptografar,,Зашифрувати
+82,system_options_data_security_rsa_encrypt_dialog_title,Load an old key or select a path to save your current key,选择现有私钥或设置新私钥放置位置,Načtěte původní klíč nebo vyberte umístění pro uložení toho stávajícího,"Laden Sie einen alten RSA-Schlüssel oder wählen Sie den Pfad, um den RSA-Schlüssel zu öffnen.",Chargez une ancienne clé ou sélectionnez un chemin pour votre clé,Carregue uma chave antiga ou selecione um caminho para salvar sua chave atual,,Завантажити старий ключ або обрати шлях до збереження поточного шляху
+83,system_options_data_security_rsa_decrypt,Decrypt,清除加密,Rozšifrovat,Entschlüsseln,Décrypter,Descriptografar,,Дешифрувати
+84,system_options_data_security_rsa_public_key,Public key,公钥,Veřejný klíč,Öffentlicher Schlüssel,Clé publique,Chave pública,,Публічний ключ
+85,system_options_data_security_rsa_private_key_path,Private key path,私钥,Popis umístění veřejného klíče,Pfad zum privaten Schlüssel,Chemin de la clé privée,Caminho da chave privada,,Шлях до приватного ключа
+86,system_options_data_security_export_dialog_title,Caution: Your data will be saved unencrypted!,导出数据将以明文显示，请妥善保管！,Varování: vaše data budou uložena nešifrovaná!,Achtung: Ihre Daten werden unverschlüsselt gespeichert,Mise en garde : vos données seront enregistrées non cryptées !,Atenção: Seus dados serão salvos sem criptografia!,,Увага: Ваші дані були збережені незашифровані!
+87,system_options_data_security_info_data_processing,Processing data. Do not close the app!,数据处理中，请勿关闭程序。,Zpracovávají se data. Nezavírejte aplikaci!,"Datenverarbeitung, Programm bitte nicht schließen.","Traitement des données, ne fermez pas l'application.",Processando dados. Não feche o aplicativo!,,Обробка даних. Не закривайте додаток!
+88,system_options_data_security_info_encrypt_private_key_warning,Protect your private key carefully! It's the only key that can decrypt your data!,请妥善保管私钥，丢失后数据将无法找回！,Svůj soukromý klíč si dobře opatrujte! Jedině pomocí něho se dostanete ke svým datům!,"Bewahren Sie Ihren privaten Schlüssel sorgfältig auf, er ist der einzige Weg um Ihre Daten zu entschlüsseln!","Protégez soigneusement votre clé privée, c'est la seule clé pour décrypter vos données !",Proteja sua chave privada com cuidado! É a única chave que pode descriptografar seus dados!,,"Ретельно захищайте свій закритий ключ! Це єдиний ключ, який може розшифрувати ваші дані!"
+89,system_options_data_security_info_clear_rsa,Would you like to clear RSA encryption?,是否清除RSA加密?,Přejete si odstranit RSA šifrování?,Möchten Sie die RSA-Verschlüsselung aufheben?,Souhaitez-vous effacer le cryptage RSA ?,Deseja limpar a criptografia RSA?,,Чи хочете ви очистити шифрування RSA?
+90,system_options_data_security_error_can_not_open,Database: Permission denied for reading or the file is not a database or the file is an encrypted database!,数据库：所选文件已被占用或不是数据库或该数据库已被加密！,"Databáze: odepřeno oprávnění pro čtení nebo soubor není databází, případně je šifrovaná!",Datei ist keine Datenbank oder Datei ist eine verschlüsselte Datenbank!,Base de données : autorisation de lecture refusée ou le fichier n'est pas une base de données ou le fichier est une base de données cryptée !,Banco de dados: Permissão negada para leitura. Ou o arquivo não é um banco de dados ou o arquivo é um banco de dados criptografado!,,"База даних: відмовлено в дозволі на читання, або файл не є базою даних, або файл являє собою зашифровану базу даних!"
+91,string_database_error_permission_denied,Database: Permission denied for reading! Please check your password of db or the file occupation.,数据库：没有足够的权限读取，或数据库已被占用！,Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.,Datenbank: Berechtigung zum Lesen verweigert! Bitte überprüfen Sie Ihr Passwort der Datei.,Base de données : autorisation de lecture refusée! Veuillez vérifier le mot de passe du fichier.,"Banco de dados: Permissão negada para leitura! Por favor, verifique sua senha de db ou o local do arquivo.",,"База даних: відмовлено в дозволі на читання! Будь ласка, перевірте свій пароль від бази даних або файл."
+92,string_database_error_rsa_private_key_format_error,Database: RSA private key is in an invalid format! Please select the correct key.,数据库：存储的 RSA 私钥文件格式错误，请重新选择！,Databáze: RSA soukromý klíč nemá platný formát! Vyberte správný klíč.,Datenbank: Der private RSA-Schlüssel hat ein falsches Format! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : la clé privée RSA est au format d'erreur! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA está em um formato inválido! Por favor, selecione a chave correta.",,"База даних: закритий ключ RSA знаходиться в неприпустимому форматі! Будь ласка, виберіть правильний ключ."
+93,string_database_error_rsa_private_key_not_found,Database: Can't find the RSA private key! Please select the correct key.,数据库：无法找到数据库中存储的 RSA 私钥文件路径！,Databáze: Nedaří se nalézt RSA soukromý klíč! Vyberte správný klíč.,Datenbank: kann den privaten RSA-Schlüssel nicht finden! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : impossible de trouver la clé privée RSA! Veuillez sélectionner une clé correcte.,"Banco de dados: Não é possível encontrar a chave privada RSA! Por favor, selecione a chave correta.",,"База даних: неможливо знайти закритий ключ RSA! Будь ласка, виберіть правильний ключ."
+94,string_database_error_rsa_private_key_not_match,Database: RSA private key does not match the public key! Please select the correct key.,数据库：存储的 RSA 私钥公钥不匹配，请重新选择！,Databáze: RSA soukromý klíč neodpovídá tomu veřejnému! Vyberte správný klíč.,Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA não corresponde à chave pública! Por favor, selecione a chave correta.",,"База даних: закритий ключ RSA не збігається з відкритим ключем! Будь ласка, виберіть правильний ключ."
+95,Theme,Theme,主题,Vzhled,Thema,Thème,Tema,,Тема
+96,Color,Color,颜色,Barva,Farbe,Couleur,Cor,,Колір
+97,Color1,Color1,主色,Barva1,Farbe1,Couleur1,Cor 1,,Колір1
+98,Color2,Color2,副色,Barva2,Farbe2,Couleur2,Cor 2,,Колір2
+99,Background,Background,背景色,Pozadí,Hintergrund,Arrière-plan,Fundo,,Фон
+100,Normal,Normal,常规,Normální,,,,,Нормальний
+101,Lighter,Lighter,亮色,Světlejší,Heller,Clair,Mouse em cima,,Світлий 
+102,Darker,Darker,暗色,Tmavší,Dunkler,Sombre,Fundo dos menus,,Темніший
+103,Font,Font,字体,Písmo,Schriftart,Police de caractère,Cor da fonte,,Шрифт
+104,Font size,Font size,字体大小,Velikost písma,Schriftgröße,Taille de la police,Tamanho da fonte,,Розмір шрифту
+105,Themes,Themes,主题,Motivy vzhledu,Farbthema,Thèmes,Temas,,Темі
+106,server_card_operate_duplicate,Duplicate,创建副本,Zduplikovat,Duplizieren,Dupliquer,Duplicado,,Копія
+107,server_card_operate_copy_address,Copy hostname to clipboard,复制地址到剪贴板,Zkopírovat název stroje do schránky,Server hostname in die Zwischenablage kopieren,Copier nom d'hôte dans le presse-papiers,Copie o nome do host para a área de transferência,,Скопіювати hostname до буферу обміну
+108,server_card_operate_copy_username,Copy username to clipboard,复制用户名到剪贴板,Zkopírovat uživatelské jméno do schránky,Benutzername in die Zwischenablage kopieren,Copier le nom d'utilisateur dans le presse-papiers,Copiar nome de usuário para a área de transferência,,Скопіювати username до буферу обміну
+109,server_card_operate_copy_password,Copy password to clipboard,复制密码到剪贴板,Zkopírovat heslo do schránky,Passwort in die Zwischenablage kopieren,Copier le mot de passe dans le presse-papiers,Copiar senha para a área de transferência,,Скопіювати пароль в буфер обміну
+110,confirm_to_delete,Are you sure you want to delete?,确认要删除吗？,Opravdu chcete smazat?,Wirklich löschen?,Valider la suppression ?,Tem certeza de que deseja excluir?,,"Ви впевнені, що хочете видалити?"
+111,confirm_to_delete_selected,Are you sure you want to delete all selected?,确认要删除所选全部项目吗？,Opravdu chcete vše vybrané smazat?,Wirklich alle markierten Einträge löschen?,Valider la suppression de toutes les sélections ?,Tem certeza de que deseja excluir todos os selecionados?,,"Ви впевнені, що хочете видалити всі вибрані?"
+112,import_server_dialog_title,Select a file,选择导入文件,Vyberte soubor,Dateiauswahl,Sélectionner un fichier,Selecione um arquivo,,Оберіть файл
+113,import_from_json,from json,从 json,z json,von einer JSON-Datei,depuis json,de arquivo .json,,з json
+114,import_from_csv,from mRemoteNG csv,从 mRemoteNG csv,z mRemoteNG csv,mRemoteNG CSV-Datei,depuis CSV mRemoteNG,do mRemoteNG .csv,,з mremoteng csv
+115,import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",,"Успішно імпортовано, додано елемент {0}."
+116,import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,,Формат даних про помилку!
+117,server_editor_different_options,<different options>,<不同的值>,&lt;různé předvolby&gt;,,<Options différentes>,<opções diferentes>,,<різні варіанти>
+118,server_editor_bulk_editing,Bulk editing,批量编辑,Hromadné upravování,,Modification groupée,Edição em massa,,Масове редагування
+119,server_editor_bulk_editing_title,You are editing in bulk:,你正在批量编辑:,Hromadně upravujete:,,Vous modifiez en masse :,Você está editando em massa:,,Ви редагуєте масово:
+120,server_editor_multi_selected_count,Number of selected items:,选中数量：,Počet vybraných položek:,,Nombre d'éléments sélectionnés:,Número de itens selecionados:,,Кількість вибраних елементів:
+121,server_editor_group_title_common,Common,常规,Společné,Allgemein,Commun,Frequente,,Загальний
+122,Connection,Connection,连接,Připojení,Verbindung,,Conexão,,Підключення від
+123,server_editor_group_title_display,Display,显示,Zobrazení,Anzeige,Affichage,Tela,,Дисплей
+124,server_editor_group_title_advantage,Advantage,高级,Výhoda,Erweitert,Avantage,Vantagem,,Перевага
+125,server_editor_group_title_gateway,RD Gateway Server,RD 网关服务器,Server brány vzdálených ploch,Remotedesktop-Gatewayserver,Serveur de passerelle RD,Servidor Gateway RD,,Сервер шлюзу віддалених робочих столів
+126,Tags,Tags,标签,Štítky,Etikett,,Marcações,,Тег
+127,server_editor_tags_tag,"Can enter multiple, separated by ','","可以输入多个，用 ',' 分隔","Je možné zadat vícero, oddělovaných „,“ (čárkou)",,"Peut entrer plusieurs, séparés par ','","Podem ser inseridos vários, separados por ','",,"Можна ввести кілька, розділених ','"
+128,Logo,Logo,图标,Logo,,,Logotipo,,Логотип
+129,Script before connect,Script before connect,会话连接前运行脚本,,,,,,Сценарій перед підключенням
+130,Hide script window,Hide script window(not recommended for script take long time),隐藏脚本运行窗口（长耗时脚本不推荐勾选）,,,,,,"Приховати вікно скрипта (не рекомендується, якщо скрипт займає багато часу)"
+131,Script after disconnected,Script after disconnected,会话关闭后运行脚本,,,,,,Скрипт після відключення
+132,Run bat before connect,Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat'),连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）,,,,,,"Запустіть bat перед підключенням (наприклад, запустіть 'C:\OpenSshTunneling.bat ')"
+133,Run bat after disconnected,Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat'),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）,,,,,,"Запуск, але після відключення (наприклад, запуск 'C:\CloseSshTunneling.bat ')"
+134,Hostname,Hostname,地址,Název stroje,,,Hospedeiro,,Ім'я хоста
+135,Target,Target,目标,Cíl,,Cibler,,,Ціль
+136,Port,Port,端口,Port,,,Porta,,Порт
+137,User,User,用户名,Uživatel,Benutzer,Utilisateur,Usuário,,Користувач
+138,Password,Password,密码,Heslo,Passwort,Mot de passe,Senha,,Пароль
+139,Use private key,Use private key,使用私钥连接,Použít soukromý klíč,Benutze privaten Schlüssel,utiliser la clé privée,Usar chave privada,,Використовувати закритий ключ
+140,Private key,Private key,私钥,Soukromý klíč,Privater Schlüssel,Clé privée,Chave privada,,Закритий ключ
+141,Open SFTP when connected,Open SFTP when connected,同时打开 SFTP,Při připojení otevřít SFTP,Öffnen Sie SFTP beim Anschluss,Ouvrir SFTP lorsqu'il est connecté,Abra o SFTP quando conectado,,Відкрийте SFTP під час підключення
+142,server_editor_display_full_screen_flag,Full screen remote desktop,全屏模式,Vzdálená plocha na celou obrazovku,Vollbild,Plein écran,Área de trabalho remota em tela cheia,,Повноекранний віддалений робочий стіл
+143,server_editor_display_full_screen_flag_window,Disable,禁用,Vypnout,Deaktivieren,Désactiver,Desativar,,Відключати
+144,server_editor_display_full_screen_flag_full_screen,Enable (single monitor),允许（单显示器）,Zapnout (jeden monitor),Aktivieren (Einzel-Monitor),Activer (moniteur unique),Ativar (monitor único),,Увімкнути (один монітор)
+145,server_editor_display_full_screen_flag_all_screens,Enable (multi monitors),允许（所有显示器）,Zapnout (více monitorů),Aktivieren (alle Monitore),Activer (multi-moniteurs),Ativar (vários monitores),,Увімкнути (кілька моніторів)
+146,Display the connection bar when use the full screen,Display the connection bar when use the full screen,全屏时显示连接栏,Ukazovat lištu připojení v režimu na celou obrazovku,"Zeigen Sie die Anschlussleiste an, wenn Sie den vollständigen Bildschirm verwenden",Afficher la barre de connexion lors de l'utilisation de l'écran complet,Exibir a barra de conexão ao usar a tela cheia,,Відображення панелі підключення при використанні повноекранного режиму
+147,New session always use full screen,New session always use full screen,启动会话时永远进入全屏模式,Nová relace bude vždy na celou obrazovku,Neue Sitzung Verwenden Sie immer den vollständigen Bildschirm,Connectez-vous en plein écran,Nova sessão sempre usará tela cheia,,Новий сеанс завжди використовуйте повноекранний режим
+148,New session use full screen if the last session is full screen,New session use full screen if the last session is full screen,启动会话时根据上次会话决定是否进入全屏模式,Nová relace bude na celou obrazovku pokud ta předchozí také byla,"Neue Sitzung Vollbild Verwenden Sie den Vollbild, wenn die letzte Sitzung Vollbild ist",Nouvelle session Utilisez plein écran si la dernière session est en plein écran,Nova sessão usará tela cheia se a última sessão foi em tela cheia,,"Новий сеанс використовуйте повноекранний режим, якщо останній сеанс був повноекранним"
+149,Resolution,Resolution,分辨率,Rozlišení,Auflösung,Résolution,Resolução,,Розширення экрану
+150,Fit to window,Fit to window(Supported server: Windows Server 2012 R2 and above),适应窗口大小(服务器要求Windows Server 2012 R2及以上),Přizpůsobit oknu (podporovaný server: Windows Server 2012 R2 a novější),An Fenster anpassen(Unterstützter Server: Windows Server 2012 R2 und höher),Apte à la fenêtre(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Ajustar à janela (Servidor Compatível com Windows Server 2012 R2 e superior),,Підгонка до вікна (Підтримуваний сервер: Windows Server 2012 R2 і вище)
+151,Custom resolution (stretch),Custom resolution (stretch),自定义分辨率 (拉伸),Uživatelsky určené rozlišení (roztáhnout),Benutzerdefinierte Auflösung (Stretch),Résolution personnalisée (étirement),Resolução personalizada (esticar),,Дозвіл користувача (розтягування)
+152,Custom resolution (fixed),Custom resolution (fixed),自定义分辨率 (固定),Uživatelsky určené rozlišení (napevno),Benutzerdefinierte Auflösung (fixiert),Résolution personnalisée (fixe),Resolução personalizada (fixa),,Дозвіл користувача (виправлено)
+153,Full-screen resolution (stretch),Full-screen resolution (stretch),屏幕分辨率 (拉伸),Rozlišení v režimu celé obrazovky (roztáhnout),Vollbildauflösung (stretch),Résolution en plein écran (étirement),Resolução de tela cheia (esticar),,Повноекранний дозвіл (розтягування)
+154,Full-screen resolution (fixed),Full-screen resolution (fixed),屏幕分辨率 (固定),Rozlišení v režimu celé obrazovky (napevno),Vollbildauflösung (fixiert),Résolution en plein écran (fixe),Resolução de tela cheia (fixa),,Повноекранний дозвіл (фіксований)
+155,server_editor_display_rdp_performance,Performance,桌面体验,Kvalita/výkon,Leistung,,,,Покращення продуктивності
+156,server_editor_display_rdp_performance_auto,Auto (judged based on connection speed),自动（根据网速）,Automaticky (usouzeno na základě rychlosti připojení),Verbindungsqualität automatisch erkennen,Jugement automatique (par vitesse de connexion),Automático (com base na velocidade da conexão),,Автоматично (оцінюється на основі швидкості з'єднання)
+157,server_editor_display_rdp_performance_high,High (32bit color with full feature support),高（32位色彩与所有特性）,Vysoká (32bit barvy a plná podpora vizuálních funkcí),Hoch (32bit Farbe mit voller Funktionsunterstützung),Élevé (couleur 32 bits avec prise en charge complète des fonctionnalités),Alta (cor de 32 bits com suporte completo a recursos),,Високий (32-бітний колір з повною підтримкою функцій)
+158,server_editor_display_rdp_performance_middle,Middle (16bit color with only font smoothing and desktop composition),中（16位色彩与字体平滑、桌面合成）,Střední (16bit barvy a pouze vyhlazování písma a kompozitor desktopu),Mittel (16bit Farbe mit nur Schriftglättung und Desktopaufbau),Milieu (couleur 16 bits avec uniquement le lissage de la police et la composition du bureau),Médio (cor de 16 bits com apenas suavização de fonte e composição da área de trabalho),,Середній (16-бітний колір тільки зі згладжуванням шрифту і композицією робочого столу)
+159,server_editor_display_rdp_performance_low,Low (8bit color with no feature support),低（8位色彩无任何显示增强）,Nízká (8bit barvy bez vizuálních funkcí),Niedrig (8-Bit-Farbe ohne Unterstützung von Funktionen),Faible (couleur 8 bits sans prise en charge des fonctionnalités),Baixo (cor de 8 bits sem suporte a recursos),,Низький (8-бітний колір без підтримки функцій)
+160,server_editor_advantage_admin,For administering a server,连接到会话以管理服务器,Pro správu serveru,,,Para administrar um servidor,,Для адміністрування сервера
+161,server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Ressourcen,Ressources,Recursos,,Ресурси
+162,server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,,Буфер обміну
+163,server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,,Комбінації клавіш
+164,server_editor_advantage_disk_drives,Disk Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,,Присторої для зберігання інформаціх
+165,server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,,Звуки
+166,server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,,Désactivée,Desabilitado,,Вимкнений
+167,server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,,Jouez en local,Rode localmente,,Увімкнути на локальному пристрої
+168,server_editor_advantage_sounds_on_remote,Play on remote,在远程播放,Přehrávat na protějšku,,Jouer à distance,Rode remotamente,,Увімнути на віддаленому присрої
+169,server_editor_advantage_audio_capture,Audio Capture,录音,Zachytávání zvuku,Audio Aufnahme,Capture audio,Captura de áudio,,Присрої для запису аудіо
+170,server_editor_advantage_ports,Ports,端口,Porty,,,Portas,,Порти
+171,server_editor_advantage_printers,Printers,打印机,Tiskárny,Drucker,Imprimantes,Impressoras,,Прінтери
+172,server_editor_advantage_smart_cards,Smart Cards,智能卡,Čipové karty,Smartcards,Carte à puce,Cartões inteligentes,,Смарт-карти
+173,server_editor_advantage_ssh_version,SSH Version,SSH Version,Verze SSH,,Version SSH,Versão SSH,,Версія SSH
+174,server_editor_advantage_ssh_startup_auto_command,Auto command,自动命令,Automaticky spouštěný příkaz,Auto-Befehl,Commande automatique,Comando automático,,Автоматична команда
+175,server_editor_advantage_ssh_startup_auto_kitty_session_tip,Use external configuration by selecting a session file path for KiTTY,输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置,Použijte externí nastavení vybráním popisu umístění souboru s relací pro KiTTY,support external config by select a session file path of KiTTY,prendre en charge la configuration externe en sélectionnant un chemin de fichier de session de KiTTY,Use a configuração externa selecionando um caminho de arquivo de sessão para o KiTTY,,"Використовуйте зовнішню конфігурацію, вибравши шлях до файлу сеансу для KiTTY"
+176,server_editor_advantage_sftp_startup_path,Startup path,启动位置,Startovní umístění,Start-Pfad,Chemin de démarrage,Caminho de inicialização,,Шлях до запуску
+177,server_editor_gateway_mode,Connection,连接设置,Připojení,Verbindung,,Conexão,,З'єднання
+178,server_editor_gateway_mode_automatically_detect,Automatically detect RD Gateway Server settings,自动检测RD网关服务器设置,Automaticky zjistit nastavení serveru brány ke vzdáleným plochám,RD-Gatewayservereinstellungen automatisch ermitteln,Détecter automatiquement les paramètres du serveur RD Gateway,Detectar automaticamente as configurações do Servidor RD Gateway,,Автоматичне визначення параметрів сервера шлюзу віддалених робочих столів
+179,server_editor_gateway_mode_use_these,Use the following RD Gateway Server settings,使用下列RD网关服务器设置,Použít následující nastavení pro server brány ke vzdáleným plochám,Diese Einstellungen für RD-Gatewayserver verwenden,Utilisez les paramètres de serveur de passerelle Bureau à distance suivants,Use as seguintes configurações do Servidor RD Gateway,,Використовуйте наступні параметри сервера шлюзу віддалених робочих столів
+180,server_editor_gateway_mode_do_not_use,Do not use RD Gateway Server,不使用RD网关服务器,Nepoužívat server brány ke vzdáleným plochám,Keinen Remotedesktop-Gatewayserver verwenden,Ne pas utiliser de serveur de passerelle pour le Bureau à distance,Não use o Servidor RD Gateway,,Не використовуйте сервер шлюзу віддалених робочих столів
+181,server_editor_gateway_server_host_name,Host Name,服务器地址,Název stroje,Servername,Nom d'hôte,Nome do Host,,Ім'я хоста
+182,server_editor_gateway_logon_method,Logon Method,登录方法,Způsob přihlašování,Anmeldemethode,Méthode de connexion,Tipo de logon,,Спосіб входу в систему
+183,server_editor_gateway_logon_method_psw,Password,账号密码,Heslo,Kennwort anfordern,Mot de passe,Senha,,Пароль
+184,server_editor_gateway_logon_method_smart_card,Smart Card,智能卡,Čipová karta,Smartcard,Carte à puce,Cartão inteligente,,Смат-картка
+185,server_editor_gateway_bypass_gateway_for_local_address,Bypass RD Gateway Server for local address,不对本地地址使用RD网关,Přemostit server brány ke vzdáleným plochám v případě přístupu na místní adresu,Remotedesktop-Gatewayserver für lokale Adressen umgehen,Contourner le serveur de passerelle RD pour l'adresse locale,Ignorar o servidor de RD Gateway para endereço local,,Обхід сервера шлюзу віддалених робочих столів для отримання локальної адреси
+186,server_editor_remote_app_name,App Name,程序名称,Název aplikace,Programm Name,Nom de l'application,Nome do APP,,Назва додатку
+187,server_editor_remote_app_name_tag,Name of the app (e.g. hello),程序名称的名称（如 hello.exe）,Název aplikace (např. ahoj),Name des Programms (bspw. Hallo),nom de l'application (par exemple bonjour),Nome do aplicativo (ex.: kernel),,"Назва програми (наприклад, hello)"
+188,server_editor_remote_app_fullname,App Path,服务端路径,Popis umístění aplikace,Pfad zum Programm,Chemin de l'application,Caminho do APP,,Шлях до додатку
+189,server_editor_remote_app_fullname_tag,Full exe path on the server (e.g. C:\Apps\hello.exe),被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）,Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe),vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe),Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe),Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe),,Повний шлях до бінарного файлу на сервері (наприклад C:\Apps\hello.exe )
+190,about_page_how_to_use,How to use,帮助,Jak používat,Handbuch im Github Wiki,Comment utiliser,Como usar,,Як використовувати
+191,about_page_feedback,Feedback,提意见/需求,Podněty vývojářům,,Retour,Dê seu feedback,,Відгук
+192,guidance_introduce,PRemoteM allows you to open a remote session at any time and anywhere.,PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面,PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit PRemoteM können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,,PRemoteM дозволяє вам відкрити віддалений сеанс в будь-який час і в будь-якому місці.
+193,guidance_feature_launcher_key,call the launcher by,快速呼出启动器,zavolat spouštěč prostřednictvím,Rufen Sie den Launcher auf mit,Appeler le lanceur par,chame os atalhos por,,Викликати лаунчер від
+194,guidance_feature_launcher_select,select item by,选择项目,vybrat položku prostřednictvím,Server auswählen mit,Sélectionner l'élément par,selecionar item por,,Обрати об'єкт від
+195,guidance_feature_launcher_connect,connect by,启动会话,připojit prostřednictvím,verbinden mit,Se connecter par,conectar por,,Підключення від
+196,guidance_feature_launcher_menu,menu by,弹出菜单,nabídka prostřednictvím,Menüaufruf mit,Menu par,menu por,,Меню від
+197,guidance_feature_tab_demo,"Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...","可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体","Přesouvatelné, odtrhovatelné a ukotvitelné vzdálené relace pro RDP, SSH, VNC, sFTP …","Verschiebbare, zerteilbare, andockbare Remote-Sitzung für RDP, SSH, VNC, sFTP...","Session distante Fixable, Découpable et Ancrable pour RDP, SSH, VNC, sFTP ...","Janelas arrastáveis. Sessão remota feita com: RDP, SSH, VNC, sFTP...",,"Мультифункциональные сессии RDP,SSH,VNC,sFTP…"
+198,guidance_feature_start_setting1,Please confirm some settings before first use.,开始使用前请确认一些配置,"Než začnete používat, potvrďte několik nastavení.",Bitte bestätigen Sie einige Einstellungen vor der Benutzung.,Veuillez confirmer certains paramètres avant de commencer.,Confirme algumas configurações antes do primeiro uso.,,"Будь ласка, підтвердіть деякі налаштування перед першим використанням."
+199,guidance_feature_start_setting2,You are able to change this setting later in Options.,这些配置稍后同样可以在设置界面中修改,Tato nastavení je možné změnit kdykoli později v Předvolbách.,Sie können diese Einstellung später in den Optionen ändern.,Vous pouvez modifier ce paramètre ultérieurement dans la page Options.,Você pode alterar essa configuração posteriormente em Opções.,,Незабаром ви зможете редагувати цей параметр в розділі Параметри.
+200,word_oops,Oops...,哎哟喂...,Jejda…,Upps...,,OOPAA...,,Хай тобі грець…
+201,error_report_unexpected_error_occurred,Unexpected error occurred. Error info is shown below:,程序发生了一些未知错误，详细信息如下：,Došlo k neočekávané chybě. Informace o chybě viz níže:,Unerwarteter Fehler ist aufgetreten. Die Fehlerinformation wird unten angezeigt:,Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :,Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:,,Сталася непередбачена помилка. Інформація про помилку наведена нижче:
+202,error_report_to_clipboard,Copy to clipboard,保存到剪贴板,Zkopírovat do schránky,In die Zwischenablage kopieren,Copier dans le presse-papier,Copiar para área de transferência,,Скопіювати до буферу обміну
+203,error_report_please_help_us_improve,Please help us improve PRemoteM by reporting this error.,请通过反馈这个错误来帮助我们改进 PRemoteM。,Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, PRemoteM zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.,Ajude-nos a melhorar o PRemoteM relatando este erro.,,"Будь ласка, допоможіть поліпшити Premortem, повідомивши про цю помилку."
+204,error_report_how_help_us_improve,Simply copy the error message and choose a way to report it.,只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）,Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.,"Kopieren Sie einfach die Fehlermeldung und wählen Sie eine der Möglichkeiten, diese zu melden.",Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.,Basta copiar a mensagem de erro e escolher uma forma de relatar.,,Просто скопіюйте повідомлення про помилку і виберіть спосіб повідомити про нього.
+205,error_report_send_by_email,Send by e-mail,通过邮件,Poslat e-mailem e-mail,Per E-Mail senden,Envoyé par email,Enviar por email,,Надіслати електронною поштою
+206,error_report_send_by_github,Send by GitHub,通过GitHub,Poslat prostřednictvím portálu GitHub,Senden über Github,Envoyer par GitHub,Enviar pelo GitHub,,Надіслати за допомогою GitHub
+207,logo_selector_open_file_dialog_title,select a picture,选择图片,vyberte obrázek,Bild auswählen,sélectionner une image,selecione uma imagem,,Обрати картинку
+208,Default,Default,默认,Výchozí,,Défaut,Predefinição,,За замовченням
+209,Exe path,Exe path,Exe 路径,Popis umístění spustitelného souboru,,,Caminho .exe,,Шлях до exe
+210,Cmd parameter,CMD parameter,命令行参数,parametry pro příkaz,,CMD paramètre,Parâmetro CMD,,cmd параметр
+211,New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo agente,,Нова группа
+212,New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,,Нове ім'я группи
+213,Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,,,Não pode estar vazio!,,Не може бути порожнім
+214,Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,,Хостинг
+215,Hosting this exe in PRemoteM tab view?,Hosting this exe in PRemoteM tab windowView?,将该 exe 集成到 PRemoteM 的 tab 视图中?,Hostovat tento spustitelný soubor v PRemoteM panelu windowView?,,,Hospedar este .exe na guia do PRemoteM?,,Розміщення цього exe-файлу в PremoteM вкладці windowView?
+216,Caution: some exe can not be hosted in PRemoteM.,"Caution: some exe can not be hosted by PRemoteM, please test by your self.",警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.",,"Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.",,"Увага: деякі exe-файли не можуть бути розміщені на PRemoteM, будь ласка, протестуйте самостійно."
+217,Show environment variables,Show environment variables,显示环境变量,Zobrazit proměnné prostředí,Show umgebungsvariablen,,Mostrar variáveis de ambiente,,Показати змінні осередку
+218,How to select the specified monitors,How to select the specified monitors,如何选择指定的显示器,Jak vybrat zadané monitory,So wählen Sie die angegebenen Monitore aus,,Como selecionar os monitores especificados,,Як обрати конкретні монітори з декількох
+219,mstsc.exe mode,mstsc.exe mode,mstsc.exe 模式,režim využívající mstsc.exe,,,modo mstsc.exe,,mstsc.exe mode
+220,Enabled,Enabled,启用,Zapnuto,Aktiv,Activer,Habilitado,,Увімкнено
+221,"In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.","In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters.",在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数,V tomto režimu bude RDP relace spuštěna jako „mstsc.exe xxxx.rdp“ v příkazovém řádku a je možné zadat více parametrů.,,,"Nesse modo, o RDP iniciará a sessão da forma 'mstsc.exe xxxx.rdp' no CMD, podendo oferecer mais parâmetros personalizados.",,
+222,Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用,Pozn.: Tento režim bude automaticky zapnut pokud je na vašem počítači přítomno dva a více monitorů s různým měřítkem zobrazení a vybrali jste režim na celou obrazovku.,,,Nota: Este modo será ativado automaticamente se houver mais de 2 monitores com escala de exibição diferente em seu PC e você selecionou o modo de tela cheia.,,
+223,Additional settings,Additional settings,额外指令,Další nastavení,,,Configurações adicionais,,Додаткові налаштування
+224,Helper,Helper,助手,Pomocné,,,Ajudante,,Помічник
+225,Preview,Preview,预览,Náhled,,,Visualizar,,Попередній перегляд 
+226,Preview rdp file,Preview rdp file,预览RDP文件,Náhled rdp souboru,,,Visualizar arquivo RDP,,Попередній перегляд файлу rdp
+227,Check monitor number,Check monitor number,查看显示器编号,Zkontrolovat počet monitorů,,,Verifique o número do monitor,,Перевірити номер монітору
+228,Add environment variables,Add environment variables,添加环境变量,Přidat proměnné prostředí,Fügen Sie Umgebungsvariablen hinzu,,Adicionar variáveis de ambiente,,Додати зміну осередку
+229,Selected,Selected,选中,Vybráno,Ausgewählt,,Selecionado,,Обраний
+230,Custom,Custom,定制,Uživatelsky určené,Benutzerdefiniert,Coutume,Personalizado,,Кастомізація
+231,write permissions alert,"We don't have write permissions for the `{0}` directory!
 Please try:
 1. run as administrator
 2. change directory or file permissions 
@@ -247,27 +247,33 @@ Vyzkoušejte:
 Por favor, tente:
 1. `Executar como administrador`
 2. Alterar as permissões de diretório/arquivo 
-3. Mover o PREmoteM para outra pasta",
-Follow system,Follow system(Supported server: Windows Server 2012 R2 and above),跟随系统(服务器要求Windows Server 2012 R2及以上),Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější),Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher),Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior),
-Scale,Scale,缩放,Měřítko,,,Tamanho,
-tag_tooltips,Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list,鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表,Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných,,,Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão,
-Are you sure you want to close the connection?,Are you sure you want to close the connection?,确定要关闭连接么？,Opravdu chcete spojení zavřít?,Möchten Sie die Verbindung wirklich beenden?,Voulez-vous vraiment fermer la connexion?,Tem certeza de que deseja encerrar a conexão?,
-"Hi there,","Hi there,",你好呀！,"Zdravím,",,,"E ai,",
-"I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!","I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!",希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！,"Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!",,,"Espero que ache este APP útil! Se quiser apoiar meu trabalho pode me pagar um cerveja ou me dar um elogio, obrigado!",
-Give suggestions,Give suggestions,提点意见,Podělit se o nápady,,,Me dê sugestões,
-Buy a coffee,Buy a coffee,买杯咖啡,Koupit kafe,,,Me pague uma cerveja,
-Give nice review,Give nice review,给个好评,Napsat kladnou recenzi,,,Me dê um elogio,
-Do not show this again in current version,Do not show this again in current version,当前版本不再显示,Ve stávající verzi znovu nezobrazovat,,,Não mostrar isso novamente na versão atual,
-User profile,User profile,用户配置,Profil uživatele,Benutzerprofil,Profil de l'utilisateur,Perfil de usuário,
-Portable mode,Portable mode,便携模式,Přenosný režim,Tragbarer Modus,Mode portable,Modo portátil,
-Profile is saved where executable is located,Profile is saved where executable is located,配置文件保存在可执行文件所在文件夹,"Profil je ukládán do stejného umístění, ve kterém se nachází aplikace","Das Profil wird dort gespeichert, wo sich die ausführbare Datei befindet",Le profil est enregistré là où est situé,O perfil é salvo onde o executável está localizado,
-Install for current windows account,Install for current windows account,为当前 Windows 用户配置,Nainstalovat pro stávající účet ve Windows,Installieren Sie für das aktuelle Windows -Konto,Installer pour le compte Windows actuel,Instale para a conta atual do Windows,
-Profile is saved in your Windows AppData folder,Profile is saved in your Windows AppData folder,配置文件保存在 Windows AppData 文件夹,Profil je ukládán do složky AppData ve vašem účtu,Das Profil wird in Ihrem Windows AppData -Ordner gespeichert,Le profil est enregistré dans votre dossier Windows AppData,O perfil é salvo na sua pasta Windows AppData,
-Selected runner,Selected runner,指定Runner,Vybraný spouštěč,,,,
-Supports the Putty-key only,Supports the Putty-key only,仅支持 putty key,Podporuje pouze Putty-klíč,,,,
-Supports the OpenSSH format key only with the internal SFTP client.,Supports the OpenSSH format key only with the internal SFTP client.,内置客户端仅支持 OpenSSH 格式私钥,Vestavěný SFTP klient podporuje klíče v OpenSSH formátu.,,,,
-Supports the OpenSSH format key and Putty-key with WinSCP.,Supports the OpenSSH format key and Putty-key with WinSCP.,WinSCP 可支持 Putty 和 OpenSSH 两种格式私钥,Podporuje klíč v OpenSSH formátu a Putty-klíč s WinSCP.,,,,
-Login with password,Login with password,通过密码登录,Přihlásit se heslem,,,,
-Login with ssh private key,Login with ssh private key,通过私钥登录,Přihlásit se pomocí soukromého ssh klíče,,,,
-Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,,Variáveis de ambiente,
-Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,,,,
+3. Mover o PREmoteM para outra pasta",,"Ми не маємо дозволу для взаємодії з директорією '{0}'!
+Будь-ласка, спробуйте: 
+1. Відкрийте з привилегіями адміністратора; 
+2. Змініть директорію або конфігурацію розподілу прав стосовно папки;
+3. Пересуньте PRemoteM до іншої директорії"
+232,Follow system,Follow system(Supported server: Windows Server 2012 R2 and above),跟随系统(服务器要求Windows Server 2012 R2及以上),Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější),Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher),Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior),,Слідкувати за системою (Підтримуваний сервер: Windows server 2012 R2 і вище)
+233,Scale,Scale,缩放,Měřítko,,,Tamanho,,Масштаб
+234,tag_tooltips,Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list,鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表,Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných,,,Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão,,"Клік лівою кнопкою миші: встановіть поточний тег в якості фільтра
+{0}Ctrl + Клік лівою кнопкою миші: додасть поточни тег до білого переліку
+{0}Ctrl + Клік правою кнопкою миші додасть поточний тег до переліку, що потрібно ігнорувати"
+235,Are you sure you want to close the connection?,Are you sure you want to close the connection?,确定要关闭连接么？,Opravdu chcete spojení zavřít?,Möchten Sie die Verbindung wirklich beenden?,Voulez-vous vraiment fermer la connexion?,Tem certeza de que deseja encerrar a conexão?,,"Чи ви впевнені, що бажаете зачинити з'єднання?"
+236,"Hi there,","Hi there,",你好呀！,"Zdravím,",,,"E ai,",,"Мої вітання,"
+237,"I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!","I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!",希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！,"Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!",,,"Espero que ache este APP útil! Se quiser apoiar meu trabalho pode me pagar um cerveja ou me dar um elogio, obrigado!",,"Я сподіваюсь, що додаток стане вам у нагоді. Якщо ви бажаєте підтримати мою працю, то ви можете пригостити мене кавою або залишити гарний відгук. Дякую!"
+238,Give suggestions,Give suggestions,提点意见,Podělit se o nápady,,,Me dê sugestões,,Надати пропозицію
+239,Buy a coffee,Buy a coffee,买杯咖啡,Koupit kafe,,,Me pague uma cerveja,,Пригостити кавою
+240,Give nice review,Give nice review,给个好评,Napsat kladnou recenzi,,,Me dê um elogio,,Залишити гарний відгук
+241,Do not show this again in current version,Do not show this again in current version,当前版本不再显示,Ve stávající verzi znovu nezobrazovat,,,Não mostrar isso novamente na versão atual,,Більше не показувати це в поточній сессіїї
+242,User profile,User profile,用户配置,Profil uživatele,Benutzerprofil,Profil de l'utilisateur,Perfil de usuário,,Профіль користувача
+243,Portable mode,Portable mode,便携模式,Přenosný režim,Tragbarer Modus,Mode portable,Modo portátil,,Портативний режим
+244,Profile is saved where executable is located,Profile is saved where executable is located,配置文件保存在可执行文件所在文件夹,"Profil je ukládán do stejného umístění, ve kterém se nachází aplikace","Das Profil wird dort gespeichert, wo sich die ausführbare Datei befindet",Le profil est enregistré là où est situé,O perfil é salvo onde o executável está localizado,,Профіль був збережени біля бінарних файлів
+245,Install for current windows account,Install for current windows account,为当前 Windows 用户配置,Nainstalovat pro stávající účet ve Windows,Installieren Sie für das aktuelle Windows -Konto,Installer pour le compte Windows actuel,Instale para a conta atual do Windows,,Встановити поточний windows аккаунт
+246,Profile is saved in your Windows AppData folder,Profile is saved in your Windows AppData folder,配置文件保存在 Windows AppData 文件夹,Profil je ukládán do složky AppData ve vašem účtu,Das Profil wird in Ihrem Windows AppData -Ordner gespeichert,Le profil est enregistré dans votre dossier Windows AppData,O perfil é salvo na sua pasta Windows AppData,,"Профіль був збережени до AppData, що знаходится в вашій домашній папці"
+247,Selected runner,Selected runner,指定Runner,Vybraný spouštěč,,,,,Обрана сессія
+248,Supports the Putty-key only,Supports the Putty-key only,仅支持 putty key,Podporuje pouze Putty-klíč,,,,,Підтримує ключі тільки в форматі Putty
+249,Supports the OpenSSH format key only with the internal SFTP client.,Supports the OpenSSH format key only with the internal SFTP client.,内置客户端仅支持 OpenSSH 格式私钥,Vestavěný SFTP klient podporuje klíče v OpenSSH formátu.,,,,,Підтримує ключі в фоматі OpenSSH тільки з внутрішнім SFTP клієнтом
+250,Supports the OpenSSH format key and Putty-key with WinSCP.,Supports the OpenSSH format key and Putty-key with WinSCP.,WinSCP 可支持 Putty 和 OpenSSH 两种格式私钥,Podporuje klíč v OpenSSH formátu a Putty-klíč s WinSCP.,,,,,Підтримує ключі в фоматі OpenSSH та Putty разом з WinSCP
+251,Login with password,Login with password,通过密码登录,Přihlásit se heslem,,,,,Авторизуватись за допомогою паролю
+252,Login with ssh private key,Login with ssh private key,通过私钥登录,Přihlásit se pomocí soukromého ssh klíče,,,,,Авторизуватись за допомогою приватного ssh-ключа
+253,Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,,Variáveis de ambiente,,Змінні осередку 
+254,Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,,,,,
