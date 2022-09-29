@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using PRM.Model.Protocol;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Model.ProtocolRunner
 {
@@ -61,7 +62,7 @@ namespace PRM.Model.ProtocolRunner
                     return false;
                 try
                 {
-                    return File.Exists(_exePath);
+                    return WinCmdRunner.CheckFileExistsAndFullName(_exePath).Item1;
                 }
                 catch
                 {

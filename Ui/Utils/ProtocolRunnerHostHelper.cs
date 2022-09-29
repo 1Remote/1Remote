@@ -12,6 +12,7 @@ using PRM.Model.ProtocolRunner.Default;
 using PRM.Utils.KiTTY;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Utils
 {
@@ -71,15 +72,18 @@ namespace PRM.Utils
                         break;
                 }
             }
-            if (!File.Exists(exePath))
+
+            var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
+            if (tmp.Item1)
             {
                 MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
                 return null;
             }
+            exePath = tmp.Item2;
 
 
             // make exeArguments and environment variables
-            var exeArguments = "";
+            string exeArguments;
             var environmentVariables = new Dictionary<string, string>();
             {
                 exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
@@ -174,7 +178,8 @@ namespace PRM.Utils
                     }
                 case LocalApp app:
                     {
-                        if (File.Exists(app.ExePath) == false)
+                        var tmp = WinCmdRunner.CheckFileExistsAndFullName(app.ExePath);
+                        if (tmp.Item1 == false)
                         {
                             MessageBoxHelper.ErrorAlert($"the path '{app.ExePath}' does not existed!");
                             return null;
@@ -182,12 +187,12 @@ namespace PRM.Utils
 
                         if (app.RunWithHosting)
                         {
-                            var host = new IntegrateHost(app, app.ExePath, app.Arguments);
+                            var host = new IntegrateHost(app, tmp.Item2, app.Arguments);
                             return host;
                         }
                         else
                         {
-                            Process.Start(app.ExePath, app.Arguments);
+                            Process.Start(tmp.Item2, app.Arguments);
                         }
                         return null;
                     }
