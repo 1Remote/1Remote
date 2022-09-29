@@ -82,17 +82,18 @@ namespace _1RM.View
         /// <param name="action"></param>
         private void FilterTagsControl(object? o, TagFilter.FilterTagsControlAction action)
         {
-            if (o is not Tag obj)
-                return;
-
-            string newTagName = string.Empty;
-            if (AppData.TagList.Any(x => x.Name == obj.Name))
+            string newTagName;
+            if (o is Tag obj && AppData.TagList.Any(x => x.Name == obj.Name))
             {
                 newTagName = obj.Name;
             }
             else if (o is string str && AppData.TagList.Any(x => x.Name == str))
             {
                 newTagName = str;
+            }
+            else
+            {
+                return;
             }
 
             if (string.IsNullOrEmpty(newTagName) == false)
