@@ -78,7 +78,7 @@
                              Text="{Binding Name,  
                                     ValidatesOnExceptions=True, 
                                     UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding Path, Mode=OneWay}"></TextBox>

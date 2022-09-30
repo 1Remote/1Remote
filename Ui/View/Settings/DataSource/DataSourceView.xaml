@@ -180,7 +180,7 @@
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=Name}" Value="{x:Static dataSource:DataSourceService.LOCAL_DATA_SOURCE_NAME}">
+                                                <DataTrigger Binding="{Binding Path=DataSourceName}" Value="{x:Static dataSource:DataSourceService.LOCAL_DATA_SOURCE_NAME}">
                                                     <Setter Property="IsEnabled" Value="False"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
