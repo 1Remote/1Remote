@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
+using Shawn.Utils;
 
 namespace _1RM.View
 {
@@ -20,6 +21,25 @@ namespace _1RM.View
                 var p = args.GetPosition(GridBottom);
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             };
+        }
+
+        private void GroupedItems_OnFilter(object sender, FilterEventArgs e)
+        {
+            if (e.Item is ProtocolBaseViewModel t
+                && DataContext is ServerListPageViewModel vm)
+            // If filter is turned on, filter completed items.
+            {
+                if (vm.TestMatchKeywords(t.Server))
+                {
+                    e.Accepted = true;
+                }
+                else
+                {
+                    e.Accepted = false;
+                    t.IsSelected = false;
+                }
+                t.IsVisible = e.Accepted;
+            }
         }
     }
 

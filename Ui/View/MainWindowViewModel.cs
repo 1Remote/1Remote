@@ -89,7 +89,6 @@ namespace _1RM.View
 
         #endregion Properties
 
-
         public MainWindowViewModel(GlobalData appData, DataSourceService sourceService, ConfigurationService configurationService)
         {
             _appData = appData;

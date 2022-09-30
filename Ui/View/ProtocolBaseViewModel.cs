@@ -79,6 +79,14 @@ namespace _1RM.View
         }
 
 
+        private bool _isVisible;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetAndNotifyIfChanged(ref _isVisible, value);
+        }
+
+
         private DateTime _lastConnectTime = DateTime.MinValue;
         public DateTime LastConnectTime
         {

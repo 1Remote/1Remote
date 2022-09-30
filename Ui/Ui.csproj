@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
+		<OutputType Condition="'$(Configuration)'=='Debug'">Exe</OutputType>
+		<OutputType Condition="'$(Configuration)'!='Debug'">WinExe</OutputType>
+		<DisableWinExeOutputInference>true</DisableWinExeOutputInference>
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>

@@ -79,7 +79,7 @@
                              Text="{Binding Name,  
                                     ValidatesOnExceptions=True, 
                                     UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Hostname}"></TextBlock>
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}"></TextBox>
@@ -90,7 +90,7 @@
                              Text="{Binding Port,  
                                     ValidatesOnExceptions=True, 
                                     UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TbPort}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbPort}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Database"></TextBlock>

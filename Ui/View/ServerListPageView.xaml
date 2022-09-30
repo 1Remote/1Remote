@@ -17,7 +17,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
-            <CollectionViewSource x:Key="GroupedItems" Source="{Binding ServerListItems}">
+            <CollectionViewSource x:Key="GroupedItems" 
+                                  Source="{Binding ServerListItems}"
+                                  Filter="GroupedItems_OnFilter">
                 <CollectionViewSource.GroupDescriptions>
                     <PropertyGroupDescription PropertyName="DataSourceName"></PropertyGroupDescription>
                 </CollectionViewSource.GroupDescriptions>
@@ -58,8 +60,10 @@
                                                             ItemsPanel="{TemplateBinding ItemsPanel}"
                                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                     <DataGridRowHeader x:Name="dataGridRowHeader" 
-                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"  
-                                                       Grid.RowSpan="2"
+                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
+                                                       Grid.Row="0" 
+                                                       Grid.RowSpan="2" 
+                                                       Grid.Column="0"
                                                        Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Row}}"/>
                                     <Grid Grid.Column="1" Grid.Row="1" Name="Details" Visibility="Collapsed">
                                         <DataGridDetailsPresenter x:Name="dataGridDetailsPresenter" />
@@ -75,6 +79,85 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style TargetType="{x:Type Expander}">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0 "/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Expander}">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="0" SnapsToDevicePixels="True">
+                                <DockPanel>
+                                    <ToggleButton x:Name="HeaderSite" Background="Red"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}"
+                                                  FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"
+                                                  FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}"
+                                                  FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="10 2" 
+                                                  MinWidth="0" 
+                                                  MinHeight="0" 
+                                                  Padding="{TemplateBinding Padding}" 
+                                                  VerticalContentAlignment="Center">
+                                        <ToggleButton.FocusVisualStyle>
+                                            <Style>
+                                                <Setter Property="Control.Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate>
+                                                            <Border>
+                                                                <Rectangle Margin="0" SnapsToDevicePixels="True" Stroke="Red" StrokeThickness="1" StrokeDashArray="1 2"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ToggleButton.FocusVisualStyle>
+                                        <ToggleButton.Style>
+                                            <Style TargetType="{x:Type ToggleButton}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                            <Border Padding="{TemplateBinding Padding}" Background="Transparent">
+                                                                <StackPanel Orientation="Horizontal" Background="Transparent">
+                                                                    <Path Grid.Column="0" 
+                                                                          x:Name="arrow" 
+                                                                          Data="M1,1.5L4.5,5 8,1.5" 
+                                                                          HorizontalAlignment="Left"  
+                                                                          SnapsToDevicePixels="False" 
+                                                                          Stroke="{DynamicResource BackgroundTextBrush}" 
+                                                                          StrokeThickness="2" 
+                                                                          VerticalAlignment="Center" 
+                                                                          Width="16" 
+                                                                          Margin="0,10" />
+                                                                    <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"  />
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsChecked" Value="True">
+                                                                    <Setter Property="Data" TargetName="arrow" Value="M1,4.5L4.5,1 8,4.5"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ToggleButton.Style>
+                                    </ToggleButton>
+                                    <ContentPresenter x:Name="ExpandSite" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" DockPanel.Dock="Bottom" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </DockPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsExpanded" Value="True">
+                                    <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
 
 
             <system:Double x:Key="ServerItemHeight">40</system:Double>
@@ -405,7 +488,6 @@
                     </Grid>
                 </Grid>
 
-
                 <DataGrid Name="LvServerCards"
                           ItemsSource="{Binding Source={StaticResource GroupedItems}}"
                           SelectedItem="{Binding SelectedServerViewModelListItem}"
@@ -518,6 +600,9 @@
 
                     </DataGrid.Columns>
                 </DataGrid>
+
+
+
 
                 <!-- footer: show detail of a server -->
                 <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">

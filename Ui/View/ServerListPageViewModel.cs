@@ -99,12 +99,22 @@ namespace _1RM.View
 
         public bool IsSelectedAll
         {
-            get => ServerListItems.All(x => x.IsSelected);
+            get => ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
             set
             {
-                foreach (var vmServerCard in ServerListItems)
+                if (value == false)
                 {
-                    vmServerCard.IsSelected = value;
+                    foreach (var vmServerCard in ServerListItems)
+                    {
+                        vmServerCard.IsSelected = false;
+                    }
+                }
+                else
+                {
+                    foreach (var vmServerCard in ServerListItems)
+                    {
+                        vmServerCard.IsSelected = vmServerCard.IsVisible;
+                    }
                 }
                 RaisePropertyChanged();
             }
@@ -187,8 +197,9 @@ namespace _1RM.View
                         ni.IsBriefNoteShown = BriefNoteVisibility == Visibility.Visible;
                     }
                 }
+
                 _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
-                CalcVisibleByFilter(_filterString);
+                RaisePropertyChanged(nameof(ServerListItems));
                 RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
@@ -224,24 +235,44 @@ namespace _1RM.View
 
         public void CalcVisibleByFilter(string filterString)
         {
-            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
-            var tagFilters = tmp.Item1;
-            var keyWords = tmp.Item2;
-            TagFilters = tagFilters;
-            var newList = new List<ProtocolBaseViewModel>();
-            foreach (var vm in AppData.VmItemList)
+            if (this.View is ServerListPageView v)
             {
-                var server = vm.Server;
-                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, keyWords);
-                if (s.Item1 == true)
-                {
-                    newList.Add(vm);
-                }
+                Execute.OnUIThread(() => { CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh(); });
+            }
+            //var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
+            //var tagFilters = tmp.Item1;
+            //var keyWords = tmp.Item2;
+            //TagFilters = tagFilters;
+            //var newList = new List<ProtocolBaseViewModel>();
+            //foreach (var vm in AppData.VmItemList)
+            //{
+            //    var server = vm.Server;
+            //    var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, keyWords);
+            //    if (s.Item1 == true)
+            //    {
+            //        newList.Add(vm);
+            //    }
+            //}
+            //ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
+            //RaisePropertyChanged(nameof(IsSelectedAll));
+            //RaisePropertyChanged(nameof(IsAnySelected));
+        }
+
+        private string _filterString2 = "";
+        private List<string> _stringFilters = new List<string>();
+        public bool TestMatchKeywords(ProtocolBase server)
+        {
+            string filterString = IoC.Get<MainWindowViewModel>().MainFilterString;
+            if (_filterString2 != filterString)
+            {
+                _filterString2 = filterString;
+                var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
+                TagFilters = tmp.Item1.Where(y => AppData.TagList.Any(x => x.Name == y.TagName)).ToList();
+                _stringFilters = tmp.Item2;
             }
 
-            ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
-            RaisePropertyChanged(nameof(IsSelectedAll));
-            RaisePropertyChanged(nameof(IsAnySelected));
+            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, _stringFilters);
+            return s.Item1;
         }
 
 
