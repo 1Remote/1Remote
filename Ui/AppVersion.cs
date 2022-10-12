@@ -7,8 +7,8 @@ namespace _1RM
         public const uint Major = 0;
         public const uint Minor = 7;
         public const uint Patch = 1;
-        public const uint Build = 6;
-        public const string PreRelease = "alpha5"; // e.g. "alpha" "beta.2"
+        public const uint Build = 7;
+        public const string PreRelease = "beta.2"; // e.g. "alpha" "beta.2"
 
         public static readonly VersionHelper.Version VersionData = new VersionHelper.Version(Major, Minor, Patch, Build, PreRelease);
         public static string Version => VersionData.ToString();

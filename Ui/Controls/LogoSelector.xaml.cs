@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
@@ -372,9 +373,32 @@ namespace _1RM.Controls
 
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
-            var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp|all files|*.*");
+            var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*");
             if (path != null)
-                SetImg(NetImageProcessHelper.ReadImgFile(path).ToBitmapSource());
+            {
+                if (path.EndsWith(".exe", true, null))
+                {
+                    using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
+                    var img = Imaging.CreateBitmapSourceFromHIcon(
+                        icon.Handle,
+                        new Int32Rect(0, 0, icon.Width, icon.Height),
+                        BitmapSizeOptions.FromEmptyOptions());
+                    SetImg(img);
+                }
+                else if (path.EndsWith(".ico", true, null))
+                {
+                    using var icon = new System.Drawing.Icon(path, -1, -1);
+                    var img = Imaging.CreateBitmapSourceFromHIcon(
+                        icon.Handle,
+                        new Int32Rect(0, 0, icon.Width, icon.Height),
+                        BitmapSizeOptions.FromEmptyOptions());
+                    SetImg(img);
+                }
+                else
+                {
+                    SetImg(NetImageProcessHelper.ReadImgFile(path)?.ToBitmapSource());
+                }
+            }
         }
 
         private void BtnZoomIn_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

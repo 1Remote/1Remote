@@ -136,7 +136,7 @@
     <s:String x:Key="Run bat after disconnected">Execute bat depois de desconectado (por exemplo, execute 'C:\CloseSshTunneling.bat')</s:String>
     <s:String x:Key="Hostname">Hospedeiro</s:String>
     <s:String x:Key="Target">Alvo</s:String>
-    <s:String x:Key="Port">Porta</s:String>
+    <s:String x:Key="Port">Port</s:String>
     <s:String x:Key="User">Usuário</s:String>
     <s:String x:Key="Password">Senha</s:String>
     <s:String x:Key="Use private key">Usar chave privada</s:String>

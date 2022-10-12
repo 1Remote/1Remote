@@ -136,7 +136,7 @@
     <s:String x:Key="Run bat after disconnected">Fledermaus ausführen, nachdem die Verbindung getrennt wurde (z. B. 'C:\CloseSshTunneling.bat' ausführen)</s:String>
     <s:String x:Key="Hostname">Hostname</s:String>
     <s:String x:Key="Target">Ziel</s:String>
-    <s:String x:Key="Port">Hafen</s:String>
+    <s:String x:Key="Port">Port</s:String>
     <s:String x:Key="User">Benutzer</s:String>
     <s:String x:Key="Password">Passwort</s:String>
     <s:String x:Key="Use private key">Benutze privaten Schlüssel</s:String>
