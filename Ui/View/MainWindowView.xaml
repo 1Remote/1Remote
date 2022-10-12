@@ -18,6 +18,7 @@
                   Title="{x:Static service:AppPathHelper.APP_NAME}" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
+            <CollectionViewSource x:Key="GroupedItems" Source="{Binding }"/>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
         </ResourceDictionary>
     </styles:WindowChromeBase.Resources>
