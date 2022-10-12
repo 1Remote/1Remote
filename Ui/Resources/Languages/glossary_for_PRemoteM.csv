@@ -135,7 +135,7 @@ Run bat before connect,Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat'
 Run bat after disconnected,Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat'),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）,,,,,
 Hostname,Hostname,地址,Název stroje,,,Hospedeiro,
 Target,Target,目标,Cíl,,Cibler,,
-Port,Port,端口,Port,,,Porta,
+Port,Port,端口,Port,Port,Port,Port,
 User,User,用户名,Uživatel,Benutzer,Utilisateur,Usuário,
 Password,Password,密码,Heslo,Passwort,Mot de passe,Senha,
 Use private key,Use private key,使用私钥连接,Použít soukromý klíč,Benutze privaten Schlüssel,utiliser la clé privée,Usar chave privada,
