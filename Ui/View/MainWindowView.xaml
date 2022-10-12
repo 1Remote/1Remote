@@ -166,7 +166,6 @@
                                     <Path UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="{DynamicResource 'Toggle Cards/List'}" Command="{Binding CmdToggleCardList}"></MenuItem>
                             <MenuItem Command="{Binding CmdGoAboutPage}">
                                 <MenuItem.Icon>
                                     <Image Source="/Resources/Image/Logo/logo64.png" Width="20"></Image>
