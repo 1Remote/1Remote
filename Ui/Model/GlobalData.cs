@@ -26,7 +26,7 @@ namespace _1RM.Model
             ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
 
-            _timer = new Timer(5 * 1000)
+            _timer = new Timer(30 * 1000)
             {
                 AutoReset = false,
             };
@@ -36,15 +36,26 @@ namespace _1RM.Model
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
-            if (IoC.Get<MainWindowViewModel>().IsShownList() == false
-                || IoC.Get<LauncherWindowViewModel>().IsActive)
+            try
             {
-                return;
-            }
+                var mainWindowViewModel = IoC.Get<MainWindowViewModel>();
+                var listPageViewModel = IoC.Get<ServerListPageViewModel>();
+                var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
+                // do not reload when any selected / launcher is shown / editor view is show
+                if (mainWindowViewModel.EditorViewModel != null
+                    || listPageViewModel.ServerListItems.Any(x => x.IsSelected)
+                    || launcherWindowViewModel.View.IsVisible)
+                {
+                    return;
+                }
 
-            ReloadServerList();
-            if (_isTimerStopFlag == false)
-                _timer.Start();
+                ReloadServerList();
+            }
+            finally
+            {
+                if (_isTimerStopFlag == false)
+                    _timer.Start();
+            }
         }
 
         private DataSourceService? _sourceService;
@@ -113,11 +124,10 @@ namespace _1RM.Model
                 foreach (var additionalSource in _sourceService.AdditionalSources)
                 {
                     // 对于断线的数据源，隔一段时间后尝试重连
-                    if (additionalSource.Value.Status == EnumDbStatus.LostConnection
-                        //TODO && additionalSource.Value.GetConfig().StatueTime.AddHours(0.5) < DateTime.Now
-                        )
+                    if (additionalSource.Value.Status == EnumDbStatus.LostConnection)
                     {
-                        if (additionalSource.Value.Database_OpenConnection())
+                        if (additionalSource.Value.StatueTime.AddMinutes(10) < DateTime.Now
+                            && additionalSource.Value.Database_OpenConnection())
                         {
                             additionalSource.Value.Database_SelfCheck();
                         }

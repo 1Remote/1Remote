@@ -25,7 +25,7 @@
             <Grid >
                 <StackPanel Margin="20 0" >
 
-                    <TextBlock Text="TXT:Plz Select a Data Source" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
+                    <TextBlock Text="{DynamicResource 'Please select a data source'}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
 
                     <ListBox MaxHeight="400" Width="500" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"

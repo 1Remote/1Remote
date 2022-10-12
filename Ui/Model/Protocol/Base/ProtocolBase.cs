@@ -229,7 +229,8 @@ namespace _1RM.Model.Protocol.Base
 
         public virtual string ToJsonString()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            return JsonConvert.SerializeObject(this);
+            //return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
         /// <summary>
