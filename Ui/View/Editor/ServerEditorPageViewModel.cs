@@ -19,6 +19,7 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Editor
 {
+    // TODO TODO: show target data source in add view
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;

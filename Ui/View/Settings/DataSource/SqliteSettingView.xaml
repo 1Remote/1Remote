@@ -89,7 +89,7 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Margin="0 5 0 15" Command="{Binding CmdGenRsaKey}"
-                                Content="TXT: 加密数据库中数据">
+                                Content="{DynamicResource system_options_data_security_rsa_encrypt}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                         <Setter Property="IsEnabled" Value="False"></Setter>
@@ -102,7 +102,7 @@
                                 </Button.Style>
                             </Button>
                             <Button Margin="10 5 0 15" Command="{Binding CmdClearRsaKey}"
-                                Content="TXT: 解密数据库中数据">
+                                Content="{DynamicResource system_options_data_security_rsa_decrypt}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                         <Style.Triggers>

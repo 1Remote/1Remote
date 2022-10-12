@@ -42,6 +42,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var dataBase = GetDataBase();
                 DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
+                SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceTimestamp} < {DataSourceDataUpdateTimestamp}");
                 return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
             }
             return false;
@@ -310,6 +311,7 @@ namespace _1RM.Service.DataSource.Model
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);
             GetDataBase()?.AddServer(tmp);
+            LastReadFromDataSourceTimestamp = 0;
         }
 
         public void Database_InsertServer(IEnumerable<ProtocolBase> servers)
@@ -324,6 +326,7 @@ namespace _1RM.Service.DataSource.Model
             }
 
             GetDataBase()?.AddServer(cloneList);
+            LastReadFromDataSourceTimestamp = 0;
         }
 
         public bool Database_UpdateServer(ProtocolBase org)
@@ -332,7 +335,12 @@ namespace _1RM.Service.DataSource.Model
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);
-            return GetDataBase()?.UpdateServer(tmp) == true;
+            var ret = GetDataBase()?.UpdateServer(tmp) == true;
+            if (ret == true)
+            {
+                LastReadFromDataSourceTimestamp = 0;
+            }
+            return ret;
         }
 
         public bool Database_UpdateServer(IEnumerable<ProtocolBase> servers)
@@ -346,17 +354,36 @@ namespace _1RM.Service.DataSource.Model
                 cloneList.Add(tmp);
             }
 
-            return GetDataBase()?.UpdateServer(cloneList) == true;
+            var ret = GetDataBase()?.UpdateServer(cloneList) == true;
+            if (ret == true)
+            {
+                LastReadFromDataSourceTimestamp = 0;
+            }
+            return ret;
         }
 
         public bool Database_DeleteServer(string id)
         {
-            return _isWritable && GetDataBase()?.DeleteServer(id) == true;
+            if (_isWritable)
+            {
+                var ret = GetDataBase()?.DeleteServer(id) == true;
+                if (ret == true)
+                    LastReadFromDataSourceTimestamp = 0;
+                return ret;
+            }
+            return false;
         }
 
         public bool Database_DeleteServer(IEnumerable<string> ids)
         {
-            return _isWritable && GetDataBase()?.DeleteServer(ids) == true;
+            if (_isWritable)
+            {
+                var ret = GetDataBase()?.DeleteServer(ids) == true;
+                if (ret == true)
+                    LastReadFromDataSourceTimestamp = 0;
+                return ret;
+            }
+            return false;
         }
 
         public List<ProtocolBase> Database_GetServers()
