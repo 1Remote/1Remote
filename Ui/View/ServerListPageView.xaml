@@ -87,9 +87,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Expander}">
-                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="0" SnapsToDevicePixels="True">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" 
+                                    CornerRadius="0" 
+                                    SnapsToDevicePixels="True">
                                 <DockPanel>
-                                    <ToggleButton x:Name="HeaderSite" Background="Red"
+                                    <ToggleButton x:Name="HeaderSite" 
+                                                  Background="Red"
+                                                  Cursor="Hand"
                                                   ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                   Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}"
                                                   FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"
@@ -762,6 +768,7 @@
 
 
 
+        <!-- tags list -->
         <Grid VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="20">
                 <Border.Effect>

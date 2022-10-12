@@ -235,22 +235,7 @@ namespace _1RM.View
                 }, o => IsShownList());
             }
         }
-
-        private RelayCommand? _cmdToggleCardList;
-
-        public RelayCommand CmdToggleCardList
-        {
-            get
-            {
-                return _cmdToggleCardList ??= new RelayCommand((o) =>
-                {
-                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    if (this.View != null)
-                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
-                }, o => IsShownList());
-            }
-        }
-
+        
         #endregion CMD
 
 
@@ -352,6 +337,9 @@ namespace _1RM.View
             set => SetAndNotifyIfChanged(ref _mainFilterCaretIndex, value);
         }
 
+
+        private readonly DebounceDispatcher _debounceDispatcher = new();
+
         private string _mainFilterString = "";
         public string MainFilterString
         {
@@ -361,11 +349,9 @@ namespace _1RM.View
                 // can only be called by the Ui
                 if (SetAndNotifyIfChanged(ref _mainFilterString, value))
                 {
-                    Task.Factory.StartNew(() =>
+                    _debounceDispatcher.Debounce(150, (obj) =>
                     {
-                        var filter = MainFilterString;
-                        Thread.Sleep(100);
-                        if (filter == MainFilterString)
+                        if (_mainFilterString == MainFilterString)
                         {
                             GlobalEventHelper.OnFilterChanged?.Invoke(MainFilterString);
                         }

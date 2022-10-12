@@ -26,6 +26,10 @@ namespace _1RM.View
 
         public string Id => Server.Id;
 
+        public string DisplayName => Server.DisplayName;
+        public string SubTitle => Server.SubTitle;
+        public string ProtocolDisplayNameInShort => Server.ProtocolDisplayNameInShort;
+
         public ProtocolBase Server { get; }
         public ProtocolBaseViewModel(ProtocolBase psb, DataSourceBase dataSource)
         {

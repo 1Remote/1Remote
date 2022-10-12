@@ -42,24 +42,6 @@ namespace _1RM.View
 
         #region properties
 
-        public bool ListPageIsCardView
-        {
-            get => IoC.Get<SettingsPageViewModel>().ListPageIsCardView;
-            set
-            {
-                if (IoC.Get<SettingsPageViewModel>().ListPageIsCardView != value)
-                {
-                    IoC.Get<SettingsPageViewModel>().ListPageIsCardView = value;
-                    RaisePropertyChanged();
-                }
-                if (value == true)
-                {
-                    _briefNoteVisibility = Visibility.Visible;
-                    BriefNoteVisibility = Visibility.Collapsed;
-                }
-            }
-        }
-
         private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
         public ProtocolBaseViewModel? SelectedServerViewModelListItem
         {
@@ -71,15 +53,7 @@ namespace _1RM.View
         public ObservableCollection<ProtocolBaseViewModel> ServerListItems
         {
             get => _serverListItems;
-            set
-            {
-                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(GetOrderedVmProtocolServers(value, ServerOrderBy));
-                //ServerListItems.CollectionChanged += (sender, args) =>
-                //{
-                //    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(ServerListItems);
-                //};
-                RaisePropertyChanged();
-            }
+            set => SetAndNotifyIfChanged(ref _serverListItems, value);
         }
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
@@ -99,7 +73,7 @@ namespace _1RM.View
 
         public bool IsSelectedAll
         {
-            get => ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
+            get => ServerListItems.Count > 0 && ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
             set
             {
                 if (value == false)
@@ -149,8 +123,6 @@ namespace _1RM.View
         {
             SourceService = sourceService;
             AppData = appData;
-            AppData.VmItemListDataChanged += RebuildVmServerList;
-            RebuildVmServerList();
 
             {
                 var showNoteFieldInListView = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView;
@@ -158,6 +130,11 @@ namespace _1RM.View
                 _briefNoteVisibility = showNoteFieldInListView == false ? Visibility.Visible : Visibility.Collapsed;
                 BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
             }
+            RebuildVmServerList();
+        }
+
+        protected override void OnViewLoaded()
+        {
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += server =>
                 {
@@ -174,8 +151,13 @@ namespace _1RM.View
                 _filterString = filterString;
                 CalcVisibleByFilter(_filterString);
             };
+            AppData.VmItemListDataChanged += RebuildVmServerList;
+
+
             ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
+            ApplySort(ServerOrderBy);
         }
+
 
         private void RebuildVmServerList()
         {
@@ -198,8 +180,8 @@ namespace _1RM.View
                     }
                 }
 
-                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
-                RaisePropertyChanged(nameof(ServerListItems));
+                ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
+                ApplySort(ServerOrderBy);
                 RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
@@ -216,21 +198,45 @@ namespace _1RM.View
             }
         }
 
-        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IReadOnlyCollection<ProtocolBaseViewModel>? servers, EnumServerOrderBy orderBy)
+        private void ApplySort(EnumServerOrderBy orderBy)
         {
-            // ReSharper disable once PossibleMultipleEnumeration
-            if (servers == null || servers.Any() == false) return new List<ProtocolBaseViewModel>();
-
-            return orderBy switch
+            if (this.View is ServerListPageView v)
             {
-                EnumServerOrderBy.ProtocolAsc => servers.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Id),
-                EnumServerOrderBy.ProtocolDesc => servers.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Id),
-                EnumServerOrderBy.NameAsc => servers.OrderBy(x => x.Server.DisplayName).ThenBy(x => x.Id),
-                EnumServerOrderBy.NameDesc => servers.OrderByDescending(x => x.Server.DisplayName).ThenBy(x => x.Id),
-                EnumServerOrderBy.AddressAsc => servers.OrderBy(x => x.Server.SubTitle).ThenBy(x => x.Id),
-                EnumServerOrderBy.AddressDesc => servers.OrderByDescending(x => x.Server.SubTitle).ThenBy(x => x.Id),
-                _ => servers.OrderBy(x => x.Id)
-            };
+                Execute.OnUIThread(() =>
+                {
+                    var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
+                    if (cvs != null)
+                    {
+                        cvs.SortDescriptions.Clear();
+                        switch (orderBy)
+                        {
+                            case EnumServerOrderBy.IdAsc:
+                                break;
+                            case EnumServerOrderBy.ProtocolAsc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Ascending));
+                                break;
+                            case EnumServerOrderBy.ProtocolDesc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Descending));
+                                break;
+                            case EnumServerOrderBy.NameAsc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.DisplayName), ListSortDirection.Ascending));
+                                break;
+                            case EnumServerOrderBy.NameDesc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.DisplayName), ListSortDirection.Descending));
+                                break;
+                            case EnumServerOrderBy.AddressAsc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.SubTitle), ListSortDirection.Ascending));
+                                break;
+                            case EnumServerOrderBy.AddressDesc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.SubTitle), ListSortDirection.Descending));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        //cvs.Refresh();
+                    }
+                });
+            }
         }
 
         public void CalcVisibleByFilter(string filterString)
@@ -520,8 +526,7 @@ namespace _1RM.View
                             }
 
                             ServerOrderBy = (EnumServerOrderBy)ot;
-                            ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(GetOrderedVmProtocolServers(ServerListItems, ServerOrderBy));
-                            _lastCmdReOrder = DateTime.Now;
+                            ApplySort(ServerOrderBy);
                         }
                     }
                 });
