@@ -74,7 +74,7 @@ namespace PRM.Utils
             }
 
             var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
-            if (tmp.Item1)
+            if (tmp.Item1 == false)
             {
                 MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
                 return null;
