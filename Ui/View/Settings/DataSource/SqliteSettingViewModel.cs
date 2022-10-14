@@ -195,7 +195,7 @@ namespace _1RM.View.Settings.DataSource
                 var path = SelectFileHelper.OpenFile(
                     checkFileExists: false,
                     initialDirectory: AppPathHelper.Instance.BaseDirPath,
-                    title: "TXT: 选择 RSA 密钥或创建一个新的密钥",
+                    title: IoC.Get<LanguageService>().Translate("system_options_data_security_rsa_encrypt_dialog_title"),
                     selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     filter: $"RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;

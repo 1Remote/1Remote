@@ -74,7 +74,7 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: Connection Name"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
                              Text="{Binding Name,  
                                     ValidatesOnExceptions=True, 
@@ -106,7 +106,7 @@
                              attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
 
                         <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
-                            <Button Command="{Binding CmdTestConnection}" Content="TXT: 测试连接" Width="100" Margin="10 0"></Button>
+                            <Button Command="{Binding CmdTestConnection}" Content="{DynamicResource 'Test connection'}" Width="100" Margin="10 0"></Button>
                         </Grid>
                     </Grid>
 
