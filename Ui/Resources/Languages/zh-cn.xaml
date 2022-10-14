@@ -255,5 +255,7 @@
     <s:String x:Key="Login with ssh private key">通过私钥登录</s:String>
     <s:String x:Key="Environment variables">环境变量</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">环境变量将在启动前写入Runner</s:String>
-    <s:String x:Key="Please select a data source">请选择一个数据源</s:String>
+    <s:String x:Key="Data Source name">数据源名称</s:String>
+    <s:String x:Key="Please select a Data Source">请选择一个数据源</s:String>
+    <s:String x:Key="Test connection">测试连接</s:String>
 </ResourceDictionary>

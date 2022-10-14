@@ -42,7 +42,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var dataBase = GetDataBase();
                 DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
-                SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceTimestamp} < {DataSourceDataUpdateTimestamp}");
+                //SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceTimestamp} < {DataSourceDataUpdateTimestamp}");
                 return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
             }
             return false;

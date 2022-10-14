@@ -271,4 +271,6 @@ Login with password,Login with password,通过密码登录,Přihlásit se heslem
 Login with ssh private key,Login with ssh private key,通过私钥登录,Přihlásit se pomocí soukromého ssh klíče,,,,
 Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,,Variáveis de ambiente,
 Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,,,,
-Please select a data source,Please select a data source,请选择一个数据源,,,,,
+Data Source name,Data Source name,数据源名称,Data Source name,Data Source name,Data Source name,Please select a Data Source,
+Please select a Data Source,Please select a Data Source,请选择一个数据源,Please select a Data Source,Please select a Data Source,Please select a Data Source,Please select a Data Source,
+Test connection,Test connection,测试连接,Test connection,Test connection,Test connection,,

@@ -255,5 +255,7 @@
     <s:String x:Key="Login with ssh private key">Login com chave privada ssh</s:String>
     <s:String x:Key="Environment variables">Variáveis de ambiente</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Antes do runner iniciar as variáveis ​​de ambiente serão definidas</s:String>
-    <s:String x:Key="Please select a data source">Selecione uma fonte de dados</s:String>
+    <s:String x:Key="Data Source name">Please select a Data Source</s:String>
+    <s:String x:Key="Please select a Data Source">Please select a Data Source</s:String>
+    <s:String x:Key="Test connection">Conexão de teste</s:String>
 </ResourceDictionary>

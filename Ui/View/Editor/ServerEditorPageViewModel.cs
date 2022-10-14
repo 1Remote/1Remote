@@ -19,7 +19,6 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Editor
 {
-    // TODO TODO: show target data source in add view
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
@@ -74,7 +73,7 @@ namespace _1RM.View.Editor
                 Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             _orgServer = (ProtocolBase)Server.Clone();
-            Title = ""; // TODO show data source name.
+            Title = "";
 
 
             // reflect remote protocols
@@ -208,7 +207,7 @@ namespace _1RM.View.Editor
 
         #endregion
 
-        public string Title { get; set; }
+        public string Title { get; }
 
 
         private ProtocolBase _server = new RDP();

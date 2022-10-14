@@ -72,7 +72,7 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: Connection Name"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
                              IsEnabled="{Binding NameWritable}"
                              Text="{Binding Name,  

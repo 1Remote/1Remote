@@ -255,5 +255,7 @@
     <s:String x:Key="Login with ssh private key">Přihlásit se pomocí soukromého ssh klíče</s:String>
     <s:String x:Key="Environment variables">Proměnné prostředí</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Před startem spouštěče budou nastaveny proměnné prostředí</s:String>
-    <s:String x:Key="Please select a data source">Vyberte prosím zdroj dat</s:String>
+    <s:String x:Key="Data Source name">Data Source name</s:String>
+    <s:String x:Key="Please select a Data Source">Please select a Data Source</s:String>
+    <s:String x:Key="Test connection">Test connection</s:String>
 </ResourceDictionary>
