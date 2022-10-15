@@ -20,9 +20,9 @@
             <CollectionViewSource x:Key="GroupedItems" 
                                   Source="{Binding ServerListItems}"
                                   Filter="GroupedItems_OnFilter">
-                <CollectionViewSource.GroupDescriptions>
+                <!--<CollectionViewSource.GroupDescriptions>
                     <PropertyGroupDescription PropertyName="DataSourceName"></PropertyGroupDescription>
-                </CollectionViewSource.GroupDescriptions>
+                </CollectionViewSource.GroupDescriptions>-->
             </CollectionViewSource>
 
 
