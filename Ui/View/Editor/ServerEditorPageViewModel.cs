@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
 using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol;
@@ -12,10 +15,12 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor
 {
@@ -514,6 +519,79 @@ namespace _1RM.View.Editor
             else
             {
                 Server.SelectedRunnerName = "";
+            }
+        }
+
+
+
+
+        private RelayCommand? _cmdSelectScript;
+        public RelayCommand CmdSelectScript
+        {
+            get
+            {
+                return _cmdSelectScript ??= new RelayCommand((o) =>
+                {
+                    lock (this)
+                    {
+                        var path = SelectFileHelper.OpenFile(title: "Select a script", filter: $"script|*.bat;*.cmd;*.ps1;*.py|*|*.*");
+                        if (path == null || File.Exists(path) == false) return;
+                        if (o?.ToString()?.ToLower() == "before")
+                        {
+                            Server.CommandBeforeConnected = path;
+                        }
+                        else
+                        {
+                            Server.CommandAfterDisconnected = path;
+                        }
+                    }
+                });
+            }
+        }
+
+
+
+
+        private RelayCommand? _cmdTestScript;
+        public RelayCommand CmdTestScript
+        {
+            get
+            {
+                return _cmdTestScript ??= new RelayCommand((o) =>
+                {
+                    string cmd;
+                    if (o?.ToString()?.ToLower() == "before")
+                    {
+                        cmd = Server.CommandBeforeConnected;
+                    }
+                    else
+                    {
+                        cmd = Server.CommandAfterDisconnected;
+                    }
+
+                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrWhiteSpace(cmd))
+                            {
+                                var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
+                                if (string.IsNullOrEmpty(tuple.Item2) == false)
+                                    MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                                WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBoxHelper.ErrorAlert(ex.Message);
+                        }
+                        finally
+                        {
+                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                        }
+                    });
+                });
             }
         }
     }

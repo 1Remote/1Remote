@@ -79,6 +79,12 @@ namespace _1RM.View.Settings.DataSource
                                     SourceConfigs.Add(vm.New);
                                     _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
                                     _configurationService.Save();
+
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _dataSourceService.AddOrUpdateDataSource(vm.New);
+                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                    });
                                 }
                                 break;
                             }
@@ -90,6 +96,12 @@ namespace _1RM.View.Settings.DataSource
                                     SourceConfigs.Add(vm.New);
                                     _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
                                     _configurationService.Save();
+
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        _dataSourceService.AddOrUpdateDataSource(vm.New);
+                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                    });
                                 }
                                 break;
                             }
@@ -136,8 +148,14 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
-                                        _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
-                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                        try
+                                        {
+                                            _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
+                                        }
+                                        finally
+                                        {
+                                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                        }
                                     });
                                 }
                                 break;
@@ -171,7 +189,11 @@ namespace _1RM.View.Settings.DataSource
                                 _configurationService.Save();
                             }
                             SourceConfigs.Remove(configBase);
-                            _dataSourceService.RemoveDataSource(configBase.DataSourceName);
+                            Task.Factory.StartNew(() =>
+                            {
+                                _dataSourceService.RemoveDataSource(configBase.DataSourceName);
+                                GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            });
                         }
                     }
                 });

@@ -132,6 +132,7 @@ namespace _1RM.View
                     source = SourceService.LocalDataSource;
                 }
                 if (source == null) return;
+                if (source.IsWritable == false) return;
                 EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
                 ShowMe();
             };
@@ -141,6 +142,7 @@ namespace _1RM.View
                 if (SourceService.LocalDataSource == null) return;
                 var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSourceName == serverToEdit.DataSourceName)?.Server;
                 if (server == null) return;
+                if (server.GetDataSource()?.IsWritable != true) return;
                 EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
                 ShowMe();
             };
@@ -161,6 +163,7 @@ namespace _1RM.View
                     source = SourceService.GetDataSource();
                 }
                 if (source == null) return;
+                if (source.IsWritable == false) return;
 
                 EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
                 ShowMe();
@@ -168,7 +171,7 @@ namespace _1RM.View
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+                var serverBases = servers.Where(x=>x.GetDataSource()?.IsWritable == true).ToArray();
                 if (serverBases.Length > 1)
                 {
                     EditorViewModel = ServerEditorPageViewModel.BuckEdit(_appData, serverBases);

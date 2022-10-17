@@ -44,7 +44,7 @@ namespace _1RM.Model
                 // do not reload when any selected / launcher is shown / editor view is show
                 if (mainWindowViewModel.EditorViewModel != null
                     || listPageViewModel.ServerListItems.Any(x => x.IsSelected)
-                    || launcherWindowViewModel.View.IsVisible)
+                    || launcherWindowViewModel.View?.IsVisible == true)
                 {
                     return;
                 }

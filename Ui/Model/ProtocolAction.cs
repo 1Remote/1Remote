@@ -35,6 +35,7 @@ namespace _1RM.Model
     {
         public static List<ProtocolAction> GetActions(this ProtocolBase server)
         {
+            bool writable = server.GetDataSource()?.IsWritable != false;
             #region Build Actions
             var actions = new List<ProtocolAction>();
             {
@@ -43,6 +44,7 @@ namespace _1RM.Model
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
                         action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
                     ));
+
 
                 // external runners
                 var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
@@ -62,18 +64,21 @@ namespace _1RM.Model
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
                 }
 
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
+                if (writable)
                 {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
-                }));
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
-                {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server,  showAnimation: false);
-                }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
+                    {
+                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                            IoC.Get<MainWindowViewModel>()?.ShowMe();
+                        GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
+                    }));
+                }
+                //actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                //{
+                //    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                //        IoC.Get<MainWindowViewModel>()?.ShowMe();
+                //    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server,  showAnimation: false);
+                //}));
             };
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {
@@ -90,41 +95,47 @@ namespace _1RM.Model
                         }
                     }));
             }
-            if (server is ProtocolBaseWithAddressPortUserPwd tmp)
+
+
+            if (writable)
             {
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_username"),
-                    () =>
-                   {
-                       try
+                if (server is ProtocolBaseWithAddressPortUserPwd tmp)
+                {
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_username"),
+                        () =>
                        {
-                           Clipboard.SetDataObject(tmp.UserName);
-                       }
-                       catch (Exception)
-                       {
-                           // ignored
-                       }
-                   }));
-            }
-            if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
-            {
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
-                    action: () =>
-                    {
-                        try
+                           try
+                           {
+                               Clipboard.SetDataObject(tmp.UserName);
+                           }
+                           catch (Exception)
+                           { 
+                               // ignored
+                           }
+                       }));
+                }
+
+                if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
+                {
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
+                        action: () =>
                         {
-                            Clipboard.SetDataObject(server.GetDataSource()?.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
-                        }
-                        catch (Exception)
-                        {
-                            // ignored
-                        }
-                    }));
+                            try
+                            {
+                                Clipboard.SetDataObject(server.GetDataSource()?.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }));
+                }
             }
 
-            actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
+            if (writable)
             {
-                GlobalEventHelper.OnRequestDeleteServer?.Invoke(server);
-            }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () => { GlobalEventHelper.OnRequestDeleteServer?.Invoke(server); }));
+            }
 
             #endregion Build Actions
 
