@@ -24,7 +24,6 @@ namespace _1RM.Service.DataSource.Model
                 SetAndNotifyIfChanged(ref _path, newValue);
                 var fi = new FileInfo(Path);
                 _isWritable = fi.IsReadOnly == false;
-                _isReadable = true;
             }
         }
 

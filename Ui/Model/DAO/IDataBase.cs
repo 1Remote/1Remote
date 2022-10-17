@@ -90,38 +90,71 @@ namespace _1RM.Model.DAO
 
 
 
-        private static string TryGetConfig(this IDataBase iDataBase, string key)
+        private static string? TryGetConfig(this IDataBase iDataBase, string key)
         {
             try
             {
-                var val = iDataBase.GetConfig(key);
-                if (val == null)
-                {
-                    val = "";
-                    iDataBase.SetConfig(key, val);
-                }
+                var val = iDataBase.GetConfig(key) ?? "";
                 return val;
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                return "";
+                return null;
             }
         }
 
-        private static void TrySetConfig(this IDataBase iDataBase, string key, string value)
+        private static bool TrySetConfig(this IDataBase iDataBase, string key, string value)
         {
             try
             {
                 iDataBase.SetConfig(key, value ?? "");
+                return true;
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
+                return false;
             }
         }
 
-        public static string Get_RSA_PublicKey(this IDataBase iDataBase)
+        public static bool CheckWritable(this IDataBase iDataBase)
+        {
+            try
+            {
+                iDataBase.SetConfig("permission_check", "true"); // insert
+                iDataBase.SetConfig("permission_check", "true"); // update
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool CheckReadable(this IDataBase iDataBase)
+        {
+            try
+            {
+                iDataBase.SetConfig("permission_check", "true"); // update
+            }
+            catch
+            {
+                // ignored
+            }
+
+            try
+            {
+                var val = iDataBase.GetConfig("permission_check");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static string? Get_RSA_PublicKey(this IDataBase iDataBase)
         {
             return iDataBase.TryGetConfig("RSA_PublicKey");
         }
@@ -131,7 +164,7 @@ namespace _1RM.Model.DAO
             iDataBase.TrySetConfig("RSA_PublicKey", value);
         }
 
-        public static string GetFromDatabase_RSA_PrivateKeyPath(this IDataBase iDataBase)
+        public static string? GetFromDatabase_RSA_PrivateKeyPath(this IDataBase iDataBase)
         {
             return iDataBase.TryGetConfig("RSA_PrivateKeyPath");
         }

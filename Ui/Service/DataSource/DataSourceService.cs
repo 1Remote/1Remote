@@ -115,6 +115,11 @@ namespace _1RM.Service.DataSource
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
                 return ret;
             }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Warning(e);
+                return EnumDbStatus.AccessDenied;
+            }
             finally
             {
                 IoC.Get<GlobalData>().ReloadServerList(true);
@@ -128,7 +133,10 @@ namespace _1RM.Service.DataSource
             else if (AdditionalSources.ContainsKey(name))
             {
                 AdditionalSources[name].Database_CloseConnection();
-                AdditionalSources.TryRemove(name, out _);
+                if (AdditionalSources.TryRemove(name, out _))
+                {
+                    IoC.Get<GlobalData>().ReloadServerList(true);
+                }
             }
         }
     }

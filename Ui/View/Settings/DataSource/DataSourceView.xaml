@@ -163,6 +163,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Width="100" IsReadOnly="True" Header="{DynamicResource Name}" Binding="{Binding DataSourceName}"/>
+                <DataGridTextColumn Width="100" IsReadOnly="True" Header="Readonly" Binding="{Binding IsWritable, Converter={StaticResource ConverterBoolInverse}}"/>
                 <DataGridTextColumn Width="Auto" Header="" Binding="{Binding DatabaseType}"/>
                 <DataGridTextColumn Width="2*" Header="" Binding="{Binding Description}"/>
 

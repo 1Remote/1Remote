@@ -66,7 +66,7 @@ namespace _1RM.Service.DataSource.Model
         }
 
 
-        private string _dataSourceName;
+        private string _dataSourceName = "";
         public string DataSourceName
         {
             get => _dataSourceName;

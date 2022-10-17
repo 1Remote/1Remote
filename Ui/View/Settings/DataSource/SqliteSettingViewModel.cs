@@ -87,7 +87,6 @@ namespace _1RM.View.Settings.DataSource
 
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
-            return true;
             // validate rsa key
             var res = New.Database_SelfCheck();
             if (res == EnumDbStatus.OK)

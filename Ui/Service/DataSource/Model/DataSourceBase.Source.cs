@@ -18,9 +18,6 @@ namespace _1RM.Service.DataSource.Model
 {
     public abstract partial class DataSourceBase : NotifyPropertyChangedBase
     {
-        protected bool _isReadable = true;
-        [JsonIgnore]
-        public bool IsReadable => _isReadable;
         protected bool _isWritable = true;
         [JsonIgnore]
         public bool IsWritable => _isWritable;
@@ -103,7 +100,14 @@ namespace _1RM.Service.DataSource.Model
             // open db or create db.
             Debug.Assert(dataBase != null);
             dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
-            dataBase.InitTables();
+            try
+            {
+                dataBase.InitTables();
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Warning(e);
+            }
             dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
             if (dataBase.IsConnected())
             {
@@ -148,6 +152,7 @@ namespace _1RM.Service.DataSource.Model
             EnumDbStatus ret = EnumDbStatus.NotConnectedYet;
             var dataBase = GetDataBase();
 
+            // check connectable
             if (dataBase.IsConnected() == false)
             {
                 try
@@ -165,15 +170,34 @@ namespace _1RM.Service.DataSource.Model
                     {
                         ret = EnumDbStatus.AccessDenied;
                     }
+                    Status = ret;
+                    return Status;
                 }
             }
 
             if (dataBase.IsConnected())
             {
-                dataBase.InitTables();
+                // try create table
+                try
+                {
+                    dataBase.InitTables();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning(e);
+                }
+
+                // check readable
+                _isWritable = dataBase.CheckWritable();
+                var isReadable = dataBase.CheckReadable();
+                if (isReadable == false)
+                {
+                    Status = EnumDbStatus.AccessDenied;
+                    return Status;
+                }
 
                 // validate encryption
-                var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
+                var privateKeyPath = dataBase.Get_RSA_PublicKey();
                 if (string.IsNullOrWhiteSpace(privateKeyPath))
                 {
                     // no encrypt
@@ -196,7 +220,7 @@ namespace _1RM.Service.DataSource.Model
             }
 
             Status = ret;
-            return ret;
+            return Status;
         }
 
 

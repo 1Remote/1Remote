@@ -483,9 +483,13 @@ namespace _1RM.View
             get
             {
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
+                {
+                    var vms = ServerListItems.Where(x => x.IsSelected && x.GetDataSource()?.IsWritable == true);
+                    if (vms.Any() == true)
                     {
-                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => ServerListItems.Any(x => x.IsSelected == true));
+                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
+                    }
+                }, o => ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 
