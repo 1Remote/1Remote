@@ -120,7 +120,7 @@ namespace _1RM.View
             {
                 // select save to which source
                 DataSourceBase? source = null;
-                if (ConfigurationService.DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
+                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
                 {
                     var vm = new DataSourceSelectorViewModel();
                     if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
@@ -151,7 +151,7 @@ namespace _1RM.View
             {
                 // select save to which source
                 DataSourceBase? source = null;
-                if (ConfigurationService.DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
+                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
                 {
                     var vm = new DataSourceSelectorViewModel();
                     if (IoC.Get<IWindowManager>().ShowDialog(vm) != true)

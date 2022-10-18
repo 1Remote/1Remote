@@ -130,6 +130,7 @@ namespace _1RM.Service
             finally
             {
                 dataBase.CloseConnection();
+                IoC.Get<GlobalData>().ReloadServerList(true);
                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
             }
         }

@@ -29,10 +29,10 @@ namespace _1RM.View.Settings.DataSource
             _configurationService = IoC.Get<ConfigurationService>();
             _dataSourceService = IoC.Get<DataSourceService>();
 
-            LocalSource = _configurationService.DataSource.LocalDataSource;
-            _sourceConfigs.Add(LocalSource);
+            LocalSource = _configurationService.LocalDataSource;
+            _sourceConfigs.Add(_configurationService.LocalDataSource);
 
-            foreach (var config in _configurationService.DataSource.AdditionalDataSourceConfigs)
+            foreach (var config in _configurationService.AdditionalDataSource)
             {
                 _sourceConfigs.Add(config);
             }
@@ -77,7 +77,7 @@ namespace _1RM.View.Settings.DataSource
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
                                     SourceConfigs.Add(vm.New);
-                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
+                                    _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
                                     Task.Factory.StartNew(() =>
@@ -94,7 +94,7 @@ namespace _1RM.View.Settings.DataSource
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
                                     SourceConfigs.Add(vm.New);
-                                    _configurationService.DataSource.AdditionalDataSourceConfigs.Add(vm.New);
+                                    _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
                                     Task.Factory.StartNew(() =>
@@ -183,9 +183,9 @@ namespace _1RM.View.Settings.DataSource
                     {
                         if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                         {
-                            if (_configurationService.DataSource.AdditionalDataSourceConfigs.Contains(configBase))
+                            if (_configurationService.AdditionalDataSource.Contains(configBase))
                             {
-                                _configurationService.DataSource.AdditionalDataSourceConfigs.Remove(configBase);
+                                _configurationService.AdditionalDataSource.Remove(configBase);
                                 _configurationService.Save();
                             }
                             SourceConfigs.Remove(configBase);

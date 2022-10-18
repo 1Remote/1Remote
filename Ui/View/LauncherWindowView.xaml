@@ -65,9 +65,9 @@
                             </ContentControl.Style>
                         </ContentControl>
 
-                        <Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
+                        <!--<Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
                             <Button Click="{s:Action ToggleQuickConnection}" HorizontalAlignment="Right">x</Button>
-                        </Grid>
+                        </Grid>-->
                     </Grid>
                 </Border>
             </StackPanel>

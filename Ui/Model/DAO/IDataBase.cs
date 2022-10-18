@@ -164,7 +164,7 @@ namespace _1RM.Model.DAO
             iDataBase.TrySetConfig("RSA_PublicKey", value);
         }
 
-        public static string? GetFromDatabase_RSA_PrivateKeyPath(this IDataBase iDataBase)
+        public static string? Get_RSA_PrivateKeyPath(this IDataBase iDataBase)
         {
             return iDataBase.TryGetConfig("RSA_PrivateKeyPath");
         }

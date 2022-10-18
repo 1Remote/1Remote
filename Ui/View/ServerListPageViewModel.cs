@@ -73,7 +73,7 @@ namespace _1RM.View
 
         public bool IsSelectedAll
         {
-            get => ServerListItems.Count > 0 && ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
+            get => ServerListItems.Any(x => x.IsVisible) && ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
             set
             {
                 if (value == false)
@@ -340,7 +340,7 @@ namespace _1RM.View
                 {
                     // select save to which source
                     DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
@@ -407,7 +407,7 @@ namespace _1RM.View
                 {
                     // select save to which source
                     DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().DataSource.AdditionalDataSourceConfigs.Any(x => x.Status == EnumDbStatus.OK))
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)

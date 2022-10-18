@@ -126,7 +126,7 @@ namespace _1RM.Service.DataSource.Model
             }
 
             // check database rsa encrypt
-            var privateKeyPath = dataBase.GetFromDatabase_RSA_PrivateKeyPath();
+            var privateKeyPath = dataBase.Get_RSA_PrivateKeyPath();
             if (!string.IsNullOrWhiteSpace(privateKeyPath)
                 && File.Exists(privateKeyPath))
             {
@@ -197,7 +197,7 @@ namespace _1RM.Service.DataSource.Model
                 }
 
                 // validate encryption
-                var privateKeyPath = dataBase.Get_RSA_PublicKey();
+                var privateKeyPath = dataBase.Get_RSA_PrivateKeyPath();
                 if (string.IsNullOrWhiteSpace(privateKeyPath))
                 {
                     // no encrypt

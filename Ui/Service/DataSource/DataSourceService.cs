@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using _1RM.Model;
@@ -11,6 +12,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -62,7 +64,7 @@ namespace _1RM.Service.DataSource
         {
             if (sqliteConfig == null)
             {
-                sqliteConfig = IoC.Get<ConfigurationService>().DataSource.LocalDataSource;
+                sqliteConfig = IoC.Get<ConfigurationService>().LocalDataSource;
                 if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
                     sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
                 var fi = new FileInfo(sqliteConfig.Path);
@@ -79,7 +81,6 @@ namespace _1RM.Service.DataSource
             }
             LocalDataSource = sqliteConfig;
             var ret = LocalDataSource.Database_SelfCheck();
-            LocalDataSource?.Database_CloseConnection();
             RaisePropertyChanged(nameof(LocalDataSource));
             return ret;
         }
@@ -137,6 +138,36 @@ namespace _1RM.Service.DataSource
                 {
                     IoC.Get<GlobalData>().ReloadServerList(true);
                 }
+            }
+        }
+
+        public static List<DataSourceBase> AdditionalSourcesLoadFromProfile(string path)
+        {
+            var ads = new List<DataSourceBase>();
+            if (File.Exists(path))
+            {
+                var tmp = JsonConvert.DeserializeObject<List<DataSourceBase>>(File.ReadAllText(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath));
+                if (tmp != null)
+                    ads = tmp;
+            }
+            return ads;
+        }
+
+
+        public static void AdditionalSourcesSaveToProfile(string path, List<DataSourceBase> sources)
+        {
+            if (sources.Count == 0)
+            {
+                var fi = new FileInfo(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
+                if (fi.Exists)
+                    fi.Delete();
+            }
+            else
+            {
+                var fi = new FileInfo(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
+                File.WriteAllText(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
             }
         }
     }

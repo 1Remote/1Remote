@@ -26,24 +26,34 @@ namespace _1RM.View.Settings.DataSource
 {
     public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly SqliteSource? _orgSqliteConfig = null;
+        public SqliteSource? OrgSqliteConfig { get; } = null;
+        private readonly string _orgRsaPublicKey;
+        private readonly string _orgRsaPrivateKeyPath;
+
         public readonly SqliteSource New = new SqliteSource();
         private readonly DataSourceViewModel _dataSourceViewModel;
 
         public SqliteSettingViewModel(DataSourceViewModel dataSourceViewModel, SqliteSource? sqliteConfig = null)
         {
-            _orgSqliteConfig = sqliteConfig;
-            _orgSqliteConfig?.Database_CloseConnection();
+            OrgSqliteConfig = sqliteConfig;
             _dataSourceViewModel = dataSourceViewModel;
-            if (_orgSqliteConfig != null)
+            _orgRsaPublicKey = "";
+            _orgRsaPrivateKeyPath = "";
+
+            // Edit mode
+            if (OrgSqliteConfig != null)
             {
-                Name = _orgSqliteConfig.DataSourceName;
-                Path = _orgSqliteConfig.Path;
+                Name = OrgSqliteConfig.DataSourceName;
+                Path = OrgSqliteConfig.Path;
+                _orgRsaPublicKey = DbRsaPublicKey = OrgSqliteConfig.Database_GetPublicKey() ?? "";
+                _orgRsaPrivateKeyPath = DbRsaPrivateKeyPath = OrgSqliteConfig.Database_GetPrivateKeyPath() ?? "";
+                New.Database_SelfCheck();
                 // disable name editing of LocalSource
                 if (dataSourceViewModel.LocalSource == sqliteConfig)
                 {
                     NameWritable = false;
                 }
+                OrgSqliteConfig?.Database_CloseConnection();
             }
         }
         ~SqliteSettingViewModel()
@@ -87,12 +97,15 @@ namespace _1RM.View.Settings.DataSource
 
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
+            if (New.Database_OpenConnection())
+            {
+                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
+                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
+            }
             // validate rsa key
             var res = New.Database_SelfCheck();
             if (res == EnumDbStatus.OK)
             {
-                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
-                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
                 return true;
             }
             if (showAlert == false) return false;
@@ -113,7 +126,7 @@ namespace _1RM.View.Settings.DataSource
                     New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgSqliteConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
                 }
             }
@@ -169,9 +182,7 @@ namespace _1RM.View.Settings.DataSource
                     {
                         GenRsa();
                     }
-                }, o => string.IsNullOrWhiteSpace(Path) == false
-                        && File.Exists(Path)
-                        && New.Status == EnumDbStatus.OK);
+                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath));
             }
         }
 
@@ -186,7 +197,7 @@ namespace _1RM.View.Settings.DataSource
         private const string PrivateKeyFileExt = ".pem";
         public void GenRsa(string privateKeyPath = "")
         {
-            if (New.Status != EnumDbStatus.OK)
+            if (New.Status == EnumDbStatus.AccessDenied)
                 return;
 
             if (string.IsNullOrEmpty(privateKeyPath))
@@ -233,23 +244,14 @@ namespace _1RM.View.Settings.DataSource
                         return;
                     }
 
-
-                    if (!File.Exists(privateKeyPath))
-                    {
-                        // save key file
-                        File.WriteAllText(privateKeyPath, privateKeyContent);
-                    }
-
                     // del back up
                     File.Delete(Path + ".back");
 
+                    DbRsaPublicKey = privateKeyContent;
+                    DbRsaPrivateKeyPath = privateKeyPath;
+
                     // done
                     OnRsaProgress(true);
-
-                    ValidateDbStatusAndShowMessageBox();
-
-                    // TODO 重新读取数据
-                    //_appData.ReloadServerList();
                 }
             });
             t.Start();
@@ -275,9 +277,7 @@ namespace _1RM.View.Settings.DataSource
                     {
                         CleanRsa();
                     }
-                }, o => string.IsNullOrWhiteSpace(Path) == false
-                        && File.Exists(Path)
-                        && New.Status == EnumDbStatus.OK);
+                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath) == false);
             }
         }
         public void CleanRsa()
@@ -308,10 +308,8 @@ namespace _1RM.View.Settings.DataSource
                     // del back up
                     File.Delete(Path + ".back");
 
-                    ValidateDbStatusAndShowMessageBox();
-
-                    // TODO 重新读取数据
-                    //_appData.ReloadServerList();
+                    DbRsaPublicKey = "";
+                    DbRsaPrivateKeyPath = "";
 
                     // done
                     OnRsaProgress(true);
@@ -330,8 +328,6 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdSelectRsaPrivateKey ??= new RelayCommand((o) =>
                 {
-                    if (New.Status != EnumDbStatus.OK)
-                        return;
                     if (string.IsNullOrEmpty(DbRsaPrivateKeyPath)) return;
                     lock (this)
                     {
@@ -339,21 +335,19 @@ namespace _1RM.View.Settings.DataSource
                             initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
                             filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                         if (path == null) return;
-                        var pks = RSA.CheckPrivatePublicKeyMatch(path, New.Database_GetPublicKey());
+                        var pks = RSA.CheckPrivatePublicKeyMatch(path, DbRsaPublicKey);
                         if (pks == RSA.EnumRsaStatus.NoError)
                         {
                             // update private key only
                             New.Database_UpdatePrivateKeyPathOnly(path);
-                            ValidateDbStatusAndShowMessageBox();
+                            DbRsaPrivateKeyPath = path;
                         }
                         else
                         {
                             MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaNotMatched.GetErrorInfo());
                         }
                     }
-                }, o => string.IsNullOrWhiteSpace(Path) == false
-                        && File.Exists(Path)
-                        && New != null);
+                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath) == false);
             }
         }
 
@@ -385,6 +379,12 @@ namespace _1RM.View.Settings.DataSource
                         try
                         {
                             Path = newPath;
+                            if (New.Database_OpenConnection())
+                            {
+                                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
+                                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
+                            }
+
                             ValidateDbStatusAndShowMessageBox();
                         }
                         catch (Exception ee)
@@ -409,15 +409,25 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (ValidateDbStatusAndShowMessageBox() == false)
                         return;
-
-                    if (_orgSqliteConfig != null)
+                    var ret = false;
+                    if (OrgSqliteConfig != null)
                     {
-                        _orgSqliteConfig.DataSourceName = Name;
-                        _orgSqliteConfig.Path = Path;
+                        if (Name != OrgSqliteConfig.DataSourceName
+                            || OrgSqliteConfig.Path != Path
+                            || _orgRsaPublicKey != DbRsaPublicKey
+                            || _orgRsaPrivateKeyPath != DbRsaPrivateKeyPath)
+                        {
+                            ret = true;
+                        }
+                        OrgSqliteConfig.DataSourceName = Name;
+                        OrgSqliteConfig.Path = Path;
+                    }
+                    else
+                    {
+                        ret = true;
                     }
 
-                    New.Database_CloseConnection();
-                    this.RequestClose(true);
+                    this.RequestClose(ret);
 
                 }, o => (
                     string.IsNullOrWhiteSpace(Name) == false
@@ -437,7 +447,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     New.Database_CloseConnection();
                     this.RequestClose(false);
-                });
+                }, o => OrgSqliteConfig == null);
             }
         }
     }
