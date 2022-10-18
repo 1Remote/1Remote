@@ -62,15 +62,15 @@ namespace _1RM.Service
         public List<string> EnabledMatchers = new List<string>();
     }
 
-    public class DataSourcesConfig
-    {
-        public SqliteSource LocalDataSource { get; set; } = new SqliteSource()
-        {
-            DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
-            Path = "./" + AppPathHelper.APP_NAME + ".db"
-        };
-        public List<DataSourceBase> AdditionalDataSourceConfigs { get; set; } = new List<DataSourceBase>();
-    }
+    //public class DataSourcesConfig
+    //{
+    //    public SqliteSource LocalDataSource { get; set; } = new SqliteSource()
+    //    {
+    //        DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
+    //        Path = "./" + AppPathHelper.APP_NAME + ".db"
+    //    };
+    //    public List<DataSourceBase> AdditionalDataSource { get; set; } = new List<DataSourceBase>();
+    //}
 
     public class ThemeConfig
     {
@@ -95,7 +95,7 @@ namespace _1RM.Service
         public GeneralConfig General { get; set; } = new GeneralConfig();
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
-        public DataSourcesConfig DataSource { get; set; } = new DataSourcesConfig();
+        public string SqliteDatabasePath { get; set; } = "./" + AppPathHelper.APP_NAME + ".db";
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
@@ -109,15 +109,16 @@ namespace _1RM.Service
 
     public class ConfigurationService
     {
-        private readonly KeywordMatchService _keywordMatchService = new KeywordMatchService();
-
-        public readonly List<MatchProviderInfo> AvailableMatcherProviders = new List<MatchProviderInfo>();
-        private readonly Configuration _cfg;
+        private readonly KeywordMatchService _keywordMatchService;
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
+        private readonly Configuration _cfg = new Configuration();
 
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
-        public DataSourcesConfig DataSource => _cfg.DataSource;
+        public SqliteSource LocalDataSource { get; } = new SqliteSource();
+
+
         public ThemeConfig Theme => _cfg.Theme;
         public EngagementSettings Engagement => _cfg.Engagement;
         /// <summary>
@@ -130,11 +131,26 @@ namespace _1RM.Service
         }
 
 
-        public ConfigurationService(Configuration cfg, KeywordMatchService keywordMatchService)
+        public List<DataSourceBase> AdditionalDataSource { get; set; } = new List<DataSourceBase>();
+
+
+
+        public ConfigurationService(KeywordMatchService keywordMatchService, Configuration? cfg = null, List<DataSourceBase>? additionalDataSource = null)
         {
+            if (cfg != null)
+                _cfg = cfg;
+            if (additionalDataSource != null)
+                AdditionalDataSource = additionalDataSource;
             _keywordMatchService = keywordMatchService;
-            _cfg = cfg;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
+
+            LocalDataSource.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SqliteSource.Path))
+                {
+                    _cfg.SqliteDatabasePath = LocalDataSource.Path;
+                }
+            };
 
             // init matcher
             if (KeywordMatch.EnabledMatchers.Count > 0)
@@ -190,35 +206,40 @@ namespace _1RM.Service
             {
                 if (!CanSave) return;
                 CanSave = false;
-                var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                {
+                    var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                    File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                }
+
+                DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
+
                 CanSave = true;
             }
+
 #if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
         }
 
 
-        public static ConfigurationService Load(string path, KeywordMatchService keywordMatchService)
+        public static ConfigurationService LoadFromAppPath(KeywordMatchService keywordMatchService)
         {
-            try
-            {
-                var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
-                var config = tmp ?? new Configuration();
-                return new ConfigurationService(config, keywordMatchService);
-            }
-            catch (Exception)
-            {
+            var cfg = new Configuration();
 
-                throw;
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
+            {
+                var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.ProfileJsonPath));
+                if (tmp != null)
+                    cfg = tmp;
             }
+
+            var ads = DataSourceService.AdditionalSourcesLoadFromProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
+
+            return new ConfigurationService(keywordMatchService, cfg, ads);
         }
     }
 }

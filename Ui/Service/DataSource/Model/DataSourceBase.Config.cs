@@ -41,14 +41,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 SetAndNotifyIfChanged(ref _status, value);
                 StatueTime = DateTime.Now;
-                if (Status == EnumDbStatus.OK)
-                {
-                    StatusInfo = $"{CachedProtocols.Count} servers";
-                }
-                else
-                {
-                    StatusInfo = "";
-                }
+                StatusInfo = Status == EnumDbStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
             }
         }
 

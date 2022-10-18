@@ -184,7 +184,7 @@
         <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*" MinHeight="300"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -260,26 +260,6 @@
 
             <!-- server list-->
             <Grid Grid.Row="1">
-
-                <!-- tooltip for how to add -->
-                <Border HorizontalAlignment="Right">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
-                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <StackPanel>
-                        <Path Fill="{DynamicResource BackgroundTextBrush}" 
-                              Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
-                              Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                        <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">Add new session</TextBlock>
-                    </StackPanel>
-                </Border>
 
                 <Grid Name="GridHeader" Height="{StaticResource ServerItemHeight}" VerticalAlignment="Top" ZIndex="999">
                     <Grid.Style>
@@ -608,8 +588,6 @@
                 </DataGrid>
 
 
-
-
                 <!-- footer: show detail of a server -->
                 <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">
                     <Grid.Style>
@@ -637,6 +615,27 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+
+
+            <!-- tooltip for how to add -->
+            <Border Grid.Row="1" HorizontalAlignment="Right">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel>
+                    <Path Fill="{DynamicResource BackgroundTextBrush}" 
+                          Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
+                          Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
+                    <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">Add new session</TextBlock>
+                </StackPanel>
+            </Border>
 
 
             <!-- popup when any item is selected-->

@@ -18,10 +18,10 @@ namespace _1RM.View.Editor
             _configurationService = IoC.Get<ConfigurationService>();
             _dataSourceService = IoC.Get<DataSourceService>();
 
-            Debug.Assert(_configurationService.DataSource.AdditionalDataSourceConfigs.Count > 0);
+            Debug.Assert(_configurationService.AdditionalDataSource.Count > 0);
 
-            _sourceConfigs.Add(_configurationService.DataSource.LocalDataSource);
-            _sourceConfigs.AddRange(_configurationService.DataSource.AdditionalDataSourceConfigs);
+            _sourceConfigs.Add(_configurationService.LocalDataSource);
+            _sourceConfigs.AddRange(_configurationService.AdditionalDataSource);
             _selectedSource = _sourceConfigs.First();
         }
 

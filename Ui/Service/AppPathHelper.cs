@@ -68,6 +68,7 @@ namespace _1RM.Service
 
         public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".json");
+        public string ProfileAdditionalDataSourceJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".DataSources.json");
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");

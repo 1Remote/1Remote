@@ -47,7 +47,7 @@ namespace _1RM.View
         }
 
         public ServerSelectionsViewModel ServerSelectionsViewModel { get; } = IoC.Get<ServerSelectionsViewModel>();
-        public QuickConnectionViewModel QuickConnectionViewModel { get;  } = IoC.Get<QuickConnectionViewModel>();
+        public QuickConnectionViewModel QuickConnectionViewModel { get; } = IoC.Get<QuickConnectionViewModel>();
 
         #region properties
 
@@ -267,24 +267,24 @@ namespace _1RM.View
 
         public void ToggleQuickConnection()
         {
-            if (ServerSelectionsViewModel == null || QuickConnectionViewModel == null)
-                return;
-            if (ServerSelectionsViewVisibility == Visibility.Collapsed)
-            {
-                ServerSelectionsViewVisibility = Visibility.Visible;
-                Execute.OnUIThread(() =>
-                {
-                    ServerSelectionsViewModel.TbKeyWord.Focus();
-                });
-            }
-            else
-            {
-                ServerSelectionsViewVisibility = Visibility.Collapsed;
-                Execute.OnUIThread(() =>
-                {
-                    QuickConnectionViewModel.TbKeyWord.Focus();
-                });
-            }
+            //if (ServerSelectionsViewModel == null || QuickConnectionViewModel == null)
+            //    return;
+            //if (ServerSelectionsViewVisibility == Visibility.Collapsed)
+            //{
+            //    ServerSelectionsViewVisibility = Visibility.Visible;
+            //    Execute.OnUIThread(() =>
+            //    {
+            //        ServerSelectionsViewModel.TbKeyWord.Focus();
+            //    });
+            //}
+            //else
+            //{
+            //    ServerSelectionsViewVisibility = Visibility.Collapsed;
+            //    Execute.OnUIThread(() =>
+            //    {
+            //        QuickConnectionViewModel.TbKeyWord.Focus();
+            //    });
+            //}
         }
     }
 }

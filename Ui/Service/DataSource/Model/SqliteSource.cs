@@ -59,7 +59,7 @@ namespace _1RM.Service.DataSource.Model
         public override string Database_GetPrivateKeyPath()
         {
             Debug.Assert(_dataBase != null);
-            return _dataBase?.GetFromDatabase_RSA_PrivateKeyPath() ?? "";
+            return _dataBase?.Get_RSA_PrivateKeyPath() ?? "";
         }
     }
 }

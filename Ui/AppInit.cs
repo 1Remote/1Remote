@@ -223,33 +223,24 @@ namespace _1RM
             {
                 if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == true)
                 {
-                    ConfigurationService = ConfigurationService.Load(AppPathHelper.Instance.ProfileJsonPath, KeywordMatchService);
+                    ConfigurationService = ConfigurationService.LoadFromAppPath(KeywordMatchService);
                 }
                 else
                 {
-                    newConfiguration.DataSource.LocalDataSource = new SqliteSource()
-                    {
-                        DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
-                        Path = AppPathHelper.Instance.SqliteDbDefaultPath
-                    };
-                    ConfigurationService = new ConfigurationService(newConfiguration, KeywordMatchService);
+                    newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                    ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-
-                newConfiguration.DataSource.LocalDataSource = new SqliteSource()
-                {
-                    DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
-                    Path = AppPathHelper.Instance.SqliteDbDefaultPath
-                };
-                ConfigurationService = new ConfigurationService(newConfiguration, KeywordMatchService);
+                newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
             }
             // make sure path is not empty
-            if (string.IsNullOrWhiteSpace(ConfigurationService.DataSource.LocalDataSource.Path))
+            if (string.IsNullOrWhiteSpace(newConfiguration.SqliteDatabasePath))
             {
-                ConfigurationService.DataSource.LocalDataSource.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
@@ -267,7 +258,7 @@ namespace _1RM
             GlobalData.SetDbOperator(IoC.Get<DataSourceService>());
             _localDataConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
             IoC.Get<GlobalData>().ReloadServerList();
-            foreach (var config in ConfigurationService!.DataSource.AdditionalDataSourceConfigs)
+            foreach (var config in ConfigurationService!.AdditionalDataSource)
             {
                 IoC.Get<DataSourceService>().AddOrUpdateDataSourceAsync(config);
             }

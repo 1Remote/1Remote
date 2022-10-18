@@ -263,7 +263,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                var existed = GetConfigPrivate("UpdateTimestamp") != null;
+                var existed = GetConfigPrivate(key) != null;
                 return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
             }
         }

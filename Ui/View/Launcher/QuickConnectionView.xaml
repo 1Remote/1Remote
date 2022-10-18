@@ -12,8 +12,8 @@
         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
             <VisualBrush.Visual>
                 <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
-                    <TextBlock FontStyle="Italic" Text="e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
+                    <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
+                    <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
