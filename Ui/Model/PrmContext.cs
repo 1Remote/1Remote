@@ -37,12 +37,20 @@ namespace PRM.Model
         /// <param name="sqlitePath"></param>
         public EnumDbStatus InitSqliteDb(string sqlitePath = "")
         {
-            if (string.IsNullOrWhiteSpace(sqlitePath))
+            try
             {
-                sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
-                var fi = new FileInfo(sqlitePath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
+                if (string.IsNullOrWhiteSpace(sqlitePath))
+                {
+                    sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
+                    var fi = new FileInfo(sqlitePath);
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                }
+            }
+            catch (Exception)
+            {
+                // in case of fi.Directory.Create() throw an exception.
+                return EnumDbStatus.AccessDenied;
             }
 
             DataService?.Database_CloseConnection();
