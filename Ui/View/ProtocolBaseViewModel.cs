@@ -72,7 +72,7 @@ namespace _1RM.View
             set => SetAndNotifyIfChanged(ref _hoverNoteDisplayControl, value);
         }
 
-        private bool _isSelected;
+        private bool _isSelected = false;
         /// <summary>
         /// is selected in list of MainWindow?
         /// </summary>
@@ -83,7 +83,7 @@ namespace _1RM.View
         }
 
 
-        private bool _isVisible;
+        private bool _isVisible = true;
         public bool IsVisible
         {
             get => _isVisible;

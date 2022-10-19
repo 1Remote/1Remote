@@ -151,7 +151,33 @@ namespace _1RM.View
                 _filterString = filterString;
                 CalcVisibleByFilter(_filterString);
             };
-            AppData.VmItemListDataChanged += RebuildVmServerList;
+
+            AppData.VmItemListDataChanged += () =>
+            {
+                if (this.View is ServerListPageView v)
+                {
+                    var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
+                    if (cvs != null)
+                    {
+                        if (SourceService.AdditionalSources.Count > 0)
+                        {
+                            if (cvs.GroupDescriptions.Count == 0)
+                            {
+                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
+                            }
+                        }
+                        if (SourceService.AdditionalSources.Count == 0)
+                        {
+                            if (cvs.GroupDescriptions.Count > 0)
+                            {
+                                cvs.GroupDescriptions.Clear();
+                            }
+                        }
+                    }
+                }
+
+                RebuildVmServerList();
+            };
 
 
             ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
