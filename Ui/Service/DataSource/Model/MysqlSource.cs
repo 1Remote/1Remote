@@ -40,11 +40,27 @@ namespace _1RM.Service.DataSource.Model
             set => SetAndNotifyIfChanged(ref _userName, value);
         }
 
-        private string _password = "";
+        [JsonProperty(nameof(Password))]
+        private string EncryptPassword { get; set; } = "";
+
+        [JsonIgnore]
         public string Password
         {
-            get => _password;
-            set => SetAndNotifyIfChanged(ref _password, value);
+            get
+            {
+                if (string.IsNullOrEmpty(EncryptPassword))
+                    return "";
+                var t = base.SimpleDecrypt(EncryptPassword);
+                if (string.IsNullOrEmpty(t))
+                    return EncryptPassword;
+                return t;
+            }
+            set
+            {
+                EncryptPassword = string.IsNullOrEmpty(value) ? "" : base.SimpleEncrypt(value);
+                var t = base.SimpleDecrypt(EncryptPassword);
+                RaisePropertyChanged();
+            }
         }
 
         public MysqlSource() : base()
@@ -53,7 +69,7 @@ namespace _1RM.Service.DataSource.Model
 
         public override string GetConnectionString(int connectTimeOutSeconds = 5)
         {
-            return DbExtensions.GetMysqlConnectionString(_host, _port, _databaseName, _userName, _password, connectTimeOutSeconds);
+            return DbExtensions.GetMysqlConnectionString(_host, _port, _databaseName, _userName, Password, connectTimeOutSeconds);
         }
 
         [JsonIgnore]

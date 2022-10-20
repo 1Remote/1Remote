@@ -71,6 +71,7 @@
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
 		<PackageReference Include="MySql.Data" Version="8.0.30" />
+		<PackageReference Include="NETCore.Encrypt" Version="2.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="NUlid" Version="1.7.0" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
