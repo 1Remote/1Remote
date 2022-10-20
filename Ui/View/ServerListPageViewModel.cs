@@ -53,8 +53,13 @@ namespace _1RM.View
         public ObservableCollection<ProtocolBaseViewModel> ServerListItems
         {
             get => _serverListItems;
-            set => SetAndNotifyIfChanged(ref _serverListItems, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _serverListItems, value);
+                SelectedServerViewModelListItem = null;
+            }
         }
+
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
@@ -130,7 +135,6 @@ namespace _1RM.View
                 _briefNoteVisibility = showNoteFieldInListView == false ? Visibility.Visible : Visibility.Collapsed;
                 BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
             }
-            RebuildVmServerList();
         }
 
         protected override void OnViewLoaded()
@@ -152,33 +156,12 @@ namespace _1RM.View
                 CalcVisibleByFilter(_filterString);
             };
 
+
             AppData.VmItemListDataChanged += () =>
             {
-                if (this.View is ServerListPageView v)
-                {
-                    var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
-                    if (cvs != null)
-                    {
-                        if (SourceService.AdditionalSources.Count > 0)
-                        {
-                            if (cvs.GroupDescriptions.Count == 0)
-                            {
-                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
-                            }
-                        }
-                        if (SourceService.AdditionalSources.Count == 0)
-                        {
-                            if (cvs.GroupDescriptions.Count > 0)
-                            {
-                                cvs.GroupDescriptions.Clear();
-                            }
-                        }
-                    }
-                }
-
                 RebuildVmServerList();
             };
-
+            RebuildVmServerList();
 
             ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
             ApplySort(ServerOrderBy);
@@ -187,31 +170,46 @@ namespace _1RM.View
 
         private void RebuildVmServerList()
         {
-            Execute.OnUIThread(() =>
+            lock (this)
             {
-                foreach (var vs in AppData.VmItemList)
+                Execute.OnUIThread(() =>
                 {
-                    try
+                    foreach (var vs in AppData.VmItemList)
                     {
                         vs.PropertyChanged -= VmServerPropertyChanged;
-                    }
-                    finally
-                    {
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
 
-                    if (vs.HoverNoteDisplayControl is NoteIcon ni)
-                    {
-                        ni.IsBriefNoteShown = BriefNoteVisibility == Visibility.Visible;
-                    }
-                }
+                    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
+                    ApplySort(ServerOrderBy);
+                    RaisePropertyChanged(nameof(IsAnySelected));
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                    RaisePropertyChanged(nameof(SelectedCount));
 
-                ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
-                ApplySort(ServerOrderBy);
-                RaisePropertyChanged(nameof(IsAnySelected));
-                RaisePropertyChanged(nameof(IsSelectedAll));
-                RaisePropertyChanged(nameof(SelectedCount));
-            });
+                    if (this.View is ServerListPageView v)
+                    {
+                        var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
+                        if (cvs != null)
+                        {
+                            if (SourceService.AdditionalSources.Count > 0)
+                            {
+                                if (cvs.GroupDescriptions.Count == 0)
+                                {
+                                    cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
+                                }
+                            }
+
+                            if (SourceService.AdditionalSources.Count == 0)
+                            {
+                                if (cvs.GroupDescriptions.Count > 0)
+                                {
+                                    cvs.GroupDescriptions.Clear();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         private void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)

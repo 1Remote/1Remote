@@ -126,8 +126,9 @@ namespace _1RM.Model.DAO
                 iDataBase.SetConfig("permission_check", "true"); // update
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                SimpleLogHelper.Info(e);
                 return false;
             }
         }

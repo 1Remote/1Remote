@@ -94,9 +94,9 @@ namespace _1RM
             builder.Bind<ServerSelectionsViewModel>().ToSelf().InSingletonScope();
             builder.Bind<QuickConnectionViewModel>().ToSelf().InSingletonScope();
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
-            builder.Bind<SettingsPageViewModel>().ToSelf();
-            builder.Bind<ServerListPageViewModel>().ToSelf();
-            builder.Bind<ProcessingRingViewModel>().ToSelf();
+            builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ProcessingRingViewModel>().ToSelf().InSingletonScope();
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
