@@ -338,7 +338,7 @@ namespace _1RM.View
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
                     if (path == null) return;
                     var list = new List<ProtocolBase>();
-                    foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
+                    foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                     {
                         var serverBase = (ProtocolBase)vs.Server.Clone();
                         var dataSource = SourceService.GetDataSource(serverBase.DataSourceName);
@@ -349,7 +349,7 @@ namespace _1RM.View
                         }
                     }
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                });
+                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
@@ -488,14 +488,14 @@ namespace _1RM.View
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
-                    var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
+                    var ss = ServerListItems.Where(x => x.IsSelected == true && x.IsEditable).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         var servers = ss.Select(x => x.Server);
                         AppData.DeleteServer(servers);
                     }
-                }, o => ServerListItems.Any(x => x.IsSelected == true));
+                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
@@ -508,12 +508,12 @@ namespace _1RM.View
             {
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                 {
-                    var vms = ServerListItems.Where(x => x.IsSelected && x.GetDataSource()?.IsWritable == true);
+                    var vms = ServerListItems.Where(x => x.IsSelected && x.IsEditable);
                     if (vms.Any() == true)
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
                     }
-                }, o => ServerListItems.Any(x => x.IsSelected == true));
+                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
