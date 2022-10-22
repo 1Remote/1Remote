@@ -49,12 +49,18 @@ namespace _1RM.Model
                     return;
                 }
 
+#if DEBUG
+                SimpleLogHelper.Debug("check database update.");
+#endif
                 ReloadServerList();
             }
             finally
             {
-                if (_isTimerStopFlag == false)
+                if (_isTimerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
+                {
+                    _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
                     _timer.Start();
+                }
             }
         }
 
@@ -238,7 +244,11 @@ namespace _1RM.Model
         {
             _isTimerStopFlag = false;
             ReloadServerList();
-            _timer.Start();
+            if (_timer.Enabled == false && _configurationService.DatabaseCheckPeriod > 0)
+            {
+                _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
+                _timer.Start();
+            }
         }
     }
 }

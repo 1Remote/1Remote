@@ -96,6 +96,7 @@ namespace _1RM.Service
         public GeneralConfig General { get; set; } = new GeneralConfig();
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
+        public int DatabaseCheckPeriod { get; set; } = 10;
         public string SqliteDatabasePath { get; set; } = "./" + AppPathHelper.APP_NAME + ".db";
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
@@ -118,6 +119,12 @@ namespace _1RM.Service
         public LauncherConfig Launcher => _cfg.Launcher;
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
         public SqliteSource LocalDataSource { get; } = new SqliteSource();
+
+        public int DatabaseCheckPeriod
+        {
+            get => _cfg.DatabaseCheckPeriod >= 0 ? (_cfg.DatabaseCheckPeriod > 99 ? 99 : _cfg.DatabaseCheckPeriod) : 0;
+            set => _cfg.DatabaseCheckPeriod = value >= 0 ? (value > 99 ? 99 : value) : 0;
+        }
 
 
         public ThemeConfig Theme => _cfg.Theme;
