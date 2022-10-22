@@ -42,6 +42,24 @@ namespace _1RM.View
 
         #region properties
 
+        public bool ListPageIsCardView
+        {
+            get => IoC.Get<SettingsPageViewModel>().ListPageIsCardView;
+            set
+            {
+                if (IoC.Get<SettingsPageViewModel>().ListPageIsCardView != value)
+                {
+                    IoC.Get<SettingsPageViewModel>().ListPageIsCardView = value;
+                    RaisePropertyChanged();
+                }
+                if (value == true)
+                {
+                    _briefNoteVisibility = Visibility.Visible;
+                    BriefNoteVisibility = Visibility.Collapsed;
+                }
+            }
+        }
+
         private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
         public ProtocolBaseViewModel? SelectedServerViewModelListItem
         {
