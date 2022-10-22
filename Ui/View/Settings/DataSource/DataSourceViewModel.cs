@@ -45,6 +45,19 @@ namespace _1RM.View.Settings.DataSource
             // 保存配置修改
         });
 
+        public int DatabaseCheckPeriod
+        {
+            get => _configurationService.DatabaseCheckPeriod;
+            set
+            {
+                if (value != _configurationService.DatabaseCheckPeriod)
+                {
+                    _configurationService.DatabaseCheckPeriod = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
 
         public SqliteSource LocalSource { get; }
 
