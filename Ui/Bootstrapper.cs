@@ -16,6 +16,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 using StyletIoC;
+using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM
 {

@@ -6,6 +6,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
@@ -73,7 +74,7 @@
                 <!--tags-->
                 <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
                     <ItemsControl.Resources>
-                        <view:ConverterTagName x:Key="ConverterTagName" />
+                        <serverList:ConverterTagName x:Key="ConverterTagName" />
                     </ItemsControl.Resources>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -89,9 +90,9 @@
                                                ContentStringFormat="{DynamicResource tag_tooltips}"/>
                                     </Button.ToolTip>
                                     <Button.InputBindings>
-                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                                     </Button.InputBindings>
                                 </Button>
                             </Grid>

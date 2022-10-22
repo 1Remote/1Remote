@@ -7,11 +7,12 @@
              xmlns:self="clr-namespace:_1RM.Controls"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:view="clr-namespace:_1RM.View"
+             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance self:TagsEditor}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <view:ConverterTagName x:Key="ConverterTagName" />
+        <serverList:ConverterTagName x:Key="ConverterTagName" />
     </UserControl.Resources>
     <Grid>
         <StackPanel>

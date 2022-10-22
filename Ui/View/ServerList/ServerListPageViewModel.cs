@@ -9,35 +9,33 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using Newtonsoft.Json;
-using _1RM.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.DAO;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Resources.Icons;
 using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
+using _1RM.View.Editor;
 using _1RM.View.Settings;
+using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
-using _1RM.View.Editor;
 
-namespace _1RM.View
+namespace _1RM.View.ServerList
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
     {
         public DataSourceService SourceService { get; }
         public GlobalData AppData { get; }
+        public TagsPanelViewModel TagsPanelViewModel { get; }
 
 
         #region properties
@@ -119,7 +117,6 @@ namespace _1RM.View
 
         public bool IsAnySelected => ServerListItems.Any(x => x.IsSelected == true);
 
-        private string _filterString = "";
 
 
         private Visibility _briefNoteVisibility;
@@ -140,12 +137,21 @@ namespace _1RM.View
                 }
             }
         }
+
+        private NotifyPropertyChangedBase? _tagListViewModel = null;
+        public NotifyPropertyChangedBase? TagListViewModel
+        {
+            get => _tagListViewModel;
+            set => SetAndNotifyIfChanged(ref this._tagListViewModel, value);
+        }
+
         #endregion
 
         public ServerListPageViewModel(DataSourceService sourceService, GlobalData appData)
         {
             SourceService = sourceService;
             AppData = appData;
+            TagsPanelViewModel = IoC.Get<TagsPanelViewModel>();
 
             {
                 var showNoteFieldInListView = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView;
@@ -155,6 +161,7 @@ namespace _1RM.View
             }
         }
 
+        private string _filterString = "";
         protected override void OnViewLoaded()
         {
             if (GlobalEventHelper.OnRequestDeleteServer == null)
@@ -335,7 +342,7 @@ namespace _1RM.View
                 {
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where(x => x.IsIncluded == true).Select(x => x.TagName).ToList());
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(Enumerable.Where<TagFilter>(TagFilters, x => x.IsIncluded == true).Select(x => x.TagName).ToList());
                 });
             }
         }
@@ -598,34 +605,6 @@ namespace _1RM.View
             }
         }
 
-
-
-        private RelayCommand? _cmdShowTabByName;
-        public RelayCommand CmdShowTabByName
-        {
-            get
-            {
-                return _cmdShowTabByName ??= new RelayCommand((o) =>
-                {
-                    string? tabName = (string?)o;
-                    if (tabName is TAB_TAGS_LIST_NAME or TAB_ALL_NAME)
-                    {
-                        if (tabName is not TAB_ALL_NAME)
-                            TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
-                        else
-                            TagFilters = new List<TagFilter>();
-                        SelectedTabName = tabName;
-                        RaisePropertyChanged(nameof(SelectedTabName));
-                    }
-                    else if (string.IsNullOrEmpty(tabName) == false)
-                        TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
-                    else
-                        TagFilters = new List<TagFilter>();
-                    IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
-                });
-            }
-        }
-
         #endregion
 
 
@@ -646,6 +625,7 @@ namespace _1RM.View
         }
 
         private RelayCommand? _cmdShowNoteField;
+
         public RelayCommand CmdShowNoteField
         {
             get
