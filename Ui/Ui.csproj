@@ -362,7 +362,7 @@
 		<Page Update="View\RequestRatingView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\ServerListPageView.xaml">
+		<Page Update="View\ServerList\ServerListPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\DataSource\SqliteSettingView.xaml">

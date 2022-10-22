@@ -13,6 +13,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using Shawn.Utils;
 using Stylet;
+using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM.Model
 {

@@ -7,6 +7,7 @@
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerSelectionsViewModel}"
              d:DesignHeight="450" d:DesignWidth="400">
@@ -307,7 +308,7 @@
 
                     <Grid Height="40" HorizontalAlignment="Right">
                         <Grid.Resources>
-                            <view:ConverterTagName x:Key="ConverterTagName" />
+                            <serverList:ConverterTagName x:Key="ConverterTagName" />
                         </Grid.Resources>
                         <Grid.Style>
                             <Style TargetType="Grid">

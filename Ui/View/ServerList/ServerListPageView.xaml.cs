@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
-using Shawn.Utils;
 
-namespace _1RM.View
+namespace _1RM.View.ServerList
 {
     public partial class ServerListPageView
     {

@@ -41,7 +41,7 @@ namespace _1RM.View
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
-        public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
+        public ServerList.ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
         private readonly GlobalData _appData;
@@ -379,9 +379,9 @@ namespace _1RM.View
 
         public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
         {
-            if (tags?.Count == 1 && tags.First().TagName is ServerListPageViewModel.TAB_TAGS_LIST_NAME)
+            if (tags?.Count == 1 && tags.First().TagName is ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME)
             {
-                _mainFilterString = ServerListPageViewModel.TAB_TAGS_LIST_NAME;
+                _mainFilterString = ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME;
                 RaisePropertyChanged(nameof(MainFilterString));
             }
             else

@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Input;
 using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
-using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.View
+namespace _1RM.View.ServerList
 {
-
     public partial class ServerListPageViewModel
     {
         public const string TAB_ALL_NAME = "";
@@ -23,7 +20,10 @@ namespace _1RM.View
 
 
         public bool IsTagFiltersShown { get; set; }
-        public string SelectedTabName { get; private set; } = TAB_ALL_NAME;
+
+        private string _selectedTabName = TAB_ALL_NAME;
+        public string SelectedTabName { get => _selectedTabName; private set => SetAndNotifyIfChanged(ref _selectedTabName, value); }
+
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
@@ -67,7 +67,6 @@ namespace _1RM.View
 
                     if (SelectedTabName == tagName) return;
                     SelectedTabName = tagName;
-                    RaisePropertyChanged(nameof(SelectedTabName));
                 }
             }
         }
@@ -95,6 +94,8 @@ namespace _1RM.View
             {
                 return;
             }
+
+            TagListViewModel = null;
 
             if (string.IsNullOrEmpty(newTagName) == false)
             {
@@ -136,6 +137,35 @@ namespace _1RM.View
         }
 
 
+
+        private RelayCommand? _cmdShowTabByName;
+        public RelayCommand CmdShowTabByName
+        {
+            get
+            {
+                return _cmdShowTabByName ??= new RelayCommand((o) =>
+                {
+                    string? tabName = (string?)o;
+                    TagFilters = new List<TagFilter>();
+                    if (tabName is TAB_TAGS_LIST_NAME)
+                    {
+                        TagListViewModel = TagsPanelViewModel;
+                        SelectedTabName = TAB_NONE_SELECTED;
+                    }
+                    else if (tabName is TAB_ALL_NAME)
+                    {
+                        TagListViewModel = null;
+                        SelectedTabName = TAB_ALL_NAME;
+                        IoC.Get<MainWindowViewModel>().SetMainFilterString(null, null);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                });
+            }
+        }
+
         private RelayCommand? _cmdTagAddIncluded;
         public RelayCommand CmdTagAddIncluded
         {
@@ -176,137 +206,5 @@ namespace _1RM.View
         }
 
         #endregion
-
-
-        private RelayCommand? _cmdTagDelete;
-        public RelayCommand CmdTagDelete
-        {
-            get
-            {
-                return _cmdTagDelete ??= new RelayCommand((o) =>
-                {
-                    if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
-                        return;
-
-                    var protocolServerBases = AppData.VmItemList.Select(x => x.Server);
-                    foreach (var server in protocolServerBases)
-                    {
-                        if (server.Tags.Contains(obj.Name))
-                        {
-                            server.Tags.Remove(obj.Name);
-                        }
-                    }
-                    AppData.UpdateServer(protocolServerBases);
-                    var delete = TagFilters.FirstOrDefault(x => x.TagName == obj.Name);
-                    if (delete != null)
-                    {
-                        var tmp = TagFilters.ToList();
-                        tmp.Remove(delete);
-                        TagFilters = new List<TagFilter>(tmp);
-                    }
-                });
-            }
-        }
-
-
-
-
-
-        private RelayCommand? _cmdTagRename;
-        public RelayCommand CmdTagRename
-        {
-            get
-            {
-                return _cmdTagRename ??= new RelayCommand((o) =>
-                {
-                    if (o is not Tag obj)
-                        return;
-
-                    string oldTagName = obj.Name;
-                    string newTagName = InputWindow.InputBox(IoC.Get<ILanguageService>().Translate("Tags"), IoC.Get<ILanguageService>().Translate("Tags"), obj.Name);
-                    newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
-                    if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
-                        return;
-
-                    var protocolServerBases = AppData.VmItemList.Select(x => x.Server) ?? new List<ProtocolBase>();
-                    foreach (var server in protocolServerBases)
-                    {
-                        if (server.Tags.Contains(oldTagName))
-                        {
-                            server.Tags.Remove(oldTagName);
-                            server.Tags.Add(newTagName);
-                        }
-                    }
-                    AppData.UpdateServer(protocolServerBases);
-
-
-                    // restore selected scene
-                    var rename = TagFilters.FirstOrDefault(x => x.TagName == oldTagName);
-                    if (rename != null)
-                    {
-                        var renamed = TagFilter.Create(newTagName, rename.Type);
-                        var tmp = TagFilters.ToList();
-                        tmp.Remove(rename);
-                        tmp.Add(renamed);
-                        TagFilters = new List<TagFilter>(tmp);
-                    }
-
-                    // restore display scene
-                    if (AppData.TagList.Any(x => x.Name == newTagName))
-                    {
-                        AppData.TagList.First(x => x.Name == newTagName).IsPinned = obj.IsPinned;
-                    }
-                });
-            }
-        }
-
-
-
-        private RelayCommand? _cmdTagConnect;
-        public RelayCommand CmdTagConnect
-        {
-            get
-            {
-                return _cmdTagConnect ??= new RelayCommand((o) =>
-                {
-                    if (o is not Tag obj)
-                        return;
-
-                    foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id);
-                            Thread.Sleep(100);
-                        }
-                    }
-                });
-            }
-        }
-
-
-
-        private RelayCommand? _cmdTagConnectToNewTab;
-        public RelayCommand CmdTagConnectToNewTab
-        {
-            get
-            {
-                return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
-                {
-                    if (o is not Tag obj)
-                        return;
-
-                    var token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
-                            Thread.Sleep(100);
-                        }
-                    }
-                });
-            }
-        }
     }
 }

@@ -8,6 +8,7 @@
                   xmlns:view="clr-namespace:_1RM.View"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                   xmlns:service="clr-namespace:_1RM.Service"
+                  xmlns:serverList="clr-namespace:_1RM.View.ServerList"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -77,6 +78,7 @@
                                 <Setter Property="Opacity" Value="0.5"></Setter>
                                 <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                 <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -102,8 +104,8 @@
                                             <Setter Property="IsEnabled" Value="True"></Setter>
                                         </MultiDataTrigger.Setters>
                                     </MultiDataTrigger>
-                                    <DataTrigger Binding="{Binding MainFilterString}" Value="{x:Static  view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <DataTrigger Binding="{Binding ServerListViewModel.TagListViewModel}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
