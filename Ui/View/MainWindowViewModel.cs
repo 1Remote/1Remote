@@ -238,7 +238,21 @@ namespace _1RM.View
                 }, o => IsShownList());
             }
         }
-        
+
+
+        private RelayCommand? _cmdToggleCardList;
+        public RelayCommand CmdToggleCardList
+        {
+            get
+            {
+                return _cmdToggleCardList ??= new RelayCommand((o) =>
+                {
+                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
+                    if (this.View != null)
+                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
+                }, o => IsShownList());
+            }
+        }
         #endregion CMD
 
 

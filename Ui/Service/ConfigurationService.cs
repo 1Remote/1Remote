@@ -34,6 +34,7 @@ namespace _1RM.Service
         public string CurrentLanguageCode = "en-us";
         public bool AppStartAutomatically = true;
         public bool AppStartMinimized = true;
+        public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
         #endregion
     }

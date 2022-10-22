@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
              xmlns:dataSource="clr-namespace:_1RM.Service.DataSource"
              xmlns:dao="clr-namespace:_1RM.Model.DAO"
+             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:DataSourceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -123,11 +124,35 @@
                   HorizontalAlignment="Stretch" 
                   HorizontalContentAlignment="Stretch" 
                   CanUserSortColumns="False"
+                  CanUserResizeColumns="False"
+                  CanUserResizeRows="False"
+                  CanUserReorderColumns="False"
                   ColumnWidth="*"
                   IsReadOnly="True"
                   ItemsSource="{Binding SourceConfigs}" >
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridColumnHeader">
+                                <Grid Height="35">
+                                    <TextBlock Text="{TemplateBinding  Content}" 
+                                               FontSize="18" FontWeight="Bold"
+                                               Foreground="{DynamicResource BackgroundTextBrush}"
+                                               VerticalAlignment="Center" 
+                                               HorizontalAlignment="Left" 
+                                               TextWrapping="Wrap"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Width="Auto">
+                <DataGridTemplateColumn Width="Auto" Header="">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid Background="Transparent" Cursor="Hand" ToolTip="{Binding StatusInfo}">
@@ -162,12 +187,34 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Width="100" IsReadOnly="True" Header="{DynamicResource Name}" Binding="{Binding DataSourceName}"/>
-                <DataGridTextColumn Width="Auto" Header="" Binding="{Binding DatabaseType}"/>
-                <DataGridTextColumn Width="100" IsReadOnly="True" Header="Readonly" Binding="{Binding IsWritable, Converter={StaticResource ConverterBoolInverse}}"/>
+
+                <DataGridTemplateColumn Width="Auto" Header="{DynamicResource Name}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DataSourceName}"></TextBlock>
+                                <TextBlock Text=" (Readonly)" Visibility="{Binding IsWritable, Converter={StaticResource ConverterBool2VisibleInv}}"></TextBlock>
+                                <Grid Width="20"></Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+                <DataGridTemplateColumn Width="Auto" Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DatabaseType}"></TextBlock>
+                                <Grid Width="20"></Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTextColumn Width="2*" Header="" Binding="{Binding Description}"/>
 
-                <DataGridTemplateColumn Width="0.5*" MinWidth="100">
+                <DataGridTemplateColumn Width="0.5*" MinWidth="100" Header="">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -199,7 +246,7 @@
 
 
         <Menu Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <MenuItem Header="{DynamicResource Add}" Background="Transparent" Height="35" Width="100">
+            <MenuItem Header="{DynamicResource Add}" Background="Transparent" Height="30" Width="100">
                 <MenuItem.Icon>
                     <Path Height="12" UseLayoutRounding="True" Data="{StaticResource GeometryCross}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                 </MenuItem.Icon>
