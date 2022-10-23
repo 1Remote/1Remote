@@ -5,29 +5,39 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.ServerList"
              xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:TagsPanelViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <CollectionViewSource x:Key="TagItemSource" 
+                              Source="{Binding AppData.TagList}"
+                              Filter="TagItemSource_OnFilter">
+        </CollectionViewSource>
+
         <local:ConverterTagName x:Key="ConverterTagName" />
     </UserControl.Resources>
-    <Grid>
 
+    <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
+        <Grid Margin="20">
+            <TextBox Name="TbFilter"
+                     attachProperty:FocusExtension.IsFocused="{Binding FilterIsFocused}"
+                     Height="40"
+                     Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}" 
+                     Tag="{DynamicResource 'Search (Ctrl+F)'}"
+                     PreviewKeyUp="TbFilter_OnKeyUp"
+                     Width="300"
+            ></TextBox>
+        </Grid>
 
         <!-- tag list: the page to config which tag should be display. -->
-        <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
-            <!--<Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static local:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>-->
-            <ListBox ItemsSource="{Binding AppData.TagList}" Margin="20" Visibility="Visible" MaxWidth="700" Background="Aqua" MinHeight="300" MinWidth="500">
+        <Grid Grid.Row="1">
+            <ListBox Name="ListBoxTags" ItemsSource="{Binding Source={StaticResource TagItemSource}}" Margin="50 0" Visibility="Visible" MinHeight="300" MinWidth="500">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
@@ -59,27 +69,29 @@
                 </ListBox.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="model:Tag">
-                        <Grid Width="300" Margin="20 5" Visibility="{Binding ObjectVisibility}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
+                        <Border CornerRadius="{StaticResource DefaultCornerRadius}" 
+                                BorderThickness="1" 
+                                BorderBrush="{DynamicResource DefaultBorderBrush}" 
+                                Margin="10"
+                                Padding="5">
+                            <Grid Width="300">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
-                            <Grid>
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
-                                        Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
-                                        HorizontalAlignment="Left"></Button>
+                                <Grid>
+                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
+                                            Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
+                                            HorizontalAlignment="Left"></Button>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                    <TextBlock Text="{Binding ItemsCount}" Margin="10 0" VerticalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
+                                    <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
+                                </StackPanel>
                             </Grid>
-
-                            <!--<Border CornerRadius="5" Padding="5 2" Background="{DynamicResource AccentMidBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3">
-                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-                            </Border>-->
-
-                            <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <TextBlock Text="{Binding ItemsCount}" Margin="10 0" VerticalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
-                                <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
-                            </StackPanel>
-                        </Grid>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ListBox>

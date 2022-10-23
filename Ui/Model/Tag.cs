@@ -45,13 +45,5 @@ namespace _1RM.Model
                 _saveOnPinnedChanged.Invoke();
             }
         }
-
-        private Visibility _objectVisibility = Visibility.Visible;
-        [JsonIgnore]
-        public Visibility ObjectVisibility
-        {
-            get => _objectVisibility;
-            set => SetAndNotifyIfChanged(ref _objectVisibility, value);
-        }
     }
 }

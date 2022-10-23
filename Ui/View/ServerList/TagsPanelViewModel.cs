@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
@@ -11,10 +12,11 @@ using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View.ServerList
 {
-    public class TagsPanelViewModel : NotifyPropertyChangedBase
+    public class TagsPanelViewModel : NotifyPropertyChangedBaseScreen
     {
         public GlobalData AppData { get; }
         public TagsPanelViewModel(GlobalData appData)
@@ -22,6 +24,37 @@ namespace _1RM.View.ServerList
             AppData = appData;
         }
 
+
+        private bool _filterIsFocused = false;
+        public bool FilterIsFocused
+        {
+            get => _filterIsFocused;
+            set => SetAndNotifyIfChanged(ref _filterIsFocused, value);
+        }
+
+        private readonly DebounceDispatcher _debounceDispatcher = new();
+        private string _filterString = "";
+        public string FilterString
+        {
+            get => _filterString;
+            set
+            {
+                // can only be called by the Ui
+                if (SetAndNotifyIfChanged(ref _filterString, value))
+                {
+                    _debounceDispatcher.Debounce(150, (obj) =>
+                    {
+                        if (_filterString == FilterString)
+                        {
+                            if (this.View is TagsPanelView v)
+                            {
+                                Execute.OnUIThread(() => { CollectionViewSource.GetDefaultView(v.ListBoxTags.ItemsSource).Refresh(); });
+                            }
+                        }
+                    });
+                }
+            }
+        }
 
 
 

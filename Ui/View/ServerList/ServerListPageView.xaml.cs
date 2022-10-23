@@ -21,7 +21,7 @@ namespace _1RM.View.ServerList
             };
         }
 
-        private void GroupedItems_OnFilter(object sender, FilterEventArgs e)
+        private void ServerListItemSource_OnFilter(object sender, FilterEventArgs e)
         {
             if (e.Item is ProtocolBaseViewModel t
                 && DataContext is ServerListPageViewModel vm)
