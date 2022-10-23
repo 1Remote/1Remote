@@ -19,9 +19,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
-            <CollectionViewSource x:Key="GroupedItems" 
+            <CollectionViewSource x:Key="ServerListItemSource" 
                                   Source="{Binding ServerListItems}"
-                                  Filter="GroupedItems_OnFilter">
+                                  Filter="ServerListItemSource_OnFilter">
                 <!--<CollectionViewSource.GroupDescriptions>
                     <PropertyGroupDescription PropertyName="DataSourceName"></PropertyGroupDescription>
                 </CollectionViewSource.GroupDescriptions>-->
@@ -524,7 +524,7 @@
                 <ListBox Name="LvServerCards"
                          HorizontalContentAlignment="Stretch"
                          SelectedItem="{Binding SelectedServerViewModelListItem}"
-                         ItemsSource="{Binding Source={StaticResource GroupedItems}}"
+                         ItemsSource="{Binding Source={StaticResource ServerListItemSource}}"
                          BorderThickness="0" Background="Transparent"
                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                          VirtualizingPanel.CacheLengthUnit="Item"

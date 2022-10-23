@@ -138,11 +138,15 @@ namespace _1RM.View.ServerList
             }
         }
 
-        private NotifyPropertyChangedBase? _tagListViewModel = null;
-        public NotifyPropertyChangedBase? TagListViewModel
+        private TagsPanelViewModel? _tagListViewModel = null;
+        public TagsPanelViewModel? TagListViewModel
         {
             get => _tagListViewModel;
-            set => SetAndNotifyIfChanged(ref this._tagListViewModel, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref this._tagListViewModel, value);
+                TagsPanelViewModel.FilterString = "";
+            }
         }
 
         #endregion

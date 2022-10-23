@@ -356,7 +356,6 @@ namespace _1RM.View
 
 
         private readonly DebounceDispatcher _debounceDispatcher = new();
-
         private string _mainFilterString = "";
         public string MainFilterString
         {

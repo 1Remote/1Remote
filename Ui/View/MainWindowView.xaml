@@ -12,14 +12,13 @@
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
-                  Background="White"
+                  Background="{DynamicResource BackgroundBrush}"
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Style="{StaticResource WindowChromeBaseBaseStyle}"
                   Title="{x:Static service:AppPathHelper.APP_NAME}" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
-            <CollectionViewSource x:Key="GroupedItems" Source="{Binding }"/>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
         </ResourceDictionary>
     </styles:WindowChromeBase.Resources>
@@ -70,7 +69,8 @@
                              attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
                              Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"
                              Tag="{DynamicResource 'Search (Ctrl+F)'}"
-                             KeyUp="MainFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
+                             KeyUp="MainFilter_OnKeyUp" 
+                             VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                         <TextBox.Style>
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
                                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
@@ -382,10 +382,9 @@
         </Grid>
 
 
-        <ContentControl 
-            PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
-            PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
-            s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
+        <ContentControl PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
+                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+                        s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
 
     </Grid>
 </styles:WindowChromeBase>
