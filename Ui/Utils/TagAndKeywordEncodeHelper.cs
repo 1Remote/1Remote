@@ -14,7 +14,7 @@ namespace _1RM.Utils
     {
         public static string RectifyTagName(string name)
         {
-            return name.Replace("#", "").Replace(" ", "_").Trim();
+            return name.Replace("#", "").Replace(" ", "").Trim();
         }
         public static Tuple<List<TagFilter>, List<string>> DecodeKeyword(string keyword)
         {
@@ -28,22 +28,32 @@ namespace _1RM.Utils
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
+                    if(string.IsNullOrWhiteSpace(tagName))
+                        continue;
+
+                    //var tags = IoC.Get<GlobalData>().TagList.Where(x=>x.Name.StartsWith(tagName, StringComparison.OrdinalIgnoreCase));
+                    //foreach (var tag in tags)
+                    //{
+                    //    tagFilters.Add(TagFilter.Create(tag.Name, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+                    //}
+
                     if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
-                    // 考虑带空格的 tag 情况，遍历后续所有的 word，组装后查询是否是 tag
-                    for (int j = i + 1; j < words.Count; j++)
-                    {
-                        if (words[j].StartsWith("#") || words[j].StartsWith("-#") || words[j].StartsWith("+#"))
-                            break;
-                        tagName = $"{tagName} {words[j]}";
-                        if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
-                        {
-                            words[j] = "";
-                            tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
-                        }
-                    }
+
+                    //// 考虑带空格的 tag 情况，遍历后续所有的 word，组装后查询是否是 tag
+                    //for (int j = i + 1; j < words.Count; j++)
+                    //{
+                    //    if (words[j].StartsWith("#") || words[j].StartsWith("-#") || words[j].StartsWith("+#"))
+                    //        break;
+                    //    tagName = $"{tagName} {words[j]}";
+                    //    if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                    //    {
+                    //        words[j] = "";
+                    //        tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+                    //    }
+                    //}
                 }
                 else if (string.IsNullOrEmpty(word) == false)
                 {
@@ -85,7 +95,7 @@ namespace _1RM.Utils
             }
 
             // check tags
-            if(tagFilters != null)
+            if(tagFilters != null && tagFilters.Any())
             {
                 bool bTagMatched = true;
                 foreach (var tagFilter in tagFilters)

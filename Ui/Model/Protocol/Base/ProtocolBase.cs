@@ -94,7 +94,7 @@ namespace _1RM.Model.Protocol.Base
                 if (value == null)
                     SetAndNotifyIfChanged(ref _tags, new List<string>());
                 else
-                    SetAndNotifyIfChanged(ref _tags, value.Distinct().OrderBy(x => x).ToList());
+                    SetAndNotifyIfChanged(ref _tags, value.Distinct().Select(x => x.Trim().Replace(" ", "")).OrderBy(x => x).ToList());
             }
         }
 
