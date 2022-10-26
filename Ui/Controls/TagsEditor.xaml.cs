@@ -65,10 +65,10 @@ namespace _1RM.Controls
 
         private void AddNewTag()
         {
-            var newTag = TbNewTag.Text.Trim();
+            var newTag = TbNewTag.Text.Replace(" ", "");
             if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(TbNewTag.Text.Trim()) == false)
             {
-                Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(TbNewTag.Text));
+                Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(newTag));
                 Tags = Tags;
             }
             TbNewTag.Text = "";
@@ -77,9 +77,13 @@ namespace _1RM.Controls
 
         private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter || e.Key == Key.Space)
             {
                 AddNewTag();
+            }
+            else if(TbNewTag.Text.IndexOf(" ", StringComparison.Ordinal) > 0)
+            {
+                TbNewTag.Text = TbNewTag.Text.Replace(" ", "");
             }
         }
 

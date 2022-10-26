@@ -326,7 +326,7 @@ namespace _1RM.View.ServerList
             {
                 _filterString2 = filterString;
                 var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
-                TagFilters = tmp.Item1.Where(y => AppData.TagList.Any(x => x.Name == y.TagName)).ToList();
+                TagFilters = tmp.Item1.Where(y => AppData.TagList.Any(x => x.Name.StartsWith(y.TagName, StringComparison.OrdinalIgnoreCase))).ToList();
                 _stringFilters = tmp.Item2;
             }
 
