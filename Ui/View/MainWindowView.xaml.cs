@@ -154,7 +154,7 @@ namespace _1RM.View
             // When press Esc, clear all of the search keywords, but keep selected tags;
             if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
-            Vm.SetMainFilterString(s.Item1, null);
+            Vm.SetMainFilterString(s.TagFilterList, null);
         }
     }
 }

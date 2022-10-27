@@ -186,20 +186,21 @@ namespace _1RM.View.Launcher
             return ret;
         }
 
-
+        private string _lastKeyword = string.Empty;
         public void CalcVisibleByFilter()
         {
+            if (string.IsNullOrEmpty(_filter) == false && _lastKeyword == _filter) return;
+            _lastKeyword = _filter;
+
             var keyword = _filter.Trim();
             var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
-            var tagFilters = tmp.Item1;
-            var keyWords = tmp.Item2;
-            TagFilters = tagFilters;
+            TagFilters = tmp.TagFilterList;
 
             var newList = new List<ProtocolBaseViewModel>();
             foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
                 var server = vm.Server;
-                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tagFilters, keyWords);
+                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp);
                 if (s.Item1 == true)
                 {
                     App.Current.Dispatcher.Invoke(() =>

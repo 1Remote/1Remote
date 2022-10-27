@@ -318,19 +318,22 @@ namespace _1RM.View.ServerList
         }
 
         private string _filterString2 = "";
-        private List<string> _stringFilters = new List<string>();
+        private TagAndKeywordEncodeHelper.KeywordDecoded? _keywordDecoded = null;
+        private List<string> _stringFilters2 = new List<string>();
         public bool TestMatchKeywords(ProtocolBase server)
         {
             string filterString = IoC.Get<MainWindowViewModel>().MainFilterString;
             if (_filterString2 != filterString)
             {
                 _filterString2 = filterString;
-                var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
-                TagFilters = tmp.Item1.Where(y => AppData.TagList.Any(x => x.Name.StartsWith(y.TagName, StringComparison.OrdinalIgnoreCase))).ToList();
-                _stringFilters = tmp.Item2;
+                _keywordDecoded = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
+                TagFilters = _keywordDecoded.TagFilterList;
             }
 
-            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, _stringFilters);
+            if (_keywordDecoded == null)
+                return true;
+
+            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, _keywordDecoded);
             return s.Item1;
         }
 
