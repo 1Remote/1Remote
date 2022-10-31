@@ -197,6 +197,12 @@ namespace _1RM.Utils.mRemoteNG
                     field.SetValue(item, value);
                 }
 
+                if (id2MRemoteNgItem.ContainsKey(item.Id))
+                {
+                    var count = id2MRemoteNgItem.Keys.Count(x => x == item.Id
+                                                     || (x.StartsWith(item.Id + " (") && x.EndsWith(")")));
+                    item.Id += $" ({count})";
+                }
                 id2MRemoteNgItem.Add(item.Id, item);
             }
 
