@@ -267,24 +267,22 @@ namespace _1RM.View
 
         public void ToggleQuickConnection()
         {
-            //if (ServerSelectionsViewModel == null || QuickConnectionViewModel == null)
-            //    return;
-            //if (ServerSelectionsViewVisibility == Visibility.Collapsed)
-            //{
-            //    ServerSelectionsViewVisibility = Visibility.Visible;
-            //    Execute.OnUIThread(() =>
-            //    {
-            //        ServerSelectionsViewModel.TbKeyWord.Focus();
-            //    });
-            //}
-            //else
-            //{
-            //    ServerSelectionsViewVisibility = Visibility.Collapsed;
-            //    Execute.OnUIThread(() =>
-            //    {
-            //        QuickConnectionViewModel.TbKeyWord.Focus();
-            //    });
-            //}
+            if (ServerSelectionsViewVisibility == Visibility.Collapsed)
+            {
+                ServerSelectionsViewVisibility = Visibility.Visible;
+                Execute.OnUIThread(() =>
+                {
+                    ServerSelectionsViewModel.TbKeyWord.Focus();
+                });
+            }
+            else
+            {
+                ServerSelectionsViewVisibility = Visibility.Collapsed;
+                Execute.OnUIThread(() =>
+                {
+                    QuickConnectionViewModel.TbKeyWord.Focus();
+                });
+            }
         }
     }
 }

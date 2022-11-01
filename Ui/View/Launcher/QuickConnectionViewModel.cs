@@ -14,6 +14,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.View.Editor;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
@@ -25,11 +26,11 @@ namespace _1RM.View.Launcher
     {
         public TextBox TbKeyWord { get; private set; } = new TextBox();
         //private LauncherWindowViewModel _launcherWindowViewModel;
-        public List<ProtocolBaseWithAddressPortUserPwd> Protocols { get; }
+        public List<ProtocolBaseWithAddressPort> Protocols { get; }
         public QuickConnectionViewModel()
         {
-            Protocols = new List<ProtocolBaseWithAddressPortUserPwd>();
-            var protocols = ProtocolBase.GetAllSubInstance().Select(x => x as ProtocolBaseWithAddressPortUserPwd).Where(x=>x != null).ToList();
+            Protocols = new List<ProtocolBaseWithAddressPort>();
+            var protocols = ProtocolBase.GetAllSubInstance().Select(x => x as ProtocolBaseWithAddressPort).Where(x=>x != null).ToList();
             foreach (var protocol in protocols)
             {
                 if (protocol != null 
@@ -55,8 +56,8 @@ namespace _1RM.View.Launcher
             }
         }
 
-        private ProtocolBase _selectedProtocol;
-        public ProtocolBase SelectedProtocol
+        private ProtocolBaseWithAddressPort _selectedProtocol;
+        public ProtocolBaseWithAddressPort SelectedProtocol
         {
             get => _selectedProtocol;
             set => SetAndNotifyIfChanged(ref _selectedProtocol, value);
@@ -75,6 +76,50 @@ namespace _1RM.View.Launcher
         {
             get => _actions;
             set => SetAndNotifyIfChanged(ref _actions, value);
+        }
+
+        public void OpenConnection(string address)
+        {
+            var server = SelectedProtocol.Clone();
+            server.DisplayName = address;
+
+            if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
+            {
+                protocolBaseWithAddressPort.Address = address;
+                var i = address.LastIndexOf(":", StringComparison.Ordinal);
+                if (i > 0)
+                {
+                    var portStr = address.Substring(i + 1);
+                    if (int.TryParse(portStr, out var port))
+                    {
+                        protocolBaseWithAddressPort.Port = port.ToString();
+                        protocolBaseWithAddressPort.Address = address.Substring(0, i);
+                    }
+                }
+            }
+
+
+            if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
+            {
+                var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
+                pwdDlg.Title = "TXT: connect to " + Filter;
+                pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
+                if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
+                {
+                    protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.Result.UserName;
+                    protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Result.Password;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            GlobalEventHelper.OnRequestQuickConnect?.Invoke(server);
         }
     }
 }

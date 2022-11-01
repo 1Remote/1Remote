@@ -59,6 +59,7 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox TabIndex="1"
+                              Margin="3 5"
                               IsTabStop="False"
                               Grid.Column="0"
                               DisplayMemberPath="Protocol"

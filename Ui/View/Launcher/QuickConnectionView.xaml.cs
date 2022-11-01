@@ -66,16 +66,9 @@ namespace _1RM.View.Launcher
 
         public void OpenSessionAndHide()
         {
-            var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
-            //pwdDlg.Result = _vm.SelectedProtocol;
-            pwdDlg.Title = "TXT: connect to " + _vm.Filter;
-            if (_windowManager.ShowDialog(pwdDlg) == true)
-            {
-                MessageBox.Show($"Your Username = {pwdDlg.Result.UserName}, Pwd = {pwdDlg.Result.Password}, Others NotImplementedException!");
-                // todo open a quick connection
-                // GlobalEventHelper.OnRequestQuickConnect?.Invoke(item.Id);
-            }
+            var a = _vm.Filter;
             _lvm.HideMe();
+            _vm.OpenConnection(a);
         }
     }
 }
