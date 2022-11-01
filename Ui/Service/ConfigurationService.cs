@@ -97,7 +97,14 @@ namespace _1RM.Service
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public int DatabaseCheckPeriod { get; set; } = 10;
-        public string SqliteDatabasePath { get; set; } = "./" + AppPathHelper.APP_NAME + ".db";
+
+        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
+        public string SqliteDatabasePath
+        {
+            get => _sqliteDatabasePath;
+            set => _sqliteDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
+        }
+
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();

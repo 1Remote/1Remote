@@ -293,7 +293,8 @@ namespace _1RM.Service
         private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
         {
             // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (this.ActivateOrReConnIfServerSessionIsOpened(server))
+            if (string.IsNullOrWhiteSpace(server.Id) == false
+                && this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
 
             // run script before connected
