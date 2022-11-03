@@ -44,7 +44,9 @@
                         <DropShadowEffect BlurRadius="10" />
                     </Border.Effect>
 
-                    <Grid Clip="{Binding GridMainClip}" Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" Height="{Binding GridMainHeight}">
+                    <Grid Clip="{Binding GridMainClip}" 
+                          Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" 
+                          Height="{Binding GridMainHeight}">
                         <ContentControl Name="ServerSelectionsView" 
                                         IsTabStop="False"
                                         Visibility="{Binding ServerSelectionsViewVisibility}"

@@ -5,83 +5,75 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.Launcher"
              xmlns:view="clr-namespace:_1RM.View"
+             xmlns:model="clr-namespace:_1RM.Model"
              d:DataContext="{d:DesignInstance local:QuickConnectionViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
-            <VisualBrush.Visual>
-                <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
-                    <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
-                </Grid>
-            </VisualBrush.Visual>
-        </VisualBrush>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="LauncherDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
+            <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+                <VisualBrush.Visual>
+                    <Grid VerticalAlignment="Center">
+                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
+                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
+                    </Grid>
+                </VisualBrush.Visual>
+            </VisualBrush>
 
 
-
-        <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-            <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="AllowDrop" Value="true" />
-            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
-            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Background" Value="Transparent" />
-            <Style.Triggers>
-                <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Background" Value="{StaticResource HintText}" />
-                </Trigger>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="Background" Value="{StaticResource HintText}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+            <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SearchBoxTbKeyWordStyleBase}">
+                <Style.Triggers>
+                    <Trigger Property="Text" Value="{x:Null}">
+                        <Setter Property="Background" Value="{StaticResource HintText}" />
+                    </Trigger>
+                    <Trigger Property="Text" Value="">
+                        <Setter Property="Background" Value="{StaticResource HintText}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
-        <Grid VerticalAlignment="Top">
-            <StackPanel Background="{DynamicResource PrimaryMidBrush}">
-                <Grid Name="GridKeyword" VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
+        <Grid Name="GridKeyword" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                    <ComboBox TabIndex="1"
-                              Margin="3 5"
-                              IsTabStop="False"
-                              Grid.Column="0"
-                              DisplayMemberPath="Protocol"
-                              SelectedItem="{Binding SelectedProtocol}"
-                              ItemsSource="{Binding Protocols}">
-                    </ComboBox>
+            <ComboBox TabIndex="1"
+                      Margin="3 8"
+                      IsTabStop="False"
+                      Grid.Column="0"
+                      DisplayMemberPath="Protocol"
+                      SelectedItem="{Binding SelectedProtocol}"
+                      ItemsSource="{Binding Protocols}">
+            </ComboBox>
 
-                    <TextBox Grid.Column="1" 
-                             TabIndex="0" IsTabStop="True"
-                             Name="TbKeyWord"
-                             PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
-                             Margin="10 0 0 0"
-                             Foreground="{DynamicResource PrimaryTextBrush}"
-                             CaretBrush="{DynamicResource PrimaryTextBrush}"
-                             Height="44"
-                             FontSize="18"
-                             Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalContentAlignment="Center"
-                             Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
-                </Grid>
-            </StackPanel>
+            <TextBox Name="TbKeyWord"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
+                     PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
+                     Margin="0 0 0 0"
+                     Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource SearchBoxTbKeyWordStyle}"
+                     Grid.Column="1" 
+                     ></TextBox>
         </Grid>
 
+        <ListBox x:Name="ListBoxActions"
+                 Grid.Row="1"
+                 Style="{StaticResource SearchBoxActionList}"
+                 BorderThickness="0"
+                 SelectedIndex="{Binding SelectedActionIndex}"
+                 ItemsSource="{Binding Actions}">
+        </ListBox>
     </Grid>
 </UserControl>

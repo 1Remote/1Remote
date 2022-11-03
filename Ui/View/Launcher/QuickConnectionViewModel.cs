@@ -16,6 +16,7 @@ using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
@@ -30,10 +31,10 @@ namespace _1RM.View.Launcher
         public QuickConnectionViewModel()
         {
             Protocols = new List<ProtocolBaseWithAddressPort>();
-            var protocols = ProtocolBase.GetAllSubInstance().Select(x => x as ProtocolBaseWithAddressPort).Where(x=>x != null).ToList();
+            var protocols = ProtocolBase.GetAllSubInstance().Select(x => x as ProtocolBaseWithAddressPort).Where(x => x != null).ToList();
             foreach (var protocol in protocols)
             {
-                if (protocol != null 
+                if (protocol != null
                     && protocol.Protocol != RdpApp.ProtocolName)
                 {
                     Protocols.Add(protocol);
@@ -44,7 +45,37 @@ namespace _1RM.View.Launcher
 
         public void Init(LauncherWindowViewModel launcherWindowViewModel)
         {
+            var actions = new List<ProtocolAction>();
+            actions.Add(new ProtocolAction(
+                actionName: IoC.Get<ILanguageService>().Translate("Connect"),
+                action: () =>
+                {
+                    launcherWindowViewModel.HideMe();
+                    OpenConnection();
+                }
+            ));
+            actions.Add(new ProtocolAction(
+                actionName: "TXT: Save and connect",
+                action: () =>
+                {
+                    launcherWindowViewModel.HideMe();
+                    // TODO save
+                    OpenConnection();
+                }
+            ));
 
+            // TODO history
+            actions.Add(new ProtocolAction(
+                actionName: "TXT: history",
+                action: () =>
+                {
+                    launcherWindowViewModel.HideMe();
+                    // TODO save
+                    OpenConnection();
+                }
+            ));
+
+            Actions = new ObservableCollection<ProtocolAction>(actions);
         }
 
         protected override void OnViewLoaded()
@@ -78,8 +109,20 @@ namespace _1RM.View.Launcher
             set => SetAndNotifyIfChanged(ref _actions, value);
         }
 
-        public void OpenConnection(string address)
+        private int _selectedActionIndex;
+        public int SelectedActionIndex
         {
+            get => _selectedActionIndex;
+            set => SetAndNotifyIfChanged(ref _selectedActionIndex, value);
+        }
+
+        public void OpenConnection()
+        {
+            var address = Filter;
+            Filter = "";
+            if (string.IsNullOrWhiteSpace(address))
+                return;
+
             var server = SelectedProtocol.Clone();
             server.DisplayName = address;
 
@@ -102,7 +145,7 @@ namespace _1RM.View.Launcher
             if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
             {
                 var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
-                pwdDlg.Title = "TXT: connect to " + Filter;
+                pwdDlg.Title = "TXT: connect to " + address;
                 pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
                 if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                 {

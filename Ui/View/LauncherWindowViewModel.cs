@@ -52,22 +52,6 @@ namespace _1RM.View
         #region properties
 
 
-        private int _tabMode = 0;
-        /// <summary>
-        /// 0 = search, 1 = quick connect
-        /// </summary>
-        public int TabMode
-        {
-            get => _tabMode;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _tabMode, value))
-                {
-                }
-            }
-        }
-
-
         private double _gridMainHeight;
         public double GridMainHeight
         {
@@ -132,7 +116,7 @@ namespace _1RM.View
         public void ReSetWindowHeight(bool showGridAction)
         {
             double height;
-            if (TabMode == 0 && ServerSelectionsViewModel != null)
+            if (ServerSelectionsViewVisibility == Visibility.Visible)
             {
                 height = ServerSelectionsViewModel.ReCalcGridMainHeight(showGridAction);
             }
@@ -146,18 +130,7 @@ namespace _1RM.View
                 GridMainHeight = height;
             });
         }
-
-
-        //public void ShowQuickConnectActionsList()
-        //{
-        //    Actions = new ObservableCollection<ProtocolAction>(VmServerList.First().Server.GetActions());
-        //    SelectedActionIndex = 0;
-        //    ReSetWindowHeight(true);
-        //    _gridMenuActions.Visibility = Visibility.Visible;
-        //}
-
-
-
+        
 
         public void ShowMe()
         {
@@ -172,6 +145,7 @@ namespace _1RM.View
                     window.WindowState = WindowState.Normal;
                     ServerSelectionsViewModel.Filter = "";
                     ServerSelectionsViewModel.CalcVisibleByFilter();
+                    QuickConnectionViewModel.SelectedProtocol = QuickConnectionViewModel.Protocols.First();
 
                     // show position
                     var p = ScreenInfoEx.GetMouseSystemPosition();
@@ -218,10 +192,10 @@ namespace _1RM.View
                             ServerSelectionsViewModel.CalcNoteFieldVisibility();
                         }
 
-                        if (QuickConnectionViewModel != null)
-                        {
-                            QuickConnectionViewModel.Filter = "";
-                        }
+                        //if (QuickConnectionViewModel != null)
+                        //{
+                        //    QuickConnectionViewModel.Filter = "";
+                        //}
 
                         // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
                         System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
@@ -283,6 +257,8 @@ namespace _1RM.View
                     QuickConnectionViewModel.TbKeyWord.Focus();
                 });
             }
+
+            ReSetWindowHeight(false);
         }
     }
 }

@@ -341,7 +341,7 @@ namespace _1RM.View.Launcher
 
         public void CalcNoteFieldVisibility()
         {
-            if (_launcherWindowViewModel?.TabMode != 0)
+            if (_launcherWindowViewModel?.ServerSelectionsViewVisibility != Visibility.Visible)
             {
                 GridNoteVisibility = Visibility.Collapsed;
                 return;
