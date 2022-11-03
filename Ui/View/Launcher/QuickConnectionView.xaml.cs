@@ -51,24 +51,59 @@ namespace _1RM.View.Launcher
             e.Handled = true;
             switch (key)
             {
+                default:
+                    e.Handled = false;
+                    break;
                 case Key.Tab:
                     _lvm.ToggleQuickConnection();
                     break;
                 case Key.Enter:
-                    OpenSessionAndHide();
+                    if (_vm.Actions.Count > 0
+                        && _vm.SelectedActionIndex >= 0
+                        && _vm.SelectedActionIndex < _vm.Actions.Count)
+                    {
+                        var i = _vm.SelectedActionIndex;
+                        _lvm.HideMe();
+                        _vm.Actions[i]?.Run();
+                    }
                     break;
-                default:
-                    e.Handled = false;
+
+                case Key.Down:
+                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    {
+                        ++_vm.SelectedActionIndex;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.Up:
+                    if (_vm.SelectedActionIndex > 0)
+                    {
+                        --_vm.SelectedActionIndex;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.PageUp:
+                    if (_vm.SelectedActionIndex > 0)
+                    {
+                        _vm.SelectedActionIndex =
+                            _vm.SelectedActionIndex - 5 < 0 ? 0 : _vm.SelectedActionIndex - 5;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.PageDown:
+                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    {
+                        _vm.SelectedActionIndex =
+                            _vm.SelectedActionIndex + 5 > _vm.Actions.Count - 1
+                                ? _vm.Actions.Count - 1
+                                : _vm.SelectedActionIndex + 5;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
                     break;
             }
-        }
-
-
-        public void OpenSessionAndHide()
-        {
-            var a = _vm.Filter;
-            _lvm.HideMe();
-            _vm.OpenConnection(a);
         }
     }
 }
