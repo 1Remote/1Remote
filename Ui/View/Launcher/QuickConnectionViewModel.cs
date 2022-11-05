@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace _1RM.View.Launcher
 {
     public class QuickConnectionViewModel : NotifyPropertyChangedBaseScreen
     {
+        private LauncherWindowViewModel? _launcherWindowViewModel;
+        public readonly QuickConnectionItem OpenConnectActionItem;
         public TextBox TbKeyWord { get; private set; } = new TextBox();
         //private LauncherWindowViewModel _launcherWindowViewModel;
         public List<ProtocolBaseWithAddressPort> Protocols { get; }
@@ -41,41 +44,18 @@ namespace _1RM.View.Launcher
                 }
             }
             _selectedProtocol = Protocols.First(x => x.Protocol == RDP.ProtocolName);
+
+
+            OpenConnectActionItem = new QuickConnectionItem()
+            {
+                Host = IoC.Get<ILanguageService>().Translate("Connect"),
+            };
         }
+
 
         public void Init(LauncherWindowViewModel launcherWindowViewModel)
         {
-            var actions = new List<ProtocolAction>();
-            actions.Add(new ProtocolAction(
-                actionName: IoC.Get<ILanguageService>().Translate("Connect"),
-                action: () =>
-                {
-                    launcherWindowViewModel.HideMe();
-                    OpenConnection();
-                }
-            ));
-            actions.Add(new ProtocolAction(
-                actionName: "TXT: Save and connect",
-                action: () =>
-                {
-                    launcherWindowViewModel.HideMe();
-                    // TODO save
-                    OpenConnection();
-                }
-            ));
-
-            // TODO history
-            actions.Add(new ProtocolAction(
-                actionName: "TXT: history",
-                action: () =>
-                {
-                    launcherWindowViewModel.HideMe();
-                    // TODO save
-                    OpenConnection();
-                }
-            ));
-
-            Actions = new ObservableCollection<ProtocolAction>(actions);
+            _launcherWindowViewModel = launcherWindowViewModel;
         }
 
         protected override void OnViewLoaded()
@@ -84,7 +64,20 @@ namespace _1RM.View.Launcher
             {
                 TbKeyWord = window.TbKeyWord;
                 TbKeyWord.Focus();
+                RebuildConnectionHistory();
             }
+        }
+
+        public void Show()
+        {
+            if (_launcherWindowViewModel == null) return;
+            Filter = "";
+            _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Collapsed;
+            RebuildConnectionHistory();
+            Execute.OnUIThread(() =>
+            {
+                TbKeyWord.Focus();
+            });
         }
 
         private ProtocolBaseWithAddressPort _selectedProtocol;
@@ -94,75 +87,170 @@ namespace _1RM.View.Launcher
             set => SetAndNotifyIfChanged(ref _selectedProtocol, value);
         }
 
+
+        private readonly DebounceDispatcher _debounceDispatcher = new();
         private string _filter = "";
         public string Filter
         {
             get => _filter;
-            set => SetAndNotifyIfChanged(ref _filter, value);
-        }
-
-
-        private ObservableCollection<ProtocolAction> _actions = new ObservableCollection<ProtocolAction>();
-        public ObservableCollection<ProtocolAction> Actions
-        {
-            get => _actions;
-            set => SetAndNotifyIfChanged(ref _actions, value);
-        }
-
-        private int _selectedActionIndex;
-        public int SelectedActionIndex
-        {
-            get => _selectedActionIndex;
-            set => SetAndNotifyIfChanged(ref _selectedActionIndex, value);
-        }
-
-        public void OpenConnection()
-        {
-            var address = Filter;
-            Filter = "";
-            if (string.IsNullOrWhiteSpace(address))
-                return;
-
-            var server = SelectedProtocol.Clone();
-            server.DisplayName = address;
-
-            if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
+            set
             {
-                protocolBaseWithAddressPort.Address = address;
-                var i = address.LastIndexOf(":", StringComparison.Ordinal);
-                if (i > 0)
+                if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    var portStr = address.Substring(i + 1);
-                    if (int.TryParse(portStr, out var port))
+                    _debounceDispatcher.Debounce(150, (obj) =>
                     {
-                        protocolBaseWithAddressPort.Port = port.ToString();
-                        protocolBaseWithAddressPort.Address = address.Substring(0, i);
+                        if (value == _filter)
+                        {
+                            SimpleLogHelper.Warning("CalcVisibleByFilter");
+                            CalcVisibleByFilter();
+                        }
+                    });
+                }
+            }
+        }
+
+
+        private int _selectedIndex = 0;
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _selectedIndex, value))
+                {
+                    if (this.View is QuickConnectionView view)
+                    {
+                        Execute.OnUIThread(() =>
+                        {
+                            view.ListBoxHistory.ScrollIntoView(view.ListBoxHistory.SelectedItem);
+                        });
                     }
                 }
             }
+        }
 
-
-            if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
+        private ObservableCollection<QuickConnectionItem> _connectHistory = new ObservableCollection<QuickConnectionItem>();
+        public ObservableCollection<QuickConnectionItem> ConnectHistory
+        {
+            get => _connectHistory;
+            set
             {
-                var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
-                pwdDlg.Title = "TXT: connect to " + address;
-                pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
-                if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
+                if (SetAndNotifyIfChanged(ref _connectHistory, value))
                 {
-                    protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.Result.UserName;
-                    protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Result.Password;
-                }
-                else
-                {
-                    return;
+                    SelectedIndex = 0;
                 }
             }
-            else
+        }
+
+        public void RebuildConnectionHistory()
+        {
+            var list = IoC.Get<LocalityService>().QuickConnectionHistory.ToList();
+            list.Insert(0, OpenConnectActionItem);
+            ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
+            _launcherWindowViewModel?.ReSetWindowHeight(false);
+        }
+
+
+        public double ReCalcGridMainHeight()
+        {
+            var tmp = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * ConnectHistory.Count;
+            var ret = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + tmp;
+            return ret;
+        }
+
+
+        private string _lastKeyword = string.Empty;
+        public void CalcVisibleByFilter()
+        {
+            if (string.IsNullOrEmpty(_filter) == false && _lastKeyword == _filter) return;
+            _lastKeyword = _filter;
+
+            var keyword = _filter.Trim();
+            if (string.IsNullOrEmpty(keyword))
             {
+                RebuildConnectionHistory();
                 return;
             }
 
-            GlobalEventHelper.OnRequestQuickConnect?.Invoke(server);
+
+            var newList = IoC.Get<LocalityService>().QuickConnectionHistory.Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
+            var list = newList?.ToList() ?? new List<QuickConnectionItem>();
+            list.Insert(0, OpenConnectActionItem);
+            ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
+            _launcherWindowViewModel?.ReSetWindowHeight(false);
+        }
+
+
+        public void OpenConnection()
+        {
+            if (ConnectHistory.Count > 0
+                && SelectedIndex >= 0
+                && SelectedIndex < ConnectHistory.Count)
+            {
+                var host = Filter;
+                var protocol = SelectedProtocol.Protocol;
+                var item = ConnectHistory[SelectedIndex];
+                if (item == OpenConnectActionItem
+                    && string.IsNullOrWhiteSpace(host))
+                    return;
+
+
+                // if open current input
+                if (item == OpenConnectActionItem)
+                {
+                    //host = Filter;
+                    //protocol = SelectedProtocol.Protocol;
+                }
+                // if open from history
+                else
+                {
+                    host = item.Host;
+                    protocol = item.Protocol;
+                }
+
+                // Hide Ui
+                Filter = "";
+                _launcherWindowViewModel?.HideMe();
+
+                // create protocol
+                var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();
+                server.DisplayName = host;
+                if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
+                {
+                    protocolBaseWithAddressPort.Address = host;
+                    var i = host.LastIndexOf(":", StringComparison.Ordinal);
+                    if (i > 0)
+                    {
+                        var portStr = host.Substring(i + 1);
+                        if (int.TryParse(portStr, out var port))
+                        {
+                            protocolBaseWithAddressPort.Port = port.ToString();
+                            protocolBaseWithAddressPort.Address = host.Substring(0, i);
+                        }
+                    }
+                }
+
+                // pop password window if needed
+                if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
+                {
+                    var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
+                    pwdDlg.Title = "TXT: connect to " + host;
+                    pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
+                    if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
+                    {
+                        protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.Result.UserName;
+                        protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Result.Password;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+                // save history
+                IoC.Get<LocalityService>().QuickConnectionHistoryAdd(new QuickConnectionItem() { Host = host, Protocol = protocol });
+                GlobalEventHelper.OnRequestQuickConnect?.Invoke(server);
+            }
         }
     }
 }

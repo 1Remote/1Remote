@@ -74,17 +74,5 @@ namespace _1RM.Service.DataSource.Model
 
         [JsonIgnore]
         public abstract string Description { get; }
-
-
-        private const string SimpleAesKey = "9ho5kUf2UVbugom7NME8ZVxFZZjavHej";
-
-        protected string SimpleEncrypt(string txt)
-        {
-            return EncryptProvider.AESEncrypt(txt, SimpleAesKey);
-        }
-        protected string SimpleDecrypt(string encryptString)
-        {
-            return EncryptProvider.AESDecrypt(encryptString, SimpleAesKey); ;
-        }
     }
 }

@@ -35,6 +35,86 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+
+
+
+            <DataTemplate DataType="{x:Type local:QuickConnectionItem}">
+                <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}">
+                    <Grid VerticalAlignment="Center" 
+                      Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+
+
+                        <TextBlock Grid.Column="0"
+                                       Text="{Binding Host}"
+                                       FontSize="16"
+                                       Margin="10 0"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Protocol}" Value="">
+                                            <Setter Property="FontWeight" Value="Bold"></Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                            <Setter Property="Grid.ColumnSpan" Value="2"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock Grid.Column="1"
+                                       Text="{Binding Protocol}"
+                                       FontSize="16" FontWeight="Bold"
+                                       HorizontalAlignment="Right"
+                                       Margin="5 0 10 0"
+                                       Opacity="0.3"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       VerticalAlignment="Center"></TextBlock>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+
+
+            <Style x:Key="ListBoxItemStyleForQuickConnect" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyleForServer}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Grid>
+                                <Border x:Name="GridContainer"></Border>
+                                <Grid x:Name="GridColorOnSelected" 
+                                      Visibility="Collapsed"
+                                      Width="40" 
+                                      HorizontalAlignment="Left" ></Grid>
+                                <ContentPresenter x:Name="ContentPresenter"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                    <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                    <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ListQuickConnect" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyleForQuickConnect}"></Setter>
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Background="{DynamicResource PrimaryMidBrush}">
@@ -68,12 +148,12 @@
                      ></TextBox>
         </Grid>
 
-        <ListBox x:Name="ListBoxActions"
+        <ListBox x:Name="ListBoxHistory"
                  Grid.Row="1"
-                 Style="{StaticResource SearchBoxActionList}"
+                 Style="{StaticResource ListQuickConnect}"
                  BorderThickness="0"
-                 SelectedIndex="{Binding SelectedActionIndex}"
-                 ItemsSource="{Binding Actions}">
+                 SelectedIndex="{Binding SelectedIndex}"
+                 ItemsSource="{Binding ConnectHistory}">
         </ListBox>
     </Grid>
 </UserControl>

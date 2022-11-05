@@ -103,8 +103,6 @@ namespace _1RM.View
                 ReSetWindowHeight(false);
                 SetHotKey();
                 ServerSelectionsViewModel.NoteField = window.NoteField;
-                IoC.Get<GlobalData>().VmItemListDataChanged += ServerSelectionsViewModel.RebuildVmServerList;
-                ServerSelectionsViewModel.RebuildVmServerList();
                 window.Deactivated += (s, a) => { HideMe(); };
                 window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
                 //ServerSelectionsViewModel.CalcVisibleByFilter();
@@ -122,7 +120,7 @@ namespace _1RM.View
             }
             else
             {
-                height = LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
+                height = QuickConnectionViewModel.ReCalcGridMainHeight();
             }
 
             Execute.OnUIThread(() =>
@@ -130,11 +128,11 @@ namespace _1RM.View
                 GridMainHeight = height;
             });
         }
-        
+
 
         public void ShowMe()
         {
-            if (this.View is LauncherWindowView window && ServerSelectionsViewModel != null)
+            if (this.View is LauncherWindowView window)
             {
                 SimpleLogHelper.Debug($"Call shortcut to invoke launcher Visibility = {window.Visibility}");
                 if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
@@ -243,21 +241,12 @@ namespace _1RM.View
         {
             if (ServerSelectionsViewVisibility == Visibility.Collapsed)
             {
-                ServerSelectionsViewVisibility = Visibility.Visible;
-                Execute.OnUIThread(() =>
-                {
-                    ServerSelectionsViewModel.TbKeyWord.Focus();
-                });
+                ServerSelectionsViewModel.Show();
             }
             else
             {
-                ServerSelectionsViewVisibility = Visibility.Collapsed;
-                Execute.OnUIThread(() =>
-                {
-                    QuickConnectionViewModel.TbKeyWord.Focus();
-                });
+                QuickConnectionViewModel.Show();
             }
-
             ReSetWindowHeight(false);
         }
     }

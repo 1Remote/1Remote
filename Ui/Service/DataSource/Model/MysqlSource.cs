@@ -50,15 +50,15 @@ namespace _1RM.Service.DataSource.Model
             {
                 if (string.IsNullOrEmpty(EncryptPassword))
                     return "";
-                var t = base.SimpleDecrypt(EncryptPassword);
+                var t = StringEncipher.SimpleDecrypt(EncryptPassword);
                 if (string.IsNullOrEmpty(t))
                     return EncryptPassword;
                 return t;
             }
             set
             {
-                EncryptPassword = string.IsNullOrEmpty(value) ? "" : base.SimpleEncrypt(value);
-                var t = base.SimpleDecrypt(EncryptPassword);
+                EncryptPassword = string.IsNullOrEmpty(value) ? "" : StringEncipher.SimpleEncrypt(value);
+                var t = StringEncipher.SimpleDecrypt(EncryptPassword);
                 RaisePropertyChanged();
             }
         }
