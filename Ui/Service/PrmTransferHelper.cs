@@ -67,6 +67,7 @@ namespace _1RM.Service
             var dataBase = new DapperDataBaseFree();
             try
             {
+                // TODO what if transfer from PRM (store)?
                 var dbPath = Path.Join(AppPathHelper.Instance.BaseDirPath, "PRemoteM.db");
                 if (File.Exists(dbPath) == false)
                 {

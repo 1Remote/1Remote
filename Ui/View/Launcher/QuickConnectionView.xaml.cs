@@ -58,49 +58,42 @@ namespace _1RM.View.Launcher
                     _lvm.ToggleQuickConnection();
                     break;
                 case Key.Enter:
-                    if (_vm.Actions.Count > 0
-                        && _vm.SelectedActionIndex >= 0
-                        && _vm.SelectedActionIndex < _vm.Actions.Count)
-                    {
-                        var i = _vm.SelectedActionIndex;
-                        _lvm.HideMe();
-                        _vm.Actions[i]?.Run();
-                    }
+                    _vm.OpenConnection();
                     break;
 
                 case Key.Down:
-                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    if (_vm.SelectedIndex < _vm.ConnectHistory.Count - 1)
                     {
-                        ++_vm.SelectedActionIndex;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                        ++_vm.SelectedIndex;
+                        ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.Up:
-                    if (_vm.SelectedActionIndex > 0)
+                    if (_vm.SelectedIndex > 0)
                     {
-                        --_vm.SelectedActionIndex;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                        --_vm.SelectedIndex;
+                        ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.PageUp:
-                    if (_vm.SelectedActionIndex > 0)
+                    if (_vm.SelectedIndex > 0)
                     {
-                        _vm.SelectedActionIndex =
-                            _vm.SelectedActionIndex - 5 < 0 ? 0 : _vm.SelectedActionIndex - 5;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                        _vm.SelectedIndex =
+                            _vm.SelectedIndex - 5 < 0 ? 0 : _vm.SelectedIndex - 5;
+                        ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.PageDown:
-                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    if (_vm.SelectedIndex < _vm.ConnectHistory.Count - 1)
                     {
-                        _vm.SelectedActionIndex =
-                            _vm.SelectedActionIndex + 5 > _vm.Actions.Count - 1
-                                ? _vm.Actions.Count - 1
-                                : _vm.SelectedActionIndex + 5;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                        _vm.SelectedIndex =
+                            _vm.SelectedIndex + 5 > _vm.ConnectHistory.Count - 1
+                                ? _vm.ConnectHistory.Count - 1
+                                : _vm.SelectedIndex + 5;
+                        ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
             }

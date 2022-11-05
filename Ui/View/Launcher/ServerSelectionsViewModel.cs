@@ -36,16 +36,29 @@ namespace _1RM.View.Launcher
             _launcherWindowViewModel = launcherWindowViewModel;
         }
 
-
         protected override void OnViewLoaded()
         {
             if (this.View is ServerSelectionsView window)
             {
                 GridMenuActions = window.GridMenuActions;
-                GridMenuActions.Focus();
                 TbKeyWord = window.TbKeyWord;
+                TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
+
+                IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
+                RebuildVmServerList();
             }
+        }
+
+        public void Show()
+        {
+            if (_launcherWindowViewModel == null) return;
+            Filter = "";
+            _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Visible;
+            Execute.OnUIThread(() =>
+            {
+                TbKeyWord.Focus();
+            });
         }
 
         private readonly DebounceDispatcher _debounceDispatcher = new();
@@ -153,7 +166,6 @@ namespace _1RM.View.Launcher
         public void RebuildVmServerList()
         {
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
-
             Execute.OnUIThread(() =>
             {
                 foreach (var vm in VmServerList)
@@ -162,27 +174,20 @@ namespace _1RM.View.Launcher
                     vm.SubTitleControl = vm.OrgSubTitleControl;
                 }
             });
+            _launcherWindowViewModel?.ReSetWindowHeight(false);
         }
 
 
         public double ReCalcGridMainHeight(bool showGridAction)
         {
             double ret = LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
-            Execute.OnUIThread(() =>
+            // show server list
+            if (showGridAction == false)
             {
-                // show server list
-                if (showGridAction == false)
-                {
-                    var tmp = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * VmServerList.Count;
-                    GridSelectionsHeight = Math.Min(tmp, LauncherWindowViewModel.MAX_SELECTION_HEIGHT);
-                    ret = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + GridSelectionsHeight;
-                }
-                //// show action list
-                //else
-                //{
-                //    LauncherWindowViewModel.GridMainHeight = LauncherWindowViewModel.MaxWindowHeight;
-                //}
-            });
+                var tmp = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * VmServerList.Count;
+                ret = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + tmp;
+                GridSelectionsHeight = Math.Min(tmp, LauncherWindowViewModel.MAX_SELECTION_HEIGHT);
+            }
             return ret;
         }
 
@@ -193,6 +198,12 @@ namespace _1RM.View.Launcher
             _lastKeyword = _filter;
 
             var keyword = _filter.Trim();
+            if (string.IsNullOrEmpty(keyword))
+            {
+                RebuildVmServerList();
+                return;
+            }
+
             var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
             TagFilters = tmp.TagFilterList;
 
@@ -275,17 +286,7 @@ namespace _1RM.View.Launcher
                 }
             }
 
-            if (string.IsNullOrEmpty(keyword) && newList.Count == 0)
-            {
-                RebuildVmServerList();
-            }
-            else
-            {
-                Execute.OnUIThread(() =>
-                {
-                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
-                });
-            }
+            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
             _launcherWindowViewModel?.ReSetWindowHeight(false);
         }
 

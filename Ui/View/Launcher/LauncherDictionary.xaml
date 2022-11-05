@@ -41,7 +41,7 @@
 
 
 
-    <Style  x:Key="ListBoxItemStyleForServer" TargetType="ListBoxItem">
+    <Style x:Key="ListBoxItemStyleForServer" TargetType="ListBoxItem">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -59,8 +59,10 @@
                                             </Border.CornerRadius>-->
                         </Border>
                         <Grid x:Name="GridColorOnSelected" 
-                                              Visibility="Collapsed"
-                                              Width="40" HorizontalAlignment="Left" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+                              Visibility="Collapsed"
+                              Width="40" 
+                              HorizontalAlignment="Left" 
+                              Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
                         <ContentPresenter x:Name="ContentPresenter"/>
                     </Grid>
                     <ControlTemplate.Triggers>
