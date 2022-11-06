@@ -490,7 +490,7 @@ namespace PRM.Service
                 }
                 else if (string.IsNullOrEmpty(assignTabToken) == false)
                 {
-                    ret = CreateNewTabWindow();
+                    ret = CreateNewTabWindow(assignTabToken);
                 }
                 // return the latest tab window.
                 else if (_token2TabWindows.ContainsKey(_lastTabToken))
@@ -507,12 +507,15 @@ namespace PRM.Service
             return ret;
         }
 
-        private TabWindowBase? CreateNewTabWindow()
+        private TabWindowBase? CreateNewTabWindow(string token = "")
         {
             TabWindowView? tab = null;
             Execute.OnUIThreadSync(() =>
             {
-                var token = DateTime.Now.Ticks.ToString();
+                if (string.IsNullOrEmpty(token))
+                {
+                    token = DateTime.Now.Ticks.ToString();
+                }
                 tab = new TabWindowView(token, IoC.Get<LocalityService>());
                 Debug.Assert(!_token2TabWindows.ContainsKey(token));
                 Debug.Assert(!string.IsNullOrEmpty(token));
