@@ -22,7 +22,7 @@ namespace _1RM.View.Launcher
 {
     public class ServerSelectionsViewModel : NotifyPropertyChangedBaseScreen
     {
-        public FrameworkElement GridMenuActions { get; private set; } = new Grid();
+        public FrameworkElement GridActionsList { get; private set; } = new Grid();
         public TextBox TbKeyWord { get; private set; } = new TextBox();
         private LauncherWindowViewModel? _launcherWindowViewModel;
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
@@ -40,7 +40,7 @@ namespace _1RM.View.Launcher
         {
             if (this.View is ServerSelectionsView window)
             {
-                GridMenuActions = window.GridMenuActions;
+                GridActionsList = window.GridActionsList;
                 TbKeyWord = window.TbKeyWord;
                 TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
@@ -54,9 +54,11 @@ namespace _1RM.View.Launcher
         {
             if (_launcherWindowViewModel == null) return;
             Filter = "";
-            _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Visible;
             Execute.OnUIThread(() =>
             {
+                _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Visible;
+                GridActionsList.Visibility = Visibility.Collapsed;
+                CalcNoteFieldVisibility();
                 TbKeyWord.Focus();
             });
         }
@@ -96,7 +98,7 @@ namespace _1RM.View.Launcher
             }
         }
 
-        private int _selectedIndex = 0;
+        private int _selectedIndex = -1;
         public int SelectedIndex
         {
             get => _selectedIndex;
@@ -124,9 +126,13 @@ namespace _1RM.View.Launcher
             get => _vmServerList;
             set
             {
-                if (SetAndNotifyIfChanged(ref _vmServerList, value))
+                if (SetAndNotifyIfChanged(ref _vmServerList, value) && value.Count > 0)
                 {
                     SelectedIndex = 0;
+                }
+                else
+                {
+                    SelectedIndex = -1;
                 }
             }
         }
@@ -144,13 +150,6 @@ namespace _1RM.View.Launcher
         {
             get => _selectedActionIndex;
             set => SetAndNotifyIfChanged(ref _selectedActionIndex, value);
-        }
-
-        private double _gridSelectionsHeight;
-        public double GridSelectionsHeight
-        {
-            get => _gridSelectionsHeight;
-            set => SetAndNotifyIfChanged(ref _gridSelectionsHeight, value);
         }
 
         private List<TagFilter> _tagFilters = new List<TagFilter>();
@@ -174,22 +173,23 @@ namespace _1RM.View.Launcher
                     vm.SubTitleControl = vm.OrgSubTitleControl;
                 }
             });
-            _launcherWindowViewModel?.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight();
         }
 
 
-        public double ReCalcGridMainHeight(bool showGridAction)
+        public double ReCalcGridMainHeight()
         {
+            bool showGridAction = GridActionsList.Visibility == Visibility.Visible;
             double ret = LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
             // show server list
             if (showGridAction == false)
             {
                 var tmp = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * VmServerList.Count;
                 ret = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + tmp;
-                GridSelectionsHeight = Math.Min(tmp, LauncherWindowViewModel.MAX_SELECTION_HEIGHT);
             }
             return ret;
         }
+
 
         private string _lastKeyword = string.Empty;
         public void CalcVisibleByFilter()
@@ -287,7 +287,7 @@ namespace _1RM.View.Launcher
             }
 
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
-            _launcherWindowViewModel?.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight();
         }
 
 
@@ -381,7 +381,7 @@ namespace _1RM.View.Launcher
                 RaisePropertyChanged(nameof(GridNoteVisibility));
             }
 
-            _launcherWindowViewModel?.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight();
         }
         #endregion
     }

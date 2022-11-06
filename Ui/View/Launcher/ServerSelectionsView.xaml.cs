@@ -114,7 +114,7 @@ namespace _1RM.View.Launcher
                     return;
                 }
 
-                if (GridMenuActions.Visibility == Visibility.Visible)
+                if (GridActionsList.Visibility == Visibility.Visible)
                 {
                     MenuActions(key);
                 }
@@ -164,11 +164,6 @@ namespace _1RM.View.Launcher
             }
         }
 
-        private void ListBoxSelections_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-                OpenSessionAndHide();
-        }
 
 
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -223,13 +218,12 @@ namespace _1RM.View.Launcher
             _vm.Actions = new ObservableCollection<ProtocolAction>(protocolBase.GetActions());
             _vm.SelectedActionIndex = 0;
 
-            _lvm.ReSetWindowHeight(true);
-
-            GridMenuActions.Visibility = Visibility.Visible;
+            GridActionsList.Visibility = Visibility.Visible;
+            _lvm.ReSetWindowHeight();
 
             var sb = new Storyboard();
             sb.AddSlideFromLeft(0.3, LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH);
-            sb.Begin(GridMenuActions);
+            sb.Begin(GridActionsList);
         }
 
 
@@ -240,10 +234,10 @@ namespace _1RM.View.Launcher
             sb.AddSlideToLeft(0.3, LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH);
             sb.Completed += (o, args) =>
             {
-                GridMenuActions.Visibility = Visibility.Hidden;
-                _lvm.ReSetWindowHeight(false);
+                GridActionsList.Visibility = Visibility.Hidden;
+                _lvm.ReSetWindowHeight();
             };
-            sb.Begin(GridMenuActions);
+            sb.Begin(GridActionsList);
         }
 
 
@@ -266,6 +260,12 @@ namespace _1RM.View.Launcher
             if (index >= _vm.VmServerList.Count)
                 index = _vm.VmServerList.Count - 1;
             _vm.SelectedIndex = index;
+        }
+
+        private void ListBoxSelections_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+                OpenSessionAndHide();
         }
     }
 }

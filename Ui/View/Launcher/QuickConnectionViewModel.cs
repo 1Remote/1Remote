@@ -72,19 +72,12 @@ namespace _1RM.View.Launcher
         {
             if (_launcherWindowViewModel == null) return;
             Filter = "";
-            _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Collapsed;
             RebuildConnectionHistory();
             Execute.OnUIThread(() =>
             {
+                _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Collapsed;
                 TbKeyWord.Focus();
             });
-        }
-
-        private ProtocolBaseWithAddressPort _selectedProtocol;
-        public ProtocolBaseWithAddressPort SelectedProtocol
-        {
-            get => _selectedProtocol;
-            set => SetAndNotifyIfChanged(ref _selectedProtocol, value);
         }
 
 
@@ -107,6 +100,13 @@ namespace _1RM.View.Launcher
                     });
                 }
             }
+        }
+
+        private ProtocolBaseWithAddressPort _selectedProtocol;
+        public ProtocolBaseWithAddressPort SelectedProtocol
+        {
+            get => _selectedProtocol;
+            set => SetAndNotifyIfChanged(ref _selectedProtocol, value);
         }
 
 
@@ -147,7 +147,7 @@ namespace _1RM.View.Launcher
             var list = IoC.Get<LocalityService>().QuickConnectionHistory.ToList();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
-            _launcherWindowViewModel?.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight();
         }
 
 
@@ -177,7 +177,7 @@ namespace _1RM.View.Launcher
             var list = newList?.ToList() ?? new List<QuickConnectionItem>();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
-            _launcherWindowViewModel?.ReSetWindowHeight(false);
+            _launcherWindowViewModel?.ReSetWindowHeight();
         }
 
 
