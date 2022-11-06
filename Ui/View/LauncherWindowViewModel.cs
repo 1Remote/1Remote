@@ -100,7 +100,7 @@ namespace _1RM.View
                 QuickConnectionViewModel.Init(this);
 
                 ServerSelectionsViewVisibility = Visibility.Visible;
-                ReSetWindowHeight(false);
+                ReSetWindowHeight();
                 SetHotKey();
                 ServerSelectionsViewModel.NoteField = window.NoteField;
                 window.Deactivated += (s, a) => { HideMe(); };
@@ -111,20 +111,19 @@ namespace _1RM.View
         }
 
 
-        public void ReSetWindowHeight(bool showGridAction)
+        public void ReSetWindowHeight()
         {
-            double height;
-            if (ServerSelectionsViewVisibility == Visibility.Visible)
-            {
-                height = ServerSelectionsViewModel.ReCalcGridMainHeight(showGridAction);
-            }
-            else
-            {
-                height = QuickConnectionViewModel.ReCalcGridMainHeight();
-            }
-
             Execute.OnUIThread(() =>
             {
+                double height;
+                if (ServerSelectionsViewVisibility == Visibility.Visible)
+                {
+                    height = ServerSelectionsViewModel.ReCalcGridMainHeight();
+                }
+                else
+                {
+                    height = QuickConnectionViewModel.ReCalcGridMainHeight();
+                }
                 GridMainHeight = height;
             });
         }
@@ -141,8 +140,6 @@ namespace _1RM.View
                 lock (this)
                 {
                     window.WindowState = WindowState.Normal;
-                    ServerSelectionsViewModel.Filter = "";
-                    ServerSelectionsViewModel.CalcVisibleByFilter();
                     QuickConnectionViewModel.SelectedProtocol = QuickConnectionViewModel.Protocols.First();
 
                     // show position
@@ -182,19 +179,7 @@ namespace _1RM.View
                     Execute.OnUIThread(() =>
                     {
                         window.Hide();
-                        if (ServerSelectionsViewModel != null)
-                        {
-                            ServerSelectionsViewModel.Filter = "";
-                            ServerSelectionsViewModel.GridMenuActions.Visibility = Visibility.Hidden;
-                            ServerSelectionsViewVisibility = Visibility.Visible;
-                            ServerSelectionsViewModel.CalcNoteFieldVisibility();
-                        }
-
-                        //if (QuickConnectionViewModel != null)
-                        //{
-                        //    QuickConnectionViewModel.Filter = "";
-                        //}
-
+                        ServerSelectionsViewModel.Show();
                         // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
                         System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
                     });
@@ -247,7 +232,7 @@ namespace _1RM.View
             {
                 QuickConnectionViewModel.Show();
             }
-            ReSetWindowHeight(false);
+            ReSetWindowHeight();
         }
     }
 }

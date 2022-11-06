@@ -150,10 +150,12 @@
 
         <ListBox x:Name="ListBoxHistory"
                  Grid.Row="1"
-                 Style="{StaticResource ListQuickConnect}"
                  BorderThickness="0"
+                 PreviewMouseLeftButtonDown="ListBoxHistory_OnPreviewMouseLeftButtonDown"
                  SelectedIndex="{Binding SelectedIndex}"
-                 ItemsSource="{Binding ConnectHistory}">
+                 ItemsSource="{Binding ConnectHistory}"
+                 Style="{StaticResource ListQuickConnect}"
+                 >
         </ListBox>
     </Grid>
 </UserControl>

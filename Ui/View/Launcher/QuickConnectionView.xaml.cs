@@ -98,5 +98,11 @@ namespace _1RM.View.Launcher
                     break;
             }
         }
+
+        private void ListBoxHistory_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+                _vm.OpenConnection();
+        }
     }
 }
