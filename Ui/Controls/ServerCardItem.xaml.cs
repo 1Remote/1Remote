@@ -16,9 +16,9 @@ namespace PRM.Controls
         {
             var value = (ProtocolBaseViewModel)e.NewValue;
             ((ServerCardItem)d).DataContext = value;
-            if (value?.HoverNoteDisplayControl is NoteIcon ni)
+            if (value?.HoverNoteDisplayControl != null)
             {
-                ni.IsBriefNoteShown = false;
+                value.HoverNoteDisplayControl.IsBriefNoteShown = false;
             }
         }
 
