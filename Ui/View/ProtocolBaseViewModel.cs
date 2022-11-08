@@ -46,8 +46,8 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 
-        private object? _hoverNoteDisplayControl = null;
-        public object? HoverNoteDisplayControl
+        private NoteIcon? _hoverNoteDisplayControl = null;
+        public NoteIcon? HoverNoteDisplayControl
         {
             get => _hoverNoteDisplayControl;
             set => SetAndNotifyIfChanged(ref _hoverNoteDisplayControl, value);
