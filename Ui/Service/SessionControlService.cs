@@ -78,8 +78,25 @@ namespace PRM.Service
                     var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
                         t.GetViewModel().SelectedItem = s;
-                    t.Show();
-                    t.Activate();
+
+                    if (t.IsClosed)
+                    {
+                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
+                        CleanupProtocolsAndWindows();
+                        return false;
+                    }
+
+                    try
+                    {
+                        t.Show();
+                        t.Activate();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                        MarkProtocolHostToClose(new string[]{ serverId.ToString() });
+                        CleanupProtocolsAndWindows();
+                    }
                 }
                 if (_connectionId2Hosts[serverId.ToString()].ParentWindow != null)
                 {
@@ -442,7 +459,7 @@ namespace PRM.Service
             return full;
         }
 
-        public Window MoveProtocolHostToFullScreen(string connectionId)
+        public void MoveProtocolHostToFullScreen(string connectionId)
         {
             if (!_connectionId2Hosts.ContainsKey(connectionId))
                 throw new NullReferenceException($"can not find host by connectionId = `{connectionId}`");
@@ -453,6 +470,10 @@ namespace PRM.Service
             var tab = _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
             if (tab != null)
             {
+                // if tab is not loaded, do not allow move to full-screen, 防止 loaded 事件中的逻辑覆盖
+                if (tab.IsLoaded == false)
+                    return;
+
                 var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
                 Execute.OnUIThread(() => { tab.GetViewModel().Items.Remove(item); });
                 tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Count > 0 ? tab.GetViewModel().Items.First() : null;
@@ -468,8 +489,6 @@ namespace PRM.Service
 
             SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
             PrintCacheCount();
-
-            return full;
         }
 
         /// <summary>
@@ -565,14 +584,25 @@ namespace PRM.Service
                 // remove from old parent
                 if (host.ParentWindow is FullScreenWindowView fullScreenWindow)
                 {
+                    if (fullScreenWindow.IsLoaded == false)
+                    {
+                        // if FullScreenWindowView is not loaded, do not allow move to tab, 防止 loaded 事件中的逻辑覆盖
+                        return;
+                    }
+
                     tab = this.GetOrCreateTabWindow(fullScreenWindow.LastTabToken ?? "");
                     // !importance: do not close old FullScreenWindowView, or RDP will lose conn bar when restore from tab to fullscreen.
-                    if (tab != null)
+                    if (tab is { IsClosed: false })
                     {
-                        SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
-                        fullScreenWindow.SetProtocolHost(null);
-                        fullScreenWindow.Hide();
                     }
+                    else
+                    {
+                        tab = this.GetOrCreateTabWindow();
+                    }
+
+                    SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
+                    fullScreenWindow.SetProtocolHost(null);
+                    fullScreenWindow.Hide();
                 }
                 else
                     tab = this.GetOrCreateTabWindow();

@@ -73,6 +73,11 @@ namespace PRM.View.Host.ProtocolHosts
                 return;
             }
 
+            if (ParentWindow is FullScreenWindowView f && f.IsLoaded == false)
+            {
+                return;
+            }
+
             ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;

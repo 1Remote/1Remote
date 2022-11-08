@@ -60,9 +60,10 @@ namespace PRM.View.Host
                 }
             };
 
-            this.Unloaded += (sender, args) =>
+            this.Closing += (sender, args) =>
             {
                 _timer4CheckForegroundWindow.Dispose();
+                this.IsEnabled = false;
             };
         }
 
