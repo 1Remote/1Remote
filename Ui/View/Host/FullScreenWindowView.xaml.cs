@@ -6,10 +6,11 @@ using PRM.Model;
 using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View.Host
 {
-    public partial class FullScreenWindowView : Window
+    public partial class FullScreenWindowView : WindowBase
     {
         private HostBase? _host = null;
 

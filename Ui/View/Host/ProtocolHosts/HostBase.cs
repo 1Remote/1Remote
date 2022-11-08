@@ -9,6 +9,7 @@ using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View.Host.ProtocolHosts
 {
@@ -33,10 +34,10 @@ namespace PRM.View.Host.ProtocolHosts
     {
         public ProtocolBase ProtocolServer { get; }
 
-        private Window? _parentWindow;
-        public Window? ParentWindow => _parentWindow;
+        private WindowBase? _parentWindow;
+        public WindowBase? ParentWindow => _parentWindow;
 
-        public virtual void SetParentWindow(Window? value)
+        public virtual void SetParentWindow(WindowBase? value)
         {
             if (_parentWindow == value) return;
             ParentWindowHandle = IntPtr.Zero;

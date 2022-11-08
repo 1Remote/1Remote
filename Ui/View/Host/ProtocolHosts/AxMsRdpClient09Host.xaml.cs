@@ -13,6 +13,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Color = System.Drawing.Color;
 
@@ -783,10 +784,10 @@ namespace PRM.View.Host.ProtocolHosts
         /// set the parent window of rdp, if parent window is FullScreenWindowView and it's loaded, go full screen
         /// </summary>
         /// <param name="value"></param>
-        public override void SetParentWindow(Window? value)
+        public override void SetParentWindow(WindowBase? value)
         {
             base.SetParentWindow(value);
-            if (value is FullScreenWindowView && value.IsLoaded)
+            if (value is FullScreenWindowView && value.IsLoaded && value.IsClosed == false)
             {
                 this.GoFullScreen();
             }
