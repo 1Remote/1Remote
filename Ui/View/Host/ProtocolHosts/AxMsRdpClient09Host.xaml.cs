@@ -707,10 +707,15 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 Execute.OnUIThreadSync(() =>
                 {
-                    if (_rdpClient?.Connected > 0)
-                        _rdpClient.Disconnect();
-                    _rdpClient?.Dispose();
-                    _rdpClient = null;
+                    try
+                    {
+                        _rdpClient?.Dispose();
+                        _rdpClient = null;
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                    }
                 });
             }
             SimpleLogHelper.Debug("RDP Host: _rdpClient.Dispose()");

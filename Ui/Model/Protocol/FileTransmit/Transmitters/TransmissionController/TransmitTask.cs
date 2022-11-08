@@ -568,14 +568,21 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 item.TransmittedSize = 0;
                 _trans?.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                 {
-                    DataTransmitting(ref item, readLength);
+                    try
+                    {
+                        DataTransmitting(ref item, readLength);
 
-                    var add = readLength - item.TransmittedSize;
-                    item.TransmittedSize = readLength;
-                    TransmittedByteLength += add;
-                    _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
-                    RaisePropertyChanged(nameof(TransmitSpeed));
-                    SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                        var add = readLength - item.TransmittedSize;
+                        item.TransmittedSize = readLength;
+                        TransmittedByteLength += add;
+                        _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                        RaisePropertyChanged(nameof(TransmitSpeed));
+                        SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                    }
                 }, _cancellationSource.Token);
             }
         }
