@@ -234,7 +234,7 @@ namespace _1RM.View.Launcher
                 if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
                 {
                     var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
-                    pwdDlg.Title = "TXT: connect to " + host;
+                    pwdDlg.Title = $"[{server.ProtocolDisplayName}]{host}";
                     pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
                     if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                     {
