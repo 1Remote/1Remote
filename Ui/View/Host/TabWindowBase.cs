@@ -60,9 +60,10 @@ namespace _1RM.View.Host
                 }
             };
 
-            this.Unloaded += (sender, args) =>
+            this.Closing += (sender, args) =>
             {
                 _timer4CheckForegroundWindow.Dispose();
+                this.IsEnabled = false;
             };
         }
 

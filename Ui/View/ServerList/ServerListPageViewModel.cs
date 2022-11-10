@@ -129,9 +129,9 @@ namespace _1RM.View.ServerList
                 {
                     foreach (var item in ServerListItems.Where(x => x.HoverNoteDisplayControl != null))
                     {
-                        if (item.HoverNoteDisplayControl is NoteIcon ni)
+                        if (item.HoverNoteDisplayControl != null)
                         {
-                            ni.IsBriefNoteShown = value == Visibility.Visible;
+                            item.HoverNoteDisplayControl.IsBriefNoteShown = value == Visibility.Visible;
                         }
                     }
                 }
