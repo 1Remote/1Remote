@@ -61,14 +61,9 @@
 
 
         <Popup Name="PopupNote" 
-               Visibility="{Binding ElementName=ButtonBriefNote, Path=Visibility}"
                AllowsTransparency="True"
                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
             <ContentControl Name="PopupNoteContent"></ContentControl>
-            <!--<noteDisplay:NoteDisplayAndEditor x:Name="PopupNoteGrid" Width="400" Height="300"
-                                              Server="{Binding Server, Mode=OneWay}"
-                                              EditEnable="True"
-                                              CloseEnable="False"/>-->
         </Popup>
     </Grid>
 </UserControl>

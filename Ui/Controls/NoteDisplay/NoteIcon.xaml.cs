@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -97,7 +98,7 @@ namespace _1RM.Controls.NoteDisplay
         }
 
 
-        private void ButtonShowNote_OnMouseEnter(object sender, MouseEventArgs e)
+        private async void ButtonShowNote_OnMouseEnter(object sender, MouseEventArgs e)
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
@@ -110,13 +111,15 @@ namespace _1RM.Controls.NoteDisplay
                     CloseEnable = false,
                 };
             }
+            await Task.Yield();
             PopupNote.IsOpen = false;
+            await Task.Yield();
             PopupNote.IsOpen = true;
             this.MouseMove -= OnMouseMove;
             this.MouseMove += OnMouseMove;
         }
 
-        private void ButtonBriefNote_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonBriefNote_OnClick(object sender, RoutedEventArgs e)
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
@@ -129,7 +132,9 @@ namespace _1RM.Controls.NoteDisplay
                     CloseEnable = false,
                 };
             }
+            await Task.Yield();
             PopupNote.IsOpen = false;
+            await Task.Yield();
             PopupNote.IsOpen = true;
             this.MouseMove -= OnMouseMove;
             this.MouseMove += OnMouseMove;

@@ -27,7 +27,6 @@ namespace _1RM.View.ErrorReport
             Init();
 
             TbErrorInfo.Text = e.Message;
-            TbErrorInfo.Text += e.Message;
 
             var sb = new StringBuilder();
 
