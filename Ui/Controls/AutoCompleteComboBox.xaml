@@ -15,7 +15,6 @@
         <controls:ComboboxWithKeyInvoke
             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType= controls:AutoCompleteComboBox}, Path=Width}"
             x:Name="CbContent"
-            PreviewKeyDown="CbContent_OnKeyDown"
             FontSize="{Binding ElementName=UserControl, Path=FontSize, Mode=OneWay}"
             Text="{Binding Text}"
             IsEditable="True" 
