@@ -25,6 +25,7 @@ namespace PRM.Controls
             // clear default `select all` behavior
             TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
             tb.Select(tb.Text.Length, 0);
+            tb.Focus();
         }
 
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
@@ -67,12 +68,16 @@ namespace PRM.Controls
 
         protected override void OnGotFocus(RoutedEventArgs e)
         {
-            IsDropDownOpen = true;
+            if (Items.Count > 0)
+                IsDropDownOpen = true;
+            ClearSelectAllBehavior();
         }
 
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
-            IsDropDownOpen = true;
+            if (Items.Count > 0)
+                IsDropDownOpen = true;
+            ClearSelectAllBehavior();
         }
     }
 
