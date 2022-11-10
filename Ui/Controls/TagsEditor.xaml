@@ -29,7 +29,10 @@
 
 
                     <Grid Grid.Column="1">
-                        <ItemsControl Name="ListViewTags" Background="{DynamicResource BackgroundBrush}" ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl Name="ListViewTags" 
+                                      Focusable="False"
+                                      Background="{DynamicResource BackgroundBrush}" 
+                                      ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel />

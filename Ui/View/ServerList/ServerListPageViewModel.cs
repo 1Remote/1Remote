@@ -563,7 +563,7 @@ namespace _1RM.View.ServerList
 
 
 
-        private DateTime _lastCmdReOrder;
+        private DateTime _lastCmdReOrder = DateTime.MinValue;
         private RelayCommand? _cmdReOrder;
         public RelayCommand CmdReOrder
         {
@@ -575,6 +575,7 @@ namespace _1RM.View.ServerList
                     {
                         if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                         {
+                            _lastCmdReOrder = DateTime.Now;
                             // cancel order
                             if (ServerOrderBy == (EnumServerOrderBy)(ot + 1))
                             {

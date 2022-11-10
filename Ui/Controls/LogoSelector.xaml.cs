@@ -379,11 +379,14 @@ namespace _1RM.Controls
                 if (path.EndsWith(".exe", true, null))
                 {
                     using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
-                    var img = Imaging.CreateBitmapSourceFromHIcon(
-                        icon.Handle,
-                        new Int32Rect(0, 0, icon.Width, icon.Height),
-                        BitmapSizeOptions.FromEmptyOptions());
-                    SetImg(img);
+                    if (icon != null)
+                    {
+                        var img = Imaging.CreateBitmapSourceFromHIcon(
+                            icon.Handle,
+                            new Int32Rect(0, 0, icon.Width, icon.Height),
+                            BitmapSizeOptions.FromEmptyOptions());
+                        SetImg(img);
+                    }
                 }
                 else if (path.EndsWith(".ico", true, null))
                 {
