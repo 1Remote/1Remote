@@ -297,7 +297,7 @@
                         </Grid>
 
                         <Grid Grid.Row="1" RowSpan="2" VerticalAlignment="Bottom" Margin="0 0 0 25">
-                            <ContentControl Content="{Binding HoverNoteDisplayControl}" Background="Red"></ContentControl>
+                            <ContentControl Content="{Binding HoverNoteDisplayControl}"></ContentControl>
                         </Grid>
                     </Grid>
                 </Border>
