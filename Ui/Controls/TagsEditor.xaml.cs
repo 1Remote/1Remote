@@ -74,7 +74,7 @@ namespace PRM.Controls
 
         private void AddNewTag(string newTag)
         {
-            newTag = newTag.Trim();
+            newTag = newTag.Trim().Replace(" ", "");
             if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(newTag) != true)
             {
                 Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(newTag));
@@ -84,13 +84,18 @@ namespace PRM.Controls
             TbNewTag.Selections = TagsForSelect.Where(x => Tags?.Contains(x) != true);
         }
 
-        //private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Enter)
-        //    {
-        //        AddNewTag();
-        //    }
-        //}
+        private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                AddNewTag(TbNewTag.Text);
+                e.Handled = true;
+            }
+            else if (TbNewTag.Text.IndexOf(" ", StringComparison.Ordinal) > 0)
+            {
+                TbNewTag.Text = TbNewTag.Text.Replace(" ", "");
+            }
+        }
 
 
         private void Button_OnClick(object sender, RoutedEventArgs e)

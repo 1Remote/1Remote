@@ -14,7 +14,7 @@ namespace PRM.Utils
     {
         public static string RectifyTagName(string name)
         {
-            return name.Replace("#", "").Replace(" ", "_").Trim();
+            return name.Replace("#", "").Replace(" ", "").Trim();
         }
         public static Tuple<List<TagFilter>, List<string>> DecodeKeyword(string keyword)
         {
@@ -28,6 +28,9 @@ namespace PRM.Utils
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
+                    if(string.IsNullOrWhiteSpace(tagName))
+                        continue;
+
                     if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
