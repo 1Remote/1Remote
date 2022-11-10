@@ -28,7 +28,7 @@ namespace PRM.Utils
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
-                    if(string.IsNullOrWhiteSpace(tagName))
+                    if (string.IsNullOrWhiteSpace(tagName))
                         continue;
 
                     if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
@@ -88,7 +88,7 @@ namespace PRM.Utils
             }
 
             // check tags
-            if(tagFilters != null)
+            if (tagFilters != null)
             {
                 bool bTagMatched = true;
                 foreach (var tagFilter in tagFilters)

@@ -1,24 +1,22 @@
-name: Build on dev push
+name: Build/Publish on push
 
 on:
   push:
     branches:
       - "*dev*"
-
+      - "*master*"
+      - "*main*"
+    tags:
+      - "*"
 jobs:
-  build:
-    strategy:
-      matrix:
-        configuration: [Release]
-
-    runs-on: windows-latest # For a list of available runner types, refer to https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+  job1:
+    name: build_and_release
+    runs-on: windows-latest
 
     env:
-      Solution_Name: 1Remote.sln # Replace with your solution name, i.e. MyWpfApp.sln.
-      Main_Project: Ui/Ui.csproj # Replace with your main project file name, i.e. MyWpfApp.csproj.
-      # Test_Project_Path: PRemoteM.Tests\PRemoteM.Tests.csproj # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: Installer # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: Installer\Installer.wapproj # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      configuration: Release
+      Main_Project: Ui/Ui.csproj
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
       - name: Checkout
@@ -37,49 +35,40 @@ jobs:
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
 
-      # Execute all unit tests in the solution
-      # - name: Execute unit tests
-      #   run: dotnet test
+      # cache nuget packages
+      - name: Cache nuget packages
+        id: cache-nuget-packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('Ui/Ui.csproj') }}
 
-      # Restore the application to populate the obj folder with RuntimeIdentifiers
-      - name: Restore the application
+      # Restore nuget packages
+      - name: Restore nuget packages 📦️
         run: msbuild $env:Main_Project /t:Restore /p:Configuration=$env:Configuration
-        env:
-          Configuration: ${{ matrix.configuration }}
 
-      - name: Build the application
-        run: msbuild $env:Main_Project /t:rebuild /p:Configuration=$env:Configuration
-        env:
-          Configuration: ${{ matrix.configuration }}
+      # Publish the application
+      - name: Publish the application
+        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.zip.pubxml
 
-      - name: Build published application
-        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.pubxml
-        env:
-          Configuration: ${{ matrix.configuration }}
+      # upload to artifact
+      - uses: actions/upload-artifact@v3
+        with:
+          name: 1Remote
+          path: Ui/bin/Release/net6.0-windows/publish/win-x64
 
+      # zip
       - name: Easy Zip Files
         uses: vimtor/action-zip@v1
         with:
           files: Ui/bin/Release/net6.0-windows/publish/win-x64
           dest: 1Remote.zip
 
-      - uses: actions/upload-artifact@v3
+      # release
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: 1Remote.zip
-          path: ${{ github.workspace }}/1Remote.zip
-
-      # - uses: actions/download-artifact@v2
-      #   with:
-      #     name: 1Remote.zip
-      #     path: ${{ github.workspace }}/1Remote.zip
-
-      # - name: publish to github release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: ${{ github.workspace }}/1Remote.zip
-      #     tag_name: ${{ github.run_number }}
-      #     name: ${{ github.run_number }}
-      #     body: ${{ github.ref }}
-      #     draft: false
-      #     prerelease: true
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+          files: 1Remote.zip
+          draft: false
+          prerelease: true

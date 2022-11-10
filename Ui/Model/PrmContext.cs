@@ -46,28 +46,29 @@ namespace PRM.Model
                     if (fi?.Directory?.Exists == false)
                         fi.Directory.Create();
                 }
+
+                DataService?.Database_CloseConnection();
+
+                if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
+                {
+                    DataService = null;
+                    return EnumDbStatus.AccessDenied;
+                }
+
+                DataService = IoC.Get<IDataService>();
+                DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
+                var ret = DataService.Database_SelfCheck();
+                if (ret == EnumDbStatus.OK)
+                    _appData.SetDbOperator(DataService);
+                return ret;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // in case of fi.Directory.Create() throw an exception.
+                // in case of dapper.OpenConnection throw `unable to open database file`
+                SimpleLogHelper.Error(e);
                 return EnumDbStatus.AccessDenied;
             }
-
-            DataService?.Database_CloseConnection();
-
-            if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
-            {
-                DataService = null;
-                return EnumDbStatus.AccessDenied;
-            }
-
-            
-            DataService = IoC.Get<IDataService>();
-            DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
-            var ret = DataService.Database_SelfCheck();
-            if (ret == EnumDbStatus.OK)
-                _appData.SetDbOperator(DataService);
-            return ret;
         }
     }
 }
