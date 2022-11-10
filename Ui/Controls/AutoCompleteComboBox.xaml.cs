@@ -6,36 +6,81 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Controls
 {
     public class ComboboxWithKeyInvoke : ComboBox
     {
+        public Action<string>? OnSelectionConfirmByMouse;
         public Action<KeyEventArgs>? OnPreviewKeyDownAction;
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            //base.OnPreviewKeyDown(e);
             OnPreviewKeyDownAction?.Invoke(e);
+        }
+
+        private void ClearSelectAllBehavior()
+        {
+            // clear default `select all` behavior
+            TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
+            tb.Select(tb.Text.Length, 0);
+        }
+
+        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
+        {
+            var item = MyVisualTreeHelper.VisualUpwardSearch<ComboBoxItem>(((UIElement)e.OriginalSource));
+            var value = item?.Content?.ToString();
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                e.Handled = true;
+                this.SelectedItem = null;
+                var cmbTextBox = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
+                cmbTextBox.Text = value;
+                cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
+                IsDropDownOpen = false;
+                OnSelectionConfirmByMouse?.Invoke(value);
+            }
+            else
+            {
+                base.OnPreviewMouseDown(e);
+            }
         }
 
         protected override void OnDropDownOpened(EventArgs e)
         {
             base.OnDropDownOpened(e);
-
-            TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
-            tb.Select(tb.Text.Length, 0);
+            ClearSelectAllBehavior();
+            this.SelectedItem = null;
         }
+
+        //protected override void OnDropDownClosed(EventArgs e)
+        //{
+        //    base.OnDropDownClosed(e);
+        //}
 
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
             base.OnSelectionChanged(e);
+            ClearSelectAllBehavior();
+        }
 
-            TextBox tb = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
-            tb.Select(tb.Text.Length, 0);
+        protected override void OnGotFocus(RoutedEventArgs e)
+        {
+            IsDropDownOpen = true;
+        }
+
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            IsDropDownOpen = true;
         }
     }
+
+
+
     public partial class AutoCompleteComboBox : UserControl
     {
+        public Action<string>? OnSelectionConfirm;
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(AutoCompleteComboBox),
@@ -139,51 +184,70 @@ namespace PRM.Controls
             Grid.DataContext = this;
             CbContent.IsTextSearchEnabled = false;
             CbContent.OnPreviewKeyDownAction += HandleUpDown;
-        }
-
-        private void CbContent_OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Tab)
+            CbContent.OnSelectionConfirmByMouse += s =>
             {
-                if (CbContent.IsDropDownOpen && Selections4Show.Any())
-                {
-                    var cmbTextBox = (TextBox)CbContent.Template.FindName("PART_EditableTextBox", CbContent);
-                    cmbTextBox.Text = CbContent.SelectedItem?.ToString() ?? Selections4Show.First();
-                    cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
-                    CbContent.IsDropDownOpen = false;
-                }
-                e.Handled = true;
-            }
+                OnSelectionConfirm?.Invoke(s);
+            };
         }
 
         private bool _textChangedEnabled = false;
         private void HandleUpDown(KeyEventArgs e)
         {
             _textChangedEnabled = true;
-            if (e.Key == Key.Down || e.Key == Key.Up)
+
+            switch (e.Key)
             {
-                if (CbContent.IsDropDownOpen == true)
-                {
-                    int i = 0;
-                    int j = CbContent.SelectedIndex;
-                    _textChangedEnabled = false;
-                    if (Selections4Show.Any(x => x == Text))
+                case Key.Tab:
                     {
-                        i = Selections4Show.ToList().IndexOf(Text);
+                        if (CbContent.IsDropDownOpen && Selections4Show.Any())
+                        {
+                            var cmbTextBox = (TextBox)CbContent.Template.FindName("PART_EditableTextBox", CbContent);
+                            cmbTextBox.Text = CbContent.SelectedItem?.ToString() ?? Selections4Show.First();
+                            cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
+                            CbContent.IsDropDownOpen = false;
+                            OnSelectionConfirm?.Invoke(cmbTextBox.Text);
+                            e.Handled = true;
+                        }
+                        break;
                     }
 
-                    CbContent.SelectedIndex = i;
-                    if (i == j)
+                case Key.Enter:
                     {
-                        if (e.Key == Key.Down && i < Selections4Show.Count() - 1)
-                            CbContent.SelectedIndex += 1;
-                        else if (e.Key == Key.Up && i > 0)
-                            CbContent.SelectedIndex -= 1;
+                        CbContent.IsDropDownOpen = false;
+                        var cmbTextBox = (TextBox)CbContent.Template.FindName("PART_EditableTextBox", CbContent);
+                        OnSelectionConfirm?.Invoke(cmbTextBox.Text);
+                        e.Handled = true;
+                        break;
                     }
 
-                    CbContent.IsDropDownOpen = true;
-                    e.Handled = true;
-                }
+                case Key.Down:
+                case Key.Up:
+                    {
+                        if (CbContent.IsDropDownOpen == true)
+                        {
+                            int i = 0;
+                            int j = CbContent.SelectedIndex;
+                            _textChangedEnabled = false;
+                            if (Selections4Show.Any(x => x == Text))
+                            {
+                                i = Selections4Show.ToList().IndexOf(Text);
+                            }
+
+                            CbContent.SelectedIndex = i;
+                            if (i == j)
+                            {
+                                if (e.Key == Key.Down && i < Selections4Show.Count() - 1)
+                                    CbContent.SelectedIndex += 1;
+                                else if (e.Key == Key.Up && i > 0)
+                                    CbContent.SelectedIndex -= 1;
+                            }
+
+                            CbContent.IsDropDownOpen = true;
+                            e.Handled = true;
+                        }
+
+                        break;
+                    }
             }
         }
     }

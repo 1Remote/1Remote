@@ -30,63 +30,72 @@ namespace PRM.Controls
         {
             ((TagsEditor)d).UpdateSelections();
         }
-
-
-
         public List<string> Tags
         {
-            get => (List<string>)GetValue(TagsProperty);
+            get
+            {
+                var obj = GetValue(TagsProperty);
+                return obj == null ? new List<string>() : (List<string>)GetValue(TagsProperty);
+            }
             set => SetValue(TagsProperty, value);
         }
 
 
         public static readonly DependencyProperty TagsForSelectProperty = DependencyProperty.Register("TagsForSelect", typeof(List<string>), typeof(TagsEditor), new FrameworkPropertyMetadata(null, OnTagsForSelectPropertyChanged));
-
         private static void OnTagsForSelectPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((TagsEditor)d).UpdateSelections();
         }
-
         public List<string> TagsForSelect
         {
-            get => (List<string>)GetValue(TagsForSelectProperty);
+            get
+            {
+                var obj = GetValue(TagsProperty);
+                return obj == null ? new List<string>() : (List<string>)GetValue(TagsForSelectProperty);
+            }
             set => SetValue(TagsForSelectProperty, value);
         }
+
 
         public TagsEditor()
         {
             InitializeComponent();
+            TbNewTag.OnSelectionConfirm += AddNewTag;
         }
 
         private void UpdateSelections()
         {
-            TbNewTag.Selections = TagsForSelect;
+            if (TagsForSelect != null && Tags != null) // must null check
+            {
+                TbNewTag.Selections = Tags?.Count > 0 ? TagsForSelect.Where(x => Tags?.Contains(x) != true)
+                    : TagsForSelect;
+            }
         }
 
-        private void AddNewTag()
+        private void AddNewTag(string newTag)
         {
-            var newTag = TbNewTag.Text.Trim();
-            if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(TbNewTag.Text.Trim()) == false)
+            newTag = newTag.Trim();
+            if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(newTag) != true)
             {
-                Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(TbNewTag.Text));
-                Tags = Tags;
+                Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(newTag));
             }
             TbNewTag.Text = "";
-            TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
+            Tags = Tags; // raise notify
+            TbNewTag.Selections = TagsForSelect.Where(x => Tags?.Contains(x) != true);
         }
 
-        private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                AddNewTag();
-            }
-        }
+        //private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
+        //{
+        //    if (e.Key == Key.Enter)
+        //    {
+        //        AddNewTag();
+        //    }
+        //}
 
 
         private void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            AddNewTag();
+            AddNewTag(TbNewTag.Text.Trim());
         }
 
         private void ButtonDel_OnClick(object sender, RoutedEventArgs e)
@@ -96,7 +105,7 @@ namespace PRM.Controls
                 if (Tags.Contains(b.Tag.ToString()!))
                 {
                     Tags.Remove(b.Tag.ToString()!);
-                    Tags = Tags;
+                    Tags = Tags; // raise notify
                     TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
                 }
             }
