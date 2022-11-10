@@ -489,7 +489,11 @@ namespace PRM.View
             {
                 return _cmdConnectSelected ??= new RelayCommand((o) =>
                 {
-                    var token = DateTime.Now.Ticks.ToString();
+                    var selected = ServerListItems.Where(x => x.IsSelected == true).ToArray();
+                    string token = "";
+                    // set tab token, show in new tab
+                    if (selected.Length > 1)
+                        token = DateTime.Now.Ticks.ToString();
                     foreach (var vmProtocolServer in ServerListItems.Where(x => x.IsSelected == true).ToArray())
                     {
                         GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
