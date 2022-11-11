@@ -15,7 +15,6 @@ jobs:
 
     env:
       configuration: Release
-      Solution_Name: 1Remote.sln
       Main_Project: Ui/Ui.csproj
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
@@ -46,7 +45,7 @@ jobs:
 
       # Restore nuget packages
       - name: Restore nuget packages 📦️
-        run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+        run: msbuild $env:Main_Project /t:Restore /p:Configuration=$env:Configuration
 
       # Publish the application
       - name: Publish the application

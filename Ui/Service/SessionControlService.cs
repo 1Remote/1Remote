@@ -310,8 +310,7 @@ namespace _1RM.Service
         private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
         {
             // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (string.IsNullOrWhiteSpace(server.Id) == false
-                && this.ActivateOrReConnIfServerSessionIsOpened(server))
+            if (this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
 
             // run script before connected
@@ -432,7 +431,7 @@ namespace _1RM.Service
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
             else if (host.ProtocolServer is RDP rdp
                      && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
-                     && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id.ToString()) is { } setting
+                     && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id) is { } setting
                      && setting.FullScreenLastSessionScreenIndex >= 0
                      && setting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
                 screenEx = ScreenInfoEx.GetCurrentScreen(setting.FullScreenLastSessionScreenIndex);
@@ -651,6 +650,14 @@ namespace _1RM.Service
                     _hostToBeDispose.Enqueue(host);
                     host.ProtocolServer.RunScriptAfterDisconnected();
                     PrintCacheCount();
+
+                    //if (host.ProtocolServer.IsTmpSession())
+                    //{
+                    //    if (IoC.Get<IWindowManager>().ShowMessageBox("TXT:Do you want to save the session?", "???", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    //    {
+                    //        IoC.Get<MainWindowViewModel>().ShowMe(true, EnumMainWindowPage.List);
+                    //    }
+                    //}
 
 #if NETFRAMEWORK
                     foreach (var kv in _token2TabWindows.ToArray())

@@ -355,7 +355,8 @@ namespace _1RM.Service.DataSource.Model
 
         public bool Database_UpdateServer(ProtocolBase org)
         {
-            Debug.Assert(string.IsNullOrEmpty(org.Id) == false);
+            Debug.Assert(org.IsTmpSession() == false);
+
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);

@@ -141,6 +141,7 @@ namespace _1RM.View
                 {
                     window.WindowState = WindowState.Normal;
                     QuickConnectionViewModel.SelectedProtocol = QuickConnectionViewModel.Protocols.First();
+                    ReSetWindowHeight();
 
                     // show position
                     var p = ScreenInfoEx.GetMouseSystemPosition();

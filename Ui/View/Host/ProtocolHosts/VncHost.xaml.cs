@@ -123,7 +123,6 @@ namespace _1RM.View.Host.ProtocolHosts
             Status = ProtocolHostStatus.Disconnected;
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
-            Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }
 
