@@ -214,6 +214,8 @@ namespace _1RM.View.Launcher
 
                 // create protocol
                 var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();
+                server.Id = "";
+                server.GenerateIdForTmpSession();
                 server.DisplayName = host;
                 if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
                 {
@@ -235,11 +237,14 @@ namespace _1RM.View.Launcher
                 {
                     var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
                     pwdDlg.Title = $"[{server.ProtocolDisplayName}]{host}";
-                    pwdDlg.Result.UserName = protocolBaseWithAddressPortUserPwd.UserName;
+                    if (string.IsNullOrEmpty(pwdDlg.UserName))
+                    {
+                        pwdDlg.UserName = protocolBaseWithAddressPortUserPwd.UserName;
+                    }
                     if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                     {
-                        protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.Result.UserName;
-                        protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Result.Password;
+                        protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.UserName;
+                        protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
                     }
                     else
                     {

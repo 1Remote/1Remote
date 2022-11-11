@@ -10,6 +10,7 @@ using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -52,8 +53,12 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
-        private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
+        /// <summary>
+        /// a flag to id if ProtocolServer can open session successfully.
+        /// </summary>
+        public bool HasConnected = false;
 
+        private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
         public ProtocolHostStatus Status
         {
             get => _status;
@@ -61,6 +66,9 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 if (_status != value)
                 {
+                    if (value == ProtocolHostStatus.Connected)
+                        HasConnected = true;
+
                     SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
                     _status = value;
                     OnCanResizeNowChanged?.Invoke();

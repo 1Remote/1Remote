@@ -50,8 +50,24 @@ namespace _1RM.Model.Protocol.Base
         [JsonIgnore]
         public string Id
         {
-            get => _id;
+            get
+            {
+                if (string.IsNullOrEmpty(_id))
+                    GenerateIdForTmpSession();
+                return _id;
+            }
             set => SetAndNotifyIfChanged(ref _id, value);
+        }
+
+        public bool IsTmpSession()
+        {
+            return _id.StartsWith("TMP_SESSION_") || string.IsNullOrEmpty(_id);
+        }
+
+        public void GenerateIdForTmpSession()
+        {
+            Debug.Assert(IsTmpSession());
+            _id = "TMP_SESSION_" + new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
         }
 
         /// <summary>

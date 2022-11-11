@@ -174,7 +174,8 @@ namespace _1RM.Model
 
         public void UpdateServer(ProtocolBase protocolServer)
         {
-            Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
+            Debug.Assert(protocolServer.IsTmpSession() == false);
+
             if (_sourceService == null) return;
             var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
             if (source == null || source.IsWritable == false) return;
@@ -210,8 +211,8 @@ namespace _1RM.Model
 
         public void DeleteServer(ProtocolBase protocolServer)
         {
-            if (_sourceService == null) return;
-            Debug.Assert(string.IsNullOrEmpty(protocolServer.Id) == false);
+            Debug.Assert(protocolServer.IsTmpSession() == false);
+
             if (_sourceService == null) return;
             var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
             if (source == null || source.IsWritable == false) return;

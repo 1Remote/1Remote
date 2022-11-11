@@ -29,7 +29,7 @@ namespace _1RM.View.Editor
         private readonly GlobalData _globalData;
         private readonly DataSourceBase? _addToDataSource = null; // target data source in add mode 
 
-        public bool IsAddMode => _serversInBuckEdit == null && string.IsNullOrEmpty(Server.Id);
+        public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
         private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
@@ -338,7 +338,8 @@ namespace _1RM.View.Editor
                         _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
-                    else if (IsAddMode == false && string.IsNullOrEmpty(Server.Id) == false)
+                    else if (IsAddMode == false 
+                             && Server.IsTmpSession() == false)
                     {
                         _globalData.UpdateServer(Server);
                     }

@@ -26,6 +26,14 @@ namespace _1RM.View.Editor
                 TbUserName.Focus();
                 TbUserName.CaretIndex = TbUserName.Text.Length;
             };
+
+            PreviewKeyUp += (sender, e) =>
+            {
+                if (e.Key == Key.Escape)
+                {
+                    BtnQuit.Command.Execute(null);
+                }
+            };
         }
 
         private void TbUserName_OnKeyDown(object sender, KeyEventArgs e)
@@ -34,11 +42,6 @@ namespace _1RM.View.Editor
             {
                 TbPwd.Focus();
             }
-
-            else if (e.Key == Key.Escape)
-            {
-                BtnQuit.Command.Execute(null);
-            }
         }
 
         private void TbPwd_OnKeyDown(object sender, KeyEventArgs e)
@@ -46,11 +49,6 @@ namespace _1RM.View.Editor
             if (e.Key == Key.Enter)
             {
                 BtnSave.Command.Execute(null);
-            }
-
-            else if (e.Key == Key.Escape)
-            {
-                BtnQuit.Command.Execute(null);
             }
         }
     }
