@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using Dragablz;
 using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
@@ -215,7 +216,10 @@ namespace _1RM.View.Host
                         }
                         else
                         {
-                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(Items.Select(x => x.Host.ConnectionId).ToArray());
+                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(
+                                Items
+                                .Where(x => x.Host.ProtocolServer.IsTmpSession() == false)
+                                .Select(x => x.Host.ConnectionId).ToArray());
                         }
                         _canCmdClose = true;
                     }
@@ -239,15 +243,20 @@ namespace _1RM.View.Host
                         }
                         else
                         {
+                            HostBase? host = null;
                             if (o is string connectionId)
                             {
                                 //Items.Remove(Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId));
-                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(connectionId);
+                                host = Items.FirstOrDefault(x => x.Host.ProtocolServer.Id == connectionId)?.Host;
                             }
-                            else if (SelectedItem?.Content.ConnectionId != null)
+                            else
                             {
-                                //Items.Remove(SelectedItem);
-                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(SelectedItem.Content.ConnectionId);
+                                host = SelectedItem?.Content;
+                            }
+
+                            if (host != null)
+                            {
+                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(host.ConnectionId);
                             }
                         }
 

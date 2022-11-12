@@ -49,7 +49,7 @@ jobs:
 
       # Publish the application
       - name: Publish the application
-        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.zip.pubxml
+        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.pubxml
 
       # upload to artifact
       - uses: actions/upload-artifact@v3

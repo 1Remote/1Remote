@@ -41,14 +41,16 @@ namespace _1RM.View.Host.ProtocolHosts
         public virtual void SetParentWindow(WindowBase? value)
         {
             if (_parentWindow == value) return;
+            _parentWindow = value;
             ParentWindowHandle = IntPtr.Zero;
+
+            if (null == value) return;
             var window = Window.GetWindow(value);
             if (window != null)
             {
                 var wih = new WindowInteropHelper(window);
                 ParentWindowHandle = wih.Handle;
             }
-            _parentWindow = value;
         }
 
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;

@@ -345,20 +345,22 @@ namespace _1RM.View.Launcher
             if (_launcherWindowViewModel?.ServerSelectionsViewVisibility != Visibility.Visible)
             {
                 GridNoteVisibility = Visibility.Collapsed;
-                return;
+            }
+            else
+            {
+                Visibility newVisibility;
+                if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
+                    newVisibility = Visibility.Collapsed;
+                else if (ConverterNoteToVisibility.IsVisible(SelectedItem?.Server?.Note))
+                    newVisibility = Visibility.Visible;
+                else
+                    newVisibility = Visibility.Collapsed;
+                if (GridNoteVisibility == newVisibility) return;
+                IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false;
+                GridNoteVisibility = newVisibility;
             }
 
-            Visibility newVisibility;
-            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
-                newVisibility = Visibility.Collapsed;
-            else if (ConverterNoteToVisibility.IsVisible(SelectedItem?.Server?.Note))
-                newVisibility = Visibility.Visible;
-            else
-                newVisibility = Visibility.Collapsed;
-            if (GridNoteVisibility == newVisibility) return;
 
-            IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false;
-            GridNoteVisibility = newVisibility;
             if (NoteField != null)
             {
                 if (GridNoteVisibility == Visibility.Visible)
