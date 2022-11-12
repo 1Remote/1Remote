@@ -233,6 +233,7 @@ namespace _1RM.View
             {
                 QuickConnectionViewModel.Show();
             }
+            ServerSelectionsViewModel.CalcNoteFieldVisibility();
             ReSetWindowHeight();
         }
     }

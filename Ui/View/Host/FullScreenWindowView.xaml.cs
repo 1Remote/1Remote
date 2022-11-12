@@ -6,14 +6,15 @@ using _1RM.Model;
 using _1RM.Service;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 
 namespace _1RM.View.Host
 {
     public partial class FullScreenWindowView : WindowBase
     {
         private HostBase? _host = null;
-
         public HostBase? Host
         {
             get => _host;
@@ -38,6 +39,7 @@ namespace _1RM.View.Host
                 this.Height = DESIGN_HEIGHT;
                 SetContent();
             };
+
             Closed += (sender, args) =>
             {
                 if (Host != null)

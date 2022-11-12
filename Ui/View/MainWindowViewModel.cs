@@ -79,7 +79,7 @@ namespace _1RM.View
             {
                 if (SetAndNotifyIfChanged(ref _showSetting, value))
                 {
-                    if(_showSetting == true)
+                    if (_showSetting == true)
                         _appData.StopTick();
                     else
                         _appData.StartTick();
@@ -131,6 +131,7 @@ namespace _1RM.View
                 {
                     source = SourceService.LocalDataSource;
                 }
+
                 if (source == null) return;
                 if (source.IsWritable == false) return;
                 EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
@@ -171,7 +172,7 @@ namespace _1RM.View
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                var serverBases = servers.Where(x=>x.GetDataSource()?.IsWritable == true).ToArray();
+                var serverBases = servers.Where(x => x.GetDataSource()?.IsWritable == true).ToArray();
                 if (serverBases.Length > 1)
                 {
                     EditorViewModel = ServerEditorPageViewModel.BuckEdit(_appData, serverBases);

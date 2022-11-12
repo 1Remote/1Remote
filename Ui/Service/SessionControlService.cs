@@ -216,7 +216,7 @@ namespace _1RM.Service
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
             _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-            host.OnClosed += this.OnProtocolClose;
+            host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += this.MoveProtocolHostToTab;
             this.MoveProtocolHostToFullScreen(host.ConnectionId);
             host.Conn();
@@ -650,14 +650,6 @@ namespace _1RM.Service
                     _hostToBeDispose.Enqueue(host);
                     host.ProtocolServer.RunScriptAfterDisconnected();
                     PrintCacheCount();
-
-                    //if (host.ProtocolServer.IsTmpSession())
-                    //{
-                    //    if (IoC.Get<IWindowManager>().ShowMessageBox("TXT:Do you want to save the session?", "???", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                    //    {
-                    //        IoC.Get<MainWindowViewModel>().ShowMe(true, EnumMainWindowPage.List);
-                    //    }
-                    //}
 
 #if NETFRAMEWORK
                     foreach (var kv in _token2TabWindows.ToArray())
