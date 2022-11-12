@@ -49,12 +49,12 @@ jobs:
 
       # Publish the application
       - name: Publish the application
-        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.zip.pubxml
+        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.pubxml
 
       # upload to artifact
       - uses: actions/upload-artifact@v3
         with:
-          name: 1Remote
+          name: PRemoteM
           path: Ui/bin/Release/net6.0-windows/publish/win-x64
 
       # zip
@@ -62,13 +62,13 @@ jobs:
         uses: vimtor/action-zip@v1
         with:
           files: Ui/bin/Release/net6.0-windows/publish/win-x64
-          dest: 1Remote.zip
+          dest: PRemoteM.zip
 
       # release
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: 1Remote.zip
+          files: PRemoteM.zip
           draft: false
           prerelease: true
