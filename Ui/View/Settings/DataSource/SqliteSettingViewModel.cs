@@ -333,7 +333,7 @@ namespace _1RM.View.Settings.DataSource
                     {
                         var path = SelectFileHelper.OpenFile(
                             initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
-                            filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                            filter: $"RSA private key|*{PrivateKeyFileExt}");
                         if (path == null) return;
                         var pks = RSA.CheckPrivatePublicKeyMatch(path, DbRsaPublicKey);
                         if (pks == RSA.EnumRsaStatus.NoError)

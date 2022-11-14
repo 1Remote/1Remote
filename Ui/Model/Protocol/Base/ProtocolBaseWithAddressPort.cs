@@ -12,7 +12,7 @@ namespace _1RM.Model.Protocol.Base
 
         private string _address = "";
 
-        [OtherName(Name = "RM_HOSTNAME")]
+        [OtherName(Name = "HOSTNAME")]
         public string Address
         {
             get => _address;
@@ -28,7 +28,7 @@ namespace _1RM.Model.Protocol.Base
 
         private string _port = "3389";
 
-        [OtherName(Name = "RM_PORT")]
+        [OtherName(Name = "PORT")]
         public string Port
         {
             get => _port;

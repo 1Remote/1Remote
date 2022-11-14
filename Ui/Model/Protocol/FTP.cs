@@ -18,7 +18,7 @@ namespace _1RM.Model.Protocol
         }
 
         private string _startupPath = "/";
-        [OtherName(Name = "RM_STARTUP_PATH")]
+        [OtherName(Name = "STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;

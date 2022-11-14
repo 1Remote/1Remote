@@ -11,108 +11,111 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ProtocolConfiogDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
 
-        <Style x:Key="ListBoxForProtocols" TargetType="{x:Type ListBox}">
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid Margin="10 3" Cursor="Hand">
-                                        <Border x:Name="GridContainer" CornerRadius="5" 
-                                                BorderBrush="{DynamicResource DefaultBorderBrush}" BorderThickness="1">
-                                        </Border>
-                                        <ContentPresenter x:Name="ContentPresenter"/>
-                                    </Grid>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
-                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
-                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                                            <Setter Property="BorderThickness" Value="0" TargetName="GridContainer" />
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
-                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
-                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <Grid Margin="10">
-                            <TextBlock Text="{Binding}"></TextBlock>
-                        </Grid>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
 
-        <Style x:Key="ListBoxRunners" TargetType="{x:Type ListBox}">
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid Margin="0 0 5 0">
-                                        <Border x:Name="GridContainer"></Border>
-                                        <ContentPresenter x:Name="ContentPresenter"/>
-                                    </Grid>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-        </Style>
 
-        <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
-            <Grid Margin="25 10 20 10">
-                <Grid.Effect>
-                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                </Grid.Effect>
-                <Grid.OpacityMask>
-                    <VisualBrush Visual="{Binding ElementName=Border1}" />
-                </Grid.OpacityMask>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                        Background="{DynamicResource BackgroundBrush}"
-                        CornerRadius="10" BorderThickness="0">
-                </Border>
-                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                    <TextBlock HorizontalAlignment="Center"  VerticalAlignment="Center"
-                               Foreground="{DynamicResource PrimaryTextBrush}" 
-                               FontSize="{DynamicResource HeadFontSize}" 
-                               Text="{Binding Name}" Margin="5"></TextBlock>
+            <Style x:Key="ListBoxForProtocols" TargetType="{x:Type ListBox}">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Grid Margin="10 3" Cursor="Hand">
+                                            <Border x:Name="GridContainer" CornerRadius="5" 
+                                                    BorderBrush="{DynamicResource DefaultBorderBrush}" BorderThickness="1">
+                                            </Border>
+                                            <ContentPresenter x:Name="ContentPresenter"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
+                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                                <Setter Property="BorderThickness" Value="0" TargetName="GridContainer" />
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+                                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Grid Margin="10">
+                                <TextBlock Text="{Binding}"></TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ListBoxRunners" TargetType="{x:Type ListBox}">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Grid Margin="0 0 5 0">
+                                            <Border x:Name="GridContainer"></Border>
+                                            <ContentPresenter x:Name="ContentPresenter"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
+                <Grid Style="{StaticResource Block}">
+                    <Grid.OpacityMask>
+                        <VisualBrush Visual="{Binding ElementName=Border1}" />
+                    </Grid.OpacityMask>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                            Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="10" BorderThickness="0">
+                    </Border>
+                    <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                        <TextBlock HorizontalAlignment="Center"  VerticalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}" 
+                                   FontSize="{DynamicResource HeadFontSize}" 
+                                   Text="{Binding Name}" Margin="5"></TextBlock>
+                    </Grid>
+                    <Grid Grid.Row="1" MinHeight="50">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
+                    </Grid>
                 </Grid>
-                <Grid Grid.Row="1" MinHeight="50">
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
-                </Grid>
-            </Grid>
-        </DataTemplate>
+            </DataTemplate>
 
 
 
@@ -120,22 +123,23 @@
 
 
 
-        <DataTemplate DataType="{x:Type default:KittyRunner}">
-            <protocolConfig:KittyRunnerSettings Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
-        </DataTemplate>
+            <DataTemplate DataType="{x:Type default:KittyRunner}">
+                <protocolConfig:KittyRunnerSettings Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
+            </DataTemplate>
 
-        <protocolConfig:ConverterExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ConverterExternalRunner2Vm>
-
-
-
-        <DataTemplate DataType="{x:Type runner:ExternalRunnerForSSH}">
-            <protocolConfig:ExternalSshRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalSshRunnerSettings>
-        </DataTemplate>
+            <protocolConfig:ConverterExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ConverterExternalRunner2Vm>
 
 
-        <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-            <protocolConfig:ExternalRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalRunnerSettings>
-        </DataTemplate>
+
+            <DataTemplate DataType="{x:Type runner:ExternalRunnerForSSH}">
+                <protocolConfig:ExternalSshRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalSshRunnerSettings>
+            </DataTemplate>
+
+
+            <DataTemplate DataType="{x:Type runner:ExternalRunner}">
+                <protocolConfig:ExternalRunnerSettings DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></protocolConfig:ExternalRunnerSettings>
+            </DataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -174,9 +178,12 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <ListBox Grid.Row="2" Opacity="0.9" ScrollViewer.CanContentScroll="False"
+                <ListBox Grid.Row="2" ScrollViewer.CanContentScroll="False"
                          Style="{StaticResource ListBoxRunners}" Grid.IsSharedSizeScope="True"
                          ItemsSource="{Binding Runners}">
+                    <ListBox.Background>
+                        <SolidColorBrush Color="{DynamicResource BackgroundTextColor}" Opacity="0.25"></SolidColorBrush>
+                    </ListBox.Background>
                 </ListBox>
 
                 <Border Grid.Row="0" Grid.RowSpan="2" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">

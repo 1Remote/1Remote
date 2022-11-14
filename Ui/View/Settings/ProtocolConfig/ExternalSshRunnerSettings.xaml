@@ -11,32 +11,14 @@
                             d:DataContext="{d:DesignInstance protocolConfig:ExternalSshRunnerSettingsViewModel}"
                             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-
-        <Style x:Key="GridOneRow" TargetType="Grid">
-            <Setter Property="Height" Value="Auto"></Setter>
-            <Setter Property="MinWidth" Value="300"></Setter>
-            <Setter Property="MinHeight" Value="30"></Setter>
-            <Setter Property="Margin">
-                <Setter.Value>
-                    <Thickness Bottom="15"></Thickness>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-            <Setter Property="TextAlignment" Value="Right"></Setter>
-            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
-            <Setter Property="Margin" Value="20 0 10 0"></Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ProtocolConfiogDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Margin="25 10 20 10">
-        <Grid.Effect>
-            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-        </Grid.Effect>
+    <Grid Style="{StaticResource Block}">
         <Grid.OpacityMask>
             <VisualBrush Visual="{Binding ElementName=Border1}" />
         </Grid.OpacityMask>
@@ -51,13 +33,13 @@
         <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
             <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding ExternalRunner.Name, UpdateSourceTrigger=PropertyChanged}" Margin="5"></TextBlock>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <!--Share-->
                 <Button Width="25" Height="25" Tag="{Binding}"
                         Style="{StaticResource ButtonBarPrimaryStyle}"
                         attachProperty:VisionElement.Opacity="0.5"
                         attachProperty:VisionElement.OpacityAccent="0.9"
                         Command="{Binding CmdCopyJsonAndShare}"
-                        ToolTip="{DynamicResource Share}"
-                        >
+                        ToolTip="{DynamicResource Share}">
                     <Grid Width="16" Height="16">
                         <Path Data="{StaticResource GeometryShare}"
                               Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -65,6 +47,7 @@
                               StrokeThickness="0" Stretch="Uniform" />
                     </Grid>
                 </Button>
+                <!--Delete-->
                 <Button Width="25" Height="25" Tag="{Binding}"
                         Style="{StaticResource ButtonBarPrimaryStyle}"
                         attachProperty:VisionElement.Opacity="0.5"
@@ -85,7 +68,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Exe path'}"></TextBlock>
@@ -112,7 +95,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
@@ -121,7 +104,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Login with password'}"></TextBlock>
@@ -150,14 +133,14 @@
                     </Border.Style>
                 </Border>
                 <controls:BindableAvalonEditor Grid.Column="1" 
-                                           Margin="8 0 4 0"
-                                           Padding="0 5 0 5"
-                                           x:Name="TextEditor"
-                                           WordWrap="False"
-                                           Background="Transparent"
-                                           Text="{Binding ExternalRunner.Arguments, UpdateSourceTrigger=PropertyChanged}"
-                                           SyntaxHighlighting="PowerShell"
-                                           FontSize="{DynamicResource TextFontSize}">
+                                               Margin="8 0 4 0"
+                                               Padding="0 5 0 5"
+                                               x:Name="TextEditor"
+                                               WordWrap="True"
+                                               Background="Transparent"
+                                               Text="{Binding ExternalRunner.Arguments, UpdateSourceTrigger=PropertyChanged}"
+                                               SyntaxHighlighting="PowerShell"
+                                               FontSize="{DynamicResource TextFontSize}">
                 </controls:BindableAvalonEditor>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -179,7 +162,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Login with ssh private key'}"></TextBlock>
@@ -211,7 +194,7 @@
                                            Margin="8 0 4 0"
                                            Padding="0 5 0 5"
                                            x:Name="TextEditorForSshWithPrivateKey"
-                                           WordWrap="False"
+                                           WordWrap="True"
                                            Background="Transparent"
                                            Text="{Binding ExternalRunnerForSSH.ArgumentsForPrivateKey, UpdateSourceTrigger=PropertyChanged}"
                                            SyntaxHighlighting="PowerShell"
@@ -238,16 +221,20 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Environment variables'}"></TextBlock>
-                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Width="100" TextWrapping="Wrap"
-                               Text="{DynamicResource 'Before runner start the environment variables will be set'}" Opacity="0.7"></TextBlock>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+
+                    <TextBlock TextWrapping="Wrap"
+                               HorizontalAlignment="Left"
+                               Margin="0"
+                               Text="{DynamicResource 'Before runner start the environment variables will be set'}" 
+                               Opacity="0.8"></TextBlock>
                     <ListBox ItemsSource="{Binding ExternalRunner.EnvironmentVariables}"
                              BorderThickness="0" Background="Transparent">
                         <ListBox.Style>
@@ -284,13 +271,13 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBox Grid.Column="0" Margin="2" 
-                                     Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" 
-                                     Tag="Key e.g. User"
-                                     ToolTip="Key e.g. User"/>
+                                             Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" 
+                                             Tag="Key e.g. User"
+                                             ToolTip="Key e.g. User"/>
 
                                     <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
                                                                Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
-                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalSshRunnerSettings}}}"
+                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
                                                                Tag="Value e.g. %RM_USERNAME%"
                                                                ToolTip="Value e.g. %RM_USERNAME%"/>
 
@@ -304,7 +291,7 @@
                                             Opacity="0.8"
                                             attachProperty:VisionElement.Opacity="0.6"
                                             attachProperty:VisionElement.OpacityAccent="1"
-                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalSshRunnerSettings}}}" 
+                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}" 
                                             CommandParameter="{Binding }"
                                             Margin="0 0 10 0">
                                         <Grid Height="10" Width="8">
@@ -320,19 +307,19 @@
                     </ListBox>
 
                     <Button Width="20" Height="20" 
-                        Margin="0 0 20 0"
-                        ToolTip="{DynamicResource 'Add environment variables'}"
-                        Style="{StaticResource ButtonBarAccentBackgroundStyle}"
-                        Background="Transparent"
-                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                        HorizontalAlignment="Center"
-                        Command="{Binding CmdAddEnvironmentVariable}">
+                            Margin="20 0 20 0"
+                            ToolTip="{DynamicResource 'Add environment variables'}"
+                            Style="{StaticResource ButtonBarAccentBackgroundStyle}"
+                            Background="Transparent"
+                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                            HorizontalAlignment="Left"
+                            Command="{Binding CmdAddEnvironmentVariable}">
                         <Grid Height="15" Width="15">
                             <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                              StrokeThickness="2" Stretch="Uniform" />
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  StrokeThickness="2" Stretch="Uniform" />
                         </Grid>
                     </Button>
                 </StackPanel>
@@ -342,7 +329,7 @@
             <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in 1Remote tab view?'}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Hosting'}"></TextBlock>
