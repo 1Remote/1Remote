@@ -11,7 +11,7 @@ namespace _1RM.Model.Protocol.Base
         #region Conn
 
         private string _userName = "Administrator";
-        [OtherName(Name = "RM_USERNAME")]
+        [OtherName(Name = "USERNAME")]
         public string UserName
         {
             get => _userName;
@@ -19,7 +19,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _password = "";
-        [OtherName(Name = "RM_PASSWORD")]
+        [OtherName(Name = "PASSWORD")]
         public string Password
         {
             get => _password;

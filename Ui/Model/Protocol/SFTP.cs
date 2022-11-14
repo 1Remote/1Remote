@@ -22,7 +22,7 @@ namespace _1RM.Model.Protocol
 
         private string _privateKey = "";
 
-        [OtherName(Name = "RM_SSH_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -30,7 +30,7 @@ namespace _1RM.Model.Protocol
         }
 
         private string _startupPath = "/";
-        [OtherName(Name = "RM_STARTUP_PATH")]
+        [OtherName(Name = "STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;

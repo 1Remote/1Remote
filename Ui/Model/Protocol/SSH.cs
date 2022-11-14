@@ -19,7 +19,7 @@ namespace _1RM.Model.Protocol
         }
 
         private string _privateKey = "";
-        [OtherName(Name = "RM_SSH_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -28,7 +28,7 @@ namespace _1RM.Model.Protocol
 
         private int? _sshVersion = 2;
 
-        [OtherName(Name = "RM_SSH_VERSION")]
+        [OtherName(Name = "SSH_VERSION")]
         public int? SshVersion
         {
             get => _sshVersion;
@@ -37,7 +37,7 @@ namespace _1RM.Model.Protocol
 
         private string _startupAutoCommand = "";
 
-        [OtherName(Name = "RM_STARTUP_AUTO_COMMAND")]
+        [OtherName(Name = "STARTUP_AUTO_COMMAND")]
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
