@@ -4,11 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-             xmlns:shawnutils="clr-namespace:Shawn.Utils;assembly=Shawn.Utils"
-             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
-             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-             xmlns:service="clr-namespace:_1RM.Service"
-             xmlns:protocolConfig="clr-namespace:_1RM.View.Settings.ProtocolConfig"
              xmlns:settings="clr-namespace:_1RM.View.Settings"
              xmlns:converter="clr-namespace:Shawn.Utils.WpfResources.Converter;assembly=Shawn.Utils.WpfResources"
              xmlns:s="https://github.com/canton7/Stylet"
@@ -18,29 +13,8 @@
              d:DesignHeight="2450" d:DesignWidth="1000">
     <UserControl.Resources>
         <ResourceDictionary>
-            <settings:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></settings:StringIsEmpty2BoolConverter>
-
-            <Style x:Key="GridOneRow" TargetType="Grid">
-                <Setter Property="Height" Value="Auto"></Setter>
-                <Setter Property="MinWidth" Value="300"></Setter>
-                <Setter Property="MinHeight" Value="30"></Setter>
-                <Setter Property="Margin">
-                    <Setter.Value>
-                        <Thickness Bottom="15"></Thickness>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                <Setter Property="TextAlignment" Value="Right"></Setter>
-                <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
-                <Setter Property="Margin" Value="20 0 10 0"></Setter>
-            </Style>
-
             <converter:DoubleAdd x:Key="DoubleAdd_15" AddValue="-15"></converter:DoubleAdd>
+
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -129,238 +103,11 @@
         <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource BackgroundBrush}">
 
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
-                <StackPanel Margin="0 20 20 0" >
-
-                    <TextBlock Text="{DynamicResource system_options_general_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Language}"></TextBlock>
-
-                        <Grid Grid.Column="1">
-                            <ComboBox MinWidth="200" HorizontalAlignment="Left"
-                                      ItemsSource="{Binding Languages}"
-                                      SelectedValue="{Binding Language}"
-                                      SelectedValuePath="Key"
-                                      DisplayMemberPath="Value" />
-                        </Grid>
-                    </Grid>
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="1" Margin="0 0 0 0" TextAlignment="Left" TextWrapping="WrapWithOverflow">
-                            <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True"
-                                       MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
-                                       NavigateUri="https://github.com/1Remote/1Remote/wiki/Help-wanted-Translation" FontSize="12">
-                                <Hyperlink.Style>
-                                    <Style TargetType="{x:Type Hyperlink}">
-                                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                        <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
-                                                <Setter Property="TextBlock.TextDecorations">
-                                                    <Setter.Value>
-                                                        <TextDecorationCollection>
-                                                            <TextDecoration Location="Underline" />
-                                                        </TextDecorationCollection>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Hyperlink.Style>
-                                Can't find your language?
-                            </Hyperlink>
-                        </TextBlock>
-                    </Grid>
-
-
-
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Startup}"></TextBlock>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
-                    </Grid>
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
-                    </Grid>
-
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}" VerticalAlignment="Center"></CheckBox>
-                    </Grid>
-
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
-                        <TextBox Grid.Column="1" Text="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
-                                 MaxWidth="400"
-                                 ToolTip="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
-                                 VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
-                    </Grid>
-                </StackPanel>
+                <ContentControl s:View.Model="{Binding GeneralSettingViewModel}"></ContentControl>
             </TabItem>
 
             <TabItem Name="TabItemLauncher" Header="{DynamicResource Launcher}">
-                <StackPanel Margin="0 20 20 0" >
-
-
-                    <TextBlock Text="{DynamicResource Launcher}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-
-
-
-
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
-                    </Grid>
-
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.Resources>
-                            <settings:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></settings:Key2KeyStringConverter>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ComboBox Width="100" SelectedValuePath="Tag"
-                                              SelectedValue="{Binding LauncherHotKeyModifiers}">
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
-                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
-                            </ComboBox>
-                            <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
-                            <TextBox Width="100"
-                                             IsReadOnly="True"
-                                             IsReadOnlyCaretVisible="False"
-                                             IsUndoEnabled="False"
-                                             PreviewKeyDown="TextBoxKey_OnPreviewKeyDown"
-                                             Text="{Binding LauncherHotKeyKey, Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_quick_match_providers}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.Resources>
-                            <settings:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></settings:Key2KeyStringConverter>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" >
-                            <Grid MinWidth="650">
-                                <Grid.Resources>
-                                    <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
-                                        <Grid Margin=" 0 0 5 15">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"></RowDefinition>
-                                                <RowDefinition Height="Auto"></RowDefinition>
-                                                <RowDefinition Height="Auto"></RowDefinition>
-                                            </Grid.RowDefinitions>
-
-                                            <CheckBox Grid.Row="0" Cursor="Hand" Margin="0 0 1 0"
-                                                      IsChecked="{Binding Enabled}"
-                                                      IsEnabled="{Binding IsEditable}"
-                                                      Content="{Binding Title1}"
-                                                      ToolTip="{Binding Title1}"
-                                                      ></CheckBox>
-                                            <TextBlock Grid.Row="2"
-                                                       Text="{Binding Title2}"
-                                                       ToolTip="{Binding Title2}"
-                                                       FontSize="10" Opacity="0.6"></TextBlock>
-                                        </Grid>
-                                    </DataTemplate>
-                                </Grid.Resources>
-                                <ListView Background="Transparent" BorderThickness="1"
-                                          ItemsSource="{Binding AvailableMatcherProviders}" 
-                                          ItemTemplate="{StaticResource DataTemplateForMatcher}">
-                                    <ListView.Style>
-                                        <Style TargetType="ListView">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ListView}">
-                                                        <ScrollViewer x:Name="ScrollViewer" BorderThickness="0">
-                                                            <ItemsPresenter/>
-                                                        </ScrollViewer>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListView.Style>
-                                    <ListView.Resources>
-                                        <Style TargetType="{x:Type ListViewItem}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="{x:Null}" />
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="true">
-                                                    <Setter Property="Background" Value="{x:Null}" />
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ListView.Resources>
-                                </ListView>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                <ContentControl s:View.Model="{Binding LauncherSettingViewModel}"></ContentControl>
             </TabItem>
 
             <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
@@ -368,90 +115,11 @@
             </TabItem>
 
             <TabItem Name="TabItemTheme" Header="{DynamicResource Theme}">
-                <StackPanel Margin="0 20 20 0">
-
-                    <TextBlock Text="{DynamicResource Theme}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-
-                    <Grid Style="{StaticResource GridOneRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="ThemeColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Theme}"></TextBlock>
-
-                        <ComboBox Grid.Column="1"
-                                  ItemsSource="{Binding ThemeList}"
-                                      SelectedItem="{Binding ThemeName}">
-                        </ComboBox>
-
-                        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Reset}" Command="{Binding CmdResetTheme}"></Button>
-                    </Grid>
-
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0 20 0 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="ThemeColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Custom}"></TextBlock>
-                    </Grid>
-
-                    <Grid Width="450" HorizontalAlignment="Left" Margin="0 0 0 0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"></RowDefinition>
-                            <RowDefinition Height="40"></RowDefinition>
-                            <RowDefinition Height="40"></RowDefinition>
-                            <RowDefinition Height="40"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                <Setter Property="TextAlignment" Value="Center"></Setter>
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                            </Style>
-                            <Style TargetType="{x:Type colorPickerWpf:ColorPickRowPopup}">
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                <Setter Property="HexVisible" Value="Collapsed"></Setter>
-                            </Style>
-                        </Grid.Resources>
-
-                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource Normal}"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource Lighter}"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource Darker}"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="5" Text="{DynamicResource Font}"></TextBlock>
-
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="1" Grid.Column="0" Text="{DynamicResource Color1}"></TextBlock>
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding PrimaryMidColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding PrimaryLightColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding PrimaryDarkColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="5" HexColor="{Binding PrimaryTextColor}" />
-
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="2" Grid.Column="0" Text="{DynamicResource Color2}"></TextBlock>
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding AccentMidColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding AccentLightColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding AccentDarkColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="5" HexColor="{Binding AccentTextColor}" />
-
-                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="3" Grid.Column="0" Text="{DynamicResource Background}"></TextBlock>
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="2" HexColor="{Binding BackgroundColor}" />
-                        <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="5" HexColor="{Binding BackgroundTextColor}" />
-                    </Grid>
-                </StackPanel>
+                <ContentControl s:View.Model="{Binding ThemeSettingViewModel}"></ContentControl>
             </TabItem>
 
             <TabItem Name="TabItemRunners" Header="{DynamicResource Protocol}">
-                <protocolConfig:ProtocolRunnerSettingsPageView Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
+                <ContentControl s:View.Model="{Binding ProtocolRunnerSettingsPageViewModel}"></ContentControl>
             </TabItem>
 
         </TabControl>
