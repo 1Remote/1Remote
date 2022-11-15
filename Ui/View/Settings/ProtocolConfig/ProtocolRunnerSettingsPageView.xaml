@@ -92,6 +92,8 @@
                 </Setter>
             </Style>
 
+
+
             <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
                 <Grid Style="{StaticResource Block}">
                     <Grid.OpacityMask>

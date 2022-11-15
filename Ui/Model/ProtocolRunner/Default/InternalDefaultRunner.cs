@@ -2,7 +2,7 @@
 {
     public class InternalDefaultRunner : Runner
     {
-        public InternalDefaultRunner(string ownerProtocolName) : base(" Internal runner", ownerProtocolName)
+        public InternalDefaultRunner(string ownerProtocolName) : base("Internal runner", ownerProtocolName)
         {
         }
     }

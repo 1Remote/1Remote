@@ -12,8 +12,6 @@ namespace _1RM.View.Settings.ProtocolConfig
         public ProtocolRunnerSettingsPageView()
         {
             InitializeComponent();
-            var vm = new ProtocolRunnerSettingsPageViewModel(IoC.Get<ProtocolConfigurationService>(), IoC.Get<ILanguageService>());
-            this.DataContext = vm;
         }
     }
 }
