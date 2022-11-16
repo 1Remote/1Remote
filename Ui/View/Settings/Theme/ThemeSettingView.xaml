@@ -11,7 +11,7 @@
     <Grid>
         <StackPanel>
 
-            <TextBlock Text="{DynamicResource Theme}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock Text="{DynamicResource Theme}" Style="{StaticResource BlockTitleColumn}" />
 
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
@@ -23,8 +23,8 @@
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Theme}"></TextBlock>
 
                 <ComboBox Grid.Column="1"
-                                  ItemsSource="{Binding ThemeList}"
-                                      SelectedItem="{Binding ThemeName}">
+                          ItemsSource="{Binding ThemeList}"
+                          SelectedItem="{Binding ThemeName}">
                 </ComboBox>
 
                 <Button Grid.Column="2" HorizontalAlignment="Left" Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Reset}" Command="{Binding CmdResetTheme}"></Button>

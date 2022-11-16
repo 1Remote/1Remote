@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
+using _1RM.Utils;
 using Newtonsoft.Json;
 
 namespace _1RM.Service.DataSource.Model
