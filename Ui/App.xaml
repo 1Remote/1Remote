@@ -49,6 +49,17 @@
                         <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
                         <Setter Property="Margin" Value="20 0 10 0"></Setter>
                     </Style>
+
+                    <Style x:Key="BlockTitleColumn" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                        <Setter Property="Margin" Value="15"></Setter>
+                        <Setter Property="FontSize" Value="20"></Setter>
+                        <Setter Property="Height" Value="30"></Setter>
+                    </Style>
                 </ResourceDictionary>
             </s:ApplicationLoader.MergedDictionaries>
         </s:ApplicationLoader>

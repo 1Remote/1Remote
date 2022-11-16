@@ -5,128 +5,171 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:settings="clr-namespace:_1RM.View.Settings"
-             xmlns:converter="clr-namespace:Shawn.Utils.WpfResources.Converter;assembly=Shawn.Utils.WpfResources"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:view="clr-namespace:_1RM.View"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance settings:SettingsPageViewModel}"
              Background="White"
              d:DesignHeight="2450" d:DesignWidth="1000">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <converter:DoubleAdd x:Key="DoubleAdd_15" AddValue="-15"></converter:DoubleAdd>
-
-            <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
-                <Setter Property="Padding" Value="2" />
-                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TabControl}">
-                            <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition x:Name="ColumnDefinition0" Width="200" />
-                                    <ColumnDefinition x:Name="ColumnDefinition1" Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Border SnapsToDevicePixels="True">
-                                    <TabPanel x:Name="headerPanel"
-                                          Background="{DynamicResource PrimaryMidBrush}" IsItemsHost="true"
-                                          Margin="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
-                                </Border>
-                                <Border x:Name="contentPanel" SnapsToDevicePixels="True"
-                                        Grid.Column="1" Background="{TemplateBinding Background}"
-                                        KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
-                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth}"></Setter>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                        <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth, Converter={StaticResource DoubleAdd_15}}"></Setter>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="TabItem">
-                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="TabItem">
-                            <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource AccentMidBrush}">
-                                <TextBlock x:Name="TabItemContent"
-                                           HorizontalAlignment="Center"
-                                           Margin="10"
-                                           Text="{TemplateBinding Header}" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
-                                    <Setter TargetName="Border" Property="BorderThickness" Value="0 0 0 1"></Setter>
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="False">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-                                </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected" Value="False"></Condition>
-                                        <Condition Property="IsMouseOver" Value="True"></Condition>
-                                    </MultiTrigger.Conditions>
-                                    <MultiTrigger.Setters>
-                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentMidBrush}" />
-                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                                    </MultiTrigger.Setters>
-                                </MultiTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsSelected" Value="False">
-                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}">
-                        </Setter>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </ResourceDictionary>
-    </UserControl.Resources>
 
     <Grid Background="{DynamicResource BackgroundBrush}" Grid.IsSharedSizeScope="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
-        <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource BackgroundBrush}">
+        <StackPanel Background="{DynamicResource PrimaryMidBrush}">
+            <StackPanel.Resources>
+                <Style x:Key="TabButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                    <Setter Property="Cursor" Value="Hand"></Setter>
+                    <Setter Property="Width" Value="200"></Setter>
+                    <Setter Property="Height" Value="40"></Setter>
+                    <Setter Property="BorderThickness" Value="0 0 0 1"></Setter>
+                    <Setter Property="BorderBrush" Value="Transparent"></Setter>
+                    <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="Transparent"></Setter>
+                    <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="Transparent"></Setter>
+                    <Setter Property="attachProperty:VisionElement.Opacity" Value="1"></Setter>
+                    <Setter Property="attachProperty:VisionElement.OpacityOnMouseDown" Value="1"></Setter>
+                    <Setter Property="attachProperty:VisionElement.OpacityOnMouseDown" Value="1"></Setter>
+                    <Setter Property="attachProperty:VisionElement.BorderOpacity" Value="1"></Setter>
+                    <Setter Property="attachProperty:VisionElement.BorderOpacityOnMouseDown" Value="1"></Setter>
+                    <Setter Property="attachProperty:VisionElement.BorderOpacityOnMouseDown" Value="1"></Setter>
+                </Style>
+            </StackPanel.Resources>
 
-            <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
-                <ContentControl s:View.Model="{Binding GeneralSettingViewModel}"></ContentControl>
-            </TabItem>
 
-            <TabItem Name="TabItemLauncher" Header="{DynamicResource Launcher}">
-                <ContentControl s:View.Model="{Binding LauncherSettingViewModel}"></ContentControl>
-            </TabItem>
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsGeneral}"
+                    Content="{DynamicResource system_options_general_title}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsGeneral}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
 
-            <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
-                <ContentControl s:View.Model="{Binding SelectedViewModel}"></ContentControl>
-            </TabItem>
 
-            <TabItem Name="TabItemTheme" Header="{DynamicResource Theme}">
-                <ContentControl s:View.Model="{Binding ThemeSettingViewModel}"></ContentControl>
-            </TabItem>
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsLauncher}"
+                    Content="{DynamicResource Launcher}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsLauncher}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
 
-            <TabItem Name="TabItemRunners" Header="{DynamicResource Protocol}">
-                <ContentControl s:View.Model="{Binding ProtocolRunnerSettingsPageViewModel}"></ContentControl>
-            </TabItem>
 
-        </TabControl>
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsData}"
+                    Content="{DynamicResource system_options_data_security_title}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsData}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
 
-        <Button VerticalAlignment="Bottom"
+
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsTheme}"
+                    Content="{DynamicResource Theme}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsTheme}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsRunners}"
+                    Content="{DynamicResource Protocol}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsRunners}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+        </StackPanel>
+
+
+
+        <Button Grid.Column="0"
+                VerticalAlignment="Bottom"
                 Width="200" Height="40"
-                HorizontalAlignment="Left"
                 Foreground="{DynamicResource PrimaryTextBrush}"
                 Background="{DynamicResource PrimaryDarkBrush}"
                 Style="{StaticResource ButtonBarAccentStyle}"
@@ -134,5 +177,7 @@
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource Save}">
         </Button>
+
+        <ContentControl Grid.Column="1" s:View.Model="{Binding SelectedViewModel}"></ContentControl>
     </Grid>
 </UserControl>

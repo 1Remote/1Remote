@@ -41,52 +41,55 @@ namespace _1RM.View.Settings
 
         protected override void OnViewLoaded()
         {
-            ShowPage(_initPage);
+            ShowPage(CurrentPage);
         }
 
 
-        private INotifyPropertyChanged _selectedViewModel = new DataSourceViewModel();
+        private INotifyPropertyChanged _selectedViewModel = IoC.Get<GeneralSettingViewModel>();
         public INotifyPropertyChanged SelectedViewModel
         {
             get => _selectedViewModel;
             set => SetAndNotifyIfChanged(ref _selectedViewModel, value);
         }
 
-        private EnumMainWindowPage _initPage = EnumMainWindowPage.SettingsGeneral;
         public void ShowPage(EnumMainWindowPage page)
         {
-            if (this.View is SettingsPageView view)
+            if (page == EnumMainWindowPage.List
+                || page == EnumMainWindowPage.About
+                || CurrentPage == page)
+                return;
+
+            CurrentPage = page;
+            switch (page)
             {
-                switch (page)
-                {
-                    case EnumMainWindowPage.SettingsGeneral:
-                        view.TabItemGeneral.IsSelected = true;
-                        break;
-                    case EnumMainWindowPage.SettingsData:
-                        view.TabItemDataBase.IsSelected = true;
-                        break;
-                    case EnumMainWindowPage.SettingsRunners:
-                        view.TabItemRunners.IsSelected = true;
-                        break;
-                    case EnumMainWindowPage.SettingsLauncher:
-                        view.TabItemLauncher.IsSelected = true;
-                        break;
-                    case EnumMainWindowPage.SettingsTheme:
-                        view.TabItemTheme.IsSelected = true;
-                        break;
-                    case EnumMainWindowPage.List:
-                    case EnumMainWindowPage.About:
-                    default:
-                        CmdSaveAndGoBack.Execute();
-                        break;
-                }
-            }
-            else
-            {
-                _initPage = page;
+                case EnumMainWindowPage.SettingsGeneral:
+                    SelectedViewModel = IoC.Get<GeneralSettingViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsData:
+                    SelectedViewModel = IoC.Get<DataSourceViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsLauncher:
+                    SelectedViewModel = IoC.Get<LauncherSettingViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsTheme:
+                    SelectedViewModel = IoC.Get<ThemeSettingViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsRunners:
+                    SelectedViewModel = IoC.Get<ProtocolRunnerSettingsPageViewModel>();
+                    break;
+                case EnumMainWindowPage.List:
+                case EnumMainWindowPage.About:
+                default:
+                    return;
             }
         }
 
+        private EnumMainWindowPage _currentPage = EnumMainWindowPage.SettingsGeneral;
+        public EnumMainWindowPage CurrentPage
+        {
+            get => _currentPage;
+            private set => SetAndNotifyIfChanged(ref _currentPage, value);
+        }
 
         private Visibility _progressBarVisibility = Visibility.Collapsed;
         public Visibility ProgressBarVisibility
@@ -148,10 +151,22 @@ namespace _1RM.View.Settings
 
 
 
-        public GeneralSettingViewModel GeneralSettingViewModel => IoC.Get<GeneralSettingViewModel>();
-        public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
-        public ThemeSettingViewModel ThemeSettingViewModel => IoC.Get<ThemeSettingViewModel>();
-        public ProtocolRunnerSettingsPageViewModel ProtocolRunnerSettingsPageViewModel => IoC.Get<ProtocolRunnerSettingsPageViewModel>();
+        private RelayCommand? _cmdShowPage;
+        public RelayCommand CmdShowPage
+        {
+            get
+            {
+                return _cmdShowPage ??= new RelayCommand((o) =>
+                {
+                    if (o is EnumMainWindowPage page)
+                    {
+                        ShowPage(page);
+                    }
+                });
+            }
+        }
+
+
 
 
 
@@ -166,13 +181,5 @@ namespace _1RM.View.Settings
                 }
             }
         }
-
-
-
-
-
-        #region UI
-
-        #endregion
     }
 }

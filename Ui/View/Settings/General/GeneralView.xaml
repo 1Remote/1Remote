@@ -12,7 +12,7 @@
     <Grid Background="{DynamicResource BackgroundBrush}">
         <StackPanel>
 
-            <TextBlock Text="{DynamicResource system_options_general_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock Text="{DynamicResource system_options_general_title}" Style="{StaticResource BlockTitleColumn}" />
 
             <Grid Style="{StaticResource GridOneRow}" Margin="0">
                 <Grid.ColumnDefinitions>

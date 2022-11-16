@@ -14,7 +14,7 @@
     <Grid Background="{DynamicResource BackgroundBrush}">
         <StackPanel>
 
-            <TextBlock Text="{DynamicResource Launcher}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock Text="{DynamicResource Launcher}" Style="{StaticResource BlockTitleColumn}" />
 
             <Grid Style="{StaticResource GridOneRow}" Margin="0">
                 <Grid.ColumnDefinitions>
@@ -33,8 +33,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <ComboBox Width="100" SelectedValuePath="Tag"
-                                              SelectedValue="{Binding LauncherHotKeyModifiers}">
+                    <ComboBox Width="100" 
+                              SelectedValuePath="Tag"
+                              SelectedValue="{Binding LauncherHotKeyModifiers}">
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
@@ -54,11 +55,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Margin="15 0" Height="30">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{DynamicResource system_options_quick_match_providers}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                </StackPanel>
-            </Grid>
+            <TextBlock Text="{DynamicResource system_options_quick_match_providers}" Style="{StaticResource BlockTitleColumn}" />
 
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
@@ -79,21 +76,21 @@
                                     </Grid.RowDefinitions>
 
                                     <CheckBox Grid.Row="0" Cursor="Hand" Margin="0 0 1 0"
-                                                      IsChecked="{Binding Enabled}"
-                                                      IsEnabled="{Binding IsEditable}"
-                                                      Content="{Binding Title1}"
-                                                      ToolTip="{Binding Title1}"
-                                                      ></CheckBox>
+                                              IsChecked="{Binding Enabled}"
+                                              IsEnabled="{Binding IsEditable}"
+                                              Content="{Binding Title1}"
+                                              ToolTip="{Binding Title1}"
+                                    ></CheckBox>
                                     <TextBlock Grid.Row="2"
-                                                       Text="{Binding Title2}"
-                                                       ToolTip="{Binding Title2}"
-                                                       FontSize="10" Opacity="0.6"></TextBlock>
+                                               Text="{Binding Title2}"
+                                               ToolTip="{Binding Title2}"
+                                               FontSize="10" Opacity="0.6"></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </Grid.Resources>
                         <ListView Background="Transparent" BorderThickness="1"
-                                          ItemsSource="{Binding AvailableMatcherProviders}" 
-                                          ItemTemplate="{StaticResource DataTemplateForMatcher}">
+                                  ItemsSource="{Binding AvailableMatcherProviders}" 
+                                  ItemTemplate="{StaticResource DataTemplateForMatcher}">
                             <ListView.Style>
                                 <Style TargetType="ListView">
                                     <Setter Property="Template">
@@ -113,8 +110,8 @@
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type ListViewItem}">
                                                 <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>

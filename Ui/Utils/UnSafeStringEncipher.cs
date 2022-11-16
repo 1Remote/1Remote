@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using NETCore.Encrypt;
-using NETCore.Encrypt.Extensions;
-using SshNet.Security.Cryptography;
 
-namespace _1RM.Service
+namespace _1RM.Utils
 {
     public static class UnSafeStringEncipher
     {
-        private static Random _random = new Random();
+        private static readonly Random Random = new Random();
         public static string SimpleEncrypt(string txt)
         {
             if (string.IsNullOrEmpty(txt))
@@ -19,9 +13,9 @@ namespace _1RM.Service
             var key = new StringBuilder();
             for (int i = 0; i < 32; i++)
             {
-                key.Append((char)_random.Next('0', 'z'));
+                key.Append((char)Random.Next('0', 'z'));
             }
-            return key.ToString() + EncryptProvider.AESEncrypt(txt, key.ToString());
+            return key.ToString() + EasyEncryption.AesThenHmac.SimpleEncryptWithPassword(txt, key.ToString());
         }
         public static string SimpleDecrypt(string encryptString)
         {
@@ -34,7 +28,7 @@ namespace _1RM.Service
             var str = encryptString.Substring(32);
             try
             {
-                return EncryptProvider.AESDecrypt(str, key);
+                return EasyEncryption.AesThenHmac.SimpleDecryptWithPassword(str, key);
             }
             catch (Exception)
             {
