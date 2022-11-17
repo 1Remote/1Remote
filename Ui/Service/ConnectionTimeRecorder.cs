@@ -63,7 +63,7 @@ namespace _1RM.Service
             var junks = ConnectTimeData.Where(x => existedIds.All(y => y != x.Key));
             foreach (var junk in junks)
             {
-                ConnectTimeData.Remove(junk.Key, out _);
+                ConnectTimeData.TryRemove(junk.Key, out _);
             }
         }
 
@@ -75,7 +75,7 @@ namespace _1RM.Service
                 var junks = ordered.Where(x => x.Value > ordered[100].Value);
                 foreach (var junk in junks)
                 {
-                    ConnectTimeData.Remove(junk.Key, out _);
+                    ConnectTimeData.TryRemove(junk.Key, out _);
                 }
             }
         }

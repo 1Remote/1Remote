@@ -12,12 +12,12 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils.KiTTY.Model;
 
 namespace _1RM.Utils.KiTTY
 {
     public interface IKittyConnectable
     {
-        string GetPuttyConnString(DataSourceBase source);
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolBase'
         /// </summary>
@@ -25,21 +25,12 @@ namespace _1RM.Utils.KiTTY
         ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
         string GetExeFullPath();
-        string GetExeArguments(DataSourceBase source);
+        string GetExeArguments(DataSourceBase source, string sessionName);
     }
 
     public static class PuttyConnectableExtension
     {
-        public static string GetSessionName(this IKittyConnectable item)
-        {
-            if (item is ProtocolBase protocolServer)
-            {
-                return $"{AppPathHelper.APP_NAME}_{protocolServer.Protocol}_{protocolServer.Id}";
-            }
-            throw new NotSupportedException("you should not access here! something goes wrong");
-        }
-
-        public static void SetKittySessionConfig(this IKittyConnectable iKittyConnectable, int fontSize, string themeName, string sshPrivateKeyPath)
+        public static void SetKittySessionConfig(this IKittyConnectable iKittyConnectable, string sessionName, int fontSize, string themeName, string sshPrivateKeyPath)
         {
             var kittyExeFullName = GetKittyExeFullName();
             var fi = new FileInfo(kittyExeFullName);
@@ -48,7 +39,7 @@ namespace _1RM.Utils.KiTTY
             if (fi?.Exists != true)
                 iKittyConnectable.InstallKitty();
 
-            var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName(), iKittyConnectable.ExternalKittySessionConfigPath);
+            var puttyOption = new KittyConfig(sessionName, iKittyConnectable.ExternalKittySessionConfigPath);
             if (iKittyConnectable is SSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))
@@ -67,24 +58,23 @@ namespace _1RM.Utils.KiTTY
                 themeName = themes.Keys.First();
 
             var options = themes[themeName];
-            if (options != null)
-                foreach (var option in options)
+            foreach (var option in options)
+            {
+                try
                 {
-                    try
+                    if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
                     {
-                        if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
-                        {
-                            if (option.ValueKind == RegistryValueKind.DWord)
-                                puttyOption.Set(key, (int)(option.Value));
-                            else
-                                puttyOption.Set(key, (string)option.Value);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                        if (option.ValueKind == RegistryValueKind.DWord)
+                            puttyOption.Set(key, (int)(option.Value));
+                        else
+                            puttyOption.Set(key, (string)option.Value);
                     }
                 }
+                catch (Exception)
+                {
+                    SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                }
+            }
 
             puttyOption.Set(EnumKittyConfigKey.FontHeight, fontSize);
 
@@ -167,17 +157,11 @@ namespace _1RM.Utils.KiTTY
             puttyOption.SaveToKittyConfig(kittyExeFolderPath);
         }
 
-        public static void DelKittySessionConfig(this IKittyConnectable iKittyConnectable)
+        public static void DelKittySessionConfig(string sessionName)
         {
-            var kittyExeFullName = GetKittyExeFullName();
-            var fi = new FileInfo(kittyExeFullName);
-            if (fi?.Directory?.Exists == false)
-                fi.Directory.Create();
-            if (fi?.Exists != true)
-                iKittyConnectable.InstallKitty();
+            var fi = new FileInfo(GetKittyExeFullName());
             var kittyExeFolderPath = fi!.Directory!.FullName;
-
-            var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName());
+            var puttyOption = new KittyConfig(sessionName);
             puttyOption.DelFromKittyConfig(kittyExeFolderPath);
         }
 

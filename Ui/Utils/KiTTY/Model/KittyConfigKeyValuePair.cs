@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.Win32;
 
-namespace _1RM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY.Model
 {
     public class KittyConfigKeyValuePair
     {
@@ -17,7 +17,7 @@ namespace _1RM.Utils.KiTTY
 
         public static KittyConfigKeyValuePair Create(string key, string value)
         {
-            if (key.ToCharArray().Count(c => c == '.') <= 1 
+            if (key.ToCharArray().Count(c => c == '.') <= 1
                 && double.TryParse(value.Replace(',', '_'), out double nValue))
             {
                 return new KittyConfigKeyValuePair

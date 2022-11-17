@@ -30,13 +30,11 @@ namespace _1RM.Model.ProtocolRunner.Default
         private string _puttyThemeName = "";
         public string PuttyThemeName
         {
-            get => string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemeNames.First() : _puttyThemeName;
+            get
+            {
+                return string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemeNames.First() : _puttyThemeName;
+            }
             set => SetAndNotifyIfChanged(ref _puttyThemeName, value);
-        }
-
-        public string GetPuttyThemeName()
-        {
-            return string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemes.GetThemes().Keys.First() : _puttyThemeName;
         }
 
         [JsonIgnore]

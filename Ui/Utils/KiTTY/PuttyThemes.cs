@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
+using _1RM.Utils.KiTTY.Model;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
 

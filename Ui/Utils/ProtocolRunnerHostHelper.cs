@@ -144,25 +144,29 @@ namespace _1RM.Utils
                     }
                 case SSH ssh:
                     {
-                        Debug.Assert(runner is KittyRunner);
-                        var kitty = (KittyRunner)runner;
-                        ssh.InstallKitty();
-                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(dataSource))
+                        var sessionName = $"{AppPathHelper.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        if (runner is KittyRunner kitty)
                         {
-                            RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey),
-                            RunAfterConnected = () => ssh.DelKittySessionConfig()
+                            ssh.InstallKitty();
+                            ssh.SetKittySessionConfig(sessionName, kitty.GetPuttyFontSize(), kitty.PuttyThemeName, ssh.PrivateKey);
+                        }
+                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(dataSource, sessionName))
+                        {
+                            RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName)
                         };
                         return host;
                     }
                 case Telnet telnet:
                     {
-                        Debug.Assert(runner is KittyRunner);
-                        var kitty = (KittyRunner)runner;
-                        telnet.InstallKitty();
-                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(dataSource))
+                        var sessionName = $"{AppPathHelper.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        if (runner is KittyRunner kitty)
                         {
-                            RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""),
-                            RunAfterConnected = () => telnet.DelKittySessionConfig()
+                            telnet.InstallKitty();
+                            telnet.SetKittySessionConfig(sessionName, kitty.GetPuttyFontSize(), kitty.PuttyThemeName, "");
+                        }
+                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(dataSource, sessionName))
+                        {
+                            RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName)
                         };
                         return host;
                     }

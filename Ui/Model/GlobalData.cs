@@ -68,7 +68,7 @@ namespace _1RM.Model
         private DataSourceService? _sourceService;
         private readonly ConfigurationService _configurationService;
 
-        public void SetDbOperator(DataSourceService sourceService)
+        public void SetDataSourceService(DataSourceService sourceService)
         {
             _sourceService = sourceService;
         }
