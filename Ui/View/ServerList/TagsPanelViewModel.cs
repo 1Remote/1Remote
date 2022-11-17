@@ -86,13 +86,15 @@ namespace _1RM.View.ServerList
                         }
                     }
                     AppData.UpdateServer(protocolServerBases);
+
+
                     var tagFilters = IoC.Get<ServerListPageViewModel>().TagFilters;
                     var delete = tagFilters.FirstOrDefault(x => x.TagName == obj.Name);
                     if (delete != null)
                     {
                         var tmp = tagFilters.ToList();
                         tmp.Remove(delete);
-                        tagFilters = new List<TagFilter>(tmp);
+                        IoC.Get<ServerListPageViewModel>().TagFilters = new List<TagFilter>(tmp);
                     }
                 });
             }

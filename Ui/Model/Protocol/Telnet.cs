@@ -39,11 +39,6 @@ namespace _1RM.Model.Protocol
             return 3;
         }
 
-        public string GetPuttyConnString(DataSourceBase _)
-        {
-            return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
-        }
-
         private string _startupAutoCommand = "";
 
         public string StartupAutoCommand
@@ -67,9 +62,11 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(DataSourceBase sourceService)
+        public string GetExeArguments(DataSourceBase source, string sessionName)
         {
-            return GetPuttyConnString(sourceService);
+            var tel = (this.Clone() as Telnet)!;
+            tel.ConnectPreprocess(source);
+            return $@" -load ""{sessionName}"" -telnet {tel.Address} -P {tel.Port}";
         }
     }
 }

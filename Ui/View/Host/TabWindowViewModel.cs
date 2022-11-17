@@ -246,8 +246,7 @@ namespace _1RM.View.Host
                             HostBase? host = null;
                             if (o is string connectionId)
                             {
-                                //Items.Remove(Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId));
-                                host = Items.FirstOrDefault(x => x.Host.ProtocolServer.Id == connectionId)?.Host;
+                                host = Items.FirstOrDefault(x => x.Host.ConnectionId == connectionId)?.Host;
                             }
                             else
                             {

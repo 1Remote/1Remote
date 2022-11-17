@@ -20,6 +20,10 @@ using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
+using _1RM.Utils.KiTTY;
+using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PRemoteM;
 
 namespace _1RM
 {
@@ -75,8 +79,7 @@ namespace _1RM
             #region Portable mode or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
-                var appDataPaths = new AppPathHelper(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
+                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
 
                 bool isPortableMode = false;
                 {
@@ -140,6 +143,11 @@ namespace _1RM
 
                     if (_isNewUser)
                     {
+                        if (PRemoteMTransferHelper.IsNeedTransfer())
+                        {
+                            PRemoteMTransferHelper.ReadAsync();
+                        }
+
                         // 新用户显示引导窗口
                         var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
@@ -254,13 +262,14 @@ namespace _1RM
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
 
-            // Init data sources
-            GlobalData.SetDbOperator(IoC.Get<DataSourceService>());
-            _localDataConnectionStatus = IoC.Get<DataSourceService>().InitLocalDataSource();
+            // Init data sources controller
+            var dataSourceService = IoC.Get<DataSourceService>();
+            GlobalData.SetDataSourceService(dataSourceService);
+            _localDataConnectionStatus = dataSourceService.InitLocalDataSource();
             IoC.Get<GlobalData>().ReloadServerList();
             foreach (var config in ConfigurationService!.AdditionalDataSource)
             {
-                IoC.Get<DataSourceService>().AddOrUpdateDataSourceAsync(config);
+                dataSourceService.AddOrUpdateDataSourceAsync(config);
             }
             IoC.Get<SessionControlService>();
             IoC.Get<TaskTrayService>().TaskTrayInit();
@@ -269,14 +278,8 @@ namespace _1RM
 
         public void InitOnLaunch()
         {
-            IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
-            {
-                if (_isNewUser)
-                {
-                    // import form PRemoteM db
-                    PrmTransferHelper.Run();
-                }
-            };
+            KittyConfig.CleanUpOldConfig();
+
             if (_localDataConnectionStatus != EnumDbStatus.OK)
             {
                 string error = _localDataConnectionStatus.GetErrorInfo();
@@ -287,6 +290,11 @@ namespace _1RM
                 || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
+                if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
+                {
+                    // import form PRemoteM db
+                    PRemoteMTransferHelper.TransAsync();
+                }
             }
         }
     }

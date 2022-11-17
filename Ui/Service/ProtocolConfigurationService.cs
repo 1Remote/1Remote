@@ -146,16 +146,16 @@ namespace _1RM.Service
                         c.Runners.Add(new ExternalRunner("UltraVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
-                            Arguments = @"%RM_HOSTNAME%:%RM_PORT% -password %RM_PASSWORD%",
+                            Arguments = @"%HOSTNAME%:%PORT% -password %PASSWORD%",
                             RunWithHosting = false,
                         });
                     if (c.Runners.All(x => x.Name != "TightVNC"))
                         c.Runners.Add(new ExternalRunner("TightVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
-                            Arguments = @"%RM_HOSTNAME%::%RM_PORT% -password=%RM_PASSWORD% -scale=auto",
+                            Arguments = @"%HOSTNAME%::%PORT% -password=%PASSWORD% -scale=auto",
                             RunWithHosting = true,
-                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%RM_PASSWORD%") }),
+                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PASSWORD%") }),
                         });
                 }
                 if (SFTP.ProtocolName == protocolName)
@@ -164,8 +164,8 @@ namespace _1RM.Service
                         c.Runners.Add(new ExternalRunnerForSSH("WinSCP", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
-                            Arguments = @"sftp://%RM_USERNAME%:%RM_PASSWORD%@%RM_HOSTNAME%:%RM_PORT%",
-                            ArgumentsForPrivateKey = @"sftp://%RM_USERNAME%@%RM_HOSTNAME%:%RM_PORT% /privatekey=%RM_SSH_PRIVATE_KEY_PATH%",
+                            Arguments = @"sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%",
+                            ArgumentsForPrivateKey = @"sftp://%USERNAME%@%HOSTNAME%:%PORT% /privatekey=%SSH_PRIVATE_KEY_PATH%",
                         });
                 }
             }
