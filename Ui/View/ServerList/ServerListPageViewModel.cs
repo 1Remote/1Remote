@@ -437,7 +437,7 @@ namespace _1RM.View.ServerList
                         }
                         catch (Exception e)
                         {
-                            SimpleLogHelper.Debug(e);
+                            SimpleLogHelper.Warning(e);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {

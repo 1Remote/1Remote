@@ -21,30 +21,24 @@ namespace _1RM.Service
         }
         public static string DecryptOrReturnOriginalString(string originalString)
         {
-            return UnSafeStringEncipher.SimpleEncrypt(originalString) ?? originalString;
+            return UnSafeStringEncipher.SimpleDecrypt(originalString) ?? originalString;
         }
 
 
 
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
         {
-            // ! server must be decrypted
-            server.DisplayName = EncryptOnce(server.DisplayName);
-
-            // encrypt some info
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-            {
-                var p = (ProtocolBaseWithAddressPort)server;
-                p.Address = EncryptOnce(p.Address);
-                p.SetPort(EncryptOnce(p.Port));
-            }
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            {
-                var p = (ProtocolBaseWithAddressPortUserPwd)server;
-                p.UserName = EncryptOnce(p.UserName);
-            }
-
-
+            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
+            //{
+            //    var p = (ProtocolBaseWithAddressPort)server;
+            //    p.Address = EncryptOnce(p.Address);
+            //    p.SetPort(EncryptOnce(p.Port));
+            //}
+            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+            //{
+            //    var p = (ProtocolBaseWithAddressPortUserPwd)server;
+            //    p.UserName = EncryptOnce(p.UserName);
+            //}
             // encrypt password
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
@@ -68,7 +62,17 @@ namespace _1RM.Service
 
         public static void DecryptToConnectLevel(this ProtocolBase server)
         {
-            server.DecryptToRamLevel();
+            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
+            //{
+            //    var p = (ProtocolBaseWithAddressPort)server;
+            //    p.Address = DecryptOrReturnOriginalString(p.Address);
+            //    p.Port = DecryptOrReturnOriginalString(p.Port);
+            //}
+            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+            //{
+            //    var p = (ProtocolBaseWithAddressPortUserPwd)server;
+            //    p.UserName = DecryptOrReturnOriginalString(p.UserName);
+            //}
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
@@ -83,23 +87,6 @@ namespace _1RM.Service
                 case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                     rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
                     break;
-            }
-        }
-
-        public static void DecryptToRamLevel(this ProtocolBase server)
-        {
-            server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-            {
-                var p = (ProtocolBaseWithAddressPort)server;
-                p.Address = DecryptOrReturnOriginalString(p.Address);
-                p.Port = DecryptOrReturnOriginalString(p.Port);
-            }
-
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            {
-                var p = (ProtocolBaseWithAddressPortUserPwd)server;
-                p.UserName = DecryptOrReturnOriginalString(p.UserName);
             }
         }
     }

@@ -73,11 +73,9 @@ namespace _1RM.Service.DataSource.Model
                 {
                     try
                     {
-                        var serverAbstract = protocol;
-                        serverAbstract.DecryptToRamLevel();
                         Execute.OnUIThreadSync(() =>
                         {
-                            var vm = new ProtocolBaseViewModel(serverAbstract, this);
+                            var vm = new ProtocolBaseViewModel(protocol, this);
                             CachedProtocols.Add(vm);
                         });
                     }
