@@ -40,8 +40,15 @@ namespace _1RM.Service.DataSource
                     ret.AddRange(LocalDataSource.GetServers(focus));
                 foreach (var dataSource in AdditionalSources)
                 {
-                    var pbs = dataSource.Value.GetServers(focus);
-                    ret.AddRange(pbs);
+                    try
+                    {
+                        var pbs = dataSource.Value.GetServers(focus);
+                        ret.AddRange(pbs);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Warning(e);
+                    }
                 }
                 return ret;
             }
@@ -164,16 +171,16 @@ namespace _1RM.Service.DataSource
         {
             if (sources.Count == 0)
             {
-                var fi = new FileInfo(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
+                var fi = new FileInfo(path);
                 if (fi.Exists)
                     fi.Delete();
             }
             else
             {
-                var fi = new FileInfo(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
+                var fi = new FileInfo(path);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
+                File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
             }
         }
     }
