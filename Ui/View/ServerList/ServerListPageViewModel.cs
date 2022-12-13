@@ -374,12 +374,8 @@ namespace _1RM.View.ServerList
                     foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                     {
                         var serverBase = (ProtocolBase)vs.Server.Clone();
-                        var dataSource = SourceService.GetDataSource(serverBase.DataSourceName);
-                        if (dataSource != null)
-                        {
-                            dataSource.DecryptToConnectLevel(ref serverBase);
-                            list.Add(serverBase);
-                        }
+                        serverBase.DecryptToConnectLevel();
+                        list.Add(serverBase);
                     }
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
                 }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));

@@ -87,11 +87,6 @@ namespace _1RM.Service.DataSource.Model
             return _dataBase;
         }
 
-        public override string Database_GetPrivateKeyPath()
-        {
-            throw new NotImplementedException();
-        }
-
         public static bool TestConnection(MysqlSource config)
         {
             return TestConnection(config.Host, config.Port, config.DatabaseName, config.UserName, config.Password);

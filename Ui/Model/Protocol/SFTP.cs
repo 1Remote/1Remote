@@ -66,7 +66,7 @@ namespace _1RM.Model.Protocol
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = this.GetDataSource()?.DecryptOrReturnOriginalString(this.Password) ?? this.Password;
+            var password = DataService.DecryptOrReturnOriginalString(this.Password) ?? this.Password;
             var sshKeyPath = this.PrivateKey;
             if (sshKeyPath == "")
                 return new TransmitterSFtp(hostname, port, username, password, true);

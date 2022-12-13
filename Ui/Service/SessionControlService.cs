@@ -95,7 +95,7 @@ namespace _1RM.Service
                     catch (Exception e)
                     {
                         SimpleLogHelper.Error(e);
-                        MarkProtocolHostToClose(new string[]{ serverId.ToString() });
+                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
                         CleanupProtocolsAndWindows();
                     }
                 }
@@ -119,10 +119,8 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            var dataSource = _sourceService.GetDataSource(rdp.DataSourceName);
-            if (dataSource != null)
             {
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(dataSource).ToString());
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -167,10 +165,8 @@ namespace _1RM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            var dataSource = _sourceService.GetDataSource(remoteApp.DataSourceName);
-            if (dataSource != null)
             {
-                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(dataSource).ToString());
+                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -207,11 +203,9 @@ namespace _1RM.Service
 
         private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
         {
-            var datSource = _sourceService.GetDataSource(server.DataSourceName);
-            if (datSource == null) return;
             CleanupProtocolsAndWindows();
             // fullscreen normally
-            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(datSource, server, runner);
+            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
@@ -225,8 +219,6 @@ namespace _1RM.Service
 
         private void ConnectWithTab(ProtocolBase server, Runner runner, string assignTabToken)
         {
-            var dataSource = _sourceService.GetDataSource(server.DataSourceName);
-            if (dataSource == null) return;
             lock (_dictLock)
             {
                 CleanupProtocolsAndWindows();
@@ -255,7 +247,7 @@ namespace _1RM.Service
                 {
                     case InternalDefaultRunner:
                         {
-                            server.ConnectPreprocess(dataSource);
+                            server.ConnectPreprocess();
                             if (server is RDP)
                             {
                                 tab = this.GetOrCreateTabWindow(assignTabToken);
@@ -266,7 +258,7 @@ namespace _1RM.Service
                             }
                             else
                             {
-                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(dataSource, server, runner);
+                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(server, runner);
                             }
 
                             break;

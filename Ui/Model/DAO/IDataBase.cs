@@ -154,25 +154,5 @@ namespace _1RM.Model.DAO
                 return false;
             }
         }
-
-        public static string? Get_RSA_PublicKey(this IDataBase iDataBase)
-        {
-            return iDataBase.TryGetConfig("RSA_PublicKey");
-        }
-
-        public static void Set_RSA_PublicKey(this IDataBase iDataBase, string value)
-        {
-            iDataBase.TrySetConfig("RSA_PublicKey", value);
-        }
-
-        public static string? Get_RSA_PrivateKeyPath(this IDataBase iDataBase)
-        {
-            return iDataBase.TryGetConfig("RSA_PrivateKeyPath");
-        }
-
-        public static void Set_RSA_PrivateKeyPath(this IDataBase iDataBase, string value)
-        {
-            iDataBase.TrySetConfig("RSA_PrivateKeyPath", value);
-        }
     }
 }

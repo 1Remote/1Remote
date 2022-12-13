@@ -91,10 +91,10 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(DataSourceBase source, string sessionName)
+        public string GetExeArguments(string sessionName)
         {
             var ssh = (this.Clone() as SSH)!;
-            ssh.ConnectPreprocess(source);
+            ssh.ConnectPreprocess();
 
             //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
 
@@ -105,9 +105,9 @@ namespace _1RM.Model.Protocol
             return " " + arg;
         }
 
-        public override void ConnectPreprocess(DataSourceBase source)
+        public override void ConnectPreprocess()
         {
-            base.ConnectPreprocess(source);
+            base.ConnectPreprocess();
             StartupAutoCommand = StartupAutoCommand.Replace(@"""", @"\""");
         }
     }

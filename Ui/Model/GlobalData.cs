@@ -177,7 +177,7 @@ namespace _1RM.Model
             Debug.Assert(protocolServer.IsTmpSession() == false);
 
             if (_sourceService == null) return;
-            var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
+            var source = protocolServer.GetDataSource();
             if (source == null || source.IsWritable == false) return;
             UnselectAllServers();
             source.Database_UpdateServer(protocolServer);
@@ -202,7 +202,7 @@ namespace _1RM.Model
             var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
             foreach (var groupedServer in groupedServers)
             {
-                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceName);
+                var source = groupedServer.First().GetDataSource();
                 if (source?.IsWritable == true)
                     source.Database_UpdateServer(groupedServer);
             }
@@ -214,7 +214,7 @@ namespace _1RM.Model
             Debug.Assert(protocolServer.IsTmpSession() == false);
 
             if (_sourceService == null) return;
-            var source = _sourceService.GetDataSource(protocolServer.DataSourceName);
+            var source = protocolServer.GetDataSource();
             if (source == null || source.IsWritable == false) return;
             if (source.Database_DeleteServer(protocolServer.Id))
             {
@@ -228,7 +228,7 @@ namespace _1RM.Model
             var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
             foreach (var groupedServer in groupedServers)
             {
-                var source = _sourceService.GetDataSource(groupedServer.First().DataSourceName);
+                var source = groupedServer.First().GetDataSource();
                 if (source?.IsWritable == true)
                     source.Database_DeleteServer(groupedServer.Select(x => x.Id));
             }

@@ -84,7 +84,7 @@ namespace _1RM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncBase.GetPort();
-            Vnc.GetPassword = () => _vncBase.GetDataSource()?.DecryptOrReturnOriginalString(_vncBase.Password) ?? _vncBase.Password;
+            Vnc.GetPassword = () => DataService.DecryptOrReturnOriginalString(_vncBase.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try

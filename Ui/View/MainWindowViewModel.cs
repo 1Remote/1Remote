@@ -138,7 +138,7 @@ namespace _1RM.View
                 ShowMe();
             };
 
-            GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
             {
                 if (SourceService.LocalDataSource == null) return;
                 var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSourceName == serverToEdit.DataSourceName)?.Server;

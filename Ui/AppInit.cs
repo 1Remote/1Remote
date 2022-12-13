@@ -61,14 +61,19 @@ namespace _1RM
             }
         }
 
-
+        public static void InitOnStartup()
+        {
+            // TODO Set salt by github action with repository secret
+            UnSafeStringEncipher.Init("***SALT***");
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+        }
 
         public LanguageService? LanguageService;
         public KeywordMatchService? KeywordMatchService;
         public ConfigurationService? ConfigurationService;
         public ThemeService? ThemeService;
         public GlobalData GlobalData = null!;
-        public Configuration newConfiguration = new();
+        public Configuration NewConfiguration = new();
 
         public void InitOnStart()
         {
@@ -149,7 +154,7 @@ namespace _1RM
                         }
 
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, NewConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
@@ -235,20 +240,20 @@ namespace _1RM
                 }
                 else
                 {
-                    newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                    ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
+                    NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                    ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
+                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
             }
             // make sure path is not empty
-            if (string.IsNullOrWhiteSpace(newConfiguration.SqliteDatabasePath))
+            if (string.IsNullOrWhiteSpace(NewConfiguration.SqliteDatabasePath))
             {
-                newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
