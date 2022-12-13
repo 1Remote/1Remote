@@ -6,29 +6,42 @@ using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 
 namespace _1RM.Service
 {
 
     public static class DataService
     {
-        public static void EncryptToDatabaseLevel(this RSA? rsa, ref ProtocolBase server)
+        public static string EncryptOnce(string str)
         {
-            if (rsa == null) return;
+            if (UnSafeStringEncipher.SimpleDecrypt(str) == null)
+                return UnSafeStringEncipher.SimpleEncrypt(str);
+            return str;
+        }
+        public static string DecryptOrReturnOriginalString(string originalString)
+        {
+            return UnSafeStringEncipher.SimpleEncrypt(originalString) ?? originalString;
+        }
+
+
+
+        public static void EncryptToDatabaseLevel(this ProtocolBase server)
+        {
             // ! server must be decrypted
-            server.DisplayName = Encrypt(rsa, server.DisplayName);
+            server.DisplayName = EncryptOnce(server.DisplayName);
 
             // encrypt some info
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
                 var p = (ProtocolBaseWithAddressPort)server;
-                p.Address = Encrypt(rsa, p.Address);
-                p.SetPort(Encrypt(rsa, p.Port));
+                p.Address = EncryptOnce(p.Address);
+                p.SetPort(EncryptOnce(p.Port));
             }
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var p = (ProtocolBaseWithAddressPortUserPwd)server;
-                p.UserName = Encrypt(rsa, p.UserName);
+                p.UserName = EncryptOnce(p.UserName);
             }
 
 
@@ -36,72 +49,57 @@ namespace _1RM.Service
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
-                s.Password = Encrypt(rsa, s.Password);
+                s.Password = EncryptOnce(s.Password);
             }
             switch (server)
             {
                 case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
                 {
-                    ssh.PrivateKey = Encrypt(rsa, ssh.PrivateKey);
+                    ssh.PrivateKey = EncryptOnce(ssh.PrivateKey);
                     break;
                 }
                 case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                 {
-                    rdp.GatewayPassword = Encrypt(rsa, rdp.GatewayPassword);
+                    rdp.GatewayPassword = EncryptOnce(rdp.GatewayPassword);
                     break;
                 }
             }
         }
-        private static string Encrypt(this RSA? rsa, string str)
+
+        public static void DecryptToConnectLevel(this ProtocolBase server)
         {
-            if (rsa?.DecodeOrNull(str) == null)
-                return rsa?.Encode(str) ?? str;
-            return str;
-        }
-
-
-        public static string DecryptOrReturnOriginalString(this RSA? ras, string originalString)
-        {
-            return ras?.DecodeOrNull(originalString) ?? originalString;
-        }
-
-
-        public static void DecryptToConnectLevel(this RSA? rsa, ref ProtocolBase server)
-        {
-            if (rsa == null) return;
-            DecryptToRamLevel(rsa, ref server);
+            server.DecryptToRamLevel();
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
-                s.Password = DecryptOrReturnOriginalString(rsa, s.Password);
+                s.Password = DecryptOrReturnOriginalString(s.Password);
             }
             switch (server)
             {
                 case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                    ssh.PrivateKey = DecryptOrReturnOriginalString(rsa, ssh.PrivateKey);
+                    ssh.PrivateKey = DecryptOrReturnOriginalString(ssh.PrivateKey);
                     break;
 
                 case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                    rdp.GatewayPassword = DecryptOrReturnOriginalString(rsa, rdp.GatewayPassword);
+                    rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
                     break;
             }
         }
 
-        public static void DecryptToRamLevel(this RSA? rsa, ref ProtocolBase server)
+        public static void DecryptToRamLevel(this ProtocolBase server)
         {
-            if (rsa == null) return;
-            server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
+            server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
                 var p = (ProtocolBaseWithAddressPort)server;
-                p.Address = DecryptOrReturnOriginalString(rsa, p.Address);
-                p.Port = DecryptOrReturnOriginalString(rsa, p.Port);
+                p.Address = DecryptOrReturnOriginalString(p.Address);
+                p.Port = DecryptOrReturnOriginalString(p.Port);
             }
 
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var p = (ProtocolBaseWithAddressPortUserPwd)server;
-                p.UserName = DecryptOrReturnOriginalString(rsa, p.UserName);
+                p.UserName = DecryptOrReturnOriginalString(p.UserName);
             }
         }
     }

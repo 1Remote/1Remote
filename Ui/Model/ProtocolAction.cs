@@ -109,7 +109,7 @@ namespace _1RM.Model
                                Clipboard.SetDataObject(tmp.UserName);
                            }
                            catch (Exception)
-                           { 
+                           {
                                // ignored
                            }
                        }));
@@ -122,7 +122,7 @@ namespace _1RM.Model
                         {
                             try
                             {
-                                Clipboard.SetDataObject(server.GetDataSource()?.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
+                                Clipboard.SetDataObject(DataService.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
                             }
                             catch (Exception)
                             {

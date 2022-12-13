@@ -81,7 +81,7 @@ namespace _1RM
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
             builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
-            builder.Bind<Configuration>().ToInstance(_appInit.newConfiguration);
+            builder.Bind<Configuration>().ToInstance(_appInit.NewConfiguration);
             builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationService);
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);

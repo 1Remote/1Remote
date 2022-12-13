@@ -9,6 +9,7 @@ using System.Windows;
 using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -132,6 +133,12 @@ namespace _1RM.Utils.PRemoteM
             return dbPaths;
         }
 
+
+        private static string DecryptOrReturnOriginalString(RSA? ras, string originalString)
+        {
+            return ras?.DecodeOrNull(originalString) ?? originalString;
+        }
+
         private static void StartTask()
         {
             var dataBase = new DapperDataBaseFree();
@@ -185,10 +192,45 @@ namespace _1RM.Utils.PRemoteM
                         _servers.Clear();
                         foreach (var server in dbServers)
                         {
-                            if (server is { } p)
+                            if (server is { })
                             {
-                                rsa.DecryptToConnectLevel(ref p);
-                                _servers.Add(p);
+                                // DecryptToRamLevel
+                                {
+                                    server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
+                                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
+                                    {
+                                        var p = (ProtocolBaseWithAddressPort)server;
+                                        p.Address = DecryptOrReturnOriginalString(rsa, p.Address);
+                                        p.Port = DecryptOrReturnOriginalString(rsa, p.Port);
+                                    }
+
+                                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+                                    {
+                                        var p = (ProtocolBaseWithAddressPortUserPwd)server;
+                                        p.UserName = DecryptOrReturnOriginalString(rsa, p.UserName);
+                                    }
+                                }
+
+                                // DecryptToConnectLevel
+                                {
+                                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+                                    {
+                                        var s = (ProtocolBaseWithAddressPortUserPwd)server;
+                                        s.Password = DecryptOrReturnOriginalString(rsa, s.Password);
+                                    }
+
+                                    switch (server)
+                                    {
+                                        case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
+                                            ssh.PrivateKey = DecryptOrReturnOriginalString(rsa, ssh.PrivateKey);
+                                            break;
+
+                                        case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
+                                            rdp.GatewayPassword = DecryptOrReturnOriginalString(rsa, rdp.GatewayPassword);
+                                            break;
+                                    }
+                                }
+                                _servers.Add(server);
                             }
                         }
                     }

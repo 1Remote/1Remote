@@ -69,7 +69,7 @@ namespace _1RM.View.Editor
             _globalData = globalData;
             _addToDataSource = addToDataSource;
 
-            IoC.Get<DataSourceService>().GetDataSource(server.DataSourceName)?.DecryptToConnectLevel(ref server);
+            server.DecryptToConnectLevel();
 
             Server = (ProtocolBase)server.Clone();
             if (addToDataSource != null)
@@ -113,13 +113,12 @@ namespace _1RM.View.Editor
         {
             _addToDataSource = null;
             _globalData = globalData;
-            var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+            var serverBases = servers.Select(x => x.Clone()).ToArray();
             // decrypt
             for (int i = 0; i < serverBases.Length; i++)
             {
                 // decrypt pwd
-                var s = Server;
-                IoC.Get<DataSourceService>().GetDataSource(s.DataSourceName)?.DecryptToConnectLevel(ref s);
+                serverBases[i].DecryptToConnectLevel();
             }
 
             // must be bulk edit

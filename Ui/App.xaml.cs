@@ -10,7 +10,7 @@ namespace _1RM
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+            AppInit.InitOnStartup();
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
         }

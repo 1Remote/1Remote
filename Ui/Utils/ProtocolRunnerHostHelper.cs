@@ -133,7 +133,7 @@ namespace _1RM.Utils
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(DataSourceBase dataSource, ProtocolBase server, Runner runner)
+        public static HostBase? GetHostForInternalRunner(ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
@@ -150,7 +150,7 @@ namespace _1RM.Utils
                             ssh.InstallKitty();
                             ssh.SetKittySessionConfig(sessionName, kitty.GetPuttyFontSize(), kitty.PuttyThemeName, ssh.PrivateKey);
                         }
-                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(dataSource, sessionName))
+                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(sessionName))
                         {
                             RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName)
                         };
@@ -164,7 +164,7 @@ namespace _1RM.Utils
                             telnet.InstallKitty();
                             telnet.SetKittySessionConfig(sessionName, kitty.GetPuttyFontSize(), kitty.PuttyThemeName, "");
                         }
-                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(dataSource, sessionName))
+                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(sessionName))
                         {
                             RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName)
                         };

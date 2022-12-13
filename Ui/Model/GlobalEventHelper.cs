@@ -34,9 +34,8 @@ namespace _1RM.Model
         /// <summary>
         /// Go to server edit or duplicate
         /// </summary>
-        /// <param name="isDuplicateMode">is duplicate? works only id above 0</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnRequestGoToServerEditPageDelegate(ProtocolBase server, bool isDuplicateMode = false, bool showAnimation = true);
+        public delegate void OnRequestGoToServerEditPageDelegate(ProtocolBase server, bool showAnimation = true);
 
         /// <summary>
         /// Go to server edit by server id

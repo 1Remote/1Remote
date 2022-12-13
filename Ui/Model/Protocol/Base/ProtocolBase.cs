@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
+using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
@@ -316,12 +317,10 @@ namespace _1RM.Model.Protocol.Base
         /// <summary>
         /// run before connect, decrypt all fields
         /// </summary>
-        /// <param name="source"></param>
-        public virtual void ConnectPreprocess(DataSourceBase source)
+        public virtual void ConnectPreprocess()
         {
             var s = this;
-            source.DecryptToRamLevel(ref s);
-            source.DecryptToConnectLevel(ref s);
+            s.DecryptToConnectLevel();
         }
 
         public static List<ProtocolBase> GetAllSubInstance()

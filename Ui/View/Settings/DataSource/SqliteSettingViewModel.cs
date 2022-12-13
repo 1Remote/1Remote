@@ -27,8 +27,6 @@ namespace _1RM.View.Settings.DataSource
     public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
-        private readonly string _orgRsaPublicKey;
-        private readonly string _orgRsaPrivateKeyPath;
 
         public readonly SqliteSource New = new SqliteSource();
         private readonly DataSourceViewModel _dataSourceViewModel;
@@ -37,16 +35,12 @@ namespace _1RM.View.Settings.DataSource
         {
             OrgSqliteConfig = sqliteConfig;
             _dataSourceViewModel = dataSourceViewModel;
-            _orgRsaPublicKey = "";
-            _orgRsaPrivateKeyPath = "";
 
             // Edit mode
             if (OrgSqliteConfig != null)
             {
                 Name = OrgSqliteConfig.DataSourceName;
                 Path = OrgSqliteConfig.Path;
-                _orgRsaPublicKey = DbRsaPublicKey = OrgSqliteConfig.Database_GetPublicKey() ?? "";
-                _orgRsaPrivateKeyPath = DbRsaPrivateKeyPath = OrgSqliteConfig.Database_GetPrivateKeyPath() ?? "";
                 New.Database_SelfCheck();
                 // disable name editing of LocalSource
                 if (dataSourceViewModel.LocalSource == sqliteConfig)
@@ -97,12 +91,6 @@ namespace _1RM.View.Settings.DataSource
 
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
-            if (New.Database_OpenConnection())
-            {
-                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
-                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
-            }
-            // validate rsa key
             var res = New.Database_SelfCheck();
             if (res == EnumDbStatus.OK)
             {
@@ -142,213 +130,18 @@ namespace _1RM.View.Settings.DataSource
                 {
                     New.Database_CloseConnection();
                     New.Path = value;
-                    //if (string.IsNullOrEmpty(Path) == false && File.Exists(Path))
-                    //{
-                    //    New.Database_OpenConnection();
-                    //}
                 }
             }
         }
 
-        private string _dbRsaPublicKey = "";
-        public string DbRsaPublicKey
-        {
-            get => _dbRsaPublicKey;
-            private set => SetAndNotifyIfChanged(ref _dbRsaPublicKey, value);
-        }
-        private string _dbRsaPrivateKeyPath = "";
-        public string DbRsaPrivateKeyPath
-        {
-            get => _dbRsaPrivateKeyPath;
-            set => SetAndNotifyIfChanged(ref _dbRsaPrivateKeyPath, value);
-        }
 
-
-
-
-        private RelayCommand? _cmdGenRsaKey;
-        public RelayCommand CmdGenRsaKey
-        {
-            get
-            {
-                return _cmdGenRsaKey ??= new RelayCommand((o) =>
-                {
-                    // validate rsa key
-                    if (!ValidateDbStatusAndShowMessageBox())
-                    {
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath) == true)
-                    {
-                        GenRsa();
-                    }
-                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath));
-            }
-        }
-
+        
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
         /// </summary>
         private void OnRsaProgress(bool stop)
         {
             GlobalEventHelper.ShowProcessingRing?.Invoke(stop ? Visibility.Collapsed : Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
-        }
-
-        private const string PrivateKeyFileExt = ".pem";
-        public void GenRsa(string privateKeyPath = "")
-        {
-            if (New.Status == EnumDbStatus.AccessDenied)
-                return;
-
-            if (string.IsNullOrEmpty(privateKeyPath))
-            {
-                var path = SelectFileHelper.OpenFile(
-                    checkFileExists: false,
-                    initialDirectory: AppPathHelper.Instance.BaseDirPath,
-                    title: IoC.Get<LanguageService>().Translate("system_options_data_security_rsa_encrypt_dialog_title"),
-                    selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
-                    filter: $"RSA private key|*{PrivateKeyFileExt}");
-                if (path == null) return;
-                privateKeyPath = path;
-            }
-
-            // validate rsa key
-            var t = new Task(() =>
-            {
-                lock (this)
-                {
-                    OnRsaProgress(false);
-                    // database back up
-                    Debug.Assert(File.Exists(Path));
-                    File.Copy(Path, Path + ".back", true);
-
-                    string privateKeyContent = "";
-                    if (File.Exists(privateKeyPath))
-                    {
-                        privateKeyContent = File.ReadAllText(privateKeyPath);
-                    }
-                    else
-                    {
-                        // gen rsa
-                        var rsa = new RSA(2048);
-                        privateKeyContent = rsa.ToPEM_PKCS1();
-                        // save key file
-                        File.WriteAllText(privateKeyPath, privateKeyContent);
-                    }
-
-                    var ss = New.GetServers().Select(x => x.Server);
-                    if (New.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
-                    {
-                        MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
-                        OnRsaProgress(true);
-                        return;
-                    }
-
-                    // del back up
-                    File.Delete(Path + ".back");
-
-                    DbRsaPublicKey = privateKeyContent;
-                    DbRsaPrivateKeyPath = privateKeyPath;
-
-                    // done
-                    OnRsaProgress(true);
-                }
-            });
-            t.Start();
-        }
-
-
-        private bool _clearingRsa = false;
-        private RelayCommand? _cmdClearRsaKey;
-        public RelayCommand CmdClearRsaKey
-        {
-            get
-            {
-                return _cmdClearRsaKey ??= new RelayCommand((o) =>
-                {
-                    if (_clearingRsa) return;
-                    _clearingRsa = true;
-                    // validate rsa key
-                    if (!ValidateDbStatusAndShowMessageBox())
-                    {
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath) != true)
-                    {
-                        CleanRsa();
-                    }
-                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath) == false);
-            }
-        }
-        public void CleanRsa()
-        {
-            if (New.Status != EnumDbStatus.OK)
-                return;
-
-            Task.Factory.StartNew(() =>
-            {
-                OnRsaProgress(false);
-                lock (this)
-                {
-                    // database back up
-                    Debug.Assert(File.Exists(Path));
-                    File.Copy(Path, Path + ".back", true);
-
-                    var ss = New.GetServers().Select(x => x.Server);
-                    if (New.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
-                    {
-                        MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo());
-                        OnRsaProgress(true);
-                        return;
-                    }
-
-                    // del key
-                    //File.Delete(ppkPath);
-
-                    // del back up
-                    File.Delete(Path + ".back");
-
-                    DbRsaPublicKey = "";
-                    DbRsaPrivateKeyPath = "";
-
-                    // done
-                    OnRsaProgress(true);
-
-                    _clearingRsa = false;
-                }
-            });
-        }
-
-
-
-        private RelayCommand? _cmdSelectRsaPrivateKey;
-        public RelayCommand CmdSelectRsaPrivateKey
-        {
-            get
-            {
-                return _cmdSelectRsaPrivateKey ??= new RelayCommand((o) =>
-                {
-                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath)) return;
-                    lock (this)
-                    {
-                        var path = SelectFileHelper.OpenFile(
-                            initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
-                            filter: $"RSA private key|*{PrivateKeyFileExt}");
-                        if (path == null) return;
-                        var pks = RSA.CheckPrivatePublicKeyMatch(path, DbRsaPublicKey);
-                        if (pks == RSA.EnumRsaStatus.NoError)
-                        {
-                            // update private key only
-                            New.Database_UpdatePrivateKeyPathOnly(path);
-                            DbRsaPrivateKeyPath = path;
-                        }
-                        else
-                        {
-                            MessageBoxHelper.ErrorAlert(EnumDbStatus.RsaNotMatched.GetErrorInfo());
-                        }
-                    }
-                }, o => string.IsNullOrWhiteSpace(DbRsaPrivateKeyPath) == false);
-            }
         }
 
 
@@ -379,12 +172,6 @@ namespace _1RM.View.Settings.DataSource
                         try
                         {
                             Path = newPath;
-                            if (New.Database_OpenConnection())
-                            {
-                                DbRsaPublicKey = New.Database_GetPublicKey() ?? "";
-                                DbRsaPrivateKeyPath = New.Database_GetPrivateKeyPath() ?? "";
-                            }
-
                             ValidateDbStatusAndShowMessageBox();
                         }
                         catch (Exception ee)
@@ -413,9 +200,7 @@ namespace _1RM.View.Settings.DataSource
                     if (OrgSqliteConfig != null)
                     {
                         if (Name != OrgSqliteConfig.DataSourceName
-                            || OrgSqliteConfig.Path != Path
-                            || _orgRsaPublicKey != DbRsaPublicKey
-                            || _orgRsaPrivateKeyPath != DbRsaPrivateKeyPath)
+                            || OrgSqliteConfig.Path != Path)
                         {
                             ret = true;
                         }

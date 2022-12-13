@@ -104,8 +104,6 @@ namespace _1RM.View.Editor.Forms
         {
             if (_vm is RDP rdp)
             {
-                var dataSource = IoC.Get<DataSourceService>().GetDataSource(rdp.DataSourceName);
-                if (dataSource == null) return;
                 var tmp = Path.GetTempPath();
                 var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
                 var invalid = new string(Path.GetInvalidFileNameChars()) +
@@ -114,7 +112,7 @@ namespace _1RM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(dataSource).ToString());
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =

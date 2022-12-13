@@ -74,7 +74,7 @@ namespace _1RM.Service.DataSource.Model
                     try
                     {
                         var serverAbstract = protocol;
-                        this.DecryptToRamLevel(ref serverAbstract);
+                        serverAbstract.DecryptToRamLevel();
                         Execute.OnUIThreadSync(() =>
                         {
                             var vm = new ProtocolBaseViewModel(serverAbstract, this);
@@ -123,18 +123,6 @@ namespace _1RM.Service.DataSource.Model
             else
             {
                 return false;
-            }
-
-            // check database rsa encrypt
-            var privateKeyPath = dataBase.Get_RSA_PrivateKeyPath();
-            if (!string.IsNullOrWhiteSpace(privateKeyPath)
-                && File.Exists(privateKeyPath))
-            {
-                _rsa = new RSA(File.ReadAllText(Database_GetPrivateKeyPath()), true);
-            }
-            else
-            {
-                _rsa = null;
             }
             return true;
         }
@@ -196,144 +184,35 @@ namespace _1RM.Service.DataSource.Model
                     return Status;
                 }
 
-                // validate encryption
-                var privateKeyPath = dataBase.Get_RSA_PrivateKeyPath();
-                if (string.IsNullOrWhiteSpace(privateKeyPath))
-                {
-                    // no encrypt
-                    ret = EnumDbStatus.OK;
-                }
-                else
-                {
-                    var publicKey = dataBase.Get_RSA_PublicKey();
-                    var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
-                    ret = pks switch
-                    {
-                        RSA.EnumRsaStatus.CannotReadPrivateKeyFile => EnumDbStatus.RsaPrivateKeyNotFound,
-                        RSA.EnumRsaStatus.PrivateKeyFormatError => EnumDbStatus.RsaPrivateKeyFormatError,
-                        RSA.EnumRsaStatus.PublicKeyFormatError => EnumDbStatus.DataIsDamaged,
-                        RSA.EnumRsaStatus.PrivateAndPublicMismatch => EnumDbStatus.RsaNotMatched,
-                        RSA.EnumRsaStatus.NoError => EnumDbStatus.OK,
-                        _ => throw new NotSupportedException()
-                    };
-                }
+                ret = EnumDbStatus.OK;
             }
 
             Status = ret;
             return Status;
         }
 
-
-        protected RSA? _rsa = null;
-
-        public virtual string Database_GetPublicKey()
-        {
-            return GetDataBase()?.Get_RSA_PublicKey() ?? "";
-        }
-
-        public abstract string Database_GetPrivateKeyPath();
-
-        public virtual RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolBase> servers)
-        {
-            var dataBase = GetDataBase();
-            Debug.Assert(dataBase != null);
-
-            // clear rsa key
-            if (string.IsNullOrEmpty(privateKeyPath))
-            {
-                Debug.Assert(_rsa != null);
-                Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
-
-                // decrypt
-                var cloneList = new List<ProtocolBase>();
-                foreach (var server in servers)
-                {
-                    var tmp = (ProtocolBase)server.Clone();
-                    tmp.SetNotifyPropertyChangedEnabled(false);
-                    DecryptToConnectLevel(ref tmp);
-                    cloneList.Add(tmp);
-                }
-
-                // update 
-                if (dataBase.SetConfigRsa("", "", cloneList))
-                {
-                    _rsa = null;
-                }
-
-                return RSA.EnumRsaStatus.NoError;
-            }
-            // set rsa key
-            else
-            {
-                Debug.Assert(_rsa == null);
-                Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == true);
-
-
-                var pks = RSA.KeyCheck(privateKeyContent, true);
-                if (pks != RSA.EnumRsaStatus.NoError)
-                    return pks;
-                var rsa = new RSA(privateKeyContent, true);
-
-                // encrypt
-                var cloneList = new List<ProtocolBase>();
-                foreach (var server in servers)
-                {
-                    var tmp = (ProtocolBase)server.Clone();
-                    tmp.SetNotifyPropertyChangedEnabled(false);
-                    rsa?.EncryptToDatabaseLevel(ref tmp);
-                    cloneList.Add(tmp);
-                }
-
-                // update 
-                if (dataBase.SetConfigRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
-                {
-                    _rsa = rsa;
-                }
-
-                return RSA.EnumRsaStatus.NoError;
-            }
-        }
-
-        public virtual RSA.EnumRsaStatus Database_UpdatePrivateKeyPathOnly(string privateKeyPath)
-        {
-            Debug.Assert(_rsa != null);
-            Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
-            Debug.Assert(File.Exists(privateKeyPath));
-
-            var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, Database_GetPublicKey());
-            if (pks == RSA.EnumRsaStatus.NoError)
-            {
-                GetDataBase()?.Set_RSA_PrivateKeyPath(privateKeyPath);
-            }
-
-            return pks;
-        }
-
-        public virtual string DecryptOrReturnOriginalString(string originalString)
-        {
-            return _rsa?.DecryptOrReturnOriginalString(originalString) ?? originalString;
-        }
-
-        public virtual void EncryptToDatabaseLevel(ref ProtocolBase server)
-        {
-            _rsa?.EncryptToDatabaseLevel(ref server);
-        }
-
-        public virtual void DecryptToRamLevel(ref ProtocolBase server)
-        {
-            _rsa?.DecryptToConnectLevel(ref server);
-        }
-
-        public virtual void DecryptToConnectLevel(ref ProtocolBase server)
-        {
-            _rsa?.DecryptToConnectLevel(ref server);
-        }
+        //public virtual string DecryptOrReturnOriginalString(string originalString)
+        //{
+        //    return _rsa?.DecryptOrReturnOriginalString(originalString) ?? originalString;
+        //}
+        //public virtual void EncryptToDatabaseLevel(ref ProtocolBase server)
+        //{
+        //    _rsa?.EncryptToDatabaseLevel(ref server);
+        //}
+        //public virtual void DecryptToRamLevel(ref ProtocolBase server)
+        //{
+        //    _rsa?.DecryptToConnectLevel(ref server);
+        //}
+        //public virtual void DecryptToConnectLevel(ref ProtocolBase server)
+        //{
+        //    _rsa?.DecryptToConnectLevel(ref server);
+        //}
 
         public void Database_InsertServer(ProtocolBase server)
         {
             var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            tmp.EncryptToDatabaseLevel();
             GetDataBase()?.AddServer(tmp);
             LastReadFromDataSourceTimestamp = 0;
         }
@@ -345,7 +224,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var tmp = (ProtocolBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
-                EncryptToDatabaseLevel(ref tmp);
+                tmp.EncryptToDatabaseLevel();
                 cloneList.Add(tmp);
             }
 
@@ -359,7 +238,7 @@ namespace _1RM.Service.DataSource.Model
 
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            tmp.EncryptToDatabaseLevel();
             var ret = GetDataBase()?.UpdateServer(tmp) == true;
             if (ret == true)
             {
@@ -375,7 +254,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var tmp = (ProtocolBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
-                EncryptToDatabaseLevel(ref tmp);
+                tmp.EncryptToDatabaseLevel();
                 cloneList.Add(tmp);
             }
 

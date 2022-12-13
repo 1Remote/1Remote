@@ -62,10 +62,10 @@ namespace _1RM.Model.Protocol
             return this.GetKittyExeFullName();
         }
 
-        public string GetExeArguments(DataSourceBase source, string sessionName)
+        public string GetExeArguments(string sessionName)
         {
             var tel = (this.Clone() as Telnet)!;
-            tel.ConnectPreprocess(source);
+            tel.ConnectPreprocess();
             return $@" -load ""{sessionName}"" -telnet {tel.Address} -P {tel.Port}";
         }
     }

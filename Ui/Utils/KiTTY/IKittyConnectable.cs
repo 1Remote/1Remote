@@ -25,7 +25,7 @@ namespace _1RM.Utils.KiTTY
         ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
         string GetExeFullPath();
-        string GetExeArguments(DataSourceBase source, string sessionName);
+        string GetExeArguments(string sessionName);
     }
 
     public static class PuttyConnectableExtension
