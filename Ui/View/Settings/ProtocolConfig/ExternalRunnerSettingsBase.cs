@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Highlighting;
 using Newtonsoft.Json.Bson;
 using PRM.Controls;
+using PRM.Service;
 
 namespace PRM.View.Settings.ProtocolConfig;
 
@@ -41,6 +44,17 @@ public abstract class ExternalRunnerSettingsBase : UserControl
 
     public void InitBindableAvalonEditor(BindableAvalonEditor avalonEditor)
     {
+        {
+            var c = IoC.Get<ConfigurationService>().Theme.GetBackgroundTextColor;
+            var highlighting = avalonEditor.SyntaxHighlighting;
+            foreach (var color in highlighting.NamedHighlightingColors)
+            {
+                color.Foreground = new SimpleHighlightingBrush(c);
+                color.FontWeight = null;
+            }
+            avalonEditor.SyntaxHighlighting = null;
+            avalonEditor.SyntaxHighlighting = highlighting;
+        }
         avalonEditor.GotFocus += (sender, args) =>
         {
             _completionWindow?.Close();

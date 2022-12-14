@@ -149,7 +149,7 @@
                                            WordWrap="False"
                                            Background="Transparent"
                                            Text="{Binding ExternalRunner.Arguments}"
-                                           SyntaxHighlighting="PowerShell"
+                                           SyntaxHighlighting="C#"
                                            FontSize="{DynamicResource TextFontSize}">
                 </controls:BindableAvalonEditor>
 
