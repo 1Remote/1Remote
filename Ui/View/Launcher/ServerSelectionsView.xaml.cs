@@ -267,5 +267,18 @@ namespace _1RM.View.Launcher
             if (e.ClickCount == 2)
                 OpenSessionAndHide();
         }
+
+        private void ButtonShowNote_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string id })
+            {
+                var s = _vm.VmServerList.FirstOrDefault(x=>x.Id == id);
+                if (s != null)
+                {
+                    _vm.SelectedIndex = _vm.VmServerList.IndexOf(s);
+                }
+            }
+            _vm.CmdShowNoteField.Execute();
+        }
     }
 }

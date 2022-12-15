@@ -126,7 +126,8 @@ namespace _1RM.View.Launcher
             get => _vmServerList;
             set
             {
-                if (SetAndNotifyIfChanged(ref _vmServerList, value) && value.Count > 0)
+                SetAndNotifyIfChanged(ref _vmServerList, value);
+                if (_vmServerList.Count > 0)
                 {
                     SelectedIndex = 0;
                 }
