@@ -29,7 +29,7 @@ namespace _1RM.Service.DataSource.Model
         public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
 
         [JsonIgnore]
-        public virtual long LastReadFromDataSourceTimestamp { get; protected set; } = 0;
+        public virtual long LastReadFromDataSourceMillisecondsTimestamp { get; protected set; } = 0;
         [JsonIgnore]
         public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
@@ -39,8 +39,8 @@ namespace _1RM.Service.DataSource.Model
             {
                 var dataBase = GetDataBase();
                 DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
-                //SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceTimestamp} < {DataSourceDataUpdateTimestamp}");
-                return LastReadFromDataSourceTimestamp < DataSourceDataUpdateTimestamp;
+                //SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceMillisecondsTimestamp} < {DataSourceDataUpdateTimestamp}");
+                return LastReadFromDataSourceMillisecondsTimestamp < DataSourceDataUpdateTimestamp;
             }
             return false;
         }
@@ -56,12 +56,12 @@ namespace _1RM.Service.DataSource.Model
             lock (this)
             {
                 if (focus == false
-                    && LastReadFromDataSourceTimestamp >= DataSourceDataUpdateTimestamp)
+                    && LastReadFromDataSourceMillisecondsTimestamp >= DataSourceDataUpdateTimestamp)
                 {
                     return CachedProtocols;
                 }
 
-                LastReadFromDataSourceTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 if (Database_OpenConnection() == false)
                 {
                     Status = EnumDbStatus.AccessDenied;
@@ -212,7 +212,7 @@ namespace _1RM.Service.DataSource.Model
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
             GetDataBase()?.AddServer(tmp);
-            LastReadFromDataSourceTimestamp = 0;
+            LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         public void Database_InsertServer(IEnumerable<ProtocolBase> servers)
@@ -227,7 +227,7 @@ namespace _1RM.Service.DataSource.Model
             }
 
             GetDataBase()?.AddServer(cloneList);
-            LastReadFromDataSourceTimestamp = 0;
+            LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         public bool Database_UpdateServer(ProtocolBase org)
@@ -240,7 +240,7 @@ namespace _1RM.Service.DataSource.Model
             var ret = GetDataBase()?.UpdateServer(tmp) == true;
             if (ret == true)
             {
-                LastReadFromDataSourceTimestamp = 0;
+                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
             return ret;
         }
@@ -259,7 +259,7 @@ namespace _1RM.Service.DataSource.Model
             var ret = GetDataBase()?.UpdateServer(cloneList) == true;
             if (ret == true)
             {
-                LastReadFromDataSourceTimestamp = 0;
+                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
             return ret;
         }
@@ -270,7 +270,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var ret = GetDataBase()?.DeleteServer(id) == true;
                 if (ret == true)
-                    LastReadFromDataSourceTimestamp = 0;
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 return ret;
             }
             return false;
@@ -282,7 +282,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 var ret = GetDataBase()?.DeleteServer(ids) == true;
                 if (ret == true)
-                    LastReadFromDataSourceTimestamp = 0;
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 return ret;
             }
             return false;

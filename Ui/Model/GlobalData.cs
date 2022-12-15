@@ -50,10 +50,18 @@ namespace _1RM.Model
                     return;
                 }
 
+                if (ReloadServerList())
+                {
 #if DEBUG
-                SimpleLogHelper.Debug("check database update.");
+                    SimpleLogHelper.Debug("check database update - reload data");
 #endif
-                ReloadServerList();
+                }
+                else
+                {
+#if DEBUG
+                    SimpleLogHelper.Warning("check database update - no need reload");
+#endif
+                }
             }
             finally
             {
@@ -116,11 +124,17 @@ namespace _1RM.Model
             _configurationService.Save();
         }
 
-        public void ReloadServerList(bool focus = false)
+
+        /// <summary>
+        /// reload data based on `LastReadFromDataSourceMillisecondsTimestamp` and `DataSourceDataUpdateTimestamp`
+        /// return true if read data
+        /// </summary>
+        /// <param name="focus"></param>
+        public bool ReloadServerList(bool focus = false)
         {
             if (_sourceService == null)
             {
-                return;
+                return false;
             }
 
 
@@ -155,7 +169,10 @@ namespace _1RM.Model
                 ConnectTimeRecorder.Cleanup();
                 ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();
+
+                return true;
             }
+            return false;
         }
 
         public void UnselectAllServers()
@@ -169,7 +186,8 @@ namespace _1RM.Model
         public void AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
             dataSource.Database_InsertServer(protocolServer);
-            ReloadServerList();
+            VmItemList.Add(new ProtocolBaseViewModel(protocolServer, dataSource));
+            VmItemListDataChanged?.Invoke();
         }
 
         public void UpdateServer(ProtocolBase protocolServer)
@@ -181,7 +199,7 @@ namespace _1RM.Model
             if (source == null || source.IsWritable == false) return;
             UnselectAllServers();
             source.Database_UpdateServer(protocolServer);
-            int i = VmItemList.Count;
+            int i = 0;
             {
                 var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                 if (old != null
@@ -189,11 +207,10 @@ namespace _1RM.Model
                 {
                     i = VmItemList.IndexOf(old);
                     VmItemList.Remove(old);
-                    VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer, source));
                 }
+                VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer, source)); 
+                VmItemListDataChanged?.Invoke();
             }
-
-            ReloadServerList();
         }
 
         public void UpdateServer(IEnumerable<ProtocolBase> protocolServers)
@@ -204,9 +221,26 @@ namespace _1RM.Model
             {
                 var source = groupedServer.First().GetDataSource();
                 if (source?.IsWritable == true)
-                    source.Database_UpdateServer(groupedServer);
+                {
+                    if (source.Database_UpdateServer(groupedServer))
+                    {
+                        // update viewmodel
+                        foreach (var protocolServer in groupedServer)
+                        {
+                            int i = 0;
+                            var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
+                            if (old != null
+                                && old.Server != protocolServer)
+                            {
+                                i = VmItemList.IndexOf(old);
+                                VmItemList.Remove(old);
+                            }
+                            VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer, source));
+                        }
+                    }
+                }
             }
-            ReloadServerList();
+            VmItemListDataChanged?.Invoke();
         }
 
         public void DeleteServer(ProtocolBase protocolServer)
@@ -218,7 +252,15 @@ namespace _1RM.Model
             if (source == null || source.IsWritable == false) return;
             if (source.Database_DeleteServer(protocolServer.Id))
             {
-                ReloadServerList();
+                int i = 0;
+                var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
+                if (old != null
+                    && old.Server != protocolServer)
+                {
+                    i = VmItemList.IndexOf(old);
+                    VmItemList.Remove(old);
+                    VmItemListDataChanged?.Invoke();
+                }
             }
         }
 
@@ -229,10 +271,24 @@ namespace _1RM.Model
             foreach (var groupedServer in groupedServers)
             {
                 var source = groupedServer.First().GetDataSource();
-                if (source?.IsWritable == true)
-                    source.Database_DeleteServer(groupedServer.Select(x => x.Id));
+                if (source?.IsWritable == true
+                    && source.Database_DeleteServer(groupedServer.Select(x => x.Id)))
+                {
+                    // update viewmodel
+                    foreach (var protocolServer in groupedServer)
+                    {
+                        int i = 0;
+                        var old = VmItemList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
+                        if (old != null
+                            && old.Server != protocolServer)
+                        {
+                            i = VmItemList.IndexOf(old);
+                            VmItemList.Remove(old);
+                        }
+                    }
+                }
             }
-            ReloadServerList();
+            VmItemListDataChanged?.Invoke();
         }
 
         #endregion Server Data
