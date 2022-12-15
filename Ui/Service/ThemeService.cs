@@ -6,30 +6,17 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.Service
 {
-    public class Theme
-    {
-        public string Name { get; set; } = "";
-        public string PrimaryMidColor { get; set; } = "";
-        public string PrimaryLightColor { get; set; } = "";
-        public string PrimaryDarkColor { get; set; } = "";
-        public string PrimaryTextColor { get; set; } = "";
-        public string AccentMidColor { get; set; } = "";
-        public string AccentLightColor { get; set; } = "";
-        public string AccentDarkColor { get; set; } = "";
-        public string AccentTextColor { get; set; } = "";
-        public string BackgroundColor { get; set; } = "";
-        public string BackgroundTextColor { get; set; } = "";
-    }
-
     public class ThemeService
     {
         private readonly ResourceDictionary _appResourceDictionary;
-        public Dictionary<string, Theme> Themes { get; } = new Dictionary<string, Theme>();
+        public ThemeConfig CurrentTheme;
+        public Dictionary<string, ThemeConfig> Themes { get; } = new Dictionary<string, ThemeConfig>();
         public ThemeService(ResourceDictionary appResourceDictionary, ThemeConfig defaultTheme)
         {
             _appResourceDictionary = appResourceDictionary;
-            Themes.Add("Light", new Theme()
+            Themes.Add("Light", new ThemeConfig()
             {
+                ThemeName = "Light",
                 PrimaryMidColor = "#FFF2F3F5",
                 PrimaryLightColor = "#FFFFFFFF",
                 PrimaryDarkColor = "#FFE4E7EB",
@@ -41,8 +28,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFFFFFFF",
                 BackgroundTextColor = "#000000",
             });
-            Themes.Add("Dark", new Theme()
+            Themes.Add("Dark", new ThemeConfig()
             {
+                ThemeName = "Dark",
                 PrimaryMidColor = "#323233",
                 PrimaryLightColor = "#474748",
                 PrimaryDarkColor = "#2d2d2d",
@@ -54,8 +42,9 @@ namespace _1RM.Service
                 BackgroundColor = "#1e1e1e",
                 BackgroundTextColor = "#cccccc",
             });
-            Themes.Add("PRemoteM", new Theme()
+            Themes.Add("PRemoteM", new ThemeConfig()
             {
+                ThemeName = "PRemoteM",
                 PrimaryMidColor = "#102b3e",
                 PrimaryLightColor = "#445a68",
                 PrimaryDarkColor = "#0c2230",
@@ -67,8 +56,9 @@ namespace _1RM.Service
                 BackgroundColor = "#ced8e1",
                 BackgroundTextColor = "#000000",
             });
-            Themes.Add("SecretKey", new Theme()
+            Themes.Add("SecretKey", new ThemeConfig()
             {
+                ThemeName = "Light",
                 PrimaryMidColor = "#FF473368",
                 PrimaryLightColor = "#796090",
                 PrimaryDarkColor = "#382853",
@@ -80,8 +70,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFF2F1EC",
                 BackgroundTextColor = "#000000",
             });
-            Themes.Add("Greystone", new Theme()
+            Themes.Add("Greystone", new ThemeConfig()
             {
+                ThemeName = "Greystone",
                 PrimaryMidColor = "#FFC7D0D5",
                 PrimaryLightColor = "#F9FDFD",
                 PrimaryDarkColor = "#9FA6AA",
@@ -93,8 +84,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFF5F5F5",
                 BackgroundTextColor = "#000000",
             });
-            Themes.Add("Asphalt", new Theme()
+            Themes.Add("Asphalt", new ThemeConfig()
             {
+                ThemeName = "Asphalt",
                 PrimaryMidColor = "#FF393939",
                 PrimaryLightColor = "#6B6661",
                 PrimaryDarkColor = "#2D2D2D",
@@ -106,8 +98,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFF5F5F5",
                 BackgroundTextColor = "#000000",
             });
-            Themes.Add("Wine", new Theme()
+            Themes.Add("Wine", new ThemeConfig()
             {
+                ThemeName = "Wine",
                 PrimaryMidColor = "#FF57112D",
                 PrimaryLightColor = "#893E55",
                 PrimaryDarkColor = "#450D24",
@@ -119,8 +112,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFFDEAD9",
                 BackgroundTextColor = "#FF450D24",
             });
-            Themes.Add("Forest", new Theme()
+            Themes.Add("Forest", new ThemeConfig()
             {
+                ThemeName = "Forest",
                 PrimaryMidColor = "#FF253938",
                 PrimaryLightColor = "#576660",
                 PrimaryDarkColor = "#1D2D2C",
@@ -132,8 +126,9 @@ namespace _1RM.Service
                 BackgroundColor = "#FFF5F5F5",
                 BackgroundTextColor = "#FF303030",
             });
-            Themes.Add("Soil", new Theme()
+            Themes.Add("Soil", new ThemeConfig()
             {
+                ThemeName = "Soil",
                 PrimaryMidColor = "#FF776245",
                 PrimaryLightColor = "#A98F6D",
                 PrimaryDarkColor = "#FF735E41",
@@ -146,6 +141,7 @@ namespace _1RM.Service
                 BackgroundTextColor = "#FF080000",
             });
 
+            CurrentTheme = defaultTheme;
             ApplyTheme(defaultTheme);
         }
 

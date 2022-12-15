@@ -127,14 +127,14 @@
                     </Border.Style>
                 </Border>
                 <controls:BindableAvalonEditor Grid.Column="1" 
-                                               Margin="8 0 4 0"
-                                               Padding="0 5 0 5"
-                                               x:Name="TextEditor"
-                                               WordWrap="True"
-                                               Background="Transparent"
-                                               Text="{Binding ExternalRunner.Arguments}"
-                                               SyntaxHighlighting="PowerShell"
-                                               FontSize="{DynamicResource TextFontSize}">
+                                           Margin="8 0 4 0"
+                                           Padding="0 5 0 5"
+                                           x:Name="TextEditor"
+                                           WordWrap="True"
+                                           Background="Transparent"
+                                           Text="{Binding ExternalRunner.Arguments}"
+                                           SyntaxHighlighting="PowerShell"
+                                           FontSize="{DynamicResource TextFontSize}">
                 </controls:BindableAvalonEditor>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">

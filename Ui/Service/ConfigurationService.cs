@@ -12,9 +12,10 @@ using Newtonsoft.Json;
 using _1RM.Model.DAO;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
-using _1RM.Utils;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
+using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.Service
 {
@@ -89,6 +90,21 @@ namespace _1RM.Service
 
         public string BackgroundColor = "#1e1e1e";
         public string BackgroundTextColor = "#cccccc";
+
+        #region GetColor
+        public System.Windows.Media.Color GetPrimaryMidColor => ColorAndBrushHelper.HexColorToMediaColor(PrimaryMidColor);
+        public System.Windows.Media.Color GetPrimaryLightColor => ColorAndBrushHelper.HexColorToMediaColor(PrimaryLightColor);
+        public System.Windows.Media.Color GetPrimaryDarkColor => ColorAndBrushHelper.HexColorToMediaColor(PrimaryDarkColor);
+        public System.Windows.Media.Color GetPrimaryTextColor => ColorAndBrushHelper.HexColorToMediaColor(PrimaryTextColor);
+
+        public System.Windows.Media.Color GetAccentMidColor => ColorAndBrushHelper.HexColorToMediaColor(AccentMidColor);
+        public System.Windows.Media.Color GetAccentLightColor => ColorAndBrushHelper.HexColorToMediaColor(AccentLightColor);
+        public System.Windows.Media.Color GetAccentDarkColor => ColorAndBrushHelper.HexColorToMediaColor(AccentDarkColor);
+        public System.Windows.Media.Color GetAccentTextColor => ColorAndBrushHelper.HexColorToMediaColor(AccentTextColor);
+
+        public System.Windows.Media.Color GetBackgroundColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundColor);
+        public System.Windows.Media.Color GetBackgroundTextColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor); 
+        #endregion
     }
 
     public class Configuration
