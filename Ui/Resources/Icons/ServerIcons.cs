@@ -8,8 +8,10 @@ using System.Linq;
 using System.Resources;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using Newtonsoft.Json.Linq;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Image;
+using Shawn.Utils.Wpf.Native;
 
 namespace PRM.Resources.Icons
 {
@@ -40,17 +42,26 @@ namespace PRM.Resources.Icons
             var mgr = new ResourceManager(resourceName, this.GetType().Assembly);
             using var set = mgr.GetResourceSet(CultureInfo.CurrentCulture, true, true);
             if (set == null) return;
+
+            var keys = new List<string>();
             foreach (DictionaryEntry each in set)
             {
                 var key = each.Key.ToString()!;
                 if (key.ToLower().IndexOf("resources/icons/".ToLower(), StringComparison.Ordinal) >= 0
                     && ".png" == Path.GetExtension(key).ToLower())
                 {
-                    var s = (UnmanagedMemoryStream)set.GetObject(key, true)!;
-                    var img = BitmapFrame.Create(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                    var bm = img.ToBitmap();
-                    Icons.Add(bm.ToBitmapSource());
+                    keys.Add(key);
                 }
+            }
+
+            var keyArray = keys.ToArray();  
+            Array.Sort(keyArray, NaturalCmpLogicalW.Get());
+            foreach (var key in keyArray)
+            {
+                var s = (UnmanagedMemoryStream)set.GetObject(key, true)!;
+                var img = BitmapFrame.Create(s, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                var bm = img.ToBitmap();
+                Icons.Add(bm.ToBitmapSource());
             }
         }
 
