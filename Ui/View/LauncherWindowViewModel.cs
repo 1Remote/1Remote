@@ -23,6 +23,7 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model.Protocol.Base;
 using _1RM.View.Launcher;
 
+
 namespace _1RM.View
 {
     public class LauncherWindowViewModel : NotifyPropertyChangedBaseScreen
@@ -162,6 +163,7 @@ namespace _1RM.View
                     window.Topmost = true; // important
                     window.Focus(); // important
                     ServerSelectionsViewModel.TbKeyWord.Focus();
+                    ServerSelectionsViewModel.SelectedIndex = 0;
                 }
             }
             else

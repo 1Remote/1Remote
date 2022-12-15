@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using _1RM.Controls;
@@ -30,6 +31,11 @@ namespace _1RM.View
         public string SubTitle => Server.SubTitle;
         public string ProtocolDisplayNameInShort => Server.ProtocolDisplayNameInShort;
 
+        /// <summary>
+        /// like: "#work #asd"
+        /// </summary>
+        public string TagString { get; }
+
         public ProtocolBase Server { get; }
         public ProtocolBaseViewModel(ProtocolBase psb, DataSourceBase dataSource)
         {
@@ -44,6 +50,7 @@ namespace _1RM.View
                 HoverNoteDisplayControl = new NoteIcon(this.Server);
             }
             LastConnectTime = ConnectTimeRecorder.Get(Server);
+            TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
         }
 
         public object OrgDisplayNameControl => new TextBlock() { Text = Server?.DisplayName, };
