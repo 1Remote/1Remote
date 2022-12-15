@@ -64,6 +64,45 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Icons\000_OS\000_Win10_1.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win10_2.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win11_0.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win11_1.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2003.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2008.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2012.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2016.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2019.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win2022.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win7.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win7_2.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win8.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win8_0.png" />
+	  <None Remove="Resources\Icons\000_OS\000_Win8_1.png" />
+	  <None Remove="Resources\Icons\000_OS\001_Arch.png" />
+	  <None Remove="Resources\Icons\000_OS\001_Centos.png" />
+	  <None Remove="Resources\Icons\000_OS\001_Linux.png" />
+	  <None Remove="Resources\Icons\000_OS\001_RaspberryPi.png" />
+	  <None Remove="Resources\Icons\000_OS\001_RedHat.png" />
+	  <None Remove="Resources\Icons\000_OS\001_Ubuntu.png" />
+	  <None Remove="Resources\Icons\000_OS\002_Apple.png" />
+	  <None Remove="Resources\Icons\001_APP\010_Docker1.png" />
+	  <None Remove="Resources\Icons\001_APP\010_Docker2.png" />
+	  <None Remove="Resources\Icons\001_APP\010_DotNet.png" />
+	  <None Remove="Resources\Icons\001_APP\010_Gitlab.png" />
+	  <None Remove="Resources\Icons\001_APP\010_Java.png" />
+	  <None Remove="Resources\Icons\001_APP\010_PHP.png" />
+	  <None Remove="Resources\Icons\001_APP\010_Python.png" />
+	  <None Remove="Resources\Icons\001_APP\011_Gitea.png" />
+	  <None Remove="Resources\Icons\001_APP\011_GitHub1.png" />
+	  <None Remove="Resources\Icons\001_APP\011_GitHub2.png" />
+	  <None Remove="Resources\Icons\001_APP\011_Gogs.png" />
+	  <None Remove="Resources\Icons\001_APP\011_Nginx.png" />
+	  <None Remove="Resources\Icons\001_APP\011_NoMachine.png" />
+	  <None Remove="Resources\Icons\001_APP\011_Wordpress.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="1Remote.Security" Version="1.0.0" />
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
 		<PackageReference Include="Dapper" Version="2.0.123" />
@@ -101,37 +140,40 @@
 
 	<ItemGroup>
 		<Resource Include="LOGO.ico" />
-		<Resource Include="Resources\Icons\20200501\Env_DotNet.png" />
-		<Resource Include="Resources\Icons\20200501\Env_Java.png" />
-		<Resource Include="Resources\Icons\20200501\Env_Python.png" />
-		<Resource Include="Resources\Icons\20200501\L_Arch.png" />
-		<Resource Include="Resources\Icons\20200501\L_Centos.png" />
-		<Resource Include="Resources\Icons\20200501\L_Linux.png" />
-		<Resource Include="Resources\Icons\20200501\L_RaspberryPi.png" />
-		<Resource Include="Resources\Icons\20200501\L_RedHat.png" />
-		<Resource Include="Resources\Icons\20200501\L_Ubuntu.png" />
-		<Resource Include="Resources\Icons\20200501\M_Apple.png" />
-		<Resource Include="Resources\Icons\20200501\M_Hp1.png" />
-		<Resource Include="Resources\Icons\20200501\M_Hp2.png" />
-		<Resource Include="Resources\Icons\20200501\T_Docker1.png" />
-		<Resource Include="Resources\Icons\20200501\T_Docker2.png" />
-		<Resource Include="Resources\Icons\20200501\T_Gitea.png" />
-		<Resource Include="Resources\Icons\20200501\T_GitHub1.png" />
-		<Resource Include="Resources\Icons\20200501\T_GitHub2.png" />
-		<Resource Include="Resources\Icons\20200501\T_Gitlab.png" />
-		<Resource Include="Resources\Icons\20200501\T_Gogs.png" />
-		<Resource Include="Resources\Icons\20200501\T_Nginx.png" />
-		<Resource Include="Resources\Icons\20200501\T_PHP.png" />
-		<Resource Include="Resources\Icons\20200501\T_Wordpress.png" />
-		<Resource Include="Resources\Icons\20200501\Win10.png" />
-		<Resource Include="Resources\Icons\20200501\Win2003.png" />
-		<Resource Include="Resources\Icons\20200501\Win2008.png" />
-		<Resource Include="Resources\Icons\20200501\Win2012.png" />
-		<Resource Include="Resources\Icons\20200501\Win2016.png" />
-		<Resource Include="Resources\Icons\20200501\Win7.png" />
-		<Resource Include="Resources\Icons\20200501\Win8.png" />
-		<Resource Include="Resources\Icons\20200501\Windows10.png" />
-		<Resource Include="Resources\Icons\20200501\Windows7.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win10_1.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win11_0.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win11_1.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2003.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2008.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2012.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2016.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2019.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2022.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win7.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win7_2.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win8_0.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win8_1.png" />
+		<Resource Include="Resources\Icons\000_OS\001_Arch.png" />
+		<Resource Include="Resources\Icons\000_OS\001_Centos.png" />
+		<Resource Include="Resources\Icons\000_OS\001_Linux.png" />
+		<Resource Include="Resources\Icons\000_OS\001_RaspberryPi.png" />
+		<Resource Include="Resources\Icons\000_OS\001_RedHat.png" />
+		<Resource Include="Resources\Icons\000_OS\001_Ubuntu.png" />
+		<Resource Include="Resources\Icons\000_OS\002_Apple.png" />
+		<Resource Include="Resources\Icons\001_APP\010_Docker1.png" />
+		<Resource Include="Resources\Icons\001_APP\010_Docker2.png" />
+		<Resource Include="Resources\Icons\001_APP\010_DotNet.png" />
+		<Resource Include="Resources\Icons\001_APP\010_Gitlab.png" />
+		<Resource Include="Resources\Icons\001_APP\010_Java.png" />
+		<Resource Include="Resources\Icons\001_APP\010_PHP.png" />
+		<Resource Include="Resources\Icons\001_APP\010_Python.png" />
+		<Resource Include="Resources\Icons\001_APP\011_Gitea.png" />
+		<Resource Include="Resources\Icons\001_APP\011_GitHub1.png" />
+		<Resource Include="Resources\Icons\001_APP\011_GitHub2.png" />
+		<Resource Include="Resources\Icons\001_APP\011_Gogs.png" />
+		<Resource Include="Resources\Icons\001_APP\011_Nginx.png" />
+		<Resource Include="Resources\Icons\001_APP\011_NoMachine.png" />
+		<Resource Include="Resources\Icons\001_APP\011_Wordpress.png" />
 		<Resource Include="Resources\Icons\20210106\20210106_001.png" />
 		<Resource Include="Resources\Icons\20210106\20210106_002.png" />
 		<Resource Include="Resources\Icons\20210106\20210106_003.png" />
@@ -237,7 +279,6 @@
 		<Resource Include="Resources\Icons\20210106\20210106_103.png" />
 		<Resource Include="Resources\Icons\20210106\20210106_104.png" />
 		<Resource Include="Resources\Icons\20210106\20210106_105.png" />
-		<Resource Include="Resources\Icons\20210106\NoMachine.png" />
 		<Resource Include="Resources\Image\Logo\author_avatar.jpg" />
 		<Resource Include="Resources\Image\Logo\logo256.png" />
 		<Resource Include="Resources\Image\Logo\logo64.png" />
