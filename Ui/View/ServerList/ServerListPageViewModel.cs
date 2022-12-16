@@ -65,18 +65,18 @@ namespace _1RM.View.ServerList
             set => SetAndNotifyIfChanged(ref _selectedServerViewModelListItem, value);
         }
 
-        private ObservableCollection<ProtocolBaseViewModel> _serverListItems = new ObservableCollection<ProtocolBaseViewModel>();
-        public ObservableCollection<ProtocolBaseViewModel> ServerListItems
+        private ObservableCollection<ProtocolBaseViewModel> _vmServerList = new ObservableCollection<ProtocolBaseViewModel>();
+        public ObservableCollection<ProtocolBaseViewModel> VmServerList
         {
-            get => _serverListItems;
+            get => _vmServerList;
             set
             {
-                SetAndNotifyIfChanged(ref _serverListItems, value);
+                SetAndNotifyIfChanged(ref _vmServerList, value);
                 SelectedServerViewModelListItem = null;
             }
         }
 
-        public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
+        public int SelectedCount => VmServerList.Count(x => x.IsSelected);
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
         public EnumServerOrderBy ServerOrderBy
@@ -94,19 +94,19 @@ namespace _1RM.View.ServerList
 
         public bool IsSelectedAll
         {
-            get => ServerListItems.Any(x => x.IsVisible) && ServerListItems.Where(x => x.IsVisible).All(x => x.IsSelected);
+            get => VmServerList.Any(x => x.IsVisible) && VmServerList.Where(x => x.IsVisible).All(x => x.IsSelected);
             set
             {
                 if (value == false)
                 {
-                    foreach (var vmServerCard in ServerListItems)
+                    foreach (var vmServerCard in VmServerList)
                     {
                         vmServerCard.IsSelected = false;
                     }
                 }
                 else
                 {
-                    foreach (var vmServerCard in ServerListItems)
+                    foreach (var vmServerCard in VmServerList)
                     {
                         vmServerCard.IsSelected = vmServerCard.IsVisible;
                     }
@@ -115,7 +115,7 @@ namespace _1RM.View.ServerList
             }
         }
 
-        public bool IsAnySelected => ServerListItems.Any(x => x.IsSelected == true);
+        public bool IsAnySelected => VmServerList.Any(x => x.IsSelected == true);
 
 
 
@@ -127,7 +127,7 @@ namespace _1RM.View.ServerList
             {
                 if (SetAndNotifyIfChanged(ref this._briefNoteVisibility, value))
                 {
-                    foreach (var item in ServerListItems.Where(x => x.HoverNoteDisplayControl != null))
+                    foreach (var item in VmServerList.Where(x => x.HoverNoteDisplayControl != null))
                     {
                         if (item.HoverNoteDisplayControl != null)
                         {
@@ -209,7 +209,7 @@ namespace _1RM.View.ServerList
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
 
-                    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
+                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
                     ApplySort(ServerOrderBy);
                     RaisePropertyChanged(nameof(IsAnySelected));
                     RaisePropertyChanged(nameof(IsSelectedAll));
@@ -312,7 +312,7 @@ namespace _1RM.View.ServerList
             //        newList.Add(vm);
             //    }
             //}
-            //ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
+            //VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList);
             //RaisePropertyChanged(nameof(IsSelectedAll));
             //RaisePropertyChanged(nameof(IsAnySelected));
         }
@@ -371,14 +371,14 @@ namespace _1RM.View.ServerList
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
                     if (path == null) return;
                     var list = new List<ProtocolBase>();
-                    foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                    foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                     {
                         var serverBase = (ProtocolBase)vs.Server.Clone();
                         serverBase.DecryptToConnectLevel();
                         list.Add(serverBase);
                     }
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
+                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
@@ -517,14 +517,14 @@ namespace _1RM.View.ServerList
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
-                    var ss = ServerListItems.Where(x => x.IsSelected == true && x.IsEditable).ToList();
+                    var ss = VmServerList.Where(x => x.IsSelected == true && x.IsEditable).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         var servers = ss.Select(x => x.Server);
                         AppData.DeleteServer(servers);
                     }
-                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
+                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
@@ -537,12 +537,12 @@ namespace _1RM.View.ServerList
             {
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                 {
-                    var vms = ServerListItems.Where(x => x.IsSelected && x.IsEditable);
+                    var vms = VmServerList.Where(x => x.IsSelected && x.IsEditable);
                     if (vms.Any() == true)
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
                     }
-                }, o => ServerListItems.Where(x => x.IsSelected == true).All(x => x.IsEditable));
+                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 
@@ -600,12 +600,12 @@ namespace _1RM.View.ServerList
             {
                 return _cmdConnectSelected ??= new RelayCommand((o) =>
                 {
-                    var selected = ServerListItems.Where(x => x.IsSelected == true).ToArray();
+                    var selected = VmServerList.Where(x => x.IsSelected == true).ToArray();
                     string token = "";
                     // set tab token, show in new tab
                     if (selected.Length > 1)
                         token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in ServerListItems.Where(x => x.IsSelected == true).ToArray())
+                    foreach (var vmProtocolServer in VmServerList.Where(x => x.IsSelected == true).ToArray())
                     {
                         GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
                         Thread.Sleep(50);
