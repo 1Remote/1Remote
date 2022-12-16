@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace _1RM.View.Launcher
                 TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
 
-                IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
+                IoC.Get<GlobalData>().OnDataReloaded += RebuildVmServerList;
                 RebuildVmServerList();
             }
         }
@@ -161,20 +162,41 @@ namespace _1RM.View.Launcher
         }
 
 
-
+        public void AppendServer(ProtocolBaseViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= OnLastConnectTimeChanged;
+            viewModel.PropertyChanged += OnLastConnectTimeChanged;
+            viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
+            viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
+            VmServerList.Add(viewModel);
+        }
 
         public void RebuildVmServerList()
         {
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
+            foreach (var viewModel in VmServerList)
+            {
+                viewModel.PropertyChanged -= OnLastConnectTimeChanged;
+                viewModel.PropertyChanged += OnLastConnectTimeChanged;
+            }
+
             Execute.OnUIThread(() =>
             {
-                foreach (var vm in VmServerList)
+                foreach (var viewModel in VmServerList)
                 {
-                    vm.DisplayNameControl = vm.OrgDisplayNameControl;
-                    vm.SubTitleControl = vm.OrgSubTitleControl;
+                    viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
+                    viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
                 }
             });
             _launcherWindowViewModel?.ReSetWindowHeight();
+        }
+
+        private void OnLastConnectTimeChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProtocolBaseViewModel.LastConnectTime))
+            {
+                VmServerList = new ObservableCollection<ProtocolBaseViewModel>(VmServerList.OrderByDescending(x => x.LastConnectTime));
+            }
         }
 
 

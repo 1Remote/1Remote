@@ -44,8 +44,9 @@ namespace _1RM.View
             get => _server;
             set
             {
-                if (SetAndNotifyIfChanged(ref _server, value))
+                if (_server != value)
                 {
+                    _server = value;
                     if (ConverterNoteToVisibility.IsVisible(Server.Note))
                     {
                         HoverNoteDisplayControl = new NoteIcon(this.Server);
@@ -62,7 +63,13 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(DataSourceName));
                     RaisePropertyChanged(nameof(IsViewable));
                     RaisePropertyChanged(nameof(IsEditable));
+                    if (DisplayNameControl != null)
+                    {
+                        DisplayNameControl = OrgDisplayNameControl;
+                        SubTitleControl = OrgSubTitleControl;
+                    }
                 }
+                RaisePropertyChanged();
             }
         }
 
@@ -182,18 +189,6 @@ namespace _1RM.View
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: Server, showAnimation: true);
-                });
-            }
-        }
-
-        private RelayCommand? _cmdDuplicateServer;
-        public RelayCommand CmdDuplicateServer
-        {
-            get
-            {
-                return _cmdDuplicateServer ??= new RelayCommand((o) =>
-                {
-                    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: Server, showAnimation: true);
                 });
             }
         }

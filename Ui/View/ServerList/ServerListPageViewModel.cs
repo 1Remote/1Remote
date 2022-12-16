@@ -73,6 +73,12 @@ namespace _1RM.View.ServerList
             {
                 SetAndNotifyIfChanged(ref _vmServerList, value);
                 SelectedServerViewModelListItem = null;
+                _vmServerList.CollectionChanged += (s, e) =>
+                {
+                    RaisePropertyChanged(nameof(IsAnySelected));
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                    RaisePropertyChanged(nameof(SelectedCount));
+                };
             }
         }
 
@@ -186,10 +192,7 @@ namespace _1RM.View.ServerList
             };
 
 
-            AppData.VmItemListDataChanged += () =>
-            {
-                RebuildVmServerList();
-            };
+            AppData.OnDataReloaded += RebuildVmServerList;
             RebuildVmServerList();
 
             ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
@@ -197,23 +200,30 @@ namespace _1RM.View.ServerList
         }
 
 
+        public void AppendServer(ProtocolBaseViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= VmServerPropertyChanged;
+            viewModel.PropertyChanged += VmServerPropertyChanged;
+            VmServerList.Add(viewModel);
+        }
+
         private void RebuildVmServerList()
         {
             lock (this)
             {
                 Execute.OnUIThread(() =>
                 {
-                    foreach (var vs in AppData.VmItemList)
-                    {
-                        vs.PropertyChanged -= VmServerPropertyChanged;
-                        vs.PropertyChanged += VmServerPropertyChanged;
-                    }
-
                     VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
                     ApplySort(ServerOrderBy);
                     RaisePropertyChanged(nameof(IsAnySelected));
                     RaisePropertyChanged(nameof(IsSelectedAll));
                     RaisePropertyChanged(nameof(SelectedCount));
+                    foreach (var vs in VmServerList)
+                    {
+                        vs.IsSelected = false;
+                        vs.PropertyChanged -= VmServerPropertyChanged;
+                        vs.PropertyChanged += VmServerPropertyChanged;
+                    }
 
                     if (this.View is ServerListPageView v)
                     {
@@ -317,9 +327,17 @@ namespace _1RM.View.ServerList
             //RaisePropertyChanged(nameof(IsAnySelected));
         }
 
+        public void ClearSelection()
+        {
+            foreach (var item in VmServerList)
+            {
+                item.IsSelected = false;
+            }
+        }
+
+
         private string _filterString2 = "";
         private TagAndKeywordEncodeHelper.KeywordDecoded? _keywordDecoded = null;
-        private List<string> _stringFilters2 = new List<string>();
         public bool TestMatchKeywords(ProtocolBase server)
         {
             string filterString = IoC.Get<MainWindowViewModel>().MainFilterString;
@@ -554,7 +572,7 @@ namespace _1RM.View.ServerList
             get
             {
                 Debug.Assert(SourceService != null);
-                return _cmdCancelSelected ??= new RelayCommand((o) => { AppData.UnselectAllServers(); });
+                return _cmdCancelSelected ??= new RelayCommand((o) => { ClearSelection(); });
             }
         }
 

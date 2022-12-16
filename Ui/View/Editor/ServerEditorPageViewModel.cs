@@ -17,6 +17,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
+using _1RM.View.ServerList;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -53,6 +54,7 @@ namespace _1RM.View.Editor
 
         public static ServerEditorPageViewModel Edit(GlobalData globalData, ProtocolBase server)
         {
+            Debug.Assert(server.IsTmpSession() == false);
             return new ServerEditorPageViewModel(globalData, server);
         }
 
@@ -337,7 +339,7 @@ namespace _1RM.View.Editor
                         _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
-                    else if (IsAddMode == false 
+                    else if (IsAddMode == false
                              && Server.IsTmpSession() == false)
                     {
                         _globalData.UpdateServer(Server);
@@ -347,7 +349,7 @@ namespace _1RM.View.Editor
                     {
                         _globalData.AddServer(Server, _addToDataSource);
                     }
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(true);
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -363,7 +365,7 @@ namespace _1RM.View.Editor
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
                 return _cmdCancel;
             }

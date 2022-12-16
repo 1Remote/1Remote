@@ -214,8 +214,6 @@ namespace _1RM.View.Launcher
 
                 // create protocol
                 var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();
-                server.Id = "";
-                server.GenerateIdForTmpSession();
                 server.DisplayName = host;
                 if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
                 {

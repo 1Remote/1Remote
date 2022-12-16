@@ -189,33 +189,17 @@ namespace _1RM.Service.DataSource.Model
             return Status;
         }
 
-        //public virtual string DecryptOrReturnOriginalString(string originalString)
-        //{
-        //    return _rsa?.DecryptOrReturnOriginalString(originalString) ?? originalString;
-        //}
-        //public virtual void EncryptToDatabaseLevel(ref ProtocolBase server)
-        //{
-        //    _rsa?.EncryptToDatabaseLevel(ref server);
-        //}
-        //public virtual void DecryptToRamLevel(ref ProtocolBase server)
-        //{
-        //    _rsa?.DecryptToConnectLevel(ref server);
-        //}
-        //public virtual void DecryptToConnectLevel(ref ProtocolBase server)
-        //{
-        //    _rsa?.DecryptToConnectLevel(ref server);
-        //}
-
         public void Database_InsertServer(ProtocolBase server)
         {
             var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
             GetDataBase()?.AddServer(tmp);
+            server.Id = tmp.Id;
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
-        public void Database_InsertServer(IEnumerable<ProtocolBase> servers)
+        public void Database_InsertServer(List<ProtocolBase> servers)
         {
             var cloneList = new List<ProtocolBase>();
             foreach (var server in servers)
@@ -225,8 +209,11 @@ namespace _1RM.Service.DataSource.Model
                 tmp.EncryptToDatabaseLevel();
                 cloneList.Add(tmp);
             }
-
             GetDataBase()?.AddServer(cloneList);
+            for (int i = 0; i < servers.Count(); i++)
+            {
+                servers[i].Id = cloneList[i].Id;
+            }
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 

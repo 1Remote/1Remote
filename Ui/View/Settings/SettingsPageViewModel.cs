@@ -117,7 +117,7 @@ namespace _1RM.View.Settings
 
                     _configurationService.Save();
                     IoC.Get<ProtocolConfigurationService>().Save();
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
             }
         }

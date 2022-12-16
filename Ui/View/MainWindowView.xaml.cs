@@ -122,7 +122,7 @@ namespace _1RM.View
                 }
                 else if (e.Key == Key.Escape && vm.IsShownList() == false)
                 {
-                    vm.ShowList();
+                    vm.ShowList(false);
                 }
                 else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && vm.IsShownList())
                 {
