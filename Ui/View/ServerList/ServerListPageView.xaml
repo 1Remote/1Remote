@@ -20,7 +20,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <CollectionViewSource x:Key="ServerListItemSource" 
-                                  Source="{Binding ServerListItems}"
+                                  Source="{Binding VmServerList}"
                                   Filter="ServerListItemSource_OnFilter">
                 <!--<CollectionViewSource.GroupDescriptions>
                     <PropertyGroupDescription PropertyName="DataSourceName"></PropertyGroupDescription>
@@ -309,7 +309,7 @@
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                                <DataTrigger Binding="{Binding VmServerList.Count}" Value="0">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ListPageIsCardView}" Value="True">
@@ -601,7 +601,7 @@
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                            <DataTrigger Binding="{Binding VmServerList.Count}" Value="0">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
                             </DataTrigger>
                         </Style.Triggers>

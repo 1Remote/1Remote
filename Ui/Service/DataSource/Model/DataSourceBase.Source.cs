@@ -75,7 +75,7 @@ namespace _1RM.Service.DataSource.Model
                     {
                         Execute.OnUIThreadSync(() =>
                         {
-                            var vm = new ProtocolBaseViewModel(protocol, this);
+                            var vm = new ProtocolBaseViewModel(protocol);
                             CachedProtocols.Add(vm);
                         });
                     }
@@ -290,7 +290,12 @@ namespace _1RM.Service.DataSource.Model
 
         public List<ProtocolBase> Database_GetServers()
         {
-            return GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+            var ps = GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+            foreach (var protocolBase in ps)
+            {
+                protocolBase.DataSourceName = DataSourceName;
+            }
+            return ps;
         }
 
         public int Database_GetServersCount()

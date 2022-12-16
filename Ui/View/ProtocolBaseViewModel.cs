@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using _1RM.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
@@ -21,9 +22,9 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
-        public string DataSourceName { get; }
-        public bool IsEditable { get; }
-        public bool IsViewable { get; }
+        public string DataSourceName => Server.DataSourceName;
+        public bool IsEditable { get; private set; } = false;
+        public bool IsViewable { get; private set; } = false;
 
         public string Id => Server.Id;
 
@@ -34,28 +35,82 @@ namespace _1RM.View
         /// <summary>
         /// like: "#work #asd"
         /// </summary>
-        public string TagString { get; }
+        public string TagString { get; private set; }
 
-        public ProtocolBase Server { get; }
-        public ProtocolBaseViewModel(ProtocolBase psb, DataSourceBase dataSource)
+
+        private ProtocolBase _server;
+        public ProtocolBase Server
+        {
+            get => _server;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _server, value))
+                {
+                    if (ConverterNoteToVisibility.IsVisible(Server.Note))
+                    {
+                        HoverNoteDisplayControl = new NoteIcon(this.Server);
+                    }
+                    LastConnectTime = ConnectTimeRecorder.Get(Server);
+                    TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
+                    RaisePropertyChanged(nameof(TagString));
+                    RaisePropertyChanged(nameof(Id));
+                    RaisePropertyChanged(nameof(DisplayName));
+                    RaisePropertyChanged(nameof(SubTitle));
+                    RaisePropertyChanged(nameof(ProtocolDisplayNameInShort));
+                    var dataSource = IoC.Get<DataSourceService>().GetDataSource(_server.DataSourceName);
+                    IsViewable = IsEditable = dataSource?.IsWritable == true;
+                    RaisePropertyChanged(nameof(DataSourceName));
+                    RaisePropertyChanged(nameof(IsViewable));
+                    RaisePropertyChanged(nameof(IsEditable));
+                }
+            }
+        }
+
+        public ProtocolBaseViewModel(ProtocolBase psb)
         {
             Debug.Assert(psb != null);
             Server = psb;
-            // TODO how it works with a tmp server?
-            DataSourceName = dataSource.DataSourceName;
-            psb.DataSourceName = dataSource.DataSourceName;
-            IsViewable = IsEditable = dataSource.IsWritable;
+            _server = psb;
+
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
                 HoverNoteDisplayControl = new NoteIcon(this.Server);
             }
             LastConnectTime = ConnectTimeRecorder.Get(Server);
             TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
+
+
+            // TODO how it works with a tmp server?
         }
 
-        public object OrgDisplayNameControl => new TextBlock() { Text = Server?.DisplayName, };
-        public object OrgSubTitleControl => new TextBlock() { Text = Server?.SubTitle, };
 
+        private object? _orgDisplayNameControl = null;
+        public object OrgDisplayNameControl
+        {
+            get
+            {
+                if (_orgDisplayNameControl is not TextBlock
+                    || (_orgDisplayNameControl is TextBlock tb && tb.Text != Server?.DisplayName))
+                {
+                    _orgDisplayNameControl = new TextBlock() { Text = Server?.DisplayName, };
+                }
+                return _orgDisplayNameControl;
+            }
+        }
+
+        private object? _orgSubTitleControl = null;
+        public object OrgSubTitleControl
+        {
+            get
+            {
+                if (_orgSubTitleControl is not TextBlock
+                    || (_orgSubTitleControl is TextBlock tb && tb.Text != Server?.SubTitle))
+                {
+                    _orgSubTitleControl = new TextBlock() { Text = Server?.SubTitle, };
+                }
+                return _orgSubTitleControl;
+            }
+        }
 
         private object? _displayNameControl = null;
         public object? DisplayNameControl

@@ -11,6 +11,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
+using _1RM.View.Launcher;
 using Shawn.Utils;
 using Stylet;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
@@ -44,7 +45,7 @@ namespace _1RM.Model
                 var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
                 // do not reload when any selected / launcher is shown / editor view is show
                 if (mainWindowViewModel.EditorViewModel != null
-                    || listPageViewModel.ServerListItems.Any(x => x.IsSelected)
+                    || listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel.View?.IsVisible == true)
                 {
                     return;
@@ -186,7 +187,7 @@ namespace _1RM.Model
         public void AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
             dataSource.Database_InsertServer(protocolServer);
-            VmItemList.Add(new ProtocolBaseViewModel(protocolServer, dataSource));
+            VmItemList.Add(new ProtocolBaseViewModel(protocolServer));
             VmItemListDataChanged?.Invoke();
         }
 
@@ -208,8 +209,37 @@ namespace _1RM.Model
                     i = VmItemList.IndexOf(old);
                     VmItemList.Remove(old);
                 }
-                VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer, source)); 
+                VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer)); 
                 VmItemListDataChanged?.Invoke();
+            }
+
+
+
+            {
+                var serverListPageViewModel = IoC.Get<ServerListPageViewModel>();
+                if (serverListPageViewModel != null)
+                {
+                    var old = serverListPageViewModel.VmServerList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
+                    if (old != null
+                        && old.Server != protocolServer)
+                    {
+                        old.Server = protocolServer;
+                    }
+                }
+            }
+
+
+            {
+                var serverSelectionsViewModel = IoC.Get<ServerSelectionsViewModel>();
+                if (serverSelectionsViewModel != null)
+                {
+                    var old = serverSelectionsViewModel.VmServerList.FirstOrDefault(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
+                    if (old != null
+                        && old.Server != protocolServer)
+                    {
+                        old.Server = protocolServer;
+                    }
+                }
             }
         }
 
@@ -235,7 +265,7 @@ namespace _1RM.Model
                                 i = VmItemList.IndexOf(old);
                                 VmItemList.Remove(old);
                             }
-                            VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer, source));
+                            VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer));
                         }
                     }
                 }
