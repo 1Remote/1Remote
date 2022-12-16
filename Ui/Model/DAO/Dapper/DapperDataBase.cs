@@ -156,8 +156,9 @@ VALUES
         {
             lock (this)
             {
+                if(protocolBase.IsTmpSession())
+                    protocolBase.Id = Ulid.NewUlid().ToString();
                 var server = protocolBase.ToDbServer();
-                server.Id = Ulid.NewUlid().ToString();
                 var ret = _dbConnection?.Execute(SqlInsert, server);
                 if (ret > 0)
                     SetDataUpdateTimestamp();
@@ -170,11 +171,12 @@ VALUES
             lock (this)
             {
                 var rng = new NUlid.Rng.MonotonicUlidRng();
-                var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
-                foreach (var s in servers)
+                foreach (var protocolBase in protocolBases)
                 {
-                    s.Id = Ulid.NewUlid(rng).ToString();
+                    if (protocolBase.IsTmpSession())
+                        protocolBase.Id = Ulid.NewUlid(rng).ToString();
                 }
+                var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
                 var ret = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
                 if (ret > 0)
                     SetDataUpdateTimestamp();

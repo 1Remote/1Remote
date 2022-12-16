@@ -72,13 +72,13 @@ namespace _1RM.Model
                             IoC.Get<MainWindowViewModel>()?.ShowMe();
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                     }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                    {
+                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                            IoC.Get<MainWindowViewModel>()?.ShowMe();
+                        GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
+                    }));
                 }
-                //actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
-                //{
-                //    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                //        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                //    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server,  showAnimation: false);
-                //}));
             };
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {

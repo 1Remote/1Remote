@@ -32,6 +32,7 @@ namespace _1RM.Model.Protocol.Base
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
         {
+            GenerateIdForTmpSession();
             Protocol = protocol;
             ClassVersion = classVersion;
             ProtocolDisplayName = protocolDisplayName;

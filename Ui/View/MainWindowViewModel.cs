@@ -17,6 +17,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using _1RM.View.Host.ProtocolHosts;
+using _1RM.View.ServerList;
 using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -94,7 +95,7 @@ namespace _1RM.View
             _appData = appData;
             SourceService = sourceService;
             ConfigurationService = configurationService;
-            ShowList();
+            ShowList(false);
         }
 
         public Action? OnMainWindowViewLoaded = null;
@@ -193,11 +194,15 @@ namespace _1RM.View
         }
 
 
-        public void ShowList()
+        public void ShowList(bool clearSelection)
         {
             EditorViewModel = null;
             ShowAbout = false;
             ShowSetting = false;
+            if (clearSelection)
+            {
+                ServerListViewModel.ClearSelection();
+            }
         }
 
         public bool IsShownList()
@@ -266,7 +271,7 @@ namespace _1RM.View
                 switch (goPage)
                 {
                     case EnumMainWindowPage.List:
-                        ShowList();
+                        ShowList(false);
                         break;
                     case EnumMainWindowPage.About:
                         CmdGoAboutPage?.Execute();

@@ -24,6 +24,7 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
 using _1RM.Service.DataSource;
+using _1RM.View.ServerList;
 
 namespace _1RM.Service
 {
@@ -360,8 +361,6 @@ namespace _1RM.Service
             Debug.Assert(_appData.VmItemList.Any(x => x.Id == serverId));
             _configurationService.Engagement.ConnectCount++;
             _configurationService.Save();
-            // clear selected state
-            _appData.UnselectAllServers();
 
             var vmServer = _appData.VmItemList.FirstOrDefault(x => x.Id == serverId);
             if (vmServer?.Server == null)

@@ -69,7 +69,7 @@ namespace _1RM.View
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
             }
         }
