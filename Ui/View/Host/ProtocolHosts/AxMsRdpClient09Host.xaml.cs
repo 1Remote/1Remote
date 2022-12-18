@@ -11,6 +11,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -240,20 +241,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 && _rdpClient != null
                 && ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices)
             {
-                // 0.7 版本迁移到 .NET6 后，出现 lParam 的值超过 int 最大值的情况。之后会出现错误 `Arithmetic operation resulted in an overflow  HwndSourceHook`
-                // rdp.NotifyRedirectDeviceChange((uint)32772, (int)828770869472)
-                // 但这样改了以后 USB 设备重定向功能可能会失效
-                if (lParam.ToInt64() < int.MaxValue && lParam.ToInt64() > int.MinValue)
-                {
-                    SimpleLogHelper.Debug($"RDP: NotifyRedirectDeviceChange({wParam}, {lParam})");
-                    uint iwParam = (uint)(wParam.ToInt32());
-                    int ilParam = (int)(lParam.ToInt32());
-                    ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).NotifyRedirectDeviceChange(iwParam, ilParam);
-                }
-                else
-                {
-                    SimpleLogHelper.Warning($"RDP: NotifyRedirectDeviceChange overflow value({wParam}, {lParam})");
-                }
+                new MsRdpClientNonScriptableWrapper(_rdpClient.GetOcx()).NotifyRedirectDeviceChange(wParam, lParam);
             }
         }
 
@@ -263,12 +251,15 @@ namespace _1RM.View.Host.ProtocolHosts
             SimpleLogHelper.Debug("RDP Host: init Redirect");
 
             #region Redirect
-            // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
-            ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableDiskDrives == true;
-            // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
-            ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = _rdpSettings.EnableDiskDrives == true;
 
             _rdpClient.AdvancedSettings9.RedirectDrives = _rdpSettings.EnableDiskDrives == true;
+            if (_rdpClient.AdvancedSettings9.RedirectDrives)
+            {
+                // enable then usb disk can be redirect
+                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableDiskDrives == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
+                // purpose is not clear
+                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = _rdpSettings.EnableDiskDrives == true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
+            }
             _rdpClient.AdvancedSettings9.RedirectClipboard = _rdpSettings.EnableClipboard == true;
             _rdpClient.AdvancedSettings9.RedirectPrinters = _rdpSettings.EnablePrinters == true;
             _rdpClient.AdvancedSettings9.RedirectPOSDevices = _rdpSettings.EnablePorts == true;
