@@ -444,18 +444,21 @@ namespace _1RM.Utils.KiTTY.Model
 
             string configPath = Path.Combine(AppPathHelper.Instance.KittyDirPath, "Sessions");
             var di = new DirectoryInfo(configPath);
-            var fis = di.GetFiles();
-            foreach (var fi in fis)
+            if (di.Exists)
             {
-                try
+                var fis = di.GetFiles();
+                foreach (var fi in fis)
                 {
-                    var sessionName = fi.Name;
-                    DelFromKittyPortableConfig(AppPathHelper.Instance.KittyDirPath, sessionName);
-                    DelFromKittyRegistryTable(sessionName);
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Warning(e);
+                    try
+                    {
+                        var sessionName = fi.Name;
+                        DelFromKittyPortableConfig(AppPathHelper.Instance.KittyDirPath, sessionName);
+                        DelFromKittyRegistryTable(sessionName);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Warning(e);
+                    }
                 }
             }
         }
