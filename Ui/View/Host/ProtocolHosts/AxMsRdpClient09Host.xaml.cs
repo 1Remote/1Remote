@@ -4,6 +4,7 @@ using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
+using _1RM.Utils.RdpFile;
 using MSTSCLib;
 using PRM.Model;
 using PRM.Model.Protocol;
@@ -236,20 +237,7 @@ namespace PRM.View.Host.ProtocolHosts
                 && _rdpClient != null
                 && ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices)
             {
-                // 0.7 版本迁移到 .NET6 后，出现 lParam 的值超过 int 最大值的情况。之后会出现错误 `Arithmetic operation resulted in an overflow  HwndSourceHook`
-                // rdp.NotifyRedirectDeviceChange((uint)32772, (int)828770869472)
-                // 但这样改了以后 USB 设备重定向功能可能会失效
-                if (lParam.ToInt64() < int.MaxValue && lParam.ToInt64() > int.MinValue)
-                {
-                    SimpleLogHelper.Debug($"RDP: NotifyRedirectDeviceChange({wParam}, {lParam})");
-                    uint iwParam = (uint)(wParam.ToInt32());
-                    int ilParam = (int)(lParam.ToInt32());
-                    ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).NotifyRedirectDeviceChange(iwParam, ilParam);
-                }
-                else
-                {
-                    SimpleLogHelper.Warning($"RDP: NotifyRedirectDeviceChange overflow value({wParam}, {lParam})");
-                }
+                new MsRdpClientNonScriptableWrapper(_rdpClient.GetOcx()).NotifyRedirectDeviceChange(wParam, lParam);
             }
         }
 

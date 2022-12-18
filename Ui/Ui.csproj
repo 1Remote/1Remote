@@ -22,6 +22,7 @@
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
