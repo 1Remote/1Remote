@@ -4,6 +4,7 @@ using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
+using _1RM.Utils.RdpFile;
 using MSTSCLib;
 using _1RM.Model;
 using _1RM.Model.Protocol;
