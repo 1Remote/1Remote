@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">开机自启动</s:String>
     <s:String x:Key="system_options_general_start_minimized">启动时最小化到托盘</s:String>
     <s:String x:Key="Confirm before closing">关闭远程会话前弹窗确认</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">远程桌面开启后显示当前会话的图标</s:String>
     <s:String x:Key="system_options_general_log_file_path">日志文件</s:String>
     <s:String x:Key="system_options_quick_description">快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。</s:String>
     <s:String x:Key="system_options_quick_match_providers">关键词匹配器</s:String>
@@ -165,6 +166,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">剪贴板</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">组合键</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">本地磁盘</s:String>
+    <s:String x:Key="Drives plug in latter">稍后插入的U盘</s:String>
     <s:String x:Key="server_editor_advantage_sounds">声音</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">禁用</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">在本地播放</s:String>
