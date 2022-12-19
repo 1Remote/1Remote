@@ -2,7 +2,7 @@
     <s:String x:Key="key">cs-cz</s:String>
     <s:String x:Key="language_code-ISO">cs-CZ</s:String>
     <s:String x:Key="language_code-google">cs</s:String>
-    <s:String x:Key="language_name">čeština</s:String>
+    <s:String x:Key="language_name">čeština (cs-CZ)</s:String>
     <s:String x:Key="messagebox_title_warning">PRemoteM – varování</s:String>
     <s:String x:Key="messagebox_title_error">PRemoteM – chyba</s:String>
     <s:String x:Key="messagebox_title_info">PRemoteM – informace</s:String>
@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">Spouštět automaticky při přihlášení do systému</s:String>
     <s:String x:Key="system_options_general_start_minimized">Spouštět minimalizované</s:String>
     <s:String x:Key="Confirm before closing">Zavírat až po potvrzení</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Soubor se záznamem událostí</s:String>
     <s:String x:Key="system_options_quick_description">Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter</s:String>
     <s:String x:Key="system_options_quick_match_providers">Hledání shod s klíčovými slovy</s:String>
@@ -165,6 +166,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Schránka</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Kombinace kláves</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Diskové jednotky</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Zvuky</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Vypnuto</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Přehrávat lokálně</s:String>

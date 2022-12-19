@@ -222,6 +222,19 @@ namespace PRM.View.Settings
         }
 
 
+        public bool ShowSessionIconInSessionWindow
+        {
+            get => _configurationService.General.ShowSessionIconInSessionWindow;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.ShowSessionIconInSessionWindow, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
+
 
         public bool LauncherEnabled
         {

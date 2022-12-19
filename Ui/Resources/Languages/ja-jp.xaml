@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">OSの起動時に自動的に実行</s:String>
     <s:String x:Key="system_options_general_start_minimized">最小化を開始</s:String>
     <s:String x:Key="Confirm before closing">終了する前に確認してください</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">ログファイル</s:String>
     <s:String x:Key="system_options_quick_description">クイック接続を使用すると、ホットキーを介してクイック接続バーを開くことができます。次に、キーワードを入力し、Enterキーを押して接続を開始できます。</s:String>
     <s:String x:Key="system_options_quick_match_providers">キーワードマッチャー</s:String>
@@ -165,6 +166,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">クリップボード</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">キーの組み合わせ</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">ディスクドライブ</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">音</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">無効</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">ローカルでプレイ</s:String>

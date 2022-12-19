@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">Run automatically at OS startup</s:String>
     <s:String x:Key="system_options_general_start_minimized">Start minimized</s:String>
     <s:String x:Key="Confirm before closing">Confirm before closing</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Log file</s:String>
     <s:String x:Key="system_options_quick_description">Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key</s:String>
     <s:String x:Key="system_options_quick_match_providers">Keyword-Matchers</s:String>
@@ -164,7 +165,8 @@
     <s:String x:Key="server_editor_advantage_resources">Resources</s:String>
     <s:String x:Key="server_editor_advantage_clipboard">Clipboard</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Key Combinations</s:String>
-    <s:String x:Key="server_editor_advantage_disk_drives">Disk Drives</s:String>
+    <s:String x:Key="server_editor_advantage_disk_drives">Drives</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sounds</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Disabled</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Play on local</s:String>

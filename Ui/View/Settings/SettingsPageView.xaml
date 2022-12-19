@@ -201,7 +201,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource GridOneRow}">
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                             <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
@@ -209,6 +209,17 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
                         <CheckBox Grid.Column="1" IsChecked="{Binding ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}" VerticalAlignment="Center"></CheckBox>
+                    </Grid>
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding ShowSessionIconInSessionWindow, Mode=TwoWay}" 
+                                  Content="{DynamicResource 'Show current session icon instead of the app icon when connected'}" 
+                                  VerticalAlignment="Center"></CheckBox>
                     </Grid>
 
                     <Grid Style="{StaticResource GridOneRow}">

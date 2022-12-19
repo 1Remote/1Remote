@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
     <s:String x:Key="system_options_general_start_minimized">Démarrer minimisé</s:String>
     <s:String x:Key="Confirm before closing">Confirmer avant de fermer</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Fichier journal</s:String>
     <s:String x:Key="system_options_quick_description">La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée</s:String>
     <s:String x:Key="system_options_quick_match_providers">Mots clés correspondants</s:String>
@@ -165,6 +166,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Presse-papiers</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinaisons de clés</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Disques durs</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Désactivée</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Jouez en local</s:String>
