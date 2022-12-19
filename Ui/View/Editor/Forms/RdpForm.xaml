@@ -409,7 +409,7 @@
                                         <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                             <VisualBrush.Visual>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock xml:space="preserve" FontStyle="Italic" Margin="50 0 0 0" Background="Transparent"> </TextBlock>
+                                                    <TextBlock xml:space="preserve" FontStyle="Italic" Margin="50 0 0 0" Background="Transparent"></TextBlock>
                                                     <TextBlock FontStyle="Italic" Margin="20 0 0 0">e.g. selectedmonitors:s:0,2</TextBlock>
                                                 </StackPanel>
                                             </VisualBrush.Visual>
@@ -496,15 +496,31 @@
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
-
-                    <UniformGrid Columns="3" Rows="3" Width="400" Height="90" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <UniformGrid Columns="3" Rows="3" Width="500" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <UniformGrid.Resources>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+                                <Setter Property="Margin" Value="0 5"></Setter>
+                            </Style>
+                        </UniformGrid.Resources>
                         <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_audio_capture}" IsChecked="{Binding EnableAudioCapture}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_ports}" IsChecked="{Binding EnablePorts}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
+                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding EnableRedirectDrivesPlugIn}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+                                    <Setter Property="Margin" Value="0 5"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EnableDiskDrives}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
                     </UniformGrid>
                 </StackPanel>
             </Grid>

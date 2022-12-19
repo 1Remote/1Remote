@@ -1,7 +1,7 @@
 key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp
 language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP
 language_code-google,en,zh-CN,cs,de,fr,pt,ja
-language_name,English (en-US),简体中文 (zh-CN),čeština,Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP)
+language_name,English (en-US),简体中文 (zh-CN),čeština (cs-CZ),Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP)
 messagebox_title_warning,1Remote Warning,1Remote 警告,1Remote – varování,1Remote Warnung,1Remote Warning,1Remote Warning,1Remote Warning
 messagebox_title_error,1Remote Error,1Remote 错误,1Remote – chyba,1Remote Fehler,1Remote Erreur,1Remote Error,1Remote Error
 messagebox_title_info,1Remote Info,1Remote 提示,1Remote – informace,1Remote Info,1Remote Info,1Remote Info,1Remote Info
@@ -70,6 +70,7 @@ Startup,Startup,启动,Při startu,Start,Commencez,Inicialização,起動
 system_options_general_start_when_win_login,Run automatically at OS startup,开机自启动,Spouštět automaticky při přihlášení do systému,Mit dem Betriebssystem starten,Exécuter automatiquement au démarrage du système d'exploitation,Executar automaticamente na inicialização do SO,OSの起動時に自動的に実行
 system_options_general_start_minimized,Start minimized,启动时最小化到托盘,Spouštět minimalizované,Minimiert starten,Démarrer minimisé,Iniciar minimizado,最小化を開始
 Confirm before closing,Confirm before closing,关闭远程会话前弹窗确认,Zavírat až po potvrzení,Bestätigen Sie vor dem Schließen,Confirmer avant de fermer,Confirme antes de fechar,閉じる前に確認する
+Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,远程桌面开启后显示当前会话的图标,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected
 system_options_general_log_file_path,Log file,日志文件,Soubor se záznamem událostí,Logdatei,Fichier journal,Arquivo de LOG,ログファイル
 system_options_quick_description,"Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key",快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。,"Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter","Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.","La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée","A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter",クイック接続を使用すると、ホットキーを介してクイック接続バーを開くことができます。次に、キーワードを入力し、Enterキーを押して接続を開始できます。
 system_options_quick_match_providers,Keyword-Matchers,关键词匹配器,Hledání shod s klíčovými slovy,Keyword-Matcher,Mots clés correspondants,Correspondentes de palavras-chave,キーワードマッチャー
@@ -163,7 +164,8 @@ server_editor_advantage_admin,For administering a server,连接到会话以管�
 server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Ressourcen,Ressources,Recursos,資力
 server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,クリップボード
 server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,キーの組み合わせ
-server_editor_advantage_disk_drives,Disk Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,ディスクドライブ
+server_editor_advantage_disk_drives,Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,ディスクドライブ
+Drives plug in latter,Drives plug in latter,稍后插入的U盘,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter
 server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,音
 server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,Deaktiviert,Désactivée,Desabilitado,無効
 server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,Lokal spielen,Jouez en local,Rode localmente,ローカルでプレイ

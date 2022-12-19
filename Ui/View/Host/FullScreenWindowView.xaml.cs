@@ -60,7 +60,8 @@ namespace _1RM.View.Host
             if (this.IsLoaded && Host != null)
             {
                 this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
-                this.Icon = Host.ProtocolServer.IconImg;
+                this.Icon = IoC.Get<ConfigurationService>().General.ShowSessionIconInSessionWindow ?
+                    Host.ProtocolServer.IconImg : null;
                 Host.SetParentWindow(this);
             }
         }
