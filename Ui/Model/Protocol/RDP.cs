@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Newtonsoft.Json;
@@ -228,6 +229,8 @@ namespace PRM.Model.Protocol
         #region resource switch
 
         private bool? _enableClipboard = true;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnableClipboard
         {
             get => _enableClipboard;
@@ -235,13 +238,31 @@ namespace PRM.Model.Protocol
         }
 
         private bool? _enableDiskDrives = false;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
-            set => SetAndNotifyIfChanged(ref _enableDiskDrives, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _enableDiskDrives, value);
+                if (value == false)
+                    EnableRedirectDrivesPlugIn = value;
+            }
+        }
+
+        private bool? _enableRedirectDrivesPlugIn = false;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool? EnableRedirectDrivesPlugIn
+        {
+            get => _enableRedirectDrivesPlugIn;
+            set => SetAndNotifyIfChanged(ref _enableRedirectDrivesPlugIn, value);
         }
 
         private bool? _enableKeyCombinations = true;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnableKeyCombinations
         {
             get => _enableKeyCombinations;
@@ -250,6 +271,8 @@ namespace PRM.Model.Protocol
 
 
         private EAudioRedirectionMode? _audioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
+        [DefaultValue(EAudioRedirectionMode.RedirectToLocal)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public EAudioRedirectionMode? AudioRedirectionMode
         {
             get => _audioRedirectionMode;
@@ -258,6 +281,8 @@ namespace PRM.Model.Protocol
 
 
         private bool? _enableAudioCapture = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnableAudioCapture
         {
             get => _enableAudioCapture;
@@ -266,6 +291,8 @@ namespace PRM.Model.Protocol
 
 
         private bool? _enablePorts = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnablePorts
         {
             get => _enablePorts;
@@ -274,6 +301,8 @@ namespace PRM.Model.Protocol
 
 
         private bool? _enablePrinters = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnablePrinters
         {
             get => _enablePrinters;
@@ -282,6 +311,8 @@ namespace PRM.Model.Protocol
 
 
         private bool? _enableSmartCardsAndWinHello = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool? EnableSmartCardsAndWinHello
         {
             get => _enableSmartCardsAndWinHello;
