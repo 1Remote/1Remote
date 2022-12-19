@@ -251,13 +251,13 @@ namespace _1RM.View.Host.ProtocolHosts
             Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Redirect");
 
-            #region Redirect
 
+            #region Redirect
             _rdpClient.AdvancedSettings9.RedirectDrives = _rdpSettings.EnableDiskDrives == true;
             if (_rdpClient.AdvancedSettings9.RedirectDrives)
             {
                 // enable then usb disk can be redirect
-                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableDiskDrives == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
+                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableRedirectDrivesPlugIn == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
                 // purpose is not clear
                 ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = _rdpSettings.EnableDiskDrives == true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
             }

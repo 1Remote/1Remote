@@ -37,6 +37,9 @@ namespace _1RM.Service
         public bool AppStartMinimized = true;
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowSessionIconInSessionWindow = true;
         #endregion
     }
 

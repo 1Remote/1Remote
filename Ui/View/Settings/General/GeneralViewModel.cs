@@ -72,5 +72,18 @@ namespace _1RM.View.Settings.General
                 }
             }
         }
+
+
+        public bool ShowSessionIconInSessionWindow
+        {
+            get => _configurationService.General.ShowSessionIconInSessionWindow;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.ShowSessionIconInSessionWindow, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
     }
 }

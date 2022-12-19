@@ -71,6 +71,7 @@
     <s:String x:Key="system_options_general_start_when_win_login">Executar automaticamente na inicialização do SO</s:String>
     <s:String x:Key="system_options_general_start_minimized">Iniciar minimizado</s:String>
     <s:String x:Key="Confirm before closing">Confirme antes de fechar</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Arquivo de LOG</s:String>
     <s:String x:Key="system_options_quick_description">A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter</s:String>
     <s:String x:Key="system_options_quick_match_providers">Correspondentes de palavras-chave</s:String>
@@ -165,6 +166,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Área de transferência</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinações de teclas</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Unidades de disco</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Desabilitado</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Rode localmente</s:String>
