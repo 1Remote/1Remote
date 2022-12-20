@@ -1,5 +1,6 @@
 ﻿using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
+using Newtonsoft.Json.Linq;
 
 namespace _1RM.Utils.PRemoteM;
 
@@ -12,7 +13,25 @@ internal class PRemoteMServer : IDataBaseServer
 
     public ProtocolBase? ToProtocolServerBase()
     {
-        return ItemCreateHelper.CreateFromDbOrm(this);
+        var x = ItemCreateHelper.CreateFromDbOrm(this);
+        if (string.IsNullOrEmpty(x.DisplayName))
+        {
+            // 尝试从更老的版本读取 DispName
+            var o = JObject.Parse(this.JsonConfigString);
+            if (o.Property("DispName") != null)
+            {
+                x.DisplayName = ((string?)(o["DispName"])) ?? "";
+            }
+            if (o.Property("GroupName") != null && x.Tags.Count == 0)
+            {
+                var tag = ((string?)(o["DispName"])) ?? "";
+                if (string.IsNullOrEmpty(tag))
+                {
+                    x.Tags.Add(tag);
+                }
+            }
+        }
+        return x;
     }
 
     public string GetId()
