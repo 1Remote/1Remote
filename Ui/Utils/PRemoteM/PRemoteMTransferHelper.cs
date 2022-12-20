@@ -84,7 +84,12 @@ namespace _1RM.Utils.PRemoteM
         private static List<string> FindDatabase()
         {
             var dbPaths = new List<string>();
-            var appNames = new string[] { "PRemoteM", "PRemoteM_Debug" };
+            var appNames = new string[] {
+                "PRemoteM",
+#if DEBUG
+                "PRemoteM_Debug",
+#endif
+            };
 
 
             foreach (var appName in appNames)
@@ -193,6 +198,7 @@ namespace _1RM.Utils.PRemoteM
                             if (server is { })
                             {
                                 // DecryptToRamLevel
+                                if(rsa != null)
                                 {
                                     server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
                                     if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
