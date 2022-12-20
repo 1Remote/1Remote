@@ -446,7 +446,7 @@ namespace _1RM.View.ServerList
                                 }
                             }
                             source.Database_InsertServer(list);
-                            AppData.ReloadServerList();
+                            AppData.ReloadServerList(true);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {

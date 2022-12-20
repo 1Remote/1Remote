@@ -18,9 +18,13 @@ namespace _1RM.Service.DataSource.Model
 {
     public abstract partial class DataSourceBase : NotifyPropertyChangedBase
     {
-        protected bool _isWritable = true;
+        private bool _isWritable = true;
         [JsonIgnore]
-        public bool IsWritable => _isWritable;
+        public bool IsWritable
+        {
+            get => _isWritable;
+            protected set => SetAndNotifyIfChanged(ref _isWritable, value);
+        }
 
         /// <summary>
         /// 已缓存的服务器信息
@@ -97,7 +101,15 @@ namespace _1RM.Service.DataSource.Model
             var dataBase = GetDataBase();
             // open db or create db.
             Debug.Assert(dataBase != null);
-            dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
+
+            var connectionString = GetConnectionString(connectTimeOutSeconds);
+            if (connectionString != _lastConnectionString)
+            {
+                dataBase.CloseConnection();
+                _lastConnectionString = connectionString;
+            }
+
+            dataBase.OpenNewConnection(DatabaseType, connectionString);
             try
             {
                 dataBase.InitTables();
@@ -106,7 +118,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 SimpleLogHelper.Warning(e);
             }
-            dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
+            dataBase.OpenNewConnection(DatabaseType, connectionString);
             if (dataBase.IsConnected())
             {
                 if (Status != EnumDbStatus.NotConnectedYet)
@@ -133,17 +145,26 @@ namespace _1RM.Service.DataSource.Model
                 dataBase.CloseConnection();
         }
 
+
+        private static string _lastConnectionString = "";
         public virtual EnumDbStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
             EnumDbStatus ret = EnumDbStatus.NotConnectedYet;
             var dataBase = GetDataBase();
+
+            var connectionString = GetConnectionString(connectTimeOutSeconds);
+            if (connectionString != _lastConnectionString)
+            {
+                dataBase.CloseConnection();
+                _lastConnectionString = connectionString;
+            }
 
             // check connectable
             if (dataBase.IsConnected() == false)
             {
                 try
                 {
-                    dataBase.OpenNewConnection(DatabaseType, GetConnectionString(connectTimeOutSeconds));
+                    dataBase.OpenNewConnection(DatabaseType, connectionString);
                 }
                 catch (Exception e)
                 {
@@ -174,7 +195,7 @@ namespace _1RM.Service.DataSource.Model
                 }
 
                 // check readable
-                _isWritable = dataBase.CheckWritable();
+                IsWritable = dataBase.CheckWritable();
                 var isReadable = dataBase.CheckReadable();
                 if (isReadable == false)
                 {
