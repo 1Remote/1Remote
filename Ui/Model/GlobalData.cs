@@ -187,6 +187,7 @@ namespace _1RM.Model
                 VmItemList.Add(@new);
                 IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
                 IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
+                ReadTagsFromServers();
             }
             else
             {
@@ -209,6 +210,7 @@ namespace _1RM.Model
                 var old = VmItemList.First(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                 // invoke main list ui change & invoke launcher ui change
                 old.Server = protocolServer;
+                ReadTagsFromServers();
             }
             else
             {
@@ -247,6 +249,10 @@ namespace _1RM.Model
             {
                 ReloadServerList();
             }
+            else
+            {
+                ReadTagsFromServers();
+            }
             StartTick();
         }
 
@@ -267,6 +273,7 @@ namespace _1RM.Model
                     VmItemList.Remove(old);
                     IoC.Get<ServerListPageViewModel>()?.VmServerList?.Remove(old); // invoke main list ui change
                     IoC.Get<ServerSelectionsViewModel>()?.VmServerList?.Remove(old); // invoke launcher ui change
+                    ReadTagsFromServers();
                 }
                 else
                 {
@@ -303,6 +310,10 @@ namespace _1RM.Model
             if (needReload)
             {
                 ReloadServerList();
+            }
+            else
+            {
+                ReadTagsFromServers();
             }
             StartTick();
         }

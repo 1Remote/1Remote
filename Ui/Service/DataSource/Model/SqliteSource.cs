@@ -23,7 +23,7 @@ namespace _1RM.Service.DataSource.Model
                 var newValue = value.Replace(Environment.CurrentDirectory, ".");
                 SetAndNotifyIfChanged(ref _path, newValue);
                 var fi = new FileInfo(Path);
-                _isWritable = fi.IsReadOnly == false;
+                IsWritable = fi.IsReadOnly == false;
             }
         }
 

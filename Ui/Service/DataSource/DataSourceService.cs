@@ -113,18 +113,16 @@ namespace _1RM.Service.DataSource
                     return InitLocalDataSource(localConfig);
                 }
 
+                // remove the old one
                 var olds = AdditionalSources.Where(x => x.Value == config);
                 foreach (var pair in olds)
                 {
                     AdditionalSources.TryRemove(pair.Key, out var _);
                 }
+                AdditionalSources.TryRemove(config.DataSourceName, out var _);
 
-                // remove the old one
-                if (AdditionalSources.TryRemove(config.DataSourceName, out var old))
-                {
-                    old?.Database_CloseConnection();
-                }
 
+                config.Database_CloseConnection();
                 var ret = config.Database_SelfCheck();
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
                 return ret;
