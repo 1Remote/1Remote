@@ -36,7 +36,7 @@ Use one of the following methods to install the application:
 
 - [GitHub release](https://github.com/1Remote/1Remote/releases)
 - [Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
-- [Chocolatey](https://chocolatey.org/packages/1Remote): `choco install 1Remote`
+- [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
 ### Requirements
 
