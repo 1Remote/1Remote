@@ -23,14 +23,14 @@ This App Will Rename to 1Remote in the feature..
 - Multi-screen and HiDPI RDP connection (Test on **Win10 + 4k monitor *2** RDP TO **Win2016**)
 - Detailed connection configuration: tags, icons, colors, connection scripts etc.
 - Multiple languages, themes and tabbed interface
-- [Import connections from mRemoteNG](https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/Migrate.jpg)
+- [Import connections from mRemoteNG](https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/Migrate.jpg)
 - [Password encryption via RSA](https://github.com/1Remote/1Remote/wiki/Security)
 - Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://github.com/1Remote/1Remote/wiki/%5BProtocol%5D--Protocol-Runners)
 - Portable - just unpack and run
 
 ## Installation
 
-Latest Version: 0.7.2
+Latest Version: 0.7.1.7
 
 Use one of the following methods to install the application:
 
@@ -55,11 +55,11 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 
 ## Overview
 
-<img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/maindemo.png" width="800" />
+<img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/maindemo.png" width="800" />
 
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/quickstart.gif" width="400"/>
+    <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
 </p>
 
 <p align="center">
@@ -68,7 +68,7 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/tab.gif" width="500" />
+    <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/tab.gif" width="500" />
 </p>
 
 <p align="center">
@@ -76,7 +76,7 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 </p>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/multi-screen.jpg" width="500"/>
+    <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500"/>
 </p>
 
 
@@ -85,7 +85,7 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 </p>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/RemoteApp/demo.jpg" width="800"/>
+    <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800"/>
 </p>
 
 <p align="center">
@@ -93,7 +93,7 @@ P.S. You can clone the code and remove all of the Win10 dependencies if you are 
 </p>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/1Remote/1Remote/Doc/DocPic/Runner/vnc_runners.jpg" width="800"/>
+    <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/Runner/vnc_runners.jpg" width="800"/>
 </p>
 
 <p align="center">
