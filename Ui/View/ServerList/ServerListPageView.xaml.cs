@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
+using Shawn.Utils.Wpf;
 
 namespace _1RM.View.ServerList
 {
@@ -18,6 +21,12 @@ namespace _1RM.View.ServerList
             {
                 var p = args.GetPosition(GridBottom);
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
+            };
+
+            Loaded += (sender, args) =>
+            {
+                _checkBoxSelectedAll = CheckBoxSelectedAll;
+                _lvServerCards = LvServerCards;
             };
         }
 
@@ -39,30 +48,62 @@ namespace _1RM.View.ServerList
                 t.IsVisible = e.Accepted;
             }
         }
-    }
 
-
-    public class ConverterTagsIndicatorIsShow : IMultiValueConverter
-    {
-        public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
         {
-            if (value.Length > 1
-               && value[0] is List<TagFilter> selectedTagNames
-               && value[1] is ObservableCollection<Tag> tags)
+            ItemsCheckBox_OnClick_Static(sender, e);
+        }
+
+        private static CheckBox? _checkBoxSelectedAll;
+        private static ListBox? _lvServerCards;
+        public static void ItemsCheckBox_OnClick_Static(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is not CheckBox checkBox) return;
+            if (_checkBoxSelectedAll == null) return;
+            if (_lvServerCards == null) return;
+
+            if (checkBox == _checkBoxSelectedAll)
             {
-                if (selectedTagNames.Count == 0)
-                    return false;
-                else
-                    return true;
+                var expanderList = MyVisualTreeHelper.FindVisualChilds<Expander>(_lvServerCards);
+                foreach (var expander in expanderList)
+                {
+                    if (expander.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+                    {
+                        headerCheckBox.IsChecked = checkBox.IsChecked == true;
+                    }
+                }
             }
-            return false;
-        }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
+            if (checkBox.Name == "HeaderCheckBox")
+            {
+                var group = (CollectionViewGroup)checkBox.DataContext;
+                foreach (ProtocolBaseViewModel item in group.Items)
+                {
+                    item.IsSelected = checkBox.IsChecked == true;
+                }
+            }
+            else if (string.IsNullOrEmpty(checkBox.Tag?.ToString()))
+            {
+                var expander = MyVisualTreeHelper.VisualUpwardSearch<Expander>(checkBox);
+                if (expander?.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+                {
+                    var group = (CollectionViewGroup)expander.DataContext;
+                    if (group.Items.OfType<ProtocolBaseViewModel>().Any(x => x.IsSelected))
+                    {
+                        if (group.Items.OfType<ProtocolBaseViewModel>().All(x => x.IsSelected))
+                            headerCheckBox.IsChecked = true;
+                        else
+                            headerCheckBox.IsChecked = null;
+                    }
+                    else
+                    {
+                        headerCheckBox.IsChecked = false;
+                    }
+                }
+            }
         }
     }
 
+    
     public class ConverterTagName : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -75,6 +116,40 @@ namespace _1RM.View.ServerList
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
+
+
+    public class ConverterGroupIsSelected : IMultiValueConverter
+    {
+        /*****
+            <DataTrigger.Binding>
+                <MultiBinding Converter="{StaticResource ConverterIsEqual}" >
+                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
+                    <Binding Path="Name" Mode="OneWay"></Binding>
+                </MultiBinding>
+            </DataTrigger.Binding>
+         */
+        public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value.Length == 2
+                && value[0] is IEnumerable<ProtocolBaseViewModel> protocolBaseViewModels
+                && value[1] is string groupName)
+            {
+                if (protocolBaseViewModels.Where(x => x.Server.DataSourceName == groupName).Any(x => x.IsSelected))
+                {
+                    if (protocolBaseViewModels.Where(x => x.Server.DataSourceName == groupName).All(x => x.IsSelected))
+                        return true;
+                    return null;
+                }
+            }
+            return false;
+        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }

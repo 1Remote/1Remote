@@ -98,9 +98,23 @@ namespace _1RM.View.ServerList
         }
 
 
-        public bool IsSelectedAll
+        public bool? IsSelectedAll
         {
-            get => VmServerList.Any(x => x.IsVisible) && VmServerList.Where(x => x.IsVisible).All(x => x.IsSelected);
+            get
+            {
+                var items = VmServerList.Where(x => x.IsVisible);
+                if (items.Any(x => x.IsSelected))
+                {
+                    if (items.All(x => x.IsSelected))
+                        return true;
+                    else
+                        return null;
+                }
+                else
+                {
+                    return false;
+                }
+            }
             set
             {
                 if (value == false)
@@ -112,9 +126,9 @@ namespace _1RM.View.ServerList
                 }
                 else
                 {
-                    foreach (var vmServerCard in VmServerList)
+                    foreach (var protocolBaseViewModel in VmServerList)
                     {
-                        vmServerCard.IsSelected = vmServerCard.IsVisible;
+                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
                     }
                 }
                 RaisePropertyChanged();
@@ -171,7 +185,6 @@ namespace _1RM.View.ServerList
             }
         }
 
-        private string _filterString = "";
         protected override void OnViewLoaded()
         {
             if (GlobalEventHelper.OnRequestDeleteServer == null)
@@ -183,13 +196,6 @@ namespace _1RM.View.ServerList
                         AppData.DeleteServer(server);
                     }
                 };
-
-            GlobalEventHelper.OnFilterChanged += (filterString) =>
-            {
-                if (_filterString == filterString) return;
-                _filterString = filterString;
-                CalcVisibleByFilter(_filterString);
-            };
 
 
             AppData.OnDataReloaded += RebuildVmServerList;
@@ -302,29 +308,12 @@ namespace _1RM.View.ServerList
             }
         }
 
-        public void CalcVisibleByFilter(string filterString)
+        public void RefreshCollectionViewSource()
         {
             if (this.View is ServerListPageView v)
             {
                 Execute.OnUIThread(() => { CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh(); });
             }
-            //var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
-            //var tagFilters = tmp.Item1;
-            //var keyWords = tmp.Item2;
-            //TagFilters = tagFilters;
-            //var newList = new List<ProtocolBaseViewModel>();
-            //foreach (var vm in AppData.VmItemList)
-            //{
-            //    var server = vm.Server;
-            //    var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, keyWords);
-            //    if (s.Item1 == true)
-            //    {
-            //        newList.Add(vm);
-            //    }
-            //}
-            //VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList);
-            //RaisePropertyChanged(nameof(IsSelectedAll));
-            //RaisePropertyChanged(nameof(IsAnySelected));
         }
 
         public void ClearSelection()

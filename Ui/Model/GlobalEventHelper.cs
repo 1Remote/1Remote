@@ -70,6 +70,5 @@ namespace _1RM.Model
         public static Action? OnLauncherHotKeyChanged { get; set; }
 
         public delegate void OnFilterChangedDelegate(string filterString = "");
-        public static OnFilterChangedDelegate? OnFilterChanged { get; set; }
     }
 }

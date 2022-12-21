@@ -106,7 +106,6 @@ namespace _1RM.View
                 ServerSelectionsViewModel.NoteField = window.NoteField;
                 window.Deactivated += (s, a) => { HideMe(); };
                 window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
-                //ServerSelectionsViewModel.CalcVisibleByFilter();
                 ServerSelectionsViewModel.CalcNoteFieldVisibility();
             }
         }

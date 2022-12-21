@@ -132,7 +132,7 @@ namespace _1RM.View.ServerList
                 }
 
                 TagFilters = filters;
-                IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).KeyWords);
+                IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString).KeyWords);
             }
         }
 
