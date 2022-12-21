@@ -384,7 +384,7 @@ namespace _1RM.View.ServerList
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.SaveFile(
-                        title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
+                        title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
                         filter: "json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
                     if (path == null) return;

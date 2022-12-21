@@ -529,16 +529,16 @@
                                         </dragablz:DragablzItemsControl.MaxWidth>
                                     </dragablz:DragablzItemsControl>
                                     <Button Content="Add"
-                                    x:Name="DefaultAddButton"
-                                    Grid.Column="2"
-                                    Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
-                                    Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            x:Name="DefaultAddButton"
+                                            Grid.Column="2"
+                                            Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
+                                            Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                     <ContentControl Grid.Column="3" x:Name="SuffixContentControl"
-                                            Content="{TemplateBinding HeaderSuffixContent}"
-                                            ContentStringFormat="{TemplateBinding HeaderSuffixContentStringFormat}"
-                                            ContentTemplate="{TemplateBinding HeaderSuffixContentStringFormat}"
-                                            ContentTemplateSelector="{TemplateBinding HeaderSuffixContentTemplateSelector}"
-                                            HorizontalAlignment="Stretch" />
+                                                    Content="{TemplateBinding HeaderSuffixContent}"
+                                                    ContentStringFormat="{TemplateBinding HeaderSuffixContentStringFormat}"
+                                                    ContentTemplate="{TemplateBinding HeaderSuffixContentStringFormat}"
+                                                    ContentTemplateSelector="{TemplateBinding HeaderSuffixContentTemplateSelector}"
+                                                    HorizontalAlignment="Stretch" />
 
 
                                     <!--MarkColor border top-->

@@ -91,7 +91,7 @@
             <Button Width="200" Height="40"
                     Command="{Binding CmdShowPage}"
                     CommandParameter="{x:Static view:EnumMainWindowPage.SettingsData}"
-                    Content="{DynamicResource system_options_data_security_title}">
+                    Content="{DynamicResource system_options_data_security_database}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
                         <Style.Triggers>

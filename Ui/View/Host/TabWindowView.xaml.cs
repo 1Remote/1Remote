@@ -9,7 +9,7 @@ namespace _1RM.View.Host
             InitializeComponent();
             this.Loaded += (sender, args) =>
             {
-                base.Init(TabablzControl);
+                base.SetTabablzControl(TabablzControl);
             };
         }
     }

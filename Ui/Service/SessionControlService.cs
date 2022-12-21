@@ -517,20 +517,7 @@ namespace _1RM.Service
                 Debug.Assert(!_token2TabWindows.ContainsKey(token));
                 Debug.Assert(!string.IsNullOrEmpty(token));
                 _token2TabWindows.TryAdd(token, tab);
-                tab.Activated += (sender, args) =>
-                    _lastTabToken = tab.Token;
-
-                // set location
-                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
-                tab.WindowStartupLocation = WindowStartupLocation.Manual;
-                if (tab.Width > screenEx.VirtualWorkingArea.Width
-                    || tab.Height > screenEx.VirtualWorkingArea.Height)
-                {
-                    tab.Width = screenEx.VirtualWorkingArea.Width;
-                    tab.Height = screenEx.VirtualWorkingArea.Height;
-                }
-                tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
-                tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+                tab.Activated += (sender, args) => _lastTabToken = tab.Token;
                 tab.Show();
                 _lastTabToken = tab.Token;
 
@@ -658,18 +645,15 @@ namespace _1RM.Service
                             Execute.OnUIThread(() =>
                             {
                                 tab.GetViewModel().Items.Remove(tabItemVm);
-                                if (tab.GetViewModel().Items.Count == 0)
+                                var items = tab.GetViewModel().Items.ToList();
+                                if (items.Count == 0)
                                 {
                                     tab.Hide();
+                                    // move tab from dict to queue
+                                    _token2TabWindows.TryRemove(key, out _);
+                                    _windowToBeDispose.Enqueue(tab);
                                 }
                             });
-
-                            // move tab from dict to queue
-                            if (tab.GetViewModel().Items.Count == 0)
-                            {
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
                         }
                     }
 
@@ -705,8 +689,8 @@ namespace _1RM.Service
                     foreach (var kv in _token2TabWindows)
                     {
                         var tab = kv.Value;
-                        var vm = tab.GetViewModel();
-                        if (vm.Items.Any(x => x.Host.ConnectionId == id))
+                        var items = tab.GetViewModel().Items.ToList();
+                        if (items.Any(x => x.Host.ConnectionId == id))
                         {
                             unhandledFlag = false;
                             break;
@@ -769,7 +753,9 @@ namespace _1RM.Service
             {
                 var key = kv.Key;
                 var tab = kv.Value;
-                if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
+                var items = tab.GetViewModel().Items.ToList();
+                items = items.Where(x => x != null).ToList();
+                if (items.Count == 0 || items.All(x => _connectionId2Hosts.ContainsKey(x?.Content?.ConnectionId ?? "****") == false))
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing tab({tab.GetHashCode()})");
                     ++closeCount;
@@ -839,7 +825,7 @@ namespace _1RM.Service
 
         private void PrintCacheCount([CallerMemberName] string callMember = "")
         {
-            SimpleLogHelper.Info($@"{callMember}: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}, WindowToBeDispose = {_windowToBeDispose.Count}");
+            SimpleLogHelper.Debug($@"{callMember}: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}, WindowToBeDispose = {_windowToBeDispose.Count}");
         }
     }
 }
