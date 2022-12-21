@@ -9,12 +9,6 @@ namespace _1RM.Model.DAO
         NotConnectedYet,
         AccessDenied,
         LostConnection,
-
-        RsaPrivateKeyNotFound,
-        RsaPrivateKeyFormatError,
-        RsaNotMatched,
-        DataIsDamaged,
-
         OK,
     }
 
@@ -45,23 +39,11 @@ namespace _1RM.Model.DAO
                 case EnumDbStatus.AccessDenied:
                     return lang.Translate("string_database_error_permission_denied");
 
-                case EnumDbStatus.RsaPrivateKeyNotFound:
-                    return lang.Translate("string_database_error_rsa_private_key_not_found");
-
-                case EnumDbStatus.RsaPrivateKeyFormatError:
-                    return lang.Translate("string_database_error_rsa_private_key_format_error");
-
-                case EnumDbStatus.RsaNotMatched:
-                    return lang.Translate("string_database_error_rsa_private_key_not_match");
-
                 case EnumDbStatus.OK:
                     break;
 
                 case EnumDbStatus.NotConnectedYet:
                     return "database: NotConnected!";
-
-                case EnumDbStatus.DataIsDamaged:
-                    return "database: Data is damaged!"; // todo translate
 
                 case EnumDbStatus.LostConnection:
                     return "database: Lost Connection!";

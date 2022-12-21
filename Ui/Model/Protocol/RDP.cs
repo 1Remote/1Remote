@@ -345,47 +345,46 @@ namespace _1RM.Model.Protocol
         #region Gateway
 
         private EGatewayMode? _gatewayMode = EGatewayMode.DoNotUseGateway;
-
         public EGatewayMode? GatewayMode
         {
             get => _gatewayMode;
             set => SetAndNotifyIfChanged(ref _gatewayMode, value);
         }
 
-        private bool? _gatewayBypassForLocalAddress = true;
 
+        private bool? _gatewayBypassForLocalAddress = true;
         public bool? GatewayBypassForLocalAddress
         {
             get => _gatewayBypassForLocalAddress;
             set => SetAndNotifyIfChanged(ref _gatewayBypassForLocalAddress, value);
         }
 
-        private string _gatewayHostName = "";
 
+        private string _gatewayHostName = "";
         public string GatewayHostName
         {
             get => _gatewayHostName;
             set => SetAndNotifyIfChanged(ref _gatewayHostName, value);
         }
 
-        private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
 
+        private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
         public EGatewayLogonMethod? GatewayLogonMethod
         {
             get => _gatewayLogonMethod;
             set => SetAndNotifyIfChanged(ref _gatewayLogonMethod, value);
         }
 
-        private string _gatewayUserName = "";
 
+        private string _gatewayUserName = "";
         public string GatewayUserName
         {
             get => _gatewayUserName;
             set => SetAndNotifyIfChanged(ref _gatewayUserName, value);
         }
 
-        private string _gatewayPassword = "";
 
+        private string _gatewayPassword = "";
         public string GatewayPassword
         {
             get => _gatewayPassword;
