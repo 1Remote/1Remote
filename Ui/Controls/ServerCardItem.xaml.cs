@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.View;
+using _1RM.View.ServerList;
 
 namespace _1RM.Controls
 {
@@ -50,6 +51,11 @@ namespace _1RM.Controls
                 afs.Run();
             }
             PopupCardSettingMenu.IsOpen = false;
+        }
+
+        private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
+        {
+            ServerListPageView.ItemsCheckBox_OnClick_Static(sender, e);
         }
     }
 }

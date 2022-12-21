@@ -34,6 +34,7 @@
                 <CheckBox Margin="10 0" 
                           Width="20" Height="20" 
                           HorizontalAlignment="Left" 
+                          Click="ItemsCheckBox_OnClick"
                           IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">

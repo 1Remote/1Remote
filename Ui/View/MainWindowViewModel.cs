@@ -375,7 +375,7 @@ namespace _1RM.View
                     {
                         if (_mainFilterString == MainFilterString)
                         {
-                            GlobalEventHelper.OnFilterChanged?.Invoke(MainFilterString);
+                            ServerListViewModel.RefreshCollectionViewSource();
                         }
                     });
                 }
