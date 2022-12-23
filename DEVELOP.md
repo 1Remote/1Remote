@@ -6,12 +6,11 @@ It assumes no local tools and empty Windows 10 OS.
 
 ## Prerequisites
 
-1. [Windows 10] 1703 or later
-2. [Microsoft Visual Studio 2019] community edition or higher, with the following workloads:
+1. `Windows 10` 1703 or later
+2. `Microsoft Visual Studio 2022` or higher, with the following workloads:
     - .NET desktop development
-    - .NET Framework 4.8 SDK
+    - `.NET6 SDK` (may included in vs2022)
     - Windows 10 SDK 10.0.17763.0
-1. [.NET Framework 4.8 Dev Pack](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 
 The build task `Deps` automates entire installation locally (except OS). More details on running tasks are given bellow.
 
@@ -20,9 +19,10 @@ The build task `Deps` automates entire installation locally (except OS). More de
 
 ### Manual
 
-1. Clone repository: `git clone https://github.com/VShawn/PRemoteM`
-2. Open `PRM.sln` in Visual Studio 2019
+1. Clone repository
+2. Open solution in Visual Studio 2022
 3. [Restore all NuGet packages](https://docs.microsoft.com/en-us/nuget/consume-packages/package-restore#restore-packages-manually-using-visual-studio)
+4. Build
 
 Now you can build solution.
 
@@ -30,9 +30,10 @@ Now you can build solution.
 
 Build is automated using [Invoke-Build] PowerShell module which is included in the repository, but can be also [installed in the system](https://github.com/nightroman/Invoke-Build#install-as-module).
 
-For convenience, set alias to it - open administrative PowerShell, go to repository root and run `Set-Alias ib $pwd\Invoke-Build.ps1`.
-
-Run `ib ?` to get list of available tasks (anywhere in the repository directory hierarchy):
+1. open `administrative PowerShell`
+2. go to repository root
+3. run `Set-Alias ib $pwd\Invoke-Build.ps1` (For convenience, set alias to it)
+4. run `ib ?` to get list of available tasks (anywhere in the repository directory hierarchy):
 
 ```
 PS C:\Projects\PRemoteM> ib ?
@@ -51,13 +52,13 @@ Tasks are defined in the [prm.build.ps1] PowerShell script.
 For example, to clean any existing builds and then build fresh PRemoteM as portable Win32 application invoke:
 
 ```ps1
-ib Clean, Build -aReleaseType R2Win32
+ib Clean, Build -aReleaseType Release
 
 # Equivalent without setting alias, must be run in root of the repository
-./Invoke-Build.ps1 Clean, Build -aReleaseType R2Win32
+./Invoke-Build.ps1 Clean, Build -aReleaseType Release
 
 # Equivalent with system install of Invoke-Build
-Invoke-Build Clean, Build -aReleaseType R2Win32
+Invoke-Build Clean, Build -aReleaseType Release
 ```
 
 Please check out [invoke-build](https://chocolatey.org/packages/invoke-build) package notes on how to enable task auto completion and other tips.

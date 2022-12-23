@@ -1,13 +1,11 @@
 <# .PARAMETER ib #>
 param (
-    [ValidateSet('Debug', 'R2Store', 'R2Win32')]
-    [string] $aReleaseType = 'R2Win32'
+    [ValidateSet('Debug', 'Release')]
+    [string] $aReleaseType = 'Release'
 )
 
 Enter-Build {
-    $SolutionPath = Join-Path $pwd PRM.sln
     $ProjectName  = Split-Path $pwd -Leaf
-
     $msbuild = Resolve-MSBuild
     Write-Host "Using msbuild: $msbuild"
     Set-Alias MSBuild $msbuild -Scope Global
@@ -27,10 +25,10 @@ task Deps {
         #choco install -y visualstudio2019-workload-universal
         #choco install -y windows-sdk-10-version-1809-all
 
-        choco install -y visualstudio2019community
-        choco install -y netfx-4.8-devpack
-        choco install -y visualstudio2019-workload-manageddesktop
-        choco install -y visualstudio2019-workload-universal
+        choco install -y visualstudio2022community
+        choco install -y dotnet-6.0-sdk
+        choco install -y visualstudio2022-workload-manageddesktop
+        choco install -y visualstudio2022-workload-universal
 
         # optional
         # choco install -y git
@@ -39,7 +37,10 @@ task Deps {
 
 # Synopsis: Build the application
 task Build {
-    exec { MSBuild $SolutionPath /t:Build /property:Configuration=$aReleaseType }
+    if (($f = [System.IO.Directory]::GetFiles($pwd, '*.sln')).Length -eq 1) {
+        $SolutionPath = $f[0]
+    }
+    exec { MSBuild $SolutionPath /t:Build /ignoreprojectextensions:.csproj /property:Configuration=$aReleaseType }
 }
 
 # Synopsis: Build in Windows Sandbox
@@ -47,7 +48,6 @@ task BuildInSandbox {
     .\scripts\Test-Sandbox.ps1 -MapFolder $pwd -Script "
         cd `$Env:USERPROFILE\Desktop\$ProjectName
         Set-Alias ib `$pwd\Invoke-Build.ps1
-
         ib Deps
         ib Build
     "
@@ -55,6 +55,9 @@ task BuildInSandbox {
 
 # Synopsis: Clean generated data
 task Clean {
+    if (($f = [System.IO.Directory]::GetFiles($pwd, '*.sln')).Length -eq 1) {
+        $SolutionPath = $f[0]
+    }
     exec { MSBuild $SolutionPath /t:Clean /property:Configuration=$aReleaseType  }
 }
 

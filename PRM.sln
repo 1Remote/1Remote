@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shawn.Utils.WpfResources", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ui", "Ui\Ui.csproj", "{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{78EDE729-3B4A-454F-ADC8-5823898FC05C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -198,26 +196,6 @@ Global
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.StoreRelease|x64.Build.0 = StoreRelease|Any CPU
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.StoreRelease|x86.ActiveCfg = StoreRelease|x86
 		{800C1D39-9E9D-4273-B6E4-E9BD8F2B7D04}.StoreRelease|x86.Build.0 = StoreRelease|x86
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|x64.Build.0 = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Debug|x86.Build.0 = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|x64.ActiveCfg = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|x64.Build.0 = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|x86.ActiveCfg = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.Release|x86.Build.0 = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreDebug|x64.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreDebug|x64.Build.0 = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreDebug|x86.ActiveCfg = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreDebug|x86.Build.0 = Debug|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreRelease|x64.ActiveCfg = Release|Any CPU
-		{78EDE729-3B4A-454F-ADC8-5823898FC05C}.StoreRelease|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
