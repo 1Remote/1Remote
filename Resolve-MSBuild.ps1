@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.5.1
+.VERSION 1.6.1
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .TAGS Invoke-Build, MSBuild
@@ -14,7 +14,7 @@
 
 .Description
 	The script finds the path to the specified or latest version of MSBuild.
-	It is designed for MSBuild 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0.
+	It is designed for MSBuild 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0.
 
 	For MSBuild 15+ the command uses the module VSSetup, see PSGallery.
 	If VSSetup is not installed then the default locations are used.
@@ -29,7 +29,7 @@
 		Specifies the required MSBuild major version. If it is omitted, empty,
 		or *, then the command finds and returns the latest installed version
 		path. The optional suffix x86 tells to use 32-bit MSBuild.
-		Known versions: 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0
+		Known versions: 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0
 .Parameter MinimumVersion
 		Specifies the required minimum MSBuild version. If the resolved MSBuild
 		version is less than the minimum version then an error is thrown.
@@ -96,6 +96,7 @@ function Get-MSBuild15VSSetup {
 
 	$items = @(
 		$v = switch($Version) {
+			'17.0' {'[17.0,18.0)'}
 			'16.0' {'[16.0,17.0)'}
 			'15.0' {'[15.0,16.0)'}
 			default {'[15.0,)'}
@@ -142,18 +143,35 @@ function Get-MSBuild15Guess {
 		[switch]$Prerelease
 	)
 
-	if (!($root = ${env:ProgramFiles(x86)})) {$root = $env:ProgramFiles}
+	$Program64 = $env:ProgramFiles
+	if (!($Program86 = ${env:ProgramFiles(x86)})) {$Program86 = $Program64}
 
 	$folders = $(
-		if ($Prerelease) {'Preview'}
-		elseif ($Version -eq '*') {'2019', '2017'}
-		elseif ($Version -eq '16.0') {'2019'}
-		else {'2017'}
+		if ($Prerelease) {
+			"$Program64\Microsoft Visual Studio\Preview"
+			"$Program86\Microsoft Visual Studio\Preview"
+		}
+		elseif ($Version -eq '*') {
+			"$Program64\Microsoft Visual Studio\2022"
+			"$Program86\Microsoft Visual Studio\2022"
+			"$Program86\Microsoft Visual Studio\2019"
+			"$Program86\Microsoft Visual Studio\2017"
+		}
+		elseif ($Version -eq '17.0') {
+			"$Program64\Microsoft Visual Studio\2022"
+			"$Program86\Microsoft Visual Studio\2022"
+		}
+		elseif ($Version -eq '16.0') {
+			"$Program86\Microsoft Visual Studio\2019"
+		}
+		else {
+			"$Program86\Microsoft Visual Studio\2017"
+		}
 	)
 	foreach($folder in $folders) {
 		$items = @(Get-Item -ErrorAction 0 @(
-			"$root\Microsoft Visual Studio\$folder\*\$(Get-MSBuild15Path Current $Bitness)"
-			"$root\Microsoft Visual Studio\$folder\*\$(Get-MSBuild15Path $Version $Bitness)"
+			"$folder\*\$(Get-MSBuild15Path Current $Bitness)"
+			"$folder\*\$(Get-MSBuild15Path $Version $Bitness)"
 		))
 		if ($items) {
 			break
@@ -252,6 +270,7 @@ try {
 	}
 	$Version = $Version.Trim()
 
+	$v17 = [Version]'17.0'
 	$v16 = [Version]'16.0'
 	$v15 = [Version]'15.0'
 	$vMax = [Version]'9999.0'
@@ -259,7 +278,7 @@ try {
 	$vRequired = if ($Version -eq '*') {$vMax} else {[Version]$Version}
 
 	$path = ''
-	if ($vRequired -eq $v16 -or $vRequired -eq $v15) {
+	if ($vRequired -eq $v17 -or $vRequired -eq $v16 -or $vRequired -eq $v15) {
 		$path = Get-MSBuild15 $Version $Bitness -Latest:$Latest
 	}
 	elseif ($vRequired -lt $v15) {
