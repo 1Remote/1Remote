@@ -164,11 +164,14 @@ namespace _1RM.View.Launcher
 
         public void AppendServer(ProtocolBaseViewModel viewModel)
         {
-            viewModel.PropertyChanged -= OnLastConnectTimeChanged;
-            viewModel.PropertyChanged += OnLastConnectTimeChanged;
-            viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
-            viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
-            VmServerList.Add(viewModel);
+            Execute.OnUIThread(() =>
+            {
+                viewModel.PropertyChanged -= OnLastConnectTimeChanged;
+                viewModel.PropertyChanged += OnLastConnectTimeChanged;
+                viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
+                viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
+                VmServerList.Add(viewModel);
+            });
         }
 
         public void RebuildVmServerList()

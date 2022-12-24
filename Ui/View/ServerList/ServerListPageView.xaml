@@ -946,6 +946,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="{DynamicResource import_from_csv}" Command="{Binding CmdImportFromCsv}"></MenuItem>
+                                <MenuItem Header=".rdp" Command="{Binding CmdImportFromRdp}"></MenuItem>
                             </StackPanel>
                         </Border>
                     </Popup>

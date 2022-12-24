@@ -23,20 +23,18 @@ namespace _1RM.View.Editor
             if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
                 var protocol = (ProtocolBaseWithAddressPort)_vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
+                if (string.IsNullOrEmpty(protocol.Address?.Trim()))
+                    return false;
+                if(protocol.GetPort() <= 0 || protocol.GetPort() >= 65536)
+                    return false;
             }
-            if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            {
-                var protocol = (ProtocolBaseWithAddressPortUserPwd)_vm;
-                if (!string.IsNullOrEmpty(protocol.UserName?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            return false;
+            //if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+            //{
+            //    var protocol = (ProtocolBaseWithAddressPortUserPwd)_vm;
+            //    if (string.IsNullOrEmpty(protocol.UserName?.Trim()))
+            //        return false;
+            //}
+            return true;
         }
     }
 }

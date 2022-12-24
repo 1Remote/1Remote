@@ -28,7 +28,7 @@ namespace _1RM.Model.Protocol.Base
 
         protected override string GetSubTitle()
         {
-            return $"{Address}:{Port} ({UserName})";
+            return string.IsNullOrEmpty(UserName) ? base.GetSubTitle() : $"{Address}:{Port} ({UserName})";
         }
 
         #endregion

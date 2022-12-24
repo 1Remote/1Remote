@@ -210,17 +210,19 @@ namespace _1RM.Service.DataSource.Model
             return Status;
         }
 
-        public void Database_InsertServer(ProtocolBase server)
+        public bool Database_InsertServer(ProtocolBase server)
         {
             var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
             GetDataBase()?.AddServer(tmp);
             server.Id = tmp.Id;
+            server.DataSourceName = this.DataSourceName;
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            return string.IsNullOrEmpty(server.Id) == false;
         }
 
-        public void Database_InsertServer(List<ProtocolBase> servers)
+        public bool Database_InsertServer(List<ProtocolBase> servers)
         {
             var cloneList = new List<ProtocolBase>();
             foreach (var server in servers)
@@ -236,6 +238,7 @@ namespace _1RM.Service.DataSource.Model
                 servers[i].Id = cloneList[i].Id;
             }
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            return servers.All(x => string.IsNullOrEmpty(x.Id) == false);
         }
 
         public bool Database_UpdateServer(ProtocolBase org)

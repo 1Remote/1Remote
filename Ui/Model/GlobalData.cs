@@ -176,24 +176,29 @@ namespace _1RM.Model
             return false;
         }
 
-        public void AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
+        public bool AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
+            bool ret = false;
             StopTick();
             var needReload = dataSource.NeedRead();
-            dataSource.Database_InsertServer(protocolServer);
-            var @new = new ProtocolBaseViewModel(protocolServer);
-            if (needReload == false)
+            if (dataSource.Database_InsertServer(protocolServer))
             {
-                VmItemList.Add(@new);
-                IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
-                IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-                ReadTagsFromServers();
-            }
-            else
-            {
-                ReloadServerList();
+                ret = true;
+                var @new = new ProtocolBaseViewModel(protocolServer);
+                if (needReload == false)
+                {
+                    VmItemList.Add(@new);
+                    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
+                    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
+                    ReadTagsFromServers();
+                }
+                else
+                {
+                    ReloadServerList();
+                }
             }
             StartTick();
+            return ret;
         }
 
         public void UpdateServer(ProtocolBase protocolServer)
@@ -300,6 +305,7 @@ namespace _1RM.Model
                     // update viewmodel
                     foreach (var protocolServer in groupedServer)
                     {
+                        SimpleLogHelper.Warning($"{protocolServer.Id} {source.DataSourceName},  VmItemListCount = {VmItemList.Count}");
                         var old = VmItemList.First(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                         VmItemList.Remove(old);
                         IoC.Get<ServerListPageViewModel>()?.VmServerList?.Remove(old); // invoke main list ui change

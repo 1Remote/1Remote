@@ -35,11 +35,6 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _port, value);
         }
 
-        public void SetPort(string str)
-        {
-            _port = str;
-        }
-
         protected override string GetSubTitle()
         {
             return $"{Address}:{Port}";
