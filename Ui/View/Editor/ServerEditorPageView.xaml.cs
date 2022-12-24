@@ -18,7 +18,7 @@ namespace _1RM.View.Editor
     {
         private BitmapSource? _oldLogo;
 
-        public ServerEditorPageView(DataSourceService sourceService)
+        public ServerEditorPageView()
         {
             this.Loaded += (sender, args) =>
             {
@@ -29,10 +29,10 @@ namespace _1RM.View.Editor
                     {
                         ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
                         if (vm.Server.IconImg == null
-                            && ServerIcons.Instance.Icons.Count > 0)
+                            && ServerIcons.Instance.IconsBase64.Count > 0)
                         {
                             var r = new Random(DateTime.Now.Millisecond);
-                            vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                            vm.Server.IconBase64 = ServerIcons.Instance.IconsBase64[r.Next(0, ServerIcons.Instance.IconsBase64.Count)];
                         }
                     }
                     _oldLogo = vm.Server.IconImg;

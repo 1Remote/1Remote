@@ -10,9 +10,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Documents;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Resources.Icons;
 using _1RM.Service;
@@ -20,6 +22,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
+using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
 using Newtonsoft.Json;
@@ -208,9 +211,12 @@ namespace _1RM.View.ServerList
 
         public void AppendServer(ProtocolBaseViewModel viewModel)
         {
-            viewModel.PropertyChanged -= VmServerPropertyChanged;
-            viewModel.PropertyChanged += VmServerPropertyChanged;
-            VmServerList.Add(viewModel);
+            Execute.OnUIThread(() =>
+            {
+                viewModel.PropertyChanged -= VmServerPropertyChanged;
+                viewModel.PropertyChanged += VmServerPropertyChanged;
+                VmServerList.Add(viewModel);
+            });
         }
 
         private void RebuildVmServerList()
@@ -488,16 +494,13 @@ namespace _1RM.View.ServerList
                     {
                         try
                         {
-                            var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
+                            var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.IconsBase64);
                             if (list?.Count > 0)
                             {
                                 source.Database_InsertServer(list);
-                                AppData.ReloadServerList();
+                                AppData.ReloadServerList(true);
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                                Execute.OnUIThread(() =>
-                                {
-                                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
-                                });
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
                                 return;
                             }
                         }
@@ -506,16 +509,64 @@ namespace _1RM.View.ServerList
                             SimpleLogHelper.Debug(e);
                         }
 
-
                         GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                        Execute.OnUIThread(() =>
-                        {
-                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
-                        });
+                        MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                     });
                 });
             }
         }
+
+
+        private RelayCommand? _cmdImportFromRdp;
+        public RelayCommand CmdImportFromRdp
+        {
+            get
+            {
+                return _cmdImportFromRdp ??= new RelayCommand((o) =>
+                {
+                    // select save to which source
+                    DataSourceBase? source = null;
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
+                    {
+                        var vm = new DataSourceSelectorViewModel();
+                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                            return;
+                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
+                    }
+                    else
+                    {
+                        source = SourceService.LocalDataSource;
+                    }
+                    if (source == null) return;
+
+
+                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
+                    if (path == null) return;
+
+                    try
+                    {
+                        var config = RdpConfig.FromRdpFile(path);
+                        if (config != null)
+                        {
+                            var rdp = RDP.FromRdpConfig(config, ServerIcons.Instance.IconsBase64);
+                            if (AppData.AddServer(rdp, source))
+                            {
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"));
+                                return;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Debug(e);
+                    }
+                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
+                });
+            }
+        }
+
+
+
 
         private RelayCommand? _cmdDeleteSelected;
         public RelayCommand CmdDeleteSelected
