@@ -160,10 +160,7 @@ namespace _1RM.Service
             }
         }
 
-        public ReadOnlyCollection<QuickConnectionItem> QuickConnectionHistory
-        {
-            get => _localitySettings.QuickConnectionHistory.AsReadOnly();
-        }
+        public ReadOnlyCollection<QuickConnectionItem> QuickConnectionHistory => _localitySettings.QuickConnectionHistory.AsReadOnly();
 
         private readonly LocalitySettings _localitySettings;
 
@@ -203,9 +200,22 @@ namespace _1RM.Service
         public void QuickConnectionHistoryAdd(QuickConnectionItem item)
         {
             var old = _localitySettings.QuickConnectionHistory.FirstOrDefault(x => x.Host == item.Host && x.Protocol == item.Protocol);
-            if(old != null)
+            if (old != null)
                 _localitySettings.QuickConnectionHistory.Remove(old);
             _localitySettings.QuickConnectionHistory.Insert(0, item);
+            if (_localitySettings.QuickConnectionHistory.Count > 50)
+            {
+                _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);
+            }
+            Save();
+        }
+
+
+        public void QuickConnectionHistoryRemove(QuickConnectionItem item)
+        {
+            var old = _localitySettings.QuickConnectionHistory.FirstOrDefault(x => x.Host == item.Host && x.Protocol == item.Protocol);
+            if (old != null)
+                _localitySettings.QuickConnectionHistory.Remove(old);
             if (_localitySettings.QuickConnectionHistory.Count > 50)
             {
                 _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);

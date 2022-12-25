@@ -142,6 +142,7 @@ namespace _1RM.View.Launcher
             }
         }
 
+
         public void RebuildConnectionHistory()
         {
             var list = IoC.Get<LocalityService>().QuickConnectionHistory.ToList();
