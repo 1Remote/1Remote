@@ -18,6 +18,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using _1RM.View.ServerList;
+using CredentialManagement;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -349,6 +350,28 @@ namespace _1RM.View.Editor
                     {
                         _globalData.AddServer(Server, _addToDataSource);
                     }
+
+                    if (IsBuckEdit == false && Server is RDP rdp)
+                    {
+                        try
+                        {
+                            // try read user name & password from CredentialManagement.
+                            using var cred = new Credential()
+                            {
+                                Target = "TERMSRV/" + rdp.Address,
+                                Type = CredentialType.Generic,
+                                Password = rdp.Password,
+                                Username = rdp.UserName,
+                                PersistanceType = PersistanceType.LocalComputer,
+                            };
+                            cred.Save();
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+                    }
+
                     IoC.Get<MainWindowViewModel>().ShowList(true);
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;

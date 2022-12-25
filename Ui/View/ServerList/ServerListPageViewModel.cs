@@ -25,6 +25,7 @@ using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
+using CredentialManagement;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -549,6 +550,25 @@ namespace _1RM.View.ServerList
                         if (config != null)
                         {
                             var rdp = RDP.FromRdpConfig(config, ServerIcons.Instance.IconsBase64);
+
+                            try
+                            {
+                                // try read user name & password from CredentialManagement.
+                                using var cred = new Credential()
+                                {
+                                    Target = "TERMSRV/" + rdp.Address,
+                                };
+                                if (cred.Load())
+                                {
+                                    rdp.UserName = cred.Username;
+                                    rdp.Password = cred.Password;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+
                             if (AppData.AddServer(rdp, source))
                             {
                                 MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"));

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:_1RM.View.Launcher"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              d:DataContext="{d:DesignInstance local:QuickConnectionViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -46,6 +47,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
 
@@ -73,10 +75,36 @@
                                        Text="{Binding Protocol}"
                                        FontSize="16" FontWeight="Bold"
                                        HorizontalAlignment="Right"
-                                       Margin="5 0 10 0"
+                                       Margin="5 0 0 0"
                                        Opacity="0.3"
                                        Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Center"></TextBlock>
+
+
+                        <Button Grid.Column="2" Width="10" Height="10" 
+                                Background="Transparent"
+                                attachProperty:VisionElement.Opacity="0.5"
+                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                Margin="5 0 10 0"
+                                Tag="{Binding}"
+                                PreviewMouseLeftButtonUp="ButtonDeleteItem_OnClick">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Protocol}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Grid Height="10" Width="8">
+                                <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="2" Stretch="Uniform" />
+                            </Grid>
+                        </Button>
                     </Grid>
                 </Grid>
             </DataTemplate>

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using _1RM.Model;
+using _1RM.Service;
 using _1RM.View.Editor;
 using Stylet;
 
@@ -103,6 +104,19 @@ namespace _1RM.View.Launcher
         {
             if (e.ClickCount == 2)
                 _vm.OpenConnection();
+        }
+
+        private void ButtonDeleteItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: QuickConnectionItem qci })
+            {
+                if (_vm.ConnectHistory.Contains(qci))
+                {
+                    _vm.ConnectHistory.Remove(qci);
+                    IoC.Get<LocalityService>().QuickConnectionHistoryRemove(qci);
+                }
+                _vm.SelectedIndex = 0;
+            }
         }
     }
 }
