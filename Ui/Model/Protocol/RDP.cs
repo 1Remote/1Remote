@@ -249,12 +249,7 @@ namespace _1RM.Model.Protocol
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
-            set
-            {
-                SetAndNotifyIfChanged(ref _enableDiskDrives, value);
-                if (value == false)
-                    EnableRedirectDrivesPlugIn = value;
-            }
+            set => SetAndNotifyIfChanged(ref _enableDiskDrives, value);
         }
 
         private bool? _enableRedirectDrivesPlugIn = false;
@@ -265,6 +260,19 @@ namespace _1RM.Model.Protocol
             get => _enableRedirectDrivesPlugIn;
             set => SetAndNotifyIfChanged(ref _enableRedirectDrivesPlugIn, value);
         }
+
+
+
+        private bool? _enableRedirectCameras = false;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool? EnableRedirectCameras
+        {
+            get => _enableRedirectCameras;
+            set => SetAndNotifyIfChanged(ref _enableRedirectCameras, value);
+        }
+
+
 
         private bool? _enableKeyCombinations = true;
         [DefaultValue(true)]
