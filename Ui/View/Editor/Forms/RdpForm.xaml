@@ -509,18 +509,8 @@
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
-                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding EnableRedirectDrivesPlugIn}">
-                            <CheckBox.Style>
-                                <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
-                                    <Setter Property="Margin" Value="0 5"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding EnableDiskDrives}" Value="False">
-                                            <Setter Property="IsEnabled" Value="False"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </CheckBox.Style>
-                        </CheckBox>
+                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding EnableRedirectDrivesPlugIn}"></CheckBox>
+                        <CheckBox Content="{DynamicResource Cameras}" IsChecked="{Binding EnableRedirectCameras}"></CheckBox>
                     </UniformGrid>
                 </StackPanel>
             </Grid>

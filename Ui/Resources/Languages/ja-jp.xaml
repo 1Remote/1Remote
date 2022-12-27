@@ -67,6 +67,7 @@
     <s:String x:Key="Custom">カスタム</s:String>
     <s:String x:Key="All">全て</s:String>
     <s:String x:Key="Protocol">プロトコル</s:String>
+    <s:String x:Key="Cameras">Cameras</s:String>
     <s:String x:Key="filter_mainwindow">キーワードまたは「＃」+タグ名</s:String>
     <s:String x:Key="Search (Ctrl+F)">検索（Ctrl + F）</s:String>
     <s:String x:Key="hotkey_already_registered">ホットキーはすでに登録されています</s:String>
