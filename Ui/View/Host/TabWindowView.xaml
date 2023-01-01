@@ -25,6 +25,7 @@
         <KeyBinding Gesture="Ctrl+7" Command="{Binding CmdShowTabByIndex}" CommandParameter="7"></KeyBinding>
         <KeyBinding Gesture="Ctrl+8" Command="{Binding CmdShowTabByIndex}" CommandParameter="8"></KeyBinding>
         <KeyBinding Gesture="Ctrl+9" Command="{Binding CmdShowTabByIndex}" CommandParameter="9"></KeyBinding>
+        <KeyBinding Gesture="F11" Command="{Binding CmdGoMaximizeF11}"></KeyBinding>
     </Window.InputBindings>
     <Window.Template>
         <ControlTemplate TargetType="host:TabWindowBase">
@@ -44,6 +45,16 @@
                     <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 8 8 8" />
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
+                <!--<MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="WindowState" Value="Maximized"></Condition>
+                        <Condition Property="WindowStyle" Value="None"></Condition>
+                    </MultiTrigger.Conditions>
+                    <MultiTrigger.Setters>
+                        <Setter TargetName="WindowContentGrid" Property="Margin" Value="1" />
+                        <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
+                    </MultiTrigger.Setters>
+                </MultiTrigger>-->
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </Window.Template>
@@ -375,6 +386,9 @@
                                 </Button>
 
                                 <Button Name="BtnMaximize" Command="{Binding CmdGoMaximize}">
+                                    <Button.InputBindings>
+                                        <MouseBinding Gesture="RightClick" Command="{Binding CmdGoMaximizeF11}" />
+                                    </Button.InputBindings>
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
@@ -533,6 +547,7 @@
                                             Grid.Column="2"
                                             Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
                                             Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    
                                     <ContentControl Grid.Column="3" x:Name="SuffixContentControl"
                                                     Content="{TemplateBinding HeaderSuffixContent}"
                                                     ContentStringFormat="{TemplateBinding HeaderSuffixContentStringFormat}"

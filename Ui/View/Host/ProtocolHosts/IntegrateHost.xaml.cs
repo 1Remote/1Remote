@@ -277,7 +277,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 FileName = exeFullName,
                 WorkingDirectory = new FileInfo(exeFullName).DirectoryName,
                 Arguments = ExeArguments,
-                WindowStyle = ProcessWindowStyle.Minimized
+                WindowStyle = ProcessWindowStyle.Normal
             };
 
             // Set environment variables
