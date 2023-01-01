@@ -10,18 +10,20 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
+using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 
 namespace _1RM.View.Host
 {
-    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IDisposable
+    public class TabWindowViewModel : NotifyPropertyChangedBase, IDisposable
     {
         public readonly string Token;
-
-        public TabWindowViewModel(string token)
+        private readonly TabWindowBase _windowView;
+        public TabWindowViewModel(string token, TabWindowBase windowView)
         {
+            _windowView = windowView;
             Token = token;
             Items.CollectionChanged += ItemsOnCollectionChanged;
         }
@@ -29,9 +31,9 @@ namespace _1RM.View.Host
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            if (Items.Count == 0 && this.View is TabWindowView tab)
+            if (Items.Count == 0)
             {
-                tab.Hide();
+                _windowView.Hide();
             }
         }
 
@@ -191,14 +193,44 @@ namespace _1RM.View.Host
             {
                 return _cmdGoMaximize ??= new RelayCommand((o) =>
                 {
-                    if (o is Window window)
-                        window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                    if (_windowView.WindowState != WindowState.Maximized)
+                    {
+                        _windowView.WindowState = WindowState.Maximized;
+                    }
+
+                    else
+                    {
+                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
+                        _windowView.WindowState = WindowState.Normal;
+                    }
                 });
             }
         }
 
-        private bool _canCmdClose = true;
 
+        private RelayCommand? _cmdGoMaximizeF11;
+        public RelayCommand CmdGoMaximizeF11
+        {
+            get
+            {
+                return _cmdGoMaximizeF11 ??= new RelayCommand((o) =>
+                {
+                    if (_windowView.WindowState != WindowState.Maximized)
+                    {
+                        _windowView.WindowStyle = WindowStyle.None;
+                        _windowView.WindowState = WindowState.Maximized;
+                    }
+                    else
+                    {
+                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
+                        _windowView.WindowState = WindowState.Normal;
+                    }
+                });
+            }
+        }
+
+
+        private bool _canCmdClose = true;
         private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {

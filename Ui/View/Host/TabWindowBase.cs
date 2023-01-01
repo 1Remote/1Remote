@@ -36,18 +36,16 @@ namespace _1RM.View.Host
 
         private IntPtr _myHandle = IntPtr.Zero;
         private readonly Timer _timer4CheckForegroundWindow = new();
-        private WindowState _lastWindowState;
         private readonly LocalityService _localityService;
 
         protected TabWindowBase(string token, LocalityService localityService)
         {
             _localityService = localityService;
-            Vm = new TabWindowViewModel(token);
+            Vm = new TabWindowViewModel(token, this);
             DataContext = Vm;
 
             this.MinWidth = this.MinHeight = 300;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            _lastWindowState = _localityService.TabWindowState;
 
             this.Loaded += (sender, args) =>
             {
@@ -84,15 +82,11 @@ namespace _1RM.View.Host
                     {
                         if (Vm.SelectedItem?.CanResizeNow != true)
                         {
-                            this.WindowState = _lastWindowState;
                             return;
-                        }
-                        else
-                        {
-                            _lastWindowState = this.WindowState;
                         }
                         Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
                         _localityService.TabWindowState = this.WindowState;
+                        _localityService.TabWindowStyle = this.WindowStyle;
                     }
                     SimpleLogHelper.Debug($"(Window state changed)Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
                 };
@@ -186,6 +180,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             if (ws != System.Windows.WindowState.Minimized)
             {
                 this.WindowState = ws;
+                this.WindowStyle = _localityService.TabWindowStyle;
             }
 
 

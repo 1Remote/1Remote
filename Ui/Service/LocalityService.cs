@@ -35,6 +35,7 @@ namespace _1RM.Service
         public double TabWindowWidth = 800;
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
+        public WindowStyle TabWindowStyle = WindowStyle.SingleBorderWindow;
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
         public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalities = new ConcurrentDictionary<string, RdpLocalSetting>();
         public List<QuickConnectionItem> QuickConnectionHistory = new List<QuickConnectionItem>();
@@ -147,6 +148,22 @@ namespace _1RM.Service
                 }
             }
         }
+
+        public WindowStyle TabWindowStyle
+        {
+            get => _localitySettings.TabWindowStyle;
+            set
+            {
+                if (_localitySettings.TabWindowStyle != value)
+                {
+                    _localitySettings.TabWindowStyle = value;
+                    Save();
+                }
+            }
+        }
+
+
+
         public EnumServerOrderBy ServerOrderBy
         {
             get => _localitySettings.ServerOrderBy;
