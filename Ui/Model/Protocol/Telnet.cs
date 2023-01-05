@@ -57,11 +57,6 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
-        public string GetExeFullPath()
-        {
-            return this.GetKittyExeFullName();
-        }
-
         public string GetExeArguments(string sessionName)
         {
             var tel = (this.Clone() as Telnet)!;

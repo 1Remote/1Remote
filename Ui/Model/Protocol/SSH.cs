@@ -86,11 +86,6 @@ namespace _1RM.Model.Protocol
         [JsonIgnore]
         public ProtocolBase ProtocolBase => this;
 
-        public string GetExeFullPath()
-        {
-            return this.GetKittyExeFullName();
-        }
-
         public string GetExeArguments(string sessionName)
         {
             var ssh = (this.Clone() as SSH)!;
