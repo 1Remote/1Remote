@@ -11,7 +11,11 @@ namespace _1RM.Utils.KiTTY
 {
     public static class PuttyThemes
     {
-        public static Dictionary<string, List<KittyConfigKeyValuePair>> GetThemes()
+        private static Dictionary<string, List<KittyConfigKeyValuePair>>? _themes;
+
+        public static Dictionary<string, List<KittyConfigKeyValuePair>> Themes => _themes ??= GetThemes();
+
+        private static Dictionary<string, List<KittyConfigKeyValuePair>> GetThemes()
         {
             var uri = ResourceUriHelper.GetUriFromCurrentAssembly("Resources/KiTTY/PuttyThemes.json");
             var stream = Application.GetResourceStream(uri)?.Stream;

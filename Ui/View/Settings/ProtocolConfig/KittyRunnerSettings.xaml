@@ -42,6 +42,29 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
+                <Grid Width="100" Margin="20 0 10 0" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0 0 5 0" Width="Auto" Text="KiTTY"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0" Width="Auto" Text="{DynamicResource 'Exe path'}"></TextBlock>
+                    </StackPanel>
+                </Grid>
+                <TextBox Grid.Column="1" Text="{Binding PuttyExePath, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                         FlowDirection="RightToLeft"
+                         ></TextBox>
+                <Button Grid.Column="2" 
+                        Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5 0 50 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Content="{DynamicResource Select}" 
+                        Command="{Binding CmdSelectExePath}"></Button>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font size'}"></TextBlock>
                 <TextBox Grid.Column="1" Text="{Binding PuttyFontSize, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"></TextBox>
             </Grid>

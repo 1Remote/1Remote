@@ -364,9 +364,9 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        public void SaveToKittyConfig(string kittyPath)
+        public void SaveToKittyConfig(string kittyExePath)
         {
-            SaveToKittyPortableConfig(kittyPath, SessionName, Options);
+            SaveToKittyPortableConfig(kittyExePath, SessionName, Options);
             SaveToKittyRegistryTable();
         }
 
@@ -397,11 +397,11 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        private static void SaveToKittyPortableConfig(string kittyPath, string sessionName, List<KittyConfigKeyValuePair> options)
+        private static void SaveToKittyPortableConfig(string kittyExePath, string sessionName, List<KittyConfigKeyValuePair> options)
         {
             try
             {
-                string configPath = Path.Combine(kittyPath, "Sessions", sessionName.Replace(" ", "%20"));
+                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath), "Sessions", sessionName.Replace(" ", "%20"));
                 var sb = new StringBuilder();
                 foreach (var item in options)
                 {
