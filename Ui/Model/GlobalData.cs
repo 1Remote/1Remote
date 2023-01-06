@@ -12,6 +12,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
 using _1RM.View.Launcher;
+using _1RM.View.ServerList;
 using Shawn.Utils;
 using Stylet;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
@@ -21,14 +22,14 @@ namespace _1RM.Model
     public class GlobalData : NotifyPropertyChangedBase
     {
         private readonly Timer _timer;
-        private bool _isTimerStopFlag = false;
+        private bool _timerStopFlag = false;
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
             ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
 
-            _timer = new Timer(30 * 1000)
+            _timer = new Timer(_configurationService.DatabaseCheckPeriod * 1000)
             {
                 AutoReset = false,
             };
@@ -53,23 +54,26 @@ namespace _1RM.Model
 
                 if (ReloadServerList())
                 {
-#if DEBUG
-                    SimpleLogHelper.Debug("check database update - reload data");
-#endif
+                    // todo #if DEBUG
+                    SimpleLogHelper.Warning("check database update - reload data");
+                    // todo #endif
                 }
                 else
                 {
-#if DEBUG
+                    // todo #if DEBUG
                     SimpleLogHelper.Warning("check database update - no need reload");
-#endif
+                    // todo #endif
                 }
             }
             finally
             {
-                if (_isTimerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
+                lock (this)
                 {
-                    _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
-                    _timer.Start();
+                    if (_timerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
+                    {
+                        _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
+                        _timer.Start();
+                    } 
                 }
             }
         }
@@ -117,6 +121,14 @@ namespace _1RM.Model
             }
 
             TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
+        }
+
+        private void ListPageViewClearHeaderCheckBox()
+        {
+            if (IoC.Get<ServerListPageViewModel>().View is ServerListPageView view)
+            {
+                view.ClearHeaderCheckBox();
+            }
         }
 
         private void SaveOnPinnedChanged()
@@ -190,12 +202,17 @@ namespace _1RM.Model
                     VmItemList.Add(@new);
                     IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
                     IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-                    ReadTagsFromServers();
                 }
-                else
-                {
-                    ReloadServerList();
-                }
+            }
+
+            if (needReload)
+            {
+                ReloadServerList();
+            }
+            else
+            {
+                ReadTagsFromServers();
+                ListPageViewClearHeaderCheckBox();
             }
             StartTick();
             return ret;
@@ -207,7 +224,7 @@ namespace _1RM.Model
             Debug.Assert(protocolServer.IsTmpSession() == false);
             if (_sourceService == null) return;
             var source = protocolServer.GetDataSource();
-            var needReload = source.NeedRead();
+            var needReload = source?.NeedRead() ?? false;
             if (source == null || source.IsWritable == false) return;
             source.Database_UpdateServer(protocolServer);
             if (needReload == false)
@@ -215,11 +232,16 @@ namespace _1RM.Model
                 var old = VmItemList.First(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                 // invoke main list ui change & invoke launcher ui change
                 old.Server = protocolServer;
-                ReadTagsFromServers();
+            }
+
+            if (needReload)
+            {
+                ReloadServerList();
             }
             else
             {
-                ReloadServerList();
+                ReadTagsFromServers();
+                ListPageViewClearHeaderCheckBox();
             }
             StartTick();
         }
@@ -257,6 +279,7 @@ namespace _1RM.Model
             else
             {
                 ReadTagsFromServers();
+                ListPageViewClearHeaderCheckBox();
             }
             StartTick();
         }
@@ -268,7 +291,7 @@ namespace _1RM.Model
 
             if (_sourceService == null) return;
             var source = protocolServer.GetDataSource();
-            var needReload = source.NeedRead();
+            var needReload = source?.NeedRead() ?? false;
             if (source == null || source.IsWritable == false) return;
             if (source.Database_DeleteServer(protocolServer.Id))
             {
@@ -278,12 +301,17 @@ namespace _1RM.Model
                     VmItemList.Remove(old);
                     IoC.Get<ServerListPageViewModel>()?.VmServerList?.Remove(old); // invoke main list ui change
                     IoC.Get<ServerSelectionsViewModel>()?.VmServerList?.Remove(old); // invoke launcher ui change
-                    ReadTagsFromServers();
                 }
-                else
-                {
-                    ReloadServerList();
-                }
+            }
+
+            if (needReload)
+            {
+                ReloadServerList();
+            }
+            else
+            {
+                ReadTagsFromServers();
+                ListPageViewClearHeaderCheckBox();
             }
             StartTick();
         }
@@ -297,7 +325,7 @@ namespace _1RM.Model
             foreach (var groupedServer in groupedServers)
             {
                 var source = groupedServer.First().GetDataSource();
-                needReload |= source.NeedRead();
+                needReload |= source?.NeedRead() ?? false;
                 if (source?.IsWritable == true
                     && source.Database_DeleteServer(groupedServer.Select(x => x.Id))
                     && needReload == false)
@@ -305,7 +333,6 @@ namespace _1RM.Model
                     // update viewmodel
                     foreach (var protocolServer in groupedServer)
                     {
-                        SimpleLogHelper.Warning($"{protocolServer.Id} {source.DataSourceName},  VmItemListCount = {VmItemList.Count}");
                         var old = VmItemList.First(x => x.Id == protocolServer.Id && x.Server.DataSourceName == source.DataSourceName);
                         VmItemList.Remove(old);
                         IoC.Get<ServerListPageViewModel>()?.VmServerList?.Remove(old); // invoke main list ui change
@@ -313,12 +340,14 @@ namespace _1RM.Model
                     }
                 }
             }
+
             if (needReload)
             {
                 ReloadServerList();
             }
             else
             {
+                ListPageViewClearHeaderCheckBox();
                 ReadTagsFromServers();
             }
             StartTick();
@@ -328,16 +357,22 @@ namespace _1RM.Model
 
         public void StopTick()
         {
-            _timer.Stop();
-            _isTimerStopFlag = true;
+            lock (this)
+            {
+                _timer.Stop();
+                _timerStopFlag = true; 
+            }
         }
         public void StartTick()
         {
-            _isTimerStopFlag = false;
-            if (_timer.Enabled == false && _configurationService.DatabaseCheckPeriod > 0)
+            lock (this)
             {
-                _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
-                _timer.Start();
+                _timerStopFlag = false;
+                if (_timer.Enabled == false && _configurationService.DatabaseCheckPeriod > 0)
+                {
+                    _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
+                    _timer.Start();
+                } 
             }
         }
     }

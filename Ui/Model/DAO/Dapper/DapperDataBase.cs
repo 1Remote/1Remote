@@ -146,6 +146,14 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
+        public override int GetServerCount()
+        {
+            lock (this)
+            {
+                return _dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0;
+            }
+        }
+
 
         static readonly string SqlInsert = $@"INSERT INTO `{Server.TABLE_NAME}`
 (`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)

@@ -401,7 +401,7 @@ namespace _1RM.Utils.KiTTY.Model
         {
             try
             {
-                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath), "Sessions", sessionName.Replace(" ", "%20"));
+                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath)!, "Sessions", sessionName.Replace(" ", "%20"));
                 var sb = new StringBuilder();
                 foreach (var item in options)
                 {

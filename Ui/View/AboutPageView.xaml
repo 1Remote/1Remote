@@ -60,11 +60,10 @@
                 <Thickness Top="0" Bottom="{StaticResource BottomHeight}"></Thickness>
             </Grid.Margin>
 
-            <ScrollViewer
-                x:Name="ScrollViewerMain"
-                Margin="0 3 0 4"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="ScrollViewerMain"
+                          Margin="0 3 0 4"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Auto">
 
                 <Grid Margin="20 0">
                     <Grid.ColumnDefinitions>
@@ -144,7 +143,11 @@
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Vertical" Margin="20 0 0 0">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support"></TextBlock>
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support" Background="Transparent">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding Gesture="Control+WheelClick" Command="{Binding CmdConsoleToggle}"></MouseBinding>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
                                 <StackPanel>
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">

@@ -14,6 +14,7 @@ internal class PRemoteMServer : IDataBaseServer
     public ProtocolBase? ToProtocolServerBase()
     {
         var x = ItemCreateHelper.CreateFromDbOrm(this);
+        if (x == null) return null;
         if (string.IsNullOrEmpty(x.DisplayName))
         {
             // 尝试从更老的版本读取 DispName

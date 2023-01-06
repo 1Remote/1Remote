@@ -155,7 +155,7 @@ namespace _1RM.View.Editor
                     type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
                 }
 
-                Debug.Assert(type.IsSubclassOf(typeof(ProtocolBase)));
+                Debug.Assert(type == typeof(ProtocolBase) || type.IsSubclassOf(typeof(ProtocolBase)));
                 _sharedTypeInBuckEdit = type;
             }
 
@@ -252,13 +252,9 @@ namespace _1RM.View.Editor
 
 
         private FormBase? _protocolEditControl;
-        public FormBase ProtocolEditControl
+        public FormBase? ProtocolEditControl
         {
-            get
-            {
-                if (_protocolEditControl == null) throw new NullReferenceException();
-                return _protocolEditControl;
-            }
+            get => _protocolEditControl;
             set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
         }
 
@@ -373,7 +369,7 @@ namespace _1RM.View.Editor
                     }
 
                     IoC.Get<MainWindowViewModel>().ShowList(true);
-                }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
+                }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? true)));
                 return _cmdSave;
             }
         }
@@ -501,6 +497,10 @@ namespace _1RM.View.Editor
                 {
                     ProtocolEditControl = new VncForm(Server);
                 }
+                else if (protocolType == typeof(LocalApp))
+                {
+                    ProtocolEditControl = new AppForm(Server);
+                }
                 else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
                 {
                     ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
@@ -509,9 +509,9 @@ namespace _1RM.View.Editor
                 {
                     ProtocolEditControl = new BaseFormWithAddressPort(Server);
                 }
-                else if (protocolType == typeof(LocalApp))
+                else if (protocolType == typeof(ProtocolBase))
                 {
-                    ProtocolEditControl = new AppForm(Server);
+                    ProtocolEditControl = null;
                 }
                 else
                     throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");

@@ -74,12 +74,18 @@ namespace _1RM.View
             }
         }
 
-        //public void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    if (e.ClickCount == 3)
-        //    {
-        //        ConsoleManager.Toggle();
-        //    }
-        //}
+
+
+        private RelayCommand? _cmdConsoleToggle;
+        public RelayCommand CmdConsoleToggle
+        {
+            get
+            {
+                return _cmdConsoleToggle ??= new RelayCommand((o) =>
+                {
+                    ConsoleManager.Toggle();
+                });
+            }
+        }
     }
 }

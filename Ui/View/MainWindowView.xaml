@@ -16,7 +16,9 @@
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Style="{StaticResource WindowChromeBaseBaseStyle}"
-                  Title="{x:Static service:AppPathHelper.APP_NAME}" Height="560" Width="900" MinWidth="900" MinHeight="560">
+                  Title="{x:Static service:AppPathHelper.APP_NAME}" 
+                  Height="560" Width="900" 
+                  MinWidth="700" MinHeight="500">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
