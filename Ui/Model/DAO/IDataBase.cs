@@ -35,6 +35,8 @@ namespace _1RM.Model.DAO
 
         public abstract List<ProtocolBase>? GetServers();
 
+        public abstract int GetServerCount();
+
         /// <summary>
         /// insert and return id
         /// </summary>

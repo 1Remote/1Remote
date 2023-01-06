@@ -40,11 +40,8 @@ namespace _1RM.View.Editor
 
         public PasswordPopupDialogViewModel()
         {
-            if (string.IsNullOrEmpty(UnSafeStringEncipher.SimpleDecrypt(LastUsername)) == false)
-                UserName = UnSafeStringEncipher.SimpleDecrypt(LastUsername);
-
-            if (string.IsNullOrEmpty(UnSafeStringEncipher.SimpleDecrypt(LastPassword)) == false)
-                Password = UnSafeStringEncipher.SimpleDecrypt(LastPassword);
+            UserName = UnSafeStringEncipher.SimpleDecrypt(LastUsername) ?? LastUsername;
+            Password = UnSafeStringEncipher.SimpleDecrypt(LastPassword) ?? LastPassword;
         }
 
 

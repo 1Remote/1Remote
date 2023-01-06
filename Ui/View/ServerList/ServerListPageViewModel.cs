@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -192,6 +193,7 @@ namespace _1RM.View.ServerList
         protected override void OnViewLoaded()
         {
             if (GlobalEventHelper.OnRequestDeleteServer == null)
+            {
                 GlobalEventHelper.OnRequestDeleteServer += server =>
                 {
                     if (string.IsNullOrEmpty(server.Id) == false
@@ -200,6 +202,7 @@ namespace _1RM.View.ServerList
                         AppData.DeleteServer(server);
                     }
                 };
+            }
 
 
             AppData.OnDataReloaded += RebuildVmServerList;

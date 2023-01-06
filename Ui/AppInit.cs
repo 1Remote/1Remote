@@ -221,7 +221,7 @@ namespace _1RM
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 ConsoleManager.Show();
 #endif
-                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
+                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Info;
                 SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 // init log file placement
                 var fi = new FileInfo(AppPathHelper.Instance.LogFilePath);

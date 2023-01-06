@@ -4,6 +4,7 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.View;
 using _1RM.View.ServerList;
+using Shawn.Utils;
 
 namespace _1RM.Controls
 {

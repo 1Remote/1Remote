@@ -110,10 +110,13 @@ namespace _1RM.Utils.PRemoteM
                             if (File.Exists(profileJsonPath))
                             {
                                 var tmp = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(profileJsonPath));
-                                string dbPath = (tmp["Database"]["SqliteDatabasePath"]).ToString();
-                                if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
+                                if (tmp != null)
                                 {
-                                    dbPaths.Add(dbPath);
+                                    string dbPath = (tmp["Database"]["SqliteDatabasePath"]).ToString();
+                                    if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
+                                    {
+                                        dbPaths.Add(dbPath);
+                                    }
                                 }
                             }
                         }

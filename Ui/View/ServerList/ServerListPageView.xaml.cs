@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
+using _1RM.Service.DataSource;
 using Shawn.Utils.Wpf;
 
 namespace _1RM.View.ServerList
@@ -46,6 +47,12 @@ namespace _1RM.View.ServerList
                     t.IsSelected = false;
                 }
                 t.IsVisible = e.Accepted;
+
+                // if any additional database, then clear all selected: 有多个数据源时，清除所有勾选项目，因为这种情况下无法控制 grouped checkbox，显示上会有BUG
+                if (IoC.Get<DataSourceService>().AdditionalSources.Any())
+                {
+                    t.IsSelected = false;
+                }
             }
         }
 
@@ -101,9 +108,25 @@ namespace _1RM.View.ServerList
                 }
             }
         }
+
+        public void ClearHeaderCheckBox()
+        {
+            if (_lvServerCards == null) return;
+            Dispatcher.Invoke(() =>
+            {
+                var expanderList = MyVisualTreeHelper.FindVisualChilds<Expander>(_lvServerCards);
+                foreach (var expander in expanderList)
+                {
+                    if (expander.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+                    {
+                        headerCheckBox.IsChecked = false;
+                    }
+                }
+            });
+        }
     }
 
-    
+
     public class ConverterTagName : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -134,7 +157,7 @@ namespace _1RM.View.ServerList
                 </MultiBinding>
             </DataTrigger.Binding>
          */
-        public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value.Length == 2
                 && value[0] is IEnumerable<ProtocolBaseViewModel> protocolBaseViewModels

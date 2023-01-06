@@ -8,15 +8,9 @@ using _1RM.Utils.RdpFile;
 using MSTSCLib;
 using _1RM.Model;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
-using _1RM.Utils.RdpFile;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Color = System.Drawing.Color;
@@ -338,7 +332,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void RedirectDevice()
         {
-            var ocx = (MSTSCLib.IMsRdpClientNonScriptable7)_rdpClient.GetOcx();
+            var ocx = _rdpClient?.GetOcx() as MSTSCLib.IMsRdpClientNonScriptable7;
+            if(ocx == null)
+                return;
             ocx.CameraRedirConfigCollection.RedirectByDefault = false;
             if (_rdpSettings.EnableRedirectCameras == true)
             {

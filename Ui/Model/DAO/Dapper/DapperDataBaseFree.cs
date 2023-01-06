@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using Dapper;
 
 namespace _1RM.Model.DAO.Dapper
 {
@@ -39,6 +40,16 @@ namespace _1RM.Model.DAO.Dapper
             {
                 OpenConnection();
                 var ret = base.GetServers();
+                CloseConnection();
+                return ret;
+            }
+        }
+        public override int GetServerCount()
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetServerCount();
                 CloseConnection();
                 return ret;
             }

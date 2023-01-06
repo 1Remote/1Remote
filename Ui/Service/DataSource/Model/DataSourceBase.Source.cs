@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
 using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
 using JsonKnownTypes;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Crypto;
 using Shawn.Utils;
 using Stylet;
 
@@ -59,7 +61,10 @@ namespace _1RM.Service.DataSource.Model
         {
             lock (this)
             {
-                if (focus == false
+                var count = Database_GetServersCount();
+
+                if (count == CachedProtocols.Count
+                    && focus == false
                     && LastReadFromDataSourceMillisecondsTimestamp >= DataSourceDataUpdateTimestamp)
                 {
                     return CachedProtocols;
@@ -219,6 +224,7 @@ namespace _1RM.Service.DataSource.Model
             server.Id = tmp.Id;
             server.DataSourceName = this.DataSourceName;
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            CachedProtocols.Add(new ProtocolBaseViewModel(server));
             return string.IsNullOrEmpty(server.Id) == false;
         }
 
@@ -236,6 +242,7 @@ namespace _1RM.Service.DataSource.Model
             for (int i = 0; i < servers.Count(); i++)
             {
                 servers[i].Id = cloneList[i].Id;
+                CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
             }
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             return servers.All(x => string.IsNullOrEmpty(x.Id) == false);
@@ -244,7 +251,6 @@ namespace _1RM.Service.DataSource.Model
         public bool Database_UpdateServer(ProtocolBase org)
         {
             Debug.Assert(org.IsTmpSession() == false);
-
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
@@ -252,6 +258,8 @@ namespace _1RM.Service.DataSource.Model
             if (ret == true)
             {
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var old = CachedProtocols.First(x => x.Id == org.Id);
+                old.Server= org;
             }
             return ret;
         }
@@ -271,6 +279,13 @@ namespace _1RM.Service.DataSource.Model
             if (ret == true)
             {
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                // update viewmodel
+                foreach (var protocolServer in servers)
+                {
+                    var old = CachedProtocols.First(x => x.Id == protocolServer.Id);
+                    // invoke main list ui change & invoke launcher ui change
+                    old.Server = protocolServer;
+                }
             }
             return ret;
         }
@@ -281,7 +296,10 @@ namespace _1RM.Service.DataSource.Model
             {
                 var ret = GetDataBase()?.DeleteServer(id) == true;
                 if (ret == true)
+                {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    CachedProtocols.RemoveAll(x => x.Id == id);
+                }
                 return ret;
             }
             return false;
@@ -293,13 +311,16 @@ namespace _1RM.Service.DataSource.Model
             {
                 var ret = GetDataBase()?.DeleteServer(ids) == true;
                 if (ret == true)
+                {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    CachedProtocols.RemoveAll(x => ids.Contains(x.Id));
+                }
                 return ret;
             }
             return false;
         }
 
-        public List<ProtocolBase> Database_GetServers()
+        protected List<ProtocolBase> Database_GetServers()
         {
             var ps = GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
             foreach (var protocolBase in ps)
@@ -311,8 +332,7 @@ namespace _1RM.Service.DataSource.Model
 
         public int Database_GetServersCount()
         {
-            var s = GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
-            return s.Count;
+            return GetDataBase()?.GetServerCount() ?? 0;
         }
     }
 }
