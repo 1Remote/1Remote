@@ -88,7 +88,7 @@ namespace _1RM.View.ServerList
                     item.IsSelected = checkBox.IsChecked == true;
                 }
             }
-            else if (string.IsNullOrEmpty(checkBox.Tag?.ToString()))
+            else
             {
                 var expander = MyVisualTreeHelper.VisualUpwardSearch<Expander>(checkBox);
                 if (expander?.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
@@ -109,7 +109,7 @@ namespace _1RM.View.ServerList
             }
         }
 
-        public void ClearHeaderCheckBox()
+        public void RefreshHeaderCheckBox()
         {
             if (_lvServerCards == null) return;
             Dispatcher.Invoke(() =>
@@ -119,7 +119,18 @@ namespace _1RM.View.ServerList
                 {
                     if (expander.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
                     {
-                        headerCheckBox.IsChecked = false;
+                        var group = (CollectionViewGroup)expander.DataContext;
+                        if (group.Items.OfType<ProtocolBaseViewModel>().Any(x => x.IsSelected))
+                        {
+                            if (group.Items.OfType<ProtocolBaseViewModel>().All(x => x.IsSelected))
+                                headerCheckBox.IsChecked = true;
+                            else
+                                headerCheckBox.IsChecked = null;
+                        }
+                        else
+                        {
+                            headerCheckBox.IsChecked = false;
+                        }
                     }
                 }
             });
