@@ -123,14 +123,6 @@ namespace _1RM.Model
             TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
         }
 
-        private void ListPageViewClearHeaderCheckBox()
-        {
-            if (IoC.Get<ServerListPageViewModel>().View is ServerListPageView view)
-            {
-                view.ClearHeaderCheckBox();
-            }
-        }
-
         private void SaveOnPinnedChanged()
         {
             _configurationService.PinnedTags = TagList.Where(x => x.IsPinned).Select(x => x.Name).ToList();
@@ -212,7 +204,7 @@ namespace _1RM.Model
             else
             {
                 ReadTagsFromServers();
-                ListPageViewClearHeaderCheckBox();
+                IoC.Get<ServerListPageViewModel>().ClearSelection();
             }
             StartTick();
             return ret;
@@ -241,7 +233,7 @@ namespace _1RM.Model
             else
             {
                 ReadTagsFromServers();
-                ListPageViewClearHeaderCheckBox();
+                IoC.Get<ServerListPageViewModel>().ClearSelection();
             }
             StartTick();
         }
@@ -279,7 +271,7 @@ namespace _1RM.Model
             else
             {
                 ReadTagsFromServers();
-                ListPageViewClearHeaderCheckBox();
+                IoC.Get<ServerListPageViewModel>().ClearSelection();
             }
             StartTick();
         }
@@ -311,7 +303,7 @@ namespace _1RM.Model
             else
             {
                 ReadTagsFromServers();
-                ListPageViewClearHeaderCheckBox();
+                IoC.Get<ServerListPageViewModel>().ClearSelection();
             }
             StartTick();
         }
@@ -347,8 +339,8 @@ namespace _1RM.Model
             }
             else
             {
-                ListPageViewClearHeaderCheckBox();
                 ReadTagsFromServers();
+                IoC.Get<ServerListPageViewModel>().ClearSelection();
             }
             StartTick();
         }

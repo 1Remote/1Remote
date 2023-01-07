@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using NUlid;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View
 {
@@ -96,12 +97,15 @@ namespace _1RM.View
         {
             get
             {
-                if (_orgDisplayNameControl is not TextBlock
-                    || (_orgDisplayNameControl is TextBlock tb && tb.Text != Server?.DisplayName))
+                Execute.OnUIThreadSync(() =>
                 {
-                    _orgDisplayNameControl = new TextBlock() { Text = Server?.DisplayName, };
-                }
-                return _orgDisplayNameControl;
+                    if (_orgDisplayNameControl is not TextBlock
+                        || (_orgDisplayNameControl is TextBlock tb && tb.Text != Server?.DisplayName))
+                    {
+                        _orgDisplayNameControl = new TextBlock() { Text = Server?.DisplayName, };
+                    }
+                });
+                return _orgDisplayNameControl!;
             }
         }
 
@@ -110,12 +114,15 @@ namespace _1RM.View
         {
             get
             {
-                if (_orgSubTitleControl is not TextBlock
-                    || (_orgSubTitleControl is TextBlock tb && tb.Text != Server?.SubTitle))
+                Execute.OnUIThreadSync(() =>
                 {
-                    _orgSubTitleControl = new TextBlock() { Text = Server?.SubTitle, };
-                }
-                return _orgSubTitleControl;
+                    if (_orgSubTitleControl is not TextBlock
+                    || (_orgSubTitleControl is TextBlock tb && tb.Text != Server?.SubTitle))
+                    {
+                        _orgSubTitleControl = new TextBlock() { Text = Server?.SubTitle, };
+                    }
+                });
+                return _orgSubTitleControl!;
             }
         }
 
