@@ -169,7 +169,7 @@ namespace _1RM.View.Editor
                     var x = serverBases.Select(x => property.GetValue(x)).ToArray();
                     if (x.Distinct().Count() <= 1) continue;
                     if (property.PropertyType == typeof(string))
-                        property.SetValue(Server, ProtocolBase.ServerEditorDifferentOptions);
+                        property.SetValue(Server, Server.ServerEditorDifferentOptions);
                     else
                         property.SetValue(Server, null);
                 }
@@ -196,7 +196,7 @@ namespace _1RM.View.Editor
 
                 var tags = new List<string>();
                 if (isAllTagsSameFlag == false)
-                    tags.Add(ProtocolBase.ServerEditorDifferentOptions);
+                    tags.Add(Server.ServerEditorDifferentOptions);
                 tags.AddRange(_sharedTagsInBuckEdit);
                 Server.Tags = tags;
             }
@@ -293,7 +293,7 @@ namespace _1RM.View.Editor
                                 var obj = property.GetValue(Server);
                                 if (obj == null)
                                     continue;
-                                else if (obj.ToString() == ProtocolBase.ServerEditorDifferentOptions)
+                                else if (obj.ToString() == Server.ServerEditorDifferentOptions)
                                     continue;
                                 else
                                     foreach (var server in _serversInBuckEdit)
@@ -319,13 +319,13 @@ namespace _1RM.View.Editor
                                 else
                                 {
                                     // remove tag if it is in not common and ServerEditorDifferentOptions is not existed
-                                    if (Server.Tags.Contains(ProtocolBase.ServerEditorDifferentOptions) == false)
+                                    if (Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
                                         server.Tags.Remove(tag);
                                 }
                             }
 
                             // add new tags
-                            foreach (var tag in Server.Tags.Where(tag => tag != ProtocolBase.ServerEditorDifferentOptions))
+                            foreach (var tag in Server.Tags.Where(tag => tag != Server.ServerEditorDifferentOptions))
                             {
                                 server.Tags.Add(tag);
                             }
@@ -535,9 +535,9 @@ namespace _1RM.View.Editor
                 {
                     Runners.Add(runner.Name);
                 }
-                if (IsBuckEdit && _orgServer.SelectedRunnerName == ProtocolBase.ServerEditorDifferentOptions)
+                if (IsBuckEdit && _orgServer.SelectedRunnerName == Server.ServerEditorDifferentOptions)
                 {
-                    Runners.Add(ProtocolBase.ServerEditorDifferentOptions);
+                    Runners.Add(Server.ServerEditorDifferentOptions);
                 }
                 Server.SelectedRunnerName = Runners.Any(x => x == selectedRunner) ? selectedRunner : Runners.First();
             }
