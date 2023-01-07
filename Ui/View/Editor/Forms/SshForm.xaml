@@ -133,7 +133,7 @@
                                     <system:Int32>2</system:Int32>
                                 </ComboBoxItem.Tag>
                             </ComboBoxItem>
-                            <ComboBoxItem Visibility="{Binding SshVersion, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
+                            <ComboBoxItem Visibility="{Binding SshVersion, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>

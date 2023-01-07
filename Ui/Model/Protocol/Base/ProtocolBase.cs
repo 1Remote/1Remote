@@ -28,11 +28,10 @@ namespace _1RM.Model.Protocol.Base
     //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
     public abstract class ProtocolBase : NotifyPropertyChangedBase
     {
-        [JsonIgnore] public static string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options");
+        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options").Replace(" ", "-");
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
         {
-            GenerateIdForTmpSession();
             Protocol = protocol;
             ClassVersion = classVersion;
             ProtocolDisplayName = protocolDisplayName;

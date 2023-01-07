@@ -535,9 +535,9 @@ namespace _1RM.View.Editor
                 {
                     Runners.Add(runner.Name);
                 }
-                if (IsBuckEdit && _orgServer.SelectedRunnerName == ProtocolBase.ServerEditorDifferentOptions)
+                if (IsBuckEdit && _orgServer.SelectedRunnerName == Server.ServerEditorDifferentOptions)
                 {
-                    Runners.Add(ProtocolBase.ServerEditorDifferentOptions);
+                    Runners.Add(Server.ServerEditorDifferentOptions);
                 }
                 Server.SelectedRunnerName = Runners.Any(x => x == selectedRunner) ? selectedRunner : Runners.First();
             }
