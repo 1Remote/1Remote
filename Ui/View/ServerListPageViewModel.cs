@@ -287,7 +287,10 @@ namespace PRM.View
                         Context.DataService.DecryptToConnectLevel(ref serverBase);
                         list.Add(serverBase);
                     }
+
+                    IsSelectedAll = false;
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Export") + ": " + IoC.Get<ILanguageService>().Translate("Done") + "!");
                 });
             }
         }
