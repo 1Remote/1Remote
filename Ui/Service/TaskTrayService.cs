@@ -45,9 +45,13 @@ namespace _1RM.Service
 
         private void TaskTrayIconOnMouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            lock (this)
             {
-                IoC.Get<MainWindowViewModel>()?.ShowMe();
+                if (_taskTrayIcon?.Visible == true
+                    && e.Button == System.Windows.Forms.MouseButtons.Left)
+                {
+                    IoC.Get<MainWindowViewModel>()?.ShowMe();
+                }
             }
         }
 
@@ -83,7 +87,16 @@ namespace _1RM.Service
                 HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
-            exit.Click += (sender, args) => App.Close();
+            exit.Click += (sender, args) =>
+            {
+                lock (this)
+                {
+                    TaskTrayDispose();
+                    App.Close(); 
+                }
+            };
+
+
             _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             _taskTrayIcon.ContextMenuStrip.Items.Add(title);
             _taskTrayIcon.ContextMenuStrip.Items.Add("-");
