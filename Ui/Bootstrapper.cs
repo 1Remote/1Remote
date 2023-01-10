@@ -137,13 +137,13 @@ namespace PRM
 
         protected override void OnExit(ExitEventArgs e)
         {
+            IoC.Get<TaskTrayService>().TaskTrayDispose();
             _namedPipeHelper?.Dispose();
             IoC.Get<SessionControlService>()?.Release();
             if (IoC.Get<LauncherWindowViewModel>()?.View != null)
                 IoC.Get<LauncherWindowViewModel>()?.RequestClose();
             if (IoC.Get<MainWindowViewModel>()?.View != null)
                 IoC.Get<MainWindowViewModel>().RequestClose();
-            IoC.Get<TaskTrayService>().TaskTrayDispose();
         }
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
