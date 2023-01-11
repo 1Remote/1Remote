@@ -180,6 +180,13 @@ namespace PRM.View.Settings
             {
                 if (SetAndNotifyIfChanged(ref _configurationService.General.AppStartAutomatically, value))
                 {
+                    var e = _configurationService.SetSelfStart();
+                    if (e != null)
+                    {
+                        _configurationService.General.AppStartAutomatically = false;
+                        RaisePropertyChanged();
+                        MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
+                    }
                     _configurationService.Save();
                 }
             }

@@ -178,13 +178,6 @@ namespace PRM.Service
                 info.PropertyChanged += OnMatchProviderChangedHandler;
             }
 
-#if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
-#else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
-#endif
             Save();
         }
 
@@ -213,13 +206,29 @@ namespace PRM.Service
                 File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
                 CanSave = true;
             }
+
+            SetSelfStart();
+        }
+
+        public Exception? SetSelfStart()
+        {
+            try
+            {
 #if FOR_MICROSOFT_STORE_ONLY
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
+                return null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                General.AppStartAutomatically = false;
+                return e;
+            }
         }
 
 
