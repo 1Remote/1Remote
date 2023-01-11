@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Ui;
 
@@ -76,7 +77,20 @@ namespace PRM.View.Guidance
         public bool AppStartAutomatically
         {
             get => _configuration.General.AppStartAutomatically;
-            set => SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value))
+                {
+                    var configurationService = new ConfigurationService(_configuration, new KeywordMatchService());
+                    var e = configurationService.SetSelfStart();
+                    if (e != null)
+                    {
+                        _configuration.General.AppStartAutomatically = false;
+                        RaisePropertyChanged();
+                        MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
+                    }
+                }
+            }
         }
 
         public bool AppStartMinimized

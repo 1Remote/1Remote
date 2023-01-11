@@ -248,6 +248,7 @@ namespace PRM
 
             KeywordMatchService = new KeywordMatchService();
             ConfigurationService = new ConfigurationService(Configuration, KeywordMatchService);
+            ConfigurationService.SetSelfStart();
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }
