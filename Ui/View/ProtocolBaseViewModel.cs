@@ -34,7 +34,7 @@ namespace _1RM.View
         public string ProtocolDisplayNameInShort => Server.ProtocolDisplayNameInShort;
 
         /// <summary>
-        /// like: "#work #asd"
+        /// like: "#work #asd", display in launcher page.
         /// </summary>
         public string TagString { get; private set; }
 

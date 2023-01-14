@@ -6,12 +6,11 @@
                          xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
                          xmlns:settings="clr-namespace:_1RM.View.Settings"
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                          xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
-                         WindowStyle="None"
                          SizeToContent="WidthAndHeight" 
+                         WindowStyle="None"
                          Background="Transparent"
                          AllowsTransparency="True"
                          d:DataContext="{d:DesignInstance local:SqliteSettingViewModel}">
