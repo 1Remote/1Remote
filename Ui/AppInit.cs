@@ -257,6 +257,7 @@ namespace _1RM
                 NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
+            ConfigurationService.SetSelfStart();
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }

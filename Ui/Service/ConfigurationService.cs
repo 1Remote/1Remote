@@ -211,13 +211,6 @@ namespace _1RM.Service
                 info.PropertyChanged += OnMatchProviderChangedHandler;
             }
 
-#if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
-#else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
-#endif
 
             AdditionalDataSource = DataSourceService.AdditionalSourcesLoadFromProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
             Save();
@@ -254,11 +247,27 @@ namespace _1RM.Service
                 CanSave = true;
             }
 
+            SetSelfStart();
+        }
+
+        public Exception? SetSelfStart()
+        {
+            try
+            {
 #if FOR_MICROSOFT_STORE_ONLY
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #else
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #endif
+                return null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                General.AppStartAutomatically = false;
+                return e;
+            }
         }
 
 
