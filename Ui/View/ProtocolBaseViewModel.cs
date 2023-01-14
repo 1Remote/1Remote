@@ -50,7 +50,10 @@ namespace _1RM.View
                     _server = value;
                     if (ConverterNoteToVisibility.IsVisible(Server.Note))
                     {
-                        HoverNoteDisplayControl = new NoteIcon(this.Server);
+                        Execute.OnUIThreadSync(() =>
+                        {
+                            HoverNoteDisplayControl = new NoteIcon(this.Server);
+                        });
                     }
                     LastConnectTime = ConnectTimeRecorder.Get(Server);
                     TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
@@ -82,7 +85,10 @@ namespace _1RM.View
 
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
-                HoverNoteDisplayControl = new NoteIcon(this.Server);
+                Execute.OnUIThreadSync(() =>
+                {
+                    HoverNoteDisplayControl = new NoteIcon(this.Server);
+                });
             }
             LastConnectTime = ConnectTimeRecorder.Get(Server);
             TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));

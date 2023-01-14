@@ -250,6 +250,27 @@ namespace _1RM.Service
             SetSelfStart();
         }
 
+        public static Exception? CheckSetSelfStart()
+        {
+            try
+            {
+#if FOR_MICROSOFT_STORE_ONLY
+                SetSelfStartingHelper.SetSelfStartByStartupTask(true, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(false, AppPathHelper.APP_NAME);
+#else
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(true, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(false, AppPathHelper.APP_NAME);
+#endif
+                return null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                return e;
+            }
+        }
+
+
         public Exception? SetSelfStart()
         {
             try

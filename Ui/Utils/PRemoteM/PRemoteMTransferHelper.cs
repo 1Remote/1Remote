@@ -65,6 +65,10 @@ namespace _1RM.Utils.PRemoteM
                             localSource.Database_InsertServer(_servers);
                             IoC.Get<GlobalData>().ReloadServerList(true);
                         }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Error(e);
+                        }
                         finally
                         {
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
