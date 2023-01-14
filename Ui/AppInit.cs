@@ -292,16 +292,18 @@ namespace _1RM
                 string error = _localDataConnectionStatus.GetErrorInfo();
                 MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
+                return;
             }
-            else if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
-                || _isNewUser)
+
+            if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
+            {
+                // import form PRemoteM db
+                IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += PRemoteMTransferHelper.TransAsync;
+            }
+
+            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
-                if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
-                {
-                    // import form PRemoteM db
-                    PRemoteMTransferHelper.TransAsync();
-                }
             }
         }
     }

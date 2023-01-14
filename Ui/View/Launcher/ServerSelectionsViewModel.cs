@@ -386,23 +386,30 @@ namespace _1RM.View.Launcher
                 GridNoteVisibility = newVisibility;
             }
 
+            if (_launcherWindowViewModel?.View is LauncherWindowView window && window.Visibility != Visibility.Visible)
+            {
+                return;
+            }
 
             if (NoteField != null)
             {
-                if (GridNoteVisibility == Visibility.Visible)
+                Execute.OnUIThreadSync(() =>
                 {
-                    RaisePropertyChanged(nameof(GridNoteVisibility));
-                    var sb = new Storyboard();
-                    sb.AddFadeIn(0.3);
-                    sb.Begin(NoteField);
-                }
-                else
-                {
-                    var sb = new Storyboard();
-                    sb.AddFadeOut(0.3);
-                    sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
-                    sb.Begin(NoteField);
-                }
+                    if (GridNoteVisibility == Visibility.Visible)
+                    {
+                        RaisePropertyChanged(nameof(GridNoteVisibility));
+                        var sb = new Storyboard();
+                        sb.AddFadeIn(0.3);
+                        sb.Begin(NoteField);
+                    }
+                    else
+                    {
+                        var sb = new Storyboard();
+                        sb.AddFadeOut(0.3);
+                        sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
+                        sb.Begin(NoteField);
+                    }
+                });
             }
             else
             {

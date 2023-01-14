@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
+using Stylet;
 
 namespace _1RM.View.Guidance
 {
@@ -80,8 +81,7 @@ namespace _1RM.View.Guidance
             {
                 if (SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value))
                 {
-                    var configurationService = new ConfigurationService(new KeywordMatchService(), _configuration);
-                    var e = configurationService.SetSelfStart();
+                    var e = ConfigurationService.CheckSetSelfStart();
                     if (e != null)
                     {
                         _configuration.General.AppStartAutomatically = false;
