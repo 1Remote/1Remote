@@ -16,6 +16,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 using StyletIoC;
+using MessageBoxViewModel = _1RM.View.Utils.MessageBoxViewModel;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM
@@ -102,6 +103,8 @@ namespace _1RM
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
+
+            builder.Bind<IMessageBoxViewModel>().To<MessageBoxViewModel>();
             base.ConfigureIoC(builder);
         }
 
@@ -136,6 +139,7 @@ namespace _1RM
 
         protected override void OnExit(ExitEventArgs e)
         {
+            _enabledOnUnhandledException = false;
             IoC.Get<TaskTrayService>().TaskTrayDispose();
             _namedPipeHelper?.Dispose();
             IoC.Get<SessionControlService>()?.Release();
@@ -145,19 +149,23 @@ namespace _1RM
                 IoC.Get<MainWindowViewModel>().RequestClose();
         }
 
+
+        private bool _enabledOnUnhandledException = true;
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            lock (this)
-            {
-                SimpleLogHelper.Fatal(e.Exception);
-                var errorReport = new ErrorReportWindow(e.Exception);
-                errorReport.ShowDialog();
+            if (_enabledOnUnhandledException)
+                lock (this)
+                {
+                    SimpleLogHelper.Fatal(e.Exception);
+                    var errorReport = new ErrorReportWindow(e.Exception);
+                    errorReport.ShowDialog();
 #if FOR_MICROSOFT_STORE_ONLY
                     throw e.Exception;
 #else
-                App.Close(100);
+                    App.Close(100);
 #endif
-            }
+                }
+            e.Handled = true;
         }
     }
 }
