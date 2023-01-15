@@ -146,7 +146,7 @@ namespace _1RM.Service
                 }
 #if DEBUG
                 var mf = string.Join(", ", missingFields);
-                MessageBox.Show($"language resource missing:\r\n {mf}", Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show($"language resource missing:\r\n {mf}", Translate("Error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 File.WriteAllText("LANGUAGE_ERROR.txt", mf);
 #endif
             }

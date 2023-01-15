@@ -175,7 +175,7 @@
                 Style="{StaticResource ButtonBarAccentStyle}"
                 attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
                 Command="{Binding CmdSaveAndGoBack}"
-                Content="{DynamicResource Save}">
+                Content="{DynamicResource Back}">
         </Button>
 
         <ContentControl Grid.Column="1" s:View.Model="{Binding SelectedViewModel}"></ContentControl>

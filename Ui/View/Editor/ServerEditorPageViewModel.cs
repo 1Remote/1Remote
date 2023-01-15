@@ -594,7 +594,7 @@ namespace _1RM.View.Editor
                         cmd = Server.CommandAfterDisconnected;
                     }
 
-                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
+                    var id = GlobalEventHelper.ShowProcessingRing();
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -604,6 +604,8 @@ namespace _1RM.View.Editor
                                 var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
                                 if (string.IsNullOrEmpty(tuple.Item2) == false)
                                     MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                                else
+                                    MessageBoxHelper.Info($"We will run: '{cmd}'");
                                 WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
                             }
                         }
@@ -613,7 +615,7 @@ namespace _1RM.View.Editor
                         }
                         finally
                         {
-                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            GlobalEventHelper.HideProcessingRing(id);
                         }
                     });
                 });

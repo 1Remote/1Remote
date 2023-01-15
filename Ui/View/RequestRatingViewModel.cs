@@ -11,7 +11,7 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.View
 {
-    public class RequestRatingViewModel : NotifyPropertyChangedBase
+    public class RequestRatingViewModel : MaskLayer
     {
         private bool _doNotShowAgain;
 

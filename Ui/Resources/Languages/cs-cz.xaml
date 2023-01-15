@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">cs-CZ</s:String>
     <s:String x:Key="language_code-google">cs</s:String>
     <s:String x:Key="language_name">čeština (cs-CZ)</s:String>
-    <s:String x:Key="messagebox_title_warning">1Remote – varování</s:String>
-    <s:String x:Key="messagebox_title_error">1Remote – chyba</s:String>
-    <s:String x:Key="messagebox_title_info">1Remote – informace</s:String>
+    <s:String x:Key="Warning">varování</s:String>
+    <s:String x:Key="Error">chyba</s:String>
+    <s:String x:Key="Info">informace</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">Ukončit</s:String>
     <s:String x:Key="Close">Zavřít</s:String>

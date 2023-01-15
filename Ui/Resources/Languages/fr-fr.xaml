@@ -3,9 +3,9 @@
     <s:String x:Key="language_code-ISO">fr-FR</s:String>
     <s:String x:Key="language_code-google">fr</s:String>
     <s:String x:Key="language_name">Français (fr-FR)</s:String>
-    <s:String x:Key="messagebox_title_warning">1Remote Warning</s:String>
-    <s:String x:Key="messagebox_title_error">1Remote Erreur</s:String>
-    <s:String x:Key="messagebox_title_info">1Remote Info</s:String>
+    <s:String x:Key="Warning">Warning</s:String>
+    <s:String x:Key="Error">Erreur</s:String>
+    <s:String x:Key="Info">Info</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">Sortir</s:String>
     <s:String x:Key="Close">Fermer</s:String>
