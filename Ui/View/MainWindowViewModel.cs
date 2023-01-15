@@ -19,6 +19,7 @@ using _1RM.View.Editor;
 using _1RM.View.Host.ProtocolHosts;
 using _1RM.View.ServerList;
 using _1RM.View.Settings;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -38,7 +39,7 @@ namespace _1RM.View
         SettingsTheme,
         SettingsRunners,
     }
-    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
+    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware, IMaskLayerContainer
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
@@ -51,8 +52,8 @@ namespace _1RM.View
         #region Properties
 
 
-        private INotifyPropertyChanged? _topLevelViewModel;
-        public INotifyPropertyChanged? TopLevelViewModel
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
         {
             get => _topLevelViewModel;
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
@@ -101,22 +102,8 @@ namespace _1RM.View
         public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
-            {
-                Execute.OnUIThread(() =>
-                {
-                    if (visibility == Visibility.Visible)
-                    {
-                        var pvm = IoC.Get<ProcessingRingViewModel>();
-                        pvm.ProcessingRingMessage = msg;
-                        this.TopLevelViewModel = pvm;
-                    }
-                    else
-                    {
-                        this.TopLevelViewModel = null;
-                    }
-                });
-            };
+            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
+
             GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
             {
                 // select save to which source
@@ -186,11 +173,45 @@ namespace _1RM.View
             };
 
             OnMainWindowViewLoaded?.Invoke();
+
+            //var vm = new _1RM.View.Utils.MessageBoxPageViewModel();
+            //vm.Setup(messageBoxText: "content",
+            //    caption: "title",
+            //    icon: MessageBoxImage.Warning,
+            //    buttons: MessageBoxButton.OK,
+            //    buttonLabels: new Dictionary<MessageBoxResult, string>()
+            //    {
+            //        {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
+            //        {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
+            //        {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
+            //    }, onButtonClicked: () =>
+            //    {
+            //        TopLevelViewModel = null;
+            //    });
+            //TopLevelViewModel = vm;
         }
 
         protected override void OnClose()
         {
             App.Close();
+        }
+
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (visibility == Visibility.Visible)
+                {
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
         }
 
 

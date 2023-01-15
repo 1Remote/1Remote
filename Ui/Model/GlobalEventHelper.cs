@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Interop;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 
@@ -53,9 +54,22 @@ namespace _1RM.Model
 
         /// <summary>
         /// Invoke to show up processing ring
-        /// alert info = arg2
+        /// cmd id = arg1
+        /// alert info = arg3
         /// </summary>
-        public static Action<Visibility, string>? ShowProcessingRing { get; set; } = null;
+        public static Action<long, Visibility, string>? ProcessingRingInvoke { get; set; } = null;
+
+        public static long ShowProcessingRing(string msg = "")
+        {
+            var id = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            ProcessingRingInvoke?.Invoke(id, Visibility.Visible, msg);
+            return id;
+        }
+
+        public static void HideProcessingRing(long layerId)
+        {
+            ProcessingRingInvoke?.Invoke(layerId, Visibility.Collapsed, "");
+        }
 
         /// <summary>
         /// Invoke to notify language was changed.

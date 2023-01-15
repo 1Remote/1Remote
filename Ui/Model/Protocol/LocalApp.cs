@@ -8,6 +8,7 @@ using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using _1RM.View;
 
 namespace _1RM.Model.Protocol
 {
@@ -134,7 +135,7 @@ namespace _1RM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBoxHelper.Info(GetCmd());
+                    MessageBoxHelper.Info(GetCmd(), ownerViewModel: IoC.Get<MainWindowViewModel>());
                 });
             }
         }

@@ -35,7 +35,7 @@ namespace _1RM
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             if (flag == false)
             {
-                MessageBox.Show(LanguageService.Translate("write permissions alert", path), LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
+                MessageBox.Show(LanguageService.Translate("write permissions alert", path), LanguageService.Translate("Warning"), MessageBoxButton.OK);
                 Environment.Exit(1);
             }
         }
@@ -290,7 +290,7 @@ namespace _1RM
             if (_localDataConnectionStatus != EnumDbStatus.OK)
             {
                 string error = _localDataConnectionStatus.GetErrorInfo();
-                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("Error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
                 return;
             }

@@ -19,7 +19,7 @@ using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class MysqlSettingViewModel : NotifyPropertyChangedBaseScreen
+    public class MysqlSettingViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer
     {
         private readonly MysqlSource? _orgMysqlConfig = null;
         public MysqlSource New = new MysqlSource();
@@ -46,33 +46,34 @@ namespace _1RM.View.Settings.DataSource
 
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
+            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
         }
 
         protected override void OnClose()
         {
-            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
+            GlobalEventHelper.ProcessingRingInvoke -= ShowProcessingRing;
             New.Database_CloseConnection();
         }
 
-        private INotifyPropertyChanged? _topLevelViewModel;
-        public INotifyPropertyChanged? TopLevelViewModel
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
         {
             get => _topLevelViewModel;
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
         }
 
-        private void ShowProcessingRing(Visibility visibility, string msg)
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
         {
             Execute.OnUIThread(() =>
             {
                 if (visibility == Visibility.Visible)
                 {
                     var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
                     pvm.ProcessingRingMessage = msg;
                     this.TopLevelViewModel = pvm;
                 }
-                else
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
                 {
                     this.TopLevelViewModel = null;
                 }
@@ -216,10 +217,9 @@ namespace _1RM.View.Settings.DataSource
                 {
                     Task.Factory.StartNew(() =>
                     {
+                        var id = GlobalEventHelper.ShowProcessingRing();
                         try
                         {
-                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
-
                             var config = new MysqlSource()
                             {
                                 DataSourceName = Name,
@@ -231,11 +231,11 @@ namespace _1RM.View.Settings.DataSource
                             };
                             if (MysqlSource.TestConnection(config))
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success!"));
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success!"), ownerViewModel: this);
                             }
                             else
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed!"));
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed!"), ownerViewModel: this);
                             }
                         }
                         catch (Exception e)
@@ -244,7 +244,7 @@ namespace _1RM.View.Settings.DataSource
                         }
                         finally
                         {
-                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            GlobalEventHelper.HideProcessingRing(id);
                         }
                     });
                 });

@@ -24,7 +24,7 @@ using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen
+    public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
 
@@ -56,33 +56,34 @@ namespace _1RM.View.Settings.DataSource
 
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ShowProcessingRing += ShowProcessingRing;
+            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
         }
 
         protected override void OnClose()
         {
-            GlobalEventHelper.ShowProcessingRing -= ShowProcessingRing;
+            GlobalEventHelper.ProcessingRingInvoke -= ShowProcessingRing;
             New.Database_CloseConnection();
         }
 
-        private INotifyPropertyChanged? _topLevelViewModel;
-        public INotifyPropertyChanged? TopLevelViewModel
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
         {
             get => _topLevelViewModel;
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
         }
 
-        private void ShowProcessingRing(Visibility visibility, string msg)
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
         {
             Execute.OnUIThread(() =>
             {
                 if (visibility == Visibility.Visible)
                 {
                     var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
                     pvm.ProcessingRingMessage = msg;
                     this.TopLevelViewModel = pvm;
                 }
-                else
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
                 {
                     this.TopLevelViewModel = null;
                 }
@@ -135,16 +136,6 @@ namespace _1RM.View.Settings.DataSource
         }
 
 
-        
-        /// <summary>
-        /// Invoke Progress bar percent = arg1 / arg2
-        /// </summary>
-        private void OnRsaProgress(bool stop)
-        {
-            GlobalEventHelper.ShowProcessingRing?.Invoke(stop ? Visibility.Collapsed : Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
-        }
-
-
         private RelayCommand? _cmdSelectDbPath;
         public RelayCommand CmdSelectDbPath
         {
@@ -166,7 +157,7 @@ namespace _1RM.View.Settings.DataSource
                         MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"));
                         return;
                     }
-                    OnRsaProgress(false);
+                    
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -180,7 +171,6 @@ namespace _1RM.View.Settings.DataSource
                             SimpleLogHelper.Warning(ee);
                             MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"));
                         }
-                        OnRsaProgress(true);
                     });
                 });
             }

@@ -93,10 +93,11 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
+                                    var id = GlobalEventHelper.ShowProcessingRing();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                        GlobalEventHelper.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -110,10 +111,11 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
+                                    var id = GlobalEventHelper.ShowProcessingRing();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                        GlobalEventHelper.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -142,12 +144,12 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new SqliteSettingViewModel(this, sqliteConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
+                                    var id = GlobalEventHelper.ShowProcessingRing();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
-                                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                        GlobalEventHelper.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -157,7 +159,7 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new MysqlSettingViewModel(this, mysqlConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
+                                    var id = GlobalEventHelper.ShowProcessingRing();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
@@ -167,7 +169,7 @@ namespace _1RM.View.Settings.DataSource
                                         }
                                         finally
                                         {
-                                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                            GlobalEventHelper.HideProcessingRing(id);
                                         }
                                     });
                                 }
@@ -205,7 +207,6 @@ namespace _1RM.View.Settings.DataSource
                             Task.Factory.StartNew(() =>
                             {
                                 _dataSourceService.RemoveDataSource(configBase.DataSourceName);
-                                GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             });
                         }
                     }

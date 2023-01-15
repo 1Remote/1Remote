@@ -7,7 +7,7 @@ using Shawn.Utils;
 
 namespace _1RM.View
 {
-    public class ProcessingRingViewModel : NotifyPropertyChangedBase
+    public class ProcessingRingViewModel : MaskLayer
     {
         private string _processingRingMessage = "";
         public string ProcessingRingMessage

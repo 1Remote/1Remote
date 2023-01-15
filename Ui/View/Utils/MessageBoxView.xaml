@@ -3,10 +3,9 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:xaml="https://github.com/canton7/Stylet"
                   xmlns:utils="clr-namespace:_1RM.View.Utils"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                  xmlns:service="clr-namespace:_1RM.Service"
+                  xmlns:s="https://github.com/canton7/Stylet"
                   mc:Ignorable="d"
                   d:DataContext="{d:DesignInstance utils:MessageBoxViewModel}"
                   ResizeMode="NoResize"
@@ -14,9 +13,8 @@
                   WindowStyle="None"
                   Background="Transparent"
                   AllowsTransparency="True"
-                  FlowDirection="{Binding FlowDirection}"
+                  FlowDirection="{Binding PageViewModel.FlowDirection}"
                   ShowInTaskbar="False"
-                  Topmost="True"
                   MinWidth="160" MaxWidth="485">
     <Window.Resources>
         <Style TargetType="TextBlock">
@@ -28,7 +26,7 @@
             <Setter Property="Margin" Value="0 5 0 15"></Setter>
         </Style>
     </Window.Resources>
-    <Border Margin="0,0,0,0"
+    <!--<Border Margin="0,0,0,0"
             Background="{DynamicResource BackgroundBrush}"
             BorderBrush="{DynamicResource BackgroundTextBrush}"
             BorderThickness="1" 
@@ -36,7 +34,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="6"/>
-                <!-- Padding -->
+                --><!-- Padding --><!--
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -46,7 +44,7 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
-            <!--TITLE-->
+            --><!--TITLE--><!--
             <Border Background="{DynamicResource AccentMidBrush}" Grid.ColumnSpan="3" ClipToBounds="True">
                 <Border.CornerRadius>
                     <CornerRadius TopLeft="{StaticResource DefaultCornerRadiusValue}" TopRight="{StaticResource DefaultCornerRadiusValue}"></CornerRadius>
@@ -70,7 +68,7 @@
 
 
 
-            <!--CONTENT-->
+            --><!--CONTENT--><!--
             <Image Grid.Row="1" Grid.Column="1"
                    Source="{Binding ImageIcon, Converter={x:Static xaml:IconToBitmapSourceConverter.Instance}}"
                    Visibility="{Binding ImageIcon, Converter={x:Static xaml:BoolToVisibilityConverter.Instance}}">
@@ -92,7 +90,7 @@
 
 
 
-            <!--BUTTONS-->
+            --><!--BUTTONS--><!--
             <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                 <ItemsControl ItemsSource="{Binding ButtonList}"
                           HorizontalAlignment="Right" VerticalAlignment="Center" Margin="43,0,0,0">
@@ -107,7 +105,7 @@
                                     Style="{DynamicResource ButtonPrimaryStyle}"
                                     Command="{xaml:Action ButtonClicked}" 
                                     CommandParameter="{Binding Value}">
-                                <!--<Button.IsDefault>
+                                --><!--<Button.IsDefault>
                                     <MultiBinding Converter="{x:Static xaml:EqualityConverter.Instance}">
                                         <Binding/>
                                         <Binding Path="DataContext.DefaultButton" ElementName="RootObject"/>
@@ -118,12 +116,15 @@
                                         <Binding/>
                                         <Binding Path="DataContext.CancelButton" ElementName="RootObject"/>
                                     </MultiBinding>
-                                </Button.IsCancel>-->
+                                </Button.IsCancel>--><!--
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
         </Grid>
-    </Border>
+    </Border>-->
+
+
+    <ContentControl s:View.Model="{Binding PageViewModel}"></ContentControl>
 </styles:WindowChromeBase>
