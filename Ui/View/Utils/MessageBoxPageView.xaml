@@ -23,12 +23,14 @@
     </UserControl.Resources>
 
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-        <Border Margin="0,0,0,0"
-                MinWidth="160" MaxWidth="485"
-                Background="{DynamicResource BackgroundBrush}"
-                BorderBrush="{DynamicResource BackgroundTextBrush}"
-                BorderThickness="1" 
-                CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+        <Grid>
+
+
+            <Border Margin="1"
+                    CornerRadius="{StaticResource DefaultCornerRadius}" 
+                    SnapsToDevicePixels="True"
+                    Background="{DynamicResource BackgroundBrush}"></Border>
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="6"/>
@@ -41,6 +43,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
+
+
 
                 <!--TITLE-->
                 <Border Background="{DynamicResource AccentMidBrush}" Grid.ColumnSpan="3" ClipToBounds="True">
@@ -58,7 +62,7 @@
                 <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
                            Text="{Binding DisplayName}" 
                            Foreground="{DynamicResource AccentTextBrush}"
-                           Margin=" 30 0 5 0" TextTrimming="CharacterEllipsis"/>
+                           Margin=" 30 0 10 0" TextTrimming="CharacterEllipsis"/>
 
 
 
@@ -96,7 +100,9 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Content="{Binding Label}" Width="85" Height="25" Margin="0,0,10,0"
-                                        Style="{DynamicResource ButtonPrimaryStyle}"
+                                        Style="{DynamicResource ButtonAccentStyle}"
+                                        Background="{DynamicResource BackgroundBrush}"
+                                        Foreground="{DynamicResource BackgroundTextBrush}"
                                         Command="{xaml:Action ButtonClicked}" 
                                         CommandParameter="{Binding Value}">
                                     <!--<Button.IsDefault>
@@ -117,6 +123,13 @@
                     </ItemsControl>
                 </Grid>
             </Grid>
-        </Border>
+
+            <Border Margin="0,0,0,0"
+                    MinWidth="160" MaxWidth="485"
+                    BorderBrush="{DynamicResource AccentMidBrush}"
+                    BorderThickness="2" 
+                    CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+            </Border>
+        </Grid>
     </StackPanel>
 </UserControl>

@@ -24,8 +24,7 @@ namespace _1RM.Utils
             }
             else
             {
-                var id = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Visible, "");
+                var id = GlobalEventHelper.ShowProcessingRing();
                 var vm = IoC.Get<IMessageBoxViewModel>();
                 vm.Setup(messageBoxText: content,
                     caption: title,
@@ -38,7 +37,7 @@ namespace _1RM.Utils
                     });
                 IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel);
                 var ret = MessageBoxResult.Yes == vm.ClickedButton;
-                GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Collapsed, "");
+                GlobalEventHelper.HideProcessingRing(id);
                 return ret;
             }
         }
@@ -93,8 +92,7 @@ namespace _1RM.Utils
                 //}
                 else
                 {
-                    var id = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Visible, "");
+                    var id = GlobalEventHelper.ShowProcessingRing();
                     var vm = IoC.Get<IMessageBoxViewModel>();
                     vm.Setup(messageBoxText: content,
                         caption: title,
@@ -107,7 +105,7 @@ namespace _1RM.Utils
                             {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
                         });
                     IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel);
-                    GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Collapsed, "");
+                    GlobalEventHelper.HideProcessingRing(id);
                 }
             });
         }

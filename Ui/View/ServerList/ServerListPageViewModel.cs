@@ -395,8 +395,8 @@ namespace _1RM.View.ServerList
                         view.CbPopForInExport.IsChecked = false;
                         var path = SelectFileHelper.SaveFile(
                             title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
-                            filter: "json array|*.prma",
-                            selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
+                            filter: "json|*.json",
+                            selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
                         if (path == null) return;
                         var list = new List<ProtocolBase>();
                         foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
@@ -442,7 +442,7 @@ namespace _1RM.View.ServerList
 
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
-                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
                     if (path == null) return;
 
                     var id = GlobalEventHelper.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));

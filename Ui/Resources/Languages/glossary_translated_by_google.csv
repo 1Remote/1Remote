@@ -112,8 +112,9 @@ server_card_operate_copy_password,Copy password to clipboard,复制密码到剪�
 confirm_to_delete,Are you sure you want to delete?,确认要删除吗？,Opravdu chcete smazat?,Wirklich löschen?,Valider la suppression ?,Tem certeza de que deseja excluir?,消去してもよろしいですか？
 confirm_to_delete_selected,Are you sure you want to delete all selected?,确认要删除所选全部项目吗？,Opravdu chcete vše vybrané smazat?,Wirklich alle markierten Einträge löschen?,Valider la suppression de toutes les sélections ?,Tem certeza de que deseja excluir todos os selecionados?,選択したものをすべて削除してもよろしいですか？
 import_server_dialog_title,Select a file,选择导入文件,Vyberte soubor,Dateiauswahl,Sélectionner un fichier,Selecione um arquivo,ファイルを選択します
-import_from_json,from json,从 json,z json,von einer JSON-Datei,depuis json,de arquivo .json,jsonから
-import_from_csv,from mRemoteNG csv,从 mRemoteNG csv,z mRemoteNG csv,mRemoteNG CSV-Datei,depuis CSV mRemoteNG,do mRemoteNG .csv,mRemoteNGcsvから
+import_from_json,import json,导入 json,import json,import json,import json,import json,import json
+import_from_mremoteng_csv,import mRemoteNG csv,导入 mRemoteNG csv,import mRemoteNG csv,import mRemoteNG csv,import mRemoteNG csv,import mRemoteNG csv,import mRemoteNG csv
+import_from_rdp_file,import *.rdp,导入 .rdp,import *.rdp,import *.rdp,import *.rdp,import *.rdp,import *.rdp
 import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",正常にインポートされ、{0}アイテムが追加されました。
 import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,エラーデータ形式！
 server_editor_different_options,<different options>,<不同的值>,<různé předvolby>,<verschiedene Optionen>,<Options différentes>,<opções diferentes>,<さまざまなオプション>

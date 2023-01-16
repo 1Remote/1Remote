@@ -269,7 +269,7 @@
                     <Style TargetType="Grid">
                         <Setter Property="Effect">
                             <Setter.Value>
-                                <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                                <BlurEffect Radius="1" KernelType="Box"></BlurEffect>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>

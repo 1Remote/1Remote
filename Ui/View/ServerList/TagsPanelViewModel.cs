@@ -8,7 +8,9 @@ using System.Windows.Data;
 using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Utils;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -123,7 +125,20 @@ namespace _1RM.View.ServerList
                         return;
                     }
 
-                    string newTagName = InputWindow.InputBox(IoC.Get<ILanguageService>().Translate("Tags"), IoC.Get<ILanguageService>().Translate("Tags"), obj.Name);
+                    var newTagName = InputBoxViewModel.GetValue(IoC.Get<ILanguageService>().Translate("Tags"), new Func<string, string>((str) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(str))
+                            return IoC.Get<ILanguageService>().Translate("Can not be empty!");
+                        if (str == obj.Name)
+                            return "";
+                        if (AppData.TagList.Any(x => x.Name == str))
+                            return IoC.Get<ILanguageService>().Translate("{0} is existed!", str);
+                        return "";
+                    }), defaultResponse: obj.Name, ownerViewModel: IoC.Get<MainWindowViewModel>());
+
+                    if (string.IsNullOrEmpty(newTagName))
+                        return;
+
                     newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
                     if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
                         return;
