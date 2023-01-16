@@ -1,0 +1,125 @@
+﻿<styles:WindowChromeBase x:Class="_1RM.View.Utils.InputBoxView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:utils="clr-namespace:_1RM.View.Utils"
+                  xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                  xmlns:s="https://github.com/canton7/Stylet"
+                  mc:Ignorable="d"
+                  d:DataContext="{d:DesignInstance utils:InputBoxViewModel}"
+                  ResizeMode="NoResize"
+                  SizeToContent="WidthAndHeight"
+                  WindowStyle="None"
+                  Background="Transparent"
+                  AllowsTransparency="True"
+                  ShowInTaskbar="False"
+                  MinWidth="160" MaxWidth="485">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxAccentStyle}">
+            <Setter Property="Margin" Value="0 5 0 15"></Setter>
+        </Style>
+    </Window.Resources>
+
+
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid>
+
+
+            <Border Margin="1"
+                    CornerRadius="{StaticResource DefaultCornerRadius}" 
+                    SnapsToDevicePixels="True"
+                    Background="{DynamicResource BackgroundBrush}"></Border>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6"/>
+                    <!-- Padding -->
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+
+
+                <!--TITLE-->
+                <Border Background="{DynamicResource AccentMidBrush}" Grid.ColumnSpan="3" ClipToBounds="True">
+                    <Border.CornerRadius>
+                        <CornerRadius TopLeft="{StaticResource DefaultCornerRadiusValue}" TopRight="{StaticResource DefaultCornerRadiusValue}"></CornerRadius>
+                    </Border.CornerRadius>
+                </Border>
+                <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
+                      Background="Transparent" Width="20" Height="20" 
+                      Margin="5 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                </Grid>
+                <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
+                           Text="{Binding DisplayName}" 
+                           Foreground="{DynamicResource AccentTextBrush}"
+                           Margin=" 30 0 10 0" TextTrimming="CharacterEllipsis"/>
+
+                <!--ValidateMessage-->
+                <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" MinHeight="10">
+                    <TextBlock Text="{Binding ValidateMessage}" 
+                               Margin="5"
+                               Foreground="Red" 
+                               HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ValidateMessage}" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <!--CONTENT-->
+                <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                         Height="30" Margin="10 0 10 0"
+                         Text="{Binding Response, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Padding="5"
+                         KeyUp="{s:Action OnKeyUp}"
+                         VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{s:Action KeyDown}" CommandParameter="{x:Static Key.Enter}"></KeyBinding>
+                        <KeyBinding Key="Escape" Command="{s:Action KeyDown}" CommandParameter="{x:Static Key.Escape}"></KeyBinding>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <!--BUTTONS-->
+                <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" 
+                                Content="{DynamicResource Done}" 
+                                Command="{s:Action ButtonClicked}" 
+                                CommandParameter="{x:Static MessageBoxResult.OK}"/>
+                        <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}"
+                                Content="{DynamicResource Cancel}" 
+                                Command="{s:Action ButtonClicked}" 
+                                CommandParameter="{x:Static MessageBoxResult.Cancel}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Border Margin="0,0,0,0"
+                    MinWidth="160" MaxWidth="485"
+                    BorderBrush="{DynamicResource AccentMidBrush}"
+                    BorderThickness="2" 
+                    CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+            </Border>
+        </Grid>
+    </StackPanel>
+
+</styles:WindowChromeBase>

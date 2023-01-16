@@ -45,8 +45,7 @@ namespace _1RM.Utils.PRemoteM
             {
                 if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer"))
                 {
-                    var id = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Visible, "Data transfer in progress");
+                    var id = GlobalEventHelper.ShowProcessingRing("Data transfer in progress");
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -72,7 +71,7 @@ namespace _1RM.Utils.PRemoteM
                         }
                         finally
                         {
-                            GlobalEventHelper.ProcessingRingInvoke?.Invoke(id, Visibility.Collapsed, "");
+                            GlobalEventHelper.HideProcessingRing(id);
                             Clear();
                         }
                     });

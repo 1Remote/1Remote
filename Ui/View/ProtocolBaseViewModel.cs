@@ -92,9 +92,6 @@ namespace _1RM.View
             }
             LastConnectTime = ConnectTimeRecorder.Get(Server);
             TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
-
-
-            // TODO how it works with a tmp server?
         }
 
 

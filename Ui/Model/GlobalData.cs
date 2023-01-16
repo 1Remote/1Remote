@@ -54,15 +54,11 @@ namespace _1RM.Model
 
                 if (ReloadServerList())
                 {
-                    // todo #if DEBUG
-                    SimpleLogHelper.Warning("check database update - reload data");
-                    // todo #endif
+                    SimpleLogHelper.Debug("check database update - reload data");
                 }
                 else
                 {
-                    // todo #if DEBUG
-                    SimpleLogHelper.Warning("check database update - no need reload");
-                    // todo #endif
+                    SimpleLogHelper.Debug("check database update - no need reload");
                 }
             }
             finally
@@ -73,7 +69,7 @@ namespace _1RM.Model
                     {
                         _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
                         _timer.Start();
-                    } 
+                    }
                 }
             }
         }
@@ -352,7 +348,7 @@ namespace _1RM.Model
             lock (this)
             {
                 _timer.Stop();
-                _timerStopFlag = true; 
+                _timerStopFlag = true;
             }
         }
         public void StartTick()
@@ -364,7 +360,7 @@ namespace _1RM.Model
                 {
                     _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
                     _timer.Start();
-                } 
+                }
             }
         }
     }

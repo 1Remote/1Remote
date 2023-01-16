@@ -940,13 +940,13 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator Style="{StaticResource SeparatorBaseStyle}"/>
-                                <MenuItem Header="{DynamicResource Import}" Command="{Binding CmdImportFromJson}">
+                                <MenuItem Header="{DynamicResource import_from_json}" Command="{Binding CmdImportFromJson}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryCopy}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="{DynamicResource import_from_csv}" Command="{Binding CmdImportFromCsv}"></MenuItem>
-                                <MenuItem Header=".rdp" Command="{Binding CmdImportFromRdp}"></MenuItem>
+                                <MenuItem Header="{DynamicResource import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></MenuItem>
+                                <MenuItem Header="{DynamicResource import_from_rdp_file}" Command="{Binding CmdImportFromRdp}"></MenuItem>
                             </StackPanel>
                         </Border>
                     </Popup>

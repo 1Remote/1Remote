@@ -101,9 +101,6 @@ namespace _1RM.Service.DataSource
         }
 
 
-        /// <summary>
-        /// TODO: need ASYNC support！
-        /// </summary>
         public EnumDbStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5)
         {
             try

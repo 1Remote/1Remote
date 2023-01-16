@@ -113,8 +113,9 @@
     <s:String x:Key="confirm_to_delete">消去してもよろしいですか？</s:String>
     <s:String x:Key="confirm_to_delete_selected">選択したものをすべて削除してもよろしいですか？</s:String>
     <s:String x:Key="import_server_dialog_title">ファイルを選択します</s:String>
-    <s:String x:Key="import_from_json">jsonから</s:String>
-    <s:String x:Key="import_from_csv">mRemoteNGcsvから</s:String>
+    <s:String x:Key="import_from_json">import json</s:String>
+    <s:String x:Key="import_from_mremoteng_csv">import mRemoteNG csv</s:String>
+    <s:String x:Key="import_from_rdp_file">import *.rdp</s:String>
     <s:String x:Key="import_done_0_items_added">正常にインポートされ、{0}アイテムが追加されました。</s:String>
     <s:String x:Key="import_failure_with_data_format_error">エラーデータ形式！</s:String>
     <s:String x:Key="server_editor_different_options">&lt;さまざまなオプション&gt;</s:String>
