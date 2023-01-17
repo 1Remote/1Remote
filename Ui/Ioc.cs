@@ -21,11 +21,18 @@ public static class IoC
 
     public static T Get<T>(string? key = null) where T : class
     {
-        var obj = GetByType(typeof(T), key);
+        var obj = TryGet<T>(key);
 #if !DEBUG
         if (obj == null)
             throw new Exception("Ioc can not get an item.");
 #endif
         return (T)obj!;
+    }
+
+
+    public static T? TryGet<T>(string? key = null) where T : class
+    {
+        var obj = GetByType(typeof(T), key);
+        return obj as T;
     }
 }

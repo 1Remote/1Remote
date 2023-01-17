@@ -8,6 +8,7 @@
                      xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                      xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                      xmlns:host="clr-namespace:_1RM.View.Host"
+                     xmlns:s="https://github.com/canton7/Stylet"
                      mc:Ignorable="d"
                      d:DataContext="{d:DesignInstance host:TabWindowViewModel}"
                      ResizeMode="{Binding WindowResizeMode}"
@@ -586,5 +587,7 @@
                 <!--<dragablz:InterTabController />-->
             </dragablz:TabablzControl.InterTabController>
         </dragablz:TabablzControl>
+
+        <ContentControl s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
     </Grid>
 </host:TabWindowBase>

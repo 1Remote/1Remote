@@ -56,12 +56,12 @@ namespace _1RM.View.Settings.DataSource
 
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
+            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
         }
 
         protected override void OnClose()
         {
-            GlobalEventHelper.ProcessingRingInvoke -= ShowProcessingRing;
+            MaskLayerController.ProcessingRingInvoke -= ShowProcessingRing;
             New.Database_CloseConnection();
         }
 
@@ -98,7 +98,7 @@ namespace _1RM.View.Settings.DataSource
                 return true;
             }
             if (showAlert == false) return false;
-            MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
+            MessageBoxHelper.ErrorAlert(res.GetErrorInfo(), ownerViewModel: this);
             return false;
         }
 
@@ -154,7 +154,7 @@ namespace _1RM.View.Settings.DataSource
 
                     if (!IoPermissionHelper.HasWritePermissionOnFile(newPath))
                     {
-                        MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"));
+                        MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"), ownerViewModel: this);
                         return;
                     }
                     
@@ -169,7 +169,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"));
+                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
                         }
                     });
                 });

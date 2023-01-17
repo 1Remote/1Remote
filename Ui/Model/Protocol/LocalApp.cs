@@ -135,7 +135,7 @@ namespace _1RM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBoxHelper.Info(GetCmd(), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    MessageBoxHelper.Info(GetCmd());
                 });
             }
         }

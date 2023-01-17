@@ -93,11 +93,11 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
-                                    var id = GlobalEventHelper.ShowProcessingRing();
+                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        GlobalEventHelper.HideProcessingRing(id);
+                                        MaskLayerController.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -111,11 +111,11 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
-                                    var id = GlobalEventHelper.ShowProcessingRing();
+                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        GlobalEventHelper.HideProcessingRing(id);
+                                        MaskLayerController.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -144,12 +144,12 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new SqliteSettingViewModel(this, sqliteConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    var id = GlobalEventHelper.ShowProcessingRing();
+                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
-                                        GlobalEventHelper.HideProcessingRing(id);
+                                        MaskLayerController.HideProcessingRing(id);
                                     });
                                 }
                                 break;
@@ -159,7 +159,7 @@ namespace _1RM.View.Settings.DataSource
                                 var vm = new MysqlSettingViewModel(this, mysqlConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    var id = GlobalEventHelper.ShowProcessingRing();
+                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
@@ -169,7 +169,7 @@ namespace _1RM.View.Settings.DataSource
                                         }
                                         finally
                                         {
-                                            GlobalEventHelper.HideProcessingRing(id);
+                                            MaskLayerController.HideProcessingRing(id);
                                         }
                                     });
                                 }

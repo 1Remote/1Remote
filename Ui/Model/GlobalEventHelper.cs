@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.View;
 
 namespace _1RM.Model
 {
@@ -52,24 +53,6 @@ namespace _1RM.Model
         public delegate void OnRequestDeleteServerDelegate(ProtocolBase server);
         public static OnRequestDeleteServerDelegate? OnRequestDeleteServer { get; set; } = null;
 
-        /// <summary>
-        /// Invoke to show up processing ring
-        /// cmd id = arg1
-        /// alert info = arg3
-        /// </summary>
-        public static Action<long, Visibility, string>? ProcessingRingInvoke { get; set; } = null;
-
-        public static long ShowProcessingRing(string msg = "")
-        {
-            var id = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            ProcessingRingInvoke?.Invoke(id, Visibility.Visible, msg);
-            return id;
-        }
-
-        public static void HideProcessingRing(long layerId)
-        {
-            ProcessingRingInvoke?.Invoke(layerId, Visibility.Collapsed, "");
-        }
 
         /// <summary>
         /// Invoke to notify language was changed.
@@ -80,8 +63,6 @@ namespace _1RM.Model
         /// OnScreenResolutionChanged
         /// </summary>
         public static Action? OnScreenResolutionChanged { get; set; } = null;
-
-        public static Action? OnLauncherHotKeyChanged { get; set; }
 
         public delegate void OnFilterChangedDelegate(string filterString = "");
     }

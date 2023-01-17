@@ -13,6 +13,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
 using Dapper;
 using Newtonsoft.Json;
@@ -45,7 +46,7 @@ namespace _1RM.Utils.PRemoteM
             {
                 if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer"))
                 {
-                    var id = GlobalEventHelper.ShowProcessingRing("Data transfer in progress");
+                    var id = MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", layerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -71,7 +72,7 @@ namespace _1RM.Utils.PRemoteM
                         }
                         finally
                         {
-                            GlobalEventHelper.HideProcessingRing(id);
+                            MaskLayerController.HideProcessingRing(id);
                             Clear();
                         }
                     });

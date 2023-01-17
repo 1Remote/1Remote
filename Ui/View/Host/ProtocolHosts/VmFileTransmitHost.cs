@@ -431,7 +431,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         {
                             if (Trans?.IsConnected() != true)
                                 return;
-                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
+                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: this))
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -608,7 +608,7 @@ namespace _1RM.View.Host.ProtocolHosts
                             var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
                             msg = msg.Replace("1 MB", $"{limit} MB");
                             if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
-                            && false == MessageBoxHelper.Confirm(msg))
+                                && false == MessageBoxHelper.Confirm(msg, ownerViewModel: this))
                             {
                                 return;
                             }
