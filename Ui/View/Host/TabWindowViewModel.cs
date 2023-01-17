@@ -17,7 +17,7 @@ using Stylet;
 
 namespace _1RM.View.Host
 {
-    public class TabWindowViewModel : NotifyPropertyChangedBase, IDisposable
+    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer, IDisposable
     {
         public readonly string Token;
         private readonly TabWindowBase _windowView;
@@ -104,6 +104,35 @@ namespace _1RM.View.Host
                 }
             }
         }
+
+
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
+        {
+            get => _topLevelViewModel;
+            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
+        }
+
+
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (visibility == Visibility.Visible)
+                {
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
+        }
+
+
 
         private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -243,7 +272,8 @@ namespace _1RM.View.Host
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
+                            && App.ExitingFlag == false
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else
@@ -270,7 +300,8 @@ namespace _1RM.View.Host
                     {
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
+                            && App.ExitingFlag == false
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else

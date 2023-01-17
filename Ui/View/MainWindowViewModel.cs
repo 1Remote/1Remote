@@ -102,7 +102,7 @@ namespace _1RM.View
         public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
+            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
 
             GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
             {

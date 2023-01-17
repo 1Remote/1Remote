@@ -139,7 +139,6 @@ namespace _1RM
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _enabledOnUnhandledException = false;
             IoC.Get<TaskTrayService>().TaskTrayDispose();
             _namedPipeHelper?.Dispose();
             IoC.Get<SessionControlService>()?.Release();
@@ -150,10 +149,9 @@ namespace _1RM
         }
 
 
-        private bool _enabledOnUnhandledException = true;
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            if (_enabledOnUnhandledException)
+            if (!App.ExitingFlag)
                 lock (this)
                 {
                     SimpleLogHelper.Fatal(e.Exception);

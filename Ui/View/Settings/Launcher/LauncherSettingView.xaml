@@ -10,6 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <local:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></local:Key2KeyStringConverter>
+        <local:ConverterHotkeyModifierKeys x:Key="ConverterHotkeyModifierKeys"></local:ConverterHotkeyModifierKeys>
     </UserControl.Resources>
     <Grid Background="{DynamicResource BackgroundBrush}">
         <StackPanel>
@@ -34,16 +35,18 @@
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <ComboBox Width="100" 
-                              SelectedValuePath="Tag"
-                              SelectedValue="{Binding LauncherHotKeyModifiers}">
-                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
+                              ItemsSource="{Binding HotkeyModifierKeys}"
+                              SelectedValuePath="Key"
+                              DisplayMemberPath="Value" 
+                              SelectedIndex="{Binding LauncherHotKeyModifiers, Converter={StaticResource ConverterHotkeyModifierKeys}}">
+                        <!--<ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
-                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
+                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>-->
                     </ComboBox>
                     <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
                     <TextBox Width="100"

@@ -30,7 +30,7 @@ namespace _1RM.View.Host
     {
         public const double TITLE_BAR_HEIGHT = 30;
 
-        protected TabWindowViewModel Vm;
+        protected readonly TabWindowViewModel Vm;
         private TabablzControl? _tabablzControl = null!;
         public string Token => Vm.Token;
 
@@ -113,6 +113,7 @@ namespace _1RM.View.Host
                     finally
                     {
                         DataContext = null;
+                        System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
                     }
                 };
 
@@ -120,8 +121,9 @@ namespace _1RM.View.Host
                 this.Closing += (sender, args) =>
                 {
                     if (this.GetViewModel().Items.Count > 0
+                        && App.ExitingFlag == false 
                         && IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
+                        && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: Vm))
                     {
                         args.Cancel = true;
                     }

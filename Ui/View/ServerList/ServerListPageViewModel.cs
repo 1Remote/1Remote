@@ -408,7 +408,7 @@ namespace _1RM.View.ServerList
 
                         ClearSelection();
                         File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                        MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!", ownerViewModel: IoC.Get<MainWindowViewModel>());
+                        MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
                     }
 
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
@@ -445,7 +445,7 @@ namespace _1RM.View.ServerList
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
                     if (path == null) return;
 
-                    var id = GlobalEventHelper.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
+                    var id = MaskLayerController.ShowProcessingRingMainWindow(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -469,11 +469,11 @@ namespace _1RM.View.ServerList
                         catch (Exception e)
                         {
                             SimpleLogHelper.Warning(e);
-                            Execute.OnUIThread(() => { MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), ownerViewModel: IoC.Get<MainWindowViewModel>()); });
+                            Execute.OnUIThread(() => { MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error")); });
                         }
                         finally
                         {
-                            GlobalEventHelper.HideProcessingRing(id);
+                            MaskLayerController.HideProcessingRing(id);
                         }
                     });
                 });
@@ -507,7 +507,7 @@ namespace _1RM.View.ServerList
 
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    var id = GlobalEventHelper.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
+                    var id = MaskLayerController.ShowProcessingRingMainWindow(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -517,18 +517,18 @@ namespace _1RM.View.ServerList
                             {
                                 source.Database_InsertServer(list);
                                 AppData.ReloadServerList(true);
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
                                 return;
                             }
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Debug(e);
-                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                         }
                         finally
                         {
-                            GlobalEventHelper.HideProcessingRing(id);
+                            MaskLayerController.HideProcessingRing(id);
                         }
                     });
                 });
@@ -589,7 +589,7 @@ namespace _1RM.View.ServerList
 
                             if (AppData.AddServer(rdp, source))
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"));
                                 return;
                             }
                         }
@@ -598,7 +598,7 @@ namespace _1RM.View.ServerList
                     {
                         SimpleLogHelper.Debug(e);
                     }
-                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                 });
             }
         }

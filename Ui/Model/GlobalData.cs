@@ -71,6 +71,7 @@ namespace _1RM.Model
                         _timer.Start();
                     }
                 }
+                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
             }
         }
 

@@ -594,7 +594,7 @@ namespace _1RM.View.Editor
                         cmd = Server.CommandAfterDisconnected;
                     }
 
-                    var id = GlobalEventHelper.ShowProcessingRing();
+                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -615,7 +615,7 @@ namespace _1RM.View.Editor
                         }
                         finally
                         {
-                            GlobalEventHelper.HideProcessingRing(id);
+                            MaskLayerController.HideProcessingRing(id);
                         }
                     });
                 });

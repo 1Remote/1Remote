@@ -46,12 +46,12 @@ namespace _1RM.View.Settings.DataSource
 
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ProcessingRingInvoke += ShowProcessingRing;
+            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
         }
 
         protected override void OnClose()
         {
-            GlobalEventHelper.ProcessingRingInvoke -= ShowProcessingRing;
+            MaskLayerController.ProcessingRingInvoke -= ShowProcessingRing;
             New.Database_CloseConnection();
         }
 
@@ -217,7 +217,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        var id = GlobalEventHelper.ShowProcessingRing();
+                        var id = MaskLayerController.ShowProcessingRingMainWindow();
                         try
                         {
                             var config = new MysqlSource()
@@ -240,11 +240,11 @@ namespace _1RM.View.Settings.DataSource
                         }
                         catch (Exception e)
                         {
-                            MessageBoxHelper.ErrorAlert(e.Message);
+                            MessageBoxHelper.ErrorAlert(e.Message, ownerViewModel: this);
                         }
                         finally
                         {
-                            GlobalEventHelper.HideProcessingRing(id);
+                            MaskLayerController.HideProcessingRing(id);
                         }
                     });
                 });

@@ -15,8 +15,10 @@ namespace _1RM
             base.OnStartup(e);
         }
 
+        public static bool ExitingFlag = false;
         public static void Close(int exitCode = 0)
         {
+            ExitingFlag = true;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Application.Current.Shutdown(exitCode);

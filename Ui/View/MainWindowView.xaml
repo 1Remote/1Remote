@@ -383,7 +383,7 @@
             </Grid>
         </Grid>
 
-        <Grid>
+        <Grid Background="Transparent">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Visible"></Setter>

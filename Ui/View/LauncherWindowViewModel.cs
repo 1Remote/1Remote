@@ -49,6 +49,7 @@ namespace _1RM.View
 
         public ServerSelectionsViewModel ServerSelectionsViewModel { get; } = IoC.Get<ServerSelectionsViewModel>();
         public QuickConnectionViewModel QuickConnectionViewModel { get; } = IoC.Get<QuickConnectionViewModel>();
+        private ConfigurationService _configurationService => IoC.Get<ConfigurationService>();
 
         #region properties
 
@@ -102,7 +103,9 @@ namespace _1RM.View
 
                 ServerSelectionsViewVisibility = Visibility.Visible;
                 ReSetWindowHeight();
-                SetHotKey();
+
+                SetHotKey(_configurationService.Launcher.LauncherEnabled,
+                    _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey);
                 ServerSelectionsViewModel.NoteField = window.NoteField;
                 window.Deactivated += (s, a) => { HideMe(); };
                 window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
@@ -190,38 +193,37 @@ namespace _1RM.View
         }
 
 
-        public void SetHotKey()
+        public bool SetHotKey(bool launcherEnabled, HotkeyModifierKeys hotKeyModifierKeys, Key hotKeyKey)
         {
-            GlobalEventHelper.OnLauncherHotKeyChanged -= SetHotKey;
             if (this.View is LauncherWindowView window)
             {
                 GlobalHotkeyHooker.Instance.Unregist(window);
-                if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false)
-                    return;
-                var r = GlobalHotkeyHooker.Instance.Register(window, (uint)IoC.Get<ConfigurationService>().Launcher.HotKeyModifiers, IoC.Get<ConfigurationService>().Launcher.HotKeyKey, this.ShowMe);
+                if (launcherEnabled == false)
+                    return false;
+                var r = GlobalHotkeyHooker.Instance.Register(window, (uint)hotKeyModifierKeys, hotKeyKey, this.ShowMe);
                 switch (r.Item1)
                 {
                     case GlobalHotkeyHooker.RetCode.Success:
-                        break;
+                        return true;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                         {
                             var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_registered_fail")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
-                            MessageBoxHelper.Warning(msg, useNativeBox: true);
+                            MessageBoxHelper.Warning(msg);
                             break;
                         }
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                         {
                             var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_already_registered")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
-                            MessageBoxHelper.Warning(msg, useNativeBox: true);
+                            MessageBoxHelper.Warning(msg);
                             break;
                         }
                     default:
                         throw new ArgumentOutOfRangeException(r.Item1.ToString());
                 }
             }
-            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
+            return false;
         }
 
         public void ToggleQuickConnection()
