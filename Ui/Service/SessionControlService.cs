@@ -66,6 +66,12 @@ namespace _1RM.Service
         private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
 
         public int TabWindowCount => _token2TabWindows.Count;
+
+        public TabWindowBase? GetTabByConnectionId(string connectionId)
+        {
+            return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
+        }
+
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
         private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
@@ -449,7 +455,7 @@ namespace _1RM.Service
             var host = _connectionId2Hosts[connectionId];
 
             // remove from old parent
-            var tab = _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
+            var tab = GetTabByConnectionId(connectionId);
             if (tab != null)
             {
                 // if tab is not loaded, do not allow move to full-screen, 防止 loaded 事件中的逻辑覆盖

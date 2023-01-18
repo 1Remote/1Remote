@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using _1RM.Model;
+using System.Windows.Interop;
 using _1RM.View;
 using Shawn.Utils.Interface;
 using Stylet;
+using Screen = Stylet.Screen;
 
 namespace _1RM.Utils
 {
     public static class MessageBoxHelper
     {
+        [DllImport("user32.dll")]
+        private static extern int EnableWindow(IntPtr handle, bool enable);
         /// <summary>
         /// show a confirm box on owner, the default value owner is MainWindowViewModel
         /// </summary>
-        /// <returns></returns>
         public static bool Confirm(string content, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
@@ -33,7 +36,15 @@ namespace _1RM.Utils
             }
             else
             {
-                var layerContainer = ownerViewModel as IMaskLayerContainer;
+                IMaskLayerContainer? layerContainer;
+                if (ownerViewModel == null)
+                {
+                    layerContainer = mainWindowViewModel;
+                }
+                else
+                {
+                    layerContainer = ownerViewModel as IMaskLayerContainer;
+                }
                 long layerId = 0;
                 if (layerContainer != null)
                     layerId = MaskLayerController.ShowProcessingRing(layerContainer: layerContainer);
@@ -47,11 +58,45 @@ namespace _1RM.Utils
                         { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
                         { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
                     });
+                if (vm is Screen screen)
+                {
+                    screen.Activated += MessageBoxOnActivated;
+                }
                 IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel != null ? ownerViewAware : mainWindowViewModel);
                 var ret = MessageBoxResult.Yes == vm.ClickedButton;
                 if (layerContainer != null)
                     MaskLayerController.HideProcessingRing(layerId, layerContainer: layerContainer);
                 return ret;
+            }
+        }
+
+        private static void MessageBoxOnActivated(object? sender, ActivationEventArgs e)
+        {
+            if (sender is Screen screen
+                && screen.View is Window dlgWindow
+                && dlgWindow.Owner is Window
+                && dlgWindow.IsLoaded == false)
+            {
+                dlgWindow.Loaded -= MessageBoxOnLoaded;
+                dlgWindow.Loaded += MessageBoxOnLoaded;
+            }
+        }
+
+        private static void MessageBoxOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is Window dlgWindow)
+            {
+                var windows = Application.Current.Windows;
+                // enable the window != owner to let message box freeze the owner only.
+                foreach (Window w in windows)
+                {
+                    if (w == dlgWindow.Owner) continue;
+                    if (w is { IsLoaded: true })
+                    {
+                        if (HwndSource.FromVisual(w) is HwndSource hwndSource)
+                            EnableWindow(hwndSource.Handle, true);
+                    }
+                }
             }
         }
 
@@ -91,7 +136,15 @@ namespace _1RM.Utils
                 }
                 else
                 {
-                    var layerContainer = ownerViewModel as IMaskLayerContainer;
+                    IMaskLayerContainer? layerContainer;
+                    if (ownerViewModel == null)
+                    {
+                        layerContainer = mainWindowViewModel;
+                    }
+                    else
+                    {
+                        layerContainer = ownerViewModel as IMaskLayerContainer;
+                    }
                     long layerId = 0;
                     if (layerContainer != null)
                         layerId = MaskLayerController.ShowProcessingRing(layerContainer: layerContainer);
@@ -106,6 +159,29 @@ namespace _1RM.Utils
                             {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
                             {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
                         });
+                    if (vm is Screen screen)
+                    {
+                        screen.Activated += (sender, args) =>
+                        {
+                            if (screen.View is Window dlgWindow)
+                            {
+                                // dlg don't have a Owner
+                                if (dlgWindow?.Owner == null)
+                                    return;
+                                var windows = Application.Current.Windows;
+                                // enable the window != owner to let message box freeze the owner only.
+                                foreach (Window w in windows)
+                                {
+                                    if (w == dlgWindow.Owner) continue;
+                                    if (w is { IsLoaded: true })
+                                    {
+                                        if (HwndSource.FromVisual(w) is HwndSource hwndSource)
+                                            EnableWindow(hwndSource.Handle, true);
+                                    }
+                                }
+                            }
+                        };
+                    }
                     IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel != null ? ownerViewAware : mainWindowViewModel);
                     if (layerContainer != null)
                         MaskLayerController.HideProcessingRing(layerId, layerContainer: layerContainer);

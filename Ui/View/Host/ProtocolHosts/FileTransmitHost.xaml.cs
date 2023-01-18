@@ -24,11 +24,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (protocolServer is SFTP protocolServerSftp)
             {
-                _vmRemote = new VmFileTransmitHost(protocolServerSftp);
+                _vmRemote = new VmFileTransmitHost(protocolServerSftp, base.ConnectionId);
             }
             else if (protocolServer is FTP protocolServerFtp)
             {
-                _vmRemote = new VmFileTransmitHost(protocolServerFtp);
+                _vmRemote = new VmFileTransmitHost(protocolServerFtp, base.ConnectionId);
             }
             else
                 throw new ArgumentException($"Send {protocolServer.GetType()} to {nameof(FileTransmitHost)}!");

@@ -14,6 +14,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol.FileTransmit;
 using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
+using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -29,9 +30,11 @@ namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
-        public VmFileTransmitHost(IFileTransmittable protocol)
+        public readonly string ConnectionId;
+        public VmFileTransmitHost(IFileTransmittable protocol, string connectionId)
         {
             _protocol = protocol;
+            ConnectionId = connectionId;
         }
 
         ~VmFileTransmitHost()
@@ -431,7 +434,9 @@ namespace _1RM.View.Host.ProtocolHosts
                         {
                             if (Trans?.IsConnected() != true)
                                 return;
-                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: this))
+
+                            var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
+                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: vm == null ? this : vm))
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -607,8 +612,9 @@ namespace _1RM.View.Host.ProtocolHosts
                             const int limit = 1;
                             var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
                             msg = msg.Replace("1 MB", $"{limit} MB");
+                            var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
                             if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
-                                && false == MessageBoxHelper.Confirm(msg, ownerViewModel: this))
+                                && false == MessageBoxHelper.Confirm(msg, ownerViewModel: vm == null ? this : vm))
                             {
                                 return;
                             }
@@ -623,7 +629,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
                                 var fi = new FileInfo(tmpPath);
                                 var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, fi!.Directory!.FullName, ris);
+                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, fi!.Directory!.FullName, ris);
                                 AddTransmitTask(t);
                                 t.StartTransmitAsync(this.RemoteItems);
                                 t.OnTaskEnd += (status, exception) =>
@@ -786,7 +792,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         }
 
                         var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                        var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, destinationDirectoryPath, ris);
+                        var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, destinationDirectoryPath, ris);
                         AddTransmitTask(t);
                         t.StartTransmitAsync(this.RemoteItems);
                     }
@@ -884,7 +890,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (fis.Count > 0 || dis.Count > 0)
             {
-                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, CurrentPath, fis.ToArray(), dis.ToArray());
+                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, CurrentPath, fis.ToArray(), dis.ToArray());
                 AddTransmitTask(t);
                 t.StartTransmitAsync(this.RemoteItems);
             }

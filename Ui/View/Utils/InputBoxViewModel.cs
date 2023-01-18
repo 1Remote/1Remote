@@ -19,7 +19,6 @@ namespace _1RM.View.Utils
     /// </summary>
     public class InputBoxViewModel : NotifyPropertyChangedBaseScreen
     {
-
         /// <summary>
         /// input string return error message or null
         /// </summary>
