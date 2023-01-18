@@ -1,4 +1,5 @@
-﻿using Stylet;
+﻿using _1RM.Utils;
+using Stylet;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +14,7 @@ namespace _1RM.View.Utils
     /// <summary>
     /// Default implementation of IMessageBoxViewModel, and is therefore the ViewModel shown by default by ShowMessageBox
     /// </summary>
-    public class MessageBoxViewModel : Screen, IMessageBoxViewModel
+    public class MessageBoxViewModel : NotifyPropertyChangedBaseScreen, IMessageBoxViewModel
     {
         private MessageBoxPageViewModel? _pageViewModel;
 

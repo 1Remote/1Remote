@@ -1,4 +1,5 @@
 ﻿using _1RM.Service;
+using _1RM.Utils;
 using Stylet;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace _1RM.View.Utils
     /// <summary>
     /// Default implementation of IMessageBoxViewModel, and is therefore the ViewModel shown by default by ShowMessageBox
     /// </summary>
-    public class MessageBoxPageViewModel : Screen
+    public class MessageBoxPageViewModel : NotifyPropertyChangedBaseScreen
     {
         /// <summary>
         /// Gets or sets the mapping of button to text to display on that button. You can modify this to localize your application.
