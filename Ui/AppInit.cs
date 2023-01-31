@@ -263,7 +263,6 @@ namespace PRM
             _dbConnectionStatus = context.InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
             IoC.Get<SessionControlService>();
-            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
 
 
@@ -280,6 +279,8 @@ namespace PRM
             {
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
+
+            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
     }
 }
