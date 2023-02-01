@@ -661,7 +661,7 @@ namespace _1RM.Model.Protocol
 
 
             rdp.DisplayPerformance = EDisplayPerformance.Auto;
-            rdp.EnableDiskDrives = rdpConfig.RedirectDrives > 0 || false == string.IsNullOrEmpty(rdpConfig.DriveStoreDirect.Replace("DynamicDrives", "", StringComparison.CurrentCultureIgnoreCase).Trim());
+            rdp.EnableDiskDrives = rdpConfig.RedirectDrives > 0 || false == string.IsNullOrEmpty(rdpConfig.DriveStoreDirect.Replace("DynamicDrives", "").Trim());
             rdp.EnableRedirectDrivesPlugIn = rdpConfig.DriveStoreDirect.IndexOf("DynamicDrives", StringComparison.OrdinalIgnoreCase) >= 0;
             rdp.EnableClipboard = rdpConfig.RedirectClipboard > 0;
             rdp.EnablePrinters = rdpConfig.RedirectPrinters > 0;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using _1RM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -19,15 +20,12 @@ namespace _1RM.Service
     {
         public TaskTrayService()
         {
-            IoC.Get<GlobalData>().VmItemListDataChanged += () =>
-            {
-                ReloadTaskTrayContextMenu();
-            };
+            IoC.Get<GlobalData>().OnDataReloaded += ReloadTaskTrayContextMenu;
         }
 
         private void ProtocolBaseOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ProtocolBase.LastConnTime))
+            if (e.PropertyName == nameof(ProtocolBaseViewModel.LastConnectTime))
             {
                 ReloadTaskTrayContextMenu();
             }
@@ -90,10 +88,10 @@ namespace _1RM.Service
 
         private void ReloadTaskTrayContextMenu()
         {
-            foreach (var protocolBase in IoC.Get<GlobalData>().VmItemList.Select(x => x.Server))
+            foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
-                protocolBase.PropertyChanged -= ProtocolBaseOnPropertyChanged;
-                protocolBase.PropertyChanged += ProtocolBaseOnPropertyChanged;
+                vm.PropertyChanged -= ProtocolBaseOnPropertyChanged;
+                vm.PropertyChanged += ProtocolBaseOnPropertyChanged;
             }
 
             // rebuild TaskTrayContextMenu while language changed
@@ -130,7 +128,7 @@ namespace _1RM.Service
             _taskTrayIcon.ContextMenuStrip.Items.Add("-");
 
             {
-                var protocolBaseViewModels = IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.Server.LastConnTime).Take(20).ToArray();
+                var protocolBaseViewModels = IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime).Take(20).ToArray();
                 if (protocolBaseViewModels.Any())
                 {
                     for (var i = 0; i < 20 && i < protocolBaseViewModels.Length; i++)

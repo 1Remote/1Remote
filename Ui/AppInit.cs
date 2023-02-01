@@ -95,18 +95,11 @@ namespace _1RM
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                     bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
-                    if (forcePortable && permissionForPortable == false)
-                    {
-                        var paths = new AppPathHelper(Environment.CurrentDirectory);
-                        WritePermissionCheck(paths.BaseDirPath, false);
-                        WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
-                        WritePermissionCheck(paths.ProfileJsonPath, true);
-                        WritePermissionCheck(paths.LogFilePath, true);
-                        WritePermissionCheck(paths.SqliteDbDefaultPath, true);
-                        WritePermissionCheck(paths.KittyDirPath, false);
-                        WritePermissionCheck(paths.LocalityJsonPath, true);
-                    }
-
+#if FOR_MICROSOFT_STORE_ONLY
+                    forceAppData = true;
+                    forcePortable = false;
+                    permissionForPortable = false;
+#endif
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
                     
@@ -228,7 +221,7 @@ namespace _1RM
                     CreateDirIfNotExist(paths.LocalityJsonPath, true);
                 }
             }
-            #endregion
+#endregion
 
             // logger init
             {
