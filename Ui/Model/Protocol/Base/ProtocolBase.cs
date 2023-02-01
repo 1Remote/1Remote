@@ -5,16 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using Newtonsoft.Json;
-using PRM.Service;
-using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
-using Stylet;
 
-namespace PRM.Model.Protocol.Base
+namespace _1RM.Model.Protocol.Base
 {
     //[JsonConverter(typeof(JsonKnownTypesConverter<ProtocolBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     //[JsonKnownType(typeof(ProtocolBaseWithAddressPort), nameof(ProtocolBaseWithAddressPort))]
@@ -42,13 +43,32 @@ namespace PRM.Model.Protocol.Base
 
         public abstract bool IsOnlyOneInstance();
 
-        private int _id = 0;
+        private string _id = string.Empty;
 
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
         [JsonIgnore]
-        public int Id
+        public string Id
         {
-            get => _id;
+            get
+            {
+                if (string.IsNullOrEmpty(_id))
+                    GenerateIdForTmpSession();
+                return _id;
+            }
             set => SetAndNotifyIfChanged(ref _id, value);
+        }
+
+        public bool IsTmpSession()
+        {
+            return _id.StartsWith("TMP_SESSION_") || string.IsNullOrEmpty(_id);
+        }
+
+        public void GenerateIdForTmpSession()
+        {
+            Debug.Assert(IsTmpSession());
+            _id = "TMP_SESSION_" + new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
         }
 
         /// <summary>
@@ -64,16 +84,6 @@ namespace PRM.Model.Protocol.Base
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
-        /// <summary>
-        /// this is for old db to new db. do not remove until 2022.05!
-        /// </summary>
-        [Obsolete]
-        public string DispName
-        {
-            get => DisplayName;
-            set => DisplayName = value;
-        }
-
         private string _displayName = "";
         public string DisplayName
         {
@@ -85,25 +95,12 @@ namespace PRM.Model.Protocol.Base
         public string SubTitle => GetSubTitle();
 
 
-        private string _groupName = "";
-        [Obsolete]
-        public string GroupName
-        {
-            get => _groupName;
-            set => SetAndNotifyIfChanged(ref _groupName, value);
-        }
-
-
+        // ReSharper disable once ArrangeObjectCreationWhenTypeEvident
         private List<string> _tags = new List<string>();
         public List<string> Tags
         {
             get
             {
-                if (string.IsNullOrEmpty(GroupName) == false && _tags.Count == 0)
-                {
-                    _tags = new List<string>() { GroupName };
-                    GroupName = string.Empty;
-                }
                 _tags = _tags.Distinct().OrderBy(x => x).ToList();
                 return _tags;
             }
@@ -157,13 +154,6 @@ namespace PRM.Model.Protocol.Base
         {
             get => _colorHex;
             set => SetAndNotifyIfChanged(ref _colorHex, value);
-        }
-
-        private DateTime _lastConnTime = DateTime.MinValue;
-        public DateTime LastConnTime
-        {
-            get => _lastConnTime;
-            set => SetAndNotifyIfChanged(ref _lastConnTime, value);
         }
 
         private string _commandBeforeConnected = "";
@@ -256,7 +246,8 @@ namespace PRM.Model.Protocol.Base
 
         public virtual string ToJsonString()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            return JsonConvert.SerializeObject(this);
+            //return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
         /// <summary>
@@ -285,7 +276,7 @@ namespace PRM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.Tags = (this.Tags?.Count > 0) ? new List<string>(this.Tags) : new List<string>();
+            clone.Tags = new List<string>(this.Tags);
             return clone;
         }
 
@@ -326,13 +317,10 @@ namespace PRM.Model.Protocol.Base
         /// <summary>
         /// run before connect, decrypt all fields
         /// </summary>
-        /// <param name="context"></param>
-        public virtual void ConnectPreprocess(PrmContext context)
+        public virtual void ConnectPreprocess()
         {
-            if (context?.DataService == null) return;
             var s = this;
-            context.DataService.DecryptToRamLevel(ref s);
-            context.DataService.DecryptToConnectLevel(ref s);
+            s.DecryptToConnectLevel();
         }
 
         public static List<ProtocolBase> GetAllSubInstance()
@@ -349,5 +337,8 @@ namespace PRM.Model.Protocol.Base
         {
             return false;
         }
+
+        [JsonIgnore]
+        public string DataSourceName = "";
     }
 }

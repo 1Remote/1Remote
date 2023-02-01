@@ -9,21 +9,23 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Newtonsoft.Json;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View;
-using PRM.View.Guidance;
-using PRM.View.Settings;
-using PRM.View.Settings.ProtocolConfig;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Service;
+using _1RM.View;
+using _1RM.View.Guidance;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
-using Ui;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
+using _1RM.Utils.KiTTY;
+using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PRemoteM;
 
-namespace PRM
+namespace _1RM
 {
     internal class AppInit
     {
@@ -33,7 +35,7 @@ namespace PRM
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             if (flag == false)
             {
-                MessageBox.Show(LanguageService.Translate("write permissions alert", path), LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
+                MessageBox.Show(LanguageService.Translate("write permissions alert", path), LanguageService.Translate("Warning"), MessageBoxButton.OK);
                 Environment.Exit(1);
             }
         }
@@ -59,14 +61,20 @@ namespace PRM
             }
         }
 
-
+        public static void InitOnStartup()
+        {
+            SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Disabled;
+            // TODO Set salt by github action with repository secret
+            UnSafeStringEncipher.Init("***SALT***");
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+        }
 
         public LanguageService? LanguageService;
         public KeywordMatchService? KeywordMatchService;
         public ConfigurationService? ConfigurationService;
         public ThemeService? ThemeService;
         public GlobalData GlobalData = null!;
-        public Configuration Configuration = new();
+        public Configuration NewConfiguration = new();
 
         public void InitOnStart()
         {
@@ -78,27 +86,6 @@ namespace PRM
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
                 var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
-                // 读取旧版本配置信息 TODO remove after 2023.01.01
-                {
-                    string iniPath = portablePaths.ProfileIniPath;
-                    string dbDefaultPath = portablePaths.SqliteDbDefaultPath;
-                    if (File.Exists(iniPath) == false)
-                    {
-                        iniPath = appDataPaths.ProfileIniPath;
-                        dbDefaultPath = appDataPaths.SqliteDbDefaultPath;
-                    }
-                    if (File.Exists(iniPath) == true)
-                    {
-                        try
-                        {
-                            Configuration = ConfigurationService.LoadFromIni(iniPath, dbDefaultPath);
-                        }
-                        finally
-                        {
-                            File.Delete(iniPath);
-                        }
-                    }
-                }
 
                 bool isPortableMode = false;
                 {
@@ -108,6 +95,18 @@ namespace PRM
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                     bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
+                    if (forcePortable && permissionForPortable == false)
+                    {
+                        var paths = new AppPathHelper(Environment.CurrentDirectory);
+                        WritePermissionCheck(paths.BaseDirPath, false);
+                        WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
+                        WritePermissionCheck(paths.ProfileJsonPath, true);
+                        WritePermissionCheck(paths.LogFilePath, true);
+                        WritePermissionCheck(paths.SqliteDbDefaultPath, true);
+                        WritePermissionCheck(paths.KittyDirPath, false);
+                        WritePermissionCheck(paths.LocalityJsonPath, true);
+                    }
+
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
                     if (permissionForPortable == false                          // 当前目录没有写权限时，只能用 AppData 模式
@@ -150,12 +149,16 @@ namespace PRM
 
                     if (_isNewUser)
                     {
+                        if (PRemoteMTransferHelper.IsNeedTransfer())
+                        {
+                            PRemoteMTransferHelper.ReadAsync();
+                        }
+
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, Configuration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, NewConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
-                        AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
                     }
 
                     // 自动创建标志文件
@@ -166,7 +169,7 @@ namespace PRM
                             if (isPortableMode)
                             {
                                 if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
-                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData"); 
+                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData");
                                 if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
                                     File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                             }
@@ -218,7 +221,7 @@ namespace PRM
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 ConsoleManager.Show();
 #endif
-                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
+                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Info;
                 SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 // init log file placement
                 var fi = new FileInfo(AppPathHelper.Instance.LogFilePath);
@@ -227,55 +230,77 @@ namespace PRM
                 SimpleLogHelper.LogFileName = AppPathHelper.Instance.LogFilePath;
             }
 
-            // 读取配置
-            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
-            {
-                try
-                {
-                    var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.ProfileJsonPath));
-                    if (tmp != null)
-                        Configuration = tmp;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else
-            {
-                Configuration.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-            }
 
             KeywordMatchService = new KeywordMatchService();
-            ConfigurationService = new ConfigurationService(Configuration, KeywordMatchService);
+            // read profile
+            try
+            {
+                if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == true)
+                {
+                    ConfigurationService = ConfigurationService.LoadFromAppPath(KeywordMatchService);
+                }
+                else
+                {
+                    NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                    ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
+                }
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
+            }
+            // make sure path is not empty
+            if (string.IsNullOrWhiteSpace(NewConfiguration.SqliteDatabasePath))
+            {
+                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+            }
+
             ConfigurationService.SetSelfStart();
             ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }
 
         private bool _isNewUser = false;
-        private EnumDbStatus _dbConnectionStatus;
+        private EnumDbStatus _localDataConnectionStatus;
 
         public void InitOnConfigure()
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
-            var context = IoC.Get<PrmContext>();
-            _dbConnectionStatus = context.InitSqliteDb();
+
+            // Init data sources controller
+            var dataSourceService = IoC.Get<DataSourceService>();
+            GlobalData.SetDataSourceService(dataSourceService);
+            _localDataConnectionStatus = dataSourceService.InitLocalDataSource();
             IoC.Get<GlobalData>().ReloadServerList();
+            foreach (var config in ConfigurationService!.AdditionalDataSource)
+            {
+                dataSourceService.AddOrUpdateDataSourceAsync(config);
+            }
             IoC.Get<SessionControlService>();
         }
 
 
         public void InitOnLaunch()
         {
-            if (_dbConnectionStatus != EnumDbStatus.OK)
+            KittyConfig.CleanUpOldConfig();
+
+            if (_localDataConnectionStatus != EnumDbStatus.OK)
             {
-                string error = _dbConnectionStatus.GetErrorInfo();
-                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                string error = _localDataConnectionStatus.GetErrorInfo();
+                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("Error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
+                return;
             }
-            else if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
-                || _isNewUser)
+
+            if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
+            {
+                // import form PRemoteM db
+                IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += PRemoteMTransferHelper.TransAsync;
+            }
+
+            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }

@@ -3,13 +3,13 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PRM.Model;
-using PRM.Model.Protocol.Base;
+using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 
-namespace PRM.Controls.NoteDisplay
+namespace _1RM.Controls.NoteDisplay
 {
     public partial class NoteDisplayAndEditor : UserControl
     {
@@ -121,7 +121,7 @@ namespace PRM.Controls.NoteDisplay
             if (Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();
-                IoC.Get<GlobalData>().UpdateServer(Server, doInvoke: false);
+                IoC.Get<GlobalData>().UpdateServer(Server);
                 EndEdit();
             }
         }

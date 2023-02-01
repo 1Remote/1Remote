@@ -1,7 +1,7 @@
 ﻿using FreeSql.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace PRM.Core.DB.freesql
+namespace _1RM.Core.DB.freesql
 {
     [Index("uk_key", "Key", true)]
     [Table(Name = "Config")]

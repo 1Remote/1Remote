@@ -11,12 +11,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using _1RM.Service;
 #if STORE_UWP_METHOD
 using Windows.ApplicationModel;
 #endif
 
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class SetSelfStartingHelper
     {
@@ -174,7 +175,7 @@ namespace PRM.Utils
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 #if !DEV
-            key?.DeleteValue("PRemoteM_Debug", false);
+            key?.DeleteValue(AppPathHelper.APP_NAME, false);
 #endif
             return key?.GetValueNames().Contains(appName) == true;
         }

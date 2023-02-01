@@ -2,14 +2,15 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils.Wpf;
 using VncSharpCore;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public sealed partial class VncHost : HostBase
     {
@@ -83,7 +84,7 @@ namespace PRM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncBase.GetPort();
-            Vnc.GetPassword = () => IoC.Get<DataService>().DecryptOrReturnOriginalString(_vncBase.Password);
+            Vnc.GetPassword = () => DataService.DecryptOrReturnOriginalString(_vncBase.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try
@@ -122,7 +123,6 @@ namespace PRM.View.Host.ProtocolHosts
             Status = ProtocolHostStatus.Disconnected;
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
-            Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }
 

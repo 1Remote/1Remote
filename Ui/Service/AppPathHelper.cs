@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.View.Guidance;
+using _1RM.View.Guidance;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class AppPathHelper
     {
-        private const string AppName = "PRemoteM";
+        private const string AppName = "1Remote";
 #if DEBUG
         public const string APP_NAME = $"{AppName}_Debug";
 #if FOR_MICROSOFT_STORE_ONLY
@@ -38,8 +38,7 @@ namespace PRM.Service
 
         private static bool WritePermissionCheck(string path, bool isFile)
         {
-            bool flag = false;
-            flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
+            var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             return flag;
         }
 
@@ -69,12 +68,12 @@ namespace PRM.Service
 
         public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".json");
-        [Obsolete]
-        public string ProfileIniPath => Path.Combine(BaseDirPath, APP_NAME + ".ini");
+        public string ProfileAdditionalDataSourceJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".DataSources.json");
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");
         public string LocalityJsonPath => Path.Combine(BaseDirPath, "Locality.json");
+        public string ConnectTimeRecord => Path.Combine(BaseDirPath, "ConnectionRecords.json");
 
 
 

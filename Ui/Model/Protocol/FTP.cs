@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
-using PRM.Model.Protocol.FileTransmit.Transmitters;
-using PRM.Service;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.Protocol.FileTransmit;
+using _1RM.Model.Protocol.FileTransmit.Transmitters;
+using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
     public class FTP : ProtocolBaseWithAddressPortUserPwd, IFileTransmittable
@@ -17,7 +18,7 @@ namespace PRM.Model.Protocol
         }
 
         private string _startupPath = "/";
-        [OtherName(Name = "PRM_STARTUP_PATH")]
+        [OtherName(Name = "STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;
@@ -49,10 +50,11 @@ namespace PRM.Model.Protocol
 
         public ITransmitter GeTransmitter()
         {
+            this.DecryptToConnectLevel();
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = IoC.Get<DataService>().DecryptOrReturnOriginalString(this.Password);
+            var password = this.Password;
             return new TransmitterFtp(hostname, port, username, password);
         }
 

@@ -4,12 +4,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Shawn.Utils;
 
-namespace PRM.Utils.RdpFile
+namespace _1RM.Utils.RdpFile
 {
     /// <summary>
     /// REF:
@@ -18,6 +21,9 @@ namespace PRM.Utils.RdpFile
     /// </summary>
     public sealed class RdpConfig
     {
+        /// <summary>
+        /// (1) The remote session will appear in a window; (2) The remote session will appear full screen
+        /// </summary>
         [RdpConfName("screen mode id:i:")]
         public int ScreenModeId { get; set; } = 2;
 
@@ -330,26 +336,23 @@ namespace PRM.Utils.RdpFile
 
 
         [RdpConfName("full address:s:")]
-        private string FullAddress { get; set; } = "";
+        public string FullAddress { get; set; } = "";
 
         [RdpConfName("username:s:")]
-        private string Username { get; set; } = "";
+        public string Username { get; set; } = "";
 
         /// <summary>
         /// The user password in a binary hash value. Will be overruled by RDP+.
         /// </summary>
         [RdpConfName("password 51:b:")]
-        private string Password { get; } = "";
+        public string Password { get; } = "";
 
         private readonly string _additionalSettings;
 
-        public RdpConfig(string address, string username, string password, string additionalSettings = "")
+        public readonly string Name;
+        public RdpConfig(string name, string address, string username, string password, string additionalSettings = "")
         {
-            if (string.IsNullOrEmpty(address))
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
+            Name = name;
             FullAddress = address;
             Username = username;
             _additionalSettings = additionalSettings;
@@ -429,6 +432,55 @@ namespace PRM.Utils.RdpFile
             }
 
             return str.ToString();
+        }
+
+
+        public static RdpConfig? FromRdpFile(string rdpFilePath)
+        {
+            var fi = new FileInfo(rdpFilePath);
+            RdpConfig? rdpConfig = null;
+            // read txt by line
+            var pts = new []{ 's', 'i' };
+            bool flag = false;
+            if (fi.Exists)
+            {
+                rdpConfig = new RdpConfig(fi.Name.ReplaceLast(fi.Extension, ""), "", "", "");
+                foreach (var line in System.IO.File.ReadLines(rdpFilePath))
+                {
+                    //var ss = line.Split(":", StringSplitOptions.TrimEntries);
+                    foreach (var t in pts)
+                    {
+                        if (Regex.IsMatch(line, @$":\s*{t}\s*:") == false) continue;
+                        var ss = Regex.Split(line, $@":\s*{t}\s*:");
+                        if (ss.Length == 2)
+                        {
+                            var key = $"{ss[0].Trim()}:{t}:";
+                            var val = ss[1].Trim();
+                            foreach (var prop in typeof(RdpConfig).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.Name != nameof(Password)))
+                            {
+                                if (prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false).Cast<RdpConfNameAttribute>().Any(attr => string.Equals(attr.Name, key, StringComparison.CurrentCultureIgnoreCase)))
+                                {
+                                    flag = true;
+                                    if (t == 'i')
+                                    {
+                                        if (int.TryParse(val, out var iVal))
+                                        {
+                                            prop.SetValue(rdpConfig, iVal);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        prop.SetValue(rdpConfig, val);
+                                    }
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+            return flag ? rdpConfig : null;
         }
 
         [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]

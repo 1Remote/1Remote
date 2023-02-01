@@ -8,13 +8,13 @@ using Microsoft.Win32;
 using Shawn.Utils;
 using System.Windows;
 using System.Windows.Media.Animation;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
-namespace PRM.View.ErrorReport
+namespace _1RM.View.ErrorReport
 {
     /// <summary>
     /// Interaction logic for ErrorReportWindow.xaml
@@ -166,7 +166,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/issues");
             }
             catch
             {

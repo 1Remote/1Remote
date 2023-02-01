@@ -1,7 +1,7 @@
 ﻿using System;
 using StyletIoC;
 
-namespace PRM;
+namespace _1RM;
 
 public static class IoC
 {
@@ -15,13 +15,24 @@ public static class IoC
 
     public static Action<object> BuildUp { get; private set; } = instance => throw new InvalidOperationException("IoC is not initialized");
 
+    public delegate object? GetByTypeDelegate(Type type, string? key = null);
+
+    public static GetByTypeDelegate GetByType = (type, key) => Instances?.Get(type, key);
+
     public static T Get<T>(string? key = null) where T : class
     {
-        var obj = Instances?.Get(typeof(T), key);
+        var obj = TryGet<T>(key);
 #if !DEBUG
         if (obj == null)
             throw new Exception("Ioc can not get an item.");
 #endif
         return (T)obj!;
+    }
+
+
+    public static T? TryGet<T>(string? key = null) where T : class
+    {
+        var obj = GetByType(typeof(T), key);
+        return obj as T;
     }
 }

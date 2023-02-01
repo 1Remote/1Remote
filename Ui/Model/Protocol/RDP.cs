@@ -2,13 +2,19 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.Utils.RdpFile;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils.RdpFile;
 using Shawn.Utils;
+using System.Collections.Generic;
+using System.Windows.Media.Imaging;
+using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     public enum ERdpWindowResizeMode
     {
@@ -80,8 +86,8 @@ namespace PRM.Model.Protocol
     // ReSharper disable once InconsistentNaming
     public sealed class RDP : ProtocolBaseWithAddressPortUserPwd
     {
-        public const string PROTOCOL_NAME = "RDP";
-        public RDP() : base(PROTOCOL_NAME, "RDP.V1", "RDP")
+        public static string ProtocolName = "RDP";
+        public RDP() : base(ProtocolName, "RDP.V1", "RDP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";
@@ -243,12 +249,7 @@ namespace PRM.Model.Protocol
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
-            set
-            {
-                SetAndNotifyIfChanged(ref _enableDiskDrives, value);
-                if (value == false)
-                    EnableRedirectDrivesPlugIn = value;
-            }
+            set => SetAndNotifyIfChanged(ref _enableDiskDrives, value);
         }
 
         private bool? _enableRedirectDrivesPlugIn = false;
@@ -259,6 +260,19 @@ namespace PRM.Model.Protocol
             get => _enableRedirectDrivesPlugIn;
             set => SetAndNotifyIfChanged(ref _enableRedirectDrivesPlugIn, value);
         }
+
+
+
+        private bool? _enableRedirectCameras = false;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool? EnableRedirectCameras
+        {
+            get => _enableRedirectCameras;
+            set => SetAndNotifyIfChanged(ref _enableRedirectCameras, value);
+        }
+
+
 
         private bool? _enableKeyCombinations = true;
         [DefaultValue(true)]
@@ -343,47 +357,46 @@ namespace PRM.Model.Protocol
         #region Gateway
 
         private EGatewayMode? _gatewayMode = EGatewayMode.DoNotUseGateway;
-
         public EGatewayMode? GatewayMode
         {
             get => _gatewayMode;
             set => SetAndNotifyIfChanged(ref _gatewayMode, value);
         }
 
-        private bool? _gatewayBypassForLocalAddress = true;
 
+        private bool? _gatewayBypassForLocalAddress = true;
         public bool? GatewayBypassForLocalAddress
         {
             get => _gatewayBypassForLocalAddress;
             set => SetAndNotifyIfChanged(ref _gatewayBypassForLocalAddress, value);
         }
 
-        private string _gatewayHostName = "";
 
+        private string _gatewayHostName = "";
         public string GatewayHostName
         {
             get => _gatewayHostName;
             set => SetAndNotifyIfChanged(ref _gatewayHostName, value);
         }
 
-        private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
 
+        private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
         public EGatewayLogonMethod? GatewayLogonMethod
         {
             get => _gatewayLogonMethod;
             set => SetAndNotifyIfChanged(ref _gatewayLogonMethod, value);
         }
 
-        private string _gatewayUserName = "";
 
+        private string _gatewayUserName = "";
         public string GatewayUserName
         {
             get => _gatewayUserName;
             set => SetAndNotifyIfChanged(ref _gatewayUserName, value);
         }
 
-        private string _gatewayPassword = "";
 
+        private string _gatewayPassword = "";
         public string GatewayPassword
         {
             get => _gatewayPassword;
@@ -426,9 +439,9 @@ namespace PRM.Model.Protocol
         /// To rdp file object
         /// </summary>
         /// <returns></returns>
-        public RdpConfig ToRdpConfig(IDataService dataService)
+        public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, dataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", this.UserName, DataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
                 LoadBalanceInfo = this.LoadBalanceInfo,
@@ -535,6 +548,13 @@ namespace PRM.Model.Protocol
                 rdpConfig.RedirectDrives = 0;
             }
 
+            if (this.EnableRedirectDrivesPlugIn == true)
+            {
+                rdpConfig.RedirectDrives = 1;
+                rdpConfig.DriveStoreDirect += ";DynamicDrives";
+                rdpConfig.DriveStoreDirect = rdpConfig.DriveStoreDirect.Trim(';');
+            }
+
             if (this.EnableClipboard == true)
                 rdpConfig.RedirectClipboard = 1;
             if (this.EnablePrinters == true)
@@ -582,7 +602,90 @@ namespace PRM.Model.Protocol
             return rdpConfig;
         }
 
+        public static RDP FromRdpConfig(RdpConfig rdpConfig, List<string> iconsBase64)
+        {
+            var r = new Random();
+            var rdp = new RDP()
+            {
+                DisplayName = rdpConfig.Name,
+                IconBase64 = iconsBase64[r.Next(0, iconsBase64.Count)],
+            };
 
+            {
+                var i = rdpConfig.FullAddress.LastIndexOf(":", StringComparison.Ordinal);
+                if (i > 0
+                    && int.TryParse(rdpConfig.FullAddress.Substring(i + 1), out var port))
+                {
+                    rdp.Address = rdpConfig.FullAddress.Substring(0, i);
+                    rdp.Port = port.ToString();
+                }
+                else
+                {
+                    rdp.Address = rdpConfig.FullAddress;
+                }
+            }
+
+            rdp.UserName = rdpConfig.Username;
+
+            rdp.Domain = rdpConfig.Domain;
+            rdp.LoadBalanceInfo = rdpConfig.LoadBalanceInfo;
+            rdp.IsFullScreenWithConnectionBar = rdpConfig.DisplayConnectionBar == 1;
+
+            rdp.RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
+            switch (rdpConfig.ScreenModeId)
+            {
+                case 1:
+                    rdp.IsConnWithFullScreen = false;
+                    break;
+                case 2:
+                    rdp.IsConnWithFullScreen = true;
+                    rdp.RdpFullScreenFlag = rdpConfig.UseMultimon > 0 ? ERdpFullScreenFlag.EnableFullAllScreens : ERdpFullScreenFlag.EnableFullScreen;
+                    break;
+
+            }
+            rdp.RdpWidth = rdpConfig.DesktopWidth > 0 ? rdpConfig.DesktopWidth : 800;
+            rdp.RdpHeight = rdpConfig.DesktopHeight > 0 ? rdpConfig.DesktopHeight : 600;
+
+            if (rdpConfig.SmartSizing > 0)
+            {
+                rdp.RdpWindowResizeMode = ERdpWindowResizeMode.Stretch;
+            }
+            else if (rdpConfig.DynamicResolution > 0)
+            {
+                rdp.RdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
+            }
+            else
+            {
+                rdp.RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
+            }
+
+
+            rdp.DisplayPerformance = EDisplayPerformance.Auto;
+            rdp.EnableDiskDrives = rdpConfig.RedirectDrives > 0 || false == string.IsNullOrEmpty(rdpConfig.DriveStoreDirect.Replace("DynamicDrives", "", StringComparison.CurrentCultureIgnoreCase).Trim());
+            rdp.EnableRedirectDrivesPlugIn = rdpConfig.DriveStoreDirect.IndexOf("DynamicDrives", StringComparison.OrdinalIgnoreCase) >= 0;
+            rdp.EnableClipboard = rdpConfig.RedirectClipboard > 0;
+            rdp.EnablePrinters = rdpConfig.RedirectPrinters > 0;
+            rdp.EnablePorts = rdpConfig.RedirectComPorts > 0;
+            rdp.EnableSmartCardsAndWinHello = rdpConfig.RedirectSmartCards > 0;
+            rdp.EnableKeyCombinations = rdpConfig.KeyboardHook > 0;
+            switch (rdpConfig.AudioMode)
+            {
+                case 0: rdp.AudioRedirectionMode = EAudioRedirectionMode.RedirectToLocal; break;
+                case 1: rdp.AudioRedirectionMode = EAudioRedirectionMode.LeaveOnRemote; break;
+                case 2: rdp.AudioRedirectionMode = EAudioRedirectionMode.Disabled; break;
+            }
+            rdp.EnableAudioCapture = rdpConfig.AudioCaptureMode > 0;
+
+
+            switch (rdpConfig.GatewayUsageMethod)
+            {
+                case 0: rdp.GatewayMode = EGatewayMode.DoNotUseGateway; break;
+                case 1: rdp.GatewayMode = EGatewayMode.UseTheseGatewayServerSettings; break;
+                case 2: rdp.GatewayMode = EGatewayMode.AutomaticallyDetectGatewayServerSettings; break;
+            }
+            rdp.GatewayHostName = rdpConfig.GatewayHostname;
+            return rdp;
+        }
 
         public override bool ThisTimeConnWithFullScreen()
         {

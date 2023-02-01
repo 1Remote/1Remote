@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
     public class VNC : ProtocolBaseWithAddressPortUserPwd

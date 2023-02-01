@@ -6,16 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PRM.Model;
-using PRM.Model.Protocol.Base;
-using PRM.View;
+using _1RM.Model;
+using _1RM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
-using Ui;
 using Application = System.Windows.Application;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class TaskTrayService
     {
@@ -104,17 +102,17 @@ namespace PRM.Service
             var title = new System.Windows.Forms.ToolStripMenuItem(AppPathHelper.APP_DISPLAY_NAME);
             title.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
             };
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/wiki");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/wiki");
             };
             var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
             exit.Click += (sender, args) =>

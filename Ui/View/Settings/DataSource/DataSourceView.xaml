@@ -1,0 +1,277 @@
+﻿<UserControl x:Class="_1RM.View.Settings.DataSource.DataSourceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
+             xmlns:dataSource="clr-namespace:_1RM.Service.DataSource"
+             xmlns:dao="clr-namespace:_1RM.Model.DAO"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance local:DataSourceViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!--<DataTemplate DataType="model:DataSourceConfigBase">
+            <TextBlock Text="{Binding Name}"></TextBlock>
+        </DataTemplate>-->
+        <Style TargetType="{x:Type Thumb}" x:Key="ThumbStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Rectangle Width="1" Stroke="Transparent" Cursor="SizeWE"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type DataGrid}">
+            <!--网格线颜色-->
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="ColumnWidth" Value="*"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Setter Property="GridLinesVisibility" Value="None"></Setter>
+        </Style>
+
+        <!--标题栏样式-->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="0 0 0 10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridColumnHeader">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="BackgroundBorder" BorderThickness="0"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Background="{TemplateBinding Background}"
+                                    Grid.ColumnSpan="2"/>
+                            <ContentPresenter Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                            <Path x:Name="SortArrow" Visibility="Collapsed" Data="M 0,0 L 1,0 0.5,1 z" Stretch="Fill"
+                                  Grid.Column="1" Width="8" Height="6" Fill="{DynamicResource BackgroundTextBrush}" Margin="0,0,8,0"
+                                  VerticalAlignment="Center" RenderTransformOrigin="0.5, 0.4"/>
+                            <Thumb x:Name="PART_LeftHeaderGripper" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource ThumbStyle}"/>
+                            <Thumb x:Name="PART_RightHeaderGripper" Grid.Column="1" HorizontalAlignment="Right" Style="{StaticResource ThumbStyle}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{StaticResource AccentMidBrush}"/>
+                                <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{StaticResource AccentMidBrush}"/>
+                            </Trigger>
+                            <Trigger Property="SortDirection" Value="Ascending">
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="SortArrow" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="SortDirection" Value="Descending">
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="DisplayIndex" Value="0">
+                                <Setter TargetName="PART_LeftHeaderGripper" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                    <Setter Property="BorderThickness" Value="0"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                    <Setter Property="BorderThickness" Value="0"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+    </UserControl.Resources>
+    <Grid Margin="10">
+        <DataGrid AutoGenerateColumns="False"
+                  HorizontalAlignment="Stretch" 
+                  HorizontalContentAlignment="Stretch" 
+                  CanUserSortColumns="False"
+                  CanUserResizeColumns="False"
+                  CanUserResizeRows="False"
+                  CanUserReorderColumns="False"
+                  ColumnWidth="*"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding SourceConfigs}" >
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridColumnHeader">
+                                <Grid Height="35">
+                                    <TextBlock Text="{TemplateBinding  Content}" 
+                                               FontSize="18" FontWeight="Bold"
+                                               Foreground="{DynamicResource BackgroundTextBrush}"
+                                               VerticalAlignment="Center" 
+                                               HorizontalAlignment="Left" 
+                                               TextWrapping="Wrap"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="Auto" Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Background="Transparent" Cursor="Hand" ToolTip="{Binding StatusInfo}">
+                                <Path Height="16" Width="16" UseLayoutRounding="True" 
+                                      Data="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z" 
+                                      Fill="Green" Stretch="Uniform">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDbStatus.OK}">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                                <Path Height="16" Width="16" UseLayoutRounding="True" 
+                                      Data="M512 981.333333C251.733333 981.333333 42.666667 772.266667 42.666667 512S251.733333 42.666667 512 42.666667s469.333333 209.066667 469.333333 469.333333-209.066667 469.333333-469.333333 469.333333z m0-409.6l98.133333 98.133334c8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8 17.066667-17.066667 17.066667-42.666667 0-59.733334L571.733333 512l98.133334-98.133333c8.533333-8.533333 12.8-17.066667 12.8-29.866667 0-12.8-4.266667-21.333333-12.8-29.866667-8.533333-8.533333-17.066667-12.8-29.866667-12.8-12.8 0-21.333333 4.266667-29.866667 12.8L512 452.266667 413.866667 354.133333C405.333333 345.6 396.8 341.333333 384 341.333333c-12.8 0-21.333333 4.266667-29.866667 12.8-8.533333 8.533333-12.8 17.066667-12.8 29.866667 0 12.8 4.266667 21.333333 12.8 29.866667l98.133334 98.133333-98.133334 98.133333c-17.066667 17.066667-17.066667 42.666667 0 59.733334 8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8l98.133333-98.133334z" 
+                                      Fill="Red" Stretch="Uniform">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDbStatus.OK}">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="Auto" Header="{DynamicResource Name}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DataSourceName}"></TextBlock>
+                                <TextBlock Text=" (Readonly)" Visibility="{Binding IsWritable, Converter={StaticResource ConverterBool2VisibleInv}}"></TextBlock>
+                                <Grid Width="20"></Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+                <DataGridTemplateColumn Width="Auto" Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DatabaseType}"></TextBlock>
+                                <Grid Width="20"></Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn Width="2*" Header="" Binding="{Binding Description}"/>
+
+                <DataGridTemplateColumn Width="0.5*" MinWidth="100" Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="{DynamicResource Edit}"
+                                        Margin="5"
+                                        Command="{Binding Path=DataContext.CmdEdit, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                        CommandParameter="{Binding}"></Button>
+                                <Button Content="{DynamicResource Delete}" 
+                                        Margin="5"
+                                        Command="{Binding Path=DataContext.CmdDelete, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                        CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=DataSourceName}" Value="{x:Static dataSource:DataSourceService.LOCAL_DATA_SOURCE_NAME}">
+                                                    <Setter Property="IsEnabled" Value="False"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Height="35" HorizontalAlignment="Right">
+
+            <!--SET DATA CHECK PERIOD-->
+            <!--<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5 0">
+                <TextBlock Text="TXT: check new data every" VerticalAlignment="Center"></TextBlock>
+                <TextBox Width="30" Height="30" HorizontalContentAlignment="Right" Margin="5 0 0 0" Text="{Binding DatabaseCheckPeriod, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                <TextBlock Text="s" VerticalAlignment="Center"></TextBlock>
+            </StackPanel>-->
+
+
+            <!--ADD DATA SOURCE BUTTON-->
+            <Menu Background="Transparent" VerticalAlignment="Center">
+                <MenuItem Header="{DynamicResource Add}" Background="Transparent" Height="30" Width="100">
+                    <MenuItem.Icon>
+                        <Path Height="12" UseLayoutRounding="True" Data="{StaticResource GeometryCross}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                    </MenuItem.Icon>
+                    <!--<MenuItem Header="SQLite" Command="{Binding CmdAdd}" CommandParameter="SQLite">
+                    <MenuItem.Icon>
+                        <Path Height="14" UseLayoutRounding="True" Data="M884.736 22.528c-44.032-38.912-97.28-23.552-149.504 23.552-8.192 7.168-15.36 14.336-23.552 22.528-12.288 13.312-24.576 27.648-35.84 43.008-12.288-5.12-25.6-8.192-39.936-8.192H199.68c-57.344 0-104.448 47.104-104.448 104.448v436.224c0 57.344 47.104 104.448 104.448 104.448h307.2c4.096 20.48 6.144 34.816 6.144 34.816s0 4.096 1.024 9.216c-2.048 38.912-1.024 79.872 2.048 116.736 4.096 49.152 11.264 91.136 21.504 113.664l6.144-3.072c-14.336-44.032-20.48-102.4-17.408-168.96 4.096-102.4 27.648-225.28 70.656-354.304 73.728-194.56 175.104-350.208 269.312-423.936-86.016 76.8-200.704 325.632-235.52 417.792-38.912 103.424-65.536 199.68-82.944 292.864 28.672-87.04 120.832-123.904 120.832-123.904s45.056-55.296 98.304-135.168c-31.744 7.168-82.944 19.456-100.352 26.624-25.6 11.264-32.768 14.336-32.768 14.336S716.8 515.072 788.48 491.52c96.256-154.624 203.776-373.76 96.256-468.992zM512 475.136c10.24 20.48 18.432 47.104 23.552 66.56 1.024 5.12 2.048 10.24 3.072 14.336 2.048 9.216 3.072 16.384 3.072 16.384l-4.096-12.288c-1.024-2.048-1.024-4.096-2.048-6.144 0-1.024-1.024-2.048-1.024-3.072-6.144-13.312-22.528-41.984-29.696-55.296-6.144 18.432-11.264 34.816-16.384 50.176 20.48 37.888 32.768 102.4 32.768 102.4s-1.024-4.096-6.144-18.432c-4.096-13.312-27.648-53.248-32.768-62.464-9.216 33.792-13.312 57.344-9.216 63.488 5.12 8.192 9.216 21.504 14.336 35.84H199.68c-11.264 0-21.504-9.216-21.504-21.504V207.872c0-11.264 9.216-21.504 21.504-21.504H624.64c-53.248 91.136-95.232 199.68-112.64 288.768z" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                    </MenuItem.Icon>
+                    </MenuItem>-->
+                    <MenuItem Header="MySQL" Command="{Binding CmdAdd}" CommandParameter="MySQL">
+                        <MenuItem.Icon>
+                            <Path Height="14" UseLayoutRounding="True" Data="M1001.632 793.792c-7.84-13.856-26.016-37.536-93.12-83.2a1096.224 1096.224 0 0 0-125.152-74.144c-30.592-82.784-89.824-190.112-176.256-319.36-93.056-139.168-201.12-197.792-321.888-174.56a756.608 756.608 0 0 0-40.928-37.696C213.824 78.688 139.2 56.48 96.32 60.736c-19.424 1.952-34.016 9.056-43.36 21.088-21.664 27.904-14.432 68.064 85.504 198.912 19.008 55.616 23.072 84.672 23.072 99.296 0 30.912 15.968 66.368 49.984 110.752l-32 109.504c-28.544 97.792 23.328 224.288 71.616 268.384 25.76 23.552 47.456 20.032 58.176 15.84 21.504-8.448 38.848-29.472 50.048-89.504 5.728 14.112 11.808 29.312 18.208 45.6 34.56 87.744 68.352 136.288 106.336 152.736a32.032 32.032 0 0 0 25.44-58.688c-9.408-4.096-35.328-23.712-72.288-117.504-31.168-79.136-53.856-132.064-69.376-161.856a32.224 32.224 0 0 0-35.328-16.48 32.032 32.032 0 0 0-25.024 29.92c-3.872 91.04-13.056 130.4-19.2 147.008-26.496-30.464-68.128-125.984-47.232-197.536 20.768-71.232 32.992-112.928 36.64-125.248a31.936 31.936 0 0 0-5.888-29.28c-41.664-51.168-46.176-75.584-46.176-83.712 0-29.472-9.248-70.4-28.288-125.152a31.104 31.104 0 0 0-4.768-8.896c-53.824-70.112-73.6-105.216-80.832-121.888 25.632 1.216 74.336 15.04 91.008 29.376a660.8 660.8 0 0 1 49.024 46.304c8 8.448 19.968 11.872 31.232 8.928 100.192-25.92 188.928 21.152 271.072 144 87.808 131.328 146.144 238.048 173.408 317.216a32 32 0 0 0 16.384 18.432 1004.544 1004.544 0 0 1 128.8 75.264c7.392 5.024 14.048 9.696 20.064 14.016h-98.848a32.032 32.032 0 0 0-24.352 52.736 3098.752 3098.752 0 0 0 97.856 110.464 32 32 0 1 0 46.56-43.872 2237.6 2237.6 0 0 1-50.08-55.328h110.08a32.032 32.032 0 0 0 27.84-47.776z" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+    </Grid>
+</UserControl>

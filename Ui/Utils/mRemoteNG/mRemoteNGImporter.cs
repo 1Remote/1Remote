@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Utils.mRemoteNG
+namespace _1RM.Utils.mRemoteNG
 {
     public static class MRemoteNgImporter
     {
@@ -252,7 +252,7 @@ namespace PRM.Utils.mRemoteNG
             }
         }
 
-        public static List<ProtocolBase>? FromCsv(string csvPath, List<BitmapSource> icons)
+        public static List<ProtocolBase>? FromCsv(string csvPath, List<string> icons)
         {
             if (!File.Exists(csvPath))
                 return null;
@@ -372,9 +372,12 @@ namespace PRM.Utils.mRemoteNG
                         break;
                 }
 
-                if (server != null && icons.Count > 0)
+                if (server != null)
                 {
-                    server.IconBase64 = icons[r.Next(0, icons.Count)].ToBase64();
+                    if (icons.Count > 0)
+                    {
+                        server.IconBase64 = icons[r.Next(0, icons.Count)];
+                    }
                     list.Add(server);
                 }
             }

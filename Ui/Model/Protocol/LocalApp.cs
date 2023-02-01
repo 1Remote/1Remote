@@ -3,13 +3,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Utils;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using _1RM.View;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     public class LocalApp : ProtocolBase
     {

@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="_1RM.View.ServerList.TagsPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_1RM.View.ServerList"
+             xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance local:TagsPanelViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="TagItemSource" 
+                              Source="{Binding AppData.TagList}"
+                              Filter="TagItemSource_OnFilter">
+        </CollectionViewSource>
+
+        <local:ConverterTagName x:Key="ConverterTagName" />
+    </UserControl.Resources>
+
+    <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="20">
+            <TextBox Name="TbFilter"
+                     attachProperty:FocusExtension.IsFocused="{Binding FilterIsFocused}"
+                     Height="40"
+                     Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}" 
+                     Tag="{DynamicResource 'Search (Ctrl+F)'}"
+                     PreviewKeyUp="TbFilter_OnKeyUp"
+                     Width="300"
+            ></TextBox>
+        </Grid>
+
+        <!-- tag list: the page to config which tag should be display. -->
+        <Grid Grid.Row="1">
+            <ListBox Name="ListBoxTags" ItemsSource="{Binding Source={StaticResource TagItemSource}}" Margin="50 0" Visibility="Visible" MinHeight="300" MinWidth="500">
+                <ListBox.Template>
+                    <ControlTemplate TargetType="ListBox">
+                        <ItemsPresenter></ItemsPresenter>
+                    </ControlTemplate>
+                </ListBox.Template>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel></WrapPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource Delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource Rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource Connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource 'Connect (New window)'}" Command="{Binding CmdTagConnectToNewTab}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="model:Tag">
+                        <Border CornerRadius="{StaticResource DefaultCornerRadius}" 
+                                BorderThickness="1" 
+                                BorderBrush="{DynamicResource DefaultBorderBrush}" 
+                                Margin="10"
+                                Padding="5">
+                            <Grid Width="300">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
+                                            Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
+                                            HorizontalAlignment="Left"></Button>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                    <TextBlock Text="{Binding ItemsCount}" Margin="10 0" VerticalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
+                                    <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+
+    </Grid>
+</UserControl>

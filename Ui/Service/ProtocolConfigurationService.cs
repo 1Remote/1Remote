@@ -7,14 +7,14 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class ProtocolConfigurationService
     {
@@ -53,12 +53,15 @@ namespace PRM.Service
             var protocolConfigs = new Dictionary<string, ProtocolSettings>();
 
             // build-in protocol
-            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Internal VNC"));
-            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Internal KiTTY"));
-            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Internal KiTTY"));
-            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Internal SFTP"));
-            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Internal FTP"));
-
+            //protocolConfigs.Add(RDP.ProtocolName, InitProtocol(protocolFolderName, new RDP(), new InternalDefaultRunner(RDP.ProtocolName), $"Built-in AxMsRdpClient"));
+            //protocolConfigs[RDP.ProtocolName].Runners.Clear();
+            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Built-in AxMsRdpClient", RDP.ProtocolName));
+            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Mstsc.exe", RDP.ProtocolName));
+            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
+            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
+            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
+            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
+            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
 
             //// custom protocol
@@ -143,16 +146,16 @@ namespace PRM.Service
                         c.Runners.Add(new ExternalRunner("UltraVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
-                            Arguments = @"%PRM_HOSTNAME%:%PRM_PORT% -password %PRM_PASSWORD%",
+                            Arguments = @"%HOSTNAME%:%PORT% -password %PASSWORD%",
                             RunWithHosting = false,
                         });
                     if (c.Runners.All(x => x.Name != "TightVNC"))
                         c.Runners.Add(new ExternalRunner("TightVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
-                            Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto",
+                            Arguments = @"%HOSTNAME%::%PORT% -password=%PASSWORD% -scale=auto",
                             RunWithHosting = true,
-                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PRM_PASSWORD%") }),
+                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PASSWORD%") }),
                         });
                 }
                 if (SFTP.ProtocolName == protocolName)
@@ -161,8 +164,8 @@ namespace PRM.Service
                         c.Runners.Add(new ExternalRunnerForSSH("WinSCP", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
-                            Arguments = @"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%",
-                            ArgumentsForPrivateKey = @"sftp://%PRM_USERNAME%@%PRM_HOSTNAME%:%PRM_PORT% /privatekey=%PRM_SSH_PRIVATE_KEY_PATH%",
+                            Arguments = @"sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%",
+                            ArgumentsForPrivateKey = @"sftp://%USERNAME%@%HOSTNAME%:%PORT% /privatekey=%SSH_PRIVATE_KEY_PATH%",
                         });
                 }
             }
@@ -171,6 +174,7 @@ namespace PRM.Service
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
                 c.Runners.Insert(0, defaultRunner);
             }
+            // 最后赋值，确保无论是从配置加载的还是上面初始化的 InternalDefaultRunner 名称正确
             c.Runners.First(x => x is InternalDefaultRunner).Name = defaultRunnerName;
             return c;
         }

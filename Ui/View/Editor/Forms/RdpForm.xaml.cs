@@ -10,13 +10,13 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using Shawn.Utils;
+using _1RM.Service.DataSource;
 
-namespace PRM.View.Editor.Forms
+namespace _1RM.View.Editor.Forms
 {
     public partial class RdpForm : FormBase
     {
@@ -112,13 +112,10 @@ namespace PRM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                var ds = IoC.Get<PrmContext>().DataService;
-                if (ds != null)
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+                var p = new Process
                 {
-                    File.WriteAllText(rdpFile, rdp.ToRdpConfig(ds).ToString());
-                    var p = new Process
-                    {
-                        StartInfo =
+                    StartInfo =
                         {
                             FileName = "cmd.exe",
                             UseShellExecute = false,
@@ -127,11 +124,10 @@ namespace PRM.View.Editor.Forms
                             RedirectStandardError = true,
                             CreateNoWindow = true
                         }
-                    };
-                    p.Start();
-                    p.StandardInput.WriteLine($"notepad " + rdpFile);
-                    p.StandardInput.WriteLine("exit");
-                }
+                };
+                p.Start();
+                p.StandardInput.WriteLine($"notepad " + rdpFile);
+                p.StandardInput.WriteLine("exit");
             }
         }
     }

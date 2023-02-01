@@ -1,23 +1,26 @@
-﻿<styles:WindowChromeBase x:Class="PRM.View.MainWindowView"
+﻿<styles:WindowChromeBase x:Class="_1RM.View.MainWindowView"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                   xmlns:s="https://github.com/canton7/Stylet"
-                  xmlns:view="clr-namespace:PRM.View"
+                  xmlns:view="clr-namespace:_1RM.View"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                  xmlns:service="clr-namespace:_1RM.Service"
+                  xmlns:serverList="clr-namespace:_1RM.View.ServerList"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
-                  Background="White"
+                  Background="{DynamicResource BackgroundBrush}"
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Style="{StaticResource WindowChromeBaseBaseStyle}"
-                  Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
+                  Title="{x:Static service:AppPathHelper.APP_NAME}" 
+                  Height="560" Width="900" 
+                  MinWidth="700" MinHeight="500">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
-            <CollectionViewSource x:Key="GroupedItems" Source="{Binding }"/>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
         </ResourceDictionary>
     </styles:WindowChromeBase.Resources>
@@ -68,7 +71,8 @@
                              attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
                              Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"
                              Tag="{DynamicResource 'Search (Ctrl+F)'}"
-                             KeyUp="MainFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
+                             KeyUp="MainFilter_OnKeyUp" 
+                             VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                         <TextBox.Style>
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
                                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
@@ -76,6 +80,7 @@
                                 <Setter Property="Opacity" Value="0.5"></Setter>
                                 <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                 <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -101,8 +106,8 @@
                                             <Setter Property="IsEnabled" Value="True"></Setter>
                                         </MultiDataTrigger.Setters>
                                     </MultiDataTrigger>
-                                    <DataTrigger Binding="{Binding MainFilterString}" Value="{x:Static  view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <DataTrigger Binding="{Binding ServerListViewModel.TagListViewModel}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -160,7 +165,7 @@
                        StaysOpen="False"
                        PlacementTarget="{Binding ElementName=CbPopForMenu}">
                     <Border CornerRadius="5" Background="{DynamicResource PrimaryDarkBrush}">
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" MinWidth="138">
                             <MenuItem Header="{DynamicResource Options}" Command="{Binding CmdGoSysOptionsPage}">
                                 <MenuItem.Icon>
                                     <Path UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
@@ -264,7 +269,7 @@
                     <Style TargetType="Grid">
                         <Setter Property="Effect">
                             <Setter.Value>
-                                <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                                <BlurEffect Radius="1" KernelType="Box"></BlurEffect>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
@@ -378,11 +383,22 @@
             </Grid>
         </Grid>
 
-
-        <ContentControl 
-            PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
-            PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
-            s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
+        <Grid Background="Transparent">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Setter Property="Background" Value="Transparent"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TopLevelViewModel, Mode=OneWay}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+        </Grid>
+        <ContentControl PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
+                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+                        s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
 
     </Grid>
 </styles:WindowChromeBase>

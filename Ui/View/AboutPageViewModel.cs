@@ -1,10 +1,10 @@
 ﻿using System.Timers;
 using System.Windows.Input;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public class AboutPageViewModel : NotifyPropertyChangedBase
     {
@@ -69,17 +69,23 @@ namespace PRM.View
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
             }
         }
 
-        //public void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    if (e.ClickCount == 3)
-        //    {
-        //        ConsoleManager.Toggle();
-        //    }
-        //}
+
+
+        private RelayCommand? _cmdConsoleToggle;
+        public RelayCommand CmdConsoleToggle
+        {
+            get
+            {
+                return _cmdConsoleToggle ??= new RelayCommand((o) =>
+                {
+                    ConsoleManager.Toggle();
+                });
+            }
+        }
     }
 }

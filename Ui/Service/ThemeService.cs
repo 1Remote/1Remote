@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class ThemeService
     {
@@ -43,9 +42,9 @@ namespace PRM.Service
                 BackgroundColor = "#1e1e1e",
                 BackgroundTextColor = "#cccccc",
             });
-            Themes.Add("Default", new ThemeConfig()
+            Themes.Add("PRemoteM", new ThemeConfig()
             {
-                ThemeName = "Default",
+                ThemeName = "PRemoteM",
                 PrimaryMidColor = "#102b3e",
                 PrimaryLightColor = "#445a68",
                 PrimaryDarkColor = "#0c2230",

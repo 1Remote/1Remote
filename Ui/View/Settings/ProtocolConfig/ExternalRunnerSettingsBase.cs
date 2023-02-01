@@ -7,10 +7,10 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Newtonsoft.Json.Bson;
-using PRM.Controls;
-using PRM.Service;
+using _1RM.Controls;
+using _1RM.Service;
 
-namespace PRM.View.Settings.ProtocolConfig;
+namespace _1RM.View.Settings.ProtocolConfig;
 
 public abstract class ExternalRunnerSettingsBase : UserControl
 {

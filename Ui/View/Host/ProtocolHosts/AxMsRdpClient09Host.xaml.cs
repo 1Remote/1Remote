@@ -6,19 +6,16 @@ using System.Windows;
 using System.Windows.Forms;
 using _1RM.Utils.RdpFile;
 using MSTSCLib;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Service;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Color = System.Drawing.Color;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     internal static class AxMsRdpClient9NotSafeForScriptingExAdd
     {
@@ -55,6 +52,7 @@ namespace PRM.View.Host.ProtocolHosts
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
         private AxMsRdpClient9NotSafeForScriptingEx? _rdpClient = null;
+        //private readonly DataSourceBase? _dataSource;
         private readonly RDP _rdpSettings;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%
@@ -76,6 +74,7 @@ namespace PRM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
 
             _rdpSettings = rdp;
+            _rdpSettings.DecryptToConnectLevel();
             InitRdp(width, height);
             GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
         }
@@ -133,7 +132,7 @@ namespace PRM.View.Host.ProtocolHosts
 
 
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdpClient.GetOcx();
-            secured.ClearTextPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpSettings.Password);
+            secured.ClearTextPassword = DataService.DecryptOrReturnOriginalString(_rdpSettings.Password);
             _rdpClient.FullScreenTitle = _rdpSettings.DisplayName + " - " + _rdpSettings.SubTitle;
 
             #endregion server info
@@ -230,9 +229,15 @@ namespace PRM.View.Host.ProtocolHosts
 
         public void NotifyRedirectDeviceChange(int msg, IntPtr wParam, IntPtr lParam)
         {
-            SimpleLogHelper.Debug($"RDP: NotifyRedirectDeviceChange Receive({msg}, {wParam}, {lParam})");
             const int WM_DEVICECHANGE = 0x0219;
-            // see https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable-notifyredirectdevicechange
+
+            /* from https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable-notifyredirectdevicechange
+             *      https://learn.microsoft.com/en-us/windows/win32/devio/wm-devicechange
+             * wParam case when msg == WM_DEVICECHANGE:
+             * DBT_DEVNODES_CHANGED     0x0007      A device has been added to or removed from the system. param = 0
+             * DBT_DEVICEARRIVAL        0x8000      A device or piece of media has been inserted and is now available. param = A pointer to a structure identifying the device inserted. 
+             */
+            SimpleLogHelper.Debug($"RDP: NotifyRedirectDeviceChange Receive(0x{msg:X}, 0x{wParam:X}, 0x{lParam:X})");
             if (msg == WM_DEVICECHANGE
                 && _rdpClient != null
                 && ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices)
@@ -248,18 +253,34 @@ namespace PRM.View.Host.ProtocolHosts
 
 
             #region Redirect
-            _rdpClient.AdvancedSettings9.RedirectDrives = _rdpSettings.EnableDiskDrives == true;
-            if (_rdpClient.AdvancedSettings9.RedirectDrives)
+
+            // purpose is not clear
+            ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
+            // enable then usb disk can be redirect
+            ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableRedirectDrivesPlugIn == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
+            if (_rdpClient.AdvancedSettings9.RedirectDrives || _rdpSettings.EnableRedirectDrivesPlugIn == true)
             {
-                // enable then usb disk can be redirect
-                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableRedirectDrivesPlugIn == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
-                // purpose is not clear
-                ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = _rdpSettings.EnableDiskDrives == true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
+                _rdpClient.AdvancedSettings9.RedirectDrives = true;
+                // disable disk
+                if (_rdpClient.AdvancedSettings9.RedirectDrives == false)
+                {
+                    var ocx = (MSTSCLib.IMsRdpClientNonScriptable7)_rdpClient.GetOcx();
+                    ocx.DriveCollection.RescanDrives(false);
+                    for (int i = 0; i < ocx.DriveCollection.DriveCount; i++)
+                    {
+                        ocx.DriveCollection.DriveByIndex[(uint)i].RedirectionState = false;
+                    }
+                }
             }
+
+            RedirectDevice();
+
+
             _rdpClient.AdvancedSettings9.RedirectClipboard = _rdpSettings.EnableClipboard == true;
             _rdpClient.AdvancedSettings9.RedirectPrinters = _rdpSettings.EnablePrinters == true;
             _rdpClient.AdvancedSettings9.RedirectPOSDevices = _rdpSettings.EnablePorts == true;
             _rdpClient.AdvancedSettings9.RedirectSmartCards = _rdpSettings.EnableSmartCardsAndWinHello == true;
+
 
             if (_rdpSettings.EnableKeyCombinations == true)
             {
@@ -307,6 +328,35 @@ namespace PRM.View.Host.ProtocolHosts
             }
             #endregion Redirect
         }
+
+
+        public void RedirectDevice()
+        {
+            var ocx = _rdpClient?.GetOcx() as MSTSCLib.IMsRdpClientNonScriptable7;
+            if(ocx == null)
+                return;
+            ocx.CameraRedirConfigCollection.RedirectByDefault = false;
+            if (_rdpSettings.EnableRedirectCameras == true)
+            {
+                // enumerates connected camera devices
+                ocx.CameraRedirConfigCollection.Rescan();
+                for (int i = 0; i < ocx.CameraRedirConfigCollection.Count; i++)
+                {
+                    var camera = ocx.CameraRedirConfigCollection.ByIndex[(uint)i];
+                    camera.Redirected = true;
+                }
+            }
+
+            ocx.DeviceCollection.RescanDevices(false);
+            for (uint i = 0; i < ocx.DeviceCollection.DeviceCount; i++)
+            {
+                var d = ocx.DeviceCollection.DeviceByIndex[i];
+                SimpleLogHelper.Debug(d.FriendlyName);
+                SimpleLogHelper.Debug(d.DeviceDescription);
+                d.RedirectionState = true;
+            }
+        }
+
 
         private void RdpInitDisplay(int width = 0, int height = 0, bool isReconnecting = false)
         {
@@ -512,7 +562,7 @@ namespace PRM.View.Host.ProtocolHosts
                     case EGatewayLogonMethod.Password:
                         _rdpClient.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdpClient.TransportSettings2.GatewayUsername = _rdpSettings.GatewayUserName;
-                        _rdpClient.TransportSettings2.GatewayPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpSettings.GatewayPassword);
+                        _rdpClient.TransportSettings2.GatewayPassword = _rdpSettings.GatewayPassword;
                         break;
 
                     default:
@@ -762,17 +812,19 @@ namespace PRM.View.Host.ProtocolHosts
         {
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), true, -1);
+                if (_rdpSettings.IsTmpSession() == false)
+                    IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, true, -1);
                 return ScreenInfoEx.GetAllScreensSize();
             }
 
-            int screenIndex = IoC.Get<LocalityService>().RdpLocalityGet(_rdpSettings.Id.ToString())?.FullScreenLastSessionScreenIndex ?? -1;
+            int screenIndex = IoC.Get<LocalityService>().RdpLocalityGet(_rdpSettings.Id)?.FullScreenLastSessionScreenIndex ?? -1;
             if (screenIndex < 0
                 || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
             {
                 screenIndex = this.ParentWindow != null ? ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index : ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
-            IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), true, screenIndex);
+            if (_rdpSettings.IsTmpSession() == false)
+                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, true, screenIndex);
             return System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds;
         }
 

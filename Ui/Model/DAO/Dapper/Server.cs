@@ -1,22 +1,29 @@
-﻿using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Utils;
+﻿using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 
-namespace PRM.Model.DAO.Dapper
+namespace _1RM.Model.DAO.Dapper
 {
     public class Server : IDataBaseServer
     {
-        public int Id { get; set; }
+        public const string TABLE_NAME = "Servers";
+
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
         public string Protocol { get; set; } = "";
         public string ClassVersion { get; set; } = "";
-        public string JsonConfigString { get; set; } = "";
+        public string Json { get; set; } = "";
 
         public ProtocolBase? ToProtocolServerBase()
         {
             return ItemCreateHelper.CreateFromDbOrm(this);
         }
-
-        public int GetId()
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        public string GetId()
         {
             return Id;
         }
@@ -33,7 +40,7 @@ namespace PRM.Model.DAO.Dapper
 
         public string GetJson()
         {
-            return JsonConfigString;
+            return Json;
         }
     }
 
@@ -45,7 +52,7 @@ namespace PRM.Model.DAO.Dapper
             {
                 Id = s.Id,
                 ClassVersion = s.ClassVersion,
-                JsonConfigString = s.ToJsonString(),
+                Json = s.ToJsonString(),
                 Protocol = s.Protocol,
             };
             return ret;

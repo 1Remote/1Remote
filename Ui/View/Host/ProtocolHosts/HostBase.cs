@@ -4,14 +4,15 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public enum ProtocolHostStatus
     {
@@ -40,20 +41,26 @@ namespace PRM.View.Host.ProtocolHosts
         public virtual void SetParentWindow(WindowBase? value)
         {
             if (_parentWindow == value) return;
+            _parentWindow = value;
             ParentWindowHandle = IntPtr.Zero;
+
+            if (null == value) return;
             var window = Window.GetWindow(value);
             if (window != null)
             {
                 var wih = new WindowInteropHelper(window);
                 ParentWindowHandle = wih.Handle;
             }
-            _parentWindow = value;
         }
 
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
-        private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
+        /// <summary>
+        /// a flag to id if ProtocolServer can open session successfully.
+        /// </summary>
+        public bool HasConnected = false;
 
+        private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
         public ProtocolHostStatus Status
         {
             get => _status;
@@ -61,6 +68,9 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 if (_status != value)
                 {
+                    if (value == ProtocolHostStatus.Connected)
+                        HasConnected = true;
+
                     SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
                     _status = value;
                     OnCanResizeNowChanged?.Invoke();

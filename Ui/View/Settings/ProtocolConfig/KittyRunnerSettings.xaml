@@ -1,39 +1,22 @@
-﻿<UserControl x:Class="PRM.View.Settings.ProtocolConfig.KittyRunnerSettings"
+﻿<UserControl x:Class="_1RM.View.Settings.ProtocolConfig.KittyRunnerSettings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-             xmlns:default="clr-namespace:PRM.Model.ProtocolRunner.Default"
+             xmlns:default="clr-namespace:_1RM.Model.ProtocolRunner.Default"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance default:KittyRunner}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-
-        <Style x:Key="GridOneRow" TargetType="Grid">
-            <Setter Property="Height" Value="Auto"></Setter>
-            <Setter Property="MinWidth" Value="300"></Setter>
-            <Setter Property="MinHeight" Value="30"></Setter>
-            <Setter Property="Margin">
-                <Setter.Value>
-                    <Thickness Bottom="15"></Thickness>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-            <Setter Property="TextAlignment" Value="Right"></Setter>
-            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
-            <Setter Property="Margin" Value="20 0 10 0"></Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ProtocolConfiogDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="25 10 20 10">
-        <Grid.Effect>
-            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-        </Grid.Effect>
+
+    <Grid Style="{StaticResource Block}">
         <Grid.OpacityMask>
             <VisualBrush Visual="{Binding ElementName=Border1}" />
         </Grid.OpacityMask>
@@ -50,15 +33,35 @@
                        Text="{Binding Name}" Margin="5"></TextBlock>
         </Grid>
         <StackPanel Grid.Row="1">
-            <Grid Margin="10">
-                <!--<TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
-                           HorizontalAlignment="Center"
-                           FontSize="{StaticResource HeadFontSize}" Text="KiTTY"></TextBlock>-->
-            </Grid>
+            <Grid Height="20"></Grid>
+
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid Width="100" Margin="20 0 10 0" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0 0 5 0" Width="Auto" Text="KiTTY"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0" Width="Auto" Text="{DynamicResource 'Exe path'}"></TextBlock>
+                    </StackPanel>
+                </Grid>
+                <TextBox Grid.Column="1" Text="{Binding PuttyExePath, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                         FlowDirection="RightToLeft"
+                         ></TextBox>
+                <Button Grid.Column="2" 
+                        Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5 0 50 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Content="{DynamicResource Select}" 
+                        Command="{Binding CmdSelectExePath}"></Button>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -69,7 +72,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 

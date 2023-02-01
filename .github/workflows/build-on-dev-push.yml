@@ -54,7 +54,7 @@ jobs:
       # upload to artifact
       - uses: actions/upload-artifact@v3
         with:
-          name: PRemoteM
+          name: 1Remote
           path: Ui/bin/Release/net6.0-windows/publish/win-x64
 
       # zip
@@ -62,13 +62,13 @@ jobs:
         uses: vimtor/action-zip@v1
         with:
           files: Ui/bin/Release/net6.0-windows/publish/win-x64
-          dest: PRemoteM.zip
+          dest: 1Remote.zip
 
       # release
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: PRemoteM.zip
+          files: 1Remote.zip
           draft: false
           prerelease: true

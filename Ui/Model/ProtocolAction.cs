@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
-using PRM.Service;
-using PRM.View;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.View;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class ProtocolAction : NotifyPropertyChangedBase
     {
@@ -34,6 +35,7 @@ namespace PRM.Model
     {
         public static List<ProtocolAction> GetActions(this ProtocolBase server)
         {
+            bool writable = server.GetDataSource()?.IsWritable != false;
             #region Build Actions
             var actions = new List<ProtocolAction>();
             {
@@ -42,6 +44,7 @@ namespace PRM.Model
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
                         action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
                     ));
+
 
                 // external runners
                 var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
@@ -61,18 +64,21 @@ namespace PRM.Model
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
                 }
 
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
+                if (writable)
                 {
-                    if(GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false);
-                }));
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
-                {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false);
-                }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
+                    {
+                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                            IoC.Get<MainWindowViewModel>()?.ShowMe();
+                        GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
+                    }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                    {
+                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                            IoC.Get<MainWindowViewModel>()?.ShowMe();
+                        GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
+                    }));
+                }
             };
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {
@@ -89,41 +95,47 @@ namespace PRM.Model
                         }
                     }));
             }
-            if (server is ProtocolBaseWithAddressPortUserPwd tmp)
+
+
+            if (writable)
             {
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_username"),
-                    () =>
-                   {
-                       try
+                if (server is ProtocolBaseWithAddressPortUserPwd tmp)
+                {
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_username"),
+                        () =>
                        {
-                           Clipboard.SetDataObject(tmp.UserName);
-                       }
-                       catch (Exception)
-                       {
-                           // ignored
-                       }
-                   }));
-            }
-            if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
-            {
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
-                    action: () =>
-                    {
-                        try
+                           try
+                           {
+                               Clipboard.SetDataObject(tmp.UserName);
+                           }
+                           catch (Exception)
+                           {
+                               // ignored
+                           }
+                       }));
+                }
+
+                if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
+                {
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
+                        action: () =>
                         {
-                            Clipboard.SetDataObject(IoC.Get<DataService>().DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
-                        }
-                        catch (Exception)
-                        {
-                            // ignored
-                        }
-                    }));
+                            try
+                            {
+                                Clipboard.SetDataObject(DataService.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }));
+                }
             }
 
-            actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
+            if (writable)
             {
-                GlobalEventHelper.OnRequestDeleteServer?.Invoke(server.Id);
-            }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () => { GlobalEventHelper.OnRequestDeleteServer?.Invoke(server); }));
+            }
 
             #endregion Build Actions
 

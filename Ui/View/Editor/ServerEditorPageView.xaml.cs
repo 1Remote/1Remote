@@ -5,20 +5,20 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using PRM.Model;
-using PRM.Resources.Icons;
-using PRM.Utils;
+using _1RM.Resources.Icons;
+using _1RM.Service.DataSource;
+using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.View.Editor
+namespace _1RM.View.Editor
 {
     public partial class ServerEditorPageView : UserControl
     {
         private BitmapSource? _oldLogo;
 
-        public ServerEditorPageView(PrmContext context)
+        public ServerEditorPageView()
         {
             this.Loaded += (sender, args) =>
             {
@@ -29,10 +29,10 @@ namespace PRM.View.Editor
                     {
                         ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
                         if (vm.Server.IconImg == null
-                            && ServerIcons.Instance.Icons.Count > 0)
+                            && ServerIcons.Instance.IconsBase64.Count > 0)
                         {
                             var r = new Random(DateTime.Now.Millisecond);
-                            vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                            vm.Server.IconBase64 = ServerIcons.Instance.IconsBase64[r.Next(0, ServerIcons.Instance.IconsBase64.Count)];
                         }
                     }
                     _oldLogo = vm.Server.IconImg;

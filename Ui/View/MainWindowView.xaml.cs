@@ -5,20 +5,20 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Resources.Icons;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
-using Ui;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class MainWindowView : WindowChromeBase
     {
@@ -99,31 +99,51 @@ namespace PRM.View
         {
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
             if (Vm.IsShownList())
-                Vm.MainFilterIsFocused = true;
+            {
+                if (Vm.ServerListViewModel.TagListViewModel == null)
+                {
+                    Vm.MainFilterIsFocused = true;
+                }
+                else
+                {
+                    Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                }
+            }
         }
 
 
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.FocusedElement is TextBox)
+            if (this.DataContext is MainWindowViewModel vm)
             {
-                //SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
-            }
-            else if (e.Key == Key.Escape && this.DataContext is MainWindowViewModel vm && vm.IsShownList() == false)
-            {
-                vm.ShowList();
-            }
-            else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
-            {
-                Vm.MainFilterIsFocused = true;
-                //TbFilter.Focus();
-                //TbFilter.CaretIndex = TbFilter.Text.Length;
+                if (Keyboard.FocusedElement is TextBox)
+                {
+                    //SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
+                }
+                else if (e.Key == Key.Escape && vm.IsShownList() == false)
+                {
+                    vm.ShowList(false);
+                }
+                else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && vm.IsShownList())
+                {
+                    if (Vm.ServerListViewModel.TagListViewModel == null)
+                    {
+                        Vm.MainFilterIsFocused = true;
+                        Vm.MainFilterIsFocused = true;
+                    }
+                    else
+                    {
+                        Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                        Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                    }
+                }
             }
         }
 
         private void ProcessingRing_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            // 等待动画实现拖拽
             if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_OnPreviewMouseDown(sender, e);
@@ -135,7 +155,7 @@ namespace PRM.View
             // When press Esc, clear all of the search keywords, but keep selected tags;
             if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
-            Vm.SetMainFilterString(s.Item1, null);
+            Vm.SetMainFilterString(s.TagFilterList, null);
         }
     }
 }

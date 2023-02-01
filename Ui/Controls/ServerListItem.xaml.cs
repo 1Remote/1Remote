@@ -12,11 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Model;
-using PRM.View;
+using _1RM.Model;
+using _1RM.View;
+using _1RM.View.ServerList;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     /// <summary>
     /// Interaction logic for ServerListItem.xaml
@@ -62,6 +64,11 @@ namespace PRM.Controls
                 afs.Run();
             }
             PopupCardSettingMenu.IsOpen = false;
+        }
+
+        private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
+        {
+            ServerListPageView.ItemsCheckBox_OnClick_Static(sender, e);
         }
     }
 }

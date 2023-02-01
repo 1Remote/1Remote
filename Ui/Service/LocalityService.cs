@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
+using _1RM.Model.Protocol;
+using _1RM.View.Launcher;
 using Shawn.Utils;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public enum EnumServerOrderBy
     {
@@ -33,8 +35,10 @@ namespace PRM.Service
         public double TabWindowWidth = 800;
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
+        public WindowStyle TabWindowStyle = WindowStyle.SingleBorderWindow;
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
-        public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalitys = new();
+        public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalities = new ConcurrentDictionary<string, RdpLocalSetting>();
+        public List<QuickConnectionItem> QuickConnectionHistory = new List<QuickConnectionItem>();
     }
 
     public sealed class LocalityService
@@ -144,6 +148,22 @@ namespace PRM.Service
                 }
             }
         }
+
+        public WindowStyle TabWindowStyle
+        {
+            get => _localitySettings.TabWindowStyle;
+            set
+            {
+                if (_localitySettings.TabWindowStyle != value)
+                {
+                    _localitySettings.TabWindowStyle = value;
+                    Save();
+                }
+            }
+        }
+
+
+
         public EnumServerOrderBy ServerOrderBy
         {
             get => _localitySettings.ServerOrderBy;
@@ -157,17 +177,23 @@ namespace PRM.Service
             }
         }
 
+        public ReadOnlyCollection<QuickConnectionItem> QuickConnectionHistory => _localitySettings.QuickConnectionHistory.AsReadOnly();
 
         private readonly LocalitySettings _localitySettings;
 
+        #region Interface
+
+        #region Save local settings for every rdp session by session id
+
         public RdpLocalSetting? RdpLocalityGet(string key)
         {
-            if (_localitySettings.RdpLocalitys.TryGetValue(key, out var v))
+            if (_localitySettings.RdpLocalities.TryGetValue(key, out var v))
             {
                 return v;
             }
             return null;
         }
+
 
         public void RdpLocalityUpdate(string key, bool isFullScreen, int fullScreenIndex = -1)
         {
@@ -177,16 +203,43 @@ namespace PRM.Service
                 FullScreenLastSessionIsFullScreen = isFullScreen,
                 FullScreenLastSessionScreenIndex = isFullScreen ? fullScreenIndex : -1,
             };
-            _localitySettings.RdpLocalitys.AddOrUpdate(key, value, (s, setting) => value);
-            var obsoletes = _localitySettings.RdpLocalitys.Where(x => x.Value.LastUpdateTime < DateTime.Now.AddDays(-30)).Select(x => x.Key).ToArray();
+            _localitySettings.RdpLocalities.AddOrUpdate(key, value, (s, setting) => value);
+            var obsoletes = _localitySettings.RdpLocalities.Where(x => x.Value.LastUpdateTime < DateTime.Now.AddDays(-30)).Select(x => x.Key).ToArray();
             foreach (var obsolete in obsoletes)
             {
-                _localitySettings.RdpLocalitys.TryRemove(obsolete, out _);
+                _localitySettings.RdpLocalities.TryRemove(obsolete, out _);
             }
             Save();
         }
 
-        #region Interface
+        #endregion
+
+        public void QuickConnectionHistoryAdd(QuickConnectionItem item)
+        {
+            var old = _localitySettings.QuickConnectionHistory.FirstOrDefault(x => x.Host == item.Host && x.Protocol == item.Protocol);
+            if (old != null)
+                _localitySettings.QuickConnectionHistory.Remove(old);
+            _localitySettings.QuickConnectionHistory.Insert(0, item);
+            if (_localitySettings.QuickConnectionHistory.Count > 50)
+            {
+                _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);
+            }
+            Save();
+        }
+
+
+        public void QuickConnectionHistoryRemove(QuickConnectionItem item)
+        {
+            var old = _localitySettings.QuickConnectionHistory.FirstOrDefault(x => x.Host == item.Host && x.Protocol == item.Protocol);
+            if (old != null)
+                _localitySettings.QuickConnectionHistory.Remove(old);
+            if (_localitySettings.QuickConnectionHistory.Count > 50)
+            {
+                _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);
+            }
+            Save();
+        }
+
 
         public bool CanSave = true;
         private void Save()

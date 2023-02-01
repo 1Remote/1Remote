@@ -1,0 +1,189 @@
+﻿<UserControl x:Class="_1RM.View.Launcher.QuickConnectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_1RM.View.Launcher"
+             xmlns:view="clr-namespace:_1RM.View"
+             xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             d:DataContext="{d:DesignInstance local:QuickConnectionViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="LauncherDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
+            <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+                <VisualBrush.Visual>
+                    <Grid VerticalAlignment="Center">
+                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
+                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
+                    </Grid>
+                </VisualBrush.Visual>
+            </VisualBrush>
+
+
+            <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SearchBoxTbKeyWordStyleBase}">
+                <Style.Triggers>
+                    <Trigger Property="Text" Value="{x:Null}">
+                        <Setter Property="Background" Value="{StaticResource HintText}" />
+                    </Trigger>
+                    <Trigger Property="Text" Value="">
+                        <Setter Property="Background" Value="{StaticResource HintText}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+
+
+
+            <DataTemplate DataType="{x:Type local:QuickConnectionItem}">
+                <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}">
+                    <Grid VerticalAlignment="Center" 
+                      Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+
+
+                        <TextBlock Grid.Column="0"
+                                       Text="{Binding Host}"
+                                       FontSize="16"
+                                       Margin="10 0"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Protocol}" Value="">
+                                            <Setter Property="FontWeight" Value="Bold"></Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                                            <Setter Property="Grid.ColumnSpan" Value="2"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock Grid.Column="1"
+                                       Text="{Binding Protocol}"
+                                       FontSize="16" FontWeight="Bold"
+                                       HorizontalAlignment="Right"
+                                       Margin="5 0 0 0"
+                                       Opacity="0.3"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       VerticalAlignment="Center"></TextBlock>
+
+
+                        <Button Grid.Column="2" Width="10" Height="10" 
+                                Background="Transparent"
+                                attachProperty:VisionElement.Opacity="0.5"
+                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                Margin="5 0 10 0"
+                                Tag="{Binding}"
+                                PreviewMouseLeftButtonUp="ButtonDeleteItem_OnClick">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Protocol}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Grid Height="10" Width="8">
+                                <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="2" Stretch="Uniform" />
+                            </Grid>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+
+
+            <Style x:Key="ListBoxItemStyleForQuickConnect" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyleForServer}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Grid>
+                                <Border x:Name="GridContainer"></Border>
+                                <Grid x:Name="GridColorOnSelected" 
+                                      Visibility="Collapsed"
+                                      Width="40" 
+                                      HorizontalAlignment="Left" ></Grid>
+                                <ContentPresenter x:Name="ContentPresenter"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                    <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                    <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ListQuickConnect" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyleForQuickConnect}"></Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Name="GridKeyword" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox TabIndex="1"
+                      Margin="3 8"
+                      IsTabStop="False"
+                      Grid.Column="0"
+                      DisplayMemberPath="Protocol"
+                      SelectedItem="{Binding SelectedProtocol}"
+                      ItemsSource="{Binding Protocols}">
+            </ComboBox>
+
+            <TextBox Name="TbKeyWord"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
+                     PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
+                     Margin="0 0 0 0"
+                     Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource SearchBoxTbKeyWordStyle}"
+                     Grid.Column="1" 
+                     ></TextBox>
+        </Grid>
+
+        <ListBox x:Name="ListBoxHistory"
+                 Grid.Row="1"
+                 BorderThickness="0"
+                 PreviewMouseLeftButtonDown="ListBoxHistory_OnPreviewMouseLeftButtonDown"
+                 SelectedIndex="{Binding SelectedIndex}"
+                 ItemsSource="{Binding ConnectHistory}"
+                 Style="{StaticResource ListQuickConnect}"
+                 >
+        </ListBox>
+    </Grid>
+</UserControl>

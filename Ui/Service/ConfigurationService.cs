@@ -9,13 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
-using PRM.Model.DAO;
+using _1RM.Model.DAO;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
-using SetSelfStartingHelper = PRM.Utils.SetSelfStartingHelper;
+using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class EngagementSettings
     {
@@ -65,37 +67,32 @@ namespace PRM.Service
         public List<string> EnabledMatchers = new List<string>();
     }
 
-    public class DatabaseConfig
-    {
-        public const DatabaseType DatabaseType = Model.DAO.DatabaseType.Sqlite;
-
-        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
-        public string SqliteDatabasePath
-        {
-            get
-            {
-                Debug.Assert(string.IsNullOrEmpty(_sqliteDatabasePath) == false);
-                return _sqliteDatabasePath;
-            }
-            set => _sqliteDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
-        }
-    }
+    //public class DataSourcesConfig
+    //{
+    //    public SqliteSource LocalDataSource { get; set; } = new SqliteSource()
+    //    {
+    //        DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
+    //        Path = "./" + AppPathHelper.APP_NAME + ".db"
+    //    };
+    //    public List<DataSourceBase> AdditionalDataSource { get; set; } = new List<DataSourceBase>();
+    //}
 
     public class ThemeConfig
     {
-        public string ThemeName = "Default";
-        public string PrimaryMidColor = "#102b3e";
-        public string PrimaryLightColor = "#445a68";
-        public string PrimaryDarkColor = "#0c2230";
-        public string PrimaryTextColor = "#ffffff";
+        public string ThemeName = "Dark";
 
-        public string AccentMidColor = "#e83d61";
-        public string AccentLightColor = "#ed6884";
-        public string AccentDarkColor = "#b5304c";
-        public string AccentTextColor = "#ffffff";
+        public string PrimaryMidColor = "#323233";
+        public string PrimaryLightColor = "#474748";
+        public string PrimaryDarkColor = "#2d2d2d";
+        public string PrimaryTextColor = "#cccccc";
 
-        public string BackgroundColor = "#ced8e1";
-        public string BackgroundTextColor = "#000000";
+        public string AccentMidColor = "#FF007ACC";
+        public string AccentLightColor = "#FF32A7F4";
+        public string AccentDarkColor = "#FF0061A3";
+        public string AccentTextColor = "#FFFFFFFF";
+
+        public string BackgroundColor = "#1e1e1e";
+        public string BackgroundTextColor = "#cccccc";
 
         #region GetColor
         public System.Windows.Media.Color GetPrimaryMidColor => ColorAndBrushHelper.HexColorToMediaColor(PrimaryMidColor);
@@ -118,23 +115,44 @@ namespace PRM.Service
         public GeneralConfig General { get; set; } = new GeneralConfig();
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
-        public DatabaseConfig Database { get; set; } = new DatabaseConfig();
+        public int DatabaseCheckPeriod { get; set; } = 10;
+
+        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
+        public string SqliteDatabasePath
+        {
+            get => _sqliteDatabasePath;
+            set => _sqliteDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
+        }
+
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
+
+        public static Configuration Load(string path)
+        {
+            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+            return tmp ?? new Configuration();
+        }
     }
 
     public class ConfigurationService
     {
-        private readonly KeywordMatchService _keywordMatchService = new KeywordMatchService();
-
-        public readonly List<MatchProviderInfo> AvailableMatcherProviders = new List<MatchProviderInfo>();
-        private readonly Configuration _cfg;
+        private readonly KeywordMatchService _keywordMatchService;
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
+        private readonly Configuration _cfg = new Configuration();
 
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
-        public DatabaseConfig Database => _cfg.Database;
+        public SqliteSource LocalDataSource { get; } = new SqliteSource();
+
+        public int DatabaseCheckPeriod
+        {
+            get => _cfg.DatabaseCheckPeriod >= 0 ? (_cfg.DatabaseCheckPeriod > 99 ? 99 : _cfg.DatabaseCheckPeriod) : 0;
+            set => _cfg.DatabaseCheckPeriod = value >= 0 ? (value > 99 ? 99 : value) : 0;
+        }
+
+
         public ThemeConfig Theme => _cfg.Theme;
         public EngagementSettings Engagement => _cfg.Engagement;
         /// <summary>
@@ -147,11 +165,26 @@ namespace PRM.Service
         }
 
 
-        public ConfigurationService(Configuration cfg, KeywordMatchService keywordMatchService)
+        public List<DataSourceBase> AdditionalDataSource { get; set; } = new List<DataSourceBase>();
+
+
+
+        public ConfigurationService(KeywordMatchService keywordMatchService, Configuration? cfg = null, List<DataSourceBase>? additionalDataSource = null)
         {
+            if (cfg != null)
+                _cfg = cfg;
+            if (additionalDataSource != null)
+                AdditionalDataSource = additionalDataSource;
             _keywordMatchService = keywordMatchService;
-            _cfg = cfg;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
+
+            LocalDataSource.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SqliteSource.Path))
+                {
+                    _cfg.SqliteDatabasePath = LocalDataSource.Path;
+                }
+            };
 
             // init matcher
             if (KeywordMatch.EnabledMatchers.Count > 0)
@@ -178,6 +211,8 @@ namespace PRM.Service
                 info.PropertyChanged += OnMatchProviderChangedHandler;
             }
 
+
+            AdditionalDataSource = DataSourceService.AdditionalSourcesLoadFromProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
             Save();
         }
 
@@ -200,23 +235,48 @@ namespace PRM.Service
             {
                 if (!CanSave) return;
                 CanSave = false;
-                var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                {
+                    var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                    File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                }
+
+                DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
+
                 CanSave = true;
             }
 
             SetSelfStart();
         }
 
+        public static Exception? CheckSetSelfStart()
+        {
+            try
+            {
+#if FOR_MICROSOFT_STORE_ONLY
+                SetSelfStartingHelper.SetSelfStartByStartupTask(true, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(false, AppPathHelper.APP_NAME);
+#else
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(true, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(false, AppPathHelper.APP_NAME);
+#endif
+                return null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                return e;
+            }
+        }
+
+
         public Exception? SetSelfStart()
         {
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
+                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
 #else
                 SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
                 SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
@@ -232,63 +292,20 @@ namespace PRM.Service
         }
 
 
-
-        // TODO remove after 2023.01.01
-        [Obsolete]
-        public static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
+        public static ConfigurationService LoadFromAppPath(KeywordMatchService keywordMatchService)
         {
             var cfg = new Configuration();
-            var ini = new Ini(iniPath);
 
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
             {
-                const string sectionName = "General";
-                cfg.General.AppStartAutomatically = ini.GetValue("AppStartAutomatically".ToLower(), sectionName, cfg.General.AppStartAutomatically);
-                cfg.General.AppStartMinimized = ini.GetValue("AppStartMinimized".ToLower(), sectionName, cfg.General.AppStartMinimized);
-#if FOR_MICROSOFT_STORE_ONLY
-                Task.Factory.StartNew(async () =>
-                {
-                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask("PRemoteM");
-                });
-#endif
+                var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(AppPathHelper.Instance.ProfileJsonPath));
+                if (tmp != null)
+                    cfg = tmp;
             }
 
-            {
-                uint modifiers = 0;
-                uint key = 0;
-                if (ini.GetValue("Enable", "Launcher", "") == "")
-                {
-                    cfg.Launcher.LauncherEnabled = ini.GetValue("Enable".ToLower(), "Launcher", cfg.Launcher.LauncherEnabled);
-                    modifiers = ini.GetValue("HotKeyModifiers".ToLower(), "Launcher", modifiers);
-                    key = ini.GetValue("HotKeyKey".ToLower(), "Launcher", key);
-                    cfg.Launcher.HotKeyModifiers = (HotkeyModifierKeys)modifiers;
-                    cfg.Launcher.HotKeyKey = (Key)key;
-                    if (cfg.Launcher.HotKeyModifiers == HotkeyModifierKeys.None || cfg.Launcher.HotKeyKey == Key.None)
-                    {
-                        cfg.Launcher.HotKeyModifiers = HotkeyModifierKeys.Alt;
-                        cfg.Launcher.HotKeyKey = Key.M;
-                    }
-                }
-            }
+            var ads = DataSourceService.AdditionalSourcesLoadFromProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath);
 
-            cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", dbDefaultPath);
-
-            {
-                const string sectionName = "Theme";
-                cfg.Theme.ThemeName = ini.GetValue("(PrmColorThemeName".ToLower(), sectionName, cfg.Theme.ThemeName);
-                cfg.Theme.PrimaryMidColor = ini.GetValue("(PrimaryMidColor".ToLower(), sectionName, cfg.Theme.PrimaryMidColor);
-                cfg.Theme.PrimaryLightColor = ini.GetValue("(PrimaryLightColor".ToLower(), sectionName, cfg.Theme.PrimaryLightColor);
-                cfg.Theme.PrimaryDarkColor = ini.GetValue("(PrimaryDarkColor".ToLower(), sectionName, cfg.Theme.PrimaryDarkColor);
-                cfg.Theme.PrimaryTextColor = ini.GetValue("(PrimaryTextColor".ToLower(), sectionName, cfg.Theme.PrimaryTextColor);
-                cfg.Theme.AccentMidColor = ini.GetValue("(AccentMidColor".ToLower(), sectionName, cfg.Theme.AccentMidColor);
-                cfg.Theme.AccentLightColor = ini.GetValue("(AccentLightColor".ToLower(), sectionName, cfg.Theme.AccentLightColor);
-                cfg.Theme.AccentDarkColor = ini.GetValue("(AccentDarkColor".ToLower(), sectionName, cfg.Theme.AccentDarkColor);
-                cfg.Theme.AccentTextColor = ini.GetValue("(AccentTextColor".ToLower(), sectionName, cfg.Theme.AccentTextColor);
-                cfg.Theme.BackgroundColor = ini.GetValue("(BackgroundColor".ToLower(), sectionName, cfg.Theme.BackgroundColor);
-                cfg.Theme.BackgroundTextColor = ini.GetValue("(BackgroundTextColor".ToLower(), sectionName, cfg.Theme.BackgroundTextColor);
-            }
-
-            return cfg;
+            return new ConfigurationService(keywordMatchService, cfg, ads);
         }
     }
 }

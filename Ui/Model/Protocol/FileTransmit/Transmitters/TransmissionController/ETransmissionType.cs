@@ -1,4 +1,4 @@
-﻿namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
+﻿namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 {
     public enum ETransmissionType
     {

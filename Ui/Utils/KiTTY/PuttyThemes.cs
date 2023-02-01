@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
+using _1RM.Utils.KiTTY.Model;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Utils.KiTTY
+namespace _1RM.Utils.KiTTY
 {
     public static class PuttyThemes
     {
-        public static Dictionary<string, List<KittyConfigKeyValuePair>> GetThemes()
+        private static Dictionary<string, List<KittyConfigKeyValuePair>>? _themes;
+
+        public static Dictionary<string, List<KittyConfigKeyValuePair>> Themes => _themes ??= GetThemes();
+
+        private static Dictionary<string, List<KittyConfigKeyValuePair>> GetThemes()
         {
             var uri = ResourceUriHelper.GetUriFromCurrentAssembly("Resources/KiTTY/PuttyThemes.json");
             var stream = Application.GetResourceStream(uri)?.Stream;

@@ -4,15 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Ui;
 
-namespace PRM.View
+namespace _1RM.View
 {
-    public class RequestRatingViewModel : NotifyPropertyChangedBase
+    public class RequestRatingViewModel : MaskLayer
     {
         private bool _doNotShowAgain;
 

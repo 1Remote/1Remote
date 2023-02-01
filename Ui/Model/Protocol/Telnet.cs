@@ -1,10 +1,12 @@
 ﻿using System;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Utils.KiTTY;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     public class Telnet : ProtocolBaseWithAddressPort, IKittyConnectable
     {
@@ -37,11 +39,6 @@ namespace PRM.Model.Protocol
             return 3;
         }
 
-        public string GetPuttyConnString(PrmContext _)
-        {
-            return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
-        }
-
         private string _startupAutoCommand = "";
 
         public string StartupAutoCommand
@@ -60,14 +57,11 @@ namespace PRM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
-        public string GetExeFullPath()
+        public string GetExeArguments(string sessionName)
         {
-            return this.GetKittyExeFullName();
-        }
-
-        public string GetExeArguments(PrmContext context)
-        {
-            return GetPuttyConnString(context);
+            var tel = (this.Clone() as Telnet)!;
+            tel.ConnectPreprocess();
+            return $@" -load ""{sessionName}"" -telnet {tel.Address} -P {tel.Port}";
         }
     }
 }

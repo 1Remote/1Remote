@@ -1,16 +1,15 @@
-﻿<Application x:Class="Ui.App"
+﻿<Application x:Class="_1RM.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:prm="clr-namespace:PRM"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:rm="clr-namespace:_1RM"
              xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit"
              ShutdownMode="OnExplicitShutdown"
              >
     <Application.Resources>
         <s:ApplicationLoader x:Name="Loader">
             <s:ApplicationLoader.Bootstrapper>
-                <prm:Bootstrapper/>
+                <rm:Bootstrapper/>
             </s:ApplicationLoader.Bootstrapper>
             <s:ApplicationLoader.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Converter/Converter.xaml"></ResourceDictionary>
@@ -27,6 +26,39 @@
                         <Setter Property="BorderThickness" Value="0"></Setter>
                         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                    </Style>
+
+
+
+                    <Style x:Key="GridOneRow" TargetType="Grid">
+                        <Setter Property="Height" Value="Auto"></Setter>
+                        <Setter Property="MinWidth" Value="300"></Setter>
+                        <Setter Property="MinHeight" Value="30"></Setter>
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Bottom="15"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                        <Setter Property="Margin" Value="20 0 10 0"></Setter>
+                    </Style>
+
+                    <Style x:Key="BlockTitleColumn" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                        <Setter Property="Margin" Value="15"></Setter>
+                        <Setter Property="FontSize" Value="20"></Setter>
+                        <Setter Property="Height" Value="30"></Setter>
                     </Style>
                 </ResourceDictionary>
             </s:ApplicationLoader.MergedDictionaries>

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using _1RM;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.Protocol;
-using PRM.Resources.Icons;
-using PRM.Service;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
+using _1RM.Resources.Icons;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.View.Settings;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Image;
 
 namespace Tests.ViewModel.Configuration
@@ -15,14 +18,14 @@ namespace Tests.ViewModel.Configuration
     [TestClass()]
     public class ConfigurationViewModelTests
     {
-        private DataService _dataService = null;
-        private PRM.Service.Configuration _cfg = null;
-        private ConfigurationService _configurationService = null;
-        private RDP _rdp = null;
-        private SSH _ssh = null;
-        private VNC _vnc = null;
-        private LocalApp _app = null;
-        private string _ppkPath;
+        private DataService _dataService = null!;
+        private _1RM.Service.Configuration _cfg = null!;
+        private ConfigurationService _configurationService = null!;
+        private RDP _rdp = null!;
+        private SSH _ssh = null!;
+        private VNC _vnc = null!;
+        private LocalApp _app = null!;
+        private string _ppkPath = "";
 
         [TestMethod()]
         public void ConfigurationViewModelTest()
@@ -39,11 +42,14 @@ namespace Tests.ViewModel.Configuration
             _dataService.Database_CloseConnection();
 
             var gd = new GlobalData(_configurationService);
-            var ctx = new PrmContext(new ProtocolConfigurationService(), gd);
-            if(File.Exists(AppPathHelper.Instance.ProfileJsonPath))
+            var ctx = new DataSourceService(new ProtocolConfigurationService(), gd);
+
+
+
+            if (File.Exists(AppPathHelper.Instance.ProfileJsonPath))
                 File.Delete(AppPathHelper.Instance.ProfileJsonPath);
-            _configurationService.Database.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-            ctx.InitSqliteDb();
+            _configurationService.DataSource.LocalDataSourceConfig = AppPathHelper.Instance.SqliteDbDefaultPath;
+            ctx.InitSqliteDb(_configurationService.DataSource.LocalDataSourceConfig, new DataService());
             SettingsPageViewModel vm = new SettingsPageViewModel(ctx, gd);
             vm.GenRsa(_ppkPath);
             vm.CleanRsa().Wait();
@@ -109,7 +115,7 @@ namespace Tests.ViewModel.Configuration
                 _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(AppPathHelper.Instance.SqliteDbDefaultPath));
                 MockData();
                 _dataService.Database_CloseConnection();
-                _cfg = new PRM.Service.Configuration();
+                _cfg = new _1RM.Service.Configuration();
                 _configurationService = new ConfigurationService(_cfg, new KeywordMatchService());
             }
         }

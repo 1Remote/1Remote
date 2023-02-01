@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 
-namespace PRM.Controls.NoteDisplay
+namespace _1RM.Controls.NoteDisplay
 {
     /// <summary>
     /// NoteIcon.xaml 的交互逻辑
