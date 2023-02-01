@@ -109,39 +109,54 @@ namespace _1RM
 
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
-                    if (permissionForPortable == false                          // 当前目录没有写权限时，只能用 AppData 模式
-                        || (forcePortable == false && forceAppData == true))    // 标记了强制 AppData 模式
-                    {
-                        isPortableMode = false;
-                        profileModeIsPortable = false;
-                        profileModeIsEnabled = false;
-                        if (appDataProfilePathExisted == false)
-                        {
-                            _isNewUser = true;
-                        }
-                    }
-                    else if (forcePortable == true && forceAppData == false)
+                    
+                    if (forcePortable == true && forceAppData == false)
                     {
                         isPortableMode = true;
-                        profileModeIsPortable = true;
-                        profileModeIsEnabled = false;
                         if (portableProfilePathExisted == false)
                         {
+                            profileModeIsPortable = true;
+                            profileModeIsEnabled = false;
                             _isNewUser = true;
                         }
                     }
-                    else
+                    else if (forcePortable == false && forceAppData == true)    // 标记了强制 AppData 模式
                     {
-                        // 当前目录有写权限，且标志文件都存在或都不存在时
-                        profileModeIsPortable = false;
-                        profileModeIsEnabled = true;
+                        isPortableMode = false;
+                        if (appDataProfilePathExisted == false)
+                        {
+                            profileModeIsPortable = false;
+                            profileModeIsEnabled = false;
+                            _isNewUser = true;
+                        }
+                    }
+                    else // 标志文件都存在或都不存在时
+                    {
+                        if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
+                            File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
+                        if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
+                            File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
+                        
+
                         if (portableProfilePathExisted)
                         {
                             isPortableMode = true;
                         }
+                        else if (permissionForPortable == false)
+                        {
+                            isPortableMode = false;
+                            if (appDataProfilePathExisted == false)
+                            {
+                                profileModeIsPortable = false;
+                                profileModeIsEnabled = false;
+                                _isNewUser = true;
+                            }
+                        }
                         else
                         {
                             // portable 配置文件不存在，无论 app_data 的配置是否存在都进引导
+                            profileModeIsPortable = !appDataProfilePathExisted;
+                            profileModeIsEnabled = true;
                             _isNewUser = true;
                         }
                     }
@@ -196,7 +211,7 @@ namespace _1RM
                     WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
                     WritePermissionCheck(paths.ProfileJsonPath, true);
                     WritePermissionCheck(paths.LogFilePath, true);
-                    WritePermissionCheck(paths.SqliteDbDefaultPath, true);
+                    //WritePermissionCheck(paths.SqliteDbDefaultPath, true);
                     WritePermissionCheck(paths.KittyDirPath, false);
                     WritePermissionCheck(paths.LocalityJsonPath, true);
                 }
