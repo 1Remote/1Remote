@@ -1,0 +1,120 @@
+﻿<UserControl x:Class="_1RM.View.Settings.General.GeneralSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_1RM.View.Settings.General"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:shawnutils="clr-namespace:Shawn.Utils;assembly=Shawn.Utils"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance local:GeneralSettingViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <StackPanel>
+
+            <TextBlock Text="{DynamicResource system_options_general_title}" Style="{StaticResource BlockTitleColumn}" />
+
+            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Language}"></TextBlock>
+
+                <Grid Grid.Column="1">
+                    <ComboBox MinWidth="200" HorizontalAlignment="Left"
+                              ItemsSource="{Binding Languages}"
+                              SelectedValue="{Binding Language}"
+                              SelectedValuePath="Key"
+                              DisplayMemberPath="Value" />
+                </Grid>
+            </Grid>
+            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Margin="0 0 0 0" TextAlignment="Left" TextWrapping="WrapWithOverflow">
+                    <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True"
+                               NavigateUri="https://github.com/1Remote/1Remote/wiki/Help-wanted-Translation" FontSize="12">
+                        <Hyperlink.Style>
+                            <Style TargetType="{x:Type Hyperlink}">
+                                <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
+                                        <Setter Property="TextBlock.TextDecorations">
+                                            <Setter.Value>
+                                                <TextDecorationCollection>
+                                                    <TextDecoration Location="Underline" />
+                                                </TextDecorationCollection>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Hyperlink.Style>
+                        Can't find your language?
+                    </Hyperlink>
+                </TextBlock>
+            </Grid>
+
+
+
+            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Startup}"></TextBlock>
+                <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+            </Grid>
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
+                <CheckBox Grid.Column="1" IsChecked="{Binding ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}" VerticalAlignment="Center"></CheckBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="1" IsChecked="{Binding ShowSessionIconInSessionWindow, Mode=TwoWay}" 
+                          Content="{DynamicResource 'Show current session icon instead of the app icon when connected'}" 
+                          VerticalAlignment="Center"></CheckBox>
+            </Grid>
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
+                <TextBox Grid.Column="1" Text="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
+                         MaxWidth="400"
+                         ToolTip="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
+                         VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

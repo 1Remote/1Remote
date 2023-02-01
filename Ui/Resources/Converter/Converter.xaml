@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converter="clr-namespace:PRM.Resources.Converter"
-                    xmlns:noteDisplay="clr-namespace:PRM.Controls.NoteDisplay">
+                    xmlns:converter="clr-namespace:_1RM.Resources.Converter"
+                    xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay">
     <noteDisplay:ConverterNoteToVisibility x:Key="ConverterNoteToVisibility" />
 </ResourceDictionary>

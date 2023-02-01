@@ -1,15 +1,16 @@
-﻿<UserControl x:Class="PRM.Controls.ServerListItem"
+﻿<UserControl x:Class="_1RM.Controls.ServerListItem"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:view="clr-namespace:PRM.View"
-             xmlns:model="clr-namespace:PRM.Model"
+             xmlns:view="clr-namespace:_1RM.View"
+             xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
-    <Grid FocusVisualStyle="{x:Null}">
+    <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="Transparent">
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
             <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
@@ -30,8 +31,11 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Margin="10 0" Width="20" Height="20" HorizontalAlignment="Left" 
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                <CheckBox Margin="10 0" 
+                          Width="20" Height="20" 
+                          HorizontalAlignment="Left" 
+                          Click="ItemsCheckBox_OnClick"
+                          IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                             <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -39,9 +43,9 @@
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Trigger Property="IsChecked" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
-                                </DataTrigger>
+                                </Trigger>
                             </Style.Triggers>
                         </Style>
                     </CheckBox.Style>
@@ -71,7 +75,7 @@
                 <!--tags-->
                 <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
                     <ItemsControl.Resources>
-                        <view:ConverterTagName x:Key="ConverterTagName" />
+                        <serverList:ConverterTagName x:Key="ConverterTagName" />
                     </ItemsControl.Resources>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -87,9 +91,9 @@
                                                ContentStringFormat="{DynamicResource tag_tooltips}"/>
                                     </Button.ToolTip>
                                     <Button.InputBindings>
-                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                                     </Button.InputBindings>
                                 </Button>
                             </Grid>
@@ -99,7 +103,7 @@
 
                 <!--brief note -->
                 <Grid Grid.Column="5" VerticalAlignment="Center" Margin="0 0 10 0">
-                    <ContentControl Content="{Binding HoverNoteDisplayControl}" Background="Red"></ContentControl>
+                    <ContentControl Content="{Binding HoverNoteDisplayControl}"></ContentControl>
                 </Grid>
 
                 <!--address-->

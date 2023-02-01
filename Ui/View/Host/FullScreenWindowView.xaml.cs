@@ -2,18 +2,19 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Service;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Service;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public partial class FullScreenWindowView : WindowBase
     {
         private HostBase? _host = null;
-
         public HostBase? Host
         {
             get => _host;
@@ -38,6 +39,7 @@ namespace PRM.View.Host
                 this.Height = DESIGN_HEIGHT;
                 SetContent();
             };
+
             Closed += (sender, args) =>
             {
                 if (Host != null)

@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Model.Protocol.FileTransmit.Transmitters
+namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 {
     public static class TransmitItemIconCache
     {

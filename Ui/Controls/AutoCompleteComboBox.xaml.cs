@@ -9,7 +9,7 @@ using System.Windows.Input;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public class ComboboxWithKeyInvoke : ComboBox
     {

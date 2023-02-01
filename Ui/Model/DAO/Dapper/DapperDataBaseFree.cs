@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using Dapper;
 
-namespace PRM.Model.DAO.Dapper
+namespace _1RM.Model.DAO.Dapper
 {
     /// <summary>
     /// DapperDb no occupation version
@@ -12,134 +13,175 @@ namespace PRM.Model.DAO.Dapper
         /// <inheritdoc />
         public override void InitTables()
         {
-            OpenConnection();
-            base.InitTables();
-            CloseConnection();
+            lock (this)
+            {
+                OpenConnection();
+                base.InitTables();
+                CloseConnection();
+            }
         }
 
         /// <inheritdoc />
         public override ProtocolBase? GetServer(int id)
         {
-            OpenConnection();
-            var ret = base.GetServer(id);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetServer(id);
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
         public override List<ProtocolBase>? GetServers()
         {
-            OpenConnection();
-            var ret = base.GetServers();
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetServers();
+                CloseConnection();
+                return ret;
+            }
+        }
+        public override int GetServerCount()
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetServerCount();
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
-        public override int AddServer(ProtocolBase server)
+        public override string AddServer(ProtocolBase protocolBase)
         {
-            OpenConnection();
-            var ret = base.AddServer(server);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.AddServer(protocolBase);
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
-        public override int AddServer(IEnumerable<ProtocolBase> servers)
+        public override int AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
-            OpenConnection();
-            var ret = base.AddServer(servers);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.AddServer(protocolBases);
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
         public override bool UpdateServer(ProtocolBase server)
         {
-            OpenConnection();
-            var ret = base.UpdateServer(server);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.UpdateServer(server);
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
         public override bool UpdateServer(IEnumerable<ProtocolBase> servers)
         {
-            OpenConnection();
-            var ret = base.UpdateServer(servers);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.UpdateServer(servers);
+                CloseConnection();
+                return ret;
+            }
         }
 
         /// <inheritdoc />
-        public override bool DeleteServer(int id)
+        public override bool DeleteServer(string id)
         {
-            OpenConnection();
-            var ret = base.DeleteServer(id);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.DeleteServer(id);
+                CloseConnection();
+                return ret;
+            }
         }
 
 
         /// <inheritdoc />
-        public override bool DeleteServer(IEnumerable<int> ids)
+        public override bool DeleteServer(IEnumerable<string> ids)
         {
-            OpenConnection();
-            var ret = base.DeleteServer(ids);
-            CloseConnection();
-            return ret;
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.DeleteServer(ids);
+                CloseConnection();
+                return ret;
+            }
         }
 
 
         /// <inheritdoc />
         public override string? GetConfig(string key)
         {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetConfig(key);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        /// <inheritdoc />
+        public override bool SetConfig(string key, string value)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.SetConfig(key, value);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        /// <inheritdoc />
+        public override bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
+        {
             OpenConnection();
-            var ret = base.GetConfig(key);
+            var ret = base.SetConfigRsa(privateKeyPath, publicKey, servers);
             CloseConnection();
             return ret;
         }
 
-        /// <inheritdoc />
-        public override void SetConfig(string key, string value)
+
+        public override void SetDataUpdateTimestamp(long time = -1)
         {
-            OpenConnection();
-            base.SetConfig(key, value);
-            CloseConnection();
+            lock (this)
+            {
+                OpenConnection();
+                base.SetDataUpdateTimestamp(time);
+                CloseConnection();
+            }
         }
 
-        /// <inheritdoc />
-        public override string GetProtocolTemplate(string key)
+        public override long GetDataUpdateTimestamp()
         {
-            OpenConnection();
-            var ret = base.GetProtocolTemplate(key);
-            CloseConnection();
-            return ret;
-        }
-
-        /// <inheritdoc />
-        public override void SetProtocolTemplate(string key, string value)
-        {
-            OpenConnection();
-            base.SetProtocolTemplate(key, value);
-            CloseConnection();
-        }
-
-        /// <inheritdoc />
-        public override bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
-        {
-            OpenConnection();
-            var ret = base.SetRsa(privateKeyPath, publicKey, servers);
-            CloseConnection();
-            return ret;
-        }
-
-        /// <inheritdoc />
-        public override void SetRsaPrivateKeyPath(string privateKeyPath)
-        {
-            OpenConnection();
-            SetRsaPrivateKeyPath(privateKeyPath);
-            CloseConnection();
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetDataUpdateTimestamp();
+                CloseConnection();
+                return ret;
+            }
         }
     }
 }

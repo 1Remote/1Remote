@@ -1,10 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PRM.Controls.NoteDisplay;
-using PRM.Model;
-using PRM.View;
+using _1RM.Controls.NoteDisplay;
+using _1RM.Model;
+using _1RM.View;
+using _1RM.View.ServerList;
+using Shawn.Utils;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public partial class ServerCardItem : UserControl
     {
@@ -50,6 +52,11 @@ namespace PRM.Controls
                 afs.Run();
             }
             PopupCardSettingMenu.IsOpen = false;
+        }
+
+        private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
+        {
+            ServerListPageView.ItemsCheckBox_OnClick_Static(sender, e);
         }
     }
 }

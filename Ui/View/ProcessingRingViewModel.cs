@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Shawn.Utils;
 
-namespace PRM.View
+namespace _1RM.View
 {
-    public class ProcessingRingViewModel : NotifyPropertyChangedBase
+    public class ProcessingRingViewModel : MaskLayer
     {
         private string _processingRingMessage = "";
         public string ProcessingRingMessage

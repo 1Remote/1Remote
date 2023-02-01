@@ -1,8 +1,8 @@
 ﻿using FreeSql.DataAnnotations;
 using Newtonsoft.Json;
-using PRM.Core.DB.IDB;
+using _1RM.Core.DB.IDB;
 
-namespace PRM.Core.DB.freesql
+namespace _1RM.Core.DB.freesql
 {
     [Table(Name = "Server")]
     public class DbServer: IDbServer

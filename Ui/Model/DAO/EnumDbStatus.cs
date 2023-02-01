@@ -1,18 +1,31 @@
 ﻿using System;
 using System.Diagnostics;
-using PRM.Service;
+using _1RM.Service;
 
-namespace PRM.Model.DAO
+namespace _1RM.Model.DAO
 {
     public enum EnumDbStatus
     {
-        OK,
+        NotConnectedYet,
         AccessDenied,
-        RsaPrivateKeyNotFound,
-        RsaPrivateKeyFormatError,
-        RsaNotMatched,
-        NotConnected,
-        DataIsDamaged
+        LostConnection,
+        OK,
+    }
+
+
+    public enum EnumConnectionStatus
+    {
+        NotConnectedYet, // Die
+        AccessDenied, // Die
+        CanConnect, // To LostConnection OR DisConnected
+        LostConnection, // Die
+    }
+    public enum EnumEncryptionStatus
+    {
+        NonEncryption,
+        RsaPrivateKeyNotFound, // Die
+        RsaPrivateKeyMismatch, // Die
+        DataIsDamaged // Die
     }
 
     public static class EnumConnectResultErrorInfo
@@ -26,24 +39,14 @@ namespace PRM.Model.DAO
                 case EnumDbStatus.AccessDenied:
                     return lang.Translate("string_database_error_permission_denied");
 
-                case EnumDbStatus.RsaPrivateKeyNotFound:
-                    return lang.Translate("string_database_error_rsa_private_key_not_found");
-
-                case EnumDbStatus.RsaPrivateKeyFormatError:
-                    return lang.Translate("string_database_error_rsa_private_key_format_error");
-
-                case EnumDbStatus.RsaNotMatched:
-                    return lang.Translate("string_database_error_rsa_private_key_not_match");
-
                 case EnumDbStatus.OK:
                     break;
 
-                case EnumDbStatus.NotConnected:
+                case EnumDbStatus.NotConnectedYet:
                     return "database: NotConnected!";
 
-                case EnumDbStatus.DataIsDamaged:
-                    return "database: Data is damaged!"; // todo translate
-
+                case EnumDbStatus.LostConnection:
+                    return "database: Lost Connection!";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }

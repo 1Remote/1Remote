@@ -7,23 +7,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Editor;
-using PRM.View.Host.ProtocolHosts;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
+using _1RM.View.Editor;
+using _1RM.View.Host.ProtocolHosts;
+using _1RM.View.ServerList;
+using _1RM.View.Settings;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
-using Ui;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public enum EnumMainWindowPage
     {
@@ -35,10 +39,11 @@ namespace PRM.View
         SettingsTheme,
         SettingsRunners,
     }
-    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
+    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware, IMaskLayerContainer
     {
-        public PrmContext Context { get; }
-        public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
+        public DataSourceService SourceService { get; }
+        public ConfigurationService ConfigurationService { get; }
+        public ServerList.ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
         private readonly GlobalData _appData;
@@ -47,8 +52,8 @@ namespace PRM.View
         #region Properties
 
 
-        private INotifyPropertyChanged? _topLevelViewModel;
-        public INotifyPropertyChanged? TopLevelViewModel
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
         {
             get => _topLevelViewModel;
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
@@ -72,72 +77,118 @@ namespace PRM.View
         public bool ShowSetting
         {
             get => _showSetting;
-            set => SetAndNotifyIfChanged(ref _showSetting, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _showSetting, value))
+                {
+                    if (_showSetting == true)
+                        _appData.StopTick();
+                    else
+                        _appData.StartTick();
+                }
+            }
         }
-
-
-
 
         #endregion Properties
 
-
-        public MainWindowViewModel(PrmContext context, IWindowManager wm, GlobalData appData)
+        public MainWindowViewModel(GlobalData appData, DataSourceService sourceService, ConfigurationService configurationService)
         {
-            Context = context;
             _appData = appData;
-            ShowList();
+            SourceService = sourceService;
+            ConfigurationService = configurationService;
+            ShowList(false);
         }
 
-
+        public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
-            GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
-            {
-                Execute.OnUIThread(() =>
-                {
-                    if (visibility == Visibility.Visible)
-                    {
-                        var pvm = IoC.Get<ProcessingRingViewModel>();
-                        pvm.ProcessingRingMessage = msg;
-                        this.TopLevelViewModel = pvm;
-                    }
-                    else
-                    {
-                        this.TopLevelViewModel = null;
-                    }
-                });
-            };
-            GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
-            {
-                if (Context.DataService == null) return;
-                if (id <= 0) return;
-                Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == id));
-                var server = _appData.VmItemList.First(x => x.Server.Id == id).Server;
-                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server, isDuplicate);
-                ShowMe();
-            });
+            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
 
-            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
+            GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
             {
-                if (Context.DataService == null) return;
-                var server = new RDP
+                // select save to which source
+                DataSourceBase? source = null;
+                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
                 {
-                    Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
-                };
-                EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, server);
+                    var vm = new DataSourceSelectorViewModel();
+                    if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                        return;
+                    source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
+                }
+                else
+                {
+                    source = SourceService.LocalDataSource;
+                }
+
+                if (source == null) return;
+                if (source.IsWritable == false) return;
+                EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
                 ShowMe();
-            });
+            };
+
+            GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
+            {
+                if (SourceService.LocalDataSource == null) return;
+                var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSourceName == serverToEdit.DataSourceName)?.Server;
+                if (server == null) return;
+                if (server.GetDataSource()?.IsWritable != true) return;
+                EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
+                ShowMe();
+            };
+
+            GlobalEventHelper.OnGoToServerAddPage += (tagNames, isInAnimationShow) =>
+            {
+                // select save to which source
+                DataSourceBase? source = null;
+                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
+                {
+                    var vm = new DataSourceSelectorViewModel();
+                    if (IoC.Get<IWindowManager>().ShowDialog(vm) != true)
+                        return;
+                    source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
+                }
+                else
+                {
+                    source = SourceService.GetDataSource();
+                }
+                if (source == null) return;
+                if (source.IsWritable == false) return;
+
+                EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
+                ShowMe();
+            };
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                if (Context.DataService == null) return;
-                var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+                var serverBases = servers.Where(x => x.GetDataSource()?.IsWritable == true).ToArray();
                 if (serverBases.Length > 1)
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases);
-                else
-                    EditorViewModel = new ServerEditorPageViewModel(_appData, Context.DataService, serverBases.First());
+                {
+                    EditorViewModel = ServerEditorPageViewModel.BuckEdit(_appData, serverBases);
+                }
+                else if (serverBases.Length == 1)
+                {
+                    EditorViewModel = ServerEditorPageViewModel.Edit(_appData, serverBases.First());
+                }
                 ShowMe();
             };
+
+            OnMainWindowViewLoaded?.Invoke();
+
+            //var vm = new _1RM.View.Utils.MessageBoxPageViewModel();
+            //vm.Setup(messageBoxText: "content",
+            //    caption: "title",
+            //    icon: MessageBoxImage.Warning,
+            //    buttons: MessageBoxButton.OK,
+            //    buttonLabels: new Dictionary<MessageBoxResult, string>()
+            //    {
+            //        {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
+            //        {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
+            //        {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
+            //    }, onButtonClicked: () =>
+            //    {
+            //        TopLevelViewModel = null;
+            //    });
+            //TopLevelViewModel = vm;
         }
 
         protected override void OnClose()
@@ -145,12 +196,34 @@ namespace PRM.View
             App.Close();
         }
 
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (visibility == Visibility.Visible)
+                {
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
+        }
 
-        public void ShowList()
+
+        public void ShowList(bool clearSelection)
         {
             EditorViewModel = null;
             ShowAbout = false;
             ShowSetting = false;
+            if (clearSelection)
+            {
+                ServerListViewModel.ClearSelection();
+            }
         }
 
         public bool IsShownList()
@@ -193,8 +266,8 @@ namespace PRM.View
             }
         }
 
-        private RelayCommand? _cmdToggleCardList;
 
+        private RelayCommand? _cmdToggleCardList;
         public RelayCommand CmdToggleCardList
         {
             get
@@ -207,7 +280,6 @@ namespace PRM.View
                 }, o => IsShownList());
             }
         }
-
         #endregion CMD
 
 
@@ -220,7 +292,7 @@ namespace PRM.View
                 switch (goPage)
                 {
                     case EnumMainWindowPage.List:
-                        ShowList();
+                        ShowList(false);
                         break;
                     case EnumMainWindowPage.About:
                         CmdGoAboutPage?.Execute();
@@ -309,6 +381,8 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _mainFilterCaretIndex, value);
         }
 
+
+        private readonly DebounceDispatcher _debounceDispatcher = new();
         private string _mainFilterString = "";
         public string MainFilterString
         {
@@ -318,13 +392,11 @@ namespace PRM.View
                 // can only be called by the Ui
                 if (SetAndNotifyIfChanged(ref _mainFilterString, value))
                 {
-                    Task.Factory.StartNew(() =>
+                    _debounceDispatcher.Debounce(150, (obj) =>
                     {
-                        var filter = MainFilterString;
-                        Thread.Sleep(100);
-                        if (filter == MainFilterString)
+                        if (_mainFilterString == MainFilterString)
                         {
-                            GlobalEventHelper.OnFilterChanged?.Invoke(MainFilterString);
+                            ServerListViewModel.RefreshCollectionViewSource();
                         }
                     });
                 }
@@ -333,9 +405,9 @@ namespace PRM.View
 
         public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
         {
-            if (tags?.Count == 1 && tags.First().TagName is ServerListPageViewModel.TAB_TAGS_LIST_NAME)
+            if (tags?.Count == 1 && tags.First().TagName is ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME)
             {
-                _mainFilterString = ServerListPageViewModel.TAB_TAGS_LIST_NAME;
+                _mainFilterString = ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME;
                 RaisePropertyChanged(nameof(MainFilterString));
             }
             else

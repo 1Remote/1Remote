@@ -15,7 +15,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {
@@ -379,11 +379,14 @@ namespace PRM.Controls
                 if (path.EndsWith(".exe", true, null))
                 {
                     using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
-                    var img = Imaging.CreateBitmapSourceFromHIcon(
-                        icon.Handle,
-                        new Int32Rect(0, 0, icon.Width, icon.Height),
-                        BitmapSizeOptions.FromEmptyOptions());
-                    SetImg(img);
+                    if (icon != null)
+                    {
+                        var img = Imaging.CreateBitmapSourceFromHIcon(
+                            icon.Handle,
+                            new Int32Rect(0, 0, icon.Width, icon.Height),
+                            BitmapSizeOptions.FromEmptyOptions());
+                        SetImg(img);
+                    }
                 }
                 else if (path.EndsWith(".ico", true, null))
                 {

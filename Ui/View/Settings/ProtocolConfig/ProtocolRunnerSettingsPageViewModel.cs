@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PRM.Controls;
-using PRM.Model.Protocol;
-using PRM.Model.ProtocolRunner;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Controls;
+using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.View.Settings.ProtocolConfig
+namespace _1RM.View.Settings.ProtocolConfig
 {
     public class ProtocolRunnerSettingsPageViewModel : NotifyPropertyChangedBase
     {
@@ -91,15 +92,15 @@ namespace PRM.View.Settings.ProtocolConfig
                 return _cmdAddRunner ??= new RelayCommand((o) =>
                 {
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    // TODO 改为 window manager
-                    var name = InputWindow.InputBox(_languageService.Translate("New runner name"), _languageService.Translate("New runner"), validate: new Func<string, string>((str) =>
-                     {
-                         if (string.IsNullOrWhiteSpace(str))
-                             return _languageService.Translate("Can not be empty!");
-                         if (c.Runners.Any(x => x.Name == str))
-                             return _languageService.Translate("{0} is existed!", str);
-                         return "";
-                     }), owner: IoC.Get<MainWindowView>()).Trim();
+                    var name = InputBoxViewModel.GetValue(_languageService.Translate("New runner name"), new Func<string, string>((str) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(str))
+                            return _languageService.Translate("Can not be empty!");
+                        if (c.Runners.Any(x => x.Name == str))
+                            return _languageService.Translate("{0} is existed!", str);
+                        return "";
+                    }), ownerViewModel: IoC.Get<MainWindowViewModel>());
+
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };

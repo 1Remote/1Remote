@@ -4,11 +4,11 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Service;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.Model
+namespace _1RM.Model
 {
     public class Tag : NotifyPropertyChangedBase
     {
@@ -44,14 +44,6 @@ namespace PRM.Model
                 SetAndNotifyIfChanged(ref _isPinned, value);
                 _saveOnPinnedChanged.Invoke();
             }
-        }
-
-        private Visibility _objectVisibility = Visibility.Visible;
-        [JsonIgnore]
-        public Visibility ObjectVisibility
-        {
-            get => _objectVisibility;
-            set => SetAndNotifyIfChanged(ref _objectVisibility, value);
         }
     }
 }

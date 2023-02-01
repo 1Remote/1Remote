@@ -1,10 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
 using Stylet;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
-    public abstract class NotifyPropertyChangedBaseScreen: Screen, INotifyPropertyChanged
+    public abstract class NotifyPropertyChangedBaseScreen : Screen, INotifyPropertyChanged
     {
         public new event PropertyChangedEventHandler? PropertyChanged;
 

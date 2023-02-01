@@ -9,36 +9,38 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MSTSCLib;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
-using PRM.Utils;
-using PRM.View;
-using PRM.View.Host;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Utils;
+using _1RM.View;
+using _1RM.View.Host;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
+using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
+using _1RM.Service.DataSource;
+using _1RM.View.ServerList;
 
-
-namespace PRM.Service
+namespace _1RM.Service
 {
     public class SessionControlService
     {
-        private readonly PrmContext _context;
+        private readonly DataSourceService _sourceService;
         private readonly ConfigurationService _configurationService;
         private readonly GlobalData _appData;
 
-        public SessionControlService(PrmContext context, ConfigurationService configurationService, GlobalData appData)
+        public SessionControlService(DataSourceService sourceService, ConfigurationService configurationService, GlobalData appData)
         {
-            _context = context;
+            _sourceService = sourceService;
             _configurationService = configurationService;
             _appData = appData;
             GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
+            GlobalEventHelper.OnRequestQuickConnect += this.ShowRemoteHost;
         }
 
         public void Release()
@@ -57,23 +59,29 @@ namespace PRM.Service
         private string _lastTabToken = "";
 
         private readonly object _dictLock = new object();
-        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new();
-        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new();
-        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new();
-        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new();
-        private readonly ConcurrentQueue<Window> _windowToBeDispose = new();
+        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new ConcurrentDictionary<string, TabWindowBase>();
+        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
+        private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
+        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
+        private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
 
         public int TabWindowCount => _token2TabWindows.Count;
+
+        public TabWindowBase? GetTabByConnectionId(string connectionId)
+        {
+            return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
+        }
+
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
         private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
         {
             var serverId = server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId.ToString()))
+            if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId))
             {
-                SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId.ToString()}");
-                if (_connectionId2Hosts[serverId.ToString()].ParentWindow is TabWindowBase t)
+                SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
+                if (_connectionId2Hosts[serverId].ParentWindow is TabWindowBase t)
                 {
                     var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
@@ -94,14 +102,14 @@ namespace PRM.Service
                     catch (Exception e)
                     {
                         SimpleLogHelper.Error(e);
-                        MarkProtocolHostToClose(new string[]{ serverId.ToString() });
+                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
                         CleanupProtocolsAndWindows();
                     }
                 }
-                if (_connectionId2Hosts[serverId.ToString()].ParentWindow != null)
+                if (_connectionId2Hosts[serverId].ParentWindow != null)
                 {
-                    if (_connectionId2Hosts[serverId.ToString()].Status != ProtocolHostStatus.Connected)
-                        _connectionId2Hosts[serverId.ToString()].ReConn();
+                    if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
+                        _connectionId2Hosts[serverId].ReConn();
                 }
                 return true;
             }
@@ -118,9 +126,8 @@ namespace PRM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            if (_context.DataService != null)
             {
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context.DataService).ToString());
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -165,9 +172,8 @@ namespace PRM.Service
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            if (_context.DataService != null)
             {
-                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context.DataService).ToString());
+                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -206,12 +212,12 @@ namespace PRM.Service
         {
             CleanupProtocolsAndWindows();
             // fullscreen normally
-            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
+            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
             _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-            host.OnClosed += this.OnProtocolClose;
+            host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += this.MoveProtocolHostToTab;
             this.MoveProtocolHostToFullScreen(host.ConnectionId);
             host.Conn();
@@ -226,7 +232,7 @@ namespace PRM.Service
                 // open SFTP when SSH is connected.
                 if (server is SSH { OpenSftpOnConnected: true } ssh)
                 {
-                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, server, SFTP.ProtocolName);
+                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, SFTP.ProtocolName);
                     var sftp = new SFTP
                     {
                         ColorHex = ssh.ColorHex,
@@ -248,25 +254,25 @@ namespace PRM.Service
                 {
                     case InternalDefaultRunner:
                         {
-                            server.ConnectPreprocess(_context);
+                            server.ConnectPreprocess();
                             if (server is RDP)
                             {
                                 tab = this.GetOrCreateTabWindow(assignTabToken);
                                 if (tab == null)
                                     return;
                                 var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(server.ColorHex) == true);
-                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(_context, server, runner, size.Width, size.Height);
+                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(server, runner, size.Width, size.Height);
                             }
                             else
                             {
-                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
+                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(server, runner);
                             }
 
                             break;
                         }
                     case ExternalRunner:
                         {
-                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, server, runner);
+                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_sourceService, server, runner);
                             // if host is null, could be run without integrate
                             break;
                         }
@@ -300,11 +306,54 @@ namespace PRM.Service
             }
         }
 
-        private void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
+        {
+            // if is OnlyOneInstance server and it is connected now, activate it and return.
+            if (this.ActivateOrReConnIfServerSessionIsOpened(server))
+                return;
+
+            // run script before connected
+            server.RunScriptBeforeConnect();
+
+            var runner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, server.Protocol, assignRunnerName)!;
+            switch (server)
+            {
+                case RdpApp remoteApp:
+                    this.ConnectRemoteApp(remoteApp);
+                    return;
+                case RDP rdp:
+                    {
+                        // check if screens are in different scale factors
+                        int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                        // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of internal runner.
+                        if (rdp.MstscModeEnabled == true
+                            || (server.ThisTimeConnWithFullScreen()
+                                && Screen.AllScreens.Length > 1
+                                && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                                && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)))
+                        {
+                            this.ConnectRdpByMstsc(rdp);
+                            return;
+                        }
+                        // rdp full screen
+                        if (server.ThisTimeConnWithFullScreen())
+                        {
+                            this.ConnectWithFullScreen(server, runner);
+                            return;
+                        }
+                        break;
+                    }
+            }
+
+            this.ConnectWithTab(server, runner, assignTabToken ?? "");
+            PrintCacheCount();
+        }
+
+        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName)
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
-            if (serverId <= 0)
+            if (string.IsNullOrEmpty(serverId))
             {
                 var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)
@@ -315,83 +364,22 @@ namespace PRM.Service
             }
             #endregion
 
-            Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == serverId));
+            Debug.Assert(_appData.VmItemList.Any(x => x.Id == serverId));
             _configurationService.Engagement.ConnectCount++;
             _configurationService.Save();
-            // clear selected state
-            _appData.UnselectAllServers();
 
-            var server = _appData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId)?.Server;
-            if (server == null)
+            var vmServer = _appData.VmItemList.FirstOrDefault(x => x.Id == serverId);
+            if (vmServer?.Server == null)
             {
                 SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
                 return;
             }
 
             // update the last conn time
-            // TODO remember connection time in the localstorage
-            server.LastConnTime = DateTime.Now;
-            Debug.Assert(_context.DataService != null);
-            _context.DataService.Database_UpdateServer(server);
+            ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
+            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
 
-            // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (this.ActivateOrReConnIfServerSessionIsOpened(server))
-                return;
-
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    // run script before connected
-                    server.RunScriptBeforeConnect();
-
-                    var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
-                    switch (server)
-                    {
-                        case RdpApp remoteApp:
-                            this.ConnectRemoteApp(remoteApp);
-                            return;
-                        case RDP rdp:
-                            {
-                                // check if screens are in different scale factors
-                                int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-                                // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-                                if (rdp.MstscModeEnabled == true
-                                    || (server.ThisTimeConnWithFullScreen()
-                                        && Screen.AllScreens.Length > 1
-                                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                                        && Screen.AllScreens
-                                            .Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100))
-                                            .Any(factor2 => factor != factor2)))
-                                {
-                                    this.ConnectRdpByMstsc(rdp);
-                                    return;
-                                }
-
-                                // rdp full screen
-                                if (server.ThisTimeConnWithFullScreen())
-                                {
-                                    Execute.OnUIThread(() =>
-                                    {
-                                        this.ConnectWithFullScreen(server, runner);
-                                    });
-                                    return;
-                                }
-                                break;
-                            }
-                    }
-                    Execute.OnUIThread(() =>
-                    {
-                        this.ConnectWithTab(server, runner, assignTabToken ?? "");
-                        PrintCacheCount();
-                    });
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                    throw;
-                }
-            });
+            ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName);
         }
 
         public void AddTab(TabWindowBase tab)
@@ -440,7 +428,7 @@ namespace PRM.Service
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
             else if (host.ProtocolServer is RDP rdp
                      && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
-                     && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id.ToString()) is { } setting
+                     && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id) is { } setting
                      && setting.FullScreenLastSessionScreenIndex >= 0
                      && setting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
                 screenEx = ScreenInfoEx.GetCurrentScreen(setting.FullScreenLastSessionScreenIndex);
@@ -467,7 +455,7 @@ namespace PRM.Service
             var host = _connectionId2Hosts[connectionId];
 
             // remove from old parent
-            var tab = _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
+            var tab = GetTabByConnectionId(connectionId);
             if (tab != null)
             {
                 // if tab is not loaded, do not allow move to full-screen, 防止 loaded 事件中的逻辑覆盖
@@ -501,7 +489,7 @@ namespace PRM.Service
         private TabWindowBase? GetOrCreateTabWindow(string assignTabToken = "")
         {
             TabWindowBase? ret = null;
-            Execute.OnUIThreadSync(() =>
+            lock (_dictLock)
             {
                 if (_token2TabWindows.ContainsKey(assignTabToken))
                 {
@@ -509,7 +497,7 @@ namespace PRM.Service
                 }
                 else if (string.IsNullOrEmpty(assignTabToken) == false)
                 {
-                    ret = CreateNewTabWindow(assignTabToken);
+                    ret = CreateNewTabWindow();
                 }
                 // return the latest tab window.
                 else if (_token2TabWindows.ContainsKey(_lastTabToken))
@@ -522,38 +510,20 @@ namespace PRM.Service
                 }
 
                 ret ??= CreateNewTabWindow();
-            });
-            return ret;
+                return ret;
+            }
         }
 
-        private TabWindowBase? CreateNewTabWindow(string token = "")
+        private TabWindowBase? CreateNewTabWindow()
         {
-            TabWindowView? tab = null;
-            Execute.OnUIThreadSync(() =>
+            lock (_dictLock)
             {
-                if (string.IsNullOrEmpty(token))
-                {
-                    token = DateTime.Now.Ticks.ToString();
-                }
-                tab = new TabWindowView(token, IoC.Get<LocalityService>());
+                var token = DateTime.Now.Ticks.ToString();
+                var tab = new TabWindowView(token, IoC.Get<LocalityService>());
                 Debug.Assert(!_token2TabWindows.ContainsKey(token));
                 Debug.Assert(!string.IsNullOrEmpty(token));
                 _token2TabWindows.TryAdd(token, tab);
-                tab.Activated += (sender, args) =>
-                    _lastTabToken = tab.Token;
-
-                // set location
-                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
-                tab.WindowStartupLocation = WindowStartupLocation.Manual;
-                if (tab.Width > screenEx.VirtualWorkingArea.Width
-                    || tab.Height > screenEx.VirtualWorkingArea.Height)
-                {
-                    tab.Width = screenEx.VirtualWorkingArea.Width;
-                    tab.Height = screenEx.VirtualWorkingArea.Height;
-                }
-
-                tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
-                tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+                tab.Activated += (sender, args) => _lastTabToken = tab.Token;
                 tab.Show();
                 _lastTabToken = tab.Token;
 
@@ -568,12 +538,11 @@ namespace PRM.Service
 
                 if (loopCount > 50)
                 {
-                    MessageBoxHelper.ErrorAlert(
-                        "Can not open a new TebWindow for the session! Check you permissions and antivirus plz.");
-                    tab = null;
+                    MessageBoxHelper.ErrorAlert("Can not open a new TebWindow for the session! Check you permissions and antivirus plz.");
+                    return null;
                 }
-            });
-            return tab;
+                return tab;
+            }
         }
 
         private void MoveProtocolHostToTab(string connectionId)
@@ -682,18 +651,15 @@ namespace PRM.Service
                             Execute.OnUIThread(() =>
                             {
                                 tab.GetViewModel().Items.Remove(tabItemVm);
-                                if (tab.GetViewModel().Items.Count == 0)
+                                var items = tab.GetViewModel().Items.ToList();
+                                if (items.Count == 0)
                                 {
                                     tab.Hide();
+                                    // move tab from dict to queue
+                                    _token2TabWindows.TryRemove(key, out _);
+                                    _windowToBeDispose.Enqueue(tab);
                                 }
                             });
-
-                            // move tab from dict to queue
-                            if (tab.GetViewModel().Items.Count == 0)
-                            {
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
                         }
                     }
 
@@ -729,8 +695,8 @@ namespace PRM.Service
                     foreach (var kv in _token2TabWindows)
                     {
                         var tab = kv.Value;
-                        var vm = tab.GetViewModel();
-                        if (vm.Items.Any(x => x.Host.ConnectionId == id))
+                        var items = tab.GetViewModel().Items.ToList();
+                        if (items.Any(x => x.Host.ConnectionId == id))
                         {
                             unhandledFlag = false;
                             break;
@@ -793,7 +759,9 @@ namespace PRM.Service
             {
                 var key = kv.Key;
                 var tab = kv.Value;
-                if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
+                var items = tab.GetViewModel().Items.ToList();
+                items = items.Where(x => x != null).ToList();
+                if (items.Count == 0 || items.All(x => _connectionId2Hosts.ContainsKey(x?.Content?.ConnectionId ?? "****") == false))
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing tab({tab.GetHashCode()})");
                     ++closeCount;
@@ -863,7 +831,7 @@ namespace PRM.Service
 
         private void PrintCacheCount([CallerMemberName] string callMember = "")
         {
-            SimpleLogHelper.Info($@"{callMember}: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}, WindowToBeDispose = {_windowToBeDispose.Count}");
+            SimpleLogHelper.Debug($@"{callMember}: Current: Host = {_connectionId2Hosts.Count}, Full = {_connectionId2FullScreenWindows.Count}, Tab = {_token2TabWindows.Count}, HostToBeDispose = {_hostToBeDispose.Count}, WindowToBeDispose = {_windowToBeDispose.Count}");
         }
     }
 }

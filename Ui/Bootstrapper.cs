@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Threading;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.DAO.Dapper;
-using PRM.Service;
-using PRM.View;
-using PRM.View.Editor;
-using PRM.View.ErrorReport;
-using PRM.View.Guidance;
-using PRM.View.Settings;
+using _1RM.Model;
+using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.View;
+using _1RM.View.Editor;
+using _1RM.View.ErrorReport;
+using _1RM.View.Launcher;
+using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
-using Ui;
+using MessageBoxViewModel = _1RM.View.Utils.MessageBoxViewModel;
+using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
-namespace PRM
+namespace _1RM
 {
     public class Bootstrapper : Bootstrapper<LauncherWindowViewModel>
     {
@@ -79,30 +77,34 @@ namespace PRM
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
             // Step2
-            // Configure the IoC container in here
-            builder.Bind<IDataService>().And<DataService>().To<DataService>();
+            // Configure the IoC container in here;
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
             builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
-            builder.Bind<Configuration>().ToInstance(_appInit.Configuration);
+            builder.Bind<Configuration>().ToInstance(_appInit.NewConfiguration);
             builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationService);
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);
             builder.Bind<ProtocolConfigurationService>().ToSelf().InSingletonScope();
-            builder.Bind<PrmContext>().ToSelf().InSingletonScope();
+            builder.Bind<DataSourceService>().ToSelf().InSingletonScope();
+            builder.Bind<LauncherService>().ToSelf().InSingletonScope();
 
             builder.Bind<MainWindowView>().ToSelf().InSingletonScope();
             builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowView>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerSelectionsViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<QuickConnectionViewModel>().ToSelf().InSingletonScope();
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
-            builder.Bind<SettingsPageViewModel>().ToSelf();
-            builder.Bind<ServerListPageViewModel>().ToSelf();
-            builder.Bind<ProcessingRingViewModel>().ToSelf();
+            builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ProcessingRingViewModel>().ToSelf().InSingletonScope();
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
+
+            builder.Bind<IMessageBoxViewModel>().To<MessageBoxViewModel>();
             base.ConfigureIoC(builder);
         }
 
@@ -146,19 +148,22 @@ namespace PRM
                 IoC.Get<MainWindowViewModel>().RequestClose();
         }
 
+
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            lock (this)
-            {
-                SimpleLogHelper.Fatal(e.Exception);
-                var errorReport = new ErrorReportWindow(e.Exception);
-                errorReport.ShowDialog();
+            if (!App.ExitingFlag)
+                lock (this)
+                {
+                    SimpleLogHelper.Fatal(e.Exception);
+                    var errorReport = new ErrorReportWindow(e.Exception);
+                    errorReport.ShowDialog();
 #if FOR_MICROSOFT_STORE_ONLY
                     throw e.Exception;
 #else
-                App.Close(100);
+                    App.Close(100);
 #endif
-            }
+                }
+            e.Handled = true;
         }
     }
 }

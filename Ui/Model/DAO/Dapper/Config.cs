@@ -1,8 +1,8 @@
-﻿namespace PRM.Model.DAO.Dapper
+﻿namespace _1RM.Model.DAO.Dapper
 {
     public class Config
     {
-        public int Id { get; set; }
+        public const string TABLE_NAME = "Configs";
 
         public string Key { get; set; } = "";
 

@@ -5,12 +5,12 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PRM.Service;
-using PRM.Utils;
+using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
-using Ui;
+using Stylet;
 
-namespace PRM.View.Guidance
+namespace _1RM.View.Guidance
 {
     public class GuidanceWindowViewModel : NotifyPropertyChangedBase
     {
@@ -81,8 +81,7 @@ namespace PRM.View.Guidance
             {
                 if (SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value))
                 {
-                    var configurationService = new ConfigurationService(_configuration, new KeywordMatchService());
-                    var e = configurationService.SetSelfStart();
+                    var e = ConfigurationService.CheckSetSelfStart();
                     if (e != null)
                     {
                         _configuration.General.AppStartAutomatically = false;

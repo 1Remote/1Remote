@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Text;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
-using PRM.Model.Protocol.FileTransmit.Transmitters;
-using PRM.Service;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.Protocol.FileTransmit;
+using _1RM.Model.Protocol.FileTransmit.Transmitters;
+using _1RM.Service;
+using _1RM.Service.DataSource;
 using Shawn.Utils;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
     public class SFTP : ProtocolBaseWithAddressPortUserPwd, IFileTransmittable
@@ -21,7 +22,7 @@ namespace PRM.Model.Protocol
 
         private string _privateKey = "";
 
-        [OtherName(Name = "PRM_SSH_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -29,7 +30,7 @@ namespace PRM.Model.Protocol
         }
 
         private string _startupPath = "/";
-        [OtherName(Name = "PRM_STARTUP_PATH")]
+        [OtherName(Name = "STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;
@@ -65,7 +66,7 @@ namespace PRM.Model.Protocol
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = IoC.Get<DataService>().DecryptOrReturnOriginalString(this.Password);
+            var password = DataService.DecryptOrReturnOriginalString(this.Password) ?? this.Password;
             var sshKeyPath = this.PrivateKey;
             if (sshKeyPath == "")
                 return new TransmitterSFtp(hostname, port, username, password, true);

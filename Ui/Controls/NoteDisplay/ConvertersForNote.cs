@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace PRM.Controls.NoteDisplay
+namespace _1RM.Controls.NoteDisplay
 {
     public class ConverterNoteToVisibility : IValueConverter
     {

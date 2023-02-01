@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
+		<OutputType Condition="'$(Configuration)'=='Debug'">Exe</OutputType>
+		<OutputType Condition="'$(Configuration)'!='Debug'">WinExe</OutputType>
+		<DisableWinExeOutputInference>true</DisableWinExeOutputInference>
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
-		<RootNamespace>PRM</RootNamespace>
-		<AssemblyName>PRemoteM</AssemblyName>
+		<RootNamespace>_1RM</RootNamespace>
+		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease</Configurations>
 		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
@@ -18,7 +20,7 @@
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
-		<StartupObject>Ui.App</StartupObject>
+		<StartupObject>_1RM.App</StartupObject>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<PlatformTarget>AnyCPU</PlatformTarget>
@@ -102,13 +104,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="1Remote.Security" Version="1.0.0" />
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
+		<PackageReference Include="CredentialManagement" Version="1.0.2" />
 		<PackageReference Include="Dapper" Version="2.0.123" />
 		<PackageReference Include="Dragablz" Version="0.0.3.234" />
 		<PackageReference Include="FluentFTP" Version="37.0.2" />
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
+		<PackageReference Include="MySql.Data" Version="8.0.30" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="NUlid" Version="1.7.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
 		<PackageReference Include="Stylet" Version="1.3.6" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
@@ -294,9 +300,6 @@
 		<Page Update="Controls\AutoCompleteComboBox.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="Controls\InputWindow.xaml">
-			<SubType>Designer</SubType>
-		</Page>
 		<Page Update="Controls\LogoSelector.xaml">
 			<SubType>Designer</SubType>
 		</Page>
@@ -355,6 +358,10 @@
 		<Page Update="View\Editor\Forms\VncForm.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="View\Editor\DataSourceSelectorView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
+		</Page>
 		<Page Update="View\Editor\ServerEditorPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
@@ -395,8 +402,16 @@
 		<Page Update="View\RequestRatingView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\ServerListPageView.xaml">
+		<Page Update="View\ServerList\ServerListPageView.xaml">
 			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="View\Settings\DataSource\SqliteSettingView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
+		</Page>
+		<Page Update="View\Settings\DataSource\MysqlSettingView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\ProtocolConfig\ExternalSshRunnerSettings.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
@@ -408,7 +423,7 @@
 		<Page Update="View\Settings\ProtocolConfig\KittyRunnerSettings.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPage.xaml">
+		<Page Update="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\SettingsPageView.xaml">

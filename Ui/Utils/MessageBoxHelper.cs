@@ -1,78 +1,190 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
+using _1RM.View;
 using Shawn.Utils.Interface;
 using Stylet;
+using Screen = Stylet.Screen;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class MessageBoxHelper
     {
-        public static bool Confirm(string content, string title = "", bool useNativeBox = false)
+        [DllImport("user32.dll")]
+        private static extern int EnableWindow(IntPtr handle, bool enable);
+        /// <summary>
+        /// show a confirm box on owner, the default value owner is MainWindowViewModel
+        /// </summary>
+        public static bool Confirm(string content, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
-            if (useNativeBox)
+                title = IoC.Get<ILanguageService>().Translate("Warning");
+
+            var ownerViewAware = (ownerViewModel as IViewAware);
+            var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
+            if (useNativeBox
+                || ownerViewModel != null && ownerViewAware == null     // 设定了 owner 且 owner 不是 IViewAware
+                || ownerViewModel == null && mainWindowViewModel?.View is Window { ShowInTaskbar: false }) // 未设定 owner 且 MainWindow is hidden
             {
-                bool ret = false;
-                ret = MessageBoxResult.Yes == MessageBox.Show(content, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var ret = MessageBoxResult.Yes == MessageBox.Show(content, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
                 return ret;
             }
             else
             {
-                bool ret = false;
-                ret = MessageBoxResult.Yes == IoC.Get<IWindowManager>().ShowMessageBox(content, title, buttons: MessageBoxButton.YesNo,
-                buttonLabels: new Dictionary<MessageBoxResult, string>()
+                IMaskLayerContainer? layerContainer;
+                if (ownerViewModel == null)
                 {
-                    { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
-                    { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
-                }, icon: MessageBoxImage.Question);
+                    layerContainer = mainWindowViewModel;
+                }
+                else
+                {
+                    layerContainer = ownerViewModel as IMaskLayerContainer;
+                }
+                long layerId = 0;
+                if (layerContainer != null)
+                    layerId = MaskLayerController.ShowProcessingRing(layerContainer: layerContainer);
+                var vm = IoC.Get<IMessageBoxViewModel>();
+                vm.Setup(messageBoxText: content,
+                    caption: title,
+                    icon: MessageBoxImage.Question,
+                    buttons: MessageBoxButton.YesNo,
+                    buttonLabels: new Dictionary<MessageBoxResult, string>()
+                    {
+                        { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
+                        { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
+                    });
+                if (vm is Screen screen)
+                {
+                    screen.Activated += MessageBoxOnActivated;
+                }
+                IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel != null ? ownerViewAware : mainWindowViewModel);
+                var ret = MessageBoxResult.Yes == vm.ClickedButton;
+                if (layerContainer != null)
+                    MaskLayerController.HideProcessingRing(layerId, layerContainer: layerContainer);
                 return ret;
             }
         }
 
-        public static void Info(string content, string title = "", bool useNativeBox = false)
+        private static void MessageBoxOnActivated(object? sender, ActivationEventArgs e)
         {
-            if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("messagebox_title_info");
-            Alert(title, content, MessageBoxImage.Information, useNativeBox);
+            if (sender is Screen screen
+                && screen.View is Window dlgWindow
+                && dlgWindow.Owner is Window
+                && dlgWindow.IsLoaded == false)
+            {
+                dlgWindow.Loaded -= MessageBoxOnLoaded;
+                dlgWindow.Loaded += MessageBoxOnLoaded;
+            }
         }
 
-        public static void Warning(string content, string title = "", bool useNativeBox = false)
+        private static void MessageBoxOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is Window dlgWindow)
+            {
+                var windows = Application.Current.Windows;
+                // enable the window != owner to let message box freeze the owner only.
+                foreach (Window w in windows)
+                {
+                    if (w == dlgWindow.Owner) continue;
+                    if (w is { IsLoaded: true })
+                    {
+                        if (HwndSource.FromVisual(w) is HwndSource hwndSource)
+                            EnableWindow(hwndSource.Handle, true);
+                    }
+                }
+            }
+        }
+
+        public static void Info(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
-            Alert(title, content, MessageBoxImage.Warning, useNativeBox);
+                title = IoC.Get<ILanguageService>().Translate("Info");
+            Alert(title, content, MessageBoxImage.Information, useNativeBox, ownerViewModel);
+        }
+
+        public static void Warning(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
+        {
+            if (string.IsNullOrEmpty(title))
+                title = IoC.Get<ILanguageService>().Translate("Warning");
+            Alert(title, content, MessageBoxImage.Warning, useNativeBox, ownerViewModel);
         }
 
 
-        public static void ErrorAlert(string content, string title = "", bool useNativeBox = false)
+        public static void ErrorAlert(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("messagebox_title_error");
-            Alert(title, content, MessageBoxImage.Error, useNativeBox);
+                title = IoC.Get<ILanguageService>().Translate("Error");
+            Alert(title, content, MessageBoxImage.Error, useNativeBox, ownerViewModel);
         }
 
-        private static void Alert(string title, string content, MessageBoxImage icon, bool useNativeBox)
+        private static void Alert(string title, string content, MessageBoxImage icon, bool useNativeBox, object? ownerViewModel = null)
         {
             Execute.OnUIThreadSync(() =>
             {
-                if (useNativeBox)
+                var ownerViewAware = (ownerViewModel as IViewAware);
+                var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
+                if (useNativeBox
+                    || ownerViewModel != null && ownerViewAware == null     // 设定了 owner 且 owner 不是 IViewAware
+                    || ownerViewModel == null && mainWindowViewModel?.View is Window { ShowInTaskbar: false }) // 未设定 owner 且 MainWindow is hidden
                 {
                     MessageBox.Show(content, title, MessageBoxButton.OK, icon);
                 }
                 else
                 {
-                    IoC.Get<IWindowManager>().ShowMessageBox(content, title,
+                    IMaskLayerContainer? layerContainer;
+                    if (ownerViewModel == null)
+                    {
+                        layerContainer = mainWindowViewModel;
+                    }
+                    else
+                    {
+                        layerContainer = ownerViewModel as IMaskLayerContainer;
+                    }
+                    long layerId = 0;
+                    if (layerContainer != null)
+                        layerId = MaskLayerController.ShowProcessingRing(layerContainer: layerContainer);
+                    var vm = IoC.Get<IMessageBoxViewModel>();
+                    vm.Setup(messageBoxText: content,
+                        caption: title,
+                        icon: icon,
+                        buttons: MessageBoxButton.OK,
                         buttonLabels: new Dictionary<MessageBoxResult, string>()
                         {
                             {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
                             {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
                             {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
-                        }, icon: icon);
+                        });
+                    if (vm is Screen screen)
+                    {
+                        screen.Activated += (sender, args) =>
+                        {
+                            if (screen.View is Window dlgWindow)
+                            {
+                                // dlg don't have a Owner
+                                if (dlgWindow?.Owner == null)
+                                    return;
+                                var windows = Application.Current.Windows;
+                                // enable the window != owner to let message box freeze the owner only.
+                                foreach (Window w in windows)
+                                {
+                                    if (w == dlgWindow.Owner) continue;
+                                    if (w is { IsLoaded: true })
+                                    {
+                                        if (HwndSource.FromVisual(w) is HwndSource hwndSource)
+                                            EnableWindow(hwndSource.Handle, true);
+                                    }
+                                }
+                            }
+                        };
+                    }
+                    IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel != null ? ownerViewAware : mainWindowViewModel);
+                    if (layerContainer != null)
+                        MaskLayerController.HideProcessingRing(layerId, layerContainer: layerContainer);
                 }
             });
         }

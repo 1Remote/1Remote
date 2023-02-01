@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Newtonsoft.Json;
-using PRM.Model.Protocol;
+using _1RM.Model.Protocol;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Model.ProtocolRunner
+namespace _1RM.Model.ProtocolRunner
 {
     public class ExternalRunner : Runner
     {

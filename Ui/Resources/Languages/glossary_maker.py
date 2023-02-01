@@ -132,7 +132,7 @@ public static class LanguagesResources
 
 if __name__ == '__main__':
 
-    CSV_FILE_NAME = 'glossary_for_PRemoteM.csv'
+    CSV_FILE_NAME = 'glossary.csv'
     CSV_FILE_NAME = os.path.basename(CSV_FILE_NAME).split('.')[0]
 
     g = glossary()

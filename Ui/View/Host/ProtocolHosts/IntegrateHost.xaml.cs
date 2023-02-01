@@ -5,12 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using Stylet;
 using Path = System.IO.Path;
@@ -31,7 +32,7 @@ We should add <UseWindowsForms>true</UseWindowsForms> in the csproj.
 
  */
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class IntegrateHost : HostBase, IDisposable
     {
@@ -276,7 +277,7 @@ namespace PRM.View.Host.ProtocolHosts
                 FileName = exeFullName,
                 WorkingDirectory = new FileInfo(exeFullName).DirectoryName,
                 Arguments = ExeArguments,
-                WindowStyle = ProcessWindowStyle.Minimized
+                WindowStyle = ProcessWindowStyle.Normal
             };
 
             // Set environment variables
@@ -301,7 +302,11 @@ namespace PRM.View.Host.ProtocolHosts
 
             SimpleLogHelper.Debug($"{nameof(IntegrateHost)}: Start process {exeFullName}");
 
-
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(1 * 1000);
+                RunAfterConnected?.Invoke();
+            });
 
             // keep detect MainWindowHandle in next 10 seconds.
             var endTime = DateTime.Now.AddSeconds(10);
@@ -315,7 +320,7 @@ namespace PRM.View.Host.ProtocolHosts
                     return;
                 }
                 else if (_process.MainWindowHandle != IntPtr.Zero
-                && _exeHandles.Contains(_process.MainWindowHandle) == false)
+                    && _exeHandles.Contains(_process.MainWindowHandle) == false)
                 {
                     _exeHandles.Add(_process.MainWindowHandle);
                     SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");

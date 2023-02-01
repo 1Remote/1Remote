@@ -4,14 +4,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using PRM.Service;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Resources.Icons;
+using _1RM.Service;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
-namespace PRM.View
+namespace _1RM.View
 {
     public partial class LauncherWindowView : WindowChromeBase
     {
@@ -24,7 +25,8 @@ namespace PRM.View
             {
                 var myWindowHandle = new WindowInteropHelper(this).Handle;
                 var source = HwndSource.FromHwnd(myWindowHandle);
-                source?.AddHook(HookUSBDeviceRedirect);
+                source?.AddHook(HookUSBDeviceRedirect); 
+                ServerIcons.Init();
             };
         }
 
@@ -38,170 +40,6 @@ namespace PRM.View
             }
             catch
             {
-            }
-        }
-
-
-        private void MenuActions(Key key)
-        {
-            switch (key)
-            {
-                case Key.Enter:
-                    if (_vm.Actions.Count > 0
-                        && _vm.SelectedActionIndex >= 0
-                        && _vm.SelectedActionIndex < _vm.Actions.Count)
-                    {
-                        if (_vm?.SelectedItem?.Server?.Id == null)
-                            return;
-                        var si = _vm.SelectedActionIndex;
-                        _vm.HideMe();
-                        _vm.Actions[si]?.Run();
-                    }
-                    break;
-
-                case Key.Down:
-                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
-                    {
-                        ++_vm.SelectedActionIndex;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                    }
-                    break;
-
-                case Key.Up:
-                    if (_vm.SelectedActionIndex > 0)
-                    {
-                        --_vm.SelectedActionIndex;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                    }
-                    break;
-
-                case Key.PageUp:
-                    if (_vm.SelectedActionIndex > 0)
-                    {
-                        _vm.SelectedActionIndex =
-                            _vm.SelectedActionIndex - 5 < 0 ? 0 : _vm.SelectedActionIndex - 5;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                    }
-                    break;
-
-                case Key.PageDown:
-                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
-                    {
-                        _vm.SelectedActionIndex =
-                            _vm.SelectedActionIndex + 5 > _vm.Actions.Count - 1
-                                ? _vm.Actions.Count - 1
-                                : _vm.SelectedActionIndex + 5;
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                    }
-                    break;
-
-                case Key.Left:
-                    _vm.HideActionsList();
-                    break;
-            }
-        }
-
-        private void TbKeyWord_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (Visibility != Visibility.Visible) return;
-
-            if (TbKeyWord.IsKeyboardFocused == false)
-                TbKeyWord.Focus();
-
-            e.Handled = true;
-            lock (this)
-            {
-                var key = e.Key;
-
-                if (key == Key.Escape)
-                {
-                    _vm.HideMe();
-                    return;
-                }
-
-                if (GridMenuActions.Visibility == Visibility.Visible)
-                {
-                    MenuActions(key);
-                }
-                else
-                {
-                    switch (key)
-                    {
-                        case Key.Right:
-                            if (sender is TextBox tb)
-                            {
-                                if (tb.CaretIndex == tb.Text.Length)
-                                {
-                                    _vm.ShowActionsList();
-                                    return;
-                                }
-                            }
-                            break;
-
-                        case Key.Enter:
-                            _vm.OpenSessionAndHide();
-                            return;
-                        case Key.Down:
-                            _vm.AddSelectedIndexOnVisibilityItems(1);
-                            return;
-                        case Key.PageDown:
-                            _vm.AddSelectedIndexOnVisibilityItems(5);
-                            return;
-                        case Key.Up:
-                            _vm.AddSelectedIndexOnVisibilityItems(-1);
-                            return;
-                        case Key.Left:
-                            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
-                                _vm.CmdShowNoteField?.Execute();
-                            else
-                                _vm.CmdHideNoteField?.Execute();
-                            return;
-                        case Key.PageUp:
-                            _vm.AddSelectedIndexOnVisibilityItems(-5);
-                            return;
-                    }
-                    e.Handled = false;
-                }
-            }
-        }
-
-        private void ListBoxSelections_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-                _vm.OpenSessionAndHide();
-        }
-
-
-        private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
-            if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is ListBoxItem { Content: ProtocolBaseViewModel baseViewModel })
-            {
-                _vm.ShowActionsList(baseViewModel.Server);
-            }
-        }
-
-        private void ListBoxActions_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _vm.HideActionsList();
-        }
-
-        private void ButtonActionBack_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _vm.HideActionsList();
-        }
-
-        private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (_vm?.SelectedItem?.Server?.Id == null)
-                return;
-            var si = _vm.SelectedActionIndex;
-            _vm.HideMe();
-            if (_vm.Actions.Count > 0
-                && si >= 0
-                && si < _vm.Actions.Count)
-            {
-                _vm.Actions[si]?.Run();
             }
         }
 
@@ -226,28 +64,9 @@ namespace PRM.View
         }
 
 
-        private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                var url = e?.Parameter?.ToString();
-                if (url != null)
-                {
-                    HyperlinkHelper.OpenUriBySystem(url);
-                }
-            }
-            catch (Exception ex)
-            {
-                SimpleLogHelper.Error(ex);
-            }
-        }
 
-        private void ClickOnImage(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            MessageBox.Show($"URL: {e.Parameter}");
-        }
-
-
+        private const uint WP_SYSTEMMENU = 0x02;
+        private const uint WM_SYSTEMMENU = 0xa4;
 
         /// <summary>
         /// Redirect USB Device
@@ -255,6 +74,13 @@ namespace PRM.View
         /// <returns></returns>
         private IntPtr HookUSBDeviceRedirect(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
+            if (((msg == WM_SYSTEMMENU) && (wParam.ToInt32() == WP_SYSTEMMENU)) || msg == 165)
+            {
+                //ShowContextMenu();
+                handled = true;
+                return IntPtr.Zero;
+            }
+
             const int WM_DEVICECHANGE = 0x0219;
             if (msg == WM_DEVICECHANGE)
             {

@@ -4,37 +4,39 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using PRM.Model;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Model.ProtocolRunner.Default;
-using PRM.Utils.KiTTY;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils.KiTTY;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Utils
+namespace _1RM.Utils
 {
     public static class ProtocolRunnerHostHelper
     {
         /// <summary>
         /// get a selected runner, or default runner. some protocol i.e. 'APP' will return null.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="protocolConfigurationService"></param>
         /// <param name="server"></param>
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static Runner GetRunner(PrmContext context, ProtocolBase server, string protocolName, string? assignRunnerName = null)
+        public static Runner GetRunner(ProtocolConfigurationService protocolConfigurationService, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
-            if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+            if (protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
                 SimpleLogHelper.Warning($"we don't have a protocol named: {protocolName}");
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
+            var p = protocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
                 SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
@@ -52,11 +54,11 @@ namespace PRM.Utils
         /// get a host for the runner if RunWithHosting == true, or start the runner if RunWithHosting == false.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="context"></param>
+        /// <param name="sourceService"></param>
         /// <param name="protocolServerBase"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
+        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(DataSourceService sourceService, T protocolServerBase, Runner runner) where T : ProtocolBase
         {
             if (runner is not ExternalRunner er) return null;
 
@@ -119,7 +121,7 @@ namespace PRM.Utils
 
         }
 
-        public static HostBase GetRdpInternalHost(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        public static HostBase GetRdpInternalHost(ProtocolBase server, Runner runner, double width = 0, double height = 0)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             Debug.Assert(server is RDP);
@@ -131,36 +133,34 @@ namespace PRM.Utils
         /// get host for a ProtocolBase, can return null
         /// </summary>
         /// <returns></returns>
-        public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner)
+        public static HostBase? GetHostForInternalRunner(ProtocolBase server, Runner runner)
         {
             Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
                 case RDP:
                     {
-                        return GetRdpInternalHost(context, server, runner);
+                        return GetRdpInternalHost(server, runner);
                     }
                 case SSH ssh:
                     {
-                        Debug.Assert(runner is KittyRunner);
-                        var kitty = (KittyRunner)runner;
-                        ssh.InstallKitty();
-                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                        var kittyRunner = (runner as KittyRunner) ?? new KittyRunner(ssh.ProtocolDisplayName);
+                        var sessionName = $"{AppPathHelper.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
+                        var host = new IntegrateHost(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName))
                         {
-                            RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey),
-                            RunAfterConnected = () => ssh.DelKittySessionConfig()
+                            RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath),
                         };
                         return host;
                     }
                 case Telnet telnet:
                     {
-                        Debug.Assert(runner is KittyRunner);
-                        var kitty = (KittyRunner)runner;
-                        telnet.InstallKitty();
-                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                        var kittyRunner = (runner as KittyRunner) ?? new KittyRunner(telnet.ProtocolDisplayName);
+                        var sessionName = $"{AppPathHelper.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        telnet.ConfigKitty(sessionName, kittyRunner, "");
+                        var host = new IntegrateHost(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName))
                         {
-                            RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""),
-                            RunAfterConnected = () => telnet.DelKittySessionConfig()
+                            RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath)
                         };
                         return host;
                     }

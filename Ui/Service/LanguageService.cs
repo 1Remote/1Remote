@@ -4,13 +4,36 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using PRM.Model;
+using _1RM.Model;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
-namespace PRM.Service
+namespace _1RM.Service
 {
+    public class MockLanguageService : ILanguageService
+    {
+        public void AddXamlLanguageResources(string code, string fullName)
+        {
+            return;
+        }
+
+        public string Translate(Enum e)
+        {
+            return e.ToString();
+        }
+
+        public string Translate(string key)
+        {
+            return key;
+        }
+
+        public string Translate(string key, params object[] parameters)
+        {
+            return key;
+        }
+    }
+
     public class LanguageService : ILanguageService
     {
         private string _languageCode = "en-us";
@@ -123,7 +146,7 @@ namespace PRM.Service
                 }
 #if DEBUG
                 var mf = string.Join(", ", missingFields);
-                MessageBox.Show($"language resource missing:\r\n {mf}", Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show($"language resource missing:\r\n {mf}", Translate("Error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 File.WriteAllText("LANGUAGE_ERROR.txt", mf);
 #endif
             }

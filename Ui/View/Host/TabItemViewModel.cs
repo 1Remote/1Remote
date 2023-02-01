@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
     public class TabItemViewModel : NotifyPropertyChangedBase
     {

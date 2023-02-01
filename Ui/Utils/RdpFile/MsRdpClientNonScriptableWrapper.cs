@@ -15,18 +15,13 @@ namespace _1RM.Utils.RdpFile
         [Guid("2F079C4C-87B2-4AFD-97AB-20CDB43038AE")]
         private interface IMsRdpClientNonScriptableEx : MSTSCLib.IMsTscNonScriptable
         {
-            [DispId(4)]
-            string BinaryPassword { get; set; }
-            [DispId(5)]
-            string BinarySalt { get; set; }
-            [DispId(1)]
-            string ClearTextPassword { set; }
-            [DispId(2)]
-            string PortablePassword { get; set; }
-            [DispId(3)]
-            string PortableSalt { get; set; }
+            [DispId(4)] new string BinaryPassword { get; set; }
+            [DispId(5)] new string BinarySalt { get; set; }
+            [DispId(1)] new string ClearTextPassword { set; }
+            [DispId(2)] new string PortablePassword { get; set; }
+            [DispId(3)] new string PortableSalt { get; set; }
 
-            void ResetPassword();
+            new void ResetPassword();
 
             // 函数接口原实现 void NotifyRedirectDeviceChange([ComAliasName("MSTSCLib.UINT_PTR")] uint wParam, [ComAliasName("MSTSCLib.LONG_PTR")] int lParam);，无法满足 x64 的指针数值范围
 

@@ -7,69 +7,99 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
-using PRM.Controls;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.Protocol;
-using PRM.Model.Protocol.Base;
-using PRM.Model.ProtocolRunner;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Editor.Forms;
+using _1RM.Controls;
+using _1RM.Model;
+using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Service;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
+using _1RM.View.Editor.Forms;
+using _1RM.View.ServerList;
+using CredentialManagement;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM.View.Editor
+namespace _1RM.View.Editor
 {
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
-        //private readonly PrmContext _context;
         private readonly GlobalData _globalData;
-        private readonly IDataService _dataService;
+        private readonly DataSourceBase? _addToDataSource = null; // target data source in add mode 
 
-        public bool IsAddMode => _serversInBuckEdit == null && Server.Id == 0;
+        public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
-        private readonly ProtocolBase _orgServer;
+        private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
         private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
 
-        #region individual edit
+
+
+        public static ServerEditorPageViewModel Add(GlobalData globalData, DataSourceBase addToDataSource, List<string>? presetTagNames = null)
+        {
+            var server = new RDP
+            {
+                Tags = presetTagNames?.Count == 0 ? new List<string>() : new List<string>(presetTagNames!),
+                DataSourceName = addToDataSource.DataSourceName,
+            };
+            return new ServerEditorPageViewModel(globalData, server, addToDataSource);
+        }
+
+        public static ServerEditorPageViewModel Duplicate(GlobalData globalData, DataSourceBase dataSource, ProtocolBase server)
+        {
+            return new ServerEditorPageViewModel(globalData, server, dataSource);
+        }
+
+        public static ServerEditorPageViewModel Edit(GlobalData globalData, ProtocolBase server)
+        {
+            Debug.Assert(server.IsTmpSession() == false);
+            return new ServerEditorPageViewModel(globalData, server);
+        }
+
+        public static ServerEditorPageViewModel BuckEdit(GlobalData globalData, IEnumerable<ProtocolBase> servers)
+        {
+            return new ServerEditorPageViewModel(globalData, servers);
+        }
+
         /// <summary>
-        /// to remember original protocol's options, for restore use
+        /// Add or Edit or Duplicate
         /// </summary>
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ProtocolBase server, bool isDuplicate = false)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase? addToDataSource = null)
         {
             _globalData = globalData;
-            _dataService = dataService;
+            _addToDataSource = addToDataSource;
+
+            server.DecryptToConnectLevel();
 
             Server = (ProtocolBase)server.Clone();
-            if (isDuplicate)
+            if (addToDataSource != null)
             {
-                Server.Id = 0; // set id = 0 and turn into edit mode
+                Server.DataSourceName = addToDataSource.DataSourceName;
+                Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = "";
 
-            // init protocol list for single add / edit mode
+
+            // reflect remote protocols
+            ProtocolList = ProtocolBase.GetAllSubInstance();
+            // set selected protocol
+            try
             {
-                // reflect remote protocols
-                ProtocolList = ProtocolBase.GetAllSubInstance();
-                // set selected protocol
-                try
-                {
-                    SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
-                }
-                catch (Exception)
-                {
-                    SelectedProtocol = ProtocolList.First();
-                }
+                SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
+            }
+            catch (Exception)
+            {
+                SelectedProtocol = ProtocolList.First();
             }
 
-            Init();
+            Debug.Assert(IsBuckEdit == false);
+            Debug.Assert(IsAddMode == (addToDataSource != null));
         }
-        #endregion
+
 
         #region buck edit
         /// <summary>
@@ -82,13 +112,20 @@ namespace PRM.View.Editor
         private readonly Type? _sharedTypeInBuckEdit = null;
         private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
 
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, IEnumerable<ProtocolBase> servers)
+        private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
+            _addToDataSource = null;
             _globalData = globalData;
-            _dataService = dataService;
-            var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+            var serverBases = servers.Select(x => x.Clone()).ToArray();
+            // decrypt
+            for (int i = 0; i < serverBases.Length; i++)
+            {
+                // decrypt pwd
+                serverBases[i].DecryptToConnectLevel();
+            }
+
             // must be bulk edit
-            Debug.Assert(serverBases.Count() > 1);
+            Debug.Assert(serverBases.Length > 1);
             // init title
             Title = IoC.Get<ILanguageService>().Translate("server_editor_bulk_editing_title") + " ";
             foreach (var serverBase in serverBases)
@@ -118,7 +155,7 @@ namespace PRM.View.Editor
                     type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
                 }
 
-                Debug.Assert(type.IsSubclassOf(typeof(ProtocolBase)));
+                Debug.Assert(type == typeof(ProtocolBase) || type.IsSubclassOf(typeof(ProtocolBase)));
                 _sharedTypeInBuckEdit = type;
             }
 
@@ -165,29 +202,19 @@ namespace PRM.View.Editor
             }
 
             _orgServer = Server.Clone();
-            // init ui
-            {
-                if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
-                    UpdateRunners(_serversInBuckEdit.First().Protocol);
-                ReflectProtocolEditControl(_sharedTypeInBuckEdit);
-            }
 
-            Init();
+            Debug.Assert(IsBuckEdit == true);
+            Debug.Assert(_sharedTypeInBuckEdit != null);
+
+            // init ui
+            if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
+                UpdateRunners(_serversInBuckEdit.First().Protocol);
+            ReflectProtocolEditControl(_sharedTypeInBuckEdit);
         }
 
         #endregion
 
-
-        private void Init()
-        {
-            // decrypt pwd
-            var s = Server;
-            _dataService.DecryptToConnectLevel(ref s);
-            NameSelections = _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _globalData.TagList.Select(x => x.Name).ToList();
-        }
-
-        public string Title { get; set; }
+        public string Title { get; }
 
 
         private ProtocolBase _server = new RDP();
@@ -225,13 +252,9 @@ namespace PRM.View.Editor
 
 
         private FormBase? _protocolEditControl;
-        public FormBase ProtocolEditControl
+        public FormBase? ProtocolEditControl
         {
-            get
-            {
-                if (_protocolEditControl == null) throw new NullReferenceException();
-                return _protocolEditControl;
-            }
+            get => _protocolEditControl;
             set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
         }
 
@@ -239,11 +262,11 @@ namespace PRM.View.Editor
         /// <summary>
         /// suggested name for name field
         /// </summary>
-        public List<string> NameSelections { get; set; } = new List<string>();
+        public List<string> NameSelections => _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
         /// <summary>
         /// suggested tag for tag field
         /// </summary>
-        public List<string> TagSelections { get; set; } = new List<string>();
+        public List<string> TagSelections => _globalData.TagList.Select(x => x.Name).ToList();
 
         private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
@@ -254,8 +277,10 @@ namespace PRM.View.Editor
                 _cmdSave = new RelayCommand((o) =>
                 {
                     // bulk edit
-                    if (IsBuckEdit == true && _sharedTypeInBuckEdit != null && _serversInBuckEdit != null)
+                    if (IsBuckEdit == true)
                     {
+                        Debug.Assert(_sharedTypeInBuckEdit != null);
+                        Debug.Assert(_serversInBuckEdit != null);
                         // copy the same value properties
                         var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var property in properties)
@@ -311,17 +336,40 @@ namespace PRM.View.Editor
                         _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
-                    else if (Server.Id > 0)
+                    else if (IsAddMode == false
+                             && Server.IsTmpSession() == false)
                     {
                         _globalData.UpdateServer(Server);
                     }
                     // add
-                    else
+                    else if (IsAddMode && _addToDataSource != null)
                     {
-                        _globalData.AddServer(Server);
+                        _globalData.AddServer(Server, _addToDataSource);
                     }
-                    IoC.Get<MainWindowViewModel>().ShowList();
-                }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
+
+                    if (IsBuckEdit == false && Server is RDP rdp)
+                    {
+                        try
+                        {
+                            // try read user name & password from CredentialManagement.
+                            using var cred = new Credential()
+                            {
+                                Target = "TERMSRV/" + rdp.Address,
+                                Type = CredentialType.Generic,
+                                Password = rdp.Password,
+                                Username = rdp.UserName,
+                                PersistanceType = PersistanceType.LocalComputer,
+                            };
+                            cred.Save();
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+                    }
+
+                    IoC.Get<MainWindowViewModel>().ShowList(true);
+                }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? true)));
                 return _cmdSave;
             }
         }
@@ -336,7 +384,7 @@ namespace PRM.View.Editor
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().ShowList();
+                    IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
                 return _cmdCancel;
             }
@@ -449,6 +497,10 @@ namespace PRM.View.Editor
                 {
                     ProtocolEditControl = new VncForm(Server);
                 }
+                else if (protocolType == typeof(LocalApp))
+                {
+                    ProtocolEditControl = new AppForm(Server);
+                }
                 else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
                 {
                     ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
@@ -457,9 +509,9 @@ namespace PRM.View.Editor
                 {
                     ProtocolEditControl = new BaseFormWithAddressPort(Server);
                 }
-                else if (protocolType == typeof(LocalApp))
+                else if (protocolType == typeof(ProtocolBase))
                 {
-                    ProtocolEditControl = new AppForm(Server);
+                    ProtocolEditControl = null;
                 }
                 else
                     throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");
@@ -483,9 +535,9 @@ namespace PRM.View.Editor
                 {
                     Runners.Add(runner.Name);
                 }
-                if (IsBuckEdit && _orgServer.SelectedRunnerName == _orgServer.ServerEditorDifferentOptions)
+                if (IsBuckEdit && _orgServer.SelectedRunnerName == Server.ServerEditorDifferentOptions)
                 {
-                    Runners.Add(_orgServer.ServerEditorDifferentOptions);
+                    Runners.Add(Server.ServerEditorDifferentOptions);
                 }
                 Server.SelectedRunnerName = Runners.Any(x => x == selectedRunner) ? selectedRunner : Runners.First();
             }
@@ -542,7 +594,7 @@ namespace PRM.View.Editor
                         cmd = Server.CommandAfterDisconnected;
                     }
 
-                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, "");
+                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -550,8 +602,10 @@ namespace PRM.View.Editor
                             if (!string.IsNullOrWhiteSpace(cmd))
                             {
                                 var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
-                                if(string.IsNullOrEmpty(tuple.Item2) == false)
+                                if (string.IsNullOrEmpty(tuple.Item2) == false)
                                     MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                                else
+                                    MessageBoxHelper.Info($"We will run: '{cmd}'");
                                 WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
                             }
                         }
@@ -561,7 +615,7 @@ namespace PRM.View.Editor
                         }
                         finally
                         {
-                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            MaskLayerController.HideProcessingRing(id);
                         }
                     });
                 });

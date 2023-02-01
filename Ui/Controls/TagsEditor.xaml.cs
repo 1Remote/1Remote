@@ -16,9 +16,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Utils;
+using _1RM.Utils;
 
-namespace PRM.Controls
+namespace _1RM.Controls
 {
     public partial class TagsEditor : UserControl
     {

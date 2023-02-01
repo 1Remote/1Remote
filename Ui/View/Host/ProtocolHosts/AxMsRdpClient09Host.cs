@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using AxMSTSCLib;
 using MSTSCLib;
-using PRM.Model.Protocol;
-using PRM.Service;
+using _1RM.Model.Protocol;
+using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
 
-namespace PRM.View.Host.ProtocolHosts
+namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
@@ -211,7 +211,10 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
                 _rdpClient.FullScreen = false;
-                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), false);
+                if (_rdpSettings.IsTmpSession() == false)
+                {
+                    IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+                }
                 return;
             }
             
@@ -260,7 +263,10 @@ namespace PRM.View.Host.ProtocolHosts
 
             // !do not remove
             ParentWindowSetToWindow();
-            IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id.ToString(), false);
+            if (_rdpSettings.IsTmpSession() == false)
+            {
+                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+            }
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
         }
 

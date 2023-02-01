@@ -5,22 +5,25 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
-using PRM.Model;
-using PRM.Service;
-using PRM.Utils;
-using PRM.View.Host.ProtocolHosts;
+using _1RM.Model;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.Utils;
+using _1RM.View.Host.ProtocolHosts;
+using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 
-namespace PRM.View.Host
+namespace _1RM.View.Host
 {
-    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IDisposable
+    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer, IDisposable
     {
         public readonly string Token;
-
-        public TabWindowViewModel(string token)
+        private readonly TabWindowBase _windowView;
+        public TabWindowViewModel(string token, TabWindowBase windowView)
         {
+            _windowView = windowView;
             Token = token;
             Items.CollectionChanged += ItemsOnCollectionChanged;
         }
@@ -28,9 +31,9 @@ namespace PRM.View.Host
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            if (Items.Count == 0 && this.View is TabWindowView tab)
+            if (Items.Count == 0)
             {
-                tab.Hide();
+                _windowView.Hide();
             }
         }
 
@@ -101,6 +104,35 @@ namespace PRM.View.Host
                 }
             }
         }
+
+
+        private MaskLayer? _topLevelViewModel;
+        public MaskLayer? TopLevelViewModel
+        {
+            get => _topLevelViewModel;
+            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
+        }
+
+
+        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (visibility == Visibility.Visible)
+                {
+                    var pvm = IoC.Get<ProcessingRingViewModel>();
+                    pvm.LayerId = layerId;
+                    pvm.ProcessingRingMessage = msg;
+                    this.TopLevelViewModel = pvm;
+                }
+                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
+                {
+                    this.TopLevelViewModel = null;
+                }
+            });
+        }
+
+
 
         private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -190,14 +222,44 @@ namespace PRM.View.Host
             {
                 return _cmdGoMaximize ??= new RelayCommand((o) =>
                 {
-                    if (o is Window window)
-                        window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                    if (_windowView.WindowState != WindowState.Maximized)
+                    {
+                        _windowView.WindowState = WindowState.Maximized;
+                    }
+
+                    else
+                    {
+                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
+                        _windowView.WindowState = WindowState.Normal;
+                    }
                 });
             }
         }
 
-        private bool _canCmdClose = true;
 
+        private RelayCommand? _cmdGoMaximizeF11;
+        public RelayCommand CmdGoMaximizeF11
+        {
+            get
+            {
+                return _cmdGoMaximizeF11 ??= new RelayCommand((o) =>
+                {
+                    if (_windowView.WindowState != WindowState.Maximized)
+                    {
+                        _windowView.WindowStyle = WindowStyle.None;
+                        _windowView.WindowState = WindowState.Maximized;
+                    }
+                    else
+                    {
+                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
+                        _windowView.WindowState = WindowState.Normal;
+                    }
+                });
+            }
+        }
+
+
+        private bool _canCmdClose = true;
         private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {
@@ -210,12 +272,16 @@ namespace PRM.View.Host
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
+                            && App.ExitingFlag == false
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else
                         {
-                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(Items.Select(x => x.Host.ConnectionId).ToArray());
+                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(
+                                Items
+                                .Where(x => x.Host.ProtocolServer.IsTmpSession() == false)
+                                .Select(x => x.Host.ConnectionId).ToArray());
                         }
                         _canCmdClose = true;
                     }
@@ -234,20 +300,25 @@ namespace PRM.View.Host
                     {
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
+                            && App.ExitingFlag == false
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else
                         {
+                            HostBase? host = null;
                             if (o is string connectionId)
                             {
-                                //Items.Remove(Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId));
-                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(connectionId);
+                                host = Items.FirstOrDefault(x => x.Host.ConnectionId == connectionId)?.Host;
                             }
-                            else if (SelectedItem?.Content.ConnectionId != null)
+                            else
                             {
-                                //Items.Remove(SelectedItem);
-                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(SelectedItem.Content.ConnectionId);
+                                host = SelectedItem?.Content;
+                            }
+
+                            if (host != null)
+                            {
+                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(host.ConnectionId);
                             }
                         }
 

@@ -1,10 +1,12 @@
 ﻿using System;
 using Newtonsoft.Json;
-using PRM.Model.Protocol.Base;
-using PRM.Utils.KiTTY;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 
-namespace PRM.Model.Protocol
+namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
     public class SSH : ProtocolBaseWithAddressPortUserPwd, IKittyConnectable
@@ -16,12 +18,8 @@ namespace PRM.Model.Protocol
             base.Port = "22";
         }
 
-        [OtherName(Name = "PRM_SESSION_NAME")]
-        public string SessionName => this.GetSessionName();
-
         private string _privateKey = "";
-
-        [OtherName(Name = "PRM_SSH_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -30,7 +28,7 @@ namespace PRM.Model.Protocol
 
         private int? _sshVersion = 2;
 
-        [OtherName(Name = "PRM_SSH_VERSION")]
+        [OtherName(Name = "SSH_VERSION")]
         public int? SshVersion
         {
             get => _sshVersion;
@@ -39,7 +37,7 @@ namespace PRM.Model.Protocol
 
         private string _startupAutoCommand = "";
 
-        [OtherName(Name = "PRM_STARTUP_AUTO_COMMAND")]
+        [OtherName(Name = "STARTUP_AUTO_COMMAND")]
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
@@ -85,49 +83,26 @@ namespace PRM.Model.Protocol
             return 1;
         }
 
-        public string GetPuttyConnString(PrmContext context)
-        {
-            var ssh = (this.Clone() as SSH)!;
-            ssh.ConnectPreprocess(context);
-
-            // var arg = $"-ssh {port} {user} {pw} {server}";
-            // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-            //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            //var template = $@" -load ""%SessionName%"" %Address% -P %Port% -l %UserName% -pw %Password% -%SshVersion% -cmd ""%StartupAutoCommand%""";
-            //var properties = this.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            //foreach (var property in properties)
-            //{
-            //    if (property.CanRead && property.GetMethod.IsPublic)
-            //    {
-            //        var val = property.GetValue(serverBase);
-            //        var key = property.Name;
-            //        template = template.Replace($"%{key}%", val?.ToString() ?? "");
-            //    }
-            //}
-
-            //var arg = $@" -load ""{serverBase.SessionName}"" {serverBase.Address} -P {serverBase.Port} -l {serverBase.UserName} -pw {serverBase.Password} -{(int)serverBase.SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
-
-            var template = $@" -load ""%PRM_SESSION_NAME%"" %PRM_HOSTNAME% -P %PRM_PORT% -l %PRM_USERNAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
-            var arg = OtherNameAttributeExtensions.Replace(ssh, template);
-            return " " + arg;
-        }
-
         [JsonIgnore]
         public ProtocolBase ProtocolBase => this;
 
-        public string GetExeFullPath()
+        public string GetExeArguments(string sessionName)
         {
-            return this.GetKittyExeFullName();
+            var ssh = (this.Clone() as SSH)!;
+            ssh.ConnectPreprocess();
+
+            //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+
+            //var template = $@" -load ""{this.GetSessionName()}"" %HOSTNAME% -P %PORT% -l %USERNAME% -pw %PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+            //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
+
+            var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+            return " " + arg;
         }
 
-        public string GetExeArguments(PrmContext context)
+        public override void ConnectPreprocess()
         {
-            return GetPuttyConnString(context);
-        }
-
-        public override void ConnectPreprocess(PrmContext context)
-        {
-            base.ConnectPreprocess(context);
+            base.ConnectPreprocess();
             StartupAutoCommand = StartupAutoCommand.Replace(@"""", @"\""");
         }
     }
