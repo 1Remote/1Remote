@@ -279,7 +279,6 @@ namespace _1RM
                 dataSourceService.AddOrUpdateDataSourceAsync(config);
             }
             IoC.Get<SessionControlService>();
-            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
 
 
@@ -305,6 +304,8 @@ namespace _1RM
             {
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
+
+            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
     }
 }
