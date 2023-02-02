@@ -13,19 +13,11 @@ namespace _1RM.View.Host
             Header = header;
             ColorHex = hostBase.ProtocolServer.ColorHex;
             IconImg = hostBase.ProtocolServer.IconImg;
-            CanResizeNow = hostBase.CanResizeNow();
-            hostBase.OnCanResizeNowChanged += () => CanResizeNow = hostBase.CanResizeNow();
         }
 
         public object Header { get; }
         public HostBase Content { get; }
         public HostBase Host => Content;
-        private bool _canResizeNow = false;
-        public bool CanResizeNow
-        {
-            get => _canResizeNow;
-            set => SetAndNotifyIfChanged(ref _canResizeNow, value);
-        }
         /// <summary>
         /// tab title mark color
         /// </summary>
