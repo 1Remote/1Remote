@@ -5,12 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
-using _1RM.Model;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
-using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -66,7 +63,7 @@ namespace _1RM.View.Host
             get
             {
                 if (SelectedItem?.Content == null
-                    || (SelectedItem?.Content is AxMsRdpClient09Host && SelectedItem?.CanResizeNow == false))
+                    || SelectedItem.Content.CanResizeNow() == false)
                     return ResizeMode.NoResize;
                 return ResizeMode.CanResize;
             }
@@ -83,26 +80,25 @@ namespace _1RM.View.Host
             set
             {
                 if (_selectedItem != null)
-                    try
-                    {
-                        _selectedItem.PropertyChanged -= SelectedItemOnPropertyChanged;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Write(e);
-                    }
+                {
+                    _selectedItem.Content.OnCanResizeNowChanged -= OnCanResizeNowChanged;
+                }
 
                 if (SetAndNotifyIfChanged(ref _selectedItem, value))
                 {
-                    RaisePropertyChanged(nameof(WindowResizeMode));
-
                     if (_selectedItem != null)
                     {
                         SetTitle();
-                        _selectedItem.PropertyChanged += SelectedItemOnPropertyChanged;
+                        _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
                     }
+                    RaisePropertyChanged(nameof(WindowResizeMode));
                 }
             }
+        }
+
+        private void OnCanResizeNowChanged()
+        {
+            RaisePropertyChanged(nameof(WindowResizeMode));
         }
 
 
@@ -130,16 +126,6 @@ namespace _1RM.View.Host
                     this.TopLevelViewModel = null;
                 }
             });
-        }
-
-
-
-        private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(TabItemViewModel.CanResizeNow))
-            {
-                RaisePropertyChanged(nameof(WindowResizeMode));
-            }
         }
 
         #region drag drop tab

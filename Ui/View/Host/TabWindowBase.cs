@@ -80,7 +80,7 @@ namespace _1RM.View.Host
                 {
                     if (this.WindowState != WindowState.Minimized)
                     {
-                        if (Vm.SelectedItem?.CanResizeNow != true)
+                        if (Vm.SelectedItem?.Content.CanResizeNow() != true)
                         {
                             return;
                         }
@@ -298,7 +298,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
         {
             if (e.ClickCount == 2)
             {
-                if (Vm.SelectedItem?.CanResizeNow == false)
+                if (Vm.SelectedItem?.Content.CanResizeNow() == false)
                     return;
             }
             base.WinTitleBar_OnPreviewMouseDown(sender, e);
