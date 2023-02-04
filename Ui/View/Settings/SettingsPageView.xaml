@@ -256,7 +256,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource GridOneRow}">
+                    <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
                         <Grid.Resources>
                             <settings:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></settings:Key2KeyStringConverter>
                         </Grid.Resources>
@@ -294,7 +294,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource GridOneRow}">
+                    <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
                         <Grid.Resources>
                             <settings:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></settings:Key2KeyStringConverter>
                         </Grid.Resources>

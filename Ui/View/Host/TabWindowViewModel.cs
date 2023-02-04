@@ -9,6 +9,7 @@ using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
+using PRM.View.Settings;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -18,6 +19,7 @@ namespace PRM.View.Host
     public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IDisposable
     {
         public readonly string Token;
+        public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
         public TabWindowViewModel(string token)
         {
