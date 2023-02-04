@@ -18,6 +18,7 @@ namespace _1RM.View.Host
     {
         public readonly string Token;
         private readonly TabWindowBase _windowView;
+
         public TabWindowViewModel(string token, TabWindowBase windowView)
         {
             _windowView = windowView;
@@ -68,6 +69,8 @@ namespace _1RM.View.Host
                 return ResizeMode.CanResize;
             }
         }
+
+        public bool LauncherEnabled => IoC.Get<ConfigurationService>().Launcher.LauncherEnabled;
 
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 

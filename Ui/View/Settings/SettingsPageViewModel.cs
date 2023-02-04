@@ -134,13 +134,15 @@ namespace _1RM.View.Settings
                     var res = _dataSourceService.LocalDataSource?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
                     if (res != EnumDbStatus.OK)
                     {
+                        ShowPage(EnumMainWindowPage.SettingsData);
                         MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
                         return;
                     }
 
-                    if (false == IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(_configurationService.Launcher.LauncherEnabled,
-                            _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey))
+                    if (_configurationService.Launcher.LauncherEnabled != IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(_configurationService.Launcher.LauncherEnabled, _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey))
                     {
+                        ShowPage(EnumMainWindowPage.SettingsLauncher);
+                        MessageBoxHelper.ErrorAlert(IoC.Get<LanguageService>().Translate("hotkey_registered_fail"));
                         return;
                     }
 
@@ -149,33 +151,6 @@ namespace _1RM.View.Settings
                     IoC.Get<ProtocolConfigurationService>().Save();
                     IoC.Get<MainWindowViewModel>().ShowList(false);
                 });
-            }
-        }
-
-        private RelayCommand? _cmdOpenPath;
-        public RelayCommand CmdOpenPath
-        {
-            get
-            {
-                if (_cmdOpenPath != null) return _cmdOpenPath;
-                _cmdOpenPath = new RelayCommand((o) =>
-                {
-                    var path = o?.ToString() ?? "";
-                    if (File.Exists(path))
-                    {
-                        System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
-                        {
-                            Arguments = "/e,/select," + path
-                        };
-                        System.Diagnostics.Process.Start(psi);
-                    }
-
-                    if (Directory.Exists(path))
-                    {
-                        System.Diagnostics.Process.Start("explorer.exe", path);
-                    }
-                });
-                return _cmdOpenPath;
             }
         }
 

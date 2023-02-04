@@ -26,7 +26,7 @@
                 <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
             </Grid>
 
-            <Grid Style="{StaticResource GridOneRow}">
+            <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
@@ -60,7 +60,7 @@
 
             <TextBlock Text="{DynamicResource system_options_quick_match_providers}" Style="{StaticResource BlockTitleColumn}" />
 
-            <Grid Style="{StaticResource GridOneRow}">
+            <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
