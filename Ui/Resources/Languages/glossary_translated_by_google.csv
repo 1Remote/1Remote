@@ -69,7 +69,7 @@ Protocol,Protocol,协议,Protokol,Protokoll,Protocole,Protocolo,プロトコル
 Cameras,Cameras,摄像头,Cameras,Cameras,Cameras,Cameras,Cameras
 filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',キーワードまたは「＃」+タグ名
 Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),検索（Ctrl + F）
-hotkey_already_registered,Hot key already registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,ホットキーはすでに登録されています
+hotkey_already_registered,Hot key already been registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,ホットキーはすでに登録されています
 hotkey_registered_fail,Failed to register the hot key,快捷键注册失败,Klávesovou zkratku se nepodařilo zaregistrovat,Fehler bei der Hotkey Registrierung,Echec de l'enregistrement du raccourci clavier,Falha ao registrar a tecla de atalho,ホットキーの登録に失敗しました
 string_permission_denied,Permission denied,无操作权限,Oprávnění odepřeno,Zugriff verweigert,Permission refusée,Permissão negada,アクセス拒否
 file_transmit_host_list_header_last_update,Last update,修改时间,Naposledy zaktualizováno,Letztes Update,Dernière mise à jour,Última atualização,最後の更新
@@ -217,7 +217,6 @@ logo_selector_open_file_dialog_title,select a picture,选择图片,vyberte obrá
 Default,Default,默认,Výchozí,Standard,Défaut,Predefinição,デフォルト
 Exe path,Exe path,Exe 路径,Popis umístění spustitelného souboru,Exe-Pfad,Chemin exe,Caminho .exe,エグゼパス
 Cmd parameter,CMD parameter,命令行参数,parametry pro příkaz,CMD-Parameter,CMD paramètre,Parâmetro CMD,CMDパラメーター
-New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo agente,新しいランナー
 New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,新しいランナー名
 Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,Kann nicht leer sein!,Ne peux pas être vide!,Não pode estar vazio!,空にすることはできません！
 Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,ホスティング
@@ -276,3 +275,4 @@ Before runner start the environment variables will be set,Befor runner start the
 Data Source name,Data Source name,数据源名称,Data Source name,Data Source name,Data Source name,Please select a Data Source,データソース名
 Please select a Data Source,Please select a Data Source,请选择一个数据源,Please select a Data Source,Please select a Data Source,Please select a Data Source,Please select a Data Source,データソースを選択してください
 Test connection,Test connection,测试连接,Test connection,Test connection,Test connection,Conexão de teste,テスト接続
+Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button

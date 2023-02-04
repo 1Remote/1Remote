@@ -218,7 +218,6 @@
     <s:String x:Key="Default">Predefinição</s:String>
     <s:String x:Key="Exe path">Caminho .exe</s:String>
     <s:String x:Key="Cmd parameter">Parâmetro CMD</s:String>
-    <s:String x:Key="New runner">Novo agente</s:String>
     <s:String x:Key="New runner name">Novo nome do agente</s:String>
     <s:String x:Key="Can not be empty!">Não pode estar vazio!</s:String>
     <s:String x:Key="Hosting">Hospedar</s:String>
@@ -248,4 +247,5 @@
     <s:String x:Key="Data Source name">Please select a Data Source</s:String>
     <s:String x:Key="Please select a Data Source">Please select a Data Source</s:String>
     <s:String x:Key="Test connection">Conexão de teste</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
 </ResourceDictionary>

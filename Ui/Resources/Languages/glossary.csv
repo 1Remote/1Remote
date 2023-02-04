@@ -263,3 +263,4 @@ Before runner start the environment variables will be set,Befor runner start the
 Data Source name,Data Source name,数据源名称,Data Source name,Data Source name,Data Source name,Please select a Data Source,
 Please select a Data Source,Please select a Data Source,请选择一个数据源,Please select a Data Source,Please select a Data Source,Please select a Data Source,Please select a Data Source,
 Test connection,Test connection,测试连接,Test connection,Test connection,Test connection,,
+Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,

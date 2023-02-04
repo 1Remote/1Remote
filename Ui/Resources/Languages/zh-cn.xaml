@@ -218,7 +218,6 @@
     <s:String x:Key="Default">默认</s:String>
     <s:String x:Key="Exe path">Exe 路径</s:String>
     <s:String x:Key="Cmd parameter">命令行参数</s:String>
-    <s:String x:Key="New runner">新增 runner</s:String>
     <s:String x:Key="New runner name">新增 runner 名</s:String>
     <s:String x:Key="Can not be empty!">不能为空！</s:String>
     <s:String x:Key="Hosting">集成</s:String>
@@ -248,4 +247,5 @@
     <s:String x:Key="Data Source name">数据源名称</s:String>
     <s:String x:Key="Please select a Data Source">请选择一个数据源</s:String>
     <s:String x:Key="Test connection">测试连接</s:String>
+    <s:String x:Key="Show XXX button">显示 `{0}` 按钮</s:String>
 </ResourceDictionary>

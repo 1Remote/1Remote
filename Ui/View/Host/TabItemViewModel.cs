@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Host
 {
@@ -23,5 +25,19 @@ namespace _1RM.View.Host
         /// </summary>
         public string ColorHex { get; }
         public System.Windows.Media.Imaging.BitmapSource? IconImg { get; }
+
+
+
+        private RelayCommand? _cmdReconnect;
+        public RelayCommand CmdReconnect
+        {
+            get
+            {
+                return _cmdReconnect ??= new RelayCommand((o) =>
+                {
+                    Content.ReConn();
+                });
+            }
+        }
     }
 }

@@ -130,6 +130,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <!--header item icon-->
@@ -140,7 +141,7 @@
                                     </Border>
 
                                     <!--header item content-->
-                                    <Border Grid.Column="2" Padding="0">
+                                    <Border Grid.Column="2" Padding="0" Margin="0 0 5 0">
                                         <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
                                                   ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                   ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
@@ -151,8 +152,8 @@
                                                   x:Name="contentPresenter" />
                                     </Border>
 
-                                    <!--header item placeholder(do not remove this)-->
-                                    <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
+                                    <!--header item placeholder(do not move or remove this)-->
+                                    <Thumb Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
                                         <Thumb.Style>
                                             <Style TargetType="{x:Type Thumb}">
                                                 <Setter Property="Background" Value="Transparent" />
@@ -167,17 +168,36 @@
                                         </Thumb.Style>
                                     </Thumb>
 
+                                    <Button Grid.Column="4" Width="13" Height="13" 
+                                            Visibility="{Binding Content.SettingsPage.TabHeaderShowReConnectButton, Converter={StaticResource ConverterBool2Visible}}"
+                                            Style="{StaticResource ButtonBarAccentStyle}"
+                                            Background="Transparent"
+                                            attachProperty:VisionElement.Opacity="0.6"
+                                            attachProperty:VisionElement.OpacityAccent="0.9"
+                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                            ToolTip="{DynamicResource Reconnect}"
+                                            Margin="0 0 5 0"
+                                            Command="{Binding CmdReconnect}">
+                                        <Grid Height="12" Width="12">
+                                            <Path Data="M684.032 403.456q-17.408-8.192-15.872-22.016t11.776-22.016q3.072-2.048 19.968-15.872t41.472-33.28q-43.008-49.152-102.4-77.312t-129.024-28.16q-64.512 0-120.832 24.064t-98.304 66.048-66.048 98.304-24.064 120.832q0 63.488 24.064 119.808t66.048 98.304 98.304 66.048 120.832 24.064q53.248 0 100.864-16.896t87.04-47.616 67.584-72.192 41.472-90.624q7.168-23.552 26.624-38.912t46.08-15.36q31.744 0 53.76 22.528t22.016 53.248q0 14.336-5.12 27.648-21.504 71.68-63.488 132.096t-99.84 103.936-128.512 68.096-148.48 24.576q-95.232 0-179.2-35.84t-145.92-98.304-98.304-145.92-36.352-178.688 36.352-179.2 98.304-145.92 145.92-98.304 179.2-36.352q105.472 0 195.584 43.52t153.6 118.272q23.552-17.408 39.424-30.208t19.968-15.872q6.144-5.12 13.312-7.68t13.312 0 10.752 10.752 6.656 24.576q1.024 9.216 2.048 31.232t2.048 51.2 1.024 60.416-1.024 58.88q-1.024 34.816-16.384 50.176-8.192 8.192-24.576 9.216t-34.816-3.072q-27.648-6.144-60.928-13.312t-63.488-14.848-53.248-14.336-29.184-9.728z"
+                                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      StrokeThickness="0" Stretch="Uniform" />
+                                        </Grid>
+                                    </Button>
 
-                                    <Button Grid.Column="4" Width="10" Height="10" 
-                                                Style="{StaticResource ButtonBarAccentStyle}"
-                                                Background="Transparent"
-                                                attachProperty:VisionElement.Opacity="0.5"
-                                                attachProperty:VisionElement.OpacityAccent="0.9"
-                                                attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                                Margin="5 0"
-                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
-                                                CommandParameter="{Binding Content.ConnectionId}">
-                                        <Grid Height="10" Width="8">
+                                    <Button Grid.Column="5" Width="13" Height="13" 
+                                            Visibility="{Binding Content.SettingsPage.TabHeaderShowCloseButton, Converter={StaticResource ConverterBool2Visible}}"
+                                            Style="{StaticResource ButtonBarAccentStyle}"
+                                            Background="Transparent"
+                                            attachProperty:VisionElement.Opacity="0.5"
+                                            attachProperty:VisionElement.OpacityAccent="0.9"
+                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                            ToolTip="{DynamicResource Close}"
+                                            Margin="0 0 5 0"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
+                                            CommandParameter="{Binding Content.ConnectionId}">
+                                        <Grid Height="10" Width="10">
                                             <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                       Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
