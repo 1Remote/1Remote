@@ -257,4 +257,5 @@
     <s:String x:Key="Login with ssh private key">通过私钥登录</s:String>
     <s:String x:Key="Environment variables">环境变量</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">环境变量将在启动前写入Runner</s:String>
+    <s:String x:Key="Show XXX button">显示 `{0}` 按钮</s:String>
 </ResourceDictionary>

@@ -241,6 +241,30 @@ namespace PRM.View.Settings
             }
         }
 
+        public bool TabHeaderShowCloseButton
+        {
+            get => _configurationService.General.TabHeaderShowCloseButton;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.TabHeaderShowCloseButton, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
+        public bool TabHeaderShowReConnectButton
+        {
+            get => _configurationService.General.TabHeaderShowReConnectButton;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.TabHeaderShowReConnectButton, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
 
 
         public bool LauncherEnabled

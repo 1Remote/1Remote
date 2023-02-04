@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using PRM.Service;
+using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf;
 
 namespace PRM.View.Host
 {
@@ -31,5 +35,19 @@ namespace PRM.View.Host
         /// </summary>
         public string ColorHex { get; }
         public System.Windows.Media.Imaging.BitmapSource? IconImg { get; }
+
+
+
+        private RelayCommand? _cmdReconnect;
+        public RelayCommand CmdReconnect
+        {
+            get
+            {
+                return _cmdReconnect ??= new RelayCommand((o) =>
+                {
+                    Content.ReConn();
+                });
+            }
+        }
     }
 }
