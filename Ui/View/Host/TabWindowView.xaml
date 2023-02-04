@@ -323,6 +323,7 @@
                                       Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
                                 <Button Grid.Column="0" Width="25" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center"
+                                        Visibility="{Binding SettingsPage.LauncherEnabled, Converter={StaticResource ConverterBool2Visible}}"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         attachProperty:VisionElement.Opacity="0.5"
                                         attachProperty:VisionElement.OpacityAccent="0.9"
