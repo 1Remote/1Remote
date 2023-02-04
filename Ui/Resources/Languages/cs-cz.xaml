@@ -218,7 +218,6 @@
     <s:String x:Key="Default">Výchozí</s:String>
     <s:String x:Key="Exe path">Popis umístění spustitelného souboru</s:String>
     <s:String x:Key="Cmd parameter">parametry pro příkaz</s:String>
-    <s:String x:Key="New runner">Nový spouštěč</s:String>
     <s:String x:Key="New runner name">Název pro nový spouštěč</s:String>
     <s:String x:Key="Can not be empty!">Je třeba vyplnit!</s:String>
     <s:String x:Key="Hosting">Hostování</s:String>
@@ -248,4 +247,5 @@
     <s:String x:Key="Data Source name">Data Source name</s:String>
     <s:String x:Key="Please select a Data Source">Please select a Data Source</s:String>
     <s:String x:Key="Test connection">Test connection</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
 </ResourceDictionary>

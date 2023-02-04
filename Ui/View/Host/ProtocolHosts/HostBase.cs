@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Interop;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
+using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -93,13 +96,56 @@ namespace _1RM.View.Host.ProtocolHosts
                     Command = new RelayCommand((o) => { ReConn(); })
                 });
             }
+
             {
                 var tb = new TextBlock();
                 tb.SetResourceReference(TextBlock.TextProperty, "Close");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
-                    Command = new RelayCommand((o) => { Close(); })
+                    Command = new RelayCommand((o) => { Close(); }),
+                });
+            }
+
+            {
+                var cb = new CheckBox
+                {
+                    Content = IoC.Get<LanguageService>().Translate("Show XXX button", IoC.Get<LanguageService>().Translate("Reconnect")),
+                    IsHitTestVisible = false,
+                };
+
+                var binding = new Binding("TabHeaderShowReConnectButton")
+                {
+                    Source = SettingsPage,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                };
+                cb.SetBinding(CheckBox.IsCheckedProperty, binding);
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
+                {
+                    Header = cb,
+                    Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowReConnectButton = !SettingsPage.TabHeaderShowReConnectButton; }),
+                });
+            }
+
+            {
+                var cb = new CheckBox
+                {
+                    Content = IoC.Get<LanguageService>().Translate("Show XXX button", IoC.Get<LanguageService>().Translate("Close")),
+                    IsHitTestVisible = false,
+                };
+
+                var binding = new Binding("TabHeaderShowCloseButton")
+                {
+                    Source = SettingsPage,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                };
+                cb.SetBinding(CheckBox.IsCheckedProperty, binding);
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
+                {
+                    Header = cb,
+                    Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowCloseButton = !SettingsPage.TabHeaderShowCloseButton; }),
                 });
             }
         }
@@ -114,6 +160,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
             }
         }
+        public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
         public bool CanFullScreen { get; protected set; }
 

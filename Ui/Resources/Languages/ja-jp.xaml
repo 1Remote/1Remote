@@ -218,7 +218,6 @@
     <s:String x:Key="Default">デフォルト</s:String>
     <s:String x:Key="Exe path">エグゼパス</s:String>
     <s:String x:Key="Cmd parameter">CMDパラメーター</s:String>
-    <s:String x:Key="New runner">新しいランナー</s:String>
     <s:String x:Key="New runner name">新しいランナー名</s:String>
     <s:String x:Key="Can not be empty!">空にすることはできません！</s:String>
     <s:String x:Key="Hosting">ホスティング</s:String>
@@ -248,4 +247,5 @@
     <s:String x:Key="Data Source name">データソース名</s:String>
     <s:String x:Key="Please select a Data Source">データソースを選択してください</s:String>
     <s:String x:Key="Test connection">テスト接続</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
 </ResourceDictionary>

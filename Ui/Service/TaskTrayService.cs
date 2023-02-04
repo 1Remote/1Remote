@@ -134,7 +134,8 @@ namespace _1RM.Service
                     for (var i = 0; i < 20 && i < protocolBaseViewModels.Length; i++)
                     {
                         var protocolBaseViewModel = protocolBaseViewModels[i];
-                        var text = $"{(i + 1):D2}. {protocolBaseViewModel.Server.DisplayName} - {protocolBaseViewModel.Server.SubTitle}";
+                        //var text = $"{(i + 1):D2}. {protocolBaseViewModel.Server.DisplayName} - {protocolBaseViewModel.Server.SubTitle}";
+                        var text = $"{protocolBaseViewModel.Server.DisplayName}";
                         if (text.Length > 30)
                         {
                             text = text.Substring(0, 30) + "...";
