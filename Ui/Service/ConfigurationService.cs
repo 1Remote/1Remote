@@ -22,7 +22,7 @@ namespace PRM.Service
         public DateTime InstallTime = DateTime.Today;
         public bool DoNotShowAgain = false;
         public string DoNotShowAgainVersionString = "";
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public VersionHelper.Version DoNotShowAgainVersion => VersionHelper.Version.FromString(DoNotShowAgainVersionString);
         public DateTime LastRequestRatingsTime = DateTime.MinValue;
         public int ConnectCount = 0;
@@ -38,6 +38,13 @@ namespace PRM.Service
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShowSessionIconInSessionWindow = true;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool TabHeaderShowCloseButton = true;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool TabHeaderShowReConnectButton = false;
         #endregion
     }
 

@@ -257,4 +257,5 @@
     <s:String x:Key="Login with ssh private key">Přihlásit se pomocí soukromého ssh klíče</s:String>
     <s:String x:Key="Environment variables">Proměnné prostředí</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Před startem spouštěče budou nastaveny proměnné prostředí</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
 </ResourceDictionary>

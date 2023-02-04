@@ -257,4 +257,5 @@
     <s:String x:Key="Login with ssh private key">Connectez-vous avec la clé privée ssh</s:String>
     <s:String x:Key="Environment variables">Variables d'environnement</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Avant le démarrage du coureur, les variables d'environnement seront définies</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
 </ResourceDictionary>
