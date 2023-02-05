@@ -524,6 +524,10 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Gateway");
+            if(_rdpClient != null )
+            {
+                throw new NullReferenceException("_rdpClient is null!");
+            }
 
             #region Gateway
 

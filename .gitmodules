@@ -1,6 +1,6 @@
 [submodule "VncSharpCore"]
 	path = VncSharpCore
-	url = https://github.com/VShawn/VncSharpCore.git
+	url = https://github.com/1Remote/VncSharpCore.git
 [submodule "Shawn.Utils"]
 	path = Shawn.Utils
 	url = git@github.com:VShawn/Shawn.Utils.git

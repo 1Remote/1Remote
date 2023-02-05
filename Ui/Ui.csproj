@@ -11,8 +11,8 @@
 		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease;ReleaseNet48</Configurations>
-		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
-		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows10.0.18362.0</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='ReleaseNet48'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreDebug'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net48</TargetFramework>
