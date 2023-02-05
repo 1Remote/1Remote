@@ -16,36 +16,60 @@ jobs:
     env:
       configuration: Release
       Main_Project: Ui/Ui.csproj
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      Action_Url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
+      - name: Echo
+        shell: pwsh
+        run: |
+          echo "url = $env:Action_Url"
+          echo "home = $HOME"
+          echo "github.ref = ${{ github.ref }}"
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: recursive
 
-      # Install the .NET Core workload
+      # Install the .NET Core workload https://github.com/actions/setup-dotnet
       - name: Install .NET Core
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.x
 
-      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
       - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.1
 
-      # cache nuget packages
+      # cache nuget packages: https://github.com/actions/cache
       - name: Cache nuget packages
         id: cache-nuget-packages
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/.nuget/packages
+          path: ${{ github.workspace }}\.nuget\packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('Ui/Ui.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache nuget packages home
+        id: cache-nuget-packages-home
+        uses: actions/cache@v3
+        with:
+          path: C:\Users\runneradmin\.nuget\packages
+          key: ${{ runner.os }}-nuget-home-${{ hashFiles('Ui/Ui.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-home
 
       # Restore nuget packages
       - name: Restore nuget packages 📦️
         run: msbuild $env:Main_Project /t:Restore /p:Configuration=$env:Configuration
+
+      # Run script
+      - name: Run script
+        shell: pwsh
+        run: |
+          ./scripts/Set-Slat.ps1 ${{ secrets.GLOBAL_STRING_ENCRYPTION_SLAT }}
 
       # Publish the application
       - name: Publish the application
