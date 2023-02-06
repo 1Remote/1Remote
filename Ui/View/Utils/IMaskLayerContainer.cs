@@ -1,10 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows;
 using Shawn.Utils;
-using Stylet;
 
-namespace _1RM.View;
+namespace _1RM.View.Utils;
 
 public abstract class MaskLayer : NotifyPropertyChangedBase
 {

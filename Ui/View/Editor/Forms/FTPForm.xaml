@@ -15,12 +15,12 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
                                                                   Tag="e.g. 192.168.0.101"></TextBox>
                 </Grid>
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                    <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
                                  MinWidth="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
@@ -33,7 +33,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -42,7 +42,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -51,7 +51,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sftp_startup_path}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding StartupPath,UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding StartupPath, UpdateSourceTrigger=PropertyChanged}"
                                                                   Tag="e.g. /home/user/Desktop"></TextBox>
                 </Grid>
             </StackPanel>

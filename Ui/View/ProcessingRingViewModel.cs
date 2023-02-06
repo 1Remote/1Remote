@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using _1RM.View.Utils;
 using Shawn.Utils;
 
 namespace _1RM.View

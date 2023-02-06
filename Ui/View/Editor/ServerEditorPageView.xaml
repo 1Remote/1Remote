@@ -10,7 +10,6 @@
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:editor="clr-namespace:_1RM.View.Editor"
-             xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
              xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
@@ -200,7 +199,7 @@
                                 <controls:GridWith4Columns Margin="0 15 0 0">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script before connect'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                             Text="{Binding Server.CommandBeforeConnected, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat before connect'}"
                                              Tag="{DynamicResource 'Run bat before connect'}"/>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -232,7 +231,7 @@
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                             Text="{Binding Server.CommandAfterDisconnected, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat after disconnected'}"
                                              Tag="{DynamicResource 'Run bat after disconnected'}"></TextBox>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal">

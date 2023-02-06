@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using _1RM.View;
+using _1RM.View.Utils;
 using Shawn.Utils.Interface;
 using Stylet;
 using Screen = Stylet.Screen;
