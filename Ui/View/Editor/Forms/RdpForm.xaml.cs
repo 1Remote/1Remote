@@ -20,7 +20,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class RdpForm : FormBase
     {
-        public RdpForm(ProtocolBase vm) : base(vm)
+        public RdpForm(ProtocolBase vm, bool isBuckEdit) : base(vm)
         {
             InitializeComponent();
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
@@ -38,6 +38,7 @@ namespace _1RM.View.Editor.Forms
                     ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
                 }
             };
+            GridAlternativeCredentials.IsEnabled = isBuckEdit == false;
         }
 
 

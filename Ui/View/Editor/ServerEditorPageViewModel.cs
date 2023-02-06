@@ -17,12 +17,16 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
+using _1RM.View.Editor.Forms.Credential;
 using _1RM.View.ServerList;
+using _1RM.View.Settings.DataSource;
+using _1RM.View.Utils;
 using CredentialManagement;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 
 namespace _1RM.View.Editor
 {
@@ -288,7 +292,8 @@ namespace _1RM.View.Editor
                             if (property.SetMethod?.IsPublic == true
                                 && property.SetMethod.IsAbstract == false
                                 && property.Name != nameof(ProtocolBase.Id)
-                                && property.Name != nameof(ProtocolBase.Tags))
+                                && property.Name != nameof(ProtocolBase.Tags)
+                                && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.Credentials))
                             {
                                 var obj = property.GetValue(Server);
                                 if (obj == null)
@@ -352,7 +357,7 @@ namespace _1RM.View.Editor
                         try
                         {
                             // try read user name & password from CredentialManagement.
-                            using var cred = new Credential()
+                            using var cred = new CredentialManagement.Credential()
                             {
                                 Target = "TERMSRV/" + rdp.Address,
                                 Type = CredentialType.Generic,
@@ -471,7 +476,7 @@ namespace _1RM.View.Editor
             {
                 if (protocolType == typeof(RDP))
                 {
-                    ProtocolEditControl = new RdpForm(Server);
+                    ProtocolEditControl = new RdpForm(Server, isBuckEdit: IsBuckEdit);
                 }
                 else if (protocolType == typeof(RdpApp))
                 {
@@ -619,6 +624,76 @@ namespace _1RM.View.Editor
                         }
                     });
                 });
+            }
+        }
+
+
+
+
+
+
+
+        private RelayCommand? _cmdAddCredential;
+        public RelayCommand CmdAddCredential
+        {
+            get
+            {
+                return _cmdAddCredential ??= new RelayCommand((o) =>
+                {
+                    if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
+                    {
+                        var vm = new CredentialEditViewModel(protocol, null);
+                        var id = MaskLayerController.ShowProcessingRingMainWindow();
+                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true
+                            && true != protocol.Credentials?.Any(x => x != vm.New && string.Equals(x.Name, vm.New.Name, StringComparison.CurrentCultureIgnoreCase)))
+                        {
+                            protocol.Credentials ??= new ObservableCollection<CredentialWithAddressPortUserPwd>();
+                            protocol.Credentials.Add(vm.New);
+                        }
+                        MaskLayerController.HideProcessingRing(id);
+                    }
+                }, o => Server is ProtocolBaseWithAddressPortUserPwd);
+            }
+        }
+
+
+
+
+        private RelayCommand? _cmdEditCredential;
+        public RelayCommand CmdEditCredential
+        {
+            get
+            {
+                return _cmdEditCredential ??= new RelayCommand((o) =>
+                {
+                });
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand? _cmdDeleteCredential;
+        public RelayCommand CmdDeleteCredential
+        {
+            get
+            {
+                return _cmdDeleteCredential ??= new RelayCommand((o) =>
+                {
+                    if (o is CredentialWithAddressPortUserPwd credential
+                        && Server is ProtocolBaseWithAddressPortUserPwd protocol)
+                    {
+                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                        {
+                            if (protocol.Credentials?.Contains(credential) == true)
+                            {
+                                protocol.Credentials.Remove(credential);
+                            }
+                        }
+                    }
+                }, o => Server is ProtocolBaseWithAddressPortUserPwd);
             }
         }
     }

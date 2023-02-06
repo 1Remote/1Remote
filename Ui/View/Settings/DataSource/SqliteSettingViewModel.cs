@@ -15,6 +15,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.View.Utils;
 using com.github.xiangyuecn.rsacsharp;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -49,9 +50,6 @@ namespace _1RM.View.Settings.DataSource
                 }
                 OrgSqliteConfig?.Database_CloseConnection();
             }
-        }
-        ~SqliteSettingViewModel()
-        {
         }
 
         protected override void OnViewLoaded()

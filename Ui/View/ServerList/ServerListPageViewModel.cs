@@ -26,6 +26,7 @@ using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
+using _1RM.View.Utils;
 using CredentialManagement;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -572,7 +573,7 @@ namespace _1RM.View.ServerList
                             try
                             {
                                 // try read user name & password from CredentialManagement.
-                                using var cred = new Credential()
+                                using var cred = new CredentialManagement.Credential()
                                 {
                                     Target = "TERMSRV/" + rdp.Address,
                                 };

@@ -8,7 +8,8 @@ using Dragablz;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
-using Shawn.Utils.Interface;
+ using _1RM.View.Utils;
+ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 
