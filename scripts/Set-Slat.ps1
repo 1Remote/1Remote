@@ -18,7 +18,7 @@ $file = Get-ChildItem -Path ..\Ui -Filter AppInit.cs
 
 # Check if the file exists
 if (!$file) {
-    throw "Error: AppInit.cs does not exist."
+    exit
 }
 
 # Replace the content of the file (***SALT***) with the input Slat
