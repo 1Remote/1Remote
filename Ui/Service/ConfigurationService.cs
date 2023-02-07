@@ -45,6 +45,9 @@ namespace PRM.Service
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool TabHeaderShowReConnectButton = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowRecentlySessionInTray = false;
         #endregion
     }
 
@@ -76,7 +79,7 @@ namespace PRM.Service
     {
         public const DatabaseType DatabaseType = Model.DAO.DatabaseType.Sqlite;
 
-        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
+        private string _sqliteDatabasePath = "./" + Assert.APP_NAME + ".db";
         public string SqliteDatabasePath
         {
             get
@@ -225,8 +228,8 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{Assert.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, Assert.APP_NAME);
 #endif
                 return null;
             }

@@ -12,23 +12,6 @@ namespace PRM.Service
 {
     public class AppPathHelper
     {
-        private const string AppName = "PRemoteM";
-#if DEBUG
-        public const string APP_NAME = $"{AppName}_Debug";
-#if FOR_MICROSOFT_STORE_ONLY
-        public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)_Debug";
-#else
-        public const string APP_DISPLAY_NAME = APP_NAME;
-#endif
-#else
-        public const string APP_NAME = $"{AppName}";
-#if FOR_MICROSOFT_STORE_ONLY
-        public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)";
-#else
-        public const string APP_DISPLAY_NAME = APP_NAME;
-#endif
-#endif
-
         public readonly string BaseDirPath;
 
         public AppPathHelper(string baseDirPath)
@@ -67,11 +50,11 @@ namespace PRM.Service
         public const string FORCE_INTO_PORTABLE_MODE = "FORCE_INTO_PORTABLE_MODE";
         public const string FORCE_INTO_APPDATA_MODE = "FORCE_INTO_APPDATA_MODE";
 
-        public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{APP_NAME}.log.md");
-        public string ProfileJsonPath => Path.Combine(BaseDirPath, APP_NAME + ".json");
+        public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{Assert.APP_NAME}.log.md");
+        public string ProfileJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".json");
         [Obsolete]
-        public string ProfileIniPath => Path.Combine(BaseDirPath, APP_NAME + ".ini");
-        public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{APP_NAME}.db");
+        public string ProfileIniPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".ini");
+        public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{Assert.APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");
         public string LocalityJsonPath => Path.Combine(BaseDirPath, "Locality.json");

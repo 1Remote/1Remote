@@ -77,7 +77,7 @@ namespace PRM
             #region Portable mode or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
-                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
+                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME));
                 // 读取旧版本配置信息 TODO remove after 2023.01.01
                 {
                     string iniPath = portablePaths.ProfileIniPath;
@@ -300,7 +300,13 @@ namespace PRM
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
 
-            IoC.Get<TaskTrayService>().TaskTrayInit();
+            if (_isNewUser == false)
+            {
+                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
+                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
+                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled}}", $"{ConfigurationService.Launcher.LauncherEnabled}");
+                MsAppCenterHelper.TraceSpecial($"App start with - Theme}}", $"{ConfigurationService.Theme.ThemeName}");
+            }
         }
     }
 }

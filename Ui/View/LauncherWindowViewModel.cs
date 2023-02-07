@@ -404,6 +404,10 @@ namespace PRM.View
 
                 lock (this)
                 {
+                    if (window.Visibility != Visibility.Visible)
+                    {
+                        MsAppCenterHelper.TraceView(nameof(LauncherWindowView), true);
+                    }
                     window.WindowState = WindowState.Normal;
                     Filter = "";
                     CalcVisibleByFilter();
@@ -443,6 +447,10 @@ namespace PRM.View
                 {
                     Execute.OnUIThread(() =>
                     {
+                        if (window.Visibility == Visibility.Visible)
+                        {
+                            MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
+                        }
                         window.Hide();
                         this.Filter = "";
                         window.GridMenuActions.Visibility = Visibility.Hidden;
@@ -495,7 +503,7 @@ namespace PRM.View
             HideMe();
             if (item?.Id != null)
             {
-                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id, from: nameof(LauncherWindowView));
             }
         }
 

@@ -8,6 +8,7 @@
              xmlns:service="clr-namespace:PRM.Service"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:view="clr-namespace:PRM.View"
+             xmlns:prm="clr-namespace:PRM"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance view:AboutPageViewModel}"
              Background="White"
@@ -75,7 +76,7 @@
                         <Image Source="/Resources/Image/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Grid.IsSharedSizeScope="True">
-                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:AppPathHelper.APP_DISPLAY_NAME}" Margin="0 10 0 0"></TextBlock>
+                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static prm:Assert.APP_DISPLAY_NAME}" Margin="0 10 0 0"></TextBlock>
                                 <Grid Style="{StaticResource RowGrid}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>

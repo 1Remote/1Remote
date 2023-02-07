@@ -313,11 +313,13 @@ namespace PRM.View.Editor
                     // edit
                     else if (Server.Id > 0)
                     {
+                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
                         _globalData.UpdateServer(Server);
                     }
                     // add
                     else
                     {
+                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
                         _globalData.AddServer(Server);
                     }
                     IoC.Get<MainWindowViewModel>().ShowList();
@@ -419,56 +421,48 @@ namespace PRM.View.Editor
         {
             Debug.Assert(protocolType?.FullName != null);
 
-            try
+            if (protocolType == typeof(RDP))
             {
-                if (protocolType == typeof(RDP))
-                {
-                    ProtocolEditControl = new RdpForm(Server);
-                }
-                else if (protocolType == typeof(RdpApp))
-                {
-                    ProtocolEditControl = new RdpAppForm(Server);
-                }
-                else if (protocolType == typeof(SSH))
-                {
-                    ProtocolEditControl = new SshForm(Server);
-                }
-                else if (protocolType == typeof(Telnet))
-                {
-                    ProtocolEditControl = new TelnetForm(Server);
-                }
-                else if (protocolType == typeof(FTP))
-                {
-                    ProtocolEditControl = new FTPForm(Server);
-                }
-                else if (protocolType == typeof(SFTP))
-                {
-                    ProtocolEditControl = new SftpForm(Server);
-                }
-                else if (protocolType == typeof(VNC))
-                {
-                    ProtocolEditControl = new VncForm(Server);
-                }
-                else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
-                {
-                    ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
-                }
-                else if (protocolType == typeof(ProtocolBaseWithAddressPort))
-                {
-                    ProtocolEditControl = new BaseFormWithAddressPort(Server);
-                }
-                else if (protocolType == typeof(LocalApp))
-                {
-                    ProtocolEditControl = new AppForm(Server);
-                }
-                else
-                    throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");
+                ProtocolEditControl = new RdpForm(Server);
             }
-            catch (Exception e)
+            else if (protocolType == typeof(RdpApp))
             {
-                SimpleLogHelper.Error(e);
-                throw;
+                ProtocolEditControl = new RdpAppForm(Server);
             }
+            else if (protocolType == typeof(SSH))
+            {
+                ProtocolEditControl = new SshForm(Server);
+            }
+            else if (protocolType == typeof(Telnet))
+            {
+                ProtocolEditControl = new TelnetForm(Server);
+            }
+            else if (protocolType == typeof(FTP))
+            {
+                ProtocolEditControl = new FTPForm(Server);
+            }
+            else if (protocolType == typeof(SFTP))
+            {
+                ProtocolEditControl = new SftpForm(Server);
+            }
+            else if (protocolType == typeof(VNC))
+            {
+                ProtocolEditControl = new VncForm(Server);
+            }
+            else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
+            {
+                ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
+            }
+            else if (protocolType == typeof(ProtocolBaseWithAddressPort))
+            {
+                ProtocolEditControl = new BaseFormWithAddressPort(Server);
+            }
+            else if (protocolType == typeof(LocalApp))
+            {
+                ProtocolEditControl = new AppForm(Server);
+            }
+            else
+                throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");
         }
 
         private void UpdateRunners(string protocolName)
@@ -550,7 +544,7 @@ namespace PRM.View.Editor
                             if (!string.IsNullOrWhiteSpace(cmd))
                             {
                                 var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
-                                if(string.IsNullOrEmpty(tuple.Item2) == false)
+                                if (string.IsNullOrEmpty(tuple.Item2) == false)
                                     MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
                                 WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
                             }

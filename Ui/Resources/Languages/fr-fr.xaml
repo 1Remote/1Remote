@@ -258,4 +258,6 @@
     <s:String x:Key="Environment variables">Variables d'environnement</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Avant le démarrage du coureur, les variables d'environnement seront définies</s:String>
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
+    <s:String x:Key="Show recently used here">Afficher récemment utilisé ici</s:String>
+    <s:String x:Key="Hide recently used">Masquer récemment utilisé</s:String>
 </ResourceDictionary>

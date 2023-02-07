@@ -258,4 +258,6 @@
     <s:String x:Key="Environment variables">Proměnné prostředí</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">Před startem spouštěče budou nastaveny proměnné prostředí</s:String>
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
+    <s:String x:Key="Show recently used here">Zobrazit nedávno použité zde</s:String>
+    <s:String x:Key="Hide recently used">Skrýt nedávno použité</s:String>
 </ResourceDictionary>

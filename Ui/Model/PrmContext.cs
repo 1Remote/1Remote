@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using PRM.Model.DAO;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 using static PRM.Service.LanguageService;
@@ -67,6 +68,7 @@ namespace PRM.Model
                 // in case of fi.Directory.Create() throw an exception.
                 // in case of dapper.OpenConnection throw `unable to open database file`
                 SimpleLogHelper.Error(e);
+                MsAppCenterHelper.Error(e);
                 return EnumDbStatus.AccessDenied;
             }
         }

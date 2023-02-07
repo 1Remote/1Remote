@@ -8,6 +8,7 @@ using PRM.Model;
 using PRM.Model.DAO;
 using PRM.Model.DAO.Dapper;
 using PRM.Service;
+using PRM.Utils;
 using PRM.View;
 using PRM.View.Editor;
 using PRM.View.ErrorReport;
@@ -35,9 +36,9 @@ namespace PRM
 
         #region OnlyOneAppInstanceCheck
 #if FOR_MICROSOFT_STORE_ONLY
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
 #else
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
 #endif
         public void OnlyOneAppInstanceCheck()
         {
@@ -125,6 +126,11 @@ namespace PRM
 
         protected override void OnLaunch()
         {
+#if FOR_MICROSOFT_STORE_ONLY
+            MsAppCenterHelper.TraceAppStatus(true, true);
+#else
+            MsAppCenterHelper.TraceAppStatus(true, false);
+#endif
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here
@@ -132,6 +138,7 @@ namespace PRM
 
             // init Database here after ui init, to show alert if db connection goes wrong.
             _appInit.InitOnLaunch();
+            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
 
 
@@ -151,6 +158,7 @@ namespace PRM
             lock (this)
             {
                 SimpleLogHelper.Fatal(e.Exception);
+
                 var errorReport = new ErrorReportWindow(e.Exception);
                 errorReport.ShowDialog();
 #if FOR_MICROSOFT_STORE_ONLY

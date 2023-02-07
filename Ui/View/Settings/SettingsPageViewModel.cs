@@ -379,7 +379,7 @@ namespace PRM.View.Settings
             if (string.IsNullOrEmpty(privateKeyPath))
             {
                 var path = SelectFileHelper.OpenFile(
-                    selectedFileName: AppPathHelper.APP_DISPLAY_NAME + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                    selectedFileName: Assert.APP_DISPLAY_NAME + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     checkFileExists: false,
                     filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                 if (path == null) return;

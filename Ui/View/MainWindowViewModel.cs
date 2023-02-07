@@ -240,6 +240,10 @@ namespace PRM.View
 
             if (this.View is Window window)
             {
+                if (window.Visibility != Visibility.Visible)
+                {
+                    MsAppCenterHelper.TraceView(nameof(MainWindowView), true);
+                }
                 Execute.OnUIThread(() =>
                 {
                     if (window.WindowState == WindowState.Minimized)
@@ -269,6 +273,10 @@ namespace PRM.View
                 Shawn.Utils.ConsoleManager.Hide();
             if (this.View is Window window)
             {
+                if (window.Visibility == Visibility.Visible)
+                {
+                    MsAppCenterHelper.TraceView(nameof(MainWindowView), false);
+                }
                 Execute.OnUIThread(() =>
                 {
                     window.ShowInTaskbar = false;
