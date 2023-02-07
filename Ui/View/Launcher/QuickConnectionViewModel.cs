@@ -251,6 +251,8 @@ namespace _1RM.View.Launcher
                     }
                 }
 
+                MsAppCenterHelper.TraceSpecial("Quick connect", server.Protocol);
+
                 // save history
                 IoC.Get<LocalityService>().QuickConnectionHistoryAdd(new QuickConnectionItem() { Host = host, Protocol = protocol });
                 GlobalEventHelper.OnRequestQuickConnect?.Invoke(server);

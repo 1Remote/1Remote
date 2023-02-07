@@ -142,7 +142,7 @@ namespace _1RM.View.Host
         {
             if (SelectedItem != null)
             {
-                this.Title = SelectedItem.Header + " - " + AppPathHelper.APP_DISPLAY_NAME;
+                this.Title = SelectedItem.Header + " - " + Assert.APP_DISPLAY_NAME;
             }
         }
 

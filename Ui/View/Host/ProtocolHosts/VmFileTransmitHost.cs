@@ -66,7 +66,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     }
                     catch (Exception e)
                     {
-                        SimpleLogHelper.Fatal(e);
+                        SimpleLogHelper.Error(e);
                         IoMessageLevel = 2;
                         IoMessage = e.Message;
                     }

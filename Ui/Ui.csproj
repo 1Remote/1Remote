@@ -26,6 +26,7 @@
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<RunPostBuildEvent>Always</RunPostBuildEvent>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='StoreRelease'">
@@ -117,6 +118,8 @@
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
 		<PackageReference Include="MySql.Data" Version="8.0.30" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="NUlid" Version="1.7.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
@@ -440,5 +443,13 @@
 			<SubType>Designer</SubType>
 		</Page>
 	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot;" />
+	</Target>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot; -isRevert" />
+	</Target>
 
 </Project>

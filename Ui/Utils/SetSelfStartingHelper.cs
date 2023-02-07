@@ -175,7 +175,7 @@ namespace _1RM.Utils
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 #if !DEV
-            key?.DeleteValue(AppPathHelper.APP_NAME, false);
+            key?.DeleteValue(Assert.APP_NAME, false);
 #endif
             return key?.GetValueNames().Contains(appName) == true;
         }

@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using _1RM.Model;
-using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using _1RM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -27,7 +25,8 @@ namespace _1RM.Service
         {
             if (e.PropertyName == nameof(ProtocolBaseViewModel.LastConnectTime))
             {
-                ReloadTaskTrayContextMenu();
+                if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray)
+                    ReloadTaskTrayContextMenu();
             }
         }
 
@@ -48,7 +47,7 @@ namespace _1RM.Service
             {
                 _taskTrayIcon ??= new System.Windows.Forms.NotifyIcon
                 {
-                    Text = AppPathHelper.APP_DISPLAY_NAME,
+                    Text = Assert.APP_DISPLAY_NAME,
                     BalloonTipText = "",
                     Icon = icon,
                     Visible = true
@@ -97,10 +96,12 @@ namespace _1RM.Service
             // rebuild TaskTrayContextMenu while language changed
             if (_taskTrayIcon == null) return;
 
-            var title = new System.Windows.Forms.ToolStripMenuItem(AppPathHelper.APP_DISPLAY_NAME);
+            var title = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
             title.Click += (sender, args) =>
             {
                 HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
+                IoC.Get<MainWindowViewModel>().ShowMe(true);
+                IoC.Get<MainWindowViewModel>().CmdGoAboutPage.Execute();
             };
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
@@ -117,16 +118,15 @@ namespace _1RM.Service
             {
                 lock (this)
                 {
+                    MsAppCenterHelper.TraceAppStatus(false);
                     TaskTrayDispose();
                     App.Close();
                 }
             };
 
-
             _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
-            _taskTrayIcon.ContextMenuStrip.Items.Add(title);
-            _taskTrayIcon.ContextMenuStrip.Items.Add("-");
 
+            if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray)
             {
                 var protocolBaseViewModels = IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime).Take(20).ToArray();
                 if (protocolBaseViewModels.Any())
@@ -140,12 +140,44 @@ namespace _1RM.Service
                         {
                             text = text.Substring(0, 30) + "...";
                         }
+
                         var button = new System.Windows.Forms.ToolStripMenuItem(text);
-                        button.Click += (sender, args) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolBaseViewModel.Id); };
+                        button.Click += (sender, args) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolBaseViewModel.Id, via: "Tray"); };
                         _taskTrayIcon.ContextMenuStrip.Items.Add(button);
                     }
+
+                    _taskTrayIcon.ContextMenuStrip.Items.Add("-");
+
+
+                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Hide recently used"));
+                    item.Click += (sender, args) =>
+                    {
+                        IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = false;
+                        IoC.Get<ConfigurationService>().Save();
+                        ReloadTaskTrayContextMenu();
+                        MsAppCenterHelper.TraceSpecial("Tray recently", "Hide");
+                    };
+                    _taskTrayIcon.ContextMenuStrip.Items.Add(item);
                     _taskTrayIcon.ContextMenuStrip.Items.Add("-");
                 }
+            }
+
+
+
+            _taskTrayIcon.ContextMenuStrip.Items.Add(title);
+            _taskTrayIcon.ContextMenuStrip.Items.Add("-");
+
+            if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray == false)
+            {
+                var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Show recently used here"));
+                item.Click += (sender, args) =>
+                {
+                    IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = true;
+                    IoC.Get<ConfigurationService>().Save();
+                    ReloadTaskTrayContextMenu();
+                    MsAppCenterHelper.TraceSpecial("Tray recently", "Show");
+                };
+                _taskTrayIcon.ContextMenuStrip.Items.Add(item);
             }
 
             //_taskTrayIcon.ContextMenuStrip.Items.Add(linkHowToUse);

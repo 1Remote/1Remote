@@ -142,6 +142,10 @@ namespace _1RM.View
 
                 lock (this)
                 {
+                    if (window.Visibility != Visibility.Visible)
+                    {
+                        MsAppCenterHelper.TraceView(nameof(LauncherWindowView), true);
+                    }
                     window.WindowState = WindowState.Normal;
                     QuickConnectionViewModel.SelectedProtocol = QuickConnectionViewModel.Protocols.First();
                     ReSetWindowHeight();
@@ -183,6 +187,10 @@ namespace _1RM.View
                 {
                     Execute.OnUIThread(() =>
                     {
+                        if (window.Visibility == Visibility.Visible)
+                        {
+                            MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
+                        }
                         window.Hide();
                         ServerSelectionsViewModel.Show();
                         // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:

@@ -247,7 +247,7 @@ namespace _1RM.View.Launcher
             _lvm.HideMe();
             if (item?.Id != null)
             {
-                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id, via: nameof(LauncherWindowView));
             }
         }
 
@@ -272,7 +272,7 @@ namespace _1RM.View.Launcher
         {
             if (sender is Button { Tag: string id })
             {
-                var s = _vm.VmServerList.FirstOrDefault(x=>x.Id == id);
+                var s = _vm.VmServerList.FirstOrDefault(x => x.Id == id);
                 if (s != null)
                 {
                     _vm.SelectedIndex = _vm.VmServerList.IndexOf(s);

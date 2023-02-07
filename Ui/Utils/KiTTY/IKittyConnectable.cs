@@ -185,7 +185,7 @@ reload=yes
 
         public static string GetInternalKittyExeFullName()
         {
-            string kittyExeName = $"kitty_portable_{AppPathHelper.APP_NAME}.exe";
+            string kittyExeName = $"kitty_portable_{Assert.APP_NAME}.exe";
             if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
                 Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
             var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, kittyExeName);

@@ -113,7 +113,7 @@ namespace _1RM.View.Utils
             Action? onButtonClicked = null)
         {
             this.Text = messageBoxText;
-            this.DisplayName = $"{AppPathHelper.APP_DISPLAY_NAME} - {caption}";
+            this.DisplayName = $"{Assert.APP_DISPLAY_NAME} - {caption}";
             this.Icon = icon;
             var buttonList = new BindableCollection<LabelledValue<MessageBoxResult>>();
             this.ButtonList = buttonList;

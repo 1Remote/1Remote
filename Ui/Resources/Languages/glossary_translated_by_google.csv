@@ -276,3 +276,5 @@ Data Source name,Data Source name,数据源名称,Data Source name,Data Source n
 Please select a Data Source,Please select a Data Source,请选择一个数据源,Please select a Data Source,Please select a Data Source,Please select a Data Source,Please select a Data Source,データソースを選択してください
 Test connection,Test connection,测试连接,Test connection,Test connection,Test connection,Conexão de teste,テスト接続
 Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button
+Show recently used here, Show recently used here, 在此显示最近使用的会话,Zobrazit nedávno použité zde,Kürzlich verwendete hier anzeigen,Afficher récemment utilisé ici,Mostrar usado recentemente aqui,最近使用したものをここに表示
+Hide recently used, Hide recently used, 隐藏最近使用的会话,Skrýt nedávno použité,Zuletzt verwendete ausblenden,Masquer récemment utilisé,Ocultar usado recentemente,最近使用したものを非表示
