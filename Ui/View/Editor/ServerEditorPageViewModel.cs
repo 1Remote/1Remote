@@ -344,11 +344,13 @@ namespace _1RM.View.Editor
                     else if (IsAddMode == false
                              && Server.IsTmpSession() == false)
                     {
+                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
                         _globalData.UpdateServer(Server);
                     }
                     // add
                     else if (IsAddMode && _addToDataSource != null)
                     {
+                         MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
                         _globalData.AddServer(Server, _addToDataSource);
                     }
 

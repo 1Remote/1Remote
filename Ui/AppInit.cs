@@ -85,7 +85,7 @@ namespace _1RM
             #region Portable mode or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
-                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppPathHelper.APP_NAME));
+                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME));
 
                 bool isPortableMode = false;
                 {
@@ -102,7 +102,7 @@ namespace _1RM
 #endif
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
-                    
+
                     if (forcePortable == true && forceAppData == false)
                     {
                         isPortableMode = true;
@@ -129,7 +129,7 @@ namespace _1RM
                             File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                         if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
                             File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
-                        
+
 
                         if (portableProfilePathExisted)
                         {
@@ -221,7 +221,7 @@ namespace _1RM
                     CreateDirIfNotExist(paths.LocalityJsonPath, true);
                 }
             }
-#endregion
+            #endregion
 
             // logger init
             {
@@ -313,7 +313,13 @@ namespace _1RM
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
 
-            IoC.Get<TaskTrayService>().TaskTrayInit();
+            if (_isNewUser == false)
+            {
+                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
+                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
+                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled}}", $"{ConfigurationService.Launcher.LauncherEnabled}");
+                MsAppCenterHelper.TraceSpecial($"App start with - Theme}}", $"{ConfigurationService.Theme.ThemeName}");
+            }
         }
     }
 }

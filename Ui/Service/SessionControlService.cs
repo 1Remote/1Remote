@@ -306,11 +306,15 @@ namespace _1RM.Service
             }
         }
 
-        private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName, string? via)
         {
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
+
+
+            if (string.IsNullOrEmpty(via) == false)
+                MsAppCenterHelper.TraceSessionOpen(server.Protocol, via);
 
             // run script before connected
             server.RunScriptBeforeConnect();
@@ -349,7 +353,7 @@ namespace _1RM.Service
             PrintCacheCount();
         }
 
-        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName, string via)
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
@@ -358,7 +362,7 @@ namespace _1RM.Service
                 var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)
                 {
-                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
+                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName, "");
                 }
                 return;
             }
@@ -375,11 +379,12 @@ namespace _1RM.Service
                 return;
             }
 
+
             // update the last conn time
             ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
             vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
 
-            ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName);
+            ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName, via);
         }
 
         public void AddTab(TabWindowBase tab)

@@ -9,6 +9,7 @@
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                   xmlns:service="clr-namespace:_1RM.Service"
                   xmlns:serverList="clr-namespace:_1RM.View.ServerList"
+                  xmlns:Rm="clr-namespace:_1RM"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -16,7 +17,7 @@
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Style="{StaticResource WindowChromeBaseBaseStyle}"
-                  Title="{x:Static service:AppPathHelper.APP_NAME}" 
+                  Title="{x:Static Rm:Assert.APP_NAME}" 
                   Height="560" Width="900" 
                   MinWidth="700" MinHeight="500">
     <styles:WindowChromeBase.Resources>

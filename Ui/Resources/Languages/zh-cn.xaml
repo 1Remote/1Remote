@@ -248,4 +248,6 @@
     <s:String x:Key="Please select a Data Source">请选择一个数据源</s:String>
     <s:String x:Key="Test connection">测试连接</s:String>
     <s:String x:Key="Show XXX button">显示 `{0}` 按钮</s:String>
+    <s:String x:Key="Show recently used here"> 在此显示最近使用的会话</s:String>
+    <s:String x:Key="Hide recently used"> 隐藏最近使用的会话</s:String>
 </ResourceDictionary>

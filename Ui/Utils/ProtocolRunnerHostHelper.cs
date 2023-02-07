@@ -145,7 +145,7 @@ namespace _1RM.Utils
                 case SSH ssh:
                     {
                         var kittyRunner = (runner as KittyRunner) ?? new KittyRunner(ssh.ProtocolDisplayName);
-                        var sessionName = $"{AppPathHelper.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        var sessionName = $"{Assert.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
                         var host = new IntegrateHost(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName))
                         {
@@ -156,7 +156,7 @@ namespace _1RM.Utils
                 case Telnet telnet:
                     {
                         var kittyRunner = (runner as KittyRunner) ?? new KittyRunner(telnet.ProtocolDisplayName);
-                        var sessionName = $"{AppPathHelper.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        var sessionName = $"{Assert.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         telnet.ConfigKitty(sessionName, kittyRunner, "");
                         var host = new IntegrateHost(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName))
                         {

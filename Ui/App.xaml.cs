@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using _1RM.Utils;
 
 namespace _1RM
 {
@@ -10,6 +11,8 @@ namespace _1RM
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
+
             AppInit.InitOnStartup();
             ResourceDictionary = this.Resources;
             base.OnStartup(e);

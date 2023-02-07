@@ -2,10 +2,9 @@
 using System.Windows;
 using System.Windows.Threading;
 using _1RM.Model;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Editor;
 using _1RM.View.ErrorReport;
@@ -33,9 +32,9 @@ namespace _1RM
 
         #region OnlyOneAppInstanceCheck
 #if FOR_MICROSOFT_STORE_ONLY
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
 #else
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(AppPathHelper.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
+        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
 #endif
         public void OnlyOneAppInstanceCheck()
         {
@@ -127,6 +126,11 @@ namespace _1RM
 
         protected override void OnLaunch()
         {
+#if FOR_MICROSOFT_STORE_ONLY
+            MsAppCenterHelper.TraceAppStatus(true, true);
+#else
+            MsAppCenterHelper.TraceAppStatus(true, false);
+#endif
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here
@@ -134,6 +138,7 @@ namespace _1RM
 
             // init Database here after ui init, to show alert if db connection goes wrong.
             _appInit.InitOnLaunch();
+            IoC.Get<TaskTrayService>().TaskTrayInit();
         }
 
 

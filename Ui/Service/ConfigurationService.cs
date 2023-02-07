@@ -47,6 +47,9 @@ namespace _1RM.Service
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool TabHeaderShowReConnectButton = false;
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowRecentlySessionInTray = false;
         #endregion
     }
 
@@ -79,7 +82,7 @@ namespace _1RM.Service
     //    public SqliteSource LocalDataSource { get; set; } = new SqliteSource()
     //    {
     //        DataSourceName = DataSourceService.LOCAL_DATA_SOURCE_NAME,
-    //        Path = "./" + AppPathHelper.APP_NAME + ".db"
+    //        Path = "./" + Assert.APP_NAME + ".db"
     //    };
     //    public List<DataSourceBase> AdditionalDataSource { get; set; } = new List<DataSourceBase>();
     //}
@@ -113,7 +116,7 @@ namespace _1RM.Service
         public System.Windows.Media.Color GetAccentTextColor => ColorAndBrushHelper.HexColorToMediaColor(AccentTextColor);
 
         public System.Windows.Media.Color GetBackgroundColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundColor);
-        public System.Windows.Media.Color GetBackgroundTextColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor); 
+        public System.Windows.Media.Color GetBackgroundTextColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor);
         #endregion
     }
 
@@ -124,7 +127,7 @@ namespace _1RM.Service
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public int DatabaseCheckPeriod { get; set; } = 10;
 
-        private string _sqliteDatabasePath = "./" + AppPathHelper.APP_NAME + ".db";
+        private string _sqliteDatabasePath = "./" + Assert.APP_NAME + ".db";
         public string SqliteDatabasePath
         {
             get => _sqliteDatabasePath;
@@ -262,11 +265,11 @@ namespace _1RM.Service
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(true, AppPathHelper.APP_NAME);
-                SetSelfStartingHelper.SetSelfStartByStartupTask(false, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(true, Assert.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(false, Assert.APP_NAME);
 #else
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(true, AppPathHelper.APP_NAME);
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(false, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(true, Assert.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(false, Assert.APP_NAME);
 #endif
                 return null;
             }
@@ -283,10 +286,10 @@ namespace _1RM.Service
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, Assert.APP_NAME);
 #else
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppPathHelper.APP_NAME}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppPathHelper.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{Assert.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, Assert.APP_NAME);
 #endif
                 return null;
             }
