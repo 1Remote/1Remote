@@ -300,7 +300,7 @@ namespace PRM.Service
             }
         }
 
-        private void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName)
+        private void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName, string? via)
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
@@ -309,11 +309,12 @@ namespace PRM.Service
                 var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)
                 {
-                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
+                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName, "");
                 }
                 return;
             }
             #endregion
+
 
             Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == serverId));
             _configurationService.Engagement.ConnectCount++;
@@ -327,6 +328,9 @@ namespace PRM.Service
                 SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
                 return;
             }
+
+            if (string.IsNullOrEmpty(via) == false)
+                MsAppCenterHelper.TraceSessionOpen(server.Protocol, via);
 
             // update the last conn time
             // TODO remember connection time in the localstorage
@@ -389,6 +393,7 @@ namespace PRM.Service
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
+                    MsAppCenterHelper.Error(e);
                     throw;
                 }
             });

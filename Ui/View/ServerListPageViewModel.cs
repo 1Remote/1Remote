@@ -497,6 +497,7 @@ namespace PRM.View
                     // set tab token, show in new tab
                     if (selected.Length > 1)
                         token = DateTime.Now.Ticks.ToString();
+                    MsAppCenterHelper.TraceSessionOpen("multiple", nameof(MainWindowView));
                     foreach (var vmProtocolServer in ServerListItems.Where(x => x.IsSelected == true).ToArray())
                     {
                         GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);

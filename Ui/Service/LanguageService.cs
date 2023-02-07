@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using PRM.Model;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -145,6 +146,7 @@ namespace PRM.Service
             if (_applicationResourceDictionary.Contains(key))
                 return _applicationResourceDictionary[key].ToString() ?? key;
 
+            MsAppCenterHelper.Error(new DirectoryNotFoundException($"int {_languageCode}, key not found: {key}"));
 #if DEBUG
             var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);
             tw.WriteLine(key);

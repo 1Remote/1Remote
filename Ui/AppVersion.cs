@@ -8,7 +8,7 @@ namespace PRM
         public const uint Minor = 7;
         public const uint Patch = 2;
         public const uint Build = 2;
-        public const string PreRelease = "beta"; // e.g. "alpha" "beta.2"
+        public const string PreRelease = ""; // e.g. "alpha" "beta.2"
 
         public static readonly VersionHelper.Version VersionData = new VersionHelper.Version(Major, Minor, Patch, Build, PreRelease);
         public static string Version => VersionData.ToString();

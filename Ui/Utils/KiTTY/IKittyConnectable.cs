@@ -33,7 +33,7 @@ namespace PRM.Utils.KiTTY
         {
             if (item is ProtocolBase protocolServer)
             {
-                return $"{AppPathHelper.APP_NAME}_{protocolServer.Protocol}_{protocolServer.Id}";
+                return $"{Assert.APP_NAME}_{protocolServer.Protocol}_{protocolServer.Id}";
             }
             throw new NotSupportedException("you should not access here! something goes wrong");
         }

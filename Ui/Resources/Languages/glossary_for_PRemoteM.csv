@@ -274,3 +274,5 @@ Login with ssh private key,Login with ssh private key,通过私钥登录,Přihl�
 Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,,Variáveis de ambiente,
 Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,,,,
 Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,
+Show recently used here, Show recently used here, 在此显示最近使用的会话,,,,,
+Hide recently used, Hide recently used, 隐藏最近使用的会话,,,,,

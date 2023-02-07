@@ -275,6 +275,7 @@ namespace PRM.View
                         return;
                     foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
                     {
+                        MsAppCenterHelper.TraceSessionOpen("multiple", "TagConnect");
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {
                             GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id);
@@ -299,6 +300,7 @@ namespace PRM.View
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();
+                    MsAppCenterHelper.TraceSessionOpen("multiple", "TagConnect");
                     foreach (var vmProtocolServer in AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))

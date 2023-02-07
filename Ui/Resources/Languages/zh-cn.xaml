@@ -258,4 +258,6 @@
     <s:String x:Key="Environment variables">环境变量</s:String>
     <s:String x:Key="Before runner start the environment variables will be set">环境变量将在启动前写入Runner</s:String>
     <s:String x:Key="Show XXX button">显示 `{0}` 按钮</s:String>
+    <s:String x:Key="Show recently used here"> 在此显示最近使用的会话</s:String>
+    <s:String x:Key="Hide recently used"> 隐藏最近使用的会话</s:String>
 </ResourceDictionary>

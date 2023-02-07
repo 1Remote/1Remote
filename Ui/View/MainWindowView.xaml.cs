@@ -32,7 +32,7 @@ namespace PRM.View
             Vm = vm;
             _configurationService = configurationService;
             this.DataContext = Vm;
-            Title = AppPathHelper.APP_DISPLAY_NAME;
+            Title = Assert.APP_DISPLAY_NAME;
             // restore the window size from 
             this.Width = localityService.MainWindowWidth;
             this.Height = localityService.MainWindowHeight;

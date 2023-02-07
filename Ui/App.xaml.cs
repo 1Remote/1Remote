@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using PRM;
 using PRM.Service;
+using PRM.Utils;
 using PRM.View;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -15,6 +16,7 @@ namespace Ui
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
             ResourceDictionary = this.Resources;
             base.OnStartup(e);

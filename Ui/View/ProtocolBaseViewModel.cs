@@ -72,7 +72,7 @@ namespace PRM.View
             {
                 return _cmdConnServer ??= new RelayCommand(o =>
                 {
-                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id, from: nameof(MainWindowView));
                 });
             }
         }

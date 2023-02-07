@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:PRM.View.Guidance"
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:service="clr-namespace:PRM.Service"
+             xmlns:prm="clr-namespace:PRM"
              mc:Ignorable="d" Background="{DynamicResource PrimaryMidBrush}"
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -49,7 +50,7 @@
                 <Grid HorizontalAlignment="Center">
                     <Image Source="/Resources/Image/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
                 </Grid>
-                <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static service:AppPathHelper.APP_NAME}"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static prm:Assert.APP_NAME}"></TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
                     <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/1Remote/PRemoteM">https://github.com/1Remote/PRemoteM</Hyperlink>
                 </TextBlock>
