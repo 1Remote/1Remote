@@ -236,7 +236,9 @@ namespace PRM
             {
 #if DEBUG
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-                ConsoleManager.Show();
+                Shawn.Utils.ConsoleManager.Show();
+#else
+                Shawn.Utils.ConsoleManager.Hide();
 #endif
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
                 SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
