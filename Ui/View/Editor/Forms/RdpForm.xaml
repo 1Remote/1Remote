@@ -81,78 +81,63 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:alternative"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DataGridColumnHeaderBaseStyle}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </Style>
+                        </Grid.Resources>
 
-                        <DataGrid AutoGenerateColumns="False"
-                                  HorizontalAlignment="Stretch" 
-                                  HorizontalContentAlignment="Stretch" 
-                                  CanUserSortColumns="False"
-                                  CanUserResizeColumns="False"
-                                  CanUserResizeRows="False"
-                                  CanUserReorderColumns="False"
-                                  ColumnWidth="*"
-                                  IsReadOnly="True"
-                                  ItemsSource="{Binding Credentials}" >
+                        <StackPanel>
+                            <Button Command="{Binding Path=DataContext.CmdAddCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}">Add</Button>
+                            <DataGrid AutoGenerateColumns="False"
+                                      HorizontalAlignment="Stretch" 
+                                      HorizontalContentAlignment="Stretch" 
+                                      CanUserSortColumns="False"
+                                      CanUserResizeColumns="False"
+                                      CanUserResizeRows="False"
+                                      CanUserReorderColumns="False"
+                                      ColumnWidth="*"
+                                      IsReadOnly="True"
+                                      ItemsSource="{Binding Credentials}" >
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="*" Header="{DynamicResource Name}">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                    <Grid Width="20"></Grid>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                            <DataGrid.Columns>
-
-                                <DataGridTemplateColumn Width="Auto" Header="{DynamicResource Name}">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}"></TextBlock>
-                                                <Grid Width="20"></Grid>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-
-                                <DataGridTemplateColumn Width="Auto" Header="">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding DatabaseType}"></TextBlock>
-                                                <Grid Width="20"></Grid>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <DataGridTextColumn Width="2*" Header="" Binding="{Binding Description}"/>
-
-                                <DataGridTemplateColumn Width="0.5*" MinWidth="100" Header="">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Button Content="{DynamicResource Edit}"
+                                    <DataGridTemplateColumn Width="Auto" Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <Button Content="{DynamicResource Edit}"
                                                         Margin="5"
-                                                        Command="{Binding Path=DataContext.CmdEdit, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                                        Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
                                                         CommandParameter="{Binding}"></Button>
-                                                <Button Content="{DynamicResource Delete}" 
+                                                    <Button Content="{DynamicResource Delete}" 
                                                         Margin="5"
-                                                        Command="{Binding Path=DataContext.CmdDelete, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                                        Command="{Binding Path=DataContext.CmdDeleteCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
                                                         CommandParameter="{Binding}">
-                                                </Button>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
 
-
-
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Height="35" HorizontalAlignment="Right">
-                            <!--ADD DATA SOURCE BUTTON-->
-                            <Button
-                                Command="{Binding Path=DataContext.CmdAddCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                >Add</Button>
                         </StackPanel>
+
                     </Grid>
                 </StackPanel>
             </Grid>
         </StackPanel>
+
 
         <StackPanel>
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_display}"></TextBlock>
@@ -596,6 +581,7 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+
 
         <StackPanel>
             <StackPanel.Resources>

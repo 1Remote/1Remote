@@ -31,6 +31,7 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <PackageCertificateKeyFile>Installer_TemporaryKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\Ui\Ui.csproj</EntryPointProjectUniqueName>
+    <PackageCertificateThumbprint>4F04B56408BCE349E462DD18B2DEC3E21AAFF55C</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -87,7 +88,6 @@
     <Content Include="Images\Square44x44Logo.targetsize-32.png" />
     <Content Include="Images\Square44x44Logo.targetsize-48.png" />
     <None Include="Installer_TemporaryKey.pfx" />
-    <None Include="Shawn_Microsoft_Store_Installer_Key_20220107.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>

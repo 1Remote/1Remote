@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -274,9 +275,22 @@ namespace _1RM.Model.Protocol.Base
         /// </summary>
         public ProtocolBase Clone()
         {
+            // TODO 使用 json 序列化来实现深拷贝
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
             clone.Tags = new List<string>(this.Tags);
+            if (this is ProtocolBaseWithAddressPortUserPwd p
+                && clone is ProtocolBaseWithAddressPortUserPwd c)
+            {
+                if (p.Credentials != null)
+                {
+                    c.Credentials = new ObservableCollection<CredentialWithAddressPortUserPwd>(p.Credentials.Select(x => x.Clone() as CredentialWithAddressPortUserPwd));
+                }
+                else
+                {
+                    c.Credentials = null;
+                }
+            }
             return clone;
         }
 

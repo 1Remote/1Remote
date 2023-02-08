@@ -11,7 +11,7 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro-%E7%AE%80%E4%BD
 1Remote is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions supporting number of different protocols.
 
 ```[SHELL]
-Since word `pre-mortem` has a awful meaning and `1Remote` is not easy to remember or spell.
+Since word `pre-mortem` has a awful meaning and `PRemoteM` is not easy to remember or spell.
 
 This App Will Rename to 1Remote in the feature..
 ```
