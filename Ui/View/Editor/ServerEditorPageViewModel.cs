@@ -6,20 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
-using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
-using _1RM.View.Editor.Forms.Credential;
-using _1RM.View.ServerList;
-using _1RM.View.Settings.DataSource;
+using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
 using CredentialManagement;
 using Shawn.Utils;
@@ -644,7 +638,7 @@ namespace _1RM.View.Editor
                 {
                     if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
                     {
-                        var vm = new CredentialEditViewModel(protocol, null);
+                        var vm = new AlternativeCredentialEditViewModel(protocol, null);
                         var id = MaskLayerController.ShowProcessingRingMainWindow();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true
                             && true != protocol.Credentials?.Any(x => x != vm.New && string.Equals(x.Name, vm.New.Name, StringComparison.CurrentCultureIgnoreCase)))

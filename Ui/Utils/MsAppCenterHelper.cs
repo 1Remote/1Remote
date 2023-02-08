@@ -49,7 +49,11 @@ namespace _1RM.Utils
         private static void Trace(EventName eventName, Dictionary<string, string> properties)
         {
             if (_isStarted == false) { return; }
+#if DEBUG
+            Analytics.TrackEvent(eventName.ToString() + "_Debug", properties);
+#else
             Analytics.TrackEvent(eventName.ToString(), properties);
+#endif
         }
 
 

@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using _1RM.Model;
 using _1RM.Utils;
 using _1RM.View;
+using Dragablz.Dockablz;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -96,10 +97,10 @@ namespace _1RM.Service
             // rebuild TaskTrayContextMenu while language changed
             if (_taskTrayIcon == null) return;
 
-            var title = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
-            title.Click += (sender, args) =>
+            var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
+            about.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
+                //HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
                 IoC.Get<MainWindowViewModel>().ShowMe(true);
                 IoC.Get<MainWindowViewModel>().CmdGoAboutPage.Execute();
             };
@@ -145,27 +146,11 @@ namespace _1RM.Service
                         button.Click += (sender, args) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolBaseViewModel.Id, via: "Tray"); };
                         _taskTrayIcon.ContextMenuStrip.Items.Add(button);
                     }
-
-                    _taskTrayIcon.ContextMenuStrip.Items.Add("-");
-
-
-                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Hide recently used"));
-                    item.Click += (sender, args) =>
-                    {
-                        IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = false;
-                        IoC.Get<ConfigurationService>().Save();
-                        ReloadTaskTrayContextMenu();
-                        MsAppCenterHelper.TraceSpecial("Tray recently", "Hide");
-                    };
-                    _taskTrayIcon.ContextMenuStrip.Items.Add(item);
-                    _taskTrayIcon.ContextMenuStrip.Items.Add("-");
                 }
             }
 
 
 
-            _taskTrayIcon.ContextMenuStrip.Items.Add(title);
-            _taskTrayIcon.ContextMenuStrip.Items.Add("-");
 
             if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray == false)
             {
@@ -179,9 +164,25 @@ namespace _1RM.Service
                 };
                 _taskTrayIcon.ContextMenuStrip.Items.Add(item);
             }
+            else
+            {
+                if (_taskTrayIcon.ContextMenuStrip.Items.Count > 0)
+                    _taskTrayIcon.ContextMenuStrip.Items.Add("-");
+
+                var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Hide recently used"));
+                item.Click += (sender, args) =>
+                {
+                    IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = false;
+                    IoC.Get<ConfigurationService>().Save();
+                    ReloadTaskTrayContextMenu();
+                    MsAppCenterHelper.TraceSpecial("Tray recently", "Hide");
+                };
+                _taskTrayIcon.ContextMenuStrip.Items.Add(item);
+            }
 
             //_taskTrayIcon.ContextMenuStrip.Items.Add(linkHowToUse);
             _taskTrayIcon.ContextMenuStrip.Items.Add(linkFeedback);
+            _taskTrayIcon.ContextMenuStrip.Items.Add(about);
             _taskTrayIcon.ContextMenuStrip.Items.Add(exit);
 
             // After startup and initializing our application and when closing our window and minimize the application to tray we free memory with the following line:

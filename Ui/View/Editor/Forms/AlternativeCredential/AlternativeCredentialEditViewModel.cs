@@ -1,37 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using _1RM.Model;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using _1RM.View.Settings.DataSource;
-using com.github.xiangyuecn.rsacsharp;
-using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
-using Stylet;
 
-namespace _1RM.View.Editor.Forms.Credential
+namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
-    public class CredentialEditViewModel : NotifyPropertyChangedBaseScreen
+    public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen
     {
         public CredentialWithAddressPortUserPwd? Org { get; } = null;
         public CredentialWithAddressPortUserPwd New { get; }= new CredentialWithAddressPortUserPwd();
         private readonly ProtocolBaseWithAddressPortUserPwd _protocol;
-        public CredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, CredentialWithAddressPortUserPwd? org = null)
+        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, CredentialWithAddressPortUserPwd? org = null)
         {
             _protocol = protocol;
             Org = org;
@@ -44,26 +25,25 @@ namespace _1RM.View.Editor.Forms.Credential
         }
 
 
-        private string _name = "";
         public string Name
         {
-            get => _name;
+            get => New.Name;
             set
             {
-                if (_name != value)
+                if (New.Name != value)
                 {
-                    if (string.IsNullOrWhiteSpace(_name))
+                    if (string.IsNullOrWhiteSpace(value))
                     {
-                        _name = "";
+                        New.Name = "";
                         RaisePropertyChanged();
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
                     }
 
-                    if (true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, _name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, value, StringComparison.CurrentCultureIgnoreCase)))
                     {
-                        _name = "";
+                        New.Name = "";
                         RaisePropertyChanged();
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", value));
                     }
 
                     New.Name = value;
@@ -81,8 +61,8 @@ namespace _1RM.View.Editor.Forms.Credential
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
-                    if (string.IsNullOrWhiteSpace(_name)
-                        || true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, _name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (string.IsNullOrWhiteSpace(Name)
+                        || true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
                         return;
                     RequestClose(true);
 

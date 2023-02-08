@@ -128,8 +128,10 @@ namespace _1RM
         {
 #if FOR_MICROSOFT_STORE_ONLY
             MsAppCenterHelper.TraceAppStatus(true, true);
+            MsAppCenterHelper.TraceSpecial("Distributor", $"{Assert.APP_NAME} MS Store");
 #else
             MsAppCenterHelper.TraceAppStatus(true, false);
+            MsAppCenterHelper.TraceSpecial("Distributor", $"{Assert.APP_NAME} Exe");
 #endif
             // Step4
             // This is called just after the root ViewModel has been launched
