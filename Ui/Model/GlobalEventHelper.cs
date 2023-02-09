@@ -10,11 +10,11 @@ namespace _1RM.Model
 {
     public static class GlobalEventHelper
     {
-        public delegate void OnRequestQuickConnectDelegate(ProtocolBase server, string assignTabToken = "", string assignRunnerName = "", string via = "");
+        public delegate void OnRequestQuickConnectDelegate(ProtocolBase server, string assignTabToken = "", string assignRunnerName = "", string fromView = "", string assignCredentialName = "");
         public static OnRequestQuickConnectDelegate? OnRequestQuickConnect { get; set; } = null;
 
 
-        public delegate void OnRequestServerConnectDelegate(string serverId, string assignTabToken = "", string assignRunnerName = "", string via = "");
+        public delegate void OnRequestServerConnectDelegate(string serverId, string assignTabToken = "", string assignRunnerName = "", string fromView = "", string assignCredentialName = "");
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
         /// </summary>

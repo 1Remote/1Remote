@@ -24,7 +24,6 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
 using _1RM.Service.DataSource;
-using _1RM.View.ServerList;
 
 namespace _1RM.Service
 {
@@ -39,8 +38,8 @@ namespace _1RM.Service
             _sourceService = sourceService;
             _configurationService = configurationService;
             _appData = appData;
-            GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
-            GlobalEventHelper.OnRequestQuickConnect += this.ShowRemoteHost;
+            GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHostById;
+            GlobalEventHelper.OnRequestQuickConnect += this.ShowRemoteHostByObject;
         }
 
         public void Release()
@@ -306,15 +305,25 @@ namespace _1RM.Service
             }
         }
 
-        private void ShowRemoteHost(ProtocolBase server, string? assignTabToken, string? assignRunnerName, string? via)
+        private void ShowRemoteHostByObject(ProtocolBase serverOrg, string? assignTabToken, string? assignRunnerName, string? fromView, string assignCredentialName = "")
         {
             // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (this.ActivateOrReConnIfServerSessionIsOpened(server))
+            if (this.ActivateOrReConnIfServerSessionIsOpened(serverOrg))
                 return;
 
 
-            if (string.IsNullOrEmpty(via) == false)
-                MsAppCenterHelper.TraceSessionOpen(server.Protocol, via);
+            if (string.IsNullOrEmpty(fromView) == false)
+                MsAppCenterHelper.TraceSessionOpen(serverOrg.Protocol, fromView);
+
+            var server = serverOrg.Clone();
+            if (server is ProtocolBaseWithAddressPortUserPwd protocol
+                && protocol.Credentials?.Count > 0
+                && protocol.Credentials.Any(x => x.Name == assignCredentialName))
+            {
+                var c = protocol.Credentials.First(x => x.Name == assignCredentialName);
+                if (!string.IsNullOrEmpty(c.Address))
+                    protocol.Address = c.Address;
+            }
 
             // run script before connected
             server.RunScriptBeforeConnect();
@@ -353,7 +362,7 @@ namespace _1RM.Service
             PrintCacheCount();
         }
 
-        private void ShowRemoteHost(string serverId, string? assignTabToken, string? assignRunnerName, string via)
+        private void ShowRemoteHostById(string serverId, string? assignTabToken, string? assignRunnerName, string fromView, string assignCredentialName = "")
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
@@ -362,7 +371,7 @@ namespace _1RM.Service
                 var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var item in list)
                 {
-                    this.ShowRemoteHost(item.Id, assignTabToken, assignRunnerName, "");
+                    this.ShowRemoteHostById(item.Id, assignTabToken, assignRunnerName, fromView);
                 }
                 return;
             }
@@ -384,7 +393,7 @@ namespace _1RM.Service
             ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
             vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
 
-            ShowRemoteHost(vmServer.Server, assignTabToken, assignRunnerName, via);
+            ShowRemoteHostByObject(vmServer.Server, assignTabToken, assignRunnerName, fromView, assignCredentialName);
         }
 
         public void AddTab(TabWindowBase tab)

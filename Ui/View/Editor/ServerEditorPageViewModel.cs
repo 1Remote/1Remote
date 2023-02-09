@@ -629,32 +629,6 @@ namespace _1RM.View.Editor
 
 
 
-        private RelayCommand? _cmdAddCredential;
-        public RelayCommand CmdAddCredential
-        {
-            get
-            {
-                return _cmdAddCredential ??= new RelayCommand((o) =>
-                {
-                    if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
-                    {
-                        var vm = new AlternativeCredentialEditViewModel(protocol, null);
-                        var id = MaskLayerController.ShowProcessingRingMainWindow();
-                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true
-                            && true != protocol.Credentials?.Any(x => x != vm.New && string.Equals(x.Name, vm.New.Name, StringComparison.CurrentCultureIgnoreCase)))
-                        {
-                            protocol.Credentials ??= new ObservableCollection<CredentialWithAddressPortUserPwd>();
-                            protocol.Credentials.Add(vm.New);
-                        }
-                        MaskLayerController.HideProcessingRing(id);
-                    }
-                }, o => Server is ProtocolBaseWithAddressPortUserPwd);
-            }
-        }
-
-
-
-
         private RelayCommand? _cmdEditCredential;
         public RelayCommand CmdEditCredential
         {
@@ -662,6 +636,14 @@ namespace _1RM.View.Editor
             {
                 return _cmdEditCredential ??= new RelayCommand((o) =>
                 {
+                    if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
+                    {
+                        var credential = o as CredentialWithAddressPortUserPwd;
+                        var vm = new AlternativeCredentialEditViewModel(protocol, credential);
+                        var id = MaskLayerController.ShowProcessingRingMainWindow();
+                        IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
+                        MaskLayerController.HideProcessingRing(id);
+                    }
                 });
             }
         }
