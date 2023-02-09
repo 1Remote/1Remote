@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Xml.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
@@ -9,18 +11,18 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
     public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen
     {
-        public CredentialWithAddressPortUserPwd? Org { get; } = null;
-        public CredentialWithAddressPortUserPwd New { get; }= new CredentialWithAddressPortUserPwd();
+        private readonly CredentialWithAddressPortUserPwd? _org = null;
+        public CredentialWithAddressPortUserPwd New { get; } = new CredentialWithAddressPortUserPwd();
         private readonly ProtocolBaseWithAddressPortUserPwd _protocol;
         public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, CredentialWithAddressPortUserPwd? org = null)
         {
             _protocol = protocol;
-            Org = org;
+            _org = org;
 
             // Edit mode
-            if (Org != null)
+            if (_org != null)
             {
-                Name = Org.Name;
+                New = (CredentialWithAddressPortUserPwd)_org.Clone();
             }
         }
 
@@ -30,20 +32,21 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => New.Name;
             set
             {
-                if (New.Name != value)
+                var v = value.Trim();
+                if (New.Name != v)
                 {
-                    if (string.IsNullOrWhiteSpace(value))
+                    if (string.IsNullOrWhiteSpace(v))
                     {
                         New.Name = "";
                         RaisePropertyChanged();
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
                     }
 
-                    if (true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, value, StringComparison.CurrentCultureIgnoreCase)))
+                    if (true == _protocol.Credentials?.Any(x => x != _org && string.Equals(x.Name, v, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         New.Name = "";
                         RaisePropertyChanged();
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", value));
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", v));
                     }
 
                     New.Name = value;
@@ -52,6 +55,36 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             }
         }
 
+        private bool CheckPort(string port)
+        {
+            if (string.IsNullOrWhiteSpace(port))
+                return true;
+
+            if (int.TryParse(port, out var i)
+                && i is > 0 and < 65536)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public string Port
+        {
+            get => New.Port;
+            set
+            {
+                var v = value.Trim();
+                if (New.Port != v)
+                {
+                    New.Port = v;
+                    RaisePropertyChanged();
+                    if (!CheckPort(v))
+                    {
+                        throw new ArgumentException();
+                    }
+                }
+            }
+        }
 
 
         private RelayCommand? _cmdSave;
@@ -61,12 +94,33 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
-                    if (string.IsNullOrWhiteSpace(Name)
-                        || true == _protocol.Credentials?.Any(x => x != Org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
-                        return;
-                    RequestClose(true);
+                    _protocol.Credentials ??= new ObservableCollection<CredentialWithAddressPortUserPwd>();
 
-                }, o => string.IsNullOrWhiteSpace(Name) == false);
+                    if (string.IsNullOrWhiteSpace(Name))
+                    {
+                        MessageBoxHelper.Warning($"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+                        return;
+                    }
+                    if (true == _protocol.Credentials.Any(x => x != _org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        MessageBoxHelper.Warning(IoC.Get<ILanguageService>().Translate("{0} is existed!", Name));
+                        return;
+                    }
+
+                    if (_org != null && _protocol.Credentials.Any(x => x == _org))
+                    {
+                        // edit
+                        var i = _protocol.Credentials.IndexOf(_org);
+                        _protocol.Credentials.Remove(_org);
+                        _protocol.Credentials.Insert(i, New);
+                    }
+                    else
+                    {
+                        // add
+                        _protocol.Credentials.Add(New);
+                    }
+                    RequestClose(true);
+                }, o => string.IsNullOrWhiteSpace(Name) == false && CheckPort(Port));
             }
         }
 

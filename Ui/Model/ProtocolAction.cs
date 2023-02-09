@@ -40,29 +40,42 @@ namespace _1RM.Model
             var actions = new List<ProtocolAction>();
             {
                 if (IoC.Get<SessionControlService>().TabWindowCount > 0)
+                {
                     actions.Add(new ProtocolAction(
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
-                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString(), via: nameof(LauncherWindowView)); }
+                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString(), fromView: nameof(LauncherWindowView)); }
                     ));
+                }
 
+                if (server is ProtocolBaseWithAddressPortUserPwd { Credentials.Count: > 0 } protocol)
+                {
+                    foreach (var credential in protocol.Credentials)
+                    {
+                        actions.Add(new ProtocolAction(
+                            actionName: IoC.Get<ILanguageService>().Translate("Connect") + $" (TXT:with credential {credential.Name})",
+                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString(), fromView: nameof(LauncherWindowView), assignCredentialName: credential.Name); }
+                        ));
+                    }
+                }
 
                 // external runners
                 var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
                 if (protocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
                     && protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
                 {
-                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name, via: nameof(LauncherWindowView)); }));
+                    //actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name, fromView: nameof(LauncherWindowView)); }));
                     foreach (var runner in protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
                         if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
-                        actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" ({runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name, via: nameof(LauncherWindowView)); }));
+                        actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (via {runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name, fromView: nameof(LauncherWindowView)); }));
                     }
                 }
-                else
-                {
-                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, via: nameof(LauncherWindowView)); }));
-                }
+
+                //else
+                //{
+                //    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, fromView: nameof(LauncherWindowView)); }));
+                //}
 
                 if (writable)
                 {
@@ -72,14 +85,16 @@ namespace _1RM.Model
                             IoC.Get<MainWindowViewModel>()?.ShowMe();
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                     }));
-                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
-                    {
-                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                            IoC.Get<MainWindowViewModel>()?.ShowMe();
-                        GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
-                    }));
+                    //actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                    //{
+                    //    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                    //        IoC.Get<MainWindowViewModel>()?.ShowMe();
+                    //    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
+                    //}));
                 }
             };
+
+
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {
                 actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_address"),
@@ -132,10 +147,10 @@ namespace _1RM.Model
                 }
             }
 
-            if (writable)
-            {
-                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () => { GlobalEventHelper.OnRequestDeleteServer?.Invoke(server); }));
-            }
+            //if (writable)
+            //{
+            //    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () => { GlobalEventHelper.OnRequestDeleteServer?.Invoke(server); }));
+            //}
 
             #endregion Build Actions
 
