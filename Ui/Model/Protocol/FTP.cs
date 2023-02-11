@@ -50,12 +50,9 @@ namespace _1RM.Model.Protocol
 
         public ITransmitter GeTransmitter()
         {
-            this.DecryptToConnectLevel();
-            var hostname = this.Address;
-            int port = this.GetPort();
-            var username = this.UserName;
-            var password = this.Password;
-            return new TransmitterFtp(hostname, port, username, password);
+            var ftp = (this.Clone() as FTP)!;
+            ftp.ConnectPreprocess();
+            return new TransmitterFtp(ftp.Address, ftp.GetPort(), ftp.UserName, ftp.Password);
         }
 
         public string GetStartupPath()

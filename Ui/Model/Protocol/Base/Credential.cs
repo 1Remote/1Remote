@@ -56,35 +56,5 @@ namespace _1RM.Model.Protocol.Base
             get => _password;
             set => SetAndNotifyIfChanged(ref _password, value);
         }
-
-        public string GetAddress(ProtocolBaseWithAddressPortUserPwd protocol)
-        {
-            if (string.IsNullOrEmpty(Address))
-                return protocol.Address;
-            return Address;
-        }
-
-        public int GetPort(ProtocolBaseWithAddressPortUserPwd protocol)
-        {
-            if (string.IsNullOrEmpty(Port))
-                return protocol.GetPort();
-            if (int.TryParse(Port, out var p))
-                return p;
-            return 1;
-        }
-
-        public string GetUserName(ProtocolBaseWithAddressPortUserPwd protocol)
-        {
-            if (string.IsNullOrEmpty(UserName))
-                return protocol.UserName;
-            return UserName;
-        }
-
-        public string GetPassword(ProtocolBaseWithAddressPortUserPwd protocol)
-        {
-            if (string.IsNullOrEmpty(Password))
-                return protocol.Password;
-            return Password;
-        }
     }
 }

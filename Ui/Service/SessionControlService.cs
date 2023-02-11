@@ -24,6 +24,8 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
 using _1RM.Service.DataSource;
+using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM.Service
 {
@@ -38,7 +40,7 @@ namespace _1RM.Service
             _sourceService = sourceService;
             _configurationService = configurationService;
             _appData = appData;
-            GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHostById;
+            GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHostByObject;
             GlobalEventHelper.OnRequestQuickConnect += this.ShowRemoteHostByObject;
         }
 
@@ -73,7 +75,7 @@ namespace _1RM.Service
 
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
+        private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server)
         {
             var serverId = server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
@@ -115,7 +117,7 @@ namespace _1RM.Service
             return false;
         }
 
-        private void ConnectRdpByMstsc(RDP rdp)
+        private void ConnectRdpByMstsc(in RDP rdp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
@@ -161,7 +163,7 @@ namespace _1RM.Service
             }
         }
 
-        private void ConnectRemoteApp(RdpApp remoteApp)
+        private void ConnectRemoteApp(in RdpApp remoteApp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{remoteApp.DisplayName}_{remoteApp.Port}_{remoteApp.UserName}";
@@ -207,7 +209,7 @@ namespace _1RM.Service
             }
         }
 
-        private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
+        private void ConnectWithFullScreen(in ProtocolBase server, in Runner runner)
         {
             CleanupProtocolsAndWindows();
             // fullscreen normally
@@ -223,15 +225,15 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(ProtocolBase server, Runner runner, string assignTabToken)
+        private void ConnectWithTab(in ProtocolBase serverClone, in Runner runner, string assignTabToken)
         {
             lock (_dictLock)
             {
                 CleanupProtocolsAndWindows();
                 // open SFTP when SSH is connected.
-                if (server is SSH { OpenSftpOnConnected: true } ssh)
+                if (serverClone is SSH { OpenSftpOnConnected: true } ssh)
                 {
-                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, SFTP.ProtocolName);
+                    var tmpRunner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), serverClone, SFTP.ProtocolName);
                     var sftp = new SFTP
                     {
                         ColorHex = ssh.ColorHex,
@@ -253,25 +255,24 @@ namespace _1RM.Service
                 {
                     case InternalDefaultRunner:
                         {
-                            server.ConnectPreprocess();
-                            if (server is RDP)
+                            if (serverClone is RDP)
                             {
                                 tab = this.GetOrCreateTabWindow(assignTabToken);
                                 if (tab == null)
                                     return;
-                                var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(server.ColorHex) == true);
-                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(server, runner, size.Width, size.Height);
+                                var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(serverClone.ColorHex) == true);
+                                host = ProtocolRunnerHostHelper.GetRdpInternalHost(serverClone, runner, size.Width, size.Height);
                             }
                             else
                             {
-                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(server, runner);
+                                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(serverClone, runner);
                             }
 
                             break;
                         }
                     case ExternalRunner:
                         {
-                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_sourceService, server, runner);
+                            host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_sourceService, serverClone, runner);
                             // if host is null, could be run without integrate
                             break;
                         }
@@ -281,6 +282,7 @@ namespace _1RM.Service
 
                 if (host != null)
                 {
+                    string displayName = serverClone.DisplayName;
                     Execute.OnUIThreadSync(() =>
                     {
                         tab ??= this.GetOrCreateTabWindow(assignTabToken);
@@ -292,7 +294,7 @@ namespace _1RM.Service
                         Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
                         host.OnClosed += OnProtocolClose;
                         host.OnFullScreen2Window += this.MoveProtocolHostToTab;
-                        tab.AddItem(new TabItemViewModel(host, server.DisplayName));
+                        tab.AddItem(new TabItemViewModel(host, displayName));
                         _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                         host.Conn();
                         if (tab.WindowState == WindowState.Minimized)
@@ -305,8 +307,24 @@ namespace _1RM.Service
             }
         }
 
-        private void ShowRemoteHostByObject(ProtocolBase serverOrg, string? assignTabToken, string? assignRunnerName, string? fromView, string assignCredentialName = "")
+        private void ShowRemoteHostByObject(in ProtocolBase? serverOrg, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
         {
+            #region START MULTIPLE SESSION
+            // if server == null, then start multiple sessions
+            if (serverOrg == null)
+            {
+                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
+                foreach (var item in list)
+                {
+                    this.ShowRemoteHostByObject(item.Server, assignTabToken, assignRunnerName, fromView);
+                }
+                MsAppCenterHelper.TraceSessionOpen("multiple sessions", fromView);
+                return;
+            }
+            #endregion
+
+
+
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(serverOrg))
                 return;
@@ -315,21 +333,50 @@ namespace _1RM.Service
             if (string.IsNullOrEmpty(fromView) == false)
                 MsAppCenterHelper.TraceSessionOpen(serverOrg.Protocol, fromView);
 
-            var server = serverOrg.Clone();
-            if (server is ProtocolBaseWithAddressPortUserPwd protocol
-                && protocol.Credentials?.Count > 0
-                && protocol.Credentials.Any(x => x.Name == assignCredentialName))
+            // recode connect count
+            _configurationService.Engagement.ConnectCount++;
+            _configurationService.Save();
+
+
             {
-                var c = protocol.Credentials.First(x => x.Name == assignCredentialName);
-                if (!string.IsNullOrEmpty(c.Address))
-                    protocol.Address = c.Address;
+                var vmServer = _appData.GetItemById(serverOrg.DataSourceName, serverOrg.Id);
+                if (vmServer != null)
+                {
+                    // update the last conn time
+                    ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
+                    vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
+                }
+            }
+
+
+            var serverClone = serverOrg.Clone();
+            serverClone.ConnectPreprocess();
+
+            // use assign credential
+            if(string.IsNullOrEmpty(assignCredentialName) == false)
+            {
+                var assignCredentialNameTmp = assignCredentialName;
+                if (serverClone is ProtocolBaseWithAddressPortUserPwd protocol
+                    && protocol.Credentials?.Count > 0
+                    && protocol.Credentials.Any(x => x.Name == assignCredentialNameTmp))
+                {
+                    var c = protocol.Credentials.First(x => x.Name == assignCredentialNameTmp);
+                    if (!string.IsNullOrEmpty(c.Address))
+                        protocol.Address = c.Address;
+                    if (!string.IsNullOrEmpty(c.Port))
+                        protocol.Port = c.Port;
+                    if (!string.IsNullOrEmpty(c.UserName))
+                        protocol.UserName = c.UserName;
+                    if (!string.IsNullOrEmpty(c.Password))
+                        protocol.Password = c.Password;
+                }
             }
 
             // run script before connected
-            server.RunScriptBeforeConnect();
+            serverClone.RunScriptBeforeConnect();
 
-            var runner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), server, server.Protocol, assignRunnerName)!;
-            switch (server)
+            var runner = ProtocolRunnerHostHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), serverClone, serverClone.Protocol, assignRunnerName)!;
+            switch (serverClone)
             {
                 case RdpApp remoteApp:
                     this.ConnectRemoteApp(remoteApp);
@@ -340,7 +387,7 @@ namespace _1RM.Service
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                         // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of internal runner.
                         if (rdp.MstscModeEnabled == true
-                            || (server.ThisTimeConnWithFullScreen()
+                            || (serverClone.ThisTimeConnWithFullScreen()
                                 && Screen.AllScreens.Length > 1
                                 && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
                                 && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)))
@@ -349,51 +396,17 @@ namespace _1RM.Service
                             return;
                         }
                         // rdp full screen
-                        if (server.ThisTimeConnWithFullScreen())
+                        if (serverClone.ThisTimeConnWithFullScreen())
                         {
-                            this.ConnectWithFullScreen(server, runner);
+                            this.ConnectWithFullScreen(serverClone, runner);
                             return;
                         }
                         break;
                     }
             }
 
-            this.ConnectWithTab(server, runner, assignTabToken ?? "");
+            this.ConnectWithTab(serverClone, runner, assignTabToken ?? "");
             PrintCacheCount();
-        }
-
-        private void ShowRemoteHostById(string serverId, string? assignTabToken, string? assignRunnerName, string fromView, string assignCredentialName = "")
-        {
-            #region START MULTIPLE SESSION
-            // if serverId <= 0, then start multiple sessions
-            if (string.IsNullOrEmpty(serverId))
-            {
-                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
-                foreach (var item in list)
-                {
-                    this.ShowRemoteHostById(item.Id, assignTabToken, assignRunnerName, fromView);
-                }
-                return;
-            }
-            #endregion
-
-            Debug.Assert(_appData.VmItemList.Any(x => x.Id == serverId));
-            _configurationService.Engagement.ConnectCount++;
-            _configurationService.Save();
-
-            var vmServer = _appData.VmItemList.FirstOrDefault(x => x.Id == serverId);
-            if (vmServer?.Server == null)
-            {
-                SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
-                return;
-            }
-
-
-            // update the last conn time
-            ConnectTimeRecorder.UpdateAndSave(vmServer.Server);
-            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
-
-            ShowRemoteHostByObject(vmServer.Server, assignTabToken, assignRunnerName, fromView, assignCredentialName);
         }
 
         public void AddTab(TabWindowBase tab)

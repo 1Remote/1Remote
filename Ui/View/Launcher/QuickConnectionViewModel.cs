@@ -255,7 +255,7 @@ namespace _1RM.View.Launcher
 
                 // save history
                 IoC.Get<LocalityService>().QuickConnectionHistoryAdd(new QuickConnectionItem() { Host = host, Protocol = protocol });
-                GlobalEventHelper.OnRequestQuickConnect?.Invoke(server);
+                GlobalEventHelper.OnRequestQuickConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - {nameof(QuickConnectionView)}");
             }
         }
     }

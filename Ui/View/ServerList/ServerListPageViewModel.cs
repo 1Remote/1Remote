@@ -704,7 +704,7 @@ namespace _1RM.View.ServerList
                         token = DateTime.Now.Ticks.ToString();
                     foreach (var vmProtocolServer in VmServerList.Where(x => x.IsSelected == true).ToArray())
                     {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
+                        GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
                         Thread.Sleep(50);
                     }
                 });

@@ -24,6 +24,7 @@ namespace _1RM.Utils
         private static bool _isStarted = false;
         public static void Init(string secret)
         {
+#if !DEBUG
             AppCenter.LogLevel = LogLevel.Verbose;
             if (secret?.Length == "********-****-****-****-************".Length
                 && "********-****-****-****-************".ToList()
@@ -35,13 +36,17 @@ namespace _1RM.Utils
                 AppCenter.Start(secret, typeof(Analytics), typeof(Crashes));
                 _isStarted = true;
             }
+#endif
         }
 
         public static void Error(Exception e, IDictionary<string, string>? properties = null, params ErrorAttachmentLog[] attachments)
         {
+#if DEBUG
+            return;
+#else
             if (_isStarted == false) { return; }
-
             Crashes.TrackError(e, properties, attachments);
+#endif
         }
 
 

@@ -247,7 +247,7 @@ namespace _1RM.View.Launcher
             _lvm.HideMe();
             if (item?.Id != null)
             {
-                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id, fromView: nameof(LauncherWindowView));
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Server, fromView: $"{nameof(LauncherWindowView)} - {nameof(ServerSelectionsView)}");
             }
         }
 

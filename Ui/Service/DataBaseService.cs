@@ -28,22 +28,17 @@ namespace _1RM.Service
 
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
         {
-            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-            //{
-            //    var p = (ProtocolBaseWithAddressPort)server;
-            //    p.Address = EncryptOnce(p.Address);
-            //    p.SetPort(EncryptOnce(p.Port));
-            //}
-            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            //{
-            //    var p = (ProtocolBaseWithAddressPortUserPwd)server;
-            //    p.UserName = EncryptOnce(p.UserName);
-            //}
             // encrypt password
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = EncryptOnce(s.Password);
+
+                if (s.Credentials != null)
+                    foreach (var credential in s.Credentials)
+                    {
+                        credential.Password = EncryptOnce(credential.Password);
+                    }
             }
             switch (server)
             {
@@ -62,21 +57,16 @@ namespace _1RM.Service
 
         public static void DecryptToConnectLevel(this ProtocolBase server)
         {
-            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-            //{
-            //    var p = (ProtocolBaseWithAddressPort)server;
-            //    p.Address = DecryptOrReturnOriginalString(p.Address);
-            //    p.Port = DecryptOrReturnOriginalString(p.Port);
-            //}
-            //if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            //{
-            //    var p = (ProtocolBaseWithAddressPortUserPwd)server;
-            //    p.UserName = DecryptOrReturnOriginalString(p.UserName);
-            //}
             if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = DecryptOrReturnOriginalString(s.Password);
+
+                if (s.Credentials != null)
+                    foreach (var credential in s.Credentials)
+                    {
+                        credential.Password = DecryptOrReturnOriginalString(credential.Password);
+                    }
             }
             switch (server)
             {
