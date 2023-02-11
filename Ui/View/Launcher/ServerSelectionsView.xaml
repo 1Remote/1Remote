@@ -63,6 +63,7 @@
                         <ContentControl Grid.Row="0" Grid.Column="3" Content="{Binding DisplayNameControl}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                    <Setter Property="Opacity" Value="0.6"></Setter>
                                     <Setter Property="FontSize" Value="18"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
@@ -70,6 +71,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
                                             <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                            <Setter Property="Opacity" Value="1"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -78,9 +80,10 @@
 
 
 
-                        <ContentControl Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Opacity="0.7" Content="{Binding SubTitleControl}">
+                        <ContentControl Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Opacity="0.8" Content="{Binding SubTitleControl}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                    <Setter Property="Opacity" Value="0.6"></Setter>
                                     <Setter Property="FontSize" Value="12"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
@@ -88,6 +91,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
                                             <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                            <Setter Property="Opacity" Value="1"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

@@ -48,31 +48,22 @@
                 <ControlTemplate TargetType="ListBoxItem">
                     <Grid>
                         <Grid x:Name="GridColor" Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
-                        <Border x:Name="GridContainer">
-                            <!-- highlight selected item 高亮选中项-->
-                            <!--<Border.CornerRadius>
-                                                <CornerRadius
-                                                    TopLeft="{StaticResource CornerRadius}"
-                                                    TopRight="{StaticResource CornerRadius}"
-                                                    BottomRight="{StaticResource CornerRadius}"
-                                                    BottomLeft="{StaticResource CornerRadius}" />
-                                            </Border.CornerRadius>-->
-                        </Border>
+                        <Border x:Name="GridHighLight"></Border>
                         <Grid x:Name="GridColorOnSelected" 
                               Visibility="Collapsed"
                               Width="40" 
                               HorizontalAlignment="Left" 
-                              Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+                              Background="{Binding Server.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
                         <ContentPresenter x:Name="ContentPresenter"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                            <Setter Property="Background" TargetName="GridHighLight" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            <Setter Property="Opacity" Value="0.2" TargetName="GridHighLight" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                            <Setter Property="Opacity" Value="1" TargetName="GridHighLight" />
+                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridHighLight" />
                             <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
                             <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
                         </Trigger>
@@ -91,10 +82,10 @@
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
                         <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" 
-                                          Background="{DynamicResource PrimaryMidBrush}"
-                                          attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
-                                          attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
-                                          Style="{StaticResource ScrollViewAccentStyle}">
+                                      Background="{DynamicResource PrimaryMidBrush}"
+                                      attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                      attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                      Style="{StaticResource ScrollViewAccentStyle}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </ScrollViewer>
                     </Border>
@@ -105,16 +96,49 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel 
-                            IsVirtualizing="True"
-                            ScrollUnit="Pixel"
-                            VirtualizationMode="Recycling"
-                            CacheLengthUnit="Item"/>
+                    <VirtualizingStackPanel IsVirtualizing="True"
+                                            ScrollUnit="Pixel"
+                                            VirtualizationMode="Recycling"
+                                            CacheLengthUnit="Item"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+
+
+
+
+    <DataTemplate x:Key="DataTemplateForProtocolAction" DataType="model:ProtocolAction">
+        <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_ACTION_LIST_ITEM_HEIGHT}">
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="30"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                            <Setter Property="Opacity" Value="0.6"></Setter>
+                            <Setter Property="FontSize" Value="14"></Setter>
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                            <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                    <Setter Property="Opacity" Value="1"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </DataTemplate>
 
 
     <Style x:Key="ListBoxItemStyleForAction" TargetType="ListBoxItem">
@@ -123,22 +147,17 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Grid>
-                        <Grid x:Name="GridColor" Opacity="0.4"></Grid>
-                        <Border x:Name="GridContainer"></Border>
-                        <Grid x:Name="GridColorOnSelected" Visibility="Collapsed" Width="40" HorizontalAlignment="Left" ></Grid>
+                        <Border x:Name="GridHighLight"></Border>
                         <ContentPresenter x:Name="ContentPresenter"></ContentPresenter>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                            <Setter TargetName="GridHighLight" Property="Background" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            <Setter TargetName="GridHighLight" Property="Opacity" Value="0.2"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                            <Setter TargetName="ContentPresenter" Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" />
-                            <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="GridHighLight" Property="Opacity" Value="1" />
+                            <Setter TargetName="GridHighLight" Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -147,27 +166,7 @@
     </Style>
 
     <Style x:Key="SearchBoxActionList" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate DataType="model:ProtocolAction">
-                    <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_ACTION_LIST_ITEM_HEIGHT}">
-                        <Grid VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="5"></ColumnDefinition>
-                                <ColumnDefinition Width="30"></ColumnDefinition>
-                                <ColumnDefinition Width="5"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="1"></Grid>
-                            <!--Foreground is set by ListBoxItemStyleForAction-->
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" Name="TextBlock"
-                                           FontSize="14" VerticalAlignment="Center">
-                            </TextBlock>
-                        </Grid>
-                    </Grid>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForProtocolAction}"></Setter>
         <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyleForAction}"></Setter>
     </Style>
 </ResourceDictionary>

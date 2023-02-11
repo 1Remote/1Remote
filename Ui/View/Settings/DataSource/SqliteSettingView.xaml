@@ -15,10 +15,8 @@
                          AllowsTransparency="True"
                          d:DataContext="{d:DesignInstance local:SqliteSettingViewModel}">
     <Window.Resources>
-        <settings:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></settings:StringIsEmpty2BoolConverter>
-
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="HorizontalAlignment" Value="Right"></Setter>
             <Setter Property="TextAlignment" Value="Right"></Setter>

@@ -222,7 +222,7 @@
                             Background="Transparent"
                             attachProperty:VisionElement.BackgroundAccent="Transparent"
                             attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                            Style="{StaticResource ButtonBarAccentBackgroundStyle}"
+                            Style="{StaticResource ButtonBarBackgroundStyle}"
                             HorizontalAlignment="Right"
                             Command="{Binding CmdAddRunner}"
                             >

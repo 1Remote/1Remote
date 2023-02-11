@@ -3,7 +3,6 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                         xmlns:settings="clr-namespace:_1RM.View.Settings"
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                          xmlns:editor="clr-namespace:_1RM.View.Editor"
                          xmlns:model="clr-namespace:_1RM.Service.DataSource.Model"
@@ -15,7 +14,9 @@
                          AllowsTransparency="True"
                          d:DataContext="{d:DesignInstance editor:DataSourceSelectorViewModel}">
     <Window.Resources>
-
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+        </Style>
     </Window.Resources>
 
     <Border Background="{DynamicResource PrimaryMidBrush}"
@@ -25,7 +26,9 @@
             <Grid >
                 <StackPanel Margin="20 0" >
 
-                    <TextBlock Text="{DynamicResource 'Please select a Data Source'}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
+                    <TextBlock Text="{DynamicResource 'Please select a Data Source'}" 
+                               Margin="15" FontSize="20" Height="30" 
+                               HorizontalAlignment="Center" ></TextBlock>
 
                     <ListBox MaxHeight="400" Width="500" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -69,10 +72,25 @@
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="SelectSource3"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
                                         <Path Height="20" Margin="10 0 0 0" UseLayoutRounding="True" Data="M884.736 22.528c-44.032-38.912-97.28-23.552-149.504 23.552-8.192 7.168-15.36 14.336-23.552 22.528-12.288 13.312-24.576 27.648-35.84 43.008-12.288-5.12-25.6-8.192-39.936-8.192H199.68c-57.344 0-104.448 47.104-104.448 104.448v436.224c0 57.344 47.104 104.448 104.448 104.448h307.2c4.096 20.48 6.144 34.816 6.144 34.816s0 4.096 1.024 9.216c-2.048 38.912-1.024 79.872 2.048 116.736 4.096 49.152 11.264 91.136 21.504 113.664l6.144-3.072c-14.336-44.032-20.48-102.4-17.408-168.96 4.096-102.4 27.648-225.28 70.656-354.304 73.728-194.56 175.104-350.208 269.312-423.936-86.016 76.8-200.704 325.632-235.52 417.792-38.912 103.424-65.536 199.68-82.944 292.864 28.672-87.04 120.832-123.904 120.832-123.904s45.056-55.296 98.304-135.168c-31.744 7.168-82.944 19.456-100.352 26.624-25.6 11.264-32.768 14.336-32.768 14.336S716.8 515.072 788.48 491.52c96.256-154.624 203.776-373.76 96.256-468.992zM512 475.136c10.24 20.48 18.432 47.104 23.552 66.56 1.024 5.12 2.048 10.24 3.072 14.336 2.048 9.216 3.072 16.384 3.072 16.384l-4.096-12.288c-1.024-2.048-1.024-4.096-2.048-6.144 0-1.024-1.024-2.048-1.024-3.072-6.144-13.312-22.528-41.984-29.696-55.296-6.144 18.432-11.264 34.816-16.384 50.176 20.48 37.888 32.768 102.4 32.768 102.4s-1.024-4.096-6.144-18.432c-4.096-13.312-27.648-53.248-32.768-62.464-9.216 33.792-13.312 57.344-9.216 63.488 5.12 8.192 9.216 21.504 14.336 35.84H199.68c-11.264 0-21.504-9.216-21.504-21.504V207.872c0-11.264 9.216-21.504 21.504-21.504H624.64c-53.248 91.136-95.232 199.68-112.64 288.768z" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
-                                        <TextBlock Grid.Column="1" FontSize="16" Text="{Binding DataSourceName}" ToolTip="{Binding DataSourceName}" Margin="5 0" Foreground="{DynamicResource BackgroundTextBrush}" VerticalAlignment="Center"></TextBlock>
+                                        <TextBlock Grid.Column="1" FontSize="16" 
+                                                   Text="{Binding DataSourceName}" 
+                                                   ToolTip="{Binding DataSourceName}" 
+                                                   Margin="5 0" 
+                                                   VerticalAlignment="Center"></TextBlock>
                                         <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                            <TextBlock FontSize="16" Text="(Readonly)" Margin="0 0 5 0" Visibility="{Binding IsWritable, Converter={StaticResource ConverterBool2VisibleInv}}" Foreground="{DynamicResource AccentTextBrush}" Background="{DynamicResource AccentMidBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
-                                            <TextBlock FontSize="16" Text="{Binding Description}" ToolTip="{Binding Description}" Margin="5 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
+                                            <TextBlock FontSize="16" 
+                                                       Text="(Readonly)" 
+                                                       Margin="0 0 5 0" 
+                                                       Visibility="{Binding IsWritable, Converter={StaticResource ConverterBool2VisibleInv}}" 
+                                                       Foreground="{DynamicResource AccentTextBrush}" 
+                                                       Background="{DynamicResource AccentMidBrush}" 
+                                                       VerticalAlignment="Center" 
+                                                       TextTrimming="CharacterEllipsis"></TextBlock>
+                                            <TextBlock FontSize="16" Text="{Binding Description}" 
+                                                       ToolTip="{Binding Description}" 
+                                                       Margin="5 0 10 0" 
+                                                       VerticalAlignment="Center" 
+                                                       TextTrimming="CharacterEllipsis"></TextBlock>
                                         </StackPanel>
                                     </Grid>
                                     <!--<Grid Width="30" Background="{DynamicResource PrimaryMidBrush}" HorizontalAlignment="Right"></Grid>-->
