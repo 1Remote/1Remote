@@ -61,7 +61,8 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                        <PasswordBox Tag="asdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaa"
+                            attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -89,10 +90,6 @@
                         </Grid.Resources>
 
                         <StackPanel>
-                            <Button Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
-                                    HorizontalAlignment="Right"
-                                    Margin="0 0 5 0"
-                                    >Add</Button>
                             <DataGrid AutoGenerateColumns="False"
                                       HorizontalAlignment="Stretch" 
                                       HorizontalContentAlignment="Stretch" 
@@ -135,6 +132,17 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
+                            <Button Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                    Style="{StaticResource ButtonBarTransparentStyle}"
+                            Margin="0 0 5 0"
+                            >
+                                <Grid Height="15" Width="15">
+                                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="2" Stretch="Uniform" />
+                                </Grid>
+                            </Button>
                         </StackPanel>
 
                     </Grid>

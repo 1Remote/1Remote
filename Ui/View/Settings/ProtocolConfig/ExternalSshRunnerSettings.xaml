@@ -283,14 +283,9 @@
 
                                     <Button Grid.Column="2" Width="10" Height="10"
                                             ToolTip="{DynamicResource 'Delete'}"
-                                            Style="{StaticResource ButtonBarPrimaryStyle}"
-                                            Background="Transparent"
-                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                            Style="{StaticResource ButtonBarTransparentStyle}"
                                             HorizontalAlignment="Right"
                                             Opacity="0.8"
-                                            attachProperty:VisionElement.Opacity="0.6"
-                                            attachProperty:VisionElement.OpacityAccent="1"
                                             Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}" 
                                             CommandParameter="{Binding }"
                                             Margin="0 0 10 0">
@@ -309,10 +304,7 @@
                     <Button Width="20" Height="20" 
                             Margin="20 0 20 0"
                             ToolTip="{DynamicResource 'Add environment variables'}"
-                            Style="{StaticResource ButtonBarAccentBackgroundStyle}"
-                            Background="Transparent"
-                            attachProperty:VisionElement.BackgroundAccent="Transparent"
-                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                            Style="{StaticResource ButtonBarTransparentStyle}"
                             HorizontalAlignment="Left"
                             Command="{Binding CmdAddEnvironmentVariable}">
                         <Grid Height="15" Width="15">

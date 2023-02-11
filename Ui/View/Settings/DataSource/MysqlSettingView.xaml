@@ -17,7 +17,7 @@
                          d:DataContext="{d:DesignInstance local:MysqlSettingViewModel}">
     <Window.Resources>
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="HorizontalAlignment" Value="Right"></Setter>
             <Setter Property="TextAlignment" Value="Right"></Setter>
@@ -34,7 +34,9 @@
 
     <Border Background="{DynamicResource PrimaryMidBrush}"
             BorderBrush="{DynamicResource PrimaryLightBrush}"
-            BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+            BorderThickness="1" 
+            CornerRadius="{StaticResource DefaultCornerRadius}"
+            ClipToBounds="True">
         <Grid IsSharedSizeScope="True">
             <Grid >
                 <Grid.Style>
@@ -74,9 +76,7 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
-                             Text="{Binding Name,  
-                                    ValidatesOnExceptions=True, 
-                                    UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Hostname}"></TextBlock>
@@ -85,7 +85,7 @@
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Port}"></TextBlock>
                         <TextBox Grid.Row="2" Grid.Column="1" Name="TbPort" 
-                             Text="{Binding Port,  
+                                 Text="{Binding Port,  
                                     ValidatesOnExceptions=True, 
                                     UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbPort}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
@@ -101,7 +101,7 @@
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Password}"></TextBlock>
                         <PasswordBox Grid.Row="5" Grid.Column="1" 
-                             attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                                     attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
 
                         <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
                             <Button Command="{Binding CmdTestConnection}" Content="{DynamicResource 'Test connection'}" Width="100" Margin="10 0"></Button>

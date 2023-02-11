@@ -147,9 +147,28 @@
 
             <!--ADD DATA SOURCE BUTTON-->
             <Menu Background="Transparent" VerticalAlignment="Center">
-                <MenuItem Header="{DynamicResource Add}" Background="Transparent" Height="30" Width="100">
+                <MenuItem Header="{DynamicResource Add}" 
+                          Height="30" 
+                          Width="100">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemBaseStyle}">
+                            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsSubmenuOpen" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
                     <MenuItem.Icon>
-                        <Path Height="12" UseLayoutRounding="True" Data="{StaticResource GeometryCross}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                        <Path Height="12" UseLayoutRounding="True" 
+                              Data="{StaticResource GeometryCross}" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}, Path=Foreground}" 
+                              Stretch="Uniform"/>
                     </MenuItem.Icon>
 
                     <!--<MenuItem Header="SQLite" Command="{Binding CmdAdd}" CommandParameter="SQLite">
