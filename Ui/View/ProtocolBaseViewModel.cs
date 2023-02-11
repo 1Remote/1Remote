@@ -186,7 +186,7 @@ namespace _1RM.View
             {
                 return _cmdConnServer ??= new RelayCommand(o =>
                 {
-                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id, fromView: nameof(MainWindowView));
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server, fromView: nameof(MainWindowView));
                 });
             }
         }

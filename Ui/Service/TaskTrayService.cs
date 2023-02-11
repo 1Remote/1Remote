@@ -143,7 +143,10 @@ namespace _1RM.Service
                         }
 
                         var button = new System.Windows.Forms.ToolStripMenuItem(text);
-                        button.Click += (sender, args) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolBaseViewModel.Id, fromView: "Tray"); };
+                        button.Click += (sender, args) =>
+                        {
+                            GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolBaseViewModel.Server, fromView: "Tray");
+                        };
                         _taskTrayIcon.ContextMenuStrip.Items.Add(button);
                     }
                 }

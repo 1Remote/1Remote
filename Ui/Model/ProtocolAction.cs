@@ -8,6 +8,7 @@ using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.View;
+using _1RM.View.Launcher;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
@@ -43,7 +44,7 @@ namespace _1RM.Model
                 {
                     actions.Add(new ProtocolAction(
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
-                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString(), fromView: nameof(LauncherWindowView)); }
+                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - New window", assignTabToken: DateTime.Now.Ticks.ToString()); }
                     ));
                 }
 
@@ -53,7 +54,7 @@ namespace _1RM.Model
                     {
                         actions.Add(new ProtocolAction(
                             actionName: IoC.Get<ILanguageService>().Translate("Connect") + $" (TXT:with credential {credential.Name})",
-                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString(), fromView: nameof(LauncherWindowView), assignCredentialName: credential.Name); }
+                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - Credentials", assignCredentialName: credential.Name); }
                         ));
                     }
                 }
@@ -68,7 +69,10 @@ namespace _1RM.Model
                     {
                         if (runner is InternalDefaultRunner) continue;
                         if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
-                        actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (via {runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name, fromView: nameof(LauncherWindowView)); }));
+                        actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (via {runner.Name})", () =>
+                        {
+                            GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - {runner.Name}", assignRunnerName: runner.Name);
+                        }));
                     }
                 }
 

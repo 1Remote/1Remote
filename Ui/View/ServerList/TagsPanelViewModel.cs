@@ -191,7 +191,7 @@ namespace _1RM.View.ServerList
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id);
+                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}");
                             Thread.Sleep(100);
                         }
                     }
@@ -216,7 +216,7 @@ namespace _1RM.View.ServerList
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
+                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
                             Thread.Sleep(100);
                         }
                     }
