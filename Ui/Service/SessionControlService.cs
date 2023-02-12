@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using MSTSCLib;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -24,8 +22,8 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
 using _1RM.Service.DataSource;
-using _1RM.Model.DAO.Dapper;
-using _1RM.Service.DataSource.Model;
+using System.Net.Sockets;
+using Windows.Security.Credentials;
 
 namespace _1RM.Service
 {
@@ -349,28 +347,84 @@ namespace _1RM.Service
             }
 
 
+            // clone and decrypt!
             var serverClone = serverOrg.Clone();
             serverClone.ConnectPreprocess();
 
-            // use assign credential
-            if(string.IsNullOrEmpty(assignCredentialName) == false)
+
+            if (serverClone is ProtocolBaseWithAddressPortUserPwd protocol
+                && protocol.AlternateCredentials != null )
             {
-                var assignCredentialNameTmp = assignCredentialName;
-                if (serverClone is ProtocolBaseWithAddressPortUserPwd protocol
-                    && protocol.Credentials?.Count > 0
-                    && protocol.Credentials.Any(x => x.Name == assignCredentialNameTmp))
+                bool flag = false;
+                var credential = protocol.GetCredential();
+
+                // use assign credential
+                if (string.IsNullOrEmpty(assignCredentialName) == false)
                 {
-                    var c = protocol.Credentials.First(x => x.Name == assignCredentialNameTmp);
-                    if (!string.IsNullOrEmpty(c.Address))
-                        protocol.Address = c.Address;
-                    if (!string.IsNullOrEmpty(c.Port))
-                        protocol.Port = c.Port;
-                    if (!string.IsNullOrEmpty(c.UserName))
-                        protocol.UserName = c.UserName;
-                    if (!string.IsNullOrEmpty(c.Password))
-                        protocol.Password = c.Password;
+                    var assignCredentialNameTmp = assignCredentialName;
+                    if (protocol.AlternateCredentials.Count > 0
+                        && protocol.AlternateCredentials.Any(x => x.Name == assignCredentialNameTmp))
+                    {
+                        var c = protocol.AlternateCredentials.First(x => x.Name == assignCredentialNameTmp);
+                        if (!string.IsNullOrEmpty(c.Address))
+                        {
+                            credential.Address = c.Address;
+                            flag = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(c.Port))
+                        {
+                            credential.Port = c.Port;
+                            flag = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(c.UserName))
+                        {
+                            credential.UserName = c.UserName;
+                            flag = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(c.Password))
+                        {
+                            credential.Password = c.Password;
+                            flag = true;
+                        }
+                    }
+                }
+
+
+                // TODO: 判断端口是否打开，未打开则自动切换
+                if (protocol.IsAutoAlternateAddressSwitching == true)
+                {
+                    int milliseconds = 1000;
+                    // TODO show progress window
+                    if (!Credential.TestAddressPortIsAvailable(protocol, credential, milliseconds))
+                    {
+                        foreach (var alternateCredential in protocol.AlternateCredentials)
+                        {
+                            if (Credential.TestAddressPortIsAvailable(protocol, alternateCredential, milliseconds))
+                            {
+                                credential.SetCredential(alternateCredential);
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        //// TODO 改成并发 ping
+                        //var tasks = protocol.AlternateCredentials.Select(x => new Task<bool>(() =>
+                        //{
+                        //    return Credential.TestAddressPortIsAvailable(protocol, x, milliseconds);
+                        //}));
+                    }
+                }
+
+
+                if (flag)
+                {
+                    protocol.SetCredential(credential);
                 }
             }
+
 
             // run script before connected
             serverClone.RunScriptBeforeConnect();

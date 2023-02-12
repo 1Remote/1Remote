@@ -11,10 +11,10 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
     public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly CredentialWithAddressPortUserPwd? _org = null;
-        public CredentialWithAddressPortUserPwd New { get; } = new CredentialWithAddressPortUserPwd();
+        private readonly Model.Protocol.Base.Credential? _org = null;
+        public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
         private readonly ProtocolBaseWithAddressPortUserPwd _protocol;
-        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, CredentialWithAddressPortUserPwd? org = null)
+        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, Model.Protocol.Base.Credential? org = null)
         {
             _protocol = protocol;
             _org = org;
@@ -22,7 +22,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             // Edit mode
             if (_org != null)
             {
-                New = (CredentialWithAddressPortUserPwd)_org.Clone();
+                New = (Model.Protocol.Base.Credential)_org.Clone();
             }
         }
 
@@ -42,7 +42,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
                     }
 
-                    if (true == _protocol.Credentials?.Any(x => x != _org && string.Equals(x.Name, v, StringComparison.CurrentCultureIgnoreCase)))
+                    if (true == _protocol.AlternateCredentials?.Any(x => x != _org && string.Equals(x.Name, v, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         New.Name = "";
                         RaisePropertyChanged();
@@ -94,30 +94,30 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
-                    _protocol.Credentials ??= new ObservableCollection<CredentialWithAddressPortUserPwd>();
+                    _protocol.AlternateCredentials ??= new ObservableCollection<Model.Protocol.Base.Credential>();
 
                     if (string.IsNullOrWhiteSpace(Name))
                     {
                         MessageBoxHelper.Warning($"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
                         return;
                     }
-                    if (true == _protocol.Credentials.Any(x => x != _org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
+                    if (true == _protocol.AlternateCredentials.Any(x => x != _org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         MessageBoxHelper.Warning(IoC.Get<ILanguageService>().Translate("{0} is existed!", Name));
                         return;
                     }
 
-                    if (_org != null && _protocol.Credentials.Any(x => x == _org))
+                    if (_org != null && _protocol.AlternateCredentials.Any(x => x == _org))
                     {
                         // edit
-                        var i = _protocol.Credentials.IndexOf(_org);
-                        _protocol.Credentials.Remove(_org);
-                        _protocol.Credentials.Insert(i, New);
+                        var i = _protocol.AlternateCredentials.IndexOf(_org);
+                        _protocol.AlternateCredentials.Remove(_org);
+                        _protocol.AlternateCredentials.Insert(i, New);
                     }
                     else
                     {
                         // add
-                        _protocol.Credentials.Add(New);
+                        _protocol.AlternateCredentials.Add(New);
                     }
                     RequestClose(true);
                 }, o => string.IsNullOrWhiteSpace(Name) == false && CheckPort(Port));

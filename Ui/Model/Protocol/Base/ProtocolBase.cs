@@ -282,13 +282,13 @@ namespace _1RM.Model.Protocol.Base
             if (this is ProtocolBaseWithAddressPortUserPwd p
                 && clone is ProtocolBaseWithAddressPortUserPwd c)
             {
-                if (p.Credentials != null)
+                if (p.AlternateCredentials != null)
                 {
-                    c.Credentials = new ObservableCollection<CredentialWithAddressPortUserPwd>(p.Credentials.Select(x => x.Clone() as CredentialWithAddressPortUserPwd));
+                    c.AlternateCredentials = new ObservableCollection<Credential>(p.AlternateCredentials.Select(x => x.Clone() as Credential));
                 }
                 else
                 {
-                    c.Credentials = null;
+                    c.AlternateCredentials = null;
                 }
             }
             return clone;

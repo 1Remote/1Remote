@@ -61,8 +61,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox Tag="asdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaaasdaaaaasdaa"
-                            attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -99,13 +98,13 @@
                                       CanUserReorderColumns="False"
                                       ColumnWidth="*"
                                       IsReadOnly="True"
-                                      ItemsSource="{Binding Credentials}" >
+                                      ItemsSource="{Binding AlternateCredentials}" >
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Width="*" Header="{DynamicResource Name}">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding Name}"></TextBlock>
                                                     <Grid Width="20"></Grid>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -134,7 +133,7 @@
 
                             <Button Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                                     Style="{StaticResource ButtonBarTransparentStyle}"
-                            Margin="0 0 5 0"
+                                    Margin="0 0 5 0"
                             >
                                 <Grid Height="15" Width="15">
                                     <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
@@ -143,6 +142,30 @@
                                           StrokeThickness="2" Stretch="Uniform" />
                                 </Grid>
                             </Button>
+
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                                         Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                                         Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <CheckBox Content="TXT:Auto address switching" 
+                                          IsChecked="{Binding IsAutoAlternateAddressSwitching}"
+                                          Margin="0 5 0 0"></CheckBox>
+                                <TextBlock Width="500" TextWrapping="Wrap" Margin="0 0 0 5" Opacity="0.7">
+                                    <Run Text="TXT: When the default address is unavailable, alternate addresses will be tried in sequence"></Run>
+                                </TextBlock>
+                            </StackPanel>
                         </StackPanel>
 
                     </Grid>

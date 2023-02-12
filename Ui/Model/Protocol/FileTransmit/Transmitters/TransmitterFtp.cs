@@ -253,7 +253,6 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 {
                     _ftp?.Dispose();
                     _ftp = new FtpClient(Hostname, Port, Username, Password);
-                    //_ftp.Credentials = new NetworkCredential(Username, Password);
                     _ftp.Connect();
                 }
             }

@@ -40,13 +40,6 @@ namespace _1RM.Model.Protocol.Base
             return $"{Address}:{Port}";
         }
 
-        private ObservableCollection<CredentialWithAddressPortUserPwd>? _credentials = new ObservableCollection<CredentialWithAddressPortUserPwd>();
-        public virtual ObservableCollection<CredentialWithAddressPortUserPwd>? Credentials
-        {
-            get => _credentials;
-            set => SetAndNotifyIfChanged(ref _credentials, value);
-        }
-
         #endregion Conn
     }
 }
