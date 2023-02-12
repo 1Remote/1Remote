@@ -34,8 +34,8 @@ namespace _1RM.Service
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = EncryptOnce(s.Password);
 
-                if (s.Credentials != null)
-                    foreach (var credential in s.Credentials)
+                if (s.AlternateCredentials != null)
+                    foreach (var credential in s.AlternateCredentials)
                     {
                         credential.Password = EncryptOnce(credential.Password);
                     }
@@ -62,8 +62,8 @@ namespace _1RM.Service
                 var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = DecryptOrReturnOriginalString(s.Password);
 
-                if (s.Credentials != null)
-                    foreach (var credential in s.Credentials)
+                if (s.AlternateCredentials != null)
+                    foreach (var credential in s.AlternateCredentials)
                     {
                         credential.Password = DecryptOrReturnOriginalString(credential.Password);
                     }

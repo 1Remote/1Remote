@@ -21,6 +21,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
+using Credential = _1RM.Model.Protocol.Base.Credential;
 
 namespace _1RM.View.Editor
 {
@@ -287,7 +288,7 @@ namespace _1RM.View.Editor
                                 && property.SetMethod.IsAbstract == false
                                 && property.Name != nameof(ProtocolBase.Id)
                                 && property.Name != nameof(ProtocolBase.Tags)
-                                && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.Credentials))
+                                && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials))
                             {
                                 var obj = property.GetValue(Server);
                                 if (obj == null)
@@ -638,7 +639,7 @@ namespace _1RM.View.Editor
                 {
                     if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
                     {
-                        var credential = o as CredentialWithAddressPortUserPwd;
+                        var credential = o as Credential;
                         var vm = new AlternativeCredentialEditViewModel(protocol, credential);
                         var id = MaskLayerController.ShowProcessingRingMainWindow();
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
@@ -660,14 +661,14 @@ namespace _1RM.View.Editor
             {
                 return _cmdDeleteCredential ??= new RelayCommand((o) =>
                 {
-                    if (o is CredentialWithAddressPortUserPwd credential
+                    if (o is Credential credential
                         && Server is ProtocolBaseWithAddressPortUserPwd protocol)
                     {
                         if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                         {
-                            if (protocol.Credentials?.Contains(credential) == true)
+                            if (protocol.AlternateCredentials?.Contains(credential) == true)
                             {
-                                protocol.Credentials.Remove(credential);
+                                protocol.AlternateCredentials.Remove(credential);
                             }
                         }
                     }

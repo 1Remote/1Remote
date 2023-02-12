@@ -30,7 +30,6 @@
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid>
 
-
             <Border Margin="1"
                     CornerRadius="{StaticResource DefaultCornerRadius}" 
                     SnapsToDevicePixels="True"

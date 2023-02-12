@@ -48,13 +48,13 @@ namespace _1RM.Model
                     ));
                 }
 
-                if (server is ProtocolBaseWithAddressPortUserPwd { Credentials.Count: > 0 } protocol)
+                if (server is ProtocolBaseWithAddressPortUserPwd { AlternateCredentials.Count: > 0 } protocol)
                 {
-                    foreach (var credential in protocol.Credentials)
+                    foreach (var credential in protocol.AlternateCredentials)
                     {
                         actions.Add(new ProtocolAction(
                             actionName: IoC.Get<ILanguageService>().Translate("Connect") + $" (TXT:with credential {credential.Name})",
-                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - Credentials", assignCredentialName: credential.Name); }
+                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - AlternateCredentials", assignCredentialName: credential.Name); }
                         ));
                     }
                 }
@@ -76,11 +76,6 @@ namespace _1RM.Model
                     }
                 }
 
-                //else
-                //{
-                //    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, fromView: nameof(LauncherWindowView)); }));
-                //}
-
                 if (writable)
                 {
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
@@ -89,12 +84,12 @@ namespace _1RM.Model
                             IoC.Get<MainWindowViewModel>()?.ShowMe();
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                     }));
-                    //actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
-                    //{
-                    //    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                    //        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    //    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
-                    //}));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () =>
+                    {
+                        if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                            IoC.Get<MainWindowViewModel>()?.ShowMe();
+                        GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
+                    }));
                 }
             };
 
@@ -150,11 +145,6 @@ namespace _1RM.Model
                         }));
                 }
             }
-
-            //if (writable)
-            //{
-            //    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () => { GlobalEventHelper.OnRequestDeleteServer?.Invoke(server); }));
-            //}
 
             #endregion Build Actions
 
