@@ -109,7 +109,17 @@ namespace _1RM.View.Host.ProtocolHosts
         public readonly string ExeArguments;
         private readonly Dictionary<string, string> _environmentVariables;
 
-        public IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null) : base(protocol, false)
+        public static IntegrateHost Create(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
+        {
+            IntegrateHost? view = null;
+            Execute.OnUIThreadSync(() =>
+            {
+                view = new IntegrateHost(protocol, exeFullName, exeArguments, environmentVariables);
+            });
+            return view!;
+        }
+
+        private IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null) : base(protocol, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
@@ -269,9 +279,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void Start()
         {
+            if (File.Exists(ExeFullName) == false) return;
+
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
-            Debug.Assert(File.Exists(exeFullName));
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = exeFullName,

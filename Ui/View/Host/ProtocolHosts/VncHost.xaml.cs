@@ -8,6 +8,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using Shawn.Utils.Wpf;
+using Stylet;
 using VncSharpCore;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -16,7 +17,17 @@ namespace _1RM.View.Host.ProtocolHosts
     {
         private readonly VNC _vncBase;
 
-        public VncHost(VNC vnc) : base(vnc, false)
+        public static VncHost Create(VNC protocolServer)
+        {
+            VncHost? view = null;
+            Execute.OnUIThreadSync(() =>
+            {
+                view = new VncHost(protocolServer);
+            });
+            return view!;
+        }
+
+        private VncHost(VNC vnc) : base(vnc, false)
         {
             InitializeComponent();
             GridMessageBox.Visibility = Visibility.Collapsed;

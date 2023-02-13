@@ -121,7 +121,7 @@ namespace _1RM.View.Host
                 this.Closing += (sender, args) =>
                 {
                     if (this.GetViewModel().Items.Count > 0
-                        && App.ExitingFlag == false 
+                        && App.ExitingFlag == false
                         && IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                         && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: Vm))
                     {
@@ -246,28 +246,12 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             return Vm;
         }
 
-        public void AddItem(TabItemViewModel newItem)
-        {
-            if (Vm?.Items == null) return;
-            if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
-            {
-                Vm.SelectedItem = Vm.Items.First(x => x.Content!.ConnectionId == newItem.Content.ConnectionId);
-                return;
-            }
-            Vm.Items.Add(newItem);
-            newItem.Content.SetParentWindow(this);
-            Vm.SelectedItem = Vm.Items.Last();
-        }
-
         public Size GetTabContentSize(bool withoutBorderColor)
         {
-            if (this.IsLoaded == false || _tabablzControl == null)
+            var size = new Size(800, 600);
+            Execute.OnUIThreadSync(() =>
             {
-                //TabWindowBase.TITLE_BAR_HEIGHT
-                return new Size(800, 600);
-            }
-            else
-            {
+                if (!this.IsLoaded || _tabablzControl == null) return;
                 Debug.Assert(this.Resources["TabContentBorderWithColor"] != null);
                 Debug.Assert(this.Resources["TabContentBorderWithOutColor"] != null);
                 var tabContentBorderWithColor = (Thickness)this.Resources["TabContentBorderWithColor"];
@@ -278,12 +262,10 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 double actualHeight = this.WindowState == WindowState.Maximized ? screenEx.VirtualWorkingArea.Height : _tabablzControl.ActualHeight;
                 double border1 = withoutBorderColor ? tabContentBorderWithOutColor.Left + tabContentBorderWithOutColor.Right : tabContentBorderWithColor.Left + tabContentBorderWithColor.Right;
                 double border2 = withoutBorderColor ? tabContentBorderWithOutColor.Top + tabContentBorderWithOutColor.Bottom : tabContentBorderWithColor.Top + tabContentBorderWithColor.Bottom;
-                return new Size()
-                {
-                    Width = actualWidth - border1,
-                    Height = actualHeight - TITLE_BAR_HEIGHT - border2,
-                };
-            }
+                size.Width = actualWidth - border1;
+                size.Height = actualHeight - TITLE_BAR_HEIGHT - border2;
+            });
+            return size;
         }
 
         [DllImport("user32.dll", SetLastError = true)]

@@ -12,6 +12,7 @@ using _1RM.View.Host.ProtocolHosts;
  using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
+using _1RM.Model.DAO.Dapper;
 
 namespace _1RM.View.Host
 {
@@ -146,6 +147,38 @@ namespace _1RM.View.Host
             }
         }
 
+        public bool TryRemoveItem(string connectionId)
+        {
+            var item = Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId);
+            if (item != null)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    Items.Remove(item);
+                    SelectedItem = Items.FirstOrDefault();
+                });
+            }
+            return false;
+        }
+
+        public void AddItem(TabItemViewModel newItem)
+        {
+            if (Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
+            {
+                SelectedItem = Items.First(x => x.Content.ConnectionId == newItem.Content.ConnectionId);
+                return;
+            }
+            Items.Add(newItem);
+            newItem.Content.SetParentWindow(_windowView);
+            SelectedItem = newItem;
+        }
+
+        public TabItemViewModel? GetItem(string connectionId)
+        {
+            return Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId);
+        }
+
+
         #region CMD
 
         private RelayCommand? _cmdHostGoFullScreen;
@@ -156,7 +189,7 @@ namespace _1RM.View.Host
                 return _cmdHostGoFullScreen ??= new RelayCommand((o) =>
                 {
                     if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                        IoC.Get<SessionControlService>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
+                        IoC.Get<SessionControlService>().MoveSessionToFullScreen(SelectedItem.Content.ConnectionId);
                 }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
             }
         }

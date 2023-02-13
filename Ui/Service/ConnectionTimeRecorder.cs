@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
 using _1RM.View;
 using Newtonsoft.Json;
@@ -38,13 +39,14 @@ namespace _1RM.Service
         /// <summary>
         /// Update the connect time of id
         /// </summary>
-        public static void UpdateAndSave(ProtocolBase server, long time = 0)
+        public static void UpdateConnectTime(this ProtocolBaseViewModel vmServer, long time = 0)
         {
             //var serverId = $"{server.Id}_From{server.DataSourceName}";
             if (time == 0)
                 time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            ConnectTimeData.AddOrUpdate(server.Id, time, (s, l) => time);
+            ConnectTimeData.AddOrUpdate(vmServer.Id, time, (s, l) => time);
             Save();
+            vmServer.LastConnectTime = ConnectTimeRecorder.Get(vmServer.Server);
         }
 
         public static DateTime Get(ProtocolBase server)

@@ -16,7 +16,18 @@ namespace _1RM.View.Host.ProtocolHosts
     public partial class FileTransmitHost : HostBase
     {
         private readonly VmFileTransmitHost _vmRemote;
-        public FileTransmitHost(ProtocolBase protocolServer) : base(protocolServer, false)
+
+        public static FileTransmitHost Create(ProtocolBase protocolServer)
+        {
+            FileTransmitHost? view = null;
+            Execute.OnUIThreadSync(() =>
+            {
+                view = new FileTransmitHost(protocolServer);
+            });
+            return view!;
+        }
+
+        private FileTransmitHost(ProtocolBase protocolServer) : base(protocolServer, false)
         {
             InitializeComponent();
             Focusable = true;

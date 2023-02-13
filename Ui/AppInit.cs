@@ -313,7 +313,7 @@ namespace _1RM
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
             }
 
-            if (_isNewUser == false)
+            if (_isNewUser == false && ConfigurationService != null)
             {
                 MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
                 MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");

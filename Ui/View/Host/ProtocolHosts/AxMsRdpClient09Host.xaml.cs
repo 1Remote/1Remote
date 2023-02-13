@@ -66,7 +66,17 @@ namespace _1RM.View.Host.ProtocolHosts
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
 
-        public AxMsRdpClient09Host(RDP rdp, int width = 0, int height = 0) : base(rdp, true)
+        public static AxMsRdpClient09Host Create(RDP rdp, int width = 0, int height = 0)
+        {
+            AxMsRdpClient09Host? view = null;
+            Execute.OnUIThreadSync(() =>
+            {
+                view = new AxMsRdpClient09Host(rdp, width, height);
+            });
+            return view!;
+        }
+
+        private AxMsRdpClient09Host(RDP rdp, int width = 0, int height = 0) : base(rdp, true)
         {
             InitializeComponent();
 
@@ -332,7 +342,7 @@ namespace _1RM.View.Host.ProtocolHosts
         public void RedirectDevice()
         {
             var ocx = _rdpClient?.GetOcx() as MSTSCLib.IMsRdpClientNonScriptable7;
-            if(ocx == null)
+            if (ocx == null)
                 return;
             ocx.CameraRedirConfigCollection.RedirectByDefault = false;
             if (_rdpSettings.EnableRedirectCameras == true)
@@ -415,7 +425,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         else
                         {
                             // if isReconnecting == false, then width is Tab width, true width = Tab width * ScaleFactor
-                            if (_rdpSettings.ThisTimeConnWithFullScreen())
+                            if (_rdpSettings.IsThisTimeConnWithFullScreen())
                             {
                                 var size = GetScreenSizeIfRdpIsFullScreen();
                                 _rdpClient.DesktopWidth = size.Width;
@@ -609,24 +619,28 @@ namespace _1RM.View.Host.ProtocolHosts
         public override void Conn()
         {
             Debug.Assert(_rdpClient != null);
-            try
+            Dispatcher.Invoke(() =>
             {
-                if (Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Connecting)
+                try
                 {
-                    return;
+                    if (Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Connecting)
+                    {
+                        return;
+                    }
+
+                    Status = ProtocolHostStatus.Connecting;
+                    GridLoading.Visibility = Visibility.Visible;
+                    RdpHost.Visibility = Visibility.Collapsed;
+                    _rdpClient.Connect();
                 }
-                Status = ProtocolHostStatus.Connecting;
-                GridLoading.Visibility = Visibility.Visible;
-                RdpHost.Visibility = Visibility.Collapsed;
-                _rdpClient.Connect();
-            }
-            catch (Exception e)
-            {
-                Status = ProtocolHostStatus.Connected;
-                GridMessageBox.Visibility = Visibility.Visible;
-                TbMessageTitle.Visibility = Visibility.Collapsed;
-                TbMessage.Text = e.Message;
-            }
+                catch (Exception e)
+                {
+                    Status = ProtocolHostStatus.Connected;
+                    GridMessageBox.Visibility = Visibility.Visible;
+                    TbMessageTitle.Visibility = Visibility.Collapsed;
+                    TbMessage.Text = e.Message;
+                }
+            });
         }
 
         public override void Close()
