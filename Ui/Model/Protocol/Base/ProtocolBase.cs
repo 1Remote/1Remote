@@ -275,7 +275,18 @@ namespace _1RM.Model.Protocol.Base
         /// </summary>
         public ProtocolBase Clone()
         {
-            // TODO 使用 json 序列化来实现深拷贝
+            //{
+            //    var json = ToJsonString();
+            //    var jsonClone = ItemCreateHelper.CreateFromJsonString(json);
+            //    if (jsonClone != null)
+            //    {
+            //        jsonClone.Id = this.Id;
+            //        jsonClone.DataSourceName = this.DataSourceName;
+            //        return jsonClone;
+            //    }
+            //}
+
+
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
             clone.Tags = new List<string>(this.Tags);
@@ -284,7 +295,7 @@ namespace _1RM.Model.Protocol.Base
             {
                 if (p.AlternateCredentials != null)
                 {
-                    c.AlternateCredentials = new ObservableCollection<Credential>(p.AlternateCredentials.Select(x => x.Clone() as Credential));
+                    c.AlternateCredentials = new(p.AlternateCredentials.Select(x => x.CloneMe()));
                 }
                 else
                 {
@@ -347,7 +358,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
 
-        public virtual bool ThisTimeConnWithFullScreen()
+        public virtual bool IsThisTimeConnWithFullScreen()
         {
             return false;
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using CredentialManagement;
 using Shawn.Utils;
 
 namespace _1RM.Model.Protocol.Base
@@ -100,27 +101,53 @@ namespace _1RM.Model.Protocol.Base
 
 
 
-        public void SetCredential(in Credential credential)
+        public bool SetCredential(in Credential credential)
         {
-            if (!string.IsNullOrEmpty(credential.Address))
+            var a = SetAddress(credential);
+            var b = SetPort(credential);
+            var c = SetUserName(credential);
+            var d = SetPassword(credential);
+            return a || b || c || d;
+        }
+
+        public bool SetAddress(in Credential credential)
+        {
+            if (!string.IsNullOrEmpty(credential.Port))
             {
                 Address = credential.Address;
+                return true;
             }
-
+            return false;
+        }
+        public bool SetPort(in Credential credential)
+        {
             if (!string.IsNullOrEmpty(credential.Port))
             {
                 Port = credential.Port;
+                return true;
             }
+            return false;
+        }
 
+        public bool SetUserName(in Credential credential)
+        {
             if (!string.IsNullOrEmpty(credential.UserName))
             {
                 UserName = credential.UserName;
+                return true;
             }
+            return false;
+        }
 
+        public bool SetPassword(in Credential credential)
+        {
             if (!string.IsNullOrEmpty(credential.Password))
             {
                 Password = credential.Password;
+                return true;
             }
+            return false;
         }
+
     }
 }

@@ -12,6 +12,7 @@ using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.Model.Protocol
@@ -687,12 +688,47 @@ namespace _1RM.Model.Protocol
             return rdp;
         }
 
-        public override bool ThisTimeConnWithFullScreen()
+        public override bool IsThisTimeConnWithFullScreen()
         {
             if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
                 || this.IsConnWithFullScreen == true
                 || IoC.Get<LocalityService>().RdpLocalityGet(this.Id.ToString())?.FullScreenLastSessionIsFullScreen == true)
                 return true;
+            return false;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public bool IsNeedRunWithMstsc()
+        {
+            if (MstscModeEnabled == true)
+            {
+                return true;
+            }
+
+            // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of internal runner.
+            // check if screens are in different scale factors
+            int factor = (int)(new ScreenInfoEx(System.Windows.Forms.Screen.PrimaryScreen).ScaleFactor * 100);
+            if (IsThisTimeConnWithFullScreen()
+                && System.Windows.Forms.Screen.AllScreens.Length > 1
+                && RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                && System.Windows.Forms.Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)
+                )
+            {
+                return true;
+            }
+
+
             return false;
         }
     }
