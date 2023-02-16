@@ -24,20 +24,15 @@ namespace _1RM.View.Launcher
     /// </summary>
     public partial class QuickConnectionView : UserControl
     {
-        private readonly IWindowManager _windowManager;
-        private readonly LauncherWindowViewModel _lvm;
-        private readonly QuickConnectionViewModel _vm;
-        public QuickConnectionView(QuickConnectionViewModel qvm, LauncherWindowViewModel lvm, IWindowManager windowManager)
+        public QuickConnectionView()
         {
-            _vm = qvm;
-            _lvm = lvm;
-            _windowManager = windowManager;
             InitializeComponent();
         }
 
         private void TbKeyWord_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (Visibility != Visibility.Visible) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+            if (this.DataContext is not QuickConnectionViewModel vm) return;
 
             if (TbKeyWord.IsKeyboardFocused == false)
                 TbKeyWord.Focus();
@@ -45,7 +40,7 @@ namespace _1RM.View.Launcher
             var key = e.Key;
             if (key == Key.Escape)
             {
-                _lvm.HideMe();
+                IoC.Get<LauncherWindowViewModel>().HideMe();
                 return;
             }
 
@@ -56,44 +51,44 @@ namespace _1RM.View.Launcher
                     e.Handled = false;
                     break;
                 case Key.Tab:
-                    _lvm.ToggleQuickConnection();
+                    IoC.Get<LauncherWindowViewModel>().ToggleQuickConnection();
                     break;
                 case Key.Enter:
-                    _vm.OpenConnection();
+                    vm.OpenConnection();
                     break;
 
                 case Key.Down:
-                    if (_vm.SelectedIndex < _vm.ConnectHistory.Count - 1)
+                    if (vm.SelectedIndex < vm.ConnectHistory.Count - 1)
                     {
-                        ++_vm.SelectedIndex;
+                        ++vm.SelectedIndex;
                         ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.Up:
-                    if (_vm.SelectedIndex > 0)
+                    if (vm.SelectedIndex > 0)
                     {
-                        --_vm.SelectedIndex;
+                        --vm.SelectedIndex;
                         ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.PageUp:
-                    if (_vm.SelectedIndex > 0)
+                    if (vm.SelectedIndex > 0)
                     {
-                        _vm.SelectedIndex =
-                            _vm.SelectedIndex - 5 < 0 ? 0 : _vm.SelectedIndex - 5;
+                        vm.SelectedIndex =
+                            vm.SelectedIndex - 5 < 0 ? 0 : vm.SelectedIndex - 5;
                         ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
 
                 case Key.PageDown:
-                    if (_vm.SelectedIndex < _vm.ConnectHistory.Count - 1)
+                    if (vm.SelectedIndex < vm.ConnectHistory.Count - 1)
                     {
-                        _vm.SelectedIndex =
-                            _vm.SelectedIndex + 5 > _vm.ConnectHistory.Count - 1
-                                ? _vm.ConnectHistory.Count - 1
-                                : _vm.SelectedIndex + 5;
+                        vm.SelectedIndex =
+                            vm.SelectedIndex + 5 > vm.ConnectHistory.Count - 1
+                                ? vm.ConnectHistory.Count - 1
+                                : vm.SelectedIndex + 5;
                         ListBoxHistory.ScrollIntoView(ListBoxHistory.SelectedItem);
                     }
                     break;
@@ -102,20 +97,26 @@ namespace _1RM.View.Launcher
 
         private void ListBoxHistory_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+            if (this.DataContext is not QuickConnectionViewModel vm) return;
+
             if (e.ClickCount == 2)
-                _vm.OpenConnection();
+                vm.OpenConnection();
         }
 
         private void ButtonDeleteItem_OnClick(object sender, RoutedEventArgs e)
         {
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+            if (this.DataContext is not QuickConnectionViewModel vm) return;
+
             if (sender is Button { Tag: QuickConnectionItem qci })
             {
-                if (_vm.ConnectHistory.Contains(qci))
+                if (vm.ConnectHistory.Contains(qci))
                 {
-                    _vm.ConnectHistory.Remove(qci);
+                    vm.ConnectHistory.Remove(qci);
                     IoC.Get<LocalityService>().QuickConnectionHistoryRemove(qci);
                 }
-                _vm.SelectedIndex = 0;
+                vm.SelectedIndex = 0;
             }
         }
     }

@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using _1RM.Model;
-using _1RM.Resources.Icons;
 using _1RM.Service;
 using _1RM.Utils;
-using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
-using Stylet;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 

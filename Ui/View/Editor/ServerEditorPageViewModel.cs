@@ -345,7 +345,7 @@ namespace _1RM.View.Editor
                     // add
                     else if (IsAddMode && _addToDataSource != null)
                     {
-                         MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
+                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
                         _globalData.AddServer(Server, _addToDataSource);
                     }
 

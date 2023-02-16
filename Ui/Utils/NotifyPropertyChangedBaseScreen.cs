@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 
 namespace _1RM.Utils
@@ -41,6 +42,11 @@ namespace _1RM.Utils
         protected virtual bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string? propertyName = null)
         {
             return SetAndNotifyIfChanged(propertyName, ref oldValue, newValue);
+        }
+
+        public bool CanUiAction()
+        {
+            return this.View is WindowBase { IsClosing: false };
         }
 
         #endregion INotifyPropertyChanged

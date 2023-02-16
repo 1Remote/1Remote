@@ -1,30 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
 using _1RM.Model;
 using _1RM.Model.DAO;
-using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor;
-using _1RM.View.Host.ProtocolHosts;
-using _1RM.View.ServerList;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
-using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
-using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 
 namespace _1RM.View
@@ -198,6 +185,7 @@ namespace _1RM.View
 
         public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
         {
+            if (this.View is not MainWindowView { IsClosing: false } window) return;
             Execute.OnUIThread(() =>
             {
                 if (visibility == Visibility.Visible)
@@ -217,6 +205,7 @@ namespace _1RM.View
 
         public void ShowList(bool clearSelection)
         {
+            if (this.View is not MainWindowView { IsClosing: false } window) return;
             EditorViewModel = null;
             ShowAbout = false;
             ShowSetting = false;
@@ -287,6 +276,13 @@ namespace _1RM.View
 
         public void ShowMe(bool isForceActivate = false, EnumMainWindowPage? goPage = null)
         {
+            if (this.View is not MainWindowView)
+            {
+                IoC.Get<IWindowManager>().ShowWindow(this);
+                return;
+            }
+            if (this.View is not MainWindowView { IsClosing: false } window) return;
+
             if (goPage != null)
             {
                 switch (goPage)
@@ -310,54 +306,42 @@ namespace _1RM.View
                 }
             }
 
-            if (this.View is Window window)
+            if (window.Visibility != Visibility.Visible)
             {
-                if (window.Visibility != Visibility.Visible)
-                {
-                    MsAppCenterHelper.TraceView(nameof(MainWindowView), true);
-                }
-                Execute.OnUIThread(() =>
-                {
-                    if (window.WindowState == WindowState.Minimized)
-                        window.WindowState = WindowState.Normal;
-                    if (isForceActivate)
-                        HideMe();
-                    window.Show();
-                    window.ShowInTaskbar = true;
-                    window.Topmost = true;
-                    window.Activate();
-                    window.Topmost = false;
-                    window.Focus();
-                });
+                MsAppCenterHelper.TraceView(nameof(MainWindowView), true);
             }
-            else
+            Execute.OnUIThread(() =>
             {
-                Execute.OnUIThread(() =>
-                {
-                    IoC.Get<IWindowManager>().ShowWindow(this);
-                });
-            }
+                if (window.WindowState == WindowState.Minimized)
+                    window.WindowState = WindowState.Normal;
+                if (isForceActivate)
+                    HideMe();
+                window.Show();
+                window.ShowInTaskbar = true;
+                window.Topmost = true;
+                window.Activate();
+                window.Topmost = false;
+                window.Focus();
+            });
         }
 
         public void HideMe()
         {
+            if (this.View is not MainWindowView { IsClosing: false } window) return;
             if (Shawn.Utils.ConsoleManager.HasConsole)
                 Shawn.Utils.ConsoleManager.Hide();
-            if (this.View is Window window)
+            if (window.Visibility == Visibility.Visible)
             {
-                if (window.Visibility == Visibility.Visible)
-                {
-                    MsAppCenterHelper.TraceView(nameof(MainWindowView), false);
-                }
-                Execute.OnUIThread(() =>
-                {
-                    window.ShowInTaskbar = false;
-                    window.Hide();
-                    window.Visibility = Visibility.Hidden;
-                    // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
-                    System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-                });
+                MsAppCenterHelper.TraceView(nameof(MainWindowView), false);
             }
+            Execute.OnUIThread(() =>
+            {
+                window.ShowInTaskbar = false;
+                window.Hide();
+                window.Visibility = Visibility.Hidden;
+                // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
+                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+            });
         }
 
         private RelayCommand? _cmdExit;
@@ -367,7 +351,7 @@ namespace _1RM.View
             {
                 return _cmdExit ??= new RelayCommand((o) =>
                 {
-                    this.RequestClose();
+                    App.Close();
                 });
             }
         }

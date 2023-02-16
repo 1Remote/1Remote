@@ -217,7 +217,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 }
                 return;
             }
-            
+
 
             var screenSize = this.GetScreenSizeIfRdpIsFullScreen();
 

@@ -60,7 +60,7 @@ namespace _1RM.Utils
 
         public static void RunWithoutHosting(this Runner runner, ProtocolBase protocol)
         {
-            if(runner.IsRunWithoutHosting()) return;
+            if (runner.IsRunWithoutHosting()) return;
             if (runner is not ExternalRunner er) return;
             var (exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
 
@@ -129,45 +129,45 @@ namespace _1RM.Utils
             switch (protocol)
             {
                 case RDP rdp:
-                {
-                    var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
-                    return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
-                }
+                    {
+                        var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                        return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
+                    }
                 case SSH ssh:
-                {
-                    var kittyRunner = new KittyRunner(ssh.ProtocolDisplayName);
-                    var sessionName = $"{Assert.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                    ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
-                    var ih = IntegrateHost.Create(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName));
-                    ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
-                    return ih;
-                }
+                    {
+                        var kittyRunner = new KittyRunner(ssh.ProtocolDisplayName);
+                        var sessionName = $"{Assert.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
+                        var ih = IntegrateHost.Create(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName));
+                        ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
+                        return ih;
+                    }
                 case Telnet telnet:
-                {
-                    var kittyRunner = new KittyRunner(telnet.ProtocolDisplayName);
-                    var sessionName = $"{Assert.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                    telnet.ConfigKitty(sessionName, kittyRunner, "");
-                    var ih = IntegrateHost.Create(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName));
-                    ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
-                    return ih;
-                }
+                    {
+                        var kittyRunner = new KittyRunner(telnet.ProtocolDisplayName);
+                        var sessionName = $"{Assert.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        telnet.ConfigKitty(sessionName, kittyRunner, "");
+                        var ih = IntegrateHost.Create(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName));
+                        ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
+                        return ih;
+                    }
                 case VNC vnc:
-                {
-                    return VncHost.Create(vnc);
-                }
+                    {
+                        return VncHost.Create(vnc);
+                    }
                 case SFTP sftp:
-                {
-                    return FileTransmitHost.Create(sftp);
-                }
+                    {
+                        return FileTransmitHost.Create(sftp);
+                    }
                 case FTP ftp:
-                {
-                    return FileTransmitHost.Create(ftp);
-                }
+                    {
+                        return FileTransmitHost.Create(ftp);
+                    }
                 case LocalApp app:
-                {
-                    var tmp = WinCmdRunner.CheckFileExistsAndFullName(app.ExePath);
-                    return IntegrateHost.Create(app, tmp.Item2, app.Arguments);
-                }
+                    {
+                        var tmp = WinCmdRunner.CheckFileExistsAndFullName(app.ExePath);
+                        return IntegrateHost.Create(app, tmp.Item2, app.Arguments);
+                    }
                 default:
                     throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");
             }
