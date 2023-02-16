@@ -26,9 +26,7 @@ namespace _1RM.View.Launcher
 {
     public class QuickConnectionViewModel : NotifyPropertyChangedBaseScreen
     {
-        private LauncherWindowViewModel? _launcherWindowViewModel;
         public readonly QuickConnectionItem OpenConnectActionItem;
-        public TextBox TbKeyWord { get; private set; } = new TextBox();
         //private LauncherWindowViewModel _launcherWindowViewModel;
         public List<ProtocolBaseWithAddressPort> Protocols { get; }
         public QuickConnectionViewModel()
@@ -52,31 +50,26 @@ namespace _1RM.View.Launcher
             };
         }
 
-
-        public void Init(LauncherWindowViewModel launcherWindowViewModel)
-        {
-            _launcherWindowViewModel = launcherWindowViewModel;
-        }
-
         protected override void OnViewLoaded()
         {
-            if (this.View is QuickConnectionView window)
+            if (this.View is QuickConnectionView view)
             {
-                TbKeyWord = window.TbKeyWord;
-                TbKeyWord.Focus();
+                Execute.OnUIThreadSync(() => { view.TbKeyWord.Focus(); });
                 RebuildConnectionHistory();
             }
         }
 
         public void Show()
         {
-            if (_launcherWindowViewModel == null) return;
+            if (this.View is not QuickConnectionView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
+            IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewVisibility = Visibility.Collapsed;
             Filter = "";
             RebuildConnectionHistory();
             Execute.OnUIThread(() =>
             {
-                _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Collapsed;
-                TbKeyWord.Focus();
+                view.TbKeyWord.Focus();
             });
         }
 
@@ -118,13 +111,9 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
-                    if (this.View is QuickConnectionView view)
-                    {
-                        Execute.OnUIThread(() =>
-                        {
-                            view.ListBoxHistory.ScrollIntoView(view.ListBoxHistory.SelectedItem);
-                        });
-                    }
+                    if (this.View is not QuickConnectionView view) return;
+                    if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+                    Execute.OnUIThread(() => { view.ListBoxHistory.ScrollIntoView(view.ListBoxHistory.SelectedItem); });
                 }
             }
         }
@@ -148,7 +137,7 @@ namespace _1RM.View.Launcher
             var list = IoC.Get<LocalityService>().QuickConnectionHistory.ToList();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
-            _launcherWindowViewModel?.ReSetWindowHeight();
+            IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 
 
@@ -163,7 +152,10 @@ namespace _1RM.View.Launcher
         private string _lastKeyword = string.Empty;
         public void CalcVisibleByFilter()
         {
+            if (this.View is not QuickConnectionView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             if (string.IsNullOrEmpty(_filter) == false && _lastKeyword == _filter) return;
+
             _lastKeyword = _filter;
 
             var keyword = _filter.Trim();
@@ -173,17 +165,19 @@ namespace _1RM.View.Launcher
                 return;
             }
 
-
             var newList = IoC.Get<LocalityService>().QuickConnectionHistory.Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
             var list = newList?.ToList() ?? new List<QuickConnectionItem>();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
-            _launcherWindowViewModel?.ReSetWindowHeight();
+            IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 
 
         public void OpenConnection()
         {
+            if (this.View is not QuickConnectionView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
             if (ConnectHistory.Count > 0
                 && SelectedIndex >= 0
                 && SelectedIndex < ConnectHistory.Count)
@@ -211,7 +205,7 @@ namespace _1RM.View.Launcher
 
                 // Hide Ui
                 Filter = "";
-                _launcherWindowViewModel?.HideMe();
+                IoC.Get<LauncherWindowViewModel>().HideMe();
 
                 // create protocol
                 var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();

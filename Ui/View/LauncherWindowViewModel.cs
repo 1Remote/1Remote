@@ -1,26 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using _1RM.Model;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.PageHost;
 using Stylet;
-using Markdig.Wpf;
-using _1RM.Controls.NoteDisplay;
-using _1RM.Model.Protocol.Base;
 using _1RM.View.Launcher;
 
 
@@ -96,17 +84,13 @@ namespace _1RM.View
         protected override void OnViewLoaded()
         {
             HideMe();
-            if (this.View is LauncherWindowView window)
+            if (this.View is LauncherWindowView { IsClosing: false } window)
             {
-                ServerSelectionsViewModel.Init(this);
-                QuickConnectionViewModel.Init(this);
-
                 ServerSelectionsViewVisibility = Visibility.Visible;
                 ReSetWindowHeight();
 
                 SetHotKey(_configurationService.Launcher.LauncherEnabled,
                     _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey);
-                ServerSelectionsViewModel.NoteField = window.NoteField;
                 window.Deactivated += (s, a) => { HideMe(); };
                 window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
                 ServerSelectionsViewModel.CalcNoteFieldVisibility();
@@ -116,6 +100,7 @@ namespace _1RM.View
 
         public void ReSetWindowHeight()
         {
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             Execute.OnUIThread(() =>
             {
                 double height;
@@ -134,7 +119,7 @@ namespace _1RM.View
 
         public void ShowMe()
         {
-            if (this.View is LauncherWindowView window)
+            if (this.View is LauncherWindowView { IsClosing: false } window)
             {
                 SimpleLogHelper.Debug($"Call shortcut to invoke launcher Visibility = {window.Visibility}");
                 if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
@@ -168,11 +153,11 @@ namespace _1RM.View
                     window.Topmost = false; // important
                     window.Topmost = true; // important
                     window.Focus(); // important
-                    ServerSelectionsViewModel.TbKeyWord.Focus();
+                    ServerSelectionsViewModel.Show();
                     ServerSelectionsViewModel.SelectedIndex = 0;
                 }
             }
-            else
+            else if (this.View is not LauncherWindowView)
             {
                 IoC.Get<IWindowManager>().ShowWindow(this);
             }
@@ -181,7 +166,7 @@ namespace _1RM.View
 
         public void HideMe()
         {
-            if (this.View is LauncherWindowView window)
+            if (this.View is LauncherWindowView { IsClosing: false } window)
             {
                 lock (this)
                 {

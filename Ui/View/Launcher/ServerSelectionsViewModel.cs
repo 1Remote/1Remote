@@ -23,27 +23,15 @@ namespace _1RM.View.Launcher
 {
     public class ServerSelectionsViewModel : NotifyPropertyChangedBaseScreen
     {
-        public FrameworkElement GridActionsList { get; private set; } = new Grid();
-        public TextBox TbKeyWord { get; private set; } = new TextBox();
-        private LauncherWindowViewModel? _launcherWindowViewModel;
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
-        public ServerSelectionsViewModel()
-        {
-        }
-
-        public void Init(LauncherWindowViewModel launcherWindowViewModel)
-        {
-            _launcherWindowViewModel = launcherWindowViewModel;
-        }
 
         protected override void OnViewLoaded()
         {
-            if (this.View is ServerSelectionsView window)
+            if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: false } window
+                && this.View is ServerSelectionsView view)
             {
-                GridActionsList = window.GridActionsList;
-                TbKeyWord = window.TbKeyWord;
-                TbKeyWord.Focus();
+                view.TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
 
                 IoC.Get<GlobalData>().OnDataReloaded += RebuildVmServerList;
@@ -53,15 +41,17 @@ namespace _1RM.View.Launcher
 
         public void Show()
         {
-            if (_launcherWindowViewModel == null) return;
+            if (this.View is not ServerSelectionsView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
             Filter = "";
+            IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewVisibility = Visibility.Visible;
             Execute.OnUIThread(() =>
             {
-                _launcherWindowViewModel.ServerSelectionsViewVisibility = Visibility.Visible;
-                GridActionsList.Visibility = Visibility.Collapsed;
-                CalcNoteFieldVisibility();
-                TbKeyWord.Focus();
+                view.GridActionsList.Visibility = Visibility.Collapsed;
+                view.TbKeyWord.Focus();
             });
+            CalcNoteFieldVisibility();
         }
 
         private readonly DebounceDispatcher _debounceDispatcher = new();
@@ -176,6 +166,9 @@ namespace _1RM.View.Launcher
 
         public void RebuildVmServerList()
         {
+            if (this.View is not ServerSelectionsView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
             foreach (var viewModel in VmServerList)
             {
@@ -191,7 +184,7 @@ namespace _1RM.View.Launcher
                     viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
                 }
             });
-            _launcherWindowViewModel?.ReSetWindowHeight();
+            IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 
         private void OnLastConnectTimeChanged(object? sender, PropertyChangedEventArgs e)
@@ -205,10 +198,11 @@ namespace _1RM.View.Launcher
 
         public double ReCalcGridMainHeight()
         {
-            bool showGridAction = GridActionsList.Visibility == Visibility.Visible;
+            if (this.View is not ServerSelectionsView view) return LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
             double ret = LauncherWindowViewModel.MAX_WINDOW_HEIGHT;
             // show server list
-            if (showGridAction == false)
+            if (view.GridActionsList.Visibility != Visibility.Visible)
             {
                 var tmp = LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT * Math.Min(VmServerList.Count, LauncherWindowViewModel.LAUNCHER_OUTLINE_CORNER_RADIUS);
                 ret = LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT + tmp;
@@ -220,7 +214,10 @@ namespace _1RM.View.Launcher
         private string _lastKeyword = string.Empty;
         public void CalcVisibleByFilter()
         {
+            if (this.View is not ServerSelectionsView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             if (string.IsNullOrEmpty(_filter) == false && _lastKeyword == _filter) return;
+
             _lastKeyword = _filter;
 
             var keyword = _filter.Trim();
@@ -240,7 +237,7 @@ namespace _1RM.View.Launcher
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp);
                 if (s.Item1 == true)
                 {
-                    App.Current.Dispatcher.Invoke(() =>
+                    Execute.OnUIThreadSync(() =>
                     {
                         if (s.Item2 == null)
                         {
@@ -313,7 +310,7 @@ namespace _1RM.View.Launcher
             }
 
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
-            _launcherWindowViewModel?.ReSetWindowHeight();
+            IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 
 
@@ -350,8 +347,6 @@ namespace _1RM.View.Launcher
         }
 
 
-        public Border? NoteField = null;
-
         private bool _isShowNoteFieldEnabled;
         public bool IsShowNoteFieldEnabled
         {
@@ -368,7 +363,10 @@ namespace _1RM.View.Launcher
 
         public void CalcNoteFieldVisibility()
         {
-            if (_launcherWindowViewModel?.ServerSelectionsViewVisibility != Visibility.Visible)
+            if (this.View is not ServerSelectionsView view) return;
+            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
+            if (IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewVisibility != Visibility.Visible)
             {
                 GridNoteVisibility = Visibility.Collapsed;
             }
@@ -386,38 +384,30 @@ namespace _1RM.View.Launcher
                 GridNoteVisibility = newVisibility;
             }
 
-            if (_launcherWindowViewModel?.View is LauncherWindowView window && window.Visibility != Visibility.Visible)
+            Execute.OnUIThreadSync(() =>
             {
-                return;
-            }
-
-            if (NoteField != null)
-            {
-                Execute.OnUIThreadSync(() =>
+                if (GridNoteVisibility == Visibility.Visible)
                 {
-                    if (GridNoteVisibility == Visibility.Visible)
+                    RaisePropertyChanged(nameof(GridNoteVisibility));
+                    var sb = new Storyboard();
+                    sb.AddFadeIn(0.3);
+                    sb.Begin(IoC.Get<LauncherWindowView>().NoteField);
+                }
+                else
+                {
+                    var sb = new Storyboard();
+                    sb.AddFadeOut(0.3);
+                    sb.Completed += (_, _) =>
                     {
                         RaisePropertyChanged(nameof(GridNoteVisibility));
-                        var sb = new Storyboard();
-                        sb.AddFadeIn(0.3);
-                        sb.Begin(NoteField);
-                    }
-                    else
-                    {
-                        var sb = new Storyboard();
-                        sb.AddFadeOut(0.3);
-                        sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
-                        sb.Begin(NoteField);
-                    }
-                });
-            }
-            else
-            {
-                RaisePropertyChanged(nameof(GridNoteVisibility));
-            }
+                    };
+                    sb.Begin(IoC.Get<LauncherWindowView>().NoteField);
+                }
+            });
 
-            _launcherWindowViewModel?.ReSetWindowHeight();
+            IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
+
         #endregion
     }
 }

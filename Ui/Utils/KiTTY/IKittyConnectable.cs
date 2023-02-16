@@ -85,7 +85,7 @@ namespace _1RM.Utils.KiTTY
             var puttyOption = new KittyConfig(sessionName);
             puttyOption.DelFromKittyConfig(kittyExeFolderPath);
         }
-        
+
 
         public static void InstallKitty()
         {
