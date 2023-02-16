@@ -22,7 +22,6 @@ using Ui;
 using Markdig.Wpf;
 using PRM.Controls.NoteDisplay;
 using PRM.Model.Protocol.Base;
-using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace PRM.View
 {
@@ -259,23 +258,35 @@ namespace PRM.View
 
             ReCalcWindowHeight(true);
 
-            _gridMenuActions.Visibility = Visibility.Visible;
+            if (View is LauncherWindowView { IsClosing: false } window)
+            {
+                Execute.OnUIThread(() =>
+                {
+                    _gridMenuActions.Visibility = Visibility.Visible;
 
-            var sb = new Storyboard();
-            sb.AddSlideFromLeft(0.3, _listAreaWidth);
-            sb.Begin(_gridMenuActions);
+                    var sb = new Storyboard();
+                    sb.AddSlideFromLeft(0.3, _listAreaWidth);
+                    sb.Begin(_gridMenuActions);
+                });
+            }
         }
 
         public void HideActionsList()
         {
-            var sb = new Storyboard();
-            sb.AddSlideToLeft(0.3, _listAreaWidth);
-            sb.Completed += (o, args) =>
+            if (View is LauncherWindowView { IsClosing: false } window)
             {
-                _gridMenuActions.Visibility = Visibility.Hidden;
-                ReCalcWindowHeight(false);
-            };
-            sb.Begin(_gridMenuActions);
+                Execute.OnUIThread(() =>
+                {
+                    var sb = new Storyboard();
+                    sb.AddSlideToLeft(0.3, _listAreaWidth);
+                    sb.Completed += (o, args) =>
+                    {
+                        _gridMenuActions.Visibility = Visibility.Hidden;
+                        ReCalcWindowHeight(false);
+                    };
+                    sb.Begin(_gridMenuActions);
+                });
+            }
         }
 
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
@@ -394,7 +405,7 @@ namespace PRM.View
 
         public void ShowMe()
         {
-            if (this.View is LauncherWindowView window)
+            if (this.View is LauncherWindowView {IsClosing: false} window)
             {
                 SimpleLogHelper.Debug($"Call shortcut to invoke launcher Visibility = {window.Visibility}");
                 window.GridMenuActions.Visibility = Visibility.Hidden;
@@ -441,7 +452,7 @@ namespace PRM.View
 
         public void HideMe()
         {
-            if (this.View is LauncherWindowView window)
+            if (this.View is LauncherWindowView {IsClosing: false} window)
             {
                 lock (this)
                 {
@@ -550,37 +561,40 @@ namespace PRM.View
 
         private void CalcNoteFieldVisibility()
         {
-            Visibility newVisibility;
-            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
-                newVisibility = Visibility.Collapsed;
-            else if (ConverterNoteToVisibility.IsVisible(SelectedItem?.Server?.Note))
-                newVisibility = Visibility.Visible;
-            else
-                newVisibility = Visibility.Collapsed;
-            if (GridNoteVisibility == newVisibility) return;
-
-            IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false;
-            GridNoteVisibility = newVisibility;
-            if (_noteField != null)
+            if (this.View is LauncherWindowView { IsClosing: false } window)
             {
-                if (GridNoteVisibility == Visibility.Visible)
+                Visibility newVisibility;
+                if (IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false)
+                    newVisibility = Visibility.Collapsed;
+                else if (ConverterNoteToVisibility.IsVisible(SelectedItem?.Server?.Note))
+                    newVisibility = Visibility.Visible;
+                else
+                    newVisibility = Visibility.Collapsed;
+                if (GridNoteVisibility == newVisibility) return;
+
+                IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInLauncher == false;
+                GridNoteVisibility = newVisibility;
+                if (_noteField != null)
                 {
-                    RaisePropertyChanged(nameof(GridNoteVisibility));
-                    var sb = new Storyboard();
-                    sb.AddFadeIn(0.3);
-                    sb.Begin(_noteField);
+                    if (GridNoteVisibility == Visibility.Visible)
+                    {
+                        RaisePropertyChanged(nameof(GridNoteVisibility));
+                        var sb = new Storyboard();
+                        sb.AddFadeIn(0.3);
+                        sb.Begin(_noteField);
+                    }
+                    else
+                    {
+                        var sb = new Storyboard();
+                        sb.AddFadeOut(0.3);
+                        sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
+                        sb.Begin(_noteField);
+                    }
                 }
                 else
                 {
-                    var sb = new Storyboard();
-                    sb.AddFadeOut(0.3);
-                    sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
-                    sb.Begin(_noteField);
+                    RaisePropertyChanged(nameof(GridNoteVisibility));
                 }
-            }
-            else
-            {
-                RaisePropertyChanged(nameof(GridNoteVisibility));
             }
         }
         #endregion

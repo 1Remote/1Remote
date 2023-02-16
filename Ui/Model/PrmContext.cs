@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using Microsoft.AppCenter.Crashes;
 using PRM.Model.DAO;
 using PRM.Service;
 using PRM.Utils;
@@ -68,7 +69,13 @@ namespace PRM.Model
                 // in case of fi.Directory.Create() throw an exception.
                 // in case of dapper.OpenConnection throw `unable to open database file`
                 SimpleLogHelper.Error(e);
-                MsAppCenterHelper.Error(e);
+
+                var attachments = new ErrorAttachmentLog[]
+                {
+                    ErrorAttachmentLog.AttachmentWithText(e.Message, "message"),
+                    ErrorAttachmentLog.AttachmentWithText(sqlitePath, "path"),
+                };
+                MsAppCenterHelper.Error(e, attachments: attachments);
                 return EnumDbStatus.AccessDenied;
             }
         }
