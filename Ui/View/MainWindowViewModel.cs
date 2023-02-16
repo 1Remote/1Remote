@@ -93,19 +93,20 @@ namespace PRM.View
         {
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
-                Execute.OnUIThread(() =>
-                {
-                    if (visibility == Visibility.Visible)
+                if (this.View is MainWindowView { IsClosing: false } window)
+                    Execute.OnUIThread(() =>
                     {
-                        var pvm = IoC.Get<ProcessingRingViewModel>();
-                        pvm.ProcessingRingMessage = msg;
-                        this.TopLevelViewModel = pvm;
-                    }
-                    else
-                    {
-                        this.TopLevelViewModel = null;
-                    }
-                });
+                        if (visibility == Visibility.Visible)
+                        {
+                            var pvm = IoC.Get<ProcessingRingViewModel>();
+                            pvm.ProcessingRingMessage = msg;
+                            this.TopLevelViewModel = pvm;
+                        }
+                        else
+                        {
+                            this.TopLevelViewModel = null;
+                        }
+                    });
             };
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
@@ -139,12 +140,6 @@ namespace PRM.View
                 ShowMe();
             };
         }
-
-        protected override void OnClose()
-        {
-            App.Close();
-        }
-
 
         public void ShowList()
         {
@@ -238,7 +233,7 @@ namespace PRM.View
                 }
             }
 
-            if (this.View is Window window)
+            if (this.View is MainWindowView { IsClosing: false } window)
             {
                 if (window.Visibility != Visibility.Visible)
                 {
@@ -271,7 +266,7 @@ namespace PRM.View
         {
             if (Shawn.Utils.ConsoleManager.HasConsole)
                 Shawn.Utils.ConsoleManager.Hide();
-            if (this.View is Window window)
+            if (this.View is MainWindowView { IsClosing: false } window)
             {
                 if (window.Visibility == Visibility.Visible)
                 {
@@ -295,7 +290,7 @@ namespace PRM.View
             {
                 return _cmdExit ??= new RelayCommand((o) =>
                 {
-                    this.RequestClose();
+                    App.Close();
                 });
             }
         }

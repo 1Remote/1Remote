@@ -74,7 +74,7 @@ namespace PRM.View.ErrorReport
 
             var attachments = new ErrorAttachmentLog[]
             {
-                ErrorAttachmentLog.AttachmentWithText("log", TbErrorInfo.Text),
+                ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md"),
             };
             MsAppCenterHelper.Error(e, attachments: attachments);
         }

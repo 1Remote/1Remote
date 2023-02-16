@@ -306,8 +306,8 @@ namespace PRM
             {
                 MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
                 MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
-                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled}}", $"{ConfigurationService.Launcher.LauncherEnabled}");
-                MsAppCenterHelper.TraceSpecial($"App start with - Theme}}", $"{ConfigurationService.Theme.ThemeName}");
+                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationService.Launcher.LauncherEnabled}");
+                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationService.Theme.ThemeName}");
             }
         }
     }

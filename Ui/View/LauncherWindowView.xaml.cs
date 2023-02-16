@@ -256,7 +256,7 @@ namespace PRM.View
         private IntPtr HookUSBDeviceRedirect(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_DEVICECHANGE = 0x0219;
-            if (msg == WM_DEVICECHANGE)
+            if (IsClosing == false && msg == WM_DEVICECHANGE)
             {
                 foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
                 {

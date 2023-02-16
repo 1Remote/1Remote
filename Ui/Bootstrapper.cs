@@ -163,11 +163,7 @@ namespace PRM
 
                 var errorReport = new ErrorReportWindow(e.Exception);
                 errorReport.ShowDialog();
-#if FOR_MICROSOFT_STORE_ONLY
-                    throw e.Exception;
-#else
                 App.Close(100);
-#endif
             }
         }
     }
