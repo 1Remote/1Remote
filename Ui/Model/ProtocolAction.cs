@@ -53,7 +53,7 @@ namespace _1RM.Model
                     foreach (var credential in protocol.AlternateCredentials)
                     {
                         actions.Add(new ProtocolAction(
-                            actionName: IoC.Get<ILanguageService>().Translate("Connect") + $" (TXT:with credential {credential.Name})",
+                            actionName: IoC.Get<ILanguageService>().Translate("Connect") + $" ({IoC.Get<ILanguageService>().Translate("with alternative")} `{credential.Name}`)",
                             action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - AlternateCredentials", assignCredentialName: credential.Name); }
                         ));
                     }

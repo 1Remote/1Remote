@@ -37,11 +37,28 @@ namespace _1RM.Service
 
             bool addressIsSwitched = false;
             bool useAssignCredential = false;
+            bool canAddressAutoSwitch = protocol.IsAutoAlternateAddressSwitching == true;
 
             var newCredential = protocol.GetCredential();
 
+
+            // use assign credential
+            var assignCredentialNameClone = assignCredentialName;
+            var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialNameClone);
+            if (assignCredential != null)
+            {
+                // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
+                if (string.IsNullOrEmpty(assignCredential.Address) == false
+                    || string.IsNullOrEmpty(assignCredential.Port) == false
+                   )
+                {
+                    canAddressAutoSwitch = false;
+                }
+                useAssignCredential = newCredential.SetCredential(assignCredential);
+            }
+
             // auto switching address
-            if (protocol.IsAutoAlternateAddressSwitching == true)
+            if (canAddressAutoSwitch)
             {
                 int milliseconds = 5000;
                 // TODO show a progress window
@@ -53,18 +70,26 @@ namespace _1RM.Service
                     .Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
 
                 var cts = new CancellationTokenSource();
-                var tasks = credentials.Select(x =>
-                        Task.Factory.StartNew(() =>
+                var tasks = new List<Task<Credential?>>();
+                for (int i = 0; i < credentials.Count; i++)
+                {
+                    var sleep = i * 50;
+                    var x = credentials[i];
+                    tasks.Add(Task.Factory.StartNew(() =>
+                    {
+                        // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
+                        if (sleep > 0)
+                            Thread.Sleep(sleep);
+                        if (Credential.TestAddressPortIsAvailable(protocol, x, milliseconds))
                         {
-                            if (Credential.TestAddressPortIsAvailable(protocol, x, milliseconds))
-                            {
-                                return x;
-                            }
-                            Thread.Sleep(milliseconds);
-                            return null;
-                        }, cts.Token))
-                    .ToArray();
-                var t = Task.WaitAny(tasks);
+                            return x;
+                        }
+                        Thread.Sleep(milliseconds);
+                        return null;
+                    }, cts.Token));
+                }
+
+                var t = Task.WaitAny(tasks.ToArray());
                 cts.Cancel(false);
                 if (tasks[t].Result != null)
                 {
@@ -75,29 +100,11 @@ namespace _1RM.Service
                 }
             }
 
-            // use assign credential
-            var assignCredentialNameClone = assignCredentialName;
-            var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialNameClone);
-            if (assignCredential != null)
-            {
-                if (addressIsSwitched)
-                {
-                    var a = newCredential.SetUserName(assignCredential);
-                    var b = newCredential.SetPassword(assignCredential);
-                    useAssignCredential = a || b;
-                }
-                else
-                {
-                    useAssignCredential = newCredential.SetCredential(assignCredential);
-                }
-            }
-
 
             if (addressIsSwitched || useAssignCredential)
             {
                 protocol.SetCredential(newCredential);
             }
-
         }
     }
 }

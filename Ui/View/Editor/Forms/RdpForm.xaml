@@ -79,8 +79,14 @@
 
             <Grid Name="GridAlternativeCredentials" Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:alternative"
-                               VerticalAlignment="Top" Margin="0 5 30 5"></TextBlock>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Alternative}"
+                                   VerticalAlignment="Top"></TextBlock>
+                        <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                                   TextWrapping="Wrap" Height="Auto" Opacity="0.6"
+                                   Text="{DynamicResource 'support multi-address multi-account'}">
+                        </TextBlock>
+                    </StackPanel>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DataGridColumnHeaderBaseStyle}">
@@ -148,22 +154,24 @@
                                     <Style TargetType="StackPanel">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                            <DataTrigger Binding="{Binding Path=DataContext.AlternateCredentials, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                                                          Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                                <!--<Setter Property="Visibility" Value="Collapsed"></Setter>-->
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                            <DataTrigger Binding="{Binding Path=DataContext.AlternateCredentials, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                                                          Value="0">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                                <!--<Setter Property="Visibility" Value="Collapsed"></Setter>-->
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </StackPanel.Style>
-                                <CheckBox Content="TXT:Auto address switching" 
+                                <CheckBox Content="{DynamicResource 'Automatic address switching'}" 
                                           IsChecked="{Binding IsAutoAlternateAddressSwitching}"
                                           Margin="0 5 0 0"></CheckBox>
-                                <TextBlock Width="500" TextWrapping="Wrap" Margin="0 0 0 5" Opacity="0.7">
-                                    <Run Text="TXT: When the default address is unavailable, alternate addresses will be tried in sequence"></Run>
+                                <TextBlock TextWrapping="Wrap" Margin="0 0 0 5" Height="Auto" Opacity="0.7"
+                                           Text="{DynamicResource 'When the default host or port is unavailable the alternate addresses will be tried in sequence'}">
                                 </TextBlock>
                             </StackPanel>
                         </StackPanel>

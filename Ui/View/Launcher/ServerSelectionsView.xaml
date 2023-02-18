@@ -63,7 +63,7 @@
                         <ContentControl Grid.Row="0" Grid.Column="3" Content="{Binding DisplayNameControl}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="Opacity" Value="0.6"></Setter>
+                                    <Setter Property="Opacity" Value="0.8"></Setter>
                                     <Setter Property="FontSize" Value="18"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
@@ -320,7 +320,7 @@
                                        Text="{Binding SelectedItem.Server.DisplayName}"></TextBlock>
                         </Grid>
 
-                        <Grid Grid.Row="1" Grid.Column="0" Opacity="0.5">
+                        <Grid Grid.Row="1" Grid.Column="0" Opacity="0.6">
                             <TextBlock TextTrimming="CharacterEllipsis"
                                        FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Top"
