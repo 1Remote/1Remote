@@ -45,7 +45,8 @@ class glossary:
         with open(csv_file_name, mode='r', encoding=encoding)as f:
             reader = csv.reader(f)
             for row in reader:
-                lines.append(row)
+                if len(row) > 0:
+                    lines.append(row)
         key_column_index = 0
         en_column_index = 1
         self.keys = [Forbidden_Characters_in_XAML_Key_convert(line[key_column_index]) for line in lines]
@@ -53,7 +54,7 @@ class glossary:
         for col in range(len(lines[0])):
             if col == key_column_index or col == en_column_index:
                 continue
-            self.columns.append([Special_Marks_to_Characters_in_XAML(line[col]) for line in lines])
+            self.columns.append([Special_Marks_to_Characters_in_XAML(line[col]) if len(line) > col else '' for line in lines])
 
     def save_csv(self, csv_file_name: str, encoding: str = 'utf-8'):
         lines = []

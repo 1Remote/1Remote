@@ -84,7 +84,7 @@ namespace _1RM.View
             const int WM_DEVICECHANGE = 0x0219;
             if (IsClosing == false && msg == WM_DEVICECHANGE)
             {
-                foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
+                foreach (var host in IoC.Get<SessionControlService>().ConnectionId2Hosts.ToArray().Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
                 {
                     if (host is AxMsRdpClient09Host rdp)
                     {

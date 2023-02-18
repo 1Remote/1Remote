@@ -250,4 +250,10 @@
     <s:String x:Key="Show XXX button">显示 `{0}` 按钮</s:String>
     <s:String x:Key="Show recently used here"> 在此显示最近使用的会话</s:String>
     <s:String x:Key="Hide recently used"> 隐藏最近使用的会话</s:String>
+    <s:String x:Key="Leave blank to inherit the default value">留空以继承默认值</s:String>
+    <s:String x:Key="Alternative">备选</s:String>
+    <s:String x:Key="with alternative">使用备选凭证</s:String>
+    <s:String x:Key="Automatic address switching">自动切换地址</s:String>
+    <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">当默认的地址不可用时，将自动依次尝试备选地址</s:String>
+    <s:String x:Key="support multi-address multi-account">支持多地址、多账号</s:String>
 </ResourceDictionary>

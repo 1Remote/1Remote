@@ -121,7 +121,7 @@
                 <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                            <Setter Property="Opacity" Value="0.6"></Setter>
+                            <Setter Property="Opacity" Value="0.8"></Setter>
                             <Setter Property="FontSize" Value="14"></Setter>
                             <Setter Property="VerticalAlignment" Value="Center"></Setter>
                             <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>

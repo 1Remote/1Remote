@@ -250,4 +250,10 @@
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
     <s:String x:Key="Show recently used here"> Show recently used here</s:String>
     <s:String x:Key="Hide recently used"> Hide recently used</s:String>
+    <s:String x:Key="Leave blank to inherit the default value">Leave blank to inherit the default value</s:String>
+    <s:String x:Key="Alternative">Alternative</s:String>
+    <s:String x:Key="with alternative">with alternative</s:String>
+    <s:String x:Key="Automatic address switching">Automatic address switching</s:String>
+    <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">When the default host or port is unavailable the alternate addresses will be tried in sequence</s:String>
+    <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
 </ResourceDictionary>

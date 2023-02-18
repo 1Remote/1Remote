@@ -71,19 +71,18 @@ namespace _1RM.Model.Protocol.Base
             string port = string.IsNullOrEmpty(credential.Port) ? protocol.Port : credential.Port;
             try
             {
-
-                var iport = int.Parse(port);
+                var p = int.Parse(port);
                 var client = new TcpClient();
                 if (timeOutMillisecond > 0)
                 {
-                    if (!client.ConnectAsync(address, iport).Wait(timeOutMillisecond))
+                    if (!client.ConnectAsync(address, p).Wait(timeOutMillisecond))
                     {
                         throw new Exception();
                     }
                 }
                 else
                 {
-                    client.Connect(address, iport);
+                    client.Connect(address, p);
                 }
                 client.Close();
 
@@ -93,9 +92,6 @@ namespace _1RM.Model.Protocol.Base
             {
                 // ignored
             }
-
-            SimpleLogHelper.Error($"TXT:{address}:{port} 未打开");
-
             return false;
         }
 

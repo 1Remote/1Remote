@@ -250,4 +250,10 @@
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
     <s:String x:Key="Show recently used here">Zobrazit nedávno použité zde</s:String>
     <s:String x:Key="Hide recently used">Skrýt nedávno použité</s:String>
+    <s:String x:Key="Leave blank to inherit the default value">Chcete-li zdědit výchozí hodnotu, ponechte prázdné</s:String>
+    <s:String x:Key="Alternative">Alternativní</s:String>
+    <s:String x:Key="with alternative">s alternativou</s:String>
+    <s:String x:Key="Automatic address switching">Automatické přepínání adres</s:String>
+    <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">Pokud není výchozí hostitel nebo port k dispozici, budou postupně vyzkoušeny alternativní adresy</s:String>
+    <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
 </ResourceDictionary>

@@ -250,4 +250,10 @@
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
     <s:String x:Key="Show recently used here">最近使用したものをここに表示</s:String>
     <s:String x:Key="Hide recently used">最近使用したものを非表示</s:String>
+    <s:String x:Key="Leave blank to inherit the default value">デフォルト値を継承するには空白のままにします</s:String>
+    <s:String x:Key="Alternative">別</s:String>
+    <s:String x:Key="with alternative">代替品あり</s:String>
+    <s:String x:Key="Automatic address switching">自動アドレス切り替え</s:String>
+    <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">デフォルトのホストまたはポートが使用できない場合、代替アドレスが順番に試行されます</s:String>
+    <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
 </ResourceDictionary>
