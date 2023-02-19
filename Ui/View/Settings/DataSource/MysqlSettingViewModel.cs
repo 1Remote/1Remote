@@ -20,7 +20,7 @@ using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class MysqlSettingViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer
+    public class MysqlSettingViewModel : MaskLayerContainerScreenBase
     {
         private readonly MysqlSource? _orgMysqlConfig = null;
         public MysqlSource New = new MysqlSource();
@@ -40,45 +40,10 @@ namespace _1RM.View.Settings.DataSource
             }
         }
 
-        ~MysqlSettingViewModel()
-        {
-        }
-
-
-        protected override void OnViewLoaded()
-        {
-            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
-        }
-
         protected override void OnClose()
         {
-            MaskLayerController.ProcessingRingInvoke -= ShowProcessingRing;
+            base.OnClose();
             New.Database_CloseConnection();
-        }
-
-        private MaskLayer? _topLevelViewModel;
-        public MaskLayer? TopLevelViewModel
-        {
-            get => _topLevelViewModel;
-            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
-        }
-
-        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
-        {
-            Execute.OnUIThread(() =>
-            {
-                if (visibility == Visibility.Visible)
-                {
-                    var pvm = IoC.Get<ProcessingRingViewModel>();
-                    pvm.LayerId = layerId;
-                    pvm.ProcessingRingMessage = msg;
-                    this.TopLevelViewModel = pvm;
-                }
-                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
-                {
-                    this.TopLevelViewModel = null;
-                }
-            });
         }
 
 
@@ -218,7 +183,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        var id = MaskLayerController.ShowProcessingRingMainWindow();
+                        var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: this);
                         try
                         {
                             var config = new MysqlSource()
@@ -245,7 +210,7 @@ namespace _1RM.View.Settings.DataSource
                         }
                         finally
                         {
-                            MaskLayerController.HideProcessingRing(id);
+                            MaskLayerController.HideMask(this);
                         }
                     });
                 });

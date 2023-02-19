@@ -596,7 +596,7 @@ namespace _1RM.View.Editor
                         cmd = Server.CommandAfterDisconnected;
                     }
 
-                    var id = MaskLayerController.ShowProcessingRingMainWindow();
+                    var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -617,7 +617,7 @@ namespace _1RM.View.Editor
                         }
                         finally
                         {
-                            MaskLayerController.HideProcessingRing(id);
+                            MaskLayerController.HideMask( IoC.Get<MainWindowViewModel>());
                         }
                     });
                 });
@@ -641,9 +641,9 @@ namespace _1RM.View.Editor
                     {
                         var credential = o as Credential;
                         var vm = new AlternativeCredentialEditViewModel(protocol, credential);
-                        var id = MaskLayerController.ShowProcessingRingMainWindow();
+                        var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
-                        MaskLayerController.HideProcessingRing(id);
+                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                     }
                 });
             }
@@ -664,7 +664,7 @@ namespace _1RM.View.Editor
                     if (o is Credential credential
                         && Server is ProtocolBaseWithAddressPortUserPwd protocol)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
                             if (protocol.AlternateCredentials?.Contains(credential) == true)
                             {

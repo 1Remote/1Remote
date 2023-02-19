@@ -194,7 +194,7 @@ namespace _1RM.View.ServerList
                 GlobalEventHelper.OnRequestDeleteServer += server =>
                 {
                     if (string.IsNullOrEmpty(server.Id) == false
-                        && true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                        && true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         AppData.DeleteServer(server);
                     }
@@ -442,7 +442,7 @@ namespace _1RM.View.ServerList
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
                     if (path == null) return;
 
-                    var id = MaskLayerController.ShowProcessingRingMainWindow(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
+                    var id = MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -461,16 +461,16 @@ namespace _1RM.View.ServerList
 
                             source.Database_InsertServer(list);
                             AppData.ReloadServerList(true);
-                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Warning(e);
-                            Execute.OnUIThread(() => { MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error")); });
+                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                         }
                         finally
                         {
-                            MaskLayerController.HideProcessingRing(id);
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                         }
                     });
                 });
@@ -504,7 +504,7 @@ namespace _1RM.View.ServerList
 
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    var id = MaskLayerController.ShowProcessingRingMainWindow(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
+                    var id = MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -525,7 +525,7 @@ namespace _1RM.View.ServerList
                         }
                         finally
                         {
-                            MaskLayerController.HideProcessingRing(id);
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                         }
                     });
                 });
@@ -612,7 +612,7 @@ namespace _1RM.View.ServerList
                 {
                     var ss = VmServerList.Where(x => x.IsSelected == true && x.IsEditable).ToList();
                     if (!(ss?.Count > 0)) return;
-                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         var servers = ss.Select(x => x.Server);
                         AppData.DeleteServer(servers);

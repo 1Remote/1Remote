@@ -16,7 +16,7 @@ using _1RM.Model.DAO.Dapper;
 
 namespace _1RM.View.Host
 {
-    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer, IDisposable
+    public class TabWindowViewModel : MaskLayerContainerScreenBase, IDisposable
     {
         public readonly string Token;
         private readonly TabWindowBase _windowView;
@@ -106,32 +106,6 @@ namespace _1RM.View.Host
             RaisePropertyChanged(nameof(WindowResizeMode));
         }
 
-
-        private MaskLayer? _topLevelViewModel;
-        public MaskLayer? TopLevelViewModel
-        {
-            get => _topLevelViewModel;
-            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
-        }
-
-
-        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
-        {
-            Execute.OnUIThread(() =>
-            {
-                if (visibility == Visibility.Visible)
-                {
-                    var pvm = IoC.Get<ProcessingRingViewModel>();
-                    pvm.LayerId = layerId;
-                    pvm.ProcessingRingMessage = msg;
-                    this.TopLevelViewModel = pvm;
-                }
-                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
-                {
-                    this.TopLevelViewModel = null;
-                }
-            });
-        }
 
         #region drag drop tab
 

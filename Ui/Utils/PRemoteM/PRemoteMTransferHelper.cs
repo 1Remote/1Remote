@@ -45,9 +45,9 @@ namespace _1RM.Utils.PRemoteM
         {
             if (_servers?.Any() == true)
             {
-                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer"))
+                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer", ownerViewModel: IoC.Get<MainWindowViewModel>()))
                 {
-                    var id = MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", layerContainer: IoC.Get<MainWindowViewModel>());
+                    var id = MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -73,7 +73,7 @@ namespace _1RM.Utils.PRemoteM
                         }
                         finally
                         {
-                            MaskLayerController.HideProcessingRing(id);
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                             Clear();
                         }
                     });

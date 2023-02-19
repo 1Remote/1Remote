@@ -87,6 +87,7 @@ namespace _1RM.View.Settings.DataSource
                     {
                         case "sqlite":
                             {
+                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new SqliteSettingViewModel(this);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
@@ -94,30 +95,36 @@ namespace _1RM.View.Settings.DataSource
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
 
-                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        MaskLayerController.HideProcessingRing(id);
+                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                     });
+                                }
+                                else
+                                {
+                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                 }
                                 break;
                             }
                         case "mysql":
                             {
+                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new MysqlSettingViewModel(this);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
                                     SourceConfigs.Add(vm.New);
                                     _configurationService.AdditionalDataSource.Add(vm.New);
                                     _configurationService.Save();
-
-                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        MaskLayerController.HideProcessingRing(id);
+                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                     });
+                                }
+                                else
+                                {
+                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                 }
                                 break;
                             }
@@ -142,25 +149,29 @@ namespace _1RM.View.Settings.DataSource
                     {
                         case SqliteSource sqliteConfig:
                             {
+                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new SqliteSettingViewModel(this, sqliteConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
                                         _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
-                                        MaskLayerController.HideProcessingRing(id);
+                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                     });
+                                }
+                                else
+                                {
+                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                 }
                                 break;
                             }
                         case MysqlSource mysqlConfig:
                             {
+                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new MysqlSettingViewModel(this, mysqlConfig);
                                 if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
                                 {
-                                    var id = MaskLayerController.ShowProcessingRingMainWindow();
                                     _configurationService.Save();
                                     Task.Factory.StartNew(() =>
                                     {
@@ -170,9 +181,13 @@ namespace _1RM.View.Settings.DataSource
                                         }
                                         finally
                                         {
-                                            MaskLayerController.HideProcessingRing(id);
+                                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                         }
                                     });
+                                }
+                                else
+                                {
+                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                                 }
                                 break;
                             }
@@ -197,7 +212,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (o is DataSourceBase configBase && configBase != LocalSource)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: this))
                         {
                             if (_configurationService.AdditionalDataSource.Contains(configBase))
                             {

@@ -70,7 +70,7 @@ namespace _1RM.View.ServerList
                         return;
                     }
 
-                    if (false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
+                    if (false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         return;
 
                     foreach (var server in protocolServerBases)

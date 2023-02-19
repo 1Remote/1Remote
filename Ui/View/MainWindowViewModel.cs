@@ -26,7 +26,7 @@ namespace _1RM.View
         SettingsTheme,
         SettingsRunners,
     }
-    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware, IMaskLayerContainer
+    public class MainWindowViewModel : MaskLayerContainerScreenBase
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
@@ -38,13 +38,6 @@ namespace _1RM.View
 
         #region Properties
 
-
-        private MaskLayer? _topLevelViewModel;
-        public MaskLayer? TopLevelViewModel
-        {
-            get => _topLevelViewModel;
-            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
-        }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -89,7 +82,6 @@ namespace _1RM.View
         public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
-            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
 
             GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
             {
@@ -183,23 +175,10 @@ namespace _1RM.View
             App.Close();
         }
 
-        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
+        public override void OnShowProcessingRing(long layerId, Visibility visibility, string msg)
         {
             if (this.View is not MainWindowView { IsClosing: false } window) return;
-            Execute.OnUIThread(() =>
-            {
-                if (visibility == Visibility.Visible)
-                {
-                    var pvm = IoC.Get<ProcessingRingViewModel>();
-                    pvm.LayerId = layerId;
-                    pvm.ProcessingRingMessage = msg;
-                    this.TopLevelViewModel = pvm;
-                }
-                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
-                {
-                    this.TopLevelViewModel = null;
-                }
-            });
+            base.OnShowProcessingRing(layerId, visibility, msg);
         }
 
 
