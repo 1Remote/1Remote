@@ -99,8 +99,6 @@ namespace _1RM
             builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<ProcessingRingViewModel>().ToSelf().InSingletonScope();
-            builder.Bind<RequestRatingViewModel>().ToSelf();
-            builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
 
             builder.Bind<IMessageBoxViewModel>().To<MessageBoxViewModel>();

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -62,7 +63,7 @@ namespace _1RM.View
                    )
                 {
                     // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
-                    Vm.TopLevelViewModel = IoC.Get<RequestRatingViewModel>();
+                    MaskLayerController.ShowMask(IoC.Get<RequestRatingViewModel>(), Vm);
                     return;
                 }
                 vm.HideMe();

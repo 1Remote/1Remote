@@ -125,7 +125,7 @@ public class ExternalRunnerSettingsViewModel
                 if (o is ExternalRunner.ObservableKvp<string, string> item
                     && ExternalRunner.EnvironmentVariables.Contains(item)
                     && ((item.Key == "" && item.Value == "")
-                        || true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
+                        || true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                    )
                 {
                     ExternalRunner.EnvironmentVariables.Remove(item);
@@ -153,7 +153,7 @@ Runner for {ExternalRunner.OwnerProtocolName}
 ```
 "
                         );
-                    if (MessageBoxHelper.Confirm($"You runner({ExternalRunner.Name}) is copied to clipboard, do you want to share to Github?", "Share"))
+                    if (MessageBoxHelper.Confirm($"You runner({ExternalRunner.Name}) is copied to clipboard, do you want to share to Github?", "Share", ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/wiki/Share-your-favorite-runner");
                     }

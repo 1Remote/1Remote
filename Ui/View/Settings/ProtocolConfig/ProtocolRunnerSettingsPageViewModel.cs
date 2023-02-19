@@ -125,7 +125,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                     var pn = o?.ToString();
                     if (pn == null) return;
 
-                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
+                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
                         if (string.IsNullOrEmpty(pn) == false && c.Runners.Any(x => x.Name == pn))

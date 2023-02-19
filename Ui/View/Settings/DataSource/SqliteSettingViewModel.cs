@@ -25,7 +25,7 @@ using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class SqliteSettingViewModel : NotifyPropertyChangedBaseScreen, IMaskLayerContainer
+    public class SqliteSettingViewModel : MaskLayerContainerScreenBase
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
 
@@ -52,40 +52,10 @@ namespace _1RM.View.Settings.DataSource
             }
         }
 
-        protected override void OnViewLoaded()
-        {
-            MaskLayerController.ProcessingRingInvoke += ShowProcessingRing;
-        }
-
         protected override void OnClose()
         {
-            MaskLayerController.ProcessingRingInvoke -= ShowProcessingRing;
+            base.OnClose();
             New.Database_CloseConnection();
-        }
-
-        private MaskLayer? _topLevelViewModel;
-        public MaskLayer? TopLevelViewModel
-        {
-            get => _topLevelViewModel;
-            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
-        }
-
-        public void ShowProcessingRing(long layerId, Visibility visibility, string msg)
-        {
-            Execute.OnUIThread(() =>
-            {
-                if (visibility == Visibility.Visible)
-                {
-                    var pvm = IoC.Get<ProcessingRingViewModel>();
-                    pvm.LayerId = layerId;
-                    pvm.ProcessingRingMessage = msg;
-                    this.TopLevelViewModel = pvm;
-                }
-                else if (this.TopLevelViewModel?.CanDelete(layerId) == true)
-                {
-                    this.TopLevelViewModel = null;
-                }
-            });
         }
 
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
