@@ -34,7 +34,6 @@
                     CornerRadius="{StaticResource DefaultCornerRadius}" 
                     SnapsToDevicePixels="True"
                     Background="{DynamicResource BackgroundBrush}"></Border>
-
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="6"/>

@@ -256,4 +256,5 @@
     <s:String x:Key="Automatic address switching">自動アドレス切り替え</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">デフォルトのホストまたはポートが使用できない場合、代替アドレスが順番に試行されます</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
+    <s:String x:Key="Detecting your alternate host...">Detecting your alternate host...</s:String>
 </ResourceDictionary>

@@ -409,7 +409,7 @@
 		<Page Update="View\MainWindowView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\ProcessingRingView.xaml">
+		<Page Update="View\Utils\ProcessingRingView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\RequestRatingView.xaml">

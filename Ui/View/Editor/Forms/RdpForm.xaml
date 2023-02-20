@@ -152,17 +152,15 @@
                             <StackPanel>
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=DataContext.AlternateCredentials, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                            <DataTrigger Binding="{Binding AlternateCredentials}"
                                                          Value="{x:Null}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
-                                                <!--<Setter Property="Visibility" Value="Collapsed"></Setter>-->
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Path=DataContext.AlternateCredentials, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                                            <DataTrigger Binding="{Binding AlternateCredentials.Count}"
                                                          Value="0">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
-                                                <!--<Setter Property="Visibility" Value="Collapsed"></Setter>-->
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
