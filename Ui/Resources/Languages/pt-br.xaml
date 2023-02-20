@@ -256,4 +256,5 @@
     <s:String x:Key="Automatic address switching">Comutação automática de endereço</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">Quando o host ou porta padrão não estiver disponível, os endereços alternativos serão tentados em sequência</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
+    <s:String x:Key="Detecting your alternate host...">Detecting your alternate host...</s:String>
 </ResourceDictionary>

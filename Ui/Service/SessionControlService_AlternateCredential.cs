@@ -22,6 +22,7 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using _1RM.Service.DataSource;
 using System.Collections.Generic;
+using _1RM.View.Utils;
 
 namespace _1RM.Service
 {
@@ -29,9 +30,9 @@ namespace _1RM.Service
     {
         private static void ApplyAlternateCredential(ref ProtocolBase serverClone, string assignCredentialName)
         {
-            if (serverClone is not ProtocolBaseWithAddressPortUserPwd protocol 
-                || protocol.AlternateCredentials == null 
-                || protocol.AlternateCredentials.Count <= 0) 
+            if (serverClone is not ProtocolBaseWithAddressPortUserPwd protocol
+                || protocol.AlternateCredentials == null
+                || protocol.AlternateCredentials.Count <= 0)
                 return;
 
 
@@ -60,8 +61,21 @@ namespace _1RM.Service
             // auto switching address
             if (canAddressAutoSwitch)
             {
-                int milliseconds = 5000;
-                // TODO show a progress window
+                WaitingViewModel? dlg = null;
+                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate("Automatic address switching");
+                var message = IoC.Get<LanguageService>().Translate("Detecting your alternate host...");
+                Execute.OnUIThreadSync(() =>
+                {
+                    // show a progress window
+                    dlg = new WaitingViewModel
+                    {
+                        Title = title,
+                        Message = message
+                    };
+                    IoC.Get<IWindowManager>().ShowWindow(dlg);
+                });
+
+                int maxWaitSeconds = 5;
                 var credentials = new List<Credential>()
                 {
                     newCredential,
@@ -80,14 +94,26 @@ namespace _1RM.Service
                         // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
                         if (sleep > 0)
                             Thread.Sleep(sleep);
-                        if (Credential.TestAddressPortIsAvailable(protocol, x, milliseconds))
+                        if (Credential.TestAddressPortIsAvailable(protocol, x, maxWaitSeconds * 1000))
                         {
                             return x;
                         }
-                        Thread.Sleep(milliseconds);
                         return null;
                     }, cts.Token));
                 }
+
+                tasks.Add(Task.Factory.StartNew(() =>
+                {
+                    for (int i = 0; i < maxWaitSeconds; i++)
+                    {
+                        if (dlg != null)
+                        {
+                            dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
+                        }
+                        Thread.Sleep(1000);
+                    }
+                    return null as Credential;
+                }, cts.Token));
 
                 var t = Task.WaitAny(tasks.ToArray());
                 cts.Cancel(false);
@@ -98,6 +124,11 @@ namespace _1RM.Service
                     newCredential.SetPort(tasks[t].Result!);
                     addressIsSwitched = true;
                 }
+
+                Execute.OnUIThreadSync(() =>
+                {
+                    dlg?.RequestClose();
+                });
             }
 
 

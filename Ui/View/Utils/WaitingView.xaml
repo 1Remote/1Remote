@@ -1,0 +1,42 @@
+﻿<styles:WindowChromeBase x:Class="_1RM.View.Utils.WaitingView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:utils="clr-namespace:_1RM.View.Utils"
+                  xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                  xmlns:s="https://github.com/canton7/Stylet"
+                  mc:Ignorable="d"
+                  d:DataContext="{d:DesignInstance utils:WaitingViewModel}"
+                  ResizeMode="NoResize"
+                  WindowStyle="None"
+                  Background="Transparent"
+                  AllowsTransparency="True"
+                  ShowInTaskbar="False"
+                  Topmost="True"
+                  PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+                  Width="540" Height="320">
+    <Grid PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="Transparent">
+        <Border Margin="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}" 
+                BorderBrush="{DynamicResource BackgroundTextBrush}"
+                BorderThickness="1"
+                SnapsToDevicePixels="True"
+                Background="{DynamicResource BackgroundBrush}">
+        </Border>
+        <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" Text="{Binding Title}" 
+                   Margin="50 20 50 0"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextWrapping="Wrap"></TextBlock>
+        <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
+        <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" Text="{Binding Message}" 
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom"
+                   Margin="40"
+                   TextWrapping="Wrap"></TextBlock>
+    </Grid>
+</styles:WindowChromeBase>

@@ -256,4 +256,5 @@
     <s:String x:Key="Automatic address switching">自动切换地址</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">当默认的地址不可用时，将自动依次尝试备选地址</s:String>
     <s:String x:Key="support multi-address multi-account">支持多地址、多账号</s:String>
+    <s:String x:Key="Detecting your alternate host...">正在检测可用地址...Detecting your alternate host...</s:String>
 </ResourceDictionary>
