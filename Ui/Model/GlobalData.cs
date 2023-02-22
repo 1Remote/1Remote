@@ -154,10 +154,9 @@ namespace _1RM.Model
                 foreach (var additionalSource in _sourceService.AdditionalSources)
                 {
                     // 对于断线的数据源，隔一段时间后尝试重连
-                    if (additionalSource.Value.Status == EnumDbStatus.LostConnection)
+                    if (additionalSource.Value.Status == EnumDatabaseStatus.LostConnection)
                     {
-                        if (additionalSource.Value.StatueTime.AddMinutes(10) < DateTime.Now
-                            && additionalSource.Value.Database_OpenConnection())
+                        if (additionalSource.Value.StatueTime.AddMinutes(10) < DateTime.Now)
                         {
                             additionalSource.Value.Database_SelfCheck();
                         }

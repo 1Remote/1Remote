@@ -77,8 +77,6 @@ namespace _1RM.View.Settings
                 case EnumMainWindowPage.SettingsRunners:
                     SelectedViewModel = IoC.Get<ProtocolRunnerSettingsPageViewModel>();
                     break;
-                case EnumMainWindowPage.List:
-                case EnumMainWindowPage.About:
                 default:
                     return;
             }
@@ -131,8 +129,8 @@ namespace _1RM.View.Settings
                 return _cmdSaveAndGoBack ??= new RelayCommand((o) =>
                 {
                     // check if Db is ok
-                    var res = _dataSourceService.LocalDataSource?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
-                    if (res != EnumDbStatus.OK)
+                    var res = _dataSourceService.LocalDataSource?.Database_SelfCheck() ?? EnumDatabaseStatus.AccessDenied;
+                    if (res != EnumDatabaseStatus.OK)
                     {
                         ShowPage(EnumMainWindowPage.SettingsData);
                         MessageBoxHelper.ErrorAlert(res.GetErrorInfo());

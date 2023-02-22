@@ -445,11 +445,11 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot;" />
+	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot;" />
 	</Target>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot; -isRevert" />
+	  <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\AppCenterSecret.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot; -isRevert" />
 	</Target>
 
 </Project>

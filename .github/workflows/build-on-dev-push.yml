@@ -69,8 +69,8 @@ jobs:
       - name: Run script
         shell: pwsh
         run: |
-          ./scripts/Set-Slat.ps1 ${{ secrets.GLOBAL_STRING_ENCRYPTION_SLAT }}
           ./scripts/Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern "===REPLACE_ME_WITH_APP_CENTER_SECRET===" -Secret ${{ secrets.APP_CENTER_SECRET }}
+          ./scripts/Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern "===REPLACE_ME_WITH_SALT===" -Secret ${{ secrets.GLOBAL_STRING_ENCRYPTION_SLAT }}
 
       # Publish the application
       - name: Publish the application

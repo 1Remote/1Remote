@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using _1Remote.Security;
 using _1RM.Model.DAO;
 using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using _1RM.View;
 using com.github.xiangyuecn.rsacsharp;
 using JsonKnownTypes;
@@ -41,11 +43,10 @@ namespace _1RM.Service.DataSource.Model
 
         public virtual bool NeedRead()
         {
-            if (Status == EnumDbStatus.OK)
+            if (Status == EnumDatabaseStatus.OK)
             {
                 var dataBase = GetDataBase();
                 DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
-                //SimpleLogHelper.Debug($"Datasource {DataSourceName} {LastReadFromDataSourceMillisecondsTimestamp} < {DataSourceDataUpdateTimestamp}");
                 return LastReadFromDataSourceMillisecondsTimestamp < DataSourceDataUpdateTimestamp;
             }
             return false;
@@ -73,7 +74,7 @@ namespace _1RM.Service.DataSource.Model
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 if (Database_OpenConnection() == false)
                 {
-                    Status = EnumDbStatus.AccessDenied;
+                    Status = EnumDatabaseStatus.AccessDenied;
                     return CachedProtocols;
                 }
                 var protocols = Database_GetServers();
@@ -94,49 +95,47 @@ namespace _1RM.Service.DataSource.Model
                     }
                 }
 
-                Status = EnumDbStatus.OK;
+                Status = EnumDatabaseStatus.OK;
                 return CachedProtocols;
             }
         }
 
-        public abstract IDataBase GetDataBase();
+        public abstract IDatabase GetDataBase();
 
         public bool Database_OpenConnection(int connectTimeOutSeconds = 5)
         {
-            var dataBase = GetDataBase();
+            var dataBaseRef = GetDataBase();
             // open db or create db.
-            Debug.Assert(dataBase != null);
+            Debug.Assert(dataBaseRef != null);
+
 
             var connectionString = GetConnectionString(connectTimeOutSeconds);
             if (connectionString != _lastConnectionString)
             {
-                dataBase.CloseConnection();
+                dataBaseRef.CloseConnection();
                 _lastConnectionString = connectionString;
             }
 
-            dataBase.OpenNewConnection(DatabaseType, connectionString);
             try
             {
-                dataBase.InitTables();
+                dataBaseRef.OpenNewConnection(DatabaseType, connectionString);
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Warning(e);
+                SimpleLogHelper.Error(e);
             }
-            dataBase.OpenNewConnection(DatabaseType, connectionString);
-            if (dataBase.IsConnected())
+
+            // check connectable
+            if (dataBaseRef.IsConnected() == false)
             {
-                if (Status != EnumDbStatus.NotConnectedYet)
+                if (Status != EnumDatabaseStatus.NotConnectedYet)
                 {
-                    Status = EnumDbStatus.LostConnection;
+                    Status = EnumDatabaseStatus.LostConnection;
                 }
                 else
                 {
-                    Status = EnumDbStatus.AccessDenied;
+                    Status = EnumDatabaseStatus.AccessDenied;
                 }
-            }
-            else
-            {
                 return false;
             }
             return true;
@@ -152,66 +151,44 @@ namespace _1RM.Service.DataSource.Model
 
 
         private static string _lastConnectionString = "";
-        public virtual EnumDbStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
+        public virtual EnumDatabaseStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
-            EnumDbStatus ret = EnumDbStatus.NotConnectedYet;
-            var dataBase = GetDataBase();
+            if (Database_OpenConnection(connectTimeOutSeconds) == false)
+                return Status;
 
-            var connectionString = GetConnectionString(connectTimeOutSeconds);
-            if (connectionString != _lastConnectionString)
+            var dataBaseRef = GetDataBase();
+
+
+
+            // try create table
+            try
             {
-                dataBase.CloseConnection();
-                _lastConnectionString = connectionString;
+                dataBaseRef.InitTables();
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Warning(e);
+                Status = EnumDatabaseStatus.AccessDenied;
+                return Status;
             }
 
-            // check connectable
-            if (dataBase.IsConnected() == false)
+            // check readable
+            IsWritable = dataBaseRef.CheckWritable();
+            var isReadable = dataBaseRef.CheckReadable();
+            if (isReadable == false)
             {
-                try
-                {
-                    dataBase.OpenNewConnection(DatabaseType, connectionString);
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                    if (Status != EnumDbStatus.NotConnectedYet)
-                    {
-                        ret = EnumDbStatus.LostConnection;
-                    }
-                    else
-                    {
-                        ret = EnumDbStatus.AccessDenied;
-                    }
-                    Status = ret;
-                    return Status;
-                }
+                Status = EnumDatabaseStatus.AccessDenied;
+                return Status;
             }
 
-            if (dataBase.IsConnected())
+            // check if encryption key is matched
+            if (dataBaseRef.CheckEncryptionTest() == false)
             {
-                // try create table
-                try
-                {
-                    dataBase.InitTables();
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Warning(e);
-                }
-
-                // check readable
-                IsWritable = dataBase.CheckWritable();
-                var isReadable = dataBase.CheckReadable();
-                if (isReadable == false)
-                {
-                    Status = EnumDbStatus.AccessDenied;
-                    return Status;
-                }
-
-                ret = EnumDbStatus.OK;
+                Status = EnumDatabaseStatus.EncryptKeyError;
+                return Status;
             }
 
-            Status = ret;
+            Status = EnumDatabaseStatus.OK;
             return Status;
         }
 
@@ -259,7 +236,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 var old = CachedProtocols.First(x => x.Id == org.Id);
-                old.Server= org;
+                old.Server = org;
             }
             return ret;
         }
@@ -309,11 +286,12 @@ namespace _1RM.Service.DataSource.Model
         {
             if (_isWritable)
             {
-                var ret = GetDataBase()?.DeleteServer(ids) == true;
+                var enumerable = ids.ToArray();
+                var ret = GetDataBase()?.DeleteServer(enumerable) == true;
                 if (ret == true)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    CachedProtocols.RemoveAll(x => ids.Contains(x.Id));
+                    CachedProtocols.RemoveAll(x => enumerable.Contains(x.Id));
                 }
                 return ret;
             }

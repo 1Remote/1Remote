@@ -4,49 +4,39 @@ using _1RM.Service;
 
 namespace _1RM.Model.DAO
 {
-    public enum EnumDbStatus
+    public enum EnumDatabaseStatus
     {
         NotConnectedYet,
         AccessDenied,
         LostConnection,
         OK,
+        EncryptKeyError, // 数据加密密钥不匹配，唯一的原因是软件未使用官方发布版本.
     }
 
-
-    public enum EnumConnectionStatus
-    {
-        NotConnectedYet, // Die
-        AccessDenied, // Die
-        CanConnect, // To LostConnection OR DisConnected
-        LostConnection, // Die
-    }
-    public enum EnumEncryptionStatus
-    {
-        NonEncryption,
-        RsaPrivateKeyNotFound, // Die
-        RsaPrivateKeyMismatch, // Die
-        DataIsDamaged // Die
-    }
 
     public static class EnumConnectResultErrorInfo
     {
-        public static string GetErrorInfo(this EnumDbStatus result)
+        public static string GetErrorInfo(this EnumDatabaseStatus result)
         {
             var lang = IoC.Get<LanguageService>();
             Debug.Assert(lang != null);
             switch (result)
             {
-                case EnumDbStatus.AccessDenied:
+                case EnumDatabaseStatus.AccessDenied:
                     return lang.Translate("string_database_error_permission_denied");
 
-                case EnumDbStatus.OK:
+                case EnumDatabaseStatus.OK:
                     break;
 
-                case EnumDbStatus.NotConnectedYet:
+                case EnumDatabaseStatus.NotConnectedYet:
                     return "database: NotConnected!";
 
-                case EnumDbStatus.LostConnection:
+                case EnumDatabaseStatus.LostConnection:
                     return "database: Lost Connection!";
+
+                case EnumDatabaseStatus.EncryptKeyError:
+                    return $"database: your database is encrypted by a third-part build {Assert.APP_NAME}, this app can not read your data correctly!";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
