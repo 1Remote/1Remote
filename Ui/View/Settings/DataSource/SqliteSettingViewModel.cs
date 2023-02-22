@@ -61,7 +61,7 @@ namespace _1RM.View.Settings.DataSource
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
             var res = New.Database_SelfCheck();
-            if (res == EnumDbStatus.OK)
+            if (res == EnumDatabaseStatus.OK)
             {
                 return true;
             }

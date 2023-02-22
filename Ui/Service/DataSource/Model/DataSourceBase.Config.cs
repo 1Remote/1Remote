@@ -32,16 +32,16 @@ namespace _1RM.Service.DataSource.Model
             };
         }
 
-        private EnumDbStatus _status = EnumDbStatus.NotConnectedYet;
+        private EnumDatabaseStatus _status = EnumDatabaseStatus.NotConnectedYet;
         [JsonIgnore]
-        public EnumDbStatus Status
+        public EnumDatabaseStatus Status
         {
             get => _status;
             set
             {
                 SetAndNotifyIfChanged(ref _status, value);
                 StatueTime = DateTime.Now;
-                StatusInfo = Status == EnumDbStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
+                StatusInfo = Status == EnumDatabaseStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
             }
         }
 

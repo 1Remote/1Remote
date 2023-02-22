@@ -21,5 +21,6 @@ namespace _1RM
 
 
         public const string MS_APP_CENTER_SECRET = "===REPLACE_ME_WITH_APP_CENTER_SECRET===";
+        public const string STRING_SALT = "===REPLACE_ME_WITH_SALT===";
     }
 }

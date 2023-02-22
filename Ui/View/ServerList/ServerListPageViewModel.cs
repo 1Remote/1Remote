@@ -423,7 +423,7 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
@@ -488,7 +488,7 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
@@ -542,7 +542,7 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDbStatus.OK))
+                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
                         if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
