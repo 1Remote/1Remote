@@ -282,15 +282,23 @@ namespace _1RM
 
         public void InitOnLaunch()
         {
+            if (_isNewUser == false && ConfigurationService != null)
+            {
+                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
+                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
+                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationService.Launcher.LauncherEnabled}");
+                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationService.Theme.ThemeName}");
+            }
+
             KittyConfig.CleanUpOldConfig();
 
             if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
             {
                 string error = _localDataConnectionStatus.GetErrorInfo();
-                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("Error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
                 {
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
+                    MessageBoxHelper.ErrorAlert(error);
                 };
                 IoC.Get<MainWindowViewModel>().ShowMe();
                 return;
@@ -309,14 +317,6 @@ namespace _1RM
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
                 };
                 IoC.Get<MainWindowViewModel>().ShowMe();
-            }
-
-            if (_isNewUser == false && ConfigurationService != null)
-            {
-                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
-                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
-                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationService.Launcher.LauncherEnabled}");
-                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationService.Theme.ThemeName}");
             }
         }
     }

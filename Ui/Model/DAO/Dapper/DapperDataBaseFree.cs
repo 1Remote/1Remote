@@ -8,7 +8,7 @@ namespace _1RM.Model.DAO.Dapper
     /// <summary>
     /// DapperDb no occupation version
     /// </summary>
-    public sealed class DapperDataBaseFree : DapperDataBase
+    public sealed class DapperDatabaseFree : DapperDatabase
     {
         /// <inheritdoc />
         public override void InitTables()

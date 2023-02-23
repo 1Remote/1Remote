@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace _1RM.Service.DataSource.Model
 {
-    public class MysqlSource : DataSourceBase
+    public sealed class MysqlSource : DataSourceBase
     {
 
         private string _host = "127.0.0.1";
@@ -81,10 +81,10 @@ namespace _1RM.Service.DataSource.Model
 
 
 
-        private readonly IDataBase _dataBase = new DapperDataBase();
-        public override IDataBase GetDataBase()
+        private readonly IDatabase _database = new DapperDatabase();
+        public override IDatabase GetDataBase()
         {
-            return _dataBase;
+            return _database;
         }
 
         public static bool TestConnection(MysqlSource config)
@@ -94,11 +94,9 @@ namespace _1RM.Service.DataSource.Model
         public static bool TestConnection(string host, int port, string dbName, string userName, string password)
         {
             var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password, 2);
-            var db = new DapperDataBase();
+            var db = new DapperDatabase();
             try
             {
-                //var dbConnection = new MySqlConnection(str);
-                //dbConnection.Open();
                 db.OpenNewConnection(DatabaseType.MySql, str);
                 return db.IsConnected();
             }

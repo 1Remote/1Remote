@@ -11,10 +11,11 @@ using _1RM.Service;
 using MySql.Data.MySqlClient;
 using NUlid;
 using Shawn.Utils;
+using _1RM.Utils;
 
 namespace _1RM.Model.DAO.Dapper
 {
-    public class DapperDataBase : IDataBase
+    public class DapperDatabase : IDatabase
     {
         protected IDbConnection? _dbConnection;
         protected string _connectionString = "";
@@ -121,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 ");
+            base.SetEncryptionTest();
         }
 
         public override ProtocolBase? GetServer(int id)
@@ -164,7 +166,7 @@ VALUES
         {
             lock (this)
             {
-                if(protocolBase.IsTmpSession())
+                if (protocolBase.IsTmpSession())
                     protocolBase.Id = Ulid.NewUlid().ToString();
                 var server = protocolBase.ToDbServer();
                 var ret = _dbConnection?.Execute(SqlInsert, server);
@@ -201,6 +203,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
+                OpenConnection();
                 var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -212,6 +215,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
+                OpenConnection();
                 var dbss = servers.Select(x => x.ToDbServer());
                 var ret = _dbConnection?.Execute(SqlUpdate, dbss) > 0;
                 if (ret)
@@ -224,8 +228,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (_dbConnection == null)
-                    return false;
+                OpenConnection();
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -237,8 +240,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (_dbConnection == null)
-                    return false;
+                OpenConnection();
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -255,6 +257,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
+                OpenConnection();
                 var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                     new { Key = key, });
                 return config?.Value;
@@ -273,6 +276,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
+                OpenConnection();
                 var existed = GetConfigPrivate(key) != null;
                 return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
             }
@@ -284,6 +288,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             {
                 if (_dbConnection == null)
                     return false;
+                OpenConnection();
                 var data = servers.Select(x => x.ToDbServer());
                 using var tran = _dbConnection.BeginTransaction();
                 try
