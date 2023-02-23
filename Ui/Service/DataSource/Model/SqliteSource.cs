@@ -12,7 +12,7 @@ using Shawn.Utils;
 
 namespace _1RM.Service.DataSource.Model
 {
-    public partial class SqliteSource : DataSourceBase
+    public sealed partial class SqliteSource : DataSourceBase
     {
         private string _path = "";
         public string Path
@@ -49,10 +49,10 @@ namespace _1RM.Service.DataSource.Model
 
 
 
-        private readonly IDataBase _dataBase = new DapperDataBaseFree();
-        public override IDataBase GetDataBase()
+        private readonly IDatabase _database = new DapperDatabaseFree();
+        public override IDatabase GetDataBase()
         {
-            return _dataBase;
+            return _database;
         }
     }
 }

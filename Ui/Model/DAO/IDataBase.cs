@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using Shawn.Utils;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace _1RM.Model.DAO
 {
@@ -18,7 +20,7 @@ namespace _1RM.Model.DAO
         Sqlite,
     }
 
-    public abstract class IDataBase
+    public abstract class IDatabase
     {
         public abstract void CloseConnection();
         public abstract void OpenConnection();
@@ -76,6 +78,24 @@ namespace _1RM.Model.DAO
 
         public abstract void SetDataUpdateTimestamp(long time = -1);
         public abstract long GetDataUpdateTimestamp();
+
+        protected void SetEncryptionTest()
+        {
+            if (string.IsNullOrEmpty(GetConfig("EncryptionTest")))
+            {
+                SetConfig("EncryptionTest", UnSafeStringEncipher.SimpleEncrypt("EncryptionTest"));
+            }
+        }
+
+        public bool CheckEncryptionTest()
+        {
+            var et = GetConfig("EncryptionTest");
+            if (UnSafeStringEncipher.SimpleDecrypt(et ?? "") != "EncryptionTest")
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
 
@@ -92,11 +112,11 @@ namespace _1RM.Model.DAO
 
 
 
-        private static string? TryGetConfig(this IDataBase iDataBase, string key)
+        private static string? TryGetConfig(this IDatabase iDatabase, string key)
         {
             try
             {
-                var val = iDataBase.GetConfig(key) ?? "";
+                var val = iDatabase.GetConfig(key) ?? "";
                 return val;
             }
             catch (Exception e)
@@ -106,11 +126,11 @@ namespace _1RM.Model.DAO
             }
         }
 
-        private static bool TrySetConfig(this IDataBase iDataBase, string key, string value)
+        private static bool TrySetConfig(this IDatabase iDatabase, string key, string value)
         {
             try
             {
-                iDataBase.SetConfig(key, value ?? "");
+                iDatabase.SetConfig(key, value ?? "");
                 return true;
             }
             catch (Exception e)
@@ -120,12 +140,12 @@ namespace _1RM.Model.DAO
             }
         }
 
-        public static bool CheckWritable(this IDataBase iDataBase)
+        public static bool CheckWritable(this IDatabase iDatabase)
         {
             try
             {
-                iDataBase.SetConfig("permission_check", "true"); // insert
-                iDataBase.SetConfig("permission_check", "true"); // update
+                iDatabase.SetConfig("permission_check", "true"); // insert
+                iDatabase.SetConfig("permission_check", "true"); // update
                 return true;
             }
             catch (Exception e)
@@ -135,11 +155,11 @@ namespace _1RM.Model.DAO
             }
         }
 
-        public static bool CheckReadable(this IDataBase iDataBase)
+        public static bool CheckReadable(this IDatabase iDatabase)
         {
             try
             {
-                iDataBase.SetConfig("permission_check", "true"); // update
+                iDatabase.SetConfig("permission_check", "true"); // update
             }
             catch
             {
@@ -148,7 +168,7 @@ namespace _1RM.Model.DAO
 
             try
             {
-                var val = iDataBase.GetConfig("permission_check");
+                var val = iDatabase.GetConfig("permission_check");
                 return true;
             }
             catch

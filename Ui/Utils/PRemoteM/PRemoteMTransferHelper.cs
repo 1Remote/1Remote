@@ -153,7 +153,7 @@ namespace _1RM.Utils.PRemoteM
 
         private static void StartTask()
         {
-            var dataBase = new DapperDataBaseFree();
+            var dataBase = new DapperDatabaseFree();
             try
             {
                 if (_dbPathList?.Count > 0 == false)
