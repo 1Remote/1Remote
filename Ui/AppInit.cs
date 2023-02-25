@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Model;
 using _1RM.Model.DAO;
@@ -271,11 +274,15 @@ namespace _1RM
             var dataSourceService = IoC.Get<DataSourceService>();
             GlobalData.SetDataSourceService(dataSourceService);
             _localDataConnectionStatus = dataSourceService.InitLocalDataSource();
-            IoC.Get<GlobalData>().ReloadServerList();
-            foreach (var config in ConfigurationService!.AdditionalDataSource)
+            // read from primary database
+            IoC.Get<GlobalData>().ReloadServerList(true);
+            // read from AdditionalDataSource async
+            Task.Factory.StartNew(() =>
             {
-                dataSourceService.AddOrUpdateDataSourceAsync(config);
-            }
+                Task.WaitAll(ConfigurationService!.AdditionalDataSource.Select(config => Task.Factory.StartNew(() => { dataSourceService.AddOrUpdateDataSource(config, doReload: false); })).ToArray());
+                IoC.Get<GlobalData>().ReloadServerList();
+            });
+            // init session controller
             IoC.Get<SessionControlService>();
         }
 
@@ -304,17 +311,16 @@ namespace _1RM
                 return;
             }
 
-            if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
-            {
-                // import form PRemoteM db
-                IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += PRemoteMTransferHelper.TransAsync;
-            }
-
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
                 {
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
+                    if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
+                    {
+                        // import form PRemoteM db
+                        PRemoteMTransferHelper.TransAsync();
+                    }
                 };
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }

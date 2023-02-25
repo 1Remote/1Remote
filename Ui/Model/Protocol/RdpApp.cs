@@ -13,7 +13,7 @@ namespace _1RM.Model.Protocol
     public sealed class RdpApp : ProtocolBaseWithAddressPortUserPwd
     {
         public static string ProtocolName = "RemoteApp";
-        public RdpApp() : base(ProtocolName, "RemoteApp.V1", "RemoteApp", "APP")
+        public RdpApp() : base(ProtocolName, "RemoteApp.V1", "RemoteApp")
         {
             base.Port = "3389";
             base.UserName = "Administrator";

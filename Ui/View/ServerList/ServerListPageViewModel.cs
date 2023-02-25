@@ -24,6 +24,7 @@ using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
+using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -81,12 +82,17 @@ namespace _1RM.View.ServerList
                     RaisePropertyChanged(nameof(IsSelectedAll));
                     RaisePropertyChanged(nameof(SelectedCount));
                 };
+
+                RaisePropertyChanged(nameof(IsAnySelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+                UpdateNote();
             }
         }
 
         public int SelectedCount => VmServerList.Count(x => x.IsSelected);
 
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
+        private EnumServerOrderBy _serverOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;
@@ -149,15 +155,23 @@ namespace _1RM.View.ServerList
             {
                 if (SetAndNotifyIfChanged(ref this._briefNoteVisibility, value))
                 {
-                    foreach (var item in VmServerList.Where(x => x.HoverNoteDisplayControl != null))
-                    {
-                        if (item.HoverNoteDisplayControl != null)
-                        {
-                            item.HoverNoteDisplayControl.IsBriefNoteShown = value == Visibility.Visible;
-                        }
-                    }
+                    UpdateNote();
                 }
             }
+        }
+
+        private void UpdateNote()
+        {
+            Execute.OnUIThreadSync(() =>
+            {
+                foreach (var item in VmServerList.Where(x => x.HoverNoteDisplayControl != null))
+                {
+                    if (item.HoverNoteDisplayControl != null)
+                    {
+                        item.HoverNoteDisplayControl.IsBriefNoteShown = BriefNoteVisibility == Visibility.Visible;
+                    }
+                }
+            });
         }
 
         private TagsPanelViewModel? _tagListViewModel = null;
@@ -182,9 +196,10 @@ namespace _1RM.View.ServerList
             {
                 var showNoteFieldInListView = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView;
                 // Make sure the update do triggered the first time assign a value 
-                _briefNoteVisibility = showNoteFieldInListView == false ? Visibility.Visible : Visibility.Collapsed;
                 BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
             }
+
+            RebuildVmServerList();
         }
 
         protected override void OnViewLoaded()
@@ -201,11 +216,7 @@ namespace _1RM.View.ServerList
                 };
             }
 
-
             AppData.OnDataReloaded += RebuildVmServerList;
-            RebuildVmServerList();
-
-            ServerOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
             ApplySort(ServerOrderBy);
         }
 
@@ -228,9 +239,6 @@ namespace _1RM.View.ServerList
                 {
                     VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
                     ApplySort(ServerOrderBy);
-                    RaisePropertyChanged(nameof(IsAnySelected));
-                    RaisePropertyChanged(nameof(IsSelectedAll));
-                    RaisePropertyChanged(nameof(SelectedCount));
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;

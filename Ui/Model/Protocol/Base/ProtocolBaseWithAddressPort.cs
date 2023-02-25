@@ -5,7 +5,7 @@ namespace _1RM.Model.Protocol.Base
 {
     public abstract class ProtocolBaseWithAddressPort : ProtocolBase
     {
-        protected ProtocolBaseWithAddressPort(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "") : base(protocol, classVersion, protocolDisplayName, protocolDisplayNameInShort)
+        protected ProtocolBaseWithAddressPort(string protocol, string classVersion, string protocolDisplayName) : base(protocol, classVersion, protocolDisplayName)
         {
         }
 
