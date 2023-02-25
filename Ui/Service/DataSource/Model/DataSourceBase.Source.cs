@@ -169,7 +169,6 @@ namespace _1RM.Service.DataSource.Model
             {
                 SimpleLogHelper.Warning(e);
                 Status = EnumDatabaseStatus.AccessDenied;
-                return Status;
             }
 
             // check readable

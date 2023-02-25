@@ -47,7 +47,7 @@ namespace _1RM.Utils.PRemoteM
             {
                 if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer", ownerViewModel: IoC.Get<MainWindowViewModel>()))
                 {
-                    var id = MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", assignLayerContainer: IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -66,6 +66,7 @@ namespace _1RM.Utils.PRemoteM
                             Debug.Assert(localSource != null);
                             localSource.Database_InsertServer(_servers);
                             IoC.Get<GlobalData>().ReloadServerList(true);
+                            MessageBoxHelper.Info($"All done! You may need to delete `{_dbPath}`...", ownerViewModel: IoC.Get<MainWindowViewModel>());
                         }
                         catch (Exception e)
                         {
@@ -81,7 +82,7 @@ namespace _1RM.Utils.PRemoteM
             }
         }
 
-        public static void Clear()
+        private static void Clear()
         {
             _dbPathList = null;
             _servers.Clear();
@@ -207,7 +208,7 @@ namespace _1RM.Utils.PRemoteM
                             if (server is { })
                             {
                                 // DecryptToRamLevel
-                                if(rsa != null)
+                                if (rsa != null)
                                 {
                                     server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
                                     if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))

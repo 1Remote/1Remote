@@ -94,16 +94,8 @@ namespace _1RM.Service.DataSource
             return ret;
         }
 
-        public void AddOrUpdateDataSourceAsync(DataSourceBase config)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                AddOrUpdateDataSource(config);
-            });
-        }
 
-
-        public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5)
+        public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5, bool doReload = true)
         {
             try
             {
@@ -133,7 +125,8 @@ namespace _1RM.Service.DataSource
             }
             finally
             {
-                IoC.Get<GlobalData>().ReloadServerList(true);
+                if (doReload)
+                    IoC.Get<GlobalData>().ReloadServerList();
             }
         }
 

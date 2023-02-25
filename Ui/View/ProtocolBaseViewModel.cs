@@ -31,7 +31,7 @@ namespace _1RM.View
 
         public string DisplayName => Server.DisplayName;
         public string SubTitle => Server.SubTitle;
-        public string ProtocolDisplayNameInShort => Server.ProtocolDisplayNameInShort;
+        public string ProtocolDisplayNameInShort => Server.ProtocolDisplayName;
 
         /// <summary>
         /// like: "#work #asd", display in launcher page.
