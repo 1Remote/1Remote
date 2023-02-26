@@ -80,7 +80,7 @@ namespace PRM.View
         }
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
+        private EnumServerOrderBy _serverOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;

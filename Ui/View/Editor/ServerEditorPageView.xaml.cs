@@ -11,6 +11,7 @@ using PRM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
+using Stylet;
 
 namespace PRM.View.Editor
 {
@@ -32,7 +33,10 @@ namespace PRM.View.Editor
                             && ServerIcons.Instance.Icons.Count > 0)
                         {
                             var r = new Random(DateTime.Now.Millisecond);
-                            vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                            Execute.OnUIThreadSync(() =>
+                            {
+                                vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                            });
                         }
                     }
                     _oldLogo = vm.Server.IconImg;

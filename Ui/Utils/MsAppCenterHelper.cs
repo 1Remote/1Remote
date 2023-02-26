@@ -8,6 +8,7 @@ using Shawn.Utils;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Ui;
 
 /*
  * Script running:
@@ -57,15 +58,20 @@ namespace PRM.Utils
 
 
 
-        public static void TraceAppStatus(bool isStart, bool? isStoreVersion = null)
+        public static void TraceAppStatus(bool isStart)
         {
             var properties = new Dictionary<string, string>
             {
                 { "Action", isStart ? "Start":"Exit" },
             };
-            if (isStart && isStoreVersion != null)
+            if (isStart)
             {
-                properties.Add("Version", isStoreVersion == true ? "MS Store" : "Exe");
+#if FOR_MICROSOFT_STORE_ONLY
+                properties.Add("Distributor", "MS Store");
+#else
+                properties.Add("Distributor", "Exe");
+#endif
+                properties.Add("VersionNumber", AppVersion.Version);
             }
             Trace(EventName.App, properties);
         }
