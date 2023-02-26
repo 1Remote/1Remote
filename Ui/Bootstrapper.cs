@@ -127,12 +127,11 @@ namespace PRM
         protected override void OnLaunch()
         {
 #if FOR_MICROSOFT_STORE_ONLY
-            MsAppCenterHelper.TraceAppStatus(true, true);
             MsAppCenterHelper.TraceSpecial("Distributor", $"{Assert.APP_NAME} MS Store");
 #else
-            MsAppCenterHelper.TraceAppStatus(true, false);
             MsAppCenterHelper.TraceSpecial("Distributor", $"{Assert.APP_NAME} Exe");
 #endif
+            MsAppCenterHelper.TraceAppStatus(true);
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here

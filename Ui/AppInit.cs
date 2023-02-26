@@ -115,7 +115,7 @@ namespace PRM
 #endif
                     bool profileModeIsPortable = false;
                     bool profileModeIsEnabled = true;
-                    
+
                     if (forcePortable == true && forceAppData == false)
                     {
                         isPortableMode = true;
@@ -142,7 +142,7 @@ namespace PRM
                             File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                         if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
                             File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
-                        
+
 
                         if (portableProfilePathExisted)
                         {
@@ -186,7 +186,7 @@ namespace PRM
                             if (isPortableMode)
                             {
                                 if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
-                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData"); 
+                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData");
                                 if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
                                     File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
                             }
@@ -230,7 +230,7 @@ namespace PRM
                     CreateDirIfNotExist(paths.LocalityJsonPath, true);
                 }
             }
-#endregion
+            #endregion
 
             // logger init
             {
