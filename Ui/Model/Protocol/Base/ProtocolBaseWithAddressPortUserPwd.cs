@@ -33,22 +33,9 @@ namespace _1RM.Model.Protocol.Base
             return string.IsNullOrEmpty(UserName) ? base.GetSubTitle() : $"{Address}:{Port} ({UserName})";
         }
 
-        private ObservableCollection<Credential>? _alternateCredentials = new ObservableCollection<Credential>();
-        public ObservableCollection<Credential>? AlternateCredentials
-        {
-            get => _alternateCredentials;
-            set => SetAndNotifyIfChanged(ref _alternateCredentials, value);
-        }
 
 
-        private bool? _isAutoAlternateAddressSwitching = false;
-        public bool? IsAutoAlternateAddressSwitching
-        {
-            get => _isAutoAlternateAddressSwitching;
-            set => SetAndNotifyIfChanged(ref _isAutoAlternateAddressSwitching, value);
-        }
-
-        public Credential GetCredential()
+        public override Credential GetCredential()
         {
             var c = new Credential()
             {
@@ -60,17 +47,9 @@ namespace _1RM.Model.Protocol.Base
             return c;
         }
 
-        public void SetCredential(in Credential credential)
+        public override void SetCredential(in Credential credential)
         {
-            if (!string.IsNullOrEmpty(credential.Address))
-            {
-                Address = credential.Address;
-            }
-
-            if (!string.IsNullOrEmpty(credential.Port))
-            {
-                Port = credential.Port;
-            }
+            base.SetCredential(credential);
 
             if (!string.IsNullOrEmpty(credential.UserName))
             {

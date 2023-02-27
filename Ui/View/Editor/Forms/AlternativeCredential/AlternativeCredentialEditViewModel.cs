@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Windows;
 using System.Xml.Linq;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
@@ -13,16 +18,61 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
     {
         private readonly Model.Protocol.Base.Credential? _org = null;
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
-        private readonly ProtocolBaseWithAddressPortUserPwd _protocol;
-        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPortUserPwd protocol, Model.Protocol.Base.Credential? org = null)
+        private readonly ProtocolBaseWithAddressPort _protocol;
+        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, Model.Protocol.Base.Credential? org = null)
         {
             _protocol = protocol;
             _org = org;
 
+            ShowUsername = true;
+            ShowPassword = true;
+            ShowPrivateKeyPath = false;
+
+            if (protocol is VNC
+                || protocol is not ProtocolBaseWithAddressPortUserPwd)
+            {
+                ShowUsername = false;
+                ShowPassword = false;
+            }
+
+            if (protocol is SSH
+                || protocol is SFTP)
+            {
+                ShowPrivateKeyPath = true;
+            }
+
             // Edit mode
             if (_org != null)
             {
+                if (string.IsNullOrEmpty(_org.PrivateKeyPath) == false)
+                {
+                    IsUsePrivateKey = true;
+                }
                 New = (Model.Protocol.Base.Credential)_org.Clone();
+            }
+        }
+
+        public bool ShowUsername { get; }
+        public bool ShowPassword { get; }
+        public bool ShowPrivateKeyPath { get; }
+
+        private bool _isUsePrivateKey = false;
+        public bool IsUsePrivateKey
+        {
+            get => _isUsePrivateKey && ShowPrivateKeyPath;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _isUsePrivateKey, value))
+                {
+                    if (value)
+                    {
+                        New.Password = "";
+                    }
+                    else
+                    {
+                        New.PrivateKeyPath = "";
+                    }
+                }
             }
         }
 
@@ -46,7 +96,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     {
                         New.Name = "";
                         RaisePropertyChanged();
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", v));
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", v));
                     }
 
                     New.Name = value;
@@ -54,6 +104,33 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 }
             }
         }
+
+        public string PrivateKeyPath
+        {
+            get => New.PrivateKeyPath;
+            set
+            {
+                var v = value.Trim();
+                if (New.PrivateKeyPath != v)
+                {
+                    if (string.IsNullOrWhiteSpace(v))
+                    {
+                        New.PrivateKeyPath = "";
+                        RaisePropertyChanged();
+                    }
+                    else
+                    {
+                        New.PrivateKeyPath = v;
+                        RaisePropertyChanged();
+                        if (File.Exists(New.PrivateKeyPath) == false)
+                        {
+                            throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is not existed!", v));
+                        }
+                    }
+                }
+            }
+        }
+
 
         private bool CheckPort(string port)
         {
@@ -103,9 +180,16 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     }
                     if (true == _protocol.AlternateCredentials.Any(x => x != _org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
                     {
-                        MessageBoxHelper.Warning(IoC.Get<ILanguageService>().Translate("{0} is existed!", Name));
+                        MessageBoxHelper.Warning(IoC.Get<ILanguageService>().Translate("XXX is already existed!", Name));
                         return;
                     }
+
+                    if (!ShowUsername)
+                        New.UserName = "";
+                    if (!ShowPassword || _isUsePrivateKey)
+                        New.Password = "";
+                    if (!ShowPrivateKeyPath || !_isUsePrivateKey)
+                        New.PrivateKeyPath = "";
 
                     if (_org != null && _protocol.AlternateCredentials.Any(x => x == _org))
                     {
@@ -127,6 +211,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
 
 
         private RelayCommand? _cmdCancel;
+
         public RelayCommand CmdCancel
         {
             get
@@ -136,6 +221,14 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     RequestClose(false);
                 });
             }
+        }
+
+
+        public void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+            if (path == null) return;
+            PrivateKeyPath = path;
         }
     }
 }

@@ -99,10 +99,10 @@
                             <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
                         </Grid>
                         <Button Content="{DynamicResource Select}" 
-                            Margin="5 0 0 0"
-                            Click="ButtonOpenPrivateKey_OnClick" 
-                            Style="{StaticResource ButtonPrimaryStyle}"
-                            VerticalAlignment="Stretch">
+                                Margin="5 0 0 0"
+                                Click="ButtonOpenPrivateKey_OnClick" 
+                                Style="{StaticResource ButtonPrimaryStyle}"
+                                VerticalAlignment="Stretch">
                         </Button>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
