@@ -15,7 +15,7 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Tag="e.g. C:/vnc/viewer.exe"
-                            Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                             Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"

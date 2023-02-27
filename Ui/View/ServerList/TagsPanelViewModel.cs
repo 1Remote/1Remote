@@ -125,7 +125,7 @@ namespace _1RM.View.ServerList
                         if (str == obj.Name)
                             return "";
                         if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
-                            return IoC.Get<ILanguageService>().Translate("{0} is existed!", str);
+                            return IoC.Get<ILanguageService>().Translate("XXX is already existed!", str);
                         return "";
                     }), defaultResponse: obj.Name, ownerViewModel: IoC.Get<MainWindowViewModel>());
 

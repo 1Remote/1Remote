@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using CredentialManagement;
+using JsonKnownTypes;
+using Newtonsoft.Json;
 using Shawn.Utils;
 
 namespace _1RM.Model.Protocol.Base
 {
+    [JsonConverter(typeof(JsonKnownTypesConverter<Credential>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
+    //[JsonKnownType(typeof(ExternalRunner), nameof(ExternalRunner))]
+    //[JsonKnownType(typeof(KittyRunner), nameof(KittyRunner))]
+    //[JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
     public class Credential : NotifyPropertyChangedBase, ICloneable
     {
         public object Clone()
@@ -60,6 +61,14 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _password, value);
         }
 
+        private string _privateKeyPath = "";
+        [OtherName(Name = "PRIVATE_KEY_PATH")]
+        public string PrivateKeyPath
+        {
+            get => _privateKeyPath;
+            set => SetAndNotifyIfChanged(ref _privateKeyPath, value);
+        }
+
         public static bool TestAddressPortIsAvailable(ProtocolBaseWithAddressPortUserPwd protocol, Credential credential, int timeOutMillisecond = 0)
         {
             if (string.IsNullOrEmpty(credential.Address) && string.IsNullOrEmpty(credential.Port))
@@ -97,16 +106,17 @@ namespace _1RM.Model.Protocol.Base
 
 
 
-        public bool SetCredential(in Credential credential)
+        public virtual bool SetCredential(in Credential credential)
         {
             var a = SetAddress(credential);
             var b = SetPort(credential);
             var c = SetUserName(credential);
             var d = SetPassword(credential);
-            return a || b || c || d;
+            var e = SetPrivateKeyPath(credential);
+            return a || b || c || d || e;
         }
 
-        public bool SetAddress(in Credential credential)
+        public virtual bool SetAddress(in Credential credential)
         {
             if (!string.IsNullOrEmpty(credential.Port))
             {
@@ -145,5 +155,14 @@ namespace _1RM.Model.Protocol.Base
             return false;
         }
 
+        public bool SetPrivateKeyPath(in Credential credential)
+        {
+            if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
+            {
+                Password = credential.PrivateKeyPath;
+                return true;
+            }
+            return false;
+        }
     }
 }

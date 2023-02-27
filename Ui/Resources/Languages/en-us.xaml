@@ -257,4 +257,6 @@
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">When the default host or port is unavailable the alternate addresses will be tried in sequence</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
     <s:String x:Key="Detecting your alternate host...">Detecting your alternate host...</s:String>
+    <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
+    <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
 </ResourceDictionary>

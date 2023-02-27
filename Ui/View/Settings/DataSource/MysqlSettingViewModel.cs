@@ -57,8 +57,8 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (string.IsNullOrWhiteSpace(_name))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
+                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName.Trim(), _name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", _name));
                 }
             }
         }
@@ -188,10 +188,10 @@ namespace _1RM.View.Settings.DataSource
                         {
                             var config = new MysqlSource()
                             {
-                                DataSourceName = Name,
-                                Host = Host,
+                                DataSourceName = Name.Trim(),
+                                Host = Host.Trim(),
                                 Port = int.Parse(_port),
-                                DatabaseName = DatabaseName,
+                                DatabaseName = DatabaseName.Trim(),
                                 UserName = UserName,
                                 Password = Password
                             };

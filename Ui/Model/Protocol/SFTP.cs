@@ -78,5 +78,25 @@ namespace _1RM.Model.Protocol
         {
             return StartupPath;
         }
+
+
+
+        public override Credential GetCredential()
+        {
+            var c = new Credential()
+            {
+                Address = Address,
+                Port = Port,
+                Password = Password,
+                UserName = UserName,
+                PrivateKeyPath = PrivateKey,
+            };
+            return c;
+        }
+        public override void SetCredential(in Credential credential)
+        {
+            base.SetCredential(credential);
+            PrivateKey = credential.PrivateKeyPath;
+        }
     }
 }

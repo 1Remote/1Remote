@@ -97,7 +97,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                         if (string.IsNullOrWhiteSpace(str))
                             return _languageService.Translate("Can not be empty!");
                         if (c.Runners.Any(x => x.Name == str))
-                            return _languageService.Translate("{0} is existed!", str);
+                            return _languageService.Translate("XXX is already existed!", str);
                         return "";
                     }), ownerViewModel: IoC.Get<MainWindowViewModel>());
 

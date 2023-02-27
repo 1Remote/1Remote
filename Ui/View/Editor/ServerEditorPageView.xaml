@@ -51,10 +51,10 @@
             </Grid.Margin>
 
             <ScrollViewer Grid.IsSharedSizeScope="True"
-                x:Name="ScrollViewerMain"
-                Margin="0 3 0 4"
-                HorizontalScrollBarVisibility="Disabled"
-                VerticalScrollBarVisibility="Auto">
+                          x:Name="ScrollViewerMain"
+                          Margin="0 3 0 4"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>

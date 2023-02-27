@@ -83,8 +83,8 @@ namespace _1RM.View.Settings.DataSource
                     New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
                         throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName, _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("{0} is existed!", _name));
+                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name, StringComparison.CurrentCultureIgnoreCase)))
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", _name));
                 }
             }
         }

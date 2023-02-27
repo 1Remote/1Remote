@@ -469,60 +469,63 @@ namespace _1RM.View.Editor
         {
             Debug.Assert(protocolType?.FullName != null);
 
-            try
+            Execute.OnUIThreadSync(() =>
             {
-                if (protocolType == typeof(RDP))
+                try
                 {
-                    ProtocolEditControl = new RdpForm(Server, isBuckEdit: IsBuckEdit);
+                    if (protocolType == typeof(RDP))
+                    {
+                        ProtocolEditControl = new RdpForm(Server, isBuckEdit: IsBuckEdit);
+                    }
+                    else if (protocolType == typeof(RdpApp))
+                    {
+                        ProtocolEditControl = new RdpAppForm(Server);
+                    }
+                    else if (protocolType == typeof(SSH))
+                    {
+                        ProtocolEditControl = new SshForm(Server);
+                    }
+                    else if (protocolType == typeof(Telnet))
+                    {
+                        ProtocolEditControl = new TelnetForm(Server);
+                    }
+                    else if (protocolType == typeof(FTP))
+                    {
+                        ProtocolEditControl = new FTPForm(Server);
+                    }
+                    else if (protocolType == typeof(SFTP))
+                    {
+                        ProtocolEditControl = new SftpForm(Server);
+                    }
+                    else if (protocolType == typeof(VNC))
+                    {
+                        ProtocolEditControl = new VncForm(Server);
+                    }
+                    else if (protocolType == typeof(LocalApp))
+                    {
+                        ProtocolEditControl = new AppForm(Server);
+                    }
+                    else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
+                    {
+                        ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
+                    }
+                    else if (protocolType == typeof(ProtocolBaseWithAddressPort))
+                    {
+                        ProtocolEditControl = new BaseFormWithAddressPort(Server);
+                    }
+                    else if (protocolType == typeof(ProtocolBase))
+                    {
+                        ProtocolEditControl = null;
+                    }
+                    else
+                        throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");
                 }
-                else if (protocolType == typeof(RdpApp))
+                catch (Exception e)
                 {
-                    ProtocolEditControl = new RdpAppForm(Server);
+                    SimpleLogHelper.Error(e);
+                    throw;
                 }
-                else if (protocolType == typeof(SSH))
-                {
-                    ProtocolEditControl = new SshForm(Server);
-                }
-                else if (protocolType == typeof(Telnet))
-                {
-                    ProtocolEditControl = new TelnetForm(Server);
-                }
-                else if (protocolType == typeof(FTP))
-                {
-                    ProtocolEditControl = new FTPForm(Server);
-                }
-                else if (protocolType == typeof(SFTP))
-                {
-                    ProtocolEditControl = new SftpForm(Server);
-                }
-                else if (protocolType == typeof(VNC))
-                {
-                    ProtocolEditControl = new VncForm(Server);
-                }
-                else if (protocolType == typeof(LocalApp))
-                {
-                    ProtocolEditControl = new AppForm(Server);
-                }
-                else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
-                {
-                    ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
-                }
-                else if (protocolType == typeof(ProtocolBaseWithAddressPort))
-                {
-                    ProtocolEditControl = new BaseFormWithAddressPort(Server);
-                }
-                else if (protocolType == typeof(ProtocolBase))
-                {
-                    ProtocolEditControl = null;
-                }
-                else
-                    throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(ServerEditorPageViewModel)}");
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                throw;
-            }
+            });
         }
 
         private void UpdateRunners(string protocolName)
@@ -617,7 +620,7 @@ namespace _1RM.View.Editor
                         }
                         finally
                         {
-                            MaskLayerController.HideMask( IoC.Get<MainWindowViewModel>());
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                         }
                     });
                 });
@@ -641,7 +644,7 @@ namespace _1RM.View.Editor
                     {
                         var credential = o as Credential;
                         var vm = new AlternativeCredentialEditViewModel(protocol, credential);
-                        var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
+                        MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
                         MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                     }

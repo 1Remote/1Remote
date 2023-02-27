@@ -30,7 +30,7 @@ This App Will Rename to 1Remote in the feature..
 
 ## Installation
 
-Latest Version: 0.7.2.2
+Latest Version: 0.7.2.3
 
 Use one of the following methods to install the application:
 

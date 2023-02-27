@@ -9,6 +9,7 @@
                  xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                  xmlns:editor="clr-namespace:_1RM.View.Editor"
                  xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
+                 xmlns:base="clr-namespace:_1RM.Model.Protocol.Base"
                  mc:Ignorable="d"
                  d:DataContext="{d:DesignInstance protocol:RDP}"
                  d:DesignHeight="1450" d:DesignWidth="800">
@@ -95,52 +96,41 @@
                         </Grid.Resources>
 
                         <StackPanel>
-                            <DataGrid AutoGenerateColumns="False"
-                                      HorizontalAlignment="Stretch" 
-                                      HorizontalContentAlignment="Stretch" 
-                                      CanUserSortColumns="False"
-                                      CanUserResizeColumns="False"
-                                      CanUserResizeRows="False"
-                                      CanUserReorderColumns="False"
-                                      ColumnWidth="*"
-                                      IsReadOnly="True"
-                                      ItemsSource="{Binding AlternateCredentials}" >
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn Width="*" Header="{DynamicResource Name}">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding Name}"></TextBlock>
-                                                    <Grid Width="20"></Grid>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-
-                                    <DataGridTemplateColumn Width="Auto" Header="">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                                    <Button Content="{DynamicResource Edit}"
-                                                        Margin="5"
-                                                        Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                                        CommandParameter="{Binding}"></Button>
-                                                    <Button Content="{DynamicResource Delete}" 
-                                                        Margin="5"
-                                                        Command="{Binding Path=DataContext.CmdDeleteCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                                        CommandParameter="{Binding}">
-                                                    </Button>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            <ItemsControl HorizontalAlignment="Stretch" 
+                                          HorizontalContentAlignment="Stretch"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                          ItemsSource="{Binding AlternateCredentials}" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="base:Credential">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Name}" 
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"></TextBlock>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <Button Content="{DynamicResource Edit}"
+                                                            Margin="5"
+                                                            Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                                            CommandParameter="{Binding}"></Button>
+                                                <Button Content="{DynamicResource Delete}" 
+                                                            Margin="5"
+                                                            Command="{Binding Path=DataContext.CmdDeleteCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                                            CommandParameter="{Binding}">
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
                             <Button Command="{Binding Path=DataContext.CmdEditCredential, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                                     Style="{StaticResource ButtonBarTransparentStyle}"
                                     Margin="0 0 5 0"
                             >
+                                <!--ADD BUTTON-->
                                 <Grid Height="15" Width="15">
                                     <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -154,12 +144,10 @@
                                     <Style TargetType="StackPanel">
                                         <Setter Property="IsEnabled" Value="True"></Setter>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding AlternateCredentials}"
-                                                         Value="{x:Null}">
+                                            <DataTrigger Binding="{Binding AlternateCredentials}" Value="{x:Null}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding AlternateCredentials.Count}"
-                                                         Value="0">
+                                            <DataTrigger Binding="{Binding AlternateCredentials.Count}" Value="0">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -173,7 +161,6 @@
                                 </TextBlock>
                             </StackPanel>
                         </StackPanel>
-
                     </Grid>
                 </StackPanel>
             </Grid>
