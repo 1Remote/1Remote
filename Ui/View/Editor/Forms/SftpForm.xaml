@@ -5,7 +5,10 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
+                        xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance protocol:SFTP}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
 
@@ -21,10 +24,10 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
-                                 InputMethod.IsInputMethodEnabled="False"
-                                 InputScope="Number"
-                                 ></TextBox>
+                             MinWidth="50" HorizontalAlignment="Left"
+                             InputMethod.IsInputMethodEnabled="False"
+                             InputScope="Number"
+                    ></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -54,6 +57,11 @@
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                 </Grid>
+                <CheckBox Name="CbUsePrivateKey"
+                          Margin="5 0 0 0"
+                          Content="{DynamicResource 'Use private key'}" 
+                          Checked="CbUsePrivateKey_OnChecked"
+                          Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
             </StackPanel>
         </Grid>
 
@@ -61,47 +69,32 @@
             <Grid.Style>
                 <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                            <Setter Property="Margin" Value="0 0 0 5"></Setter>
+                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter Property="IsEnabled" Value="False"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
-                <CheckBox Name="CbUsePrivateKey" 
-                          Content="{DynamicResource 'Use private key'}" 
-                          Checked="CbUsePrivateKey_OnChecked"
-                          Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
-            </StackPanel>
-        </Grid>
-
-
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
-                    </Grid>
-                    <Button Content="{DynamicResource Select}" 
-                            Margin="5 0 0 0"
+                        <Button Content="{DynamicResource Select}" 
                             Click="ButtonOpenPrivateKey_OnClick" 
                             Style="{StaticResource ButtonPrimaryStyle}"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Stretch">
-                    </Button>
+                        </Button>
+                    </Grid>
+                    <CheckBox Margin="5 0 0 0"
+                          Content="{DynamicResource 'Use private key'}" 
+                          IsChecked="{Binding ElementName=CbUsePrivateKey, Path=IsChecked}"
+                          Checked="CbUsePrivateKey_OnChecked"
+                          Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
                 </StackPanel>
+
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                     <TextBlock Text="{DynamicResource 'Supports the OpenSSH format key only with the internal SFTP client.'}" Opacity="0.7"></TextBlock>
@@ -118,9 +111,12 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sftp_startup_path}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding StartupPath, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="e.g. /home/user/Desktop"></TextBox>
+                             Tag="e.g. /home/user/Desktop"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
+
+        <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
+
     </StackPanel>
 </editor:FormBase>

@@ -8,6 +8,7 @@
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                         xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance protocol:RdpApp}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -20,14 +21,15 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="e.g. 192.168.0.101"></TextBox>
+                             Tag="e.g. 192.168.0.101"></TextBox>
                 </Grid>
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                           Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
-                                 InputMethod.IsInputMethodEnabled="False"
-                                 InputScope="Number"></TextBox>
+                             MinWidth="50" HorizontalAlignment="Left"
+                             InputMethod.IsInputMethodEnabled="False"
+                             InputScope="Number"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -50,14 +52,16 @@
             </StackPanel>
         </Grid>
 
+        <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
+
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_remote_app_name}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding RemoteApplicationName, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="{DynamicResource server_editor_remote_app_name_tag}"
-                                 ToolTip="{DynamicResource server_editor_remote_app_name_tag}"
-                                 ></TextBox>
+                             Tag="{DynamicResource server_editor_remote_app_name_tag}"
+                             ToolTip="{DynamicResource server_editor_remote_app_name_tag}"
+                    ></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -67,8 +71,8 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_remote_app_fullname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding RemoteApplicationProgram, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="{DynamicResource server_editor_remote_app_fullname_tag}"
-                                 ToolTip="{DynamicResource server_editor_remote_app_fullname_tag}"></TextBox>
+                             Tag="{DynamicResource server_editor_remote_app_fullname_tag}"
+                             ToolTip="{DynamicResource server_editor_remote_app_fullname_tag}"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>

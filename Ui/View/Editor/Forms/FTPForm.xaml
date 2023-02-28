@@ -5,6 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         mc:Ignorable="d"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
@@ -46,6 +47,8 @@
                 </Grid>
             </StackPanel>
         </Grid>
+
+        <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
 
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">

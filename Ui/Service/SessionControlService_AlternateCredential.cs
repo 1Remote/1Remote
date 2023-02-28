@@ -30,7 +30,7 @@ namespace _1RM.Service
     {
         private static void ApplyAlternateCredential(ref ProtocolBase serverClone, string assignCredentialName)
         {
-            if (serverClone is not ProtocolBaseWithAddressPortUserPwd protocol
+            if (serverClone is not ProtocolBaseWithAddressPort protocol
                 || protocol.AlternateCredentials == null
                 || protocol.AlternateCredentials.Count <= 0)
                 return;

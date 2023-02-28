@@ -28,16 +28,25 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             ShowPassword = true;
             ShowPrivateKeyPath = false;
 
-            if (protocol is VNC
-                || protocol is not ProtocolBaseWithAddressPortUserPwd)
+            if (protocol is not ProtocolBaseWithAddressPortUserPwd)
             {
                 ShowUsername = false;
                 ShowPassword = false;
+                ShowPrivateKeyPath = false;
+            }
+
+            if (protocol is VNC)
+            {
+                ShowUsername = false;
+                ShowPassword = true;
+                ShowPrivateKeyPath = false;
             }
 
             if (protocol is SSH
                 || protocol is SFTP)
             {
+                ShowUsername = true;
+                ShowPassword = true;
                 ShowPrivateKeyPath = true;
             }
 
@@ -82,9 +91,9 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => New.Name;
             set
             {
-                var v = value.Trim();
-                if (New.Name != v)
+                if (New.Name != value)
                 {
+                    var v = value.Trim();
                     if (string.IsNullOrWhiteSpace(v))
                     {
                         New.Name = "";
@@ -191,7 +200,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     if (!ShowPrivateKeyPath || !_isUsePrivateKey)
                         New.PrivateKeyPath = "";
 
-                    if (_org != null && _protocol.AlternateCredentials.Any(x => x == _org))
+                    if (_org != null && _protocol.AlternateCredentials.Any(x => x.Equals(_org)))
                     {
                         // edit
                         var i = _protocol.AlternateCredentials.IndexOf(_org);
