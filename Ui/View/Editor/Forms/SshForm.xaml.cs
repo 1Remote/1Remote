@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -42,19 +43,15 @@ namespace _1RM.View.Editor.Forms
 
         private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (CbUsePrivateKey.IsChecked == false)
-            {
-                if (_vm is SSH ssh)
+            if (sender is CheckBox cb && _vm is SSH ssh)
+                if (cb.IsChecked == false)
+                {
                     ssh.PrivateKey = "";
-            }
-            else
-            {
-                if (_vm is SSH ssh)
+                }
+                else
                 {
                     ssh.Password = "";
-                    //ssh.OpenSftpOnConnected = false;
                 }
-            }
         }
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)

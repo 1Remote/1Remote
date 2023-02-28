@@ -5,6 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance protocol:Telnet}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -30,6 +31,9 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+
+            <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
+
         </StackPanel>
 
         <StackPanel>

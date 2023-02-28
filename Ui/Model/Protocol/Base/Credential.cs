@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Sockets;
+using System.Reflection;
+using _1RM.Model.DAO.Dapper;
 using JsonKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -69,7 +72,7 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _privateKeyPath, value);
         }
 
-        public static bool TestAddressPortIsAvailable(ProtocolBaseWithAddressPortUserPwd protocol, Credential credential, int timeOutMillisecond = 0)
+        public static bool TestAddressPortIsAvailable(ProtocolBaseWithAddressPort protocol, Credential credential, int timeOutMillisecond = 0)
         {
             if (string.IsNullOrEmpty(credential.Address) && string.IsNullOrEmpty(credential.Port))
             {
@@ -163,6 +166,19 @@ namespace _1RM.Model.Protocol.Base
                 return true;
             }
             return false;
+        }
+
+        public static bool IsEqualInVal(Credential a, Credential b)
+        {
+            var properties = typeof(Credential).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var property in properties)
+            {
+                if (property.GetValue(a) != property.GetValue(b))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

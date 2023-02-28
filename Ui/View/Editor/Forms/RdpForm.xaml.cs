@@ -38,7 +38,7 @@ namespace _1RM.View.Editor.Forms
                     ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
                 }
             };
-            GridAlternativeCredentials.IsEnabled = isBuckEdit == false;
+            //// TODO //GridAlternativeCredentials.IsEnabled = isBuckEdit == false;
         }
 
 
