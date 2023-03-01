@@ -110,6 +110,7 @@ namespace _1RM.View.Editor
         /// </summary>
         private readonly Type? _sharedTypeInBuckEdit = null;
         private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
+        private readonly List<Credential> _sharedCredentialsInBuckEdit = new List<Credential>();
 
         private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
@@ -177,7 +178,7 @@ namespace _1RM.View.Editor
             // tags
             {
                 _sharedTagsInBuckEdit = new List<string>(); // remember the common tags
-                bool isAllTagsSameFlag = true;
+                bool isAllTheSameFlag = true;
                 for (var i = 0; i < serverBases.Length; i++)
                 {
                     foreach (var tagName in serverBases[i].Tags)
@@ -188,16 +189,48 @@ namespace _1RM.View.Editor
                         }
                         else
                         {
-                            isAllTagsSameFlag = false;
+                            isAllTheSameFlag = false;
                         }
                     }
                 }
 
-                var tags = new List<string>();
-                if (isAllTagsSameFlag == false)
-                    tags.Add(Server.ServerEditorDifferentOptions);
-                tags.AddRange(_sharedTagsInBuckEdit);
-                Server.Tags = tags;
+                var list = new List<string>();
+                if (isAllTheSameFlag == false)
+                    list.Add(Server.ServerEditorDifferentOptions);
+                list.AddRange(_sharedTagsInBuckEdit);
+                Server.Tags = list;
+            }
+
+
+            // alternate credentials
+            if (Server is ProtocolBaseWithAddressPort protocol
+                && (_sharedTypeInBuckEdit.IsSubclassOf(typeof(ProtocolBaseWithAddressPort)) || _sharedTypeInBuckEdit == typeof(ProtocolBaseWithAddressPort)))
+            {
+                var ss = servers.Select(x => x as ProtocolBaseWithAddressPort).Where(x => x != null).ToArray() ?? Array.Empty<ProtocolBaseWithAddressPort>();
+                bool isAllTheSameFlag = true;
+                foreach (var s in ss)
+                {
+                    foreach (var c in s.AlternateCredentials)
+                    {
+                        if (ss.All(x => x.AlternateCredentials.Any(y => y.IsValueEqualTo(c) == true)))
+                        {
+                            if (_sharedCredentialsInBuckEdit.All(x => x.IsValueEqualTo(c) == false))
+                            {
+                                _sharedCredentialsInBuckEdit.Add(c);
+                            }
+                        }
+                        else
+                        {
+                            isAllTheSameFlag = false;
+                        }
+                    }
+                }
+
+                var list = new List<Credential>();
+                if (isAllTheSameFlag == false)
+                    list.Add(new Credential(isEditable: false) { Name = Server.ServerEditorDifferentOptions });
+                list.AddRange(_sharedCredentialsInBuckEdit);
+                protocol.AlternateCredentials = new ObservableCollection<Credential>(list);
             }
 
             _orgServer = Server.Clone();
@@ -312,13 +345,11 @@ namespace _1RM.View.Editor
                             {
                                 if (_sharedTagsInBuckEdit.Contains(tag) == true)
                                 {
-                                    // remove tag if it is in common and not in Server.Tags
                                     if (Server.Tags.Contains(tag) == false)
                                         server.Tags.Remove(tag);
                                 }
                                 else
                                 {
-                                    // remove tag if it is in not common and ServerEditorDifferentOptions is not existed
                                     if (Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
                                         server.Tags.Remove(tag);
                                 }
@@ -330,6 +361,38 @@ namespace _1RM.View.Editor
                                 server.Tags.Add(tag);
                             }
                             server.Tags = server.Tags.Distinct().ToList();
+
+
+                            // merge credentials
+                            if (server is ProtocolBaseWithAddressPort protocol
+                                && Server is ProtocolBaseWithAddressPort newServer)
+                            {
+                                foreach (var credential in protocol.AlternateCredentials.ToArray())
+                                {
+                                    if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential)))
+                                    {
+                                        if (newServer.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                        {
+                                            protocol.AlternateCredentials.Remove(credential);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (newServer.AlternateCredentials.All(x => x.Name != Server.ServerEditorDifferentOptions && x.IsEditable != false))
+                                        {
+                                            protocol.AlternateCredentials.Remove(credential);
+                                        }
+                                    }
+                                }
+
+                                foreach (var credential in newServer.AlternateCredentials.Where(x => x.Name != Server.ServerEditorDifferentOptions))
+                                {
+                                    if (protocol.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                    {
+                                        protocol.AlternateCredentials.Add(credential);
+                                    }
+                                }
+                            }
                         }
 
                         // save
@@ -640,7 +703,7 @@ namespace _1RM.View.Editor
             {
                 return _cmdEditCredential ??= new RelayCommand((o) =>
                 {
-                    if (Server is ProtocolBaseWithAddressPortUserPwd protocol)
+                    if (Server is ProtocolBaseWithAddressPort protocol)
                     {
                         var credential = o as Credential;
                         var vm = new AlternativeCredentialEditViewModel(protocol, credential);
@@ -648,7 +711,7 @@ namespace _1RM.View.Editor
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
                         MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                     }
-                });
+                }, o => Server is ProtocolBaseWithAddressPort);
             }
         }
 
@@ -665,17 +728,17 @@ namespace _1RM.View.Editor
                 return _cmdDeleteCredential ??= new RelayCommand((o) =>
                 {
                     if (o is Credential credential
-                        && Server is ProtocolBaseWithAddressPortUserPwd protocol)
+                        && Server is ProtocolBaseWithAddressPort protocol)
                     {
                         if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
-                            if (protocol.AlternateCredentials?.Contains(credential) == true)
+                            if (protocol.AlternateCredentials.Contains(credential) == true)
                             {
                                 protocol.AlternateCredentials.Remove(credential);
                             }
                         }
                     }
-                }, o => Server is ProtocolBaseWithAddressPortUserPwd);
+                }, o => Server is ProtocolBaseWithAddressPort);
             }
         }
     }

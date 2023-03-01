@@ -286,14 +286,7 @@ namespace _1RM.Model.Protocol.Base
             if (this is ProtocolBaseWithAddressPortUserPwd p
                 && clone is ProtocolBaseWithAddressPortUserPwd c)
             {
-                if (p.AlternateCredentials != null)
-                {
-                    c.AlternateCredentials = new(p.AlternateCredentials.Select(x => x.CloneMe()));
-                }
-                else
-                {
-                    c.AlternateCredentials = null;
-                }
+                c.AlternateCredentials = new(p.AlternateCredentials.Select(x => x.CloneMe()));
             }
             return clone;
         }

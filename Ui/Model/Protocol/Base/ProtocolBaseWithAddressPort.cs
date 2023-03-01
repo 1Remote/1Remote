@@ -43,12 +43,11 @@ namespace _1RM.Model.Protocol.Base
 
 
         private ObservableCollection<Credential>? _alternateCredentials = new ObservableCollection<Credential>();
-        public ObservableCollection<Credential>? AlternateCredentials
+        public ObservableCollection<Credential> AlternateCredentials
         {
-            get => _alternateCredentials;
+            get => _alternateCredentials ??= new ObservableCollection<Credential>();
             set => SetAndNotifyIfChanged(ref _alternateCredentials, value);
         }
-
 
 
         private bool? _isAutoAlternateAddressSwitching = false;
