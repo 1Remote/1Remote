@@ -6,6 +6,7 @@
                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:base="clr-namespace:_1RM.Model.Protocol.Base"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance base:ProtocolBaseWithAddressPortUserPwd}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -23,10 +24,10 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox MinWidth="50" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 HorizontalAlignment="Left"
-                                 InputMethod.IsInputMethodEnabled="False"
-                                 InputScope="Number"
-                        ></TextBox>
+                             HorizontalAlignment="Left"
+                             InputMethod.IsInputMethodEnabled="False"
+                             InputScope="Number"
+                    ></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -48,5 +49,8 @@
                 </Grid>
             </StackPanel>
         </Grid>
+
+        <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
+
     </StackPanel>
 </editor:FormBase>

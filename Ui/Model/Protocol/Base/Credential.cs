@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Reflection;
+using _1Remote.Security;
 using _1RM.Model.DAO.Dapper;
 using JsonKnownTypes;
 using Newtonsoft.Json;
@@ -15,6 +17,13 @@ namespace _1RM.Model.Protocol.Base
     //[JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
     public class Credential : NotifyPropertyChangedBase, ICloneable
     {
+        public Credential(bool? isEditable = true)
+        {
+            IsEditable = isEditable;
+        }
+
+        [JsonIgnore] [DefaultValue(true)] public bool? IsEditable { get; }
+
         public object Clone()
         {
             return MemberwiseClone();
@@ -65,6 +74,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _privateKeyPath = "";
+
         [OtherName(Name = "PRIVATE_KEY_PATH")]
         public string PrivateKeyPath
         {
@@ -168,16 +178,14 @@ namespace _1RM.Model.Protocol.Base
             return false;
         }
 
-        public static bool IsEqualInVal(Credential a, Credential b)
+        public bool IsValueEqualTo(in Credential credential)
         {
-            var properties = typeof(Credential).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var property in properties)
-            {
-                if (property.GetValue(a) != property.GetValue(b))
-                {
-                    return false;
-                }
-            }
+            if (this.Name != credential.Name) return false;
+            if (this.Address != credential.Address) return false;
+            if (this.Port != credential.Port) return false;
+            if (this.UserName != credential.UserName) return false;
+            if (SimpleStringEncipher.Decrypt(this.Password) != SimpleStringEncipher.Decrypt(credential.Password)) return false;
+            if (SimpleStringEncipher.Decrypt(this.PrivateKeyPath) != SimpleStringEncipher.Decrypt(credential.PrivateKeyPath)) return false;
             return true;
         }
     }
