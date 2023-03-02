@@ -66,7 +66,8 @@ Selected,Selected,选中,Vybráno,Ausgewählt,,Selecionado,
 Custom,Custom,定制,Uživatelsky určené,Benutzerdefiniert,Coutume,Personalizado,
 All,All,全部,Vše,Alle,Tous,Todos,
 Protocol,Protocol,协议,Protokol,Protokoll,,Protocolo,
-Cameras,Cameras,摄像头,Cameras,Cameras,Cameras,Cameras,Cameras,
+Cameras,Cameras,摄像头,,,,,
+Upload,Upload,上传,,,,,
 filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',
 Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),
 hotkey_already_registered,Hot key already been registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,
@@ -117,7 +118,7 @@ import_from_mremoteng_csv,import mRemoteNG csv,导入 mRemoteNG csv,import mRemo
 import_from_rdp_file,import *.rdp,导入 .rdp,import *.rdp,import *.rdp,import *.rdp,import *.rdp,import *.rdp
 import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",
 import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,
-server_editor_different_options,<different options>,<不同的值>,&lt;různé předvolby&gt;,,<Options différentes>,<opções diferentes>,
+server_editor_different_options,<different options>,<不同的值>,<různé předvolby>,,<Options différentes>,<opções diferentes>,
 server_editor_bulk_editing,Bulk editing,批量编辑,Hromadné upravování,,Modification groupée,Edição em massa,
 server_editor_bulk_editing_title,You are editing in bulk:,你正在批量编辑:,Hromadně upravujete:,,Vous modifiez en masse :,Você está editando em massa:,
 server_editor_multi_selected_count,Number of selected items:,选中数量：,Počet vybraných položek:,,Nombre d'éléments sélectionnés:,Número de itens selecionados:,
@@ -159,7 +160,7 @@ server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Re
 server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,
 server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,
 server_editor_advantage_disk_drives,Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,
-Drives plug in latter,Drives plug in latter,稍后插入的U盘,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,
+Drives plug in latter,Drives plug in latter,稍后插入的U盘,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter
 server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,
 server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,,Désactivée,Desabilitado,
 server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,,Jouez en local,Rode localmente,
@@ -263,15 +264,15 @@ Before runner start the environment variables will be set,Befor runner start the
 Data Source name,Data Source name,数据源名称,Data Source name,Data Source name,Data Source name,Please select a Data Source,
 Please select a Data Source,Please select a Data Source,请选择一个数据源,Please select a Data Source,Please select a Data Source,Please select a Data Source,Please select a Data Source,
 Test connection,Test connection,测试连接,Test connection,Test connection,Test connection,,
-Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,
+Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button
 Show recently used here, Show recently used here, 在此显示最近使用的会话,,,,,
 Hide recently used, Hide recently used, 隐藏最近使用的会话,,,,,
 Leave blank to inherit the default value,Leave blank to inherit the default value,留空以继承默认值,,,,,
 Alternative,Alternative,备选,,,,,
 with alternative,with alternative,使用备选凭证,,,,,
 Automatic address switching,Automatic address switching,自动切换地址,,,,,
-When the default host or port is unavailable the alternate addresses will be tried in sequence,When the default host or port is unavailable the alternate addresses will be tried in sequence,当默认的地址不可用时，将自动依次尝试备选地址,,,,
+When the default host or port is unavailable the alternate addresses will be tried in sequence,When the default host or port is unavailable the alternate addresses will be tried in sequence,当默认的地址不可用时，将自动依次尝试备选地址,,,,,
 support multi-address multi-account,support multi-address multi-account,支持多地址、多账号,support multi-address multi-account,support multi-address multi-account,support multi-address multi-account,support multi-address multi-account,support multi-address multi-account
-Detecting your alternate host...,Detecting your alternate host...,正在检测可用地址...Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,
-XXX is already existed!,`{0}` is already existed!,`{0}`已经存在！,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,
-XXX is not existed!,`{0}` is not existed!,`{0}` 不存在！,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!
+Detecting your alternate host...,Detecting your alternate host...,正在检测可用地址...Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...,Detecting your alternate host...
+XXX is already existed!,`{0}` is already existed!,`{0}`已经存在！,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!,`{0}` is already existed!
+XXX is not existed!,`{0}` is not existed!,`{0}` 不存在！,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!,`{0}` is not existed!

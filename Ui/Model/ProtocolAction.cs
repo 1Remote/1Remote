@@ -7,6 +7,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
@@ -136,7 +137,7 @@ namespace _1RM.Model
                         {
                             try
                             {
-                                Clipboard.SetDataObject(DataService.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
+                                Clipboard.SetDataObject(UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
                             }
                             catch (Exception)
                             {

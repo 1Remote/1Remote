@@ -206,7 +206,7 @@ namespace _1RM.View.Editor
             if (Server is ProtocolBaseWithAddressPort protocol
                 && (_sharedTypeInBuckEdit.IsSubclassOf(typeof(ProtocolBaseWithAddressPort)) || _sharedTypeInBuckEdit == typeof(ProtocolBaseWithAddressPort)))
             {
-                var ss = servers.Select(x => x as ProtocolBaseWithAddressPort).Where(x => x != null).ToArray() ?? Array.Empty<ProtocolBaseWithAddressPort>();
+                var ss = servers.Select(x => (ProtocolBaseWithAddressPort)x).ToArray();
                 bool isAllTheSameFlag = true;
                 foreach (var s in ss)
                 {
@@ -706,7 +706,18 @@ namespace _1RM.View.Editor
                     if (Server is ProtocolBaseWithAddressPort protocol)
                     {
                         var credential = o as Credential;
-                        var vm = new AlternativeCredentialEditViewModel(protocol, credential);
+                        var existedNames = protocol.AlternateCredentials.Select(x => x.Name).ToList();
+                        if (IsBuckEdit && _serversInBuckEdit?.Count() > 0)
+                        {
+                            foreach (var s in _serversInBuckEdit)
+                            {
+                                if (s is ProtocolBaseWithAddressPort p)
+                                    existedNames.AddRange(p.AlternateCredentials.Select(x => x.Name));
+                            }
+                        }
+                        existedNames = existedNames.Distinct().ToList();
+
+                        var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
                         MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
                         MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());

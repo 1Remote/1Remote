@@ -20,6 +20,8 @@ namespace _1RM.View.ServerList
 {
     public class TagsPanelViewModel : NotifyPropertyChangedBaseScreen
     {
+        public GlobalData GlobalData => IoC.Get<GlobalData>();
+
         private bool _filterIsFocused = false;
         public bool FilterIsFocused
         {

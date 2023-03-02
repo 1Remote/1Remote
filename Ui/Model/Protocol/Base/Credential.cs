@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using _1Remote.Security;
 using _1RM.Model.DAO.Dapper;
+using _1RM.Utils;
 using JsonKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -22,7 +23,10 @@ namespace _1RM.Model.Protocol.Base
             IsEditable = isEditable;
         }
 
-        [JsonIgnore] [DefaultValue(true)] public bool? IsEditable { get; }
+        [JsonIgnore] [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsEditable { get; }
+
 
         public object Clone()
         {
@@ -117,7 +121,13 @@ namespace _1RM.Model.Protocol.Base
             return false;
         }
 
-
+        public void Trim()
+        {
+            this.Name = Name.Trim();
+            this.Address = Address.Trim();
+            this.Port = Port.Trim();
+            this.PrivateKeyPath = PrivateKeyPath.Trim();
+        }
 
         public virtual bool SetCredential(in Credential credential)
         {
@@ -131,9 +141,9 @@ namespace _1RM.Model.Protocol.Base
 
         public virtual bool SetAddress(in Credential credential)
         {
-            if (!string.IsNullOrEmpty(credential.Port))
+            if (!string.IsNullOrEmpty(credential.Address))
             {
-                Address = credential.Address;
+                Address = credential.Address.Trim();
                 return true;
             }
             return false;
@@ -142,7 +152,7 @@ namespace _1RM.Model.Protocol.Base
         {
             if (!string.IsNullOrEmpty(credential.Port))
             {
-                Port = credential.Port;
+                Port = credential.Port.Trim();
                 return true;
             }
             return false;
@@ -152,7 +162,7 @@ namespace _1RM.Model.Protocol.Base
         {
             if (!string.IsNullOrEmpty(credential.UserName))
             {
-                UserName = credential.UserName;
+                UserName = credential.UserName.Trim();
                 return true;
             }
             return false;
@@ -172,7 +182,7 @@ namespace _1RM.Model.Protocol.Base
         {
             if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
             {
-                Password = credential.PrivateKeyPath;
+                Password = credential.PrivateKeyPath.Trim();
                 return true;
             }
             return false;
@@ -184,8 +194,8 @@ namespace _1RM.Model.Protocol.Base
             if (this.Address != credential.Address) return false;
             if (this.Port != credential.Port) return false;
             if (this.UserName != credential.UserName) return false;
-            if (SimpleStringEncipher.Decrypt(this.Password) != SimpleStringEncipher.Decrypt(credential.Password)) return false;
-            if (SimpleStringEncipher.Decrypt(this.PrivateKeyPath) != SimpleStringEncipher.Decrypt(credential.PrivateKeyPath)) return false;
+            if (UnSafeStringEncipher.DecryptOrReturnOriginalString(Password) != UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password)) return false;
+            if (UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath) != UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath)) return false;
             return true;
         }
     }
