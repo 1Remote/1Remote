@@ -3,9 +3,6 @@ using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
-using System.Runtime.Intrinsics.X86;
 
 namespace _1RM.Model.Protocol
 {

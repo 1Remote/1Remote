@@ -68,6 +68,7 @@
     <s:String x:Key="All">Tous</s:String>
     <s:String x:Key="Protocol">Protocole</s:String>
     <s:String x:Key="Cameras">Cameras</s:String>
+    <s:String x:Key="Upload">Télécharger</s:String>
     <s:String x:Key="filter_mainwindow">Mots-clés ou '#' + nom de tag</s:String>
     <s:String x:Key="Search (Ctrl+F)">Rechercher (Ctrl + F)</s:String>
     <s:String x:Key="hotkey_already_registered">Raccourci clavier déjà enregistré</s:String>

@@ -24,7 +24,6 @@ using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
-using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;

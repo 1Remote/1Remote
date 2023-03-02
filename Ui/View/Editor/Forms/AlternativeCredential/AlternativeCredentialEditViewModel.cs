@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
 using System.Windows;
-using System.Xml.Linq;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
@@ -19,10 +18,12 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
         private readonly Model.Protocol.Base.Credential? _org = null;
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
         private readonly ProtocolBaseWithAddressPort _protocol;
-        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, Model.Protocol.Base.Credential? org = null)
+        private readonly List<string>? _existedNames;
+        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, List<string>? existedNames, Model.Protocol.Base.Credential? org = null)
         {
             _protocol = protocol;
             _org = org;
+            _existedNames = existedNames;
 
             ShowUsername = true;
             ShowPassword = true;
@@ -48,6 +49,22 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 ShowUsername = true;
                 ShowPassword = true;
                 ShowPrivateKeyPath = true;
+            }
+
+            if (_org != null)
+            {
+                if (string.IsNullOrEmpty(_org.UserName) == false)
+                {
+                    ShowUsername = true;
+                }
+                if (string.IsNullOrEmpty(_org.Password) == false)
+                {
+                    ShowPassword = true;
+                }
+                if (string.IsNullOrEmpty(_org.PrivateKeyPath) == false)
+                {
+                    ShowPrivateKeyPath = true;
+                }
             }
 
             // Edit mode
@@ -79,7 +96,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     }
                     else
                     {
-                        New.PrivateKeyPath = "";
+                        PrivateKeyPath = "";
                     }
                 }
             }
@@ -93,23 +110,13 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             {
                 if (New.Name != value)
                 {
-                    var v = value.Trim();
-                    if (string.IsNullOrWhiteSpace(v))
-                    {
-                        New.Name = "";
-                        RaisePropertyChanged();
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
-                    }
-
-                    if (true == _protocol.AlternateCredentials?.Any(x => x != _org && string.Equals(x.Name, v, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        New.Name = "";
-                        RaisePropertyChanged();
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", v));
-                    }
-
                     New.Name = value;
                     RaisePropertyChanged();
+                    var t = CheckName(value.Trim());
+                    if (t.Item1 == false)
+                    {
+                        throw new ArgumentException(t.Item2);
+                    }
                 }
             }
         }
@@ -119,27 +126,31 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => New.PrivateKeyPath;
             set
             {
-                var v = value.Trim();
-                if (New.PrivateKeyPath != v)
+                New.PrivateKeyPath = value;
+                RaisePropertyChanged();
+                var t = CheckPrivateKeyPath(value.Trim());
+                if (t.Item1 == false)
                 {
-                    if (string.IsNullOrWhiteSpace(v))
-                    {
-                        New.PrivateKeyPath = "";
-                        RaisePropertyChanged();
-                    }
-                    else
-                    {
-                        New.PrivateKeyPath = v;
-                        RaisePropertyChanged();
-                        if (File.Exists(New.PrivateKeyPath) == false)
-                        {
-                            throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is not existed!", v));
-                        }
-                    }
+                    throw new ArgumentException(t.Item2);
                 }
             }
         }
 
+        private Tuple<bool, string> CheckName(string name)
+        {
+            name = name.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+            }
+
+            if (_existedNames?.Any(x => string.Equals(x, name, StringComparison.CurrentCultureIgnoreCase)) == true)
+            {
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", name));
+            }
+
+            return new Tuple<bool, string>(true, "");
+        }
 
         private bool CheckPort(string port)
         {
@@ -152,6 +163,17 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 return true;
             }
             return false;
+        }
+
+        private Tuple<bool, string> CheckPrivateKeyPath(string path)
+        {
+            if (ShowPrivateKeyPath
+                && string.IsNullOrWhiteSpace(path) == false
+                && File.Exists(New.PrivateKeyPath) == false)
+            {
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is not existed!", path));
+            }
+            return new Tuple<bool, string>(true, "");
         }
 
         public string Port
@@ -178,18 +200,14 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
         {
             get
             {
-                return _cmdSave ??= new RelayCommand((o) =>
+                return _cmdSave ??= new RelayCommand((_) =>
                 {
                     _protocol.AlternateCredentials ??= new ObservableCollection<Model.Protocol.Base.Credential>();
 
-                    if (string.IsNullOrWhiteSpace(Name))
+                    var t = CheckName(Name);
+                    if (t.Item1 == false)
                     {
-                        MessageBoxHelper.Warning($"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
-                        return;
-                    }
-                    if (true == _protocol.AlternateCredentials.Any(x => x != _org && string.Equals(x.Name, Name, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        MessageBoxHelper.Warning(IoC.Get<ILanguageService>().Translate("XXX is already existed!", Name));
+                        MessageBoxHelper.Warning(t.Item2);
                         return;
                     }
 
@@ -200,6 +218,8 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                     if (!ShowPrivateKeyPath || !_isUsePrivateKey)
                         New.PrivateKeyPath = "";
 
+
+                    New.Trim();
                     if (_org != null && _protocol.AlternateCredentials.Any(x => x.Equals(_org)))
                     {
                         // edit
@@ -213,7 +233,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                         _protocol.AlternateCredentials.Add(New);
                     }
                     RequestClose(true);
-                }, o => string.IsNullOrWhiteSpace(Name) == false && CheckPort(Port));
+                }, o => CheckName(Name).Item1 && CheckPort(Port) && CheckPrivateKeyPath(PrivateKeyPath).Item1);
             }
         }
 

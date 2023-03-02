@@ -9,6 +9,7 @@ using MSTSCLib;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -141,7 +142,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdpClient.GetOcx();
-            secured.ClearTextPassword = DataService.DecryptOrReturnOriginalString(_rdpSettings.Password);
+            secured.ClearTextPassword = UnSafeStringEncipher.DecryptOrReturnOriginalString(_rdpSettings.Password);
             _rdpClient.FullScreenTitle = _rdpSettings.DisplayName + " - " + _rdpSettings.SubTitle;
 
             #endregion server info

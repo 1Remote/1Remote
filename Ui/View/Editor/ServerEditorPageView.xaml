@@ -544,7 +544,6 @@
 
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
-
                     <Grid Width="300">
                         <Button Name="ButtonSave"
                                 Padding="0 1 0 0" Width="80" Height="25"

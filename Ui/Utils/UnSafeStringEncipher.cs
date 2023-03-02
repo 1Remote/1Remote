@@ -22,5 +22,16 @@ namespace _1RM.Utils
         {
             return _1Remote.Security.SimpleStringEncipher.Decrypt(encryptString);
         }
+
+        public static string EncryptOnce(string str)
+        {
+            if (SimpleDecrypt(str) == null)
+                return SimpleEncrypt(str);
+            return str;
+        }
+        public static string DecryptOrReturnOriginalString(string originalString)
+        {
+            return SimpleDecrypt(originalString) ?? originalString;
+        }
     }
 }

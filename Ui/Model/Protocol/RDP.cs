@@ -1,19 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
 using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
+using _1RM.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.Model.Protocol
 {
@@ -442,7 +437,7 @@ namespace _1RM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", this.UserName, DataService.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
                 LoadBalanceInfo = this.LoadBalanceInfo,
