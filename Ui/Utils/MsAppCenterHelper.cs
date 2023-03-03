@@ -41,11 +41,12 @@ namespace PRM.Utils
             }
         }
 
-        public static void Error(Exception e, IDictionary<string, string>? properties = null, params ErrorAttachmentLog[] attachments)
+        public static void Error(Exception e, IDictionary<string, string>? properties = null, List<ErrorAttachmentLog>? attachments = null)
         {
             if (_isStarted == false) { return; }
-
-            Crashes.TrackError(e, properties, attachments);
+            properties ??= new Dictionary<string, string>();
+            properties.TryAdd("Version", AppVersion.Version);
+            Crashes.TrackError(e, properties, attachments?.ToArray());
         }
 
 

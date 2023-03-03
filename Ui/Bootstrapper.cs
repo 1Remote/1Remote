@@ -132,6 +132,9 @@ namespace PRM
             MsAppCenterHelper.TraceSpecial("Distributor", $"{Assert.APP_NAME} Exe");
 #endif
             MsAppCenterHelper.TraceAppStatus(true);
+
+            SimpleLogHelper.Debug("Version", Application.ResourceAssembly.GetName().Version);
+
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here

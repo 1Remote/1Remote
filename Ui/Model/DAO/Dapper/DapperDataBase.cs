@@ -7,6 +7,7 @@ using System.Linq;
 using Dapper;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Utils;
 
 namespace PRM.Model.DAO.Dapper
 {
@@ -43,7 +44,16 @@ namespace PRM.Model.DAO.Dapper
                     else
                         throw new NotImplementedException(_databaseType.ToString() + " not supported!");
                 }
-                _dbConnection.Open();
+
+                try
+                {
+                    _dbConnection.Open();
+                }
+                catch (Exception e)
+                {
+                    MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", _databaseType.ToString() } });
+                    MessageBoxHelper.ErrorAlert(EnumDbStatus.AccessDenied.GetErrorInfo() + " ----> ", e.Message);
+                }
             }
         }
 
@@ -80,6 +90,7 @@ namespace PRM.Model.DAO.Dapper
 
         public virtual void InitTables()
         {
+            if (!IsConnected()) return;
             _dbConnection?.Execute(@"
 CREATE TABLE IF NOT EXISTS `Server` (
   `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,7 +112,8 @@ COMMIT TRANSACTION;
 
         public virtual ProtocolBase? GetServer(int id)
         {
-            Debug.Assert(id > 0);
+            OpenConnection();
+            if (!IsConnected()) return null;
             var dbServer =
                 _dbConnection?.QueryFirstOrDefault<Server>(
                     $"SELECT * FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
@@ -111,6 +123,8 @@ COMMIT TRANSACTION;
 
         public virtual List<ProtocolBase>? GetServers()
         {
+            OpenConnection();
+            if (!IsConnected()) return null;
 #pragma warning disable CS8619
             return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
 #pragma warning restore CS8619
@@ -130,6 +144,8 @@ VALUES
 
         public virtual int AddServer(IEnumerable<ProtocolBase> servers)
         {
+            OpenConnection();
+            if (!IsConnected()) return 0;
             var dbss = servers.Select(x => x.ToDbServer());
             return _dbConnection?.Execute(SqlInsert, dbss) > 0 ? servers.Count() : 0;
         }
@@ -141,12 +157,16 @@ VALUES
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual bool UpdateServer(ProtocolBase server)
         {
+            OpenConnection();
+            if (!IsConnected()) return false;
             Debug.Assert(server.Id > 0);
             return _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
         }
 
         public virtual bool UpdateServer(IEnumerable<ProtocolBase> servers)
         {
+            OpenConnection();
+            if (!IsConnected()) return false;
             var dbss = servers.Select(x => x.ToDbServer());
             var ret = _dbConnection?.Execute(SqlUpdate, dbss);
             return ret > 0;
@@ -154,16 +174,22 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public virtual bool DeleteServer(int id)
         {
+            OpenConnection();
+            if (!IsConnected()) return false;
             return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
         }
 
         public virtual bool DeleteServer(IEnumerable<int> ids)
         {
+            OpenConnection();
+            if (!IsConnected()) return false;
             return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
         }
 
         public virtual string? GetConfig(string key)
         {
+            OpenConnection();
+            if (!IsConnected()) return null;
             var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{nameof(Config)}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                 new { Key = key, });
             return config?.Value;
@@ -173,6 +199,8 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         private static readonly string SqlUpdateConfig = $@"UPDATE `{nameof(Config)}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
         public virtual void SetConfig(string key, string value)
         {
+            OpenConnection();
+            if (!IsConnected()) return;
             if (GetConfig(key) != null)
             {
                 _dbConnection?.Execute(SqlUpdateConfig, new { Key = key, Value = value, });
@@ -195,6 +223,8 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public virtual bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
         {
+            OpenConnection();
+            if (!IsConnected()) return false;
             if (_dbConnection == null)
                 return false;
             var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;

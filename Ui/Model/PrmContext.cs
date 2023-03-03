@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -70,7 +71,7 @@ namespace PRM.Model
                 // in case of dapper.OpenConnection throw `unable to open database file`
                 SimpleLogHelper.Error(e);
 
-                var attachments = new ErrorAttachmentLog[]
+                var attachments = new List<ErrorAttachmentLog>
                 {
                     ErrorAttachmentLog.AttachmentWithText(e.Message, "message"),
                     ErrorAttachmentLog.AttachmentWithText(sqlitePath, "path"),

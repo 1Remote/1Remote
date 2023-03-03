@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Model;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -118,6 +119,7 @@ namespace PRM.Controls.NoteDisplay
 
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
+            if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
             if (Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();

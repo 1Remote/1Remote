@@ -69,7 +69,7 @@ jobs:
       - name: Run script
         shell: pwsh
         run: |
-          ./scripts/Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern "===REPLACE_ME_WITH_APP_CENTER_SECRET===" -Secret ${{ secrets.APP_CENTER_SECRET }}
+          ./scripts/Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern "===REPLACE_ME_WITH_APP_CENTER_SECRET===" -Secret ${{ secrets.APP_CENTER_SECRET_PREMOTEM }}
 
       # Publish the application
       - name: Publish the application
