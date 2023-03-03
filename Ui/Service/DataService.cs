@@ -6,6 +6,7 @@ using PRM.Model.DAO;
 using PRM.Model.DAO.Dapper;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Utils;
 
 namespace PRM.Service
 {
@@ -84,6 +85,17 @@ namespace PRM.Service
             return EnumDbStatus.OK;
         }
 
+        public bool Database_SelfChek_ShowError()
+        {
+            var res = Database_SelfCheck();
+            if (res != EnumDbStatus.OK)
+            {
+                MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
+                return false;
+            }
+            return true;
+        }
+
         private RSA? _rsa = null;
 
         public string Database_GetPublicKey()
@@ -131,7 +143,7 @@ namespace PRM.Service
                 Debug.Assert(_rsa == null);
                 Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == true);
 
-                
+
                 var pks = RSA.KeyCheck(privateKeyContent, true);
                 if (pks != RSA.EnumRsaStatus.NoError)
                     return pks;

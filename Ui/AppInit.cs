@@ -293,7 +293,7 @@ namespace PRM
             if (_dbConnectionStatus != EnumDbStatus.OK)
             {
                 string error = _dbConnectionStatus.GetErrorInfo();
-                MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBoxHelper.ErrorAlert(error, useNativeBox: true);
                 IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
             }
             else if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false

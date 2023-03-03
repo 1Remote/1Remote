@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -70,13 +71,7 @@ namespace PRM.View.ErrorReport
             sb.AppendLine();
 
             TbErrorInfo.Text = sb.ToString();
-
-
-            var attachments = new ErrorAttachmentLog[]
-            {
-                ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md"),
-            };
-            MsAppCenterHelper.Error(e, attachments: attachments);
+            MsAppCenterHelper.Error(e, attachments: new List<ErrorAttachmentLog>(){ ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md") });
         }
 
         private void Init()

@@ -7,6 +7,7 @@ using System.Windows.Input;
 using PRM.Controls;
 using PRM.Model;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -185,6 +186,7 @@ namespace PRM.View
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
+                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
                     if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
@@ -220,6 +222,7 @@ namespace PRM.View
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
+                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
                     var obj = o as Tag;
                     if (obj == null)
                         return;

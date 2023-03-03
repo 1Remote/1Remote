@@ -7,6 +7,7 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Installer", "Installer\Inst
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9CF15528-C588-43AA-9578-B9B669EF9667}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-on-dev-push.yml = .github\workflows\build-on-dev-push.yml
 		LICENSE = LICENSE
 		readme.md = readme.md
 	EndProjectSection
