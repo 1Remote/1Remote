@@ -1,237 +1,237 @@
-key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp
-language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP
-language_code-google,en,zh-CN,cs,de,fr,pt,ja
-language_name,English (en-US),简体中文 (zh-CN),čeština (cs-CZ),Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP)
-messagebox_title_warning,PRemoteM Warning,PRemoteM 警告,PRemoteM – varování,PRemoteM Warnung,PRemoteM Warning,PRemoteM Warning,PRemoteM Warning
-messagebox_title_error,PRemoteM Error,PRemoteM 错误,PRemoteM – chyba,PRemoteM Fehler,PRemoteM Erreur,PRemoteM Error,PRemoteM Error
-messagebox_title_info,PRemoteM Info,PRemoteM 提示,PRemoteM – informace,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Info
-OK,OK,确定,OK,OK,OK,OK,OK
-Exit,Exit,退出,Ukončit,Beenden,Sortir,Sair,出口
-Close,Close,关闭,Zavřít,Schließen,Fermer,Fechar,近い
-Add,Add,添加,Přidat,Hinzufügen,Ajouter,Adicionar,追加
-Edit,Edit,编辑,Upravit,Bearbeiten,Edition,Editar,編集
-Save,Save,保存,Uložit,Speichern,Sauvegarder,Salvar,保存
-Save as...,Save as...,保存到...,Uložit jako…,Speichern als...,Sauvegarder sour...,Salvar como...,名前を付けて保存...
-Back,Back,返回,Zpět,Zurück,Retour,Voltar,戻る
-Delete,Delete,删除,Smazat,Löschen,Effacer,Deletar,消去
-Cancel,Cancel,取消,Storno,Abbrechen,Annuler,Cancelar,キャンセル
-Select,Select,选择,Vybrat,Auswählen,Selectionner,Selecionar,選択する
-Explore to...,Explore to...,定位到...,Prozkoumat v…,Entdecken Sie ...,Explorer...,Explorar como...,探索して...
-Previous,Previous,上一页,Předchozí,Zurück,Précédent,Anterior,前
-Next,Next,下一页,Další,Weiter,Suivant,Próximo,次
-Done,Done,完成,Hotovo,Fertig,Effectuée,OK,終わり
-Reset,Reset,重置,Resetovat,Zurücksetzen,Réinitialiser,Redefinir,リセット
-Import,Import,导入,Import,Importieren,Importer,Importar,輸入
-Export,Export,导出,Export,Export,Exporter,Exportar,書き出す
-Name,Name,名称,Název,Name,Nom,Nome,名前
-File Name,File Name,文件名,Název souboru,Dateiname,Nom de fichier,Nome do arquivo,ファイル名
-Test,Test,测试,Test,Prüfen,Test,Teste,テスト
-Reconnect,Reconnect,重新连接,Znovu připojit,Neu verbinden,Reconnecter,Reconectar,再接続
-Dismiss,Dismiss,关闭,Zahodit,Schließen,Rejeter,Dispensar,解散
-Lock,Lock,锁定,Zamknout,Sperren,Verrouiller,Bloquear,ロック
-Always on top,Always on top,置顶,Vždy na vrchu,Immer oben,Garder au premier plan,Sempre no topo,常にトップに
-Close all,Close all,全部关闭,Zavřít vše,Alle schließen,Tout fermer,Fechar tudo,すべて閉じる
-Rename,Rename,重命名,Přejmenovat,Umbenennen,Renommer,Renomear,名前を変更
-Connect,Connect,连接,Připojit,Verbinden,Connexion,Conectar,接続
-Connect (New window),Connect (New window),连接 (新窗口),Připojit (nové okno),Verbinden (Neues Fenster),Connexion (Nouvelle fenetre),Conectar (Nova janela),接続（新しいウィンドウ）
-Note,Note,Note,Poznámka,Note,Note,Note,ノート
-Share,Share,分享,Sdílet,Teilen,Partager,Compartilhar,シェア
-Copy,Copy,复制,Zkopírovat,Kopieren,Copie,cópia de,コピー
-filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',キーワードまたは「＃」+タグ名
-Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),検索（Ctrl + F）
-hotkey_already_registered,Hot key already registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,ホットキーはすでに登録されています
-hotkey_registered_fail,Failed to register the hot key,快捷键注册失败,Klávesovou zkratku se nepodařilo zaregistrovat,Fehler bei der Hotkey Registrierung,Echec de l'enregistrement du raccourci clavier,Falha ao registrar a tecla de atalho,ホットキーの登録に失敗しました
-string_permission_denied,Permission denied,无操作权限,Oprávnění odepřeno,Zugriff verweigert,Permission refusée,Permissão negada,アクセス拒否
-All,All,全部,Vše,Alle,Tous,Todos,全て
-Protocol,Protocol,协议,Protokol,Protokoll,Protocole,Protocolo,プロトコル
-file_transmit_host_list_header_last_update,Last update,修改时间,Naposledy zaktualizováno,Letztes Update,Dernière mise à jour,Última atualização,最後の更新
-file_transmit_host_list_header_type,Type,类型,Typ,Typ,Taper,Tipo,タイプ
-file_transmit_host_list_header_size,Size,大小,Velikost,Größe,Taille,Tamanho,サイズ
-file_transmit_host_message_preview_over_size,"This item is over 1 MB, are you sure you want to open it?",文件超过 1 MB，确定要打开吗?,Tato položka má přes 1 MB – opravdu ji chcete otevírat?,"Das Bild ist über 1 MB groß, wirklich öffnen?","Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?",Este item tem mais de 1 MB. Tem certeza de que quer abrir?,このアイテムは1MBを超えていますが、開いてもよろしいですか？
-file_transmit_host_message_files_download_to,Please select a folder to save to,将文件下载到所选文件夹,Vyberte složku do které uložit,Bitte wählen Sie den Speicherpfad aus,Veuillez sélectionner un dossier pour enregistrer les fichiers,Selecione uma pasta para salvar,保存先のフォルダを選択してください
-file_transmit_host_message_files_download_to_dir,Use this folder,选择该文件夹,Použít tuto složku,Den Ordner verwenden,Utiliser ce dossier,Usar esta pasta,このフォルダを使用する
-file_transmit_host_message_select_files_to_upload,Please select files to upload,请选择要上传的文件,Vyberte soubory k nahrání,Bitte die Dateien zum Hochladen auswählen,Veuillez sélectionner les fichiers à télécharger,Selecione os arquivos para fazer o upload,アップロードするファイルを選択してください
-file_transmit_host_command_refresh,Refresh (F5),刷新(F5),Načíst znovu (F5),Aktualisieren (F5),Actualiser (F5),Atualizar (F5),更新（F5）
-file_transmit_host_command_create_folder,Create a folder,新建文件夹,Vytvořit složku,Ordner erstellen,Créer le dossier,Criar uma nova pasta,フォルダを作成する
-file_transmit_host_command_upload,Upload (Ctrl + V),上传(Ctrl + V),Nahrát (Ctrl + V),Upload (STRG + V),Télécharger (Ctrl + V),Enviar (Ctrl + V),アップロード（Ctrl + V）
-file_transmit_host_command_select_files_upload,Select files to upload,选择文件上传,Vyberte soubory k nahrání,Dateien zum Hochladen auswählen,Sélectionnez les fichiers à télécharger,Selecione os arquivos para fazer o upload,アップロードするファイルを選択します
-file_transmit_host_command_select_folder_upload,Select a folder to upload,选择文件夹上传,Vyberte složku k nahrání,Ordner zum Hochladen auswählen,Sélectionnez le dossier à télécharger,Selecione uma pasta para fazer o upload,アップロードするフォルダを選択してください
-file_transmit_host_command_delete,Delete (Del),删除(Del),Smazat (Del),Löschen (ENTF),Supprimer (Suppr),Deletar (Del),削除（削除）
-file_transmit_host_command_save_to,Save to... (Ctrl + S),保存到...(Ctrl + S),Uložit do… (Ctrl + S),Speichern nach... (STRG + S),Enregistrer sous ... (Ctrl + S),Salvar como... (Ctrl + S),保存先...（Ctrl + S）
-file_transmit_host_warning_same_names_title,Replace or cancel,替换或跳过,Nahradit nebo zrušit,Austauschen oder abbrechen,Remplacer ou annuler,Substituir ou cancelar,交換またはキャンセル
-file_transmit_host_warning_same_names,The destination has {0} file(s) with the same name(s). Do you want to continue?,目标包含{0}个同名文件，需要替换吗？,Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?,Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?,La destination contient {0} fichiers portant les mêmes noms. Voulez-vous continuer?,O destino tem {0} arquivo(s) com o(s) mesmo(s) nome(s). Você quer continuar?,宛先に同じ名前の{0}ファイルがあります。続けたいですか？
-host_reconecting_info,Reconnecting...,正尝试重新连接...,Opětovné připojování…,Wiederverbinden...,Reconnexion ...,Reconectando...,再接続しています...
-Options,Options,设置,Předvolby,Optionen,Choix,Opções,オプション
-About,About,关于,O aplikaci,Über,À propos,Sobre,約
-Toggle Cards/List,Toggle Cards/List,切换卡片/列表,Přepnout mezi kartami/seznamem,Karten/Liste umschalten,Basculer les Tuiles/Liste,Alternar Cartões/Lista,カード/リストの切り替え
-system_options_general_title,General,常规,Obecné,Allgemein,Général,Geral,全般的
-Language,Language,语言,Jazyk,Sprache,Langue,Idioma,言語
-Startup,Startup,启动,Při startu,Start,Commencez,Inicialização,起動
-system_options_general_start_when_win_login,Run automatically at OS startup,开机自启动,Spouštět automaticky při přihlášení do systému,Mit dem Betriebssystem starten,Exécuter automatiquement au démarrage du système d'exploitation,Executar automaticamente na inicialização do SO,OSの起動時に自動的に実行
-system_options_general_start_minimized,Start minimized,启动时最小化到托盘,Spouštět minimalizované,Minimiert starten,Démarrer minimisé,Iniciar minimizado,最小化を開始
-Confirm before closing,Confirm before closing,关闭远程会话前弹窗确认,Zavírat až po potvrzení,Bestätigen Sie vor dem Schließen,Confirmer avant de fermer,Confirme antes de fechar,終了する前に確認してください
-Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,远程桌面开启后显示当前会话的图标,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected
-system_options_general_log_file_path,Log file,日志文件,Soubor se záznamem událostí,Logdatei,Fichier journal,Arquivo de LOG,ログファイル
-system_options_quick_description,"Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key",快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。,"Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter","Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.","La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée","A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter",クイック接続を使用すると、ホットキーを介してクイック接続バーを開くことができます。次に、キーワードを入力し、Enterキーを押して接続を開始できます。
-system_options_quick_match_providers,Keyword-Matchers,关键词匹配器,Hledání shod s klíčovými slovy,Keyword-Matcher,Mots clés correspondants,Correspondentes de palavras-chave,キーワードマッチャー
-Launcher,Launcher,启动器,Spouštěč,Startprogramm,Lanceur,Atalhos,ランチャー
-system_options_quick_launcher_enable,Enable the launcher,启用,Zapnout spouštěč,Aktiv,Activer,Ative os atalhos,ランチャーを有効にする
-system_options_quick_launcher_hotkey,Hot key,快捷键,Klávesová zkratka,Hotkey,Raccourci clavier,Tecla de atalho,ホットキー
-system_options_data_security_title,Data & Security,数据与安全,Data a zabezpečení,Datenbank & Sicherheit,Sécurité des données,Dados & Segurança,データセキュリティ
-system_options_data_security_database,Database,数据库,Databáze,Datenbank,Base de données,Base de dados,データベース
-system_options_data_security_database_migrate,Migrate,移动,Přestěhovat,Migrieren,Migrer,Migrar,移行する
-system_options_data_security_rsa_title,RSA encryption,RSA加密,RSA šifrování,RSA Verschlüsselung,Cryptage RSA,Criptografia RSA,RSA暗号化
-system_options_data_security_rsa_encrypt,Encrypt,生成加密,Šifrovat,Verschlüsseln,Crypter,Criptografar,暗号化
-system_options_data_security_rsa_encrypt_dialog_title,Load an old key or select a path to save your current key,选择现有私钥或设置新私钥放置位置,Načtěte původní klíč nebo vyberte umístění pro uložení toho stávajícího,"Laden Sie einen alten RSA-Schlüssel oder wählen Sie den Pfad, um den RSA-Schlüssel zu öffnen.",Chargez une ancienne clé ou sélectionnez un chemin pour votre clé,Carregue uma chave antiga ou selecione um caminho para salvar sua chave atual,古いキーをロードするか、パスを選択して現在のキーを保存します
-system_options_data_security_rsa_decrypt,Decrypt,清除加密,Rozšifrovat,Entschlüsseln,Décrypter,Descriptografar,復号化
-system_options_data_security_rsa_public_key,Public key,公钥,Veřejný klíč,Öffentlicher Schlüssel,Clé publique,Chave pública,公開鍵
-system_options_data_security_rsa_private_key_path,Private key path,私钥,Popis umístění veřejného klíče,Pfad zum privaten Schlüssel,Chemin de la clé privée,Caminho da chave privada,秘密鍵のパス
-system_options_data_security_export_dialog_title,Caution: Your data will be saved unencrypted!,导出数据将以明文显示，请妥善保管！,Varování: vaše data budou uložena nešifrovaná!,Achtung: Ihre Daten werden unverschlüsselt gespeichert,Mise en garde : vos données seront enregistrées non cryptées !,Atenção: Seus dados serão salvos sem criptografia!,注意：データは暗号化されずに保存されます！
-system_options_data_security_info_data_processing,Processing data. Do not close the app!,数据处理中，请勿关闭程序。,Zpracovávají se data. Nezavírejte aplikaci!,"Datenverarbeitung, Programm bitte nicht schließen.","Traitement des données, ne fermez pas l'application.",Processando dados. Não feche o aplicativo!,データを処理しています。アプリを閉じないでください！
-system_options_data_security_info_encrypt_private_key_warning,Protect your private key carefully! It's the only key that can decrypt your data!,请妥善保管私钥，丢失后数据将无法找回！,Svůj soukromý klíč si dobře opatrujte! Jedině pomocí něho se dostanete ke svým datům!,"Bewahren Sie Ihren privaten Schlüssel sorgfältig auf, er ist der einzige Weg um Ihre Daten zu entschlüsseln!","Protégez soigneusement votre clé privée, c'est la seule clé pour décrypter vos données !",Proteja sua chave privada com cuidado! É a única chave que pode descriptografar seus dados!,秘密鍵は慎重に保護してください。それはあなたのデータを解読できる唯一の鍵です！
-system_options_data_security_info_clear_rsa,Would you like to clear RSA encryption?,是否清除RSA加密?,Přejete si odstranit RSA šifrování?,Möchten Sie die RSA-Verschlüsselung aufheben?,Souhaitez-vous effacer le cryptage RSA ?,Deseja limpar a criptografia RSA?,RSA暗号化をクリアしますか？
-system_options_data_security_error_can_not_open,Database: Permission denied for reading or the file is not a database or the file is an encrypted database!,数据库：所选文件已被占用或不是数据库或该数据库已被加密！,"Databáze: odepřeno oprávnění pro čtení nebo soubor není databází, případně je šifrovaná!",Datei ist keine Datenbank oder Datei ist eine verschlüsselte Datenbank!,Base de données : autorisation de lecture refusée ou le fichier n'est pas une base de données ou le fichier est une base de données cryptée !,Banco de dados: Permissão negada para leitura. Ou o arquivo não é um banco de dados ou o arquivo é um banco de dados criptografado!,データベース：読み取りの許可が拒否されたか、ファイルがデータベースではないか、ファイルが暗号化されたデータベースです！
-string_database_error_permission_denied,Database: Permission denied for reading! Please check your password of db or the file occupation.,数据库：没有足够的权限读取，或数据库已被占用！,Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.,Datenbank: Berechtigung zum Lesen verweigert! Bitte überprüfen Sie Ihr Passwort der Datei.,Base de données : autorisation de lecture refusée! Veuillez vérifier le mot de passe du fichier.,"Banco de dados: Permissão negada para leitura! Por favor, verifique sua senha de db ou o local do arquivo.",データベース：読み取りの許可が拒否されました！ dbのパスワードまたはファイルの職業を確認してください。
-string_database_error_rsa_private_key_format_error,Database: RSA private key is in an invalid format! Please select the correct key.,数据库：存储的 RSA 私钥文件格式错误，请重新选择！,Databáze: RSA soukromý klíč nemá platný formát! Vyberte správný klíč.,Datenbank: Der private RSA-Schlüssel hat ein falsches Format! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : la clé privée RSA est au format d'erreur! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA está em um formato inválido! Por favor, selecione a chave correta.",データベース：RSA秘密鍵の形式が無効です！正しいキーを選択してください。
-string_database_error_rsa_private_key_not_found,Database: Can't find the RSA private key! Please select the correct key.,数据库：无法找到数据库中存储的 RSA 私钥文件路径！,Databáze: Nedaří se nalézt RSA soukromý klíč! Vyberte správný klíč.,Datenbank: kann den privaten RSA-Schlüssel nicht finden! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : impossible de trouver la clé privée RSA! Veuillez sélectionner une clé correcte.,"Banco de dados: Não é possível encontrar a chave privada RSA! Por favor, selecione a chave correta.",データベース：RSA秘密鍵が見つかりません！正しいキーを選択してください。
-string_database_error_rsa_private_key_not_match,Database: RSA private key does not match the public key! Please select the correct key.,数据库：存储的 RSA 私钥公钥不匹配，请重新选择！,Databáze: RSA soukromý klíč neodpovídá tomu veřejnému! Vyberte správný klíč.,Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA não corresponde à chave pública! Por favor, selecione a chave correta.",データベース：RSA秘密鍵が公開鍵と一致しません！正しいキーを選択してください。
-Theme,Theme,主题,Vzhled,Thema,Thème,Tema,テーマ
-Color,Color,颜色,Barva,Farbe,Couleur,Cor,色
-Color1,Color1,主色,Barva1,Farbe1,Couleur1,Cor 1,Color1
-Color2,Color2,副色,Barva2,Farbe2,Couleur2,Cor 2,Color2
-Background,Background,背景色,Pozadí,Hintergrund,Arrière-plan,Fundo,バックグラウンド
-Normal,Normal,常规,Normální,Normal,Normal,Normal,普通
-Lighter,Lighter,亮色,Světlejší,Heller,Clair,Mouse em cima,ライター
-Darker,Darker,暗色,Tmavší,Dunkler,Sombre,Fundo dos menus,暗い
-Font,Font,字体,Písmo,Schriftart,Police de caractère,Cor da fonte,フォント
-Font size,Font size,字体大小,Velikost písma,Schriftgröße,Taille de la police,Tamanho da fonte,フォントサイズ
-Themes,Themes,主题,Motivy vzhledu,Farbthema,Thèmes,Temas,テーマ
-server_card_operate_duplicate,Duplicate,创建副本,Zduplikovat,Duplizieren,Dupliquer,Duplicado,複製
-server_card_operate_copy_address,Copy hostname to clipboard,复制地址到剪贴板,Zkopírovat název stroje do schránky,Server hostname in die Zwischenablage kopieren,Copier nom d'hôte dans le presse-papiers,Copie o nome do host para a área de transferência,ホスト名をクリップボードにコピー
-server_card_operate_copy_username,Copy username to clipboard,复制用户名到剪贴板,Zkopírovat uživatelské jméno do schránky,Benutzername in die Zwischenablage kopieren,Copier le nom d'utilisateur dans le presse-papiers,Copiar nome de usuário para a área de transferência,ユーザー名をクリップボードにコピー
-server_card_operate_copy_password,Copy password to clipboard,复制密码到剪贴板,Zkopírovat heslo do schránky,Passwort in die Zwischenablage kopieren,Copier le mot de passe dans le presse-papiers,Copiar senha para a área de transferência,パスワードをクリップボードにコピーする
-confirm_to_delete,Are you sure you want to delete?,确认要删除吗？,Opravdu chcete smazat?,Wirklich löschen?,Valider la suppression ?,Tem certeza de que deseja excluir?,消去してもよろしいですか？
-confirm_to_delete_selected,Are you sure you want to delete all selected?,确认要删除所选全部项目吗？,Opravdu chcete vše vybrané smazat?,Wirklich alle markierten Einträge löschen?,Valider la suppression de toutes les sélections ?,Tem certeza de que deseja excluir todos os selecionados?,選択したものをすべて削除してもよろしいですか？
-import_server_dialog_title,Select a file,选择导入文件,Vyberte soubor,Dateiauswahl,Sélectionner un fichier,Selecione um arquivo,ファイルを選択
-import_from_json,from json,从 json,z json,von einer JSON-Datei,depuis json,de arquivo .json,jsonから
-import_from_csv,from mRemoteNG csv,从 mRemoteNG csv,z mRemoteNG csv,mRemoteNG CSV-Datei,depuis CSV mRemoteNG,do mRemoteNG .csv,mRemoteNGcsvから
-import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",正常にインポートされ、{0}アイテムが追加されました。
-import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,エラーデータ形式！
-server_editor_different_options,<different options>,<不同的值>,<různé předvolby>,<verschiedene Optionen>,<Options différentes>,<opções diferentes>,<さまざまなオプション>
-server_editor_bulk_editing,Bulk editing,批量编辑,Hromadné upravování,Massenbearbeitung,Modification groupée,Edição em massa,一括編集
-server_editor_bulk_editing_title,You are editing in bulk:,你正在批量编辑:,Hromadně upravujete:,Sie bearbeiten in großen Mengen:,Vous modifiez en masse :,Você está editando em massa:,一括編集しています：
-server_editor_multi_selected_count,Number of selected items:,选中数量：,Počet vybraných položek:,Anzahl der ausgewählten Artikel:,Nombre d'éléments sélectionnés:,Número de itens selecionados:,選択したアイテムの数：
-server_editor_group_title_common,Common,常规,Společné,Allgemein,Commun,Frequente,一般
-Connection,Connection,连接,Připojení,Verbindung,Lien,Conexão,繋がり
-server_editor_group_title_display,Display,显示,Zobrazení,Anzeige,Affichage,Tela,画面
-server_editor_group_title_advantage,Advantage,高级,Výhoda,Erweitert,Avantage,Vantagem,アドバンテージ
-server_editor_group_title_gateway,RD Gateway Server,RD 网关服务器,Server brány vzdálených ploch,Remotedesktop-Gatewayserver,Serveur de passerelle RD,Servidor Gateway RD,RDゲートウェイサーバー
-Tags,Tags,标签,Štítky,Etikett,Mots clés,Marcações,タグ
-server_editor_tags_tag,"Can enter multiple, separated by ','","可以输入多个，用 ',' 分隔","Je možné zadat vícero, oddělovaných „,“ (čárkou)","Kann mehrere eingeben, getrennt durch ','","Peut entrer plusieurs, séparés par ','","Podem ser inseridos vários, separados por ','",'、'で区切って複数入力できます
-Logo,Logo,图标,Logo,Logo,Logo,Logotipo,ロゴ
-Script before connect,Script before connect,会话连接前运行脚本,Skript před připojením,Skript vor dem Verbinden,Script avant connexion,Script antes de conectar,接続前のスクリプト
-Hide script window,Hide script window(not recommended for script take long time),隐藏脚本运行窗口（长耗时脚本不推荐勾选）,"Skrýt okno skriptu (nedoporučuje se, pokud skript trvá dlouho)","Skriptfenster ausblenden (nicht empfohlen, da das Skript lange dauert)",Masquer la fenêtre de script (non recommandé car le script prend beaucoup de temps),Ocultar janela de script (não recomendado para script demorado),スクリプト ウィンドウを非表示にする (スクリプトに時間がかかる場合はお勧めしません)
-Script after disconnected,Script after disconnected,会话关闭后运行脚本,Skript po odpojení,Skript nach dem Trennen,Script après déconnexion,Script depois de desconectado,切断後のスクリプト
-Run bat before connect,Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat'),连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）,Spusťte bat před připojením (např. spusťte 'C:\OpenSshTunneling.bat'),Führen Sie bat vor dem Verbinden aus (z. B. führen Sie 'C:\OpenSshTunneling.bat' aus),"Exécutez bat avant de vous connecter (par exemple, exécutez 'C:\OpenSshTunneling.bat')","Execute bat antes de conectar (por exemplo, execute 'C:\OpenSshTunneling.bat')",接続する前にバットを実行します (例: 'C:\OpenSshTunneling.bat' を実行)
-Run bat after disconnected,Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat'),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）,Spustit bat po odpojení (např. spustit 'C:\CloseSshTunneling.bat'),"Fledermaus ausführen, nachdem die Verbindung getrennt wurde (z. B. 'C:\CloseSshTunneling.bat' ausführen)","Exécutez bat après la déconnexion (par exemple, exécutez 'C:\CloseSshTunneling.bat')","Execute bat depois de desconectado (por exemplo, execute 'C:\CloseSshTunneling.bat')",切断後にバットを実行します (例: 'C:\CloseSshTunneling.bat' を実行)
-Hostname,Hostname,地址,Název stroje,Hostname,Nom d'hôte,Hospedeiro,ホスト名
-Target,Target,目标,Cíl,Ziel,Cibler,Alvo,目標
-Port,Port,端口,Port,Port,Port,Port,ポート
-User,User,用户名,Uživatel,Benutzer,Utilisateur,Usuário,ユーザー
-Password,Password,密码,Heslo,Passwort,Mot de passe,Senha,パスワード
-Use private key,Use private key,使用私钥连接,Použít soukromý klíč,Benutze privaten Schlüssel,utiliser la clé privée,Usar chave privada,秘密鍵を使用する
-Private key,Private key,私钥,Soukromý klíč,Privater Schlüssel,Clé privée,Chave privada,秘密鍵
-Open SFTP when connected,Open SFTP when connected,同时打开 SFTP,Při připojení otevřít SFTP,Öffnen Sie SFTP beim Anschluss,Ouvrir SFTP lorsqu'il est connecté,Abra o SFTP quando conectado,接続時にSFTPを開く
-server_editor_display_full_screen_flag,Full screen remote desktop,全屏模式,Vzdálená plocha na celou obrazovku,Vollbild,Plein écran,Área de trabalho remota em tela cheia,フルスクリーンリモートデスクトップ
-server_editor_display_full_screen_flag_window,Disable,禁用,Vypnout,Deaktivieren,Désactiver,Desativar,無効にする
-server_editor_display_full_screen_flag_full_screen,Enable (single monitor),允许（单显示器）,Zapnout (jeden monitor),Aktivieren (Einzel-Monitor),Activer (moniteur unique),Ativar (monitor único),有効にする（単一モニター）
-server_editor_display_full_screen_flag_all_screens,Enable (multi monitors),允许（所有显示器）,Zapnout (více monitorů),Aktivieren (alle Monitore),Activer (multi-moniteurs),Ativar (vários monitores),有効にする（マルチモニター）
-Display the connection bar when use the full screen,Display the connection bar when use the full screen,全屏时显示连接栏,Ukazovat lištu připojení v režimu na celou obrazovku,"Zeigen Sie die Anschlussleiste an, wenn Sie den vollständigen Bildschirm verwenden",Afficher la barre de connexion lors de l'utilisation de l'écran complet,Exibir a barra de conexão ao usar a tela cheia,フルスクリーンを使用するときに接続バーを表示する
-New session always use full screen,New session always use full screen,启动会话时永远进入全屏模式,Nová relace bude vždy na celou obrazovku,Neue Sitzung Verwenden Sie immer den vollständigen Bildschirm,Connectez-vous en plein écran,Nova sessão sempre usará tela cheia,新しいセッションは常にフルスクリーンを使用します
-New session use full screen if the last session is full screen,New session use full screen if the last session is full screen,启动会话时根据上次会话决定是否进入全屏模式,Nová relace bude na celou obrazovku pokud ta předchozí také byla,"Neue Sitzung Vollbild Verwenden Sie den Vollbild, wenn die letzte Sitzung Vollbild ist",Nouvelle session Utilisez plein écran si la dernière session est en plein écran,Nova sessão usará tela cheia se a última sessão foi em tela cheia,最後のセッションがフルスクリーンの場合、新しいセッションはフルスクリーンを使用します
-Resolution,Resolution,分辨率,Rozlišení,Auflösung,Résolution,Resolução,解像度
-Fit to window,Fit to window(Supported server: Windows Server 2012 R2 and above),适应窗口大小(服务器要求Windows Server 2012 R2及以上),Přizpůsobit oknu (podporovaný server: Windows Server 2012 R2 a novější),An Fenster anpassen(Unterstützter Server: Windows Server 2012 R2 und höher),Apte à la fenêtre(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Ajustar à janela (Servidor Compatível com Windows Server 2012 R2 e superior),ウィンドウに合わせる（サポートされているサーバー：Windows Server 2012 R2以降）
-Custom resolution (stretch),Custom resolution (stretch),自定义分辨率 (拉伸),Uživatelsky určené rozlišení (roztáhnout),Benutzerdefinierte Auflösung (Stretch),Résolution personnalisée (étirement),Resolução personalizada (esticar),カスタム解像度（ストレッチ）
-Custom resolution (fixed),Custom resolution (fixed),自定义分辨率 (固定),Uživatelsky určené rozlišení (napevno),Benutzerdefinierte Auflösung (fixiert),Résolution personnalisée (fixe),Resolução personalizada (fixa),カスタム解像度（固定）
-Full-screen resolution (stretch),Full-screen resolution (stretch),屏幕分辨率 (拉伸),Rozlišení v režimu celé obrazovky (roztáhnout),Vollbildauflösung (stretch),Résolution en plein écran (étirement),Resolução de tela cheia (esticar),フルスクリーン解像度（ストレッチ）
-Full-screen resolution (fixed),Full-screen resolution (fixed),屏幕分辨率 (固定),Rozlišení v režimu celé obrazovky (napevno),Vollbildauflösung (fixiert),Résolution en plein écran (fixe),Resolução de tela cheia (fixa),フルスクリーン解像度（固定）
-server_editor_display_rdp_performance,Performance,桌面体验,Kvalita/výkon,Leistung,Performance,atuação,パフォーマンス
-server_editor_display_rdp_performance_auto,Auto (judged based on connection speed),自动（根据网速）,Automaticky (usouzeno na základě rychlosti připojení),Verbindungsqualität automatisch erkennen,Jugement automatique (par vitesse de connexion),Automático (com base na velocidade da conexão),自動（接続速度に基づいて判断）
-server_editor_display_rdp_performance_high,High (32bit color with full feature support),高（32位色彩与所有特性）,Vysoká (32bit barvy a plná podpora vizuálních funkcí),Hoch (32bit Farbe mit voller Funktionsunterstützung),Élevé (couleur 32 bits avec prise en charge complète des fonctionnalités),Alta (cor de 32 bits com suporte completo a recursos),高（フル機能をサポートする32ビットカラー）
-server_editor_display_rdp_performance_middle,Middle (16bit color with only font smoothing and desktop composition),中（16位色彩与字体平滑、桌面合成）,Střední (16bit barvy a pouze vyhlazování písma a kompozitor desktopu),Mittel (16bit Farbe mit nur Schriftglättung und Desktopaufbau),Milieu (couleur 16 bits avec uniquement le lissage de la police et la composition du bureau),Médio (cor de 16 bits com apenas suavização de fonte e composição da área de trabalho),ミドル（フォントスムージングとデスクトップ構成のみの16ビットカラー）
-server_editor_display_rdp_performance_low,Low (8bit color with no feature support),低（8位色彩无任何显示增强）,Nízká (8bit barvy bez vizuálních funkcí),Niedrig (8-Bit-Farbe ohne Unterstützung von Funktionen),Faible (couleur 8 bits sans prise en charge des fonctionnalités),Baixo (cor de 8 bits sem suporte a recursos),低（機能をサポートしない8ビットカラー）
-server_editor_advantage_admin,For administering a server,连接到会话以管理服务器,Pro správu serveru,Zur Verwaltung eines Servers,Pour administrer un serveur,Para administrar um servidor,サーバーの管理用
-server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Ressourcen,Ressources,Recursos,資力
-server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,クリップボード
-server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,キーの組み合わせ
-server_editor_advantage_disk_drives,Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,ディスクドライブ
-Drives plug in latter,Drives plug in latter,稍后插入的U盘,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter
-server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,音
-server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,Deaktiviert,Désactivée,Desabilitado,無効
-server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,Lokal spielen,Jouez en local,Rode localmente,ローカルでプレイ
-server_editor_advantage_sounds_on_remote,Play on remote,在远程播放,Přehrávat na protějšku,Spielen Sie auf der Fernbedienung,Jouer à distance,Rode remotamente,リモートで再生
-server_editor_advantage_audio_capture,Audio Capture,录音,Zachytávání zvuku,Audio Aufnahme,Capture audio,Captura de áudio,オーディオキャプチャ
-server_editor_advantage_ports,Ports,端口,Porty,Häfen,Ports,Portas,ポート
-server_editor_advantage_printers,Printers,打印机,Tiskárny,Drucker,Imprimantes,Impressoras,プリンター
-server_editor_advantage_smart_cards,Smart Cards,智能卡,Čipové karty,Smartcards,Carte à puce,Cartões inteligentes,スマートカード
-server_editor_advantage_ssh_version,SSH Version,SSH Version,Verze SSH,SSH-Version,Version SSH,Versão SSH,SSHバージョン
-server_editor_advantage_ssh_startup_auto_command,Auto command,自动命令,Automaticky spouštěný příkaz,Auto-Befehl,Commande automatique,Comando automático,自動コマンド
-server_editor_advantage_ssh_startup_auto_kitty_session_tip,Use external configuration by selecting a session file path for KiTTY,输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置,Použijte externí nastavení vybráním popisu umístění souboru s relací pro KiTTY,support external config by select a session file path of KiTTY,prendre en charge la configuration externe en sélectionnant un chemin de fichier de session de KiTTY,Use a configuração externa selecionando um caminho de arquivo de sessão para o KiTTY,KiTTYのセッションファイルパスを選択して、外部構成を使用します
-server_editor_advantage_sftp_startup_path,Startup path,启动位置,Startovní umístění,Start-Pfad,Chemin de démarrage,Caminho de inicialização,スタートアップパス
-server_editor_gateway_mode,Connection,连接设置,Připojení,Verbindung,Lien,Conexão,繋がり
-server_editor_gateway_mode_automatically_detect,Automatically detect RD Gateway Server settings,自动检测RD网关服务器设置,Automaticky zjistit nastavení serveru brány ke vzdáleným plochám,RD-Gatewayservereinstellungen automatisch ermitteln,Détecter automatiquement les paramètres du serveur RD Gateway,Detectar automaticamente as configurações do Servidor RD Gateway,RDゲートウェイサーバーの設定を自動的に検出する
-server_editor_gateway_mode_use_these,Use the following RD Gateway Server settings,使用下列RD网关服务器设置,Použít následující nastavení pro server brány ke vzdáleným plochám,Diese Einstellungen für RD-Gatewayserver verwenden,Utilisez les paramètres de serveur de passerelle Bureau à distance suivants,Use as seguintes configurações do Servidor RD Gateway,次のRDゲートウェイサーバー設定を使用します
-server_editor_gateway_mode_do_not_use,Do not use RD Gateway Server,不使用RD网关服务器,Nepoužívat server brány ke vzdáleným plochám,Keinen Remotedesktop-Gatewayserver verwenden,Ne pas utiliser de serveur de passerelle pour le Bureau à distance,Não use o Servidor RD Gateway,RDゲートウェイサーバーを使用しないでください
-server_editor_gateway_server_host_name,Host Name,服务器地址,Název stroje,Servername,Nom d'hôte,Nome do Host,ホスト名
-server_editor_gateway_logon_method,Logon Method,登录方法,Způsob přihlašování,Anmeldemethode,Méthode de connexion,Tipo de logon,ログオン方法
-server_editor_gateway_logon_method_psw,Password,账号密码,Heslo,Kennwort anfordern,Mot de passe,Senha,パスワード
-server_editor_gateway_logon_method_smart_card,Smart Card,智能卡,Čipová karta,Smartcard,Carte à puce,Cartão inteligente,スマートカード
-server_editor_gateway_bypass_gateway_for_local_address,Bypass RD Gateway Server for local address,不对本地地址使用RD网关,Přemostit server brány ke vzdáleným plochám v případě přístupu na místní adresu,Remotedesktop-Gatewayserver für lokale Adressen umgehen,Contourner le serveur de passerelle RD pour l'adresse locale,Ignorar o servidor de RD Gateway para endereço local,ローカルアドレスのRDゲートウェイサーバーをバイパスする
-server_editor_remote_app_name,App Name,程序名称,Název aplikace,Programm Name,Nom de l'application,Nome do APP,アプリ名
-server_editor_remote_app_name_tag,Name of the app (e.g. hello),程序名称的名称（如 hello.exe）,Název aplikace (např. ahoj),Name des Programms (bspw. Hallo),nom de l'application (par exemple bonjour),Nome do aplicativo (ex.: kernel),アプリの名前（例：hello）
-server_editor_remote_app_fullname,App Path,服务端路径,Popis umístění aplikace,Pfad zum Programm,Chemin de l'application,Caminho do APP,アプリパス
-server_editor_remote_app_fullname_tag,Full exe path on the server (e.g. C:\Apps\hello.exe),被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）,Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe),vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe),Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe),Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe),サーバー上の完全なexeパス（例：C：\ Apps \ hello.exe）
-about_page_how_to_use,How to use,帮助,Jak používat,Handbuch im Github Wiki,Comment utiliser,Como usar,使い方
-about_page_feedback,Feedback,提意见/需求,Podněty vývojářům,Feedback,Retour,Dê seu feedback,フィードバック
-guidance_introduce,PRemoteM allows you to open a remote session at any time and anywhere.,PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面,PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit PRemoteM können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,PRemoteMを使用すると、いつでもどこでもリモートセッションを開くことができます。
-guidance_feature_launcher_key,call the launcher by,快速呼出启动器,zavolat spouštěč prostřednictvím,Rufen Sie den Launcher auf mit,Appeler le lanceur par,chame os atalhos por,ランチャーを呼び出す
-guidance_feature_launcher_select,select item by,选择项目,vybrat položku prostřednictvím,Server auswählen mit,Sélectionner l'élément par,selecionar item por,でアイテムを選択
-guidance_feature_launcher_connect,connect by,启动会话,připojit prostřednictvím,verbinden mit,Se connecter par,conectar por,接続する
-guidance_feature_launcher_menu,menu by,弹出菜单,nabídka prostřednictvím,Menüaufruf mit,Menu par,menu por,メニュー
-guidance_feature_tab_demo,"Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...","可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体","Přesouvatelné, odtrhovatelné a ukotvitelné vzdálené relace pro RDP, SSH, VNC, sFTP …","Verschiebbare, zerteilbare, andockbare Remote-Sitzung für RDP, SSH, VNC, sFTP...","Session distante Fixable, Découpable et Ancrable pour RDP, SSH, VNC, sFTP ...","Janelas arrastáveis. Sessão remota feita com: RDP, SSH, VNC, sFTP...",RDP、SSH、VNC、sFTPのドラッグ可能、ティアリング可能、ドッキング可能なリモートセッション...
-guidance_feature_start_setting1,Please confirm some settings before first use.,开始使用前请确认一些配置,"Než začnete používat, potvrďte několik nastavení.",Bitte bestätigen Sie einige Einstellungen vor der Benutzung.,Veuillez confirmer certains paramètres avant de commencer.,Confirme algumas configurações antes do primeiro uso.,初めて使用する前に、いくつかの設定を確認してください。
-guidance_feature_start_setting2,You are able to change this setting later in Options.,这些配置稍后同样可以在设置界面中修改,Tato nastavení je možné změnit kdykoli později v Předvolbách.,Sie können diese Einstellung später in den Optionen ändern.,Vous pouvez modifier ce paramètre ultérieurement dans la page Options.,Você pode alterar essa configuração posteriormente em Opções.,この設定は、後で[オプション]で変更できます。
-word_oops,Oops...,哎哟喂...,Jejda…,Upps...,Oops...,OOPAA...,おっとっと...
-error_report_unexpected_error_occurred,Unexpected error occurred. Error info is shown below:,程序发生了一些未知错误，详细信息如下：,Došlo k neočekávané chybě. Informace o chybě viz níže:,Unerwarteter Fehler ist aufgetreten. Die Fehlerinformation wird unten angezeigt:,Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :,Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:,予期しないエラーが発生しました。エラー情報を以下に示します。
-error_report_to_clipboard,Copy to clipboard,保存到剪贴板,Zkopírovat do schránky,In die Zwischenablage kopieren,Copier dans le presse-papier,Copiar para área de transferência,クリップボードにコピー
-error_report_please_help_us_improve,Please help us improve PRemoteM by reporting this error.,请通过反馈这个错误来帮助我们改进 PRemoteM。,Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, PRemoteM zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.,Ajude-nos a melhorar o PRemoteM relatando este erro.,このエラーを報告して、PRemoteMの改善にご協力ください。
-error_report_how_help_us_improve,Simply copy the error message and choose a way to report it.,只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）,Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.,"Kopieren Sie einfach die Fehlermeldung und wählen Sie eine der Möglichkeiten, diese zu melden.",Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.,Basta copiar a mensagem de erro e escolher uma forma de relatar.,エラーメッセージをコピーして、報告する方法を選択するだけです。
-error_report_send_by_email,Send by e-mail,通过邮件,Poslat e-mailem e-mail,Per E-Mail senden,Envoyé par email,Enviar por email,メールで送る
-error_report_send_by_github,Send by GitHub,通过GitHub,Poslat prostřednictvím portálu GitHub,Senden über Github,Envoyer par GitHub,Enviar pelo GitHub,GitHubで送信
-logo_selector_open_file_dialog_title,select a picture,选择图片,vyberte obrázek,Bild auswählen,sélectionner une image,selecione uma imagem,写真を選択
-Default,Default,默认,Výchozí,Standard,Défaut,Predefinição,デフォルト
-Exe path,Exe path,Exe 路径,Popis umístění spustitelného souboru,Exe-Pfad,Chemin exe,Caminho .exe,エグゼパス
-Cmd parameter,CMD parameter,命令行参数,parametry pro příkaz,CMD-Parameter,CMD paramètre,Parâmetro CMD,CMDパラメータ
-New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo agente,新しいランナー
-New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,新しいランナー名
-Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,Kann nicht leer sein!,Ne peux pas être vide!,Não pode estar vazio!,空にすることはできません！
-Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,ホスティング
-Hosting this exe in PRemoteM tab view?,Hosting this exe in PRemoteM tab windowView?,将该 exe 集成到 PRemoteM 的 tab 视图中?,Hostovat tento spustitelný soubor v PRemoteM panelu windowView?,Hosten Sie diese exe-Datei in der PRemoteM-Registerkarte windowView?,Hébergement de cet exe dans l'onglet PRemoteM windowView ?,Hospedar este .exe na guia do PRemoteM?,このexeをPRemoteMタブwindowViewでホストしますか？
-Caution: some exe can not be hosted in PRemoteM.,"Caution: some exe can not be hosted by PRemoteM, please test by your self.",警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.","Attention : certains exe ne peuvent pas être hébergés par PRemoteM, veuillez tester par vous-même.","Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.",注意：一部のexeはPRemoteMでホストできません。自分でテストしてください。
-Show environment variables,Show environment variables,显示环境变量,Zobrazit proměnné prostředí,Show umgebungsvariablen,Afficher les variables d'environnement,Mostrar variáveis de ambiente,環境変数を表示する
-How to select the specified monitors,How to select the specified monitors,如何选择指定的显示器,Jak vybrat zadané monitory,So wählen Sie die angegebenen Monitore aus,Comment sélectionner les moniteurs spécifiés,Como selecionar os monitores especificados,指定したモニターの選び方
-mstsc.exe mode,mstsc.exe mode,mstsc.exe 模式,režim využívající mstsc.exe,mstsc.exe-Modus,mode mstsc.exe,modo mstsc.exe,mstsc.exeモード
-Enabled,Enabled,启用,Zapnuto,Aktiv,Activer,Habilitado,有効
-"In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.","In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters.",在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数,V tomto režimu bude RDP relace spuštěna jako „mstsc.exe xxxx.rdp“ v příkazovém řádku a je možné zadat více parametrů.,"In diesem Modus startet RDP die Sitzung auf die Art 'mstsc.exe xxxx.rdp' in CMD, es kann mehr benutzerdefinierte Parameter anbieten.","Dans ce mode, RDP démarrera la session de la manière 'mstsc.exe xxxx.rdp' dans CMD, il peut offrir plus de paramètres personnalisés.","Nesse modo, o RDP iniciará a sessão da forma 'mstsc.exe xxxx.rdp' no CMD, podendo oferecer mais parâmetros personalizados.",このモードでは、RDPはCMDの「mstsc.exexxxx.rdp」の方法でセッションを開始し、より多くのカスタムパラメーターを提供できます。
-Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用,Pozn.: Tento režim bude automaticky zapnut pokud je na vašem počítači přítomno dva a více monitorů s různým měřítkem zobrazení a vybrali jste režim na celou obrazovku.,"Hinweis: Dieser Modus wird automatisch aktiviert, wenn mehr als 2 Monitore mit unterschiedlicher Anzeigeskalierung auf Ihrem PC vorhanden sind und Sie den Vollbildmodus ausgewählt haben.",Remarque : Ce mode sera automatiquement activé s'il y a plus de 2 moniteurs avec une mise à l'échelle d'affichage différente sur votre PC et que vous avez sélectionné le mode plein écran.,Nota: Este modo será ativado automaticamente se houver mais de 2 monitores com escala de exibição diferente em seu PC e você selecionou o modo de tela cheia.,注：このモードは、PCに表示スケーリングが異なる2台以上のモニターがあり、フルスクリーンモードを選択した場合に自動的に有効になります。
-Additional settings,Additional settings,额外指令,Další nastavení,Zusätzliche Einstellungen,Paramètres additionnels,Configurações adicionais,追加の設定
-Helper,Helper,助手,Pomocné,Helfer,Assistant,Ajudante,ヘルパー
-Preview,Preview,预览,Náhled,Vorschau,Aperçu,Visualizar,プレビュー
-Preview rdp file,Preview rdp file,预览RDP文件,Náhled rdp souboru,Vorschau der RDP-Datei,Prévisualiser le fichier rdp,Visualizar arquivo RDP,rdpファイルのプレビュー
-Check monitor number,Check monitor number,查看显示器编号,Zkontrolovat počet monitorů,Überprüfen Sie die Monitornummer,Vérifier le numéro du moniteur,Verifique o número do monitor,モニター番号を確認してください
-Add environment variables,Add environment variables,添加环境变量,Přidat proměnné prostředí,Fügen Sie Umgebungsvariablen hinzu,Ajouter des variables d'environnement,Adicionar variáveis de ambiente,環境変数を追加する
-Selected,Selected,选中,Vybráno,Ausgewählt,Choisi,Selecionado,選択済み
-Custom,Custom,定制,Uživatelsky určené,Benutzerdefiniert,Coutume,Personalizado,カスタム
+key,en-us,zh-cn,cs-cz,de-de,fr-fr,pt-br,ja-jp,zh-tw
+language_code-ISO,en-US,zh-CN,cs-CZ,de-DE,fr-FR,pt-BR,ja-JP,zh-TW
+language_code-google,en,zh-CN,cs,de,fr,pt,ja,zh-TW
+language_name,English (en-US),简体中文 (zh-CN),čeština (cs-CZ),Deutsch (de-DE),Français (fr-FR),Portuguese (pt-BR),日本語(ja-JP),正體中文(zh-TW)
+messagebox_title_warning,PRemoteM Warning,PRemoteM 警告,PRemoteM – varování,PRemoteM Warnung,PRemoteM Warning,PRemoteM Warning,PRemoteM Warning,PRemoteM 警告
+messagebox_title_error,PRemoteM Error,PRemoteM 错误,PRemoteM – chyba,PRemoteM Fehler,PRemoteM Erreur,PRemoteM Error,PRemoteM Error,PRemoteM 錯誤
+messagebox_title_info,PRemoteM Info,PRemoteM 提示,PRemoteM – informace,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM Info,PRemoteM 提示
+OK,OK,确定,OK,OK,OK,OK,OK,確定
+Exit,Exit,退出,Ukončit,Beenden,Sortir,Sair,出口,離開
+Close,Close,关闭,Zavřít,Schließen,Fermer,Fechar,近い,關閉
+Add,Add,添加,Přidat,Hinzufügen,Ajouter,Adicionar,追加,新增
+Edit,Edit,编辑,Upravit,Bearbeiten,Edition,Editar,編集,編輯
+Save,Save,保存,Uložit,Speichern,Sauvegarder,Salvar,保存,儲存
+Save as...,Save as...,保存到...,Uložit jako…,Speichern als...,Sauvegarder sour...,Salvar como...,名前を付けて保存...,另存新檔...
+Back,Back,返回,Zpět,Zurück,Retour,Voltar,戻る,返回
+Delete,Delete,删除,Smazat,Löschen,Effacer,Deletar,消去,刪除
+Cancel,Cancel,取消,Storno,Abbrechen,Annuler,Cancelar,キャンセル,取消
+Select,Select,选择,Vybrat,Auswählen,Selectionner,Selecionar,選択する,選擇
+Explore to...,Explore to...,定位到...,Prozkoumat v…,Entdecken Sie ...,Explorer...,Explorar como...,探索して...,瀏覽至...
+Previous,Previous,上一页,Předchozí,Zurück,Précédent,Anterior,前,上一頁
+Next,Next,下一页,Další,Weiter,Suivant,Próximo,次,下一頁
+Done,Done,完成,Hotovo,Fertig,Effectuée,OK,終わり,完成
+Reset,Reset,重置,Resetovat,Zurücksetzen,Réinitialiser,Redefinir,リセット,重設
+Import,Import,导入,Import,Importieren,Importer,Importar,輸入,匯入
+Export,Export,导出,Export,Export,Exporter,Exportar,書き出す,匯出
+Name,Name,名称,Název,Name,Nom,Nome,名前,名稱
+File Name,File Name,文件名,Název souboru,Dateiname,Nom de fichier,Nome do arquivo,ファイル名,檔案名稱
+Test,Test,测试,Test,Prüfen,Test,Teste,テスト,測試
+Reconnect,Reconnect,重新连接,Znovu připojit,Neu verbinden,Reconnecter,Reconectar,再接続,重新連線
+Dismiss,Dismiss,关闭,Zahodit,Schließen,Rejeter,Dispensar,解散,關閉
+Lock,Lock,锁定,Zamknout,Sperren,Verrouiller,Bloquear,ロック,鎖定
+Always on top,Always on top,置顶,Vždy na vrchu,Immer oben,Garder au premier plan,Sempre no topo,常にトップに,保持在最上層
+Close all,Close all,全部关闭,Zavřít vše,Alle schließen,Tout fermer,Fechar tudo,すべて閉じる,全部關閉
+Rename,Rename,重命名,Přejmenovat,Umbenennen,Renommer,Renomear,名前を変更,重新命名
+Connect,Connect,连接,Připojit,Verbinden,Connexion,Conectar,接続,連線
+Connect (New window),Connect (New window),连接 (新窗口),Připojit (nové okno),Verbinden (Neues Fenster),Connexion (Nouvelle fenetre),Conectar (Nova janela),接続（新しいウィンドウ）,連線 (開新視窗)
+Note,Note,Note,Poznámka,Note,Note,Note,ノート,備註
+Share,Share,分享,Sdílet,Teilen,Partager,Compartilhar,シェア,分享
+Copy,Copy,复制,Zkopírovat,Kopieren,Copie,cópia de,コピー,複製
+filter_mainwindow,Keywords or '#' + tag name,输入关键词或 '#' + 标签名,Klíčová slova nebo „#“ + název štítku,Schlüsselwörter oder '#' + Tag-Name,Mots-clés ou '#' + nom de tag,Palavras-chave ou '#' + 'nome_da_tag',キーワードまたは「＃」+タグ名,輸入關鍵字或 '#' + 標籤名稱
+Search (Ctrl+F),Search (Ctrl + F),搜索 (Ctrl + F),Hledat (Ctrl + F),Suche (STRG + F),Rechercher (Ctrl + F),Procurar (Ctrl + F),検索（Ctrl + F）,搜尋 (Ctrl + F)
+hotkey_already_registered,Hot key already registered,快捷键已被占用,Klávesová zkratka už je zaregistrována (pro něco jiného?),Hotkey bereits registriert,Raccourci clavier déjà enregistré,Tecla de atalho já registrada,ホットキーはすでに登録されています,快捷鍵已被其他應用程式占用
+hotkey_registered_fail,Failed to register the hot key,快捷键注册失败,Klávesovou zkratku se nepodařilo zaregistrovat,Fehler bei der Hotkey Registrierung,Echec de l'enregistrement du raccourci clavier,Falha ao registrar a tecla de atalho,ホットキーの登録に失敗しました,快捷鍵綁定失敗
+string_permission_denied,Permission denied,无操作权限,Oprávnění odepřeno,Zugriff verweigert,Permission refusée,Permissão negada,アクセス拒否,沒有存取權限
+All,All,全部,Vše,Alle,Tous,Todos,全て,全部
+Protocol,Protocol,协议,Protokol,Protokoll,Protocole,Protocolo,プロトコル,協定
+file_transmit_host_list_header_last_update,Last update,修改时间,Naposledy zaktualizováno,Letztes Update,Dernière mise à jour,Última atualização,最後の更新,修改日期
+file_transmit_host_list_header_type,Type,类型,Typ,Typ,Taper,Tipo,タイプ,類型
+file_transmit_host_list_header_size,Size,大小,Velikost,Größe,Taille,Tamanho,サイズ,大小
+file_transmit_host_message_preview_over_size,"This item is over 1 MB, are you sure you want to open it?",文件超过 1 MB，确定要打开吗?,Tato položka má přes 1 MB – opravdu ji chcete otevírat?,"Das Bild ist über 1 MB groß, wirklich öffnen?","Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?",Este item tem mais de 1 MB. Tem certeza de que quer abrir?,このアイテムは1MBを超えていますが、開いてもよろしいですか？,檔案超過 1 MB，您確定要繼續開啟嗎？
+file_transmit_host_message_files_download_to,Please select a folder to save to,将文件下载到所选文件夹,Vyberte složku do které uložit,Bitte wählen Sie den Speicherpfad aus,Veuillez sélectionner un dossier pour enregistrer les fichiers,Selecione uma pasta para salvar,保存先のフォルダを選択してください,將檔案下載到選擇的資料夾
+file_transmit_host_message_files_download_to_dir,Use this folder,选择该文件夹,Použít tuto složku,Den Ordner verwenden,Utiliser ce dossier,Usar esta pasta,このフォルダを使用する,使用此資料夾
+file_transmit_host_message_select_files_to_upload,Please select files to upload,请选择要上传的文件,Vyberte soubory k nahrání,Bitte die Dateien zum Hochladen auswählen,Veuillez sélectionner les fichiers à télécharger,Selecione os arquivos para fazer o upload,アップロードするファイルを選択してください,請選擇要上傳的檔案
+file_transmit_host_command_refresh,Refresh (F5),刷新(F5),Načíst znovu (F5),Aktualisieren (F5),Actualiser (F5),Atualizar (F5),更新（F5）,重新整理 (F5)
+file_transmit_host_command_create_folder,Create a folder,新建文件夹,Vytvořit složku,Ordner erstellen,Créer le dossier,Criar uma nova pasta,フォルダを作成する,新增資料夾
+file_transmit_host_command_upload,Upload (Ctrl + V),上传(Ctrl + V),Nahrát (Ctrl + V),Upload (STRG + V),Télécharger (Ctrl + V),Enviar (Ctrl + V),アップロード（Ctrl + V）,上傳 (Ctrl + V)
+file_transmit_host_command_select_files_upload,Select files to upload,选择文件上传,Vyberte soubory k nahrání,Dateien zum Hochladen auswählen,Sélectionnez les fichiers à télécharger,Selecione os arquivos para fazer o upload,アップロードするファイルを選択します,上傳檔案
+file_transmit_host_command_select_folder_upload,Select a folder to upload,选择文件夹上传,Vyberte složku k nahrání,Ordner zum Hochladen auswählen,Sélectionnez le dossier à télécharger,Selecione uma pasta para fazer o upload,アップロードするフォルダを選択してください,上傳資料夾
+file_transmit_host_command_delete,Delete (Del),删除(Del),Smazat (Del),Löschen (ENTF),Supprimer (Suppr),Deletar (Del),削除（削除）,刪除 (Del)
+file_transmit_host_command_save_to,Save to... (Ctrl + S),保存到...(Ctrl + S),Uložit do… (Ctrl + S),Speichern nach... (STRG + S),Enregistrer sous ... (Ctrl + S),Salvar como... (Ctrl + S),保存先...（Ctrl + S）,儲存到... (Ctrl + S)
+file_transmit_host_warning_same_names_title,Replace or cancel,替换或跳过,Nahradit nebo zrušit,Austauschen oder abbrechen,Remplacer ou annuler,Substituir ou cancelar,交換またはキャンセル,取代或略過
+file_transmit_host_warning_same_names,The destination has {0} file(s) with the same name(s). Do you want to continue?,目标包含{0}个同名文件，需要替换吗？,Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?,Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?,La destination contient {0} fichiers portant les mêmes noms. Voulez-vous continuer?,O destino tem {0} arquivo(s) com o(s) mesmo(s) nome(s). Você quer continuar?,宛先に同じ名前の{0}ファイルがあります。続けたいですか？,目標位置已有 {0} 個相同名稱的檔案，要以這些檔案取代嗎？
+host_reconecting_info,Reconnecting...,正尝试重新连接...,Opětovné připojování…,Wiederverbinden...,Reconnexion ...,Reconectando...,再接続しています...,正在重試連線...
+Options,Options,设置,Předvolby,Optionen,Choix,Opções,オプション,設定
+About,About,关于,O aplikaci,Über,À propos,Sobre,約,關於
+Toggle Cards/List,Toggle Cards/List,切换卡片/列表,Přepnout mezi kartami/seznamem,Karten/Liste umschalten,Basculer les Tuiles/Liste,Alternar Cartões/Lista,カード/リストの切り替え,卡片或清單檢視
+system_options_general_title,General,常规,Obecné,Allgemein,Général,Geral,全般的,一般
+Language,Language,语言,Jazyk,Sprache,Langue,Idioma,言語,語言
+Startup,Startup,启动,Při startu,Start,Commencez,Inicialização,起動,啟動
+system_options_general_start_when_win_login,Run automatically at OS startup,开机自启动,Spouštět automaticky při přihlášení do systému,Mit dem Betriebssystem starten,Exécuter automatiquement au démarrage du système d'exploitation,Executar automaticamente na inicialização do SO,OSの起動時に自動的に実行,跟隨作業系統一併啟動
+system_options_general_start_minimized,Start minimized,启动时最小化到托盘,Spouštět minimalizované,Minimiert starten,Démarrer minimisé,Iniciar minimizado,最小化を開始,啟動時縮小至系統匣
+Confirm before closing,Confirm before closing,关闭远程会话前弹窗确认,Zavírat až po potvrzení,Bestätigen Sie vor dem Schließen,Confirmer avant de fermer,Confirme antes de fechar,終了する前に確認してください,關閉遠端工作階段前顯示確認視窗
+Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,远程桌面开启后显示当前会话的图标,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,Show current session icon instead of the app icon when connected,遠端桌面開啟後顯示目前工作階段的圖示
+system_options_general_log_file_path,Log file,日志文件,Soubor se záznamem událostí,Logdatei,Fichier journal,Arquivo de LOG,ログファイル,日誌檔案
+system_options_quick_description,"Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key",快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。,"Rychlé připojení umožňuje zobrazit lištu rychlého připojení pomocí klávesové zkratky, poté je možné napsat klíčové slovo a navázat připojení stisknutím klávesy Enter","Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.","La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée","A conexão rápida permite que você abra uma barra de conexão rápida por meio de uma tecla de atalho, você pode digitar a palavra-chave e iniciar a conexão pressionando a tecla Enter",クイック接続を使用すると、ホットキーを介してクイック接続バーを開くことができます。次に、キーワードを入力し、Enterキーを押して接続を開始できます。,快速連線可以讓使用者在桌面的任意位置，透過快捷鍵來將焦點定位至搜尋方塊，輸入關鍵字來搜尋要連線的伺服器後，按下 Enter 鍵即可開啟遠端連線。
+system_options_quick_match_providers,Keyword-Matchers,关键词匹配器,Hledání shod s klíčovými slovy,Keyword-Matcher,Mots clés correspondants,Correspondentes de palavras-chave,キーワードマッチャー,關鍵字對應管理
+Launcher,Launcher,启动器,Spouštěč,Startprogramm,Lanceur,Atalhos,ランチャー,啟動器
+system_options_quick_launcher_enable,Enable the launcher,启用,Zapnout spouštěč,Aktiv,Activer,Ative os atalhos,ランチャーを有効にする,啟用
+system_options_quick_launcher_hotkey,Hot key,快捷键,Klávesová zkratka,Hotkey,Raccourci clavier,Tecla de atalho,ホットキー,快捷鍵
+system_options_data_security_title,Data & Security,数据与安全,Data a zabezpečení,Datenbank & Sicherheit,Sécurité des données,Dados & Segurança,データセキュリティ,資料與安全性
+system_options_data_security_database,Database,数据库,Databáze,Datenbank,Base de données,Base de dados,データベース,資料庫
+system_options_data_security_database_migrate,Migrate,移动,Přestěhovat,Migrieren,Migrer,Migrar,移行する,遷移
+system_options_data_security_rsa_title,RSA encryption,RSA加密,RSA šifrování,RSA Verschlüsselung,Cryptage RSA,Criptografia RSA,RSA暗号化,RSA 加密
+system_options_data_security_rsa_encrypt,Encrypt,生成加密,Šifrovat,Verschlüsseln,Crypter,Criptografar,暗号化,建立加密
+system_options_data_security_rsa_encrypt_dialog_title,Load an old key or select a path to save your current key,选择现有私钥或设置新私钥放置位置,Načtěte původní klíč nebo vyberte umístění pro uložení toho stávajícího,"Laden Sie einen alten RSA-Schlüssel oder wählen Sie den Pfad, um den RSA-Schlüssel zu öffnen.",Chargez une ancienne clé ou sélectionnez un chemin pour votre clé,Carregue uma chave antiga ou selecione um caminho para salvar sua chave atual,古いキーをロードするか、パスを選択して現在のキーを保存します,選取現有私密金鑰或是設定新建私密金鑰的儲存位置
+system_options_data_security_rsa_decrypt,Decrypt,清除加密,Rozšifrovat,Entschlüsseln,Décrypter,Descriptografar,復号化,取消加密
+system_options_data_security_rsa_public_key,Public key,公钥,Veřejný klíč,Öffentlicher Schlüssel,Clé publique,Chave pública,公開鍵,公共金鑰
+system_options_data_security_rsa_private_key_path,Private key path,私钥,Popis umístění veřejného klíče,Pfad zum privaten Schlüssel,Chemin de la clé privée,Caminho da chave privada,秘密鍵のパス,私密金鑰
+system_options_data_security_export_dialog_title,Caution: Your data will be saved unencrypted!,导出数据将以明文显示，请妥善保管！,Varování: vaše data budou uložena nešifrovaná!,Achtung: Ihre Daten werden unverschlüsselt gespeichert,Mise en garde : vos données seront enregistrées non cryptées !,Atenção: Seus dados serão salvos sem criptografia!,注意：データは暗号化されずに保存されます！,注意：匯出的資料將以明文的形式儲存，請妥善保管！
+system_options_data_security_info_data_processing,Processing data. Do not close the app!,数据处理中，请勿关闭程序。,Zpracovávají se data. Nezavírejte aplikaci!,"Datenverarbeitung, Programm bitte nicht schließen.","Traitement des données, ne fermez pas l'application.",Processando dados. Não feche o aplicativo!,データを処理しています。アプリを閉じないでください！,正在處理資料，請勿關閉應用程式。
+system_options_data_security_info_encrypt_private_key_warning,Protect your private key carefully! It's the only key that can decrypt your data!,请妥善保管私钥，丢失后数据将无法找回！,Svůj soukromý klíč si dobře opatrujte! Jedině pomocí něho se dostanete ke svým datům!,"Bewahren Sie Ihren privaten Schlüssel sorgfältig auf, er ist der einzige Weg um Ihre Daten zu entschlüsseln!","Protégez soigneusement votre clé privée, c'est la seule clé pour décrypter vos données !",Proteja sua chave privada com cuidado! É a única chave que pode descriptografar seus dados!,秘密鍵は慎重に保護してください。それはあなたのデータを解読できる唯一の鍵です！,請妥善保管您的私密金鑰，若遺失將無法復原任何已加密的資料！
+system_options_data_security_info_clear_rsa,Would you like to clear RSA encryption?,是否清除RSA加密?,Přejete si odstranit RSA šifrování?,Möchten Sie die RSA-Verschlüsselung aufheben?,Souhaitez-vous effacer le cryptage RSA ?,Deseja limpar a criptografia RSA?,RSA暗号化をクリアしますか？,是否取消 RSA 加密?
+system_options_data_security_error_can_not_open,Database: Permission denied for reading or the file is not a database or the file is an encrypted database!,数据库：所选文件已被占用或不是数据库或该数据库已被加密！,"Databáze: odepřeno oprávnění pro čtení nebo soubor není databází, případně je šifrovaná!",Datei ist keine Datenbank oder Datei ist eine verschlüsselte Datenbank!,Base de données : autorisation de lecture refusée ou le fichier n'est pas une base de données ou le fichier est une base de données cryptée !,Banco de dados: Permissão negada para leitura. Ou o arquivo não é um banco de dados ou o arquivo é um banco de dados criptografado!,データベース：読み取りの許可が拒否されたか、ファイルがデータベースではないか、ファイルが暗号化されたデータベースです！,資料庫：選擇的檔案不是資料庫格式，或是正在被其他應用程式占用，或者資料已被加密！
+string_database_error_permission_denied,Database: Permission denied for reading! Please check your password of db or the file occupation.,数据库：没有足够的权限读取，或数据库已被占用！,Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.,Datenbank: Berechtigung zum Lesen verweigert! Bitte überprüfen Sie Ihr Passwort der Datei.,Base de données : autorisation de lecture refusée! Veuillez vérifier le mot de passe du fichier.,"Banco de dados: Permissão negada para leitura! Por favor, verifique sua senha de db ou o local do arquivo.",データベース：読み取りの許可が拒否されました！ dbのパスワードまたはファイルの職業を確認してください。,資料庫：沒有存取權限，或者正在被其他應用程式占用！
+string_database_error_rsa_private_key_format_error,Database: RSA private key is in an invalid format! Please select the correct key.,数据库：存储的 RSA 私钥文件格式错误，请重新选择！,Databáze: RSA soukromý klíč nemá platný formát! Vyberte správný klíč.,Datenbank: Der private RSA-Schlüssel hat ein falsches Format! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : la clé privée RSA est au format d'erreur! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA está em um formato inválido! Por favor, selecione a chave correta.",データベース：RSA秘密鍵の形式が無効です！正しいキーを選択してください。,資料庫：儲存的 RSA 私密金鑰檔案格式錯誤，請重新選擇！
+string_database_error_rsa_private_key_not_found,Database: Can't find the RSA private key! Please select the correct key.,数据库：无法找到数据库中存储的 RSA 私钥文件路径！,Databáze: Nedaří se nalézt RSA soukromý klíč! Vyberte správný klíč.,Datenbank: kann den privaten RSA-Schlüssel nicht finden! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données : impossible de trouver la clé privée RSA! Veuillez sélectionner une clé correcte.,"Banco de dados: Não é possível encontrar a chave privada RSA! Por favor, selecione a chave correta.",データベース：RSA秘密鍵が見つかりません！正しいキーを選択してください。,資料庫：無法找到資料庫中儲存的 RSA 私密金鑰路經找到對應檔案！
+string_database_error_rsa_private_key_not_match,Database: RSA private key does not match the public key! Please select the correct key.,数据库：存储的 RSA 私钥公钥不匹配，请重新选择！,Databáze: RSA soukromý klíč neodpovídá tomu veřejnému! Vyberte správný klíč.,Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.,Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.,"Banco de dados: A chave privada RSA não corresponde à chave pública! Por favor, selecione a chave correta.",データベース：RSA秘密鍵が公開鍵と一致しません！正しいキーを選択してください。,資料庫：儲存的 RSA 私密金鑰與公共金鑰無法配對，請重新選擇！
+Theme,Theme,主题,Vzhled,Thema,Thème,Tema,テーマ,佈景主題
+Color,Color,颜色,Barva,Farbe,Couleur,Cor,色,顏色
+Color1,Color1,主色,Barva1,Farbe1,Couleur1,Cor 1,Color1,主要顏色
+Color2,Color2,副色,Barva2,Farbe2,Couleur2,Cor 2,Color2,輔助顏色
+Background,Background,背景色,Pozadí,Hintergrund,Arrière-plan,Fundo,バックグラウンド,背景顏色
+Normal,Normal,常规,Normální,Normal,Normal,Normal,普通,普通
+Lighter,Lighter,亮色,Světlejší,Heller,Clair,Mouse em cima,ライター,淺色
+Darker,Darker,暗色,Tmavší,Dunkler,Sombre,Fundo dos menus,暗い,深色
+Font,Font,字体,Písmo,Schriftart,Police de caractère,Cor da fonte,フォント,字型
+Font size,Font size,字体大小,Velikost písma,Schriftgröße,Taille de la police,Tamanho da fonte,フォントサイズ,字型大小
+Themes,Themes,主题,Motivy vzhledu,Farbthema,Thèmes,Temas,テーマ,佈景主題
+server_card_operate_duplicate,Duplicate,创建副本,Zduplikovat,Duplizieren,Dupliquer,Duplicado,複製,建立副本
+server_card_operate_copy_address,Copy hostname to clipboard,复制地址到剪贴板,Zkopírovat název stroje do schránky,Server hostname in die Zwischenablage kopieren,Copier nom d'hôte dans le presse-papiers,Copie o nome do host para a área de transferência,ホスト名をクリップボードにコピー,複製主機名稱或網址到剪貼簿
+server_card_operate_copy_username,Copy username to clipboard,复制用户名到剪贴板,Zkopírovat uživatelské jméno do schránky,Benutzername in die Zwischenablage kopieren,Copier le nom d'utilisateur dans le presse-papiers,Copiar nome de usuário para a área de transferência,ユーザー名をクリップボードにコピー,複製使用者名稱到剪貼簿
+server_card_operate_copy_password,Copy password to clipboard,复制密码到剪贴板,Zkopírovat heslo do schránky,Passwort in die Zwischenablage kopieren,Copier le mot de passe dans le presse-papiers,Copiar senha para a área de transferência,パスワードをクリップボードにコピーする,複製密碼到剪貼簿
+confirm_to_delete,Are you sure you want to delete?,确认要删除吗？,Opravdu chcete smazat?,Wirklich löschen?,Valider la suppression ?,Tem certeza de que deseja excluir?,消去してもよろしいですか？,您確定要刪除嗎？
+confirm_to_delete_selected,Are you sure you want to delete all selected?,确认要删除所选全部项目吗？,Opravdu chcete vše vybrané smazat?,Wirklich alle markierten Einträge löschen?,Valider la suppression de toutes les sélections ?,Tem certeza de que deseja excluir todos os selecionados?,選択したものをすべて削除してもよろしいですか？,您確定要刪除選取的全部項目嗎？
+import_server_dialog_title,Select a file,选择导入文件,Vyberte soubor,Dateiauswahl,Sélectionner un fichier,Selecione um arquivo,ファイルを選択,選取匯入檔案
+import_from_json,from json,从 json,z json,von einer JSON-Datei,depuis json,de arquivo .json,jsonから,從 JSON 檔案
+import_from_csv,from mRemoteNG csv,从 mRemoteNG csv,z mRemoteNG csv,mRemoteNG CSV-Datei,depuis CSV mRemoteNG,do mRemoteNG .csv,mRemoteNGcsvから,從 mRemoteNG csv 檔案
+import_done_0_items_added,"Imported successfully, {0} item(s) added.",已导入{0}条记录.,"Úspěšně naimportováno, {0} položek přidáno.","Erfolgreich importiert, {0} Element hinzugefügt.","Importé avec succès, {0} élément(s) ajouté(s).","Importado com sucesso, {0} item(ns) adicionado(s).",正常にインポートされ、{0}アイテムが追加されました。,已匯入 {0} 筆項目。
+import_failure_with_data_format_error,Error data format!,导入0条，输入的数据文件格式有误!,Chyba ve formátu dat!,Falsches Datenformat!,Erreur dans le format des données !,Erro no formato dos dados!,エラーデータ形式！,沒有項目被匯入，可能是檔案格式有問題！
+server_editor_different_options,<different options>,<不同的值>,<různé předvolby>,<verschiedene Optionen>,<Options différentes>,<opções diferentes>,<さまざまなオプション>,<不同的值>
+server_editor_bulk_editing,Bulk editing,批量编辑,Hromadné upravování,Massenbearbeitung,Modification groupée,Edição em massa,一括編集,批次編輯
+server_editor_bulk_editing_title,You are editing in bulk:,你正在批量编辑:,Hromadně upravujete:,Sie bearbeiten in großen Mengen:,Vous modifiez en masse :,Você está editando em massa:,一括編集しています：,您正在批次編輯：
+server_editor_multi_selected_count,Number of selected items:,选中数量：,Počet vybraných položek:,Anzahl der ausgewählten Artikel:,Nombre d'éléments sélectionnés:,Número de itens selecionados:,選択したアイテムの数：,已選取數量：
+server_editor_group_title_common,Common,常规,Společné,Allgemein,Commun,Frequente,一般,一般
+Connection,Connection,连接,Připojení,Verbindung,Lien,Conexão,繋がり,連線
+server_editor_group_title_display,Display,显示,Zobrazení,Anzeige,Affichage,Tela,画面,顯示
+server_editor_group_title_advantage,Advantage,高级,Výhoda,Erweitert,Avantage,Vantagem,アドバンテージ,進階
+server_editor_group_title_gateway,RD Gateway Server,RD 网关服务器,Server brány vzdálených ploch,Remotedesktop-Gatewayserver,Serveur de passerelle RD,Servidor Gateway RD,RDゲートウェイサーバー,RD 閘道伺服器
+Tags,Tags,标签,Štítky,Etikett,Mots clés,Marcações,タグ,標籤
+server_editor_tags_tag,"Can enter multiple, separated by ','","可以输入多个，用 ',' 分隔","Je možné zadat vícero, oddělovaných „,“ (čárkou)","Kann mehrere eingeben, getrennt durch ','","Peut entrer plusieurs, séparés par ','","Podem ser inseridos vários, separados por ','",'、'で区切って複数入力できます,"可以輸入多個，以 ',' 分隔"
+Logo,Logo,图标,Logo,Logo,Logo,Logotipo,ロゴ,圖示
+Script before connect,Script before connect,会话连接前运行脚本,Skript před připojením,Skript vor dem Verbinden,Script avant connexion,Script antes de conectar,接続前のスクリプト,工作階段連線前執行批次檔案
+Hide script window,Hide script window(not recommended for script take long time),隐藏脚本运行窗口（长耗时脚本不推荐勾选）,"Skrýt okno skriptu (nedoporučuje se, pokud skript trvá dlouho)","Skriptfenster ausblenden (nicht empfohlen, da das Skript lange dauert)",Masquer la fenêtre de script (non recommandé car le script prend beaucoup de temps),Ocultar janela de script (não recomendado para script demorado),スクリプト ウィンドウを非表示にする (スクリプトに時間がかかる場合はお勧めしません),隱藏批次檔執行視窗 (不建議需要較長時間執行的批次檔案使用)
+Script after disconnected,Script after disconnected,会话关闭后运行脚本,Skript po odpojení,Skript nach dem Trennen,Script après déconnexion,Script depois de desconectado,切断後のスクリプト,工作階段結束後執行批次檔案
+Run bat before connect,Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat'),连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）,Spusťte bat před připojením (např. spusťte 'C:\OpenSshTunneling.bat'),Führen Sie bat vor dem Verbinden aus (z. B. führen Sie 'C:\OpenSshTunneling.bat' aus),"Exécutez bat avant de vous connecter (par exemple, exécutez 'C:\OpenSshTunneling.bat')","Execute bat antes de conectar (por exemplo, execute 'C:\OpenSshTunneling.bat')",接続する前にバットを実行します (例: 'C:\OpenSshTunneling.bat' を実行),連線前執行批次檔案 (例如：執行 'C:\OpenSshTunneling.bat')
+Run bat after disconnected,Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat'),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）,Spustit bat po odpojení (např. spustit 'C:\CloseSshTunneling.bat'),"Fledermaus ausführen, nachdem die Verbindung getrennt wurde (z. B. 'C:\CloseSshTunneling.bat' ausführen)","Exécutez bat après la déconnexion (par exemple, exécutez 'C:\CloseSshTunneling.bat')","Execute bat depois de desconectado (por exemplo, execute 'C:\CloseSshTunneling.bat')",切断後にバットを実行します (例: 'C:\CloseSshTunneling.bat' を実行),关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）
+Hostname,Hostname,地址,Název stroje,Hostname,Nom d'hôte,Hospedeiro,ホスト名,主機名稱或網址
+Target,Target,目标,Cíl,Ziel,Cibler,Alvo,目標,目標
+Port,Port,端口,Port,Port,Port,Port,ポート,連接埠
+User,User,用户名,Uživatel,Benutzer,Utilisateur,Usuário,ユーザー,使用者名稱
+Password,Password,密码,Heslo,Passwort,Mot de passe,Senha,パスワード,密碼
+Use private key,Use private key,使用私钥连接,Použít soukromý klíč,Benutze privaten Schlüssel,utiliser la clé privée,Usar chave privada,秘密鍵を使用する,使用私密金鑰連線
+Private key,Private key,私钥,Soukromý klíč,Privater Schlüssel,Clé privée,Chave privada,秘密鍵,私密金鑰
+Open SFTP when connected,Open SFTP when connected,同时打开 SFTP,Při připojení otevřít SFTP,Öffnen Sie SFTP beim Anschluss,Ouvrir SFTP lorsqu'il est connecté,Abra o SFTP quando conectado,接続時にSFTPを開く,同時連線 SFTP
+server_editor_display_full_screen_flag,Full screen remote desktop,全屏模式,Vzdálená plocha na celou obrazovku,Vollbild,Plein écran,Área de trabalho remota em tela cheia,フルスクリーンリモートデスクトップ,全螢幕
+server_editor_display_full_screen_flag_window,Disable,禁用,Vypnout,Deaktivieren,Désactiver,Desativar,無効にする,停用
+server_editor_display_full_screen_flag_full_screen,Enable (single monitor),允许（单显示器）,Zapnout (jeden monitor),Aktivieren (Einzel-Monitor),Activer (moniteur unique),Ativar (monitor único),有効にする（単一モニター）,啟用 (單一顯示器)
+server_editor_display_full_screen_flag_all_screens,Enable (multi monitors),允许（所有显示器）,Zapnout (více monitorů),Aktivieren (alle Monitore),Activer (multi-moniteurs),Ativar (vários monitores),有効にする（マルチモニター）,啟用 (全部顯示器)
+Display the connection bar when use the full screen,Display the connection bar when use the full screen,全屏时显示连接栏,Ukazovat lištu připojení v režimu na celou obrazovku,"Zeigen Sie die Anschlussleiste an, wenn Sie den vollständigen Bildschirm verwenden",Afficher la barre de connexion lors de l'utilisation de l'écran complet,Exibir a barra de conexão ao usar a tela cheia,フルスクリーンを使用するときに接続バーを表示する,全螢幕時顯示連線列
+New session always use full screen,New session always use full screen,启动会话时永远进入全屏模式,Nová relace bude vždy na celou obrazovku,Neue Sitzung Verwenden Sie immer den vollständigen Bildschirm,Connectez-vous en plein écran,Nova sessão sempre usará tela cheia,新しいセッションは常にフルスクリーンを使用します,連線工作階段後一律以全螢幕顯示
+New session use full screen if the last session is full screen,New session use full screen if the last session is full screen,启动会话时根据上次会话决定是否进入全屏模式,Nová relace bude na celou obrazovku pokud ta předchozí také byla,"Neue Sitzung Vollbild Verwenden Sie den Vollbild, wenn die letzte Sitzung Vollbild ist",Nouvelle session Utilisez plein écran si la dernière session est en plein écran,Nova sessão usará tela cheia se a última sessão foi em tela cheia,最後のセッションがフルスクリーンの場合、新しいセッションはフルスクリーンを使用します,連線工作階段後依照上一次連線時的顯示決定
+Resolution,Resolution,分辨率,Rozlišení,Auflösung,Résolution,Resolução,解像度,解析度
+Fit to window,Fit to window(Supported server: Windows Server 2012 R2 and above),适应窗口大小(服务器要求Windows Server 2012 R2及以上),Přizpůsobit oknu (podporovaný server: Windows Server 2012 R2 a novější),An Fenster anpassen(Unterstützter Server: Windows Server 2012 R2 und höher),Apte à la fenêtre(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Ajustar à janela (Servidor Compatível com Windows Server 2012 R2 e superior),ウィンドウに合わせる（サポートされているサーバー：Windows Server 2012 R2以降）,與客戶端視窗大小相同 (需要Windows Server 2012 R2及以上的伺服器)
+Custom resolution (stretch),Custom resolution (stretch),自定义分辨率 (拉伸),Uživatelsky určené rozlišení (roztáhnout),Benutzerdefinierte Auflösung (Stretch),Résolution personnalisée (étirement),Resolução personalizada (esticar),カスタム解像度（ストレッチ）,自訂解析度 (延展)
+Custom resolution (fixed),Custom resolution (fixed),自定义分辨率 (固定),Uživatelsky určené rozlišení (napevno),Benutzerdefinierte Auflösung (fixiert),Résolution personnalisée (fixe),Resolução personalizada (fixa),カスタム解像度（固定）,自訂解析度 (固定大小)
+Full-screen resolution (stretch),Full-screen resolution (stretch),屏幕分辨率 (拉伸),Rozlišení v režimu celé obrazovky (roztáhnout),Vollbildauflösung (stretch),Résolution en plein écran (étirement),Resolução de tela cheia (esticar),フルスクリーン解像度（ストレッチ）,全螢幕解析度 (延展)
+Full-screen resolution (fixed),Full-screen resolution (fixed),屏幕分辨率 (固定),Rozlišení v režimu celé obrazovky (napevno),Vollbildauflösung (fixiert),Résolution en plein écran (fixe),Resolução de tela cheia (fixa),フルスクリーン解像度（固定）,全螢幕解析度 (固定大小)
+server_editor_display_rdp_performance,Performance,桌面体验,Kvalita/výkon,Leistung,Performance,atuação,パフォーマンス,效能
+server_editor_display_rdp_performance_auto,Auto (judged based on connection speed),自动（根据网速）,Automaticky (usouzeno na základě rychlosti připojení),Verbindungsqualität automatisch erkennen,Jugement automatique (par vitesse de connexion),Automático (com base na velocidade da conexão),自動（接続速度に基づいて判断）,根據網路品質自動調整
+server_editor_display_rdp_performance_high,High (32bit color with full feature support),高（32位色彩与所有特性）,Vysoká (32bit barvy a plná podpora vizuálních funkcí),Hoch (32bit Farbe mit voller Funktionsunterstützung),Élevé (couleur 32 bits avec prise en charge complète des fonctionnalités),Alta (cor de 32 bits com suporte completo a recursos),高（フル機能をサポートする32ビットカラー）,高 (32 位元色彩且包含所有增強效果)
+server_editor_display_rdp_performance_middle,Middle (16bit color with only font smoothing and desktop composition),中（16位色彩与字体平滑、桌面合成）,Střední (16bit barvy a pouze vyhlazování písma a kompozitor desktopu),Mittel (16bit Farbe mit nur Schriftglättung und Desktopaufbau),Milieu (couleur 16 bits avec uniquement le lissage de la police et la composition du bureau),Médio (cor de 16 bits com apenas suavização de fonte e composição da área de trabalho),ミドル（フォントスムージングとデスクトップ構成のみの16ビットカラー）,中 (16 位元色彩，開啟字型反鋸齒與桌面合成)
+server_editor_display_rdp_performance_low,Low (8bit color with no feature support),低（8位色彩无任何显示增强）,Nízká (8bit barvy bez vizuálních funkcí),Niedrig (8-Bit-Farbe ohne Unterstützung von Funktionen),Faible (couleur 8 bits sans prise en charge des fonctionnalités),Baixo (cor de 8 bits sem suporte a recursos),低（機能をサポートしない8ビットカラー）,低 (8 位元色彩，沒有其他增強效果)
+server_editor_advantage_admin,For administering a server,连接到会话以管理服务器,Pro správu serveru,Zur Verwaltung eines Servers,Pour administrer un serveur,Para administrar um servidor,サーバーの管理用,連線到工作階段以便管理伺服器
+server_editor_advantage_resources,Resources,共享到远程桌面,Prostředky,Ressourcen,Ressources,Recursos,資力,與遠端伺服器分享資源
+server_editor_advantage_clipboard,Clipboard,剪贴板,Schránka,Zwischenablage,Presse-papiers,Área de transferência,クリップボード,剪貼簿
+server_editor_advantage_key_combinations,Key Combinations,组合键,Kombinace kláves,Tastenkombinationen,Combinaisons de clés,Combinações de teclas,キーの組み合わせ,按鍵組合
+server_editor_advantage_disk_drives,Drives,本地磁盘,Diskové jednotky,Laufwerke,Disques durs,Unidades de disco,ディスクドライブ,本機磁碟
+Drives plug in latter,Drives plug in latter,稍后插入的U盘,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,Drives plug in latter,稍後連接的磁碟機
+server_editor_advantage_sounds,Sounds,声音,Zvuky,Ton,Sons,Sons,音,音效
+server_editor_advantage_sounds_disabled,Disabled,禁用,Vypnuto,Deaktiviert,Désactivée,Desabilitado,無効,停用
+server_editor_advantage_sounds_on_local,Play on local,在本地播放,Přehrávat lokálně,Lokal spielen,Jouez en local,Rode localmente,ローカルでプレイ,在本機播放
+server_editor_advantage_sounds_on_remote,Play on remote,在远程播放,Přehrávat na protějšku,Spielen Sie auf der Fernbedienung,Jouer à distance,Rode remotamente,リモートで再生,在遠端播放
+server_editor_advantage_audio_capture,Audio Capture,录音,Zachytávání zvuku,Audio Aufnahme,Capture audio,Captura de áudio,オーディオキャプチャ,音效擷取
+server_editor_advantage_ports,Ports,端口,Porty,Häfen,Ports,Portas,ポート,連接埠
+server_editor_advantage_printers,Printers,打印机,Tiskárny,Drucker,Imprimantes,Impressoras,プリンター,印表機
+server_editor_advantage_smart_cards,Smart Cards,智能卡,Čipové karty,Smartcards,Carte à puce,Cartões inteligentes,スマートカード,智慧卡
+server_editor_advantage_ssh_version,SSH Version,SSH Version,Verze SSH,SSH-Version,Version SSH,Versão SSH,SSHバージョン,SSH 版本
+server_editor_advantage_ssh_startup_auto_command,Auto command,自动命令,Automaticky spouštěný příkaz,Auto-Befehl,Commande automatique,Comando automático,自動コマンド,自動執行命令
+server_editor_advantage_ssh_startup_auto_kitty_session_tip,Use external configuration by selecting a session file path for KiTTY,输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置,Použijte externí nastavení vybráním popisu umístění souboru s relací pro KiTTY,support external config by select a session file path of KiTTY,prendre en charge la configuration externe en sélectionnant un chemin de fichier de session de KiTTY,Use a configuração externa selecionando um caminho de arquivo de sessão para o KiTTY,KiTTYのセッションファイルパスを選択して、外部構成を使用します,輸入 KiTTY Portable.exe 的 工作階段設定檔路徑，可支援更多額外的設定
+server_editor_advantage_sftp_startup_path,Startup path,启动位置,Startovní umístění,Start-Pfad,Chemin de démarrage,Caminho de inicialização,スタートアップパス,開始位置
+server_editor_gateway_mode,Connection,连接设置,Připojení,Verbindung,Lien,Conexão,繋がり,連線設定
+server_editor_gateway_mode_automatically_detect,Automatically detect RD Gateway Server settings,自动检测RD网关服务器设置,Automaticky zjistit nastavení serveru brány ke vzdáleným plochám,RD-Gatewayservereinstellungen automatisch ermitteln,Détecter automatiquement les paramètres du serveur RD Gateway,Detectar automaticamente as configurações do Servidor RD Gateway,RDゲートウェイサーバーの設定を自動的に検出する,自動偵測 RD 閘道伺服器設定
+server_editor_gateway_mode_use_these,Use the following RD Gateway Server settings,使用下列RD网关服务器设置,Použít následující nastavení pro server brány ke vzdáleným plochám,Diese Einstellungen für RD-Gatewayserver verwenden,Utilisez les paramètres de serveur de passerelle Bureau à distance suivants,Use as seguintes configurações do Servidor RD Gateway,次のRDゲートウェイサーバー設定を使用します,使用下列 RD 閘道伺服器設定
+server_editor_gateway_mode_do_not_use,Do not use RD Gateway Server,不使用RD网关服务器,Nepoužívat server brány ke vzdáleným plochám,Keinen Remotedesktop-Gatewayserver verwenden,Ne pas utiliser de serveur de passerelle pour le Bureau à distance,Não use o Servidor RD Gateway,RDゲートウェイサーバーを使用しないでください,不使用 RD 閘道伺服器
+server_editor_gateway_server_host_name,Host Name,服务器地址,Název stroje,Servername,Nom d'hôte,Nome do Host,ホスト名,伺服器位址
+server_editor_gateway_logon_method,Logon Method,登录方法,Způsob přihlašování,Anmeldemethode,Méthode de connexion,Tipo de logon,ログオン方法,登入方式
+server_editor_gateway_logon_method_psw,Password,账号密码,Heslo,Kennwort anfordern,Mot de passe,Senha,パスワード,密碼
+server_editor_gateway_logon_method_smart_card,Smart Card,智能卡,Čipová karta,Smartcard,Carte à puce,Cartão inteligente,スマートカード,智慧卡
+server_editor_gateway_bypass_gateway_for_local_address,Bypass RD Gateway Server for local address,不对本地地址使用RD网关,Přemostit server brány ke vzdáleným plochám v případě přístupu na místní adresu,Remotedesktop-Gatewayserver für lokale Adressen umgehen,Contourner le serveur de passerelle RD pour l'adresse locale,Ignorar o servidor de RD Gateway para endereço local,ローカルアドレスのRDゲートウェイサーバーをバイパスする,區域網路中的位址不使用 RD 閘道器
+server_editor_remote_app_name,App Name,程序名称,Název aplikace,Programm Name,Nom de l'application,Nome do APP,アプリ名,程式名稱
+server_editor_remote_app_name_tag,Name of the app (e.g. hello),程序名称的名称（如 hello.exe）,Název aplikace (např. ahoj),Name des Programms (bspw. Hallo),nom de l'application (par exemple bonjour),Nome do aplicativo (ex.: kernel),アプリの名前（例：hello）,應用程式的檔案名稱 (例如 hello.exe)
+server_editor_remote_app_fullname,App Path,服务端路径,Popis umístění aplikace,Pfad zum Programm,Chemin de l'application,Caminho do APP,アプリパス,遠端應用程式路徑
+server_editor_remote_app_fullname_tag,Full exe path on the server (e.g. C:\Apps\hello.exe),被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）,Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe),vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe),Chemin complet de l'éxecutable sur le serveur (par exemple C:\\Apps\\hello.exe),Caminho completo do .exe no servidor (ex.: C:\Apps\kernel.exe),サーバー上の完全なexeパス（例：C：\ Apps \ hello.exe）,遠端伺服器上的應用程式路徑 (例如 'C:\\Apps\\hello.exe')
+about_page_how_to_use,How to use,帮助,Jak používat,Handbuch im Github Wiki,Comment utiliser,Como usar,使い方,說明
+about_page_feedback,Feedback,提意见/需求,Podněty vývojářům,Feedback,Retour,Dê seu feedback,フィードバック,意見或需求反映
+guidance_introduce,PRemoteM allows you to open a remote session at any time and anywhere.,PRemoteM 为您管理远程会话，帮您通过启动器快速打开远程桌面,PRemoteM umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.,Mit PRemoteM können Sie jederzeit und überall eine Remote-Sitzung eröffnen.,PRemoteM vous permet d'ouvrir une session à distance à tout moment et de n'importe où.,O PRemoteM permite que você abra uma sessão remota a qualquer hora e em qualquer lugar.,PRemoteMを使用すると、いつでもどこでもリモートセッションを開くことができます。,PRemoteM 可協助您管理遠端連線，並在任何時候建立工作階段。
+guidance_feature_launcher_key,call the launcher by,快速呼出启动器,zavolat spouštěč prostřednictvím,Rufen Sie den Launcher auf mit,Appeler le lanceur par,chame os atalhos por,ランチャーを呼び出す,快速呼叫啟動器
+guidance_feature_launcher_select,select item by,选择项目,vybrat položku prostřednictvím,Server auswählen mit,Sélectionner l'élément par,selecionar item por,でアイテムを選択,選擇項目
+guidance_feature_launcher_connect,connect by,启动会话,připojit prostřednictvím,verbinden mit,Se connecter par,conectar por,接続する,開啟工作階段
+guidance_feature_launcher_menu,menu by,弹出菜单,nabídka prostřednictvím,Menüaufruf mit,Menu par,menu por,メニュー,開啟選單
+guidance_feature_tab_demo,"Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...","可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体","Přesouvatelné, odtrhovatelné a ukotvitelné vzdálené relace pro RDP, SSH, VNC, sFTP …","Verschiebbare, zerteilbare, andockbare Remote-Sitzung für RDP, SSH, VNC, sFTP...","Session distante Fixable, Découpable et Ancrable pour RDP, SSH, VNC, sFTP ...","Janelas arrastáveis. Sessão remota feita com: RDP, SSH, VNC, sFTP...",RDP、SSH、VNC、sFTPのドラッグ可能、ティアリング可能、ドッキング可能なリモートセッション...,"可拆分或組合的 RDP, SSH, VNC, sFTP 遠端連線視窗"
+guidance_feature_start_setting1,Please confirm some settings before first use.,开始使用前请确认一些配置,"Než začnete používat, potvrďte několik nastavení.",Bitte bestätigen Sie einige Einstellungen vor der Benutzung.,Veuillez confirmer certains paramètres avant de commencer.,Confirme algumas configurações antes do primeiro uso.,初めて使用する前に、いくつかの設定を確認してください。,請在開始使用前完成一些設定。
+guidance_feature_start_setting2,You are able to change this setting later in Options.,这些配置稍后同样可以在设置界面中修改,Tato nastavení je možné změnit kdykoli později v Předvolbách.,Sie können diese Einstellung später in den Optionen ändern.,Vous pouvez modifier ce paramètre ultérieurement dans la page Options.,Você pode alterar essa configuração posteriormente em Opções.,この設定は、後で[オプション]で変更できます。,这些配置稍后同样可以在设置界面中修改
+word_oops,Oops...,哎哟喂...,Jejda…,Upps...,Oops...,OOPAA...,おっとっと...,糟糕...
+error_report_unexpected_error_occurred,Unexpected error occurred. Error info is shown below:,程序发生了一些未知错误，详细信息如下：,Došlo k neočekávané chybě. Informace o chybě viz níže:,Unerwarteter Fehler ist aufgetreten. Die Fehlerinformation wird unten angezeigt:,Une erreur inattendue s'est produite. Les informations sur l'erreur sont affichées ci-dessous :,Ocorreu um erro inesperado. As informações do erro são mostradas abaixo:,予期しないエラーが発生しました。エラー情報を以下に示します。,應用程式發生了一些未知的問題，以下是詳細資訊：
+error_report_to_clipboard,Copy to clipboard,保存到剪贴板,Zkopírovat do schránky,In die Zwischenablage kopieren,Copier dans le presse-papier,Copiar para área de transferência,クリップボードにコピー,複製到剪貼簿
+error_report_please_help_us_improve,Please help us improve PRemoteM by reporting this error.,请通过反馈这个错误来帮助我们改进 PRemoteM。,Prosíme pomozte nám PRemoteM vylepšit nahlášením této chyby.,"Bitte helfen Sie uns, PRemoteM zu verbessern, indem Sie diesen Fehler melden.",Veuillez nous aider à améliorer PRemoteM en signalant cette erreur.,Ajude-nos a melhorar o PRemoteM relatando este erro.,このエラーを報告して、PRemoteMの改善にご協力ください。,請反映這些問題來協助我們改善 PRemoteM。
+error_report_how_help_us_improve,Simply copy the error message and choose a way to report it.,只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）,Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.,"Kopieren Sie einfach die Fehlermeldung und wählen Sie eine der Möglichkeiten, diese zu melden.",Copiez simplement le message d'erreur et choisissez l'une des façons de le signaler.,Basta copiar a mensagem de erro e escolher uma forma de relatar.,エラーメッセージをコピーして、報告する方法を選択するだけです。,只需要複製錯誤訊息，並透過下列任意方式反映這個問題！
+error_report_send_by_email,Send by e-mail,通过邮件,Poslat e-mailem e-mail,Per E-Mail senden,Envoyé par email,Enviar por email,メールで送る,透過電子郵件
+error_report_send_by_github,Send by GitHub,通过GitHub,Poslat prostřednictvím portálu GitHub,Senden über Github,Envoyer par GitHub,Enviar pelo GitHub,GitHubで送信,透過 GitHub
+logo_selector_open_file_dialog_title,select a picture,选择图片,vyberte obrázek,Bild auswählen,sélectionner une image,selecione uma imagem,写真を選択,選擇圖片
+Default,Default,默认,Výchozí,Standard,Défaut,Predefinição,デフォルト,預設
+Exe path,Exe path,Exe 路径,Popis umístění spustitelného souboru,Exe-Pfad,Chemin exe,Caminho .exe,エグゼパス,Exe 檔案路徑
+Cmd parameter,CMD parameter,命令行参数,parametry pro příkaz,CMD-Parameter,CMD paramètre,Parâmetro CMD,CMDパラメータ,命令列參數
+New runner,New runner,新增 runner,Nový spouštěč,New runner,New runner,Novo agente,新しいランナー,新增執行器
+New runner name,New runner name,新增 runner 名,Název pro nový spouštěč,New runner name,New runner name,Novo nome do agente,新しいランナー名,新增執行器名稱
+Can not be empty!,Can not be empty!,不能为空！,Je třeba vyplnit!,Kann nicht leer sein!,Ne peux pas être vide!,Não pode estar vazio!,空にすることはできません！,不能為空值！
+Hosting,Hosting,集成,Hostování,Hosting,Hosting,Hospedar,ホスティング,嵌入
+Hosting this exe in PRemoteM tab view?,Hosting this exe in PRemoteM tab windowView?,将该 exe 集成到 PRemoteM 的 tab 视图中?,Hostovat tento spustitelný soubor v PRemoteM panelu windowView?,Hosten Sie diese exe-Datei in der PRemoteM-Registerkarte windowView?,Hébergement de cet exe dans l'onglet PRemoteM windowView ?,Hospedar este .exe na guia do PRemoteM?,このexeをPRemoteMタブwindowViewでホストしますか？,將該 exe 嵌入到 PRemoteM 的視窗分頁中顯示？
+Caution: some exe can not be hosted in PRemoteM.,"Caution: some exe can not be hosted by PRemoteM, please test by your self.",警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。,Upozornění: hostování některých spustitelných souborů pomocí PRemoteM nefunguje – je třeba si vyzkoušet.,"Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.","Attention : certains exe ne peuvent pas être hébergés par PRemoteM, veuillez tester par vous-même.","Atenção: alguns .exe não podem ser hospedados pelo PRemoteM, por favor teste por conta própria.",注意：一部のexeはPRemoteMでホストできません。自分でテストしてください。,警告：並非所有應用程式都能嵌入到 PRemoteM 中，請自行測試。
+Show environment variables,Show environment variables,显示环境变量,Zobrazit proměnné prostředí,Show umgebungsvariablen,Afficher les variables d'environnement,Mostrar variáveis de ambiente,環境変数を表示する,顯示環境變數
+How to select the specified monitors,How to select the specified monitors,如何选择指定的显示器,Jak vybrat zadané monitory,So wählen Sie die angegebenen Monitore aus,Comment sélectionner les moniteurs spécifiés,Como selecionar os monitores especificados,指定したモニターの選び方,如何選擇指定的顯示器
+mstsc.exe mode,mstsc.exe mode,mstsc.exe 模式,režim využívající mstsc.exe,mstsc.exe-Modus,mode mstsc.exe,modo mstsc.exe,mstsc.exeモード,mstsc.exe 模式
+Enabled,Enabled,启用,Zapnuto,Aktiv,Activer,Habilitado,有効,啟用
+"In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.","In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters.",在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数,V tomto režimu bude RDP relace spuštěna jako „mstsc.exe xxxx.rdp“ v příkazovém řádku a je možné zadat více parametrů.,"In diesem Modus startet RDP die Sitzung auf die Art 'mstsc.exe xxxx.rdp' in CMD, es kann mehr benutzerdefinierte Parameter anbieten.","Dans ce mode, RDP démarrera la session de la manière 'mstsc.exe xxxx.rdp' dans CMD, il peut offrir plus de paramètres personnalisés.","Nesse modo, o RDP iniciará a sessão da forma 'mstsc.exe xxxx.rdp' no CMD, podendo oferecer mais parâmetros personalizados.",このモードでは、RDPはCMDの「mstsc.exexxxx.rdp」の方法でセッションを開始し、より多くのカスタムパラメーターを提供できます。,在此模式中 RDP 將以 CMD 執行 mstsc.exe xxxx.rdp 的方式開啟工作階段，可提供更多自訂參數。
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.,注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用,Pozn.: Tento režim bude automaticky zapnut pokud je na vašem počítači přítomno dva a více monitorů s různým měřítkem zobrazení a vybrali jste režim na celou obrazovku.,"Hinweis: Dieser Modus wird automatisch aktiviert, wenn mehr als 2 Monitore mit unterschiedlicher Anzeigeskalierung auf Ihrem PC vorhanden sind und Sie den Vollbildmodus ausgewählt haben.",Remarque : Ce mode sera automatiquement activé s'il y a plus de 2 moniteurs avec une mise à l'échelle d'affichage différente sur votre PC et que vous avez sélectionné le mode plein écran.,Nota: Este modo será ativado automaticamente se houver mais de 2 monitores com escala de exibição diferente em seu PC e você selecionou o modo de tela cheia.,注：このモードは、PCに表示スケーリングが異なる2台以上のモニターがあり、フルスクリーンモードを選択した場合に自動的に有効になります。,注意：在全螢幕模式中，且目前客戶端有多個解析度不同的顯示器時，此模式將自動啟用。
+Additional settings,Additional settings,额外指令,Další nastavení,Zusätzliche Einstellungen,Paramètres additionnels,Configurações adicionais,追加の設定,額外命令
+Helper,Helper,助手,Pomocné,Helfer,Assistant,Ajudante,ヘルパー,協助
+Preview,Preview,预览,Náhled,Vorschau,Aperçu,Visualizar,プレビュー,預覽
+Preview rdp file,Preview rdp file,预览RDP文件,Náhled rdp souboru,Vorschau der RDP-Datei,Prévisualiser le fichier rdp,Visualizar arquivo RDP,rdpファイルのプレビュー,預覽 RDP 檔案
+Check monitor number,Check monitor number,查看显示器编号,Zkontrolovat počet monitorů,Überprüfen Sie die Monitornummer,Vérifier le numéro du moniteur,Verifique o número do monitor,モニター番号を確認してください,檢視顯示器識別
+Add environment variables,Add environment variables,添加环境变量,Přidat proměnné prostředí,Fügen Sie Umgebungsvariablen hinzu,Ajouter des variables d'environnement,Adicionar variáveis de ambiente,環境変数を追加する,新增環境變數
+Selected,Selected,选中,Vybráno,Ausgewählt,Choisi,Selecionado,選択済み,已選取
+Custom,Custom,定制,Uživatelsky určené,Benutzerdefiniert,Coutume,Personalizado,カスタム,自訂
 write permissions alert,"We don't have write permissions for the `{0}` directory!
 Please try:
 1. run as administrator
@@ -261,30 +261,34 @@ Por favor, tente:
 してみてください：
 1.管理者として実行
 2.ディレクトリまたはファイルのアクセス許可を変更します
-3.PRemoteMを別のフォルダーに移動します"
-Follow system,Follow system(Supported server: Windows Server 2012 R2 and above),跟随系统(服务器要求Windows Server 2012 R2及以上),Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější),Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher),Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior),システムに従ってください（サポートされているサーバー：Windows Server 2012 R2以降）
-Scale,Scale,缩放,Měřítko,Skala,Échelle,Tamanho,規模
-tag_tooltips,Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list,鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表,Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných,Linksklick : Dieses Tag als Filter festlegen{0}Strg + Linksklick : Dieses Tag zur Einschlussliste hinzufügen {0}Strg + Rechtsklick : Dieses Tag zur Ausschlussliste hinzufügen,Clic gauche : définir ce tag comme filtre{0}Ctrl + clic gauche : ajouter ce tag à la liste d'inclusion {0}Ctrl + clic droit : ajouter ce tag à la liste d'exclusion,Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão,左クリック：このタグをフィルターに設定{0} Ctrl +左クリック：このタグを包含リストに追加{0} Ctrl +右クリック：このタグを除外リストに追加
-Are you sure you want to close the connection?,Are you sure you want to close the connection?,确定要关闭连接么？,Opravdu chcete spojení zavřít?,Möchten Sie die Verbindung wirklich beenden?,Voulez-vous vraiment fermer la connexion?,Tem certeza de que deseja encerrar a conexão?,接続を閉じてもよろしいですか？
-"Hi there,","Hi there,",你好呀！,"Zdravím,","Hi,","Bonjour à tous,","E ai,",やあ、
-"I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!","I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!",希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！,"Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!","Ich hoffe, dass Sie diese App nützlich finden. Wenn Sie meine Arbeit unterstützen möchten, können Sie mir einen Kaffee spendieren oder eine nette Bewertung abgeben. Vielen Dank!","J'espère que vous trouverez cette application utile. Si vous souhaitez soutenir mon travail, vous pouvez m'offrir un café ou donner une belle critique. Merci!","Espero que ache este APP útil! Se quiser apoiar meu trabalho pode me pagar um cerveja ou me dar um elogio, obrigado!",このアプリがお役に立てば幸いです。私の仕事をサポートしたい場合は、私にコーヒーを買うか、素敵なレビューをしてください。ありがとう！
-Give suggestions,Give suggestions,提点意见,Podělit se o nápady,Geben Sie Anregungen,Faire des suggestions,Me dê sugestões,提案をする
-Buy a coffee,Buy a coffee,买杯咖啡,Koupit kafe,Kaffee kaufen,Acheter un café,Me pague uma cerveja,コーヒーを買う
-Give nice review,Give nice review,给个好评,Napsat kladnou recenzi,Geben Sie eine schöne Bewertung ab,Donnez une belle critique,Me dê um elogio,素敵なレビューを
-Do not show this again in current version,Do not show this again in current version,当前版本不再显示,Ve stávající verzi znovu nezobrazovat,In der aktuellen Version nicht mehr anzeigen,Ne plus l'afficher dans la version actuelle,Não mostrar isso novamente na versão atual,現在のバージョンではこれを再度表示しないでください
-User profile,User profile,用户配置,Profil uživatele,Benutzerprofil,Profil de l'utilisateur,Perfil de usuário,ユーザープロファイル
-Portable mode,Portable mode,便携模式,Přenosný režim,Tragbarer Modus,Mode portable,Modo portátil,ポータブルモード
-Profile is saved where executable is located,Profile is saved where executable is located,配置文件保存在可执行文件所在文件夹,"Profil je ukládán do stejného umístění, ve kterém se nachází aplikace","Das Profil wird dort gespeichert, wo sich die ausführbare Datei befindet",Le profil est enregistré là où est situé,O perfil é salvo onde o executável está localizado,プロファイルは実行可能ファイルが配置されている場所に保存されます
-Install for current windows account,Install for current windows account,为当前 Windows 用户配置,Nainstalovat pro stávající účet ve Windows,Installieren Sie für das aktuelle Windows -Konto,Installer pour le compte Windows actuel,Instale para a conta atual do Windows,現在のWindowsアカウント用にインストール
-Profile is saved in your Windows AppData folder,Profile is saved in your Windows AppData folder,配置文件保存在 Windows AppData 文件夹,Profil je ukládán do složky AppData ve vašem účtu,Das Profil wird in Ihrem Windows AppData -Ordner gespeichert,Le profil est enregistré dans votre dossier Windows AppData,O perfil é salvo na sua pasta Windows AppData,プロファイルはWindowsAppDataフォルダーに保存されます
-Selected runner,Selected runner,指定Runner,Vybraný spouštěč,Ausgewählter Läufer,Coureur sélectionné,Corredor selecionado,選ばれたランナー
-Supports the Putty-key only,Supports the Putty-key only,仅支持 putty key,Podporuje pouze Putty-klíč,Unterstützt nur den Putty-Key,Prend en charge la clé Putty uniquement,Suporta apenas a chave Putty,パテキーのみをサポート
-Supports the OpenSSH format key only with the internal SFTP client.,Supports the OpenSSH format key only with the internal SFTP client.,内置客户端仅支持 OpenSSH 格式私钥,Vestavěný SFTP klient podporuje klíče v OpenSSH formátu.,Unterstützt den Schlüssel im OpenSSH-Format nur mit dem internen SFTP-Client.,Prend en charge la clé au format OpenSSH uniquement avec le client SFTP interne.,Suporta a chave de formato OpenSSH apenas com o cliente SFTP interno.,内部SFTPクライアントでのみOpenSSHフォーマットキーをサポートします。
-Supports the OpenSSH format key and Putty-key with WinSCP.,Supports the OpenSSH format key and Putty-key with WinSCP.,WinSCP 可支持 Putty 和 OpenSSH 两种格式私钥,Podporuje klíč v OpenSSH formátu a Putty-klíč s WinSCP.,Unterstützt den OpenSSH-Formatschlüssel und Putty-Key mit WinSCP.,Prend en charge la clé de format OpenSSH et la clé Putty avec WinSCP.,Suporta a chave de formato OpenSSH e a chave Putty com WinSCP.,WinSCPでOpenSSHフォーマットキーとPuttyキーをサポートします。
-Login with password,Login with password,通过密码登录,Přihlásit se heslem,Login mit Passwort,Connectez-vous avec mot de passe,Entrar com senha,パスワードでログイン
-Login with ssh private key,Login with ssh private key,通过私钥登录,Přihlásit se pomocí soukromého ssh klíče,Melden Sie sich mit dem privaten ssh-Schlüssel an,Connectez-vous avec la clé privée ssh,Login com chave privada ssh,ssh秘密鍵でログイン
-Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,Variables d'environnement,Variáveis de ambiente,環境変数
-Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,Vor dem Start des Runners werden die Umgebungsvariablen gesetzt,"Avant le démarrage du coureur, les variables d'environnement seront définies",Antes do runner iniciar as variáveis ​​de ambiente serão definidas,ランナーを開始する前に、環境変数が設定されます
-Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button
-Show recently used here, Show recently used here, 在此显示最近使用的会话,Zobrazit nedávno použité zde,Kürzlich verwendete hier anzeigen,Afficher récemment utilisé ici,Mostrar usado recentemente aqui,最近使用したものをここに表示
-Hide recently used, Hide recently used, 隐藏最近使用的会话,Skrýt nedávno použité,Zuletzt verwendete ausblenden,Masquer récemment utilisé,Ocultar usado recentemente,最近使用したものを非表示
+3.PRemoteMを別のフォルダーに移動します","我們沒有對 `{0}` 的存取權限！
+請嘗試使用以下方式來解決此問題：
+1. 使用系統管理員身分執行
+2. 修改該目錄的權限設定
+3. 將 PRemoteM 移動到其他位置"
+Follow system,Follow system(Supported server: Windows Server 2012 R2 and above),跟随系统(服务器要求Windows Server 2012 R2及以上),Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější),Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher),Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur),Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior),システムに従ってください（サポートされているサーバー：Windows Server 2012 R2以降）,與系統相同 (Windows Server 2012 R2 及以上的伺服器)
+Scale,Scale,缩放,Měřítko,Skala,Échelle,Tamanho,規模,縮放
+tag_tooltips,Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list,鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表,Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných,Linksklick : Dieses Tag als Filter festlegen{0}Strg + Linksklick : Dieses Tag zur Einschlussliste hinzufügen {0}Strg + Rechtsklick : Dieses Tag zur Ausschlussliste hinzufügen,Clic gauche : définir ce tag comme filtre{0}Ctrl + clic gauche : ajouter ce tag à la liste d'inclusion {0}Ctrl + clic droit : ajouter ce tag à la liste d'exclusion,Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão,左クリック：このタグをフィルターに設定{0} Ctrl +左クリック：このタグを包含リストに追加{0} Ctrl +右クリック：このタグを除外リストに追加,滑鼠左鍵：過濾出該標籤{0}Ctrl + 滑鼠左鍵：將該標籤加入至過濾清單 {0}Ctrl + 滑鼠右鍵：將該標籤加入到排除清單
+Are you sure you want to close the connection?,Are you sure you want to close the connection?,确定要关闭连接么？,Opravdu chcete spojení zavřít?,Möchten Sie die Verbindung wirklich beenden?,Voulez-vous vraiment fermer la connexion?,Tem certeza de que deseja encerrar a conexão?,接続を閉じてもよろしいですか？,確定要關閉連線嗎？
+"Hi there,","Hi there,",你好呀！,"Zdravím,","Hi,","Bonjour à tous,","E ai,",やあ、,您好！
+"I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!","I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!",希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！,"Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!","Ich hoffe, dass Sie diese App nützlich finden. Wenn Sie meine Arbeit unterstützen möchten, können Sie mir einen Kaffee spendieren oder eine nette Bewertung abgeben. Vielen Dank!","J'espère que vous trouverez cette application utile. Si vous souhaitez soutenir mon travail, vous pouvez m'offrir un café ou donner une belle critique. Merci!","Espero que ache este APP útil! Se quiser apoiar meu trabalho pode me pagar um cerveja ou me dar um elogio, obrigado!",このアプリがお役に立てば幸いです。私の仕事をサポートしたい場合は、私にコーヒーを買うか、素敵なレビューをしてください。ありがとう！,希望這個應用程式有幫助到您，如果想要支持我的專案，可以幫我買杯咖啡或給我一些評等，若有任何建議也歡迎您透過 GitHub 反映，謝謝您！
+Give suggestions,Give suggestions,提点意见,Podělit se o nápady,Geben Sie Anregungen,Faire des suggestions,Me dê sugestões,提案をする,給予建議
+Buy a coffee,Buy a coffee,买杯咖啡,Koupit kafe,Kaffee kaufen,Acheter un café,Me pague uma cerveja,コーヒーを買う,買杯咖啡
+Give nice review,Give nice review,给个好评,Napsat kladnou recenzi,Geben Sie eine schöne Bewertung ab,Donnez une belle critique,Me dê um elogio,素敵なレビューを,給個好評
+Do not show this again in current version,Do not show this again in current version,当前版本不再显示,Ve stávající verzi znovu nezobrazovat,In der aktuellen Version nicht mehr anzeigen,Ne plus l'afficher dans la version actuelle,Não mostrar isso novamente na versão atual,現在のバージョンではこれを再度表示しないでください,不要在此版本再次顯示
+User profile,User profile,用户配置,Profil uživatele,Benutzerprofil,Profil de l'utilisateur,Perfil de usuário,ユーザープロファイル,使用者設定
+Portable mode,Portable mode,便携模式,Přenosný režim,Tragbarer Modus,Mode portable,Modo portátil,ポータブルモード,可移動模式
+Profile is saved where executable is located,Profile is saved where executable is located,配置文件保存在可执行文件所在文件夹,"Profil je ukládán do stejného umístění, ve kterém se nachází aplikace","Das Profil wird dort gespeichert, wo sich die ausführbare Datei befindet",Le profil est enregistré là où est situé,O perfil é salvo onde o executável está localizado,プロファイルは実行可能ファイルが配置されている場所に保存されます,設定檔案儲存在應用程式執行檔所在的位置
+Install for current windows account,Install for current windows account,为当前 Windows 用户配置,Nainstalovat pro stávající účet ve Windows,Installieren Sie für das aktuelle Windows -Konto,Installer pour le compte Windows actuel,Instale para a conta atual do Windows,現在のWindowsアカウント用にインストール,為目前的 Windows 使用者設定
+Profile is saved in your Windows AppData folder,Profile is saved in your Windows AppData folder,配置文件保存在 Windows AppData 文件夹,Profil je ukládán do složky AppData ve vašem účtu,Das Profil wird in Ihrem Windows AppData -Ordner gespeichert,Le profil est enregistré dans votre dossier Windows AppData,O perfil é salvo na sua pasta Windows AppData,プロファイルはWindowsAppDataフォルダーに保存されます,設定檔案儲存在 Users AppData 資料夾
+Selected runner,Selected runner,指定Runner,Vybraný spouštěč,Ausgewählter Läufer,Coureur sélectionné,Corredor selecionado,選ばれたランナー,選擇的執行器
+Supports the Putty-key only,Supports the Putty-key only,仅支持 putty key,Podporuje pouze Putty-klíč,Unterstützt nur den Putty-Key,Prend en charge la clé Putty uniquement,Suporta apenas a chave Putty,パテキーのみをサポート,僅支援 putty 金鑰
+Supports the OpenSSH format key only with the internal SFTP client.,Supports the OpenSSH format key only with the internal SFTP client.,内置客户端仅支持 OpenSSH 格式私钥,Vestavěný SFTP klient podporuje klíče v OpenSSH formátu.,Unterstützt den Schlüssel im OpenSSH-Format nur mit dem internen SFTP-Client.,Prend en charge la clé au format OpenSSH uniquement avec le client SFTP interne.,Suporta a chave de formato OpenSSH apenas com o cliente SFTP interno.,内部SFTPクライアントでのみOpenSSHフォーマットキーをサポートします。,SFTP 內建客戶端只能支援 OpenSSH 格式的金鑰
+Supports the OpenSSH format key and Putty-key with WinSCP.,Supports the OpenSSH format key and Putty-key with WinSCP.,WinSCP 可支持 Putty 和 OpenSSH 两种格式私钥,Podporuje klíč v OpenSSH formátu a Putty-klíč s WinSCP.,Unterstützt den OpenSSH-Formatschlüssel und Putty-Key mit WinSCP.,Prend en charge la clé de format OpenSSH et la clé Putty avec WinSCP.,Suporta a chave de formato OpenSSH e a chave Putty com WinSCP.,WinSCPでOpenSSHフォーマットキーとPuttyキーをサポートします。,WinSCP 可以支援 Putty 和 OpenSSH 兩種格式的金鑰
+Login with password,Login with password,通过密码登录,Přihlásit se heslem,Login mit Passwort,Connectez-vous avec mot de passe,Entrar com senha,パスワードでログイン,透過密碼登入
+Login with ssh private key,Login with ssh private key,通过私钥登录,Přihlásit se pomocí soukromého ssh klíče,Melden Sie sich mit dem privaten ssh-Schlüssel an,Connectez-vous avec la clé privée ssh,Login com chave privada ssh,ssh秘密鍵でログイン,透過私密金鑰登入
+Environment variables,Environment variables,环境变量,Proměnné prostředí,Umgebungsvariablen,Variables d'environnement,Variáveis de ambiente,環境変数,環境變數
+Before runner start the environment variables will be set,Befor runner start the environment variables will be set,环境变量将在启动前写入Runner,Před startem spouštěče budou nastaveny proměnné prostředí,Vor dem Start des Runners werden die Umgebungsvariablen gesetzt,"Avant le démarrage du coureur, les variables d'environnement seront définies",Antes do runner iniciar as variáveis ​​de ambiente serão definidas,ランナーを開始する前に、環境変数が設定されます,環境變數會在執行器啟動前設定
+Show XXX button,Show `{0}` button,显示 `{0}` 按钮,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,Show `{0}` button,顯示 `{0}` 按鈕
+Show recently used here, Show recently used here, 在此显示最近使用的会话,Zobrazit nedávno použité zde,Kürzlich verwendete hier anzeigen,Afficher récemment utilisé ici,Mostrar usado recentemente aqui,最近使用したものをここに表示,在此顯示最近的工作階段
+Hide recently used, Hide recently used, 隐藏最近使用的会话,Skrýt nedávno použité,Zuletzt verwendete ausblenden,Masquer récemment utilisé,Ocultar usado recentemente,最近使用したものを非表示,隱藏最近的工作階段
