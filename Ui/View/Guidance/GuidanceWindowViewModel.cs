@@ -81,8 +81,7 @@ namespace PRM.View.Guidance
             {
                 if (SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value))
                 {
-                    var configurationService = new ConfigurationService(_configuration, new KeywordMatchService());
-                    var e = configurationService.SetSelfStart();
+                    var e = ConfigurationService.SetSelfStartStatic(value);
                     if (e != null)
                     {
                         _configuration.General.AppStartAutomatically = false;

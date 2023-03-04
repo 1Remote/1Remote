@@ -119,7 +119,7 @@ namespace PRM.Service
         public System.Windows.Media.Color GetAccentTextColor => ColorAndBrushHelper.HexColorToMediaColor(AccentTextColor);
 
         public System.Windows.Media.Color GetBackgroundColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundColor);
-        public System.Windows.Media.Color GetBackgroundTextColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor); 
+        public System.Windows.Media.Color GetBackgroundTextColor => ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor);
         #endregion
     }
 
@@ -220,25 +220,36 @@ namespace PRM.Service
             SetSelfStart();
         }
 
-        public Exception? SetSelfStart()
+
+        public static Exception? SetSelfStartStatic(bool autoStart)
         {
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({autoStart}, \"PRemoteM\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(autoStart, "PRemoteM");
 #else
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{Assert.APP_NAME}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, Assert.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({autoStart}, \"{Assert.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(autoStart, Assert.APP_NAME);
 #endif
                 return null;
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                General.AppStartAutomatically = false;
                 return e;
             }
+        }
+
+
+        public Exception? SetSelfStart()
+        {
+            var e = SetSelfStartStatic(General.AppStartAutomatically);
+            if (e != null)
+            {
+                General.AppStartAutomatically = false;
+            }
+            return e;
         }
 
 

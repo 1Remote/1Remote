@@ -45,7 +45,10 @@ namespace PRM.Utils
         {
             if (_isStarted == false) { return; }
             properties ??= new Dictionary<string, string>();
-            properties.TryAdd("Version", AppVersion.Version);
+            if (properties.ContainsKey("Version"))
+                properties["Version"] = AppVersion.Version;
+            else
+                properties.Add("Version", AppVersion.Version);
             Crashes.TrackError(e, properties, attachments?.ToArray());
         }
 
