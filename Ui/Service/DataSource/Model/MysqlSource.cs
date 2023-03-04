@@ -54,7 +54,7 @@ namespace _1RM.Service.DataSource.Model
                 var t = UnSafeStringEncipher.SimpleDecrypt(EncryptPassword);
                 if (string.IsNullOrEmpty(t))
                     return EncryptPassword;
-                return t;
+                return t ?? "";
             }
             set
             {

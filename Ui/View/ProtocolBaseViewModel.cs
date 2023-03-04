@@ -79,7 +79,6 @@ namespace _1RM.View
 
         public ProtocolBaseViewModel(ProtocolBase psb)
         {
-            Debug.Assert(psb != null);
             Server = psb;
             _server = psb;
 
@@ -138,9 +137,9 @@ namespace _1RM.View
 
 
         private object? _subTitleControl = null;
-        public object? SubTitleControl
+        public object SubTitleControl
         {
-            get => _subTitleControl ??= OrgSubTitleControl;
+            get { return _subTitleControl ??= OrgSubTitleControl; }
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 

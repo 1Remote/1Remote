@@ -26,7 +26,7 @@ namespace _1RM.Resources.Icons
         {
             get
             {
-                Debug.Assert(_uniqueInstance != null);
+                _uniqueInstance ??= new ServerIcons();
                 return _uniqueInstance;
             }
         }

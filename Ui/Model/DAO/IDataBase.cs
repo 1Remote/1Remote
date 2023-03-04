@@ -68,14 +68,6 @@ namespace _1RM.Model.DAO
 
         public abstract bool SetConfig(string key, string value);
 
-        /// <summary>
-        /// set rsa encryption and encrypt or decrypt the data.
-        /// </summary>
-        /// <param name="privateKeyPath"></param>
-        /// <param name="publicKey"></param>
-        /// <param name="servers">已加密或已解密的数据</param>
-        public abstract bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers);
-
         public abstract void SetDataUpdateTimestamp(long time = -1);
         public abstract long GetDataUpdateTimestamp();
 

@@ -153,15 +153,6 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        /// <inheritdoc />
-        public override bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
-        {
-            OpenConnection();
-            var ret = base.SetConfigRsa(privateKeyPath, publicKey, servers);
-            CloseConnection();
-            return ret;
-        }
-
 
         public override void SetDataUpdateTimestamp(long time = -1)
         {

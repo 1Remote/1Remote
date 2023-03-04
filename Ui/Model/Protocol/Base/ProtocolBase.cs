@@ -280,9 +280,9 @@ namespace _1RM.Model.Protocol.Base
             //}
 
 
-            var clone = this.MemberwiseClone() as ProtocolBase;
+            var clone = (ProtocolBase)this.MemberwiseClone();
             Debug.Assert(clone != null);
-            clone.Tags = new List<string>(this.Tags);
+            clone!.Tags = new List<string>(this.Tags);
             if (this is ProtocolBaseWithAddressPortUserPwd p
                 && clone is ProtocolBaseWithAddressPortUserPwd c)
             {

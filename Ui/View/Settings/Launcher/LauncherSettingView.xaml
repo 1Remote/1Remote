@@ -17,7 +17,7 @@
 
             <TextBlock Text="{DynamicResource Launcher}" Style="{StaticResource BlockTitleColumn}" />
 
-            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+            <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
@@ -26,20 +26,22 @@
                 <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
             </Grid>
 
-            <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <ComboBox Width="100" 
-                              ItemsSource="{Binding HotkeyModifierKeys}"
-                              SelectedValuePath="Key"
-                              DisplayMemberPath="Value" 
-                              SelectedIndex="{Binding LauncherHotKeyModifiers, Converter={StaticResource ConverterHotkeyModifierKeys}}">
-                        <!--<ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
+            <StackPanel IsEnabled="{Binding LauncherEnabled, Mode=OneWay}" 
+                        Visibility="{Binding LauncherEnabled, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid Style="{StaticResource GridOneRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <ComboBox Width="100" 
+                                  ItemsSource="{Binding HotkeyModifierKeys}"
+                                  SelectedValuePath="Key"
+                                  DisplayMemberPath="Value" 
+                                  SelectedIndex="{Binding LauncherHotKeyModifiers, Converter={StaticResource ConverterHotkeyModifierKeys}}">
+                            <!--<ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
@@ -47,92 +49,103 @@
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
                         <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>-->
-                    </ComboBox>
-                    <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
-                    <TextBox Width="100"
-                             IsReadOnly="True"
-                             IsReadOnlyCaretVisible="False"
-                             IsUndoEnabled="False"
-                             PreviewKeyDown="TextBoxKey_OnPreviewKeyDown"
-                             Text="{Binding LauncherHotKeyKey, Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
-                </StackPanel>
-            </Grid>
+                        </ComboBox>
+                        <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
+                        <TextBox Width="100"
+                                 IsReadOnly="True"
+                                 IsReadOnlyCaretVisible="False"
+                                 IsUndoEnabled="False"
+                                 PreviewKeyDown="TextBoxKey_OnPreviewKeyDown"
+                                 Text="{Binding LauncherHotKeyKey, Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
+                    </StackPanel>
+                </Grid>
 
-            <TextBlock Text="{DynamicResource system_options_quick_match_providers}" Style="{StaticResource BlockTitleColumn}" />
 
-            <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                <Grid Style="{StaticResource GridOneRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowCredentials, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource 'Show credentials info'}"></CheckBox>
+                </Grid>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" >
-                    <Grid MinWidth="650">
-                        <Grid.Resources>
-                            <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
-                                <Grid Margin=" 0 0 5 15">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"></RowDefinition>
-                                        <RowDefinition Height="Auto"></RowDefinition>
-                                        <RowDefinition Height="Auto"></RowDefinition>
-                                    </Grid.RowDefinitions>
+                <TextBlock Text="{DynamicResource system_options_quick_match_providers}" Style="{StaticResource BlockTitleColumn}" />
 
-                                    <CheckBox Grid.Row="0" Cursor="Hand" Margin="0 0 1 0"
+                <Grid Style="{StaticResource GridOneRow}" IsEnabled="{Binding LauncherEnabled, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" >
+                        <Grid MinWidth="650">
+                            <Grid.Resources>
+                                <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
+                                    <Grid Margin=" 0 0 5 15">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                        </Grid.RowDefinitions>
+
+                                        <CheckBox Grid.Row="0" Cursor="Hand" Margin="0 0 1 0"
                                               IsChecked="{Binding Enabled}"
                                               IsEnabled="{Binding IsEditable}"
                                               Content="{Binding Title1}"
                                               ToolTip="{Binding Title1}"
                                     ></CheckBox>
-                                    <TextBlock Grid.Row="2"
+                                        <TextBlock Grid.Row="2"
                                                Text="{Binding Title2}"
                                                ToolTip="{Binding Title2}"
                                                FontSize="10" Opacity="0.6"></TextBlock>
-                                </Grid>
-                            </DataTemplate>
-                        </Grid.Resources>
-                        <ListView Background="Transparent" BorderThickness="1"
+                                    </Grid>
+                                </DataTemplate>
+                            </Grid.Resources>
+                            <ListView Background="Transparent" BorderThickness="1"
                                   ItemsSource="{Binding AvailableMatcherProviders}" 
                                   ItemTemplate="{StaticResource DataTemplateForMatcher}">
-                            <ListView.Style>
-                                <Style TargetType="ListView">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ListView}">
-                                                <ScrollViewer x:Name="ScrollViewer" BorderThickness="0">
-                                                    <ItemsPresenter/>
-                                                </ScrollViewer>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListView.Style>
-                            <ListView.Resources>
-                                <Style TargetType="{x:Type ListViewItem}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                <ListView.Style>
+                                    <Style TargetType="ListView">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListView}">
+                                                    <ScrollViewer x:Name="ScrollViewer" BorderThickness="0">
+                                                        <ItemsPresenter/>
+                                                    </ScrollViewer>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListView.Style>
+                                <ListView.Resources>
+                                    <Style TargetType="{x:Type ListViewItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{x:Null}" />
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="true">
-                                            <Setter Property="Background" Value="{x:Null}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListView.Resources>
-                        </ListView>
-                    </Grid>
-                </StackPanel>
-            </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{x:Null}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter Property="Background" Value="{x:Null}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.Resources>
+                            </ListView>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

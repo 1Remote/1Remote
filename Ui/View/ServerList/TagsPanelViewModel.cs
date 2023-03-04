@@ -131,7 +131,7 @@ namespace _1RM.View.ServerList
                         return "";
                     }), defaultResponse: obj.Name, ownerViewModel: IoC.Get<MainWindowViewModel>());
 
-                    if (string.IsNullOrEmpty(newTagName))
+                    if (newTagName == null || string.IsNullOrEmpty(newTagName))
                         return;
 
                     newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);

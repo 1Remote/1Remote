@@ -46,6 +46,7 @@ namespace _1RM.View.Launcher
 
             Filter = "";
             IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewVisibility = Visibility.Visible;
+            ShowCredentials = IoC.Get<ConfigurationService>().Launcher.ShowCredentials;
             Execute.OnUIThread(() =>
             {
                 view.GridActionsList.Visibility = Visibility.Collapsed;
@@ -169,11 +170,19 @@ namespace _1RM.View.Launcher
             if (this.View is not ServerSelectionsView view) return;
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
 
+            var selectedId = SelectedItem?.Id ?? "";
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
             foreach (var viewModel in VmServerList)
             {
                 viewModel.PropertyChanged -= OnLastConnectTimeChanged;
                 viewModel.PropertyChanged += OnLastConnectTimeChanged;
+            }
+
+            if (string.IsNullOrEmpty(selectedId) == false)
+            {
+                var s = VmServerList.FirstOrDefault(x => x.Id == selectedId);
+                if (s != null)
+                    SelectedIndex = VmServerList.IndexOf(s);
             }
 
             Execute.OnUIThread(() =>
@@ -234,7 +243,7 @@ namespace _1RM.View.Launcher
             foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
                 var server = vm.Server;
-                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp);
+                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp, ShowCredentials);
                 if (s.Item1 == true)
                 {
                     Execute.OnUIThreadSync(() =>
@@ -242,7 +251,8 @@ namespace _1RM.View.Launcher
                         if (s.Item2 == null)
                         {
                             vm.DisplayNameControl = vm.OrgDisplayNameControl;
-                            vm.SubTitleControl = vm.OrgSubTitleControl;
+                            if (ShowCredentials)
+                                vm.SubTitleControl = vm.OrgSubTitleControl;
                         }
                         else
                         {
@@ -250,7 +260,6 @@ namespace _1RM.View.Launcher
                             if (mrs.IsMatchAllKeywords)
                             {
                                 var displayName = server.DisplayName;
-                                var subTitle = server.SubTitle;
                                 var m1 = mrs.HitFlags[0];
                                 if (m1.Any(x => x == true))
                                 {
@@ -277,30 +286,34 @@ namespace _1RM.View.Launcher
                                     vm.DisplayNameControl = vm.OrgDisplayNameControl;
                                 }
 
-                                var m2 = mrs.HitFlags[1];
-                                if (m2.Any(x => x == true))
+                                if (ShowCredentials)
                                 {
-                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                    for (int i = 0; i < m2.Count; i++)
+                                    var subTitle = server.SubTitle;
+                                    var m2 = mrs.HitFlags[1];
+                                    if (m2.Any(x => x == true))
                                     {
-                                        if (m2[i])
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = subTitle[i].ToString(),
-                                                Background = _highLightBrush,
-                                            });
-                                        else
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = subTitle[i].ToString(),
-                                            });
-                                    }
+                                        var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
+                                        for (int i = 0; i < m2.Count; i++)
+                                        {
+                                            if (m2[i])
+                                                sp.Children.Add(new TextBlock()
+                                                {
+                                                    Text = subTitle[i].ToString(),
+                                                    Background = _highLightBrush,
+                                                });
+                                            else
+                                                sp.Children.Add(new TextBlock()
+                                                {
+                                                    Text = subTitle[i].ToString(),
+                                                });
+                                        }
 
-                                    vm.SubTitleControl = sp;
-                                }
-                                else
-                                {
-                                    vm.SubTitleControl = vm.OrgSubTitleControl;
+                                        vm.SubTitleControl = sp;
+                                    }
+                                    else
+                                    {
+                                        vm.SubTitleControl = vm.OrgSubTitleControl;
+                                    }
                                 }
                             }
                         }
@@ -352,6 +365,14 @@ namespace _1RM.View.Launcher
         {
             get => this._isShowNoteFieldEnabled;
             set => this.SetAndNotifyIfChanged(ref _isShowNoteFieldEnabled, value);
+        }
+
+
+        private bool _showCredentials;
+        public bool ShowCredentials
+        {
+            get => _showCredentials;
+            set => SetAndNotifyIfChanged(ref _showCredentials, value);
         }
 
         private Visibility _gridNoteVisibility = Visibility.Visible;

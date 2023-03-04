@@ -101,7 +101,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                         return "";
                     }), ownerViewModel: IoC.Get<MainWindowViewModel>());
 
-                    if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
+                    if (name != null && string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
                         if (SelectedProtocol == SSH.ProtocolName || SelectedProtocol == SFTP.ProtocolName)

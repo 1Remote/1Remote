@@ -55,7 +55,7 @@ namespace _1RM.Utils.KiTTY.Model
             InitDefault();
             if (!string.IsNullOrEmpty(overwritePath))
             {
-                var overWrite = Read(overwritePath);
+                var overWrite = Read(overwritePath!);
                 foreach (var item in overWrite)
                 {
                     if (Options.Any(x => string.Equals(x.Key, item.Key, StringComparison.CurrentCultureIgnoreCase)))
@@ -72,7 +72,7 @@ namespace _1RM.Utils.KiTTY.Model
             }
 
             // DISABLED ALT + F4
-            if (Options.Any(x => String.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase)))
+            if (Options.Any(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase)))
             {
                 var oldItem = Options.First(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase));
                 oldItem.Value = 0;

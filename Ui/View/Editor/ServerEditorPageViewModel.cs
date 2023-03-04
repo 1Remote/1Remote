@@ -235,9 +235,6 @@ namespace _1RM.View.Editor
 
             _orgServer = Server.Clone();
 
-            Debug.Assert(IsBuckEdit == true);
-            Debug.Assert(_sharedTypeInBuckEdit != null);
-
             // init ui
             if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
                 UpdateRunners(_serversInBuckEdit.First().Protocol);
@@ -311,8 +308,8 @@ namespace _1RM.View.Editor
                     // bulk edit
                     if (IsBuckEdit == true)
                     {
-                        Debug.Assert(_sharedTypeInBuckEdit != null);
-                        Debug.Assert(_serversInBuckEdit != null);
+                        if (_sharedTypeInBuckEdit == null) throw new NullReferenceException($"{nameof(_sharedTypeInBuckEdit)} should not be null!");
+                        if (_serversInBuckEdit == null) throw new NullReferenceException($"{nameof(_serversInBuckEdit)} should not be null!");
                         // copy the same value properties
                         var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var property in properties)
@@ -460,7 +457,6 @@ namespace _1RM.View.Editor
 
         private void UpdateServerWhenProtocolChanged(Type newProtocolType)
         {
-            Debug.Assert(newProtocolType?.FullName != null);
             // change protocol
             var protocolServerBaseAssembly = typeof(ProtocolBase).Assembly;
             var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
@@ -530,8 +526,6 @@ namespace _1RM.View.Editor
         /// <param name="protocolType"></param>
         private void ReflectProtocolEditControl(Type protocolType)
         {
-            Debug.Assert(protocolType?.FullName != null);
-
             Execute.OnUIThreadSync(() =>
             {
                 try

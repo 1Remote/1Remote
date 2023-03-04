@@ -121,7 +121,7 @@ namespace _1RM.View.Host.ProtocolHosts
         private void RdpInitServerInfo()
         {
             #region server info
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             // server connection info: user name\ psw \ port ...
             _rdpClient.Server = _rdpSettings.Address;
             _rdpClient.Domain = _rdpSettings.Domain;
@@ -150,7 +150,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitStatic()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Static");
             // enable CredSSP, will use CredSsp if the client supports.
             _rdpClient.AdvancedSettings7.EnableCredSspSupport = true;
@@ -227,7 +227,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitConnBar()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init conn bar");
             _rdpClient.AdvancedSettings6.DisplayConnectionBar = _rdpSettings.IsFullScreenWithConnectionBar == true;
             _rdpClient.AdvancedSettings6.ConnectionBarShowPinButton = true;
@@ -258,7 +258,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitRedirect()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Redirect");
 
 
@@ -370,7 +370,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitDisplay(int width = 0, int height = 0, bool isReconnecting = false)
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             #region Display
 
             _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
@@ -472,7 +472,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitPerformance()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Performance");
 
             #region Performance
@@ -532,7 +532,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void RdpInitGateway()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Gateway");
 
             #region Gateway
@@ -619,7 +619,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void Conn()
         {
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             Dispatcher.Invoke(() =>
             {
                 try
@@ -658,7 +658,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 return;
             }
-            Debug.Assert(_rdpClient != null);
+            Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
         }
 

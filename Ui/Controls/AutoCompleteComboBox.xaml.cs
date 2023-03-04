@@ -37,10 +37,10 @@ namespace _1RM.Controls
                 e.Handled = true;
                 this.SelectedItem = null;
                 var cmbTextBox = (TextBox)this.Template.FindName("PART_EditableTextBox", this);
-                cmbTextBox.Text = value;
+                cmbTextBox.Text = value!;
                 cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
                 IsDropDownOpen = false;
-                OnSelectionConfirmByMouse?.Invoke(value);
+                OnSelectionConfirmByMouse?.Invoke(cmbTextBox.Text);
             }
             else
             {
@@ -115,12 +115,10 @@ namespace _1RM.Controls
 
         private static void TextChanged(AutoCompleteComboBox o, string newValue)
         {
-            if ((o.Selections?.Count() ?? 0) == 0)
-                return;
-            if (o._textChangedEnabled == false)
-                return;
+            if(o.Selections == null) return;
+            if (!o.Selections.Any()) return;
+            if (o._textChangedEnabled == false) return;
             o._textChangedEnabled = false;
-            Debug.Assert(o?.Selections != null);
             if (string.IsNullOrWhiteSpace(newValue))
             {
                 o.CbContent.IsDropDownOpen = false;

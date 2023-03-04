@@ -106,7 +106,6 @@ namespace _1RM.Service.DataSource.Model
         {
             var dataBaseRef = GetDataBase();
             // open db or create db.
-            Debug.Assert(dataBaseRef != null);
 
 
             var connectionString = GetConnectionString(connectTimeOutSeconds);
@@ -144,7 +143,6 @@ namespace _1RM.Service.DataSource.Model
         public virtual void Database_CloseConnection()
         {
             var dataBase = GetDataBase();
-            Debug.Assert(dataBase != null);
             if (dataBase.IsConnected())
                 dataBase.CloseConnection();
         }

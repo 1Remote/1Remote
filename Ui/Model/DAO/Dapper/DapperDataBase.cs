@@ -66,7 +66,16 @@ namespace _1RM.Model.DAO.Dapper
                             throw new NotImplementedException(_databaseType.ToString() + " not supported!");
                     }
                 }
-                _dbConnection.Open();
+
+                try
+                {
+                    _dbConnection.Open();
+                }
+                catch (Exception e)
+                {
+                    MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "_databaseType", _databaseType.ToString() } });
+                    MessageBoxHelper.ErrorAlert(EnumDatabaseStatus.AccessDenied.GetErrorInfo() + " ----> ", e.Message);
+                }
             }
         }
 
@@ -102,6 +111,8 @@ namespace _1RM.Model.DAO.Dapper
 
         public override void InitTables()
         {
+            OpenConnection();
+            if (!IsConnected()) return;
             _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
     `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
@@ -129,6 +140,8 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
+                OpenConnection();
+                if (!IsConnected()) return null;
                 Debug.Assert(id > 0);
                 var dbServer =
                     _dbConnection?.QueryFirstOrDefault<Server>(
@@ -142,6 +155,8 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
+                OpenConnection();
+                if (!IsConnected()) return null;
 #pragma warning disable CS8619
                 return _dbConnection?.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
 #pragma warning restore CS8619 
@@ -152,6 +167,8 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
+                OpenConnection();
+                if (!IsConnected()) return 0;
                 return _dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0;
             }
         }
@@ -162,10 +179,17 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
 
+        /// <summary>
+        /// return new id
+        /// </summary>
+        /// <param name="protocolBase"></param>
+        /// <returns></returns>
         public override string AddServer(ProtocolBase protocolBase)
         {
             lock (this)
             {
+                OpenConnection();
+                if (!IsConnected()) return string.Empty;
                 if (protocolBase.IsTmpSession())
                     protocolBase.Id = Ulid.NewUlid().ToString();
                 var server = protocolBase.ToDbServer();
@@ -180,6 +204,8 @@ VALUES
         {
             lock (this)
             {
+                OpenConnection();
+                if (!IsConnected()) return 0;
                 var rng = new NUlid.Rng.MonotonicUlidRng();
                 foreach (var protocolBase in protocolBases)
                 {
@@ -204,6 +230,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return false;
                 var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -216,6 +243,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return false;
                 var dbss = servers.Select(x => x.ToDbServer());
                 var ret = _dbConnection?.Execute(SqlUpdate, dbss) > 0;
                 if (ret)
@@ -229,6 +257,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return false;
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -241,6 +270,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return false;
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -258,6 +288,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return null;
                 var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                     new { Key = key, });
                 return config?.Value;
@@ -277,41 +308,9 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 OpenConnection();
+                if (!IsConnected()) return false;
                 var existed = GetConfigPrivate(key) != null;
                 return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
-            }
-        }
-
-        public override bool SetConfigRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
-        {
-            lock (this)
-            {
-                if (_dbConnection == null)
-                    return false;
-                OpenConnection();
-                var data = servers.Select(x => x.ToDbServer());
-                using var tran = _dbConnection.BeginTransaction();
-                try
-                {
-                    var existedPrivate = GetConfigPrivate("RSA_PrivateKeyPath") != null;
-                    var existedPublic = GetConfigPrivate("RSA_PublicKey") != null;
-
-                    _dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
-                    _dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
-                    if (data.Any())
-                        _dbConnection?.Execute(SqlUpdate, data, tran);
-                    tran.Commit();
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Fatal(e);
-                    // Not needed any rollback, if you don't call Complete
-                    // a rollback is automatic exiting from the using block
-                    //tran.Rollback();
-                    return false;
-                }
-
-                return true;
             }
         }
 

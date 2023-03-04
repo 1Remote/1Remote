@@ -199,7 +199,7 @@ namespace _1RM.Service
                 });
             }
             Debug.Assert(ret != null);
-            return ret;
+            return ret!;
         }
 
         public TabWindowBase? GetTabByConnectionId(string connectionId)

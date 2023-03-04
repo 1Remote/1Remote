@@ -39,28 +39,26 @@
 
 
             <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
-                <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}">
-                    <Grid VerticalAlignment="Center" 
-                          Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="5"></ColumnDefinition>
-                            <ColumnDefinition Width="30"></ColumnDefinition>
-                            <ColumnDefinition Width="5"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="150"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
+                <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}"
+                      Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="1">
+                        <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                    </Grid>
+
+
+                    <Grid Grid.Column="3">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
-
-                        <Grid Grid.Column="1" Grid.RowSpan="2">
-                            <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                        </Grid>
-
-
-
-                        <ContentControl Grid.Row="0" Grid.Column="3" Content="{Binding DisplayNameControl}">
+                        <ContentControl Grid.Row="0" Content="{Binding DisplayNameControl}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="Opacity" Value="0.8"></Setter>
@@ -77,10 +75,9 @@
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
-
-
-
-                        <ContentControl Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Opacity="0.8" Content="{Binding SubTitleControl}">
+                        <ContentControl Grid.Row="1" Opacity="0.8" 
+                                        Content="{Binding SubTitleControl}"
+                                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ServerSelectionsView}}, Path=DataContext.ShowCredentials, Converter={StaticResource ConverterBool2Visible}}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="Opacity" Value="0.6"></Setter>
@@ -97,91 +94,95 @@
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
+                    </Grid>
 
 
 
 
-                        <TextBlock Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" 
-                                   Text="{Binding TagString}"
-                                   ToolTip="{Binding TagString}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="Opacity" Value="0.5"></Setter>
-                                    <Setter Property="FontSize" Value="10"></Setter>
-                                    <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Margin" Value="5 0 10 0"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                            <Setter Property="Opacity" Value="0.8"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
 
 
 
-                        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="4">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <!--Note button-->
-                                <Grid Background="Transparent" ToolTip="press '←' key to show/hide Note">
-                                    <Button Background="Transparent"
-                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            attachProperty:VisionElement.Opacity="0.8"
-                                            attachProperty:VisionElement.OpacityAccent="0.9"
-                                            Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
-                                            Tag="{Binding Server.Id}"
-                                            PreviewMouseDown="ButtonShowNote_OnClick"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.CmdShowNoteField}"
-                                    >
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                                <Setter Property="Margin" Value="5 0 0 0"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}" Value="False">
-                                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <Grid Width="16">
-                                            <Path Data="{StaticResource NoteGeometry}"
-                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  StrokeThickness="0" Stretch="Uniform" />
-                                        </Grid>
-                                    </Button>
-                                </Grid>
-                                <!--ProtocolDisplayName-->
-                                <TextBlock Text="{Binding Server.ProtocolDisplayName}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                            <Setter Property="Opacity" Value="0.3"></Setter>
-                                            <Setter Property="FontSize" Value="16"></Setter>
-                                            <Setter Property="FontWeight" Value="Bold"></Setter>
-                                            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                            <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                            <Setter Property="Margin" Value="5 0 10 0"></Setter>
-                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                    <TextBlock Grid.Column="3" Grid.ColumnSpan="2"
+                               VerticalAlignment="Bottom"
+                               Text="{Binding TagString}"
+                               ToolTip="{Binding TagString}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                                <Setter Property="FontSize" Value="10"></Setter>
+                                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                        <Setter Property="Opacity" Value="0.8"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+
+
+                    <Grid Grid.Row="0" Grid.Column="4">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <!--Note button-->
+                            <Grid Background="Transparent" ToolTip="press '←' key to show/hide Note">
+                                <Button Background="Transparent"
+                                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        attachProperty:VisionElement.Opacity="0.8"
+                                        attachProperty:VisionElement.OpacityAccent="0.9"
+                                        Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
+                                        Tag="{Binding Server.Id}"
+                                        PreviewMouseDown="ButtonShowNote_OnClick"
+                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.CmdShowNoteField}"
+                                >
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                            <Setter Property="Margin" Value="5 0 0 0"></Setter>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                                    <Setter Property="Opacity" Value="0.7"></Setter>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}" Value="False">
+                                                    <Setter Property="IsEnabled" Value="False"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </StackPanel>
-                        </Grid>
+                                    </Button.Style>
+                                    <Grid Width="16">
+                                        <Path Data="{StaticResource NoteGeometry}"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="0" Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                            <!--ProtocolDisplayName-->
+                            <TextBlock Text="{Binding Server.ProtocolDisplayName}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                        <Setter Property="Opacity" Value="0.3"></Setter>
+                                        <Setter Property="FontSize" Value="16"></Setter>
+                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                        <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                <Setter Property="Opacity" Value="0.7"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </Grid>
             </DataTemplate>

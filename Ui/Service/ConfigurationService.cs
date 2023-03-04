@@ -50,6 +50,7 @@ namespace _1RM.Service
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShowRecentlySessionInTray = false;
+        public bool ShowNoteFieldInListView = true;
         #endregion
     }
 
@@ -66,7 +67,7 @@ namespace _1RM.Service
         public Key HotKeyKey = Key.M;
 
         public bool ShowNoteFieldInLauncher = true;
-        public bool ShowNoteFieldInListView = true;
+        public bool ShowCredentials = true;
     }
 
     public class KeywordMatchConfig
