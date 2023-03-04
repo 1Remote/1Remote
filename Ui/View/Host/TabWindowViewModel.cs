@@ -30,7 +30,7 @@ namespace PRM.View.Host
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            if (Items.Count == 0 && this.View is TabWindowView tab)
+            if (Items.Count == 0 && this.View is TabWindowView { IsClosing: false } tab)
             {
                 tab.Hide();
             }

@@ -43,13 +43,13 @@ namespace PRM.Service
 
         public void Release()
         {
-            foreach (var tabWindow in _token2TabWindows.ToArray())
+            foreach (var kv in _token2TabWindows.ToArray())
             {
-                tabWindow.Value.Hide();
+                if (kv.Value.IsClosing == false) kv.Value.Hide();
             }
             foreach (var kv in _connectionId2FullScreenWindows.ToArray())
             {
-                kv.Value.Hide();
+                if (kv.Value.IsClosing == false) kv.Value.Hide();
             }
             this.CloseProtocolHostAsync(_connectionId2Hosts.Keys.ToArray());
         }
@@ -88,13 +88,13 @@ namespace PRM.Service
 
                     try
                     {
-                        t.Show();
-                        t.Activate();
+                        if (t.IsClosing == false) t.Show();
+                        if (t.IsClosing == false) t.Activate();
                     }
                     catch (Exception e)
                     {
                         SimpleLogHelper.Error(e);
-                        MarkProtocolHostToClose(new string[]{ serverId.ToString() });
+                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
                         CleanupProtocolsAndWindows();
                     }
                 }
@@ -279,8 +279,8 @@ namespace PRM.Service
                     Execute.OnUIThreadSync(() =>
                     {
                         tab ??= this.GetOrCreateTabWindow(assignTabToken);
-                        if (tab == null)
-                            return;
+                        if (tab == null) return;
+                        if (tab.IsClosing) return;
                         tab.Show();
 
                         // get display area size for host
@@ -426,7 +426,7 @@ namespace PRM.Service
                 full.LastTabToken = _lastTabToken;
             }
             full.SetProtocolHost(host);
-            full.Show();
+            if (full.IsClosing == false) full.Show();
             return full;
         }
 
@@ -460,7 +460,7 @@ namespace PRM.Service
 
             _connectionId2FullScreenWindows.TryAdd(host.ConnectionId, full);
             full.SetProtocolHost(host);
-            full.Show();
+            if (full.IsClosing == false) full.Show();
             return full;
         }
 
@@ -559,7 +559,7 @@ namespace PRM.Service
 
                 tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
                 tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
-                tab.Show();
+                if (tab.IsClosing == false) tab.Show();
                 _lastTabToken = tab.Token;
 
                 int loopCount = 0;
@@ -610,14 +610,14 @@ namespace PRM.Service
 
                     SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
                     fullScreenWindow.SetProtocolHost(null);
-                    fullScreenWindow.Hide();
+                    if (fullScreenWindow.IsClosing == false) fullScreenWindow.Hide();
                 }
                 else
                     tab = this.GetOrCreateTabWindow();
             }
 
-            if (tab == null)
-                return;
+            if (tab == null) return;
+            if (tab.IsClosing) return;
 
             // assign host to tab
             if (tab.GetViewModel().Items.All(x => x.Content != host))
@@ -687,7 +687,7 @@ namespace PRM.Service
                             Execute.OnUIThread(() =>
                             {
                                 tab.GetViewModel().Items.Remove(tabItemVm);
-                                if (tab.GetViewModel().Items.Count == 0)
+                                if (tab.GetViewModel().Items.Count == 0 && tab.IsClosing == false)
                                 {
                                     tab.Hide();
                                 }
@@ -719,7 +719,7 @@ namespace PRM.Service
                             Execute.OnUIThread(() =>
                             {
                                 full.SetProtocolHost(null);
-                                full.Hide();
+                                if (full.IsClosing == false) full.Hide();
                             });
                         }
                     }
