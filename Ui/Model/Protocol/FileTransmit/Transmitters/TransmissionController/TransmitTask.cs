@@ -77,16 +77,14 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                     TransmitItemNames += di.Name + ", ";
                 }
             }
-            Debug.Assert(TransmitItemNames != null);
             TransmitItemNames = TransmitItemNames.Trim(',', ' ');
             RaisePropertyChanged(nameof(TransmitItemDstDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemSrcDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
-        public TransmitTask(ILanguageService languageService, ITransmitter trans, string connectionId, string destinationDirectoryPath, RemoteItem[]? ris)
+        public TransmitTask(ILanguageService languageService, ITransmitter trans, string connectionId, string destinationDirectoryPath, RemoteItem[] ris)
         {
-            Debug.Assert(ris != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
             TransmissionType = ETransmissionType.ServerToHost;
             this._transOrg = trans;
@@ -107,7 +105,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 TransmitItemNames += item.Name + ", ";
             }
             Debug.Assert(TransmitItemNames != null);
-            TransmitItemNames = TransmitItemNames.Trim(',', ' ');
+            TransmitItemNames = TransmitItemNames!.Trim(',', ' ');
             RaisePropertyChanged(nameof(TransmitItemDstDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemSrcDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemNames));
@@ -156,7 +154,8 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 var dst = Items?.FirstOrDefault()?.DstPath;
                 if (TransmissionType == ETransmissionType.HostToServer)
                 {
-                    if (!string.IsNullOrWhiteSpace(dst)
+                    if (dst != null
+                        && !string.IsNullOrWhiteSpace(dst)
                         && dst.LastIndexOf("/", StringComparison.Ordinal) > 0)
                     {
                         return dst.Substring(0, dst.LastIndexOf("/", StringComparison.Ordinal));
@@ -292,8 +291,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 if (!topDirectory.Exists)
                     return;
 
-                Debug.Assert(topDirectory?.Parent?.FullName != null);
-                var srcParentDirPath = topDirectory.Parent.FullName.TrimEnd('/', '\\');
+                var srcParentDirPath = topDirectory.Parent!.FullName.TrimEnd('/', '\\');
 
                 var dis = new Queue<DirectoryInfo>();
                 var allItems = new Queue<TransmitItem>();
@@ -338,7 +336,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
             try
             {
-                if (!_trans.Exists(topItem.FullName))
+                if (_trans?.Exists(topItem.FullName) != true)
                     return;
 
                 var srcParentDirPath = topItem.FullName.TrimEnd('/', '\\');

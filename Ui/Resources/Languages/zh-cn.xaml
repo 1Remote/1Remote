@@ -260,4 +260,5 @@
     <s:String x:Key="Detecting your alternate host...">正在检测可用地址...Detecting your alternate host...</s:String>
     <s:String x:Key="XXX is already existed!">`{0}`已经存在！</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` 不存在！</s:String>
+    <s:String x:Key="Show credentials info">显示地址账号信息</s:String>
 </ResourceDictionary>

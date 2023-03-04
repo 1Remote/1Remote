@@ -16,6 +16,7 @@ using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
 using _1RM.Service;
 using _1RM.Utils;
+using Dapper;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -909,7 +910,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     if (o is TransmitTask t)
                     {
                         var dst = t.TransmitDstDirectoryPath;
-                        if (!string.IsNullOrEmpty(dst))
+                        if (dst != null && string.IsNullOrEmpty(dst) == false)
                         {
                             if (t.TransmissionType == ETransmissionType.HostToServer)
                             {

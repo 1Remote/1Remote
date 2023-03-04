@@ -75,8 +75,9 @@ namespace _1RM.Service
             if (LanguageCode2Name.ContainsKey(code)) return;
             var r = GetResourceDictionaryByXamlUri(path);
             Debug.Assert(r != null);
-            Debug.Assert(r.Contains("language_name"));
-            AddLanguage(code, r["language_name"].ToString()!, r);
+            Debug.Assert(r?.Contains("language_name") == true);
+            if (r != null)
+                AddLanguage(code, r["language_name"].ToString()!, r);
         }
 
         private static ResourceDictionary? GetResourceDictionaryByXamlUri(string path)

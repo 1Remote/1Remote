@@ -28,12 +28,8 @@ namespace _1RM.Service
 
         public static bool CheckPermissionForPortablePaths()
         {
-#if FOR_MICROSOFT_STORE_ONLY
-            return false;
-#endif
             var paths = new AppPathHelper(Environment.CurrentDirectory);
-
-            if(WritePermissionCheck(paths.BaseDirPath, false)
+            if (WritePermissionCheck(paths.BaseDirPath, false)
             && WritePermissionCheck(paths.ProtocolRunnerDirPath, false)
             && WritePermissionCheck(paths.ProfileJsonPath, true)
             && WritePermissionCheck(paths.LogFilePath, true)
@@ -48,7 +44,7 @@ namespace _1RM.Service
 
         public const string FORCE_INTO_PORTABLE_MODE = "FORCE_INTO_PORTABLE_MODE";
         public const string FORCE_INTO_APPDATA_MODE = "FORCE_INTO_APPDATA_MODE";
-        
+
         public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{Assert.APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".json");
         public string ProfileAdditionalDataSourceJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".DataSources.json");

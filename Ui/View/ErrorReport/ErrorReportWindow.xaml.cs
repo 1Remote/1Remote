@@ -14,6 +14,7 @@ using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using System.Collections.Generic;
 
 namespace _1RM.View.ErrorReport
 {
@@ -68,14 +69,8 @@ namespace _1RM.View.ErrorReport
             sb.AppendLine("</details>");
             sb.AppendLine();
 
-            TbErrorInfo.Text = sb.ToString();
-
-
-            var attachments = new ErrorAttachmentLog[]
-            {
-                ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md"),
-            };
-            MsAppCenterHelper.Error(e, attachments: attachments);
+            TbErrorInfo.Text = sb.ToString(); 
+            MsAppCenterHelper.Error(e, attachments: new List<ErrorAttachmentLog>() { ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md") });
         }
 
         private void Init()

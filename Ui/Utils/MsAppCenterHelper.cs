@@ -39,13 +39,16 @@ namespace _1RM.Utils
 #endif
         }
 
-        public static void Error(Exception e, IDictionary<string, string>? properties = null, params ErrorAttachmentLog[] attachments)
+        public static void Error(Exception e, IDictionary<string, string>? properties = null, List<ErrorAttachmentLog>? attachments = null)
         {
 #if DEBUG
             return;
 #else
             if (_isStarted == false) { return; }
-            Crashes.TrackError(e, properties, attachments);
+            properties ??= new Dictionary<string, string>();
+            if(!properties.ContainsKey("Version"))
+                properties.Add("Version", AppVersion.Version);
+            Crashes.TrackError(e, properties, attachments?.ToArray());
 #endif
         }
 

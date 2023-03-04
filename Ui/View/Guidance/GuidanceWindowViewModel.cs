@@ -22,7 +22,7 @@ namespace _1RM.View.Guidance
         {
             _languageService = languageService;
             Debug.Assert(App.ResourceDictionary != null);
-            _themeService = new ThemeService(App.ResourceDictionary, configuration.Theme);
+            _themeService = new ThemeService(App.ResourceDictionary!, configuration.Theme);
             _configuration = configuration;
 
             ProfileModeIsPortable = profileModeIsPortable;

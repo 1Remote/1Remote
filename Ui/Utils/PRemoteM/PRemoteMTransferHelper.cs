@@ -64,7 +64,7 @@ namespace _1RM.Utils.PRemoteM
 
                             var localSource = IoC.Get<DataSourceService>().LocalDataSource;
                             Debug.Assert(localSource != null);
-                            localSource.Database_InsertServer(_servers);
+                            localSource!.Database_InsertServer(_servers);
                             IoC.Get<GlobalData>().ReloadServerList(true);
                             MessageBoxHelper.Info($"All done! You may need to delete `{_dbPath}`...", ownerViewModel: IoC.Get<MainWindowViewModel>());
                         }

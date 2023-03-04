@@ -79,6 +79,19 @@ namespace _1RM.View.Settings.Launcher
                 }
             }
         }
+
+
+        public bool ShowCredentials
+        {
+            get => _configurationService.Launcher.ShowCredentials;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.Launcher.ShowCredentials, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
     }
 
 

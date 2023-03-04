@@ -28,7 +28,7 @@ namespace _1RM
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             if (flag == false)
             {
-                MessageBox.Show(LanguageService.Translate("write permissions alert", path), LanguageService.Translate("Warning"), MessageBoxButton.OK);
+                MessageBoxHelper.ErrorAlert(LanguageService?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
                 Environment.Exit(1);
             }
         }
@@ -73,7 +73,7 @@ namespace _1RM
         {
             Debug.Assert(App.ResourceDictionary != null);
 
-            LanguageService = new LanguageService(App.ResourceDictionary);
+            LanguageService = new LanguageService(App.ResourceDictionary!);
             LanguageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
             #region Portable mode or not
             {
@@ -259,7 +259,7 @@ namespace _1RM
             }
 
             ConfigurationService.SetSelfStart();
-            ThemeService = new ThemeService(App.ResourceDictionary, ConfigurationService.Theme);
+            ThemeService = new ThemeService(App.ResourceDictionary!, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }
 

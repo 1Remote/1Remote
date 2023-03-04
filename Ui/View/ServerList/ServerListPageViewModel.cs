@@ -193,9 +193,8 @@ namespace _1RM.View.ServerList
             TagsPanelViewModel = IoC.Get<TagsPanelViewModel>();
 
             {
-                var showNoteFieldInListView = IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView;
                 // Make sure the update do triggered the first time assign a value 
-                BriefNoteVisibility = showNoteFieldInListView == true ? Visibility.Visible : Visibility.Collapsed;
+                BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
             }
 
             RebuildVmServerList();
@@ -364,7 +363,7 @@ namespace _1RM.View.ServerList
             if (_keywordDecoded == null)
                 return true;
 
-            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, _keywordDecoded);
+            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, _keywordDecoded, false);
             return s.Item1;
         }
 
@@ -726,7 +725,7 @@ namespace _1RM.View.ServerList
             {
                 return _cmdHideNoteField ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = false;
+                    IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView = false;
                     IoC.Get<ConfigurationService>().Save();
                     BriefNoteVisibility = Visibility.Collapsed;
                 });
@@ -741,7 +740,7 @@ namespace _1RM.View.ServerList
             {
                 return _cmdShowNoteField ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<ConfigurationService>().Launcher.ShowNoteFieldInListView = true;
+                    IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView = true;
                     IoC.Get<ConfigurationService>().Save();
                     BriefNoteVisibility = Visibility.Visible;
                 });

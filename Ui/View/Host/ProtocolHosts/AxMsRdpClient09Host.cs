@@ -207,15 +207,20 @@ namespace _1RM.View.Host.ProtocolHosts
             Debug.Assert(_rdpClient != null);
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
-            if (ParentWindow is TabWindowBase)
+            switch (ParentWindow)
             {
-                // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
-                _rdpClient.FullScreen = false;
-                if (_rdpSettings.IsTmpSession() == false)
+                case null:
+                    return;
+                case TabWindowBase:
                 {
-                    IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+                    // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
+                    _rdpClient!.FullScreen = false;
+                    if (_rdpSettings.IsTmpSession() == false)
+                    {
+                        IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+                    }
+                    return;
                 }
-                return;
             }
 
 

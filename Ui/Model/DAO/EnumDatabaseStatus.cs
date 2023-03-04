@@ -19,7 +19,6 @@ namespace _1RM.Model.DAO
         public static string GetErrorInfo(this EnumDatabaseStatus result)
         {
             var lang = IoC.Get<LanguageService>();
-            Debug.Assert(lang != null);
             switch (result)
             {
                 case EnumDatabaseStatus.AccessDenied:

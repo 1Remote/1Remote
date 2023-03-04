@@ -100,7 +100,7 @@ namespace _1RM.Utils
                 return "";
             return filterString + (keyWords?.Count > 0 ? "" : " ");
         }
-        public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, KeywordDecoded keywordDecoded)
+        public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, KeywordDecoded keywordDecoded, bool matchSubTitle)
         {
             if (keywordDecoded.IsKeywordEmpty())
             {
@@ -156,6 +156,10 @@ namespace _1RM.Utils
             // match keywords
             var dispName = server.DisplayName;
             var subTitle = server.SubTitle;
+            if (matchSubTitle == false)
+            {
+                subTitle = "";
+            }
             var mrs = IoC.Get<KeywordMatchService>().Match(new List<string>() { dispName, subTitle }, keywordDecoded.KeyWords);
             if (mrs.IsMatchAllKeywords)
                 return new Tuple<bool, MatchResults?>(true, mrs);
