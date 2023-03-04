@@ -61,6 +61,6 @@ namespace PRM.Service
 
 
 
-        public static AppPathHelper Instance { get; set; } = null!;
+        public static AppPathHelper? Instance { get; set; } = null;
     }
 }
