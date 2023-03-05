@@ -81,7 +81,7 @@ namespace PRM
         {
             // Step2
             // Configure the IoC container in here
-            builder.Bind<IDataService>().And<DataService>().To<DataService>();
+            builder.Bind<IDataService>().And<DataService>().To<DataService>().InSingletonScope();
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
