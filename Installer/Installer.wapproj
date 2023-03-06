@@ -31,7 +31,6 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <PackageCertificateKeyFile>Installer_TemporaryKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\Ui\Ui.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>4F04B56408BCE349E462DD18B2DEC3E21AAFF55C</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
     <DefaultLanguage>en-US</DefaultLanguage>

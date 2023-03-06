@@ -11,13 +11,13 @@
 		<AssemblyName>1Remote</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease;ReleaseNet48</Configurations>
-		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows10.0.18362.0</TargetFramework>
-		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='ReleaseNet48'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreDebug'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net48</TargetFramework>
-		<!--<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>-->
-		<TargetPlatformMinVersion Condition="'$(Configuration)'!='ReleaseNet48'">10.0.17763.0</TargetPlatformMinVersion>
+		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>
+		<!--<TargetPlatformMinVersion Condition="'$(Configuration)'!='ReleaseNet48'">10.0.17763.0</TargetPlatformMinVersion>-->
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<LangVersion>latest</LangVersion>
@@ -27,8 +27,6 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
-		<AssemblyVersion>0.0.2.3</AssemblyVersion>
-		<FileVersion>0.0.2.3</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='StoreRelease'">

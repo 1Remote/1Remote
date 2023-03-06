@@ -4,9 +4,9 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:guidance="clr-namespace:_1RM.View.Guidance"
-                   xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                    xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                    xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                   xmlns:_1rm="clr-namespace:_1RM"
                    WindowStartupLocation="CenterScreen"
                    ResizeMode="NoResize"
                    WindowStyle="None"
@@ -15,7 +15,7 @@
                    Topmost="True"
                    mc:Ignorable="d"
                    d:DataContext="{d:DesignInstance guidance:GuidanceWindow}"
-                   Title="Guidance" Height="600" Width="800">
+                   Title="{x:Static _1rm:Assert.APP_DISPLAY_NAME}" Height="600" Width="800">
     <styles:WindowBase.Style>
         <Style TargetType="styles:WindowBase">
             <Setter Property="Template">
