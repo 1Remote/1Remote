@@ -261,4 +261,6 @@
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">Afficher les informations d'identification</s:String>
+    <s:String x:Key="Sorting">Tri</s:String>
+    <s:String x:Key="Sort by drag">Trier par glissement</s:String>
 </ResourceDictionary>

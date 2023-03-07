@@ -261,4 +261,6 @@
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">Zobrazit informace o přihlašovacích údajích</s:String>
+    <s:String x:Key="Sorting">Řazení</s:String>
+    <s:String x:Key="Sort by drag">Seřadit přetažením</s:String>
 </ResourceDictionary>

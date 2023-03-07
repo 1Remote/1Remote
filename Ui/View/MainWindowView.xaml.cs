@@ -90,7 +90,7 @@ namespace _1RM.View
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
-            if (Vm.IsShownList())
+            if (Vm.IsShownList)
             {
                 if (Vm.ServerListViewModel.TagListViewModel == null)
                 {
@@ -113,11 +113,11 @@ namespace _1RM.View
                 {
                     //SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
                 }
-                else if (e.Key == Key.Escape && vm.IsShownList() == false)
+                else if (e.Key == Key.Escape && vm.IsShownList == false)
                 {
                     vm.ShowList(false);
                 }
-                else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && vm.IsShownList())
+                else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && vm.IsShownList)
                 {
                     if (Vm.ServerListViewModel.TagListViewModel == null)
                     {

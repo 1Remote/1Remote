@@ -261,4 +261,6 @@
     <s:String x:Key="XXX is already existed!">`{0}`已经存在！</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` 不存在！</s:String>
     <s:String x:Key="Show credentials info">显示地址账号信息</s:String>
+    <s:String x:Key="Sorting"> 排序</s:String>
+    <s:String x:Key="Sort by drag"> 自定义拖拽排序</s:String>
 </ResourceDictionary>

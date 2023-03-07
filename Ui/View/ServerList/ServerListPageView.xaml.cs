@@ -6,7 +6,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using _1RM.Model;
+using System.Windows.Input;
+using _1RM.Service;
 using _1RM.Service.DataSource;
 using Shawn.Utils.Wpf;
 
@@ -134,6 +135,48 @@ namespace _1RM.View.ServerList
                     }
                 }
             });
+        }
+
+        void listboxItem_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed
+                && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom)
+            {
+                if (sender is ListBoxItem item)
+                {
+                    DragDrop.DoDragDrop(item, item.DataContext, DragDropEffects.Move);
+                    item.IsSelected = true;
+                }
+            }
+        }
+
+
+        void listboxItem_OnDrop(object sender, DragEventArgs e)
+        {
+            if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
+                && e.Data.GetData(typeof(ProtocolBaseViewModel)) is ProtocolBaseViewModel toBeMoved
+                && ((ListBoxItem)(sender)).DataContext is ProtocolBaseViewModel target
+                && toBeMoved != target)
+            {
+                var vm = IoC.Get<ServerListPageViewModel>();
+                int removedIdx = vm.VmServerList.IndexOf(toBeMoved);
+                int targetIdx = vm.VmServerList.IndexOf(target);
+                if (removedIdx == targetIdx - 1)
+                {
+                    (toBeMoved, target) = (target, toBeMoved);// swap
+                    removedIdx = vm.VmServerList.IndexOf(toBeMoved);
+                    targetIdx = vm.VmServerList.IndexOf(target);
+                }
+                if (removedIdx >= 0
+                    && targetIdx >= 0
+                    && removedIdx != targetIdx)
+                {
+                    vm.VmServerList.RemoveAt(removedIdx);
+                    targetIdx = vm.VmServerList.IndexOf(target);
+                    vm.VmServerList.Insert(targetIdx, toBeMoved);
+                    IoC.Get<LocalityService>().ServerCustomOrderRebuild(vm.VmServerList);
+                }
+            }
         }
     }
 

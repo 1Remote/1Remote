@@ -139,6 +139,9 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <EventSetter Event="MouseMove" Handler="listboxItem_PreviewMouseMoveEvent"/>
+                <EventSetter Event="Drop" Handler="listboxItem_OnDrop"/>
+                <Setter Property="AllowDrop" Value="true"/>
             </Style>
 
             <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
@@ -372,7 +375,7 @@
                                                          attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                          Background="{DynamicResource BackgroundBrush}"
                                                          Foreground="{DynamicResource BackgroundTextBrush}"
-                                                         Command="{Binding CmdReOrder}" CommandParameter="0">
+                                                         Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
@@ -406,7 +409,7 @@
                                 attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                 Background="{DynamicResource BackgroundBrush}"
                                 Foreground="{DynamicResource BackgroundTextBrush}"
-                                Command="{Binding CmdReOrder}" CommandParameter="2">
+                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.NameAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
@@ -500,7 +503,7 @@
                                 attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                 Background="{DynamicResource BackgroundBrush}"
                                 Foreground="{DynamicResource BackgroundTextBrush}"
-                                Command="{Binding CmdReOrder}" CommandParameter="6">
+                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.AddressAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
