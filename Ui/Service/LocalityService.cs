@@ -6,10 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Documents;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol;
 using _1RM.View.Launcher;
 using Shawn.Utils;
+using _1RM.View;
 
 namespace _1RM.Service
 {
@@ -24,6 +26,7 @@ namespace _1RM.Service
         //TagDesc = 5,
         AddressAsc = 6,
         AddressDesc = 7,
+        Custom,
     }
 
     internal class LocalitySettings
@@ -37,26 +40,13 @@ namespace _1RM.Service
         public WindowState TabWindowState = WindowState.Normal;
         public WindowStyle TabWindowStyle = WindowStyle.SingleBorderWindow;
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
+        public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
         public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalities = new ConcurrentDictionary<string, RdpLocalSetting>();
         public List<QuickConnectionItem> QuickConnectionHistory = new List<QuickConnectionItem>();
     }
 
     public sealed class LocalityService
     {
-        public LocalityService()
-        {
-            _localitySettings = new LocalitySettings();
-            try
-            {
-                var tmp = JsonConvert.DeserializeObject<LocalitySettings>(File.ReadAllText(AppPathHelper.Instance.LocalityJsonPath));
-                if (tmp != null)
-                    _localitySettings = tmp;
-            }
-            catch
-            {
-                // ignored
-            }
-        }
 
         public double MainWindowWidth
         {
@@ -181,6 +171,8 @@ namespace _1RM.Service
 
         private readonly LocalitySettings _localitySettings;
 
+        public Dictionary<string, int> ServerCustomOrder => _localitySettings.ServerCustomOrder;
+
         #region Interface
 
         #region Save local settings for every rdp session by session id
@@ -240,6 +232,17 @@ namespace _1RM.Service
             Save();
         }
 
+        public void ServerCustomOrderRebuild(IEnumerable<ProtocolBaseViewModel> servers)
+        {
+            int i = 0;
+            _localitySettings.ServerCustomOrder.Clear();
+            foreach (var server in servers)
+            {
+                _localitySettings.ServerCustomOrder.Add(server.Id, i);
+                ++i;
+            }
+            Save();
+        }
 
         public bool CanSave = true;
         private void Save()
@@ -254,6 +257,25 @@ namespace _1RM.Service
                     fi.Directory.Create();
                 File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
                 CanSave = true;
+            }
+        }
+
+        /// <summary>
+        /// Load
+        /// </summary>
+        public LocalityService()
+        {
+            // Load
+            _localitySettings = new LocalitySettings();
+            try
+            {
+                var tmp = JsonConvert.DeserializeObject<LocalitySettings>(File.ReadAllText(AppPathHelper.Instance.LocalityJsonPath));
+                if (tmp != null)
+                    _localitySettings = tmp;
+            }
+            catch
+            {
+                // ignored
             }
         }
 

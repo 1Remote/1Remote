@@ -38,6 +38,19 @@ namespace _1RM.View
         /// </summary>
         public string TagString { get; private set; }
 
+        public int CustomOrder
+        {
+            get
+            {
+                if (IoC.TryGet<LocalityService>() == null)
+                    return 0;
+                else if (IoC.Get<LocalityService>().ServerCustomOrder.ContainsKey(Id) == true)
+                    return IoC.Get<LocalityService>().ServerCustomOrder[Id];
+                else
+                    return int.MaxValue;
+            }
+        }
+
 
         private ProtocolBase _server;
         public ProtocolBase Server

@@ -66,40 +66,19 @@ namespace _1RM.View.ServerList
             get => _selectedServerViewModelListItem;
             set => SetAndNotifyIfChanged(ref _selectedServerViewModelListItem, value);
         }
-
-        private ObservableCollection<ProtocolBaseViewModel> _vmServerList = new ObservableCollection<ProtocolBaseViewModel>();
-        public ObservableCollection<ProtocolBaseViewModel> VmServerList
-        {
-            get => _vmServerList;
-            set
-            {
-                SetAndNotifyIfChanged(ref _vmServerList, value);
-                SelectedServerViewModelListItem = null;
-                _vmServerList.CollectionChanged += (s, e) =>
-                {
-                    RaisePropertyChanged(nameof(IsAnySelected));
-                    RaisePropertyChanged(nameof(IsSelectedAll));
-                    RaisePropertyChanged(nameof(SelectedCount));
-                };
-
-                RaisePropertyChanged(nameof(IsAnySelected));
-                RaisePropertyChanged(nameof(IsSelectedAll));
-                RaisePropertyChanged(nameof(SelectedCount));
-                UpdateNote();
-            }
-        }
+        public ObservableCollection<ProtocolBaseViewModel> VmServerList { get; set; } = new ObservableCollection<ProtocolBaseViewModel>();
 
         public int SelectedCount => VmServerList.Count(x => x.IsSelected);
 
-        private EnumServerOrderBy _serverOrderBy = IoC.Get<LocalityService>().ServerOrderBy;
         public EnumServerOrderBy ServerOrderBy
         {
-            get => _serverOrderBy;
+            get => IoC.Get<LocalityService>().ServerOrderBy;
             set
             {
-                if (SetAndNotifyIfChanged(ref _serverOrderBy, value))
+                if (value != IoC.Get<LocalityService>().ServerOrderBy)
                 {
                     IoC.Get<LocalityService>().ServerOrderBy = value;
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -235,15 +214,30 @@ namespace _1RM.View.ServerList
             {
                 Execute.OnUIThread(() =>
                 {
-                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
-                    ApplySort(ServerOrderBy);
+                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(
+                        // in order to implement the `custom` order 
+                        // !!! VmItemList should order by CustomOrder by default
+                        AppData.VmItemList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id));
+                    RaisePropertyChanged(nameof(VmServerList));
+                    SelectedServerViewModelListItem = null;
+                    VmServerList.CollectionChanged += (s, e) =>
+                    {
+                        RaisePropertyChanged(nameof(IsAnySelected));
+                        RaisePropertyChanged(nameof(IsSelectedAll));
+                        RaisePropertyChanged(nameof(SelectedCount));
+                    };
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;
                         vs.PropertyChanged -= VmServerPropertyChanged;
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
+                    RaisePropertyChanged(nameof(IsAnySelected));
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                    RaisePropertyChanged(nameof(SelectedCount));
+                    UpdateNote();
 
+                    ApplySort(ServerOrderBy);
                     if (this.View is ServerListPageView v)
                     {
                         var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
@@ -293,6 +287,14 @@ namespace _1RM.View.ServerList
                         switch (orderBy)
                         {
                             case EnumServerOrderBy.IdAsc:
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Id), ListSortDirection.Ascending));
+                                break;
+                            case EnumServerOrderBy.Custom:
+                                //cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.CustomOrder), ListSortDirection.Ascending));
+                                // in order to implement the `custom` order 
+                                // !!! VmItemList should order by CustomOrder by default
+                                // !!! and the SortDescriptions should be empty!
+                                cvs.SortDescriptions.Clear();
                                 break;
                             case EnumServerOrderBy.ProtocolAsc:
                                 cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Ascending));
@@ -313,7 +315,9 @@ namespace _1RM.View.ServerList
                                 cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.SubTitle), ListSortDirection.Descending));
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException();
+                                SimpleLogHelper.Error($"ApplySort: type {orderBy} is not supported");
+                                MsAppCenterHelper.Error(new NotImplementedException($"ApplySort: type {orderBy} is not supported"));
+                                break;
                         }
                         //cvs.Refresh();
                     }
@@ -667,25 +671,49 @@ namespace _1RM.View.ServerList
             {
                 return _cmdReOrder ??= new RelayCommand((o) =>
                 {
-                    if (int.TryParse(o?.ToString() ?? "0", out int ot))
-                    {
-                        if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
-                        {
-                            _lastCmdReOrder = DateTime.Now;
-                            // cancel order
-                            if (ServerOrderBy == (EnumServerOrderBy)(ot + 1))
-                            {
-                                ot = -1;
-                            }
-                            else if (ServerOrderBy == (EnumServerOrderBy)ot)
-                            {
-                                ++ot;
-                            }
+                    if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds < 200)
+                        return;
+                    _lastCmdReOrder = DateTime.Now;
 
-                            ServerOrderBy = (EnumServerOrderBy)ot;
-                            ApplySort(ServerOrderBy);
+                    var newOrderBy = EnumServerOrderBy.IdAsc;
+                    if (int.TryParse(o?.ToString() ?? "0", out var ot)
+                        && ot is >= (int)EnumServerOrderBy.IdAsc and <= (int)EnumServerOrderBy.Custom)
+                    {
+                        newOrderBy = (EnumServerOrderBy)ot;
+                    }
+                    else if (o is EnumServerOrderBy x)
+                    {
+                        newOrderBy = x;
+                    }
+
+                    if (newOrderBy is EnumServerOrderBy.IdAsc or EnumServerOrderBy.Custom)
+                    {
+                        ServerOrderBy = newOrderBy;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // cancel order
+                            if (ServerOrderBy == newOrderBy + 1)
+                            {
+                                newOrderBy = EnumServerOrderBy.IdAsc;
+                            }
+                            else if (ServerOrderBy == newOrderBy)
+                            {
+                                newOrderBy += 1;
+                            }
+                        }
+                        catch
+                        {
+                            newOrderBy = EnumServerOrderBy.IdAsc;
+                        }
+                        finally
+                        {
+                            ServerOrderBy = newOrderBy;
                         }
                     }
+                    ApplySort(ServerOrderBy);
                 });
             }
         }

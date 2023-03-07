@@ -43,14 +43,22 @@ namespace _1RM.View
         public ServerEditorPageViewModel? EditorViewModel
         {
             get => _editorViewModel;
-            set => SetAndNotifyIfChanged(ref _editorViewModel, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _editorViewModel, value);
+                RaisePropertyChanged(nameof(IsShownList));
+            }
         }
 
         private bool _showAbout = false;
         public bool ShowAbout
         {
             get => _showAbout;
-            set => SetAndNotifyIfChanged(ref _showAbout, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _showAbout, value);
+                RaisePropertyChanged(nameof(IsShownList));
+            }
         }
 
         private bool _showSetting = false;
@@ -61,6 +69,7 @@ namespace _1RM.View
             {
                 if (SetAndNotifyIfChanged(ref _showSetting, value))
                 {
+                    RaisePropertyChanged(nameof(IsShownList));
                     if (_showSetting == true)
                         _appData.StopTick();
                     else
@@ -194,10 +203,8 @@ namespace _1RM.View
             }
         }
 
-        public bool IsShownList()
-        {
-            return EditorViewModel is null && ShowAbout == false && ShowSetting == false;
-        }
+
+        public bool IsShownList => EditorViewModel is null && ShowAbout == false && ShowSetting == false;
 
 
         #region CMD
@@ -212,9 +219,9 @@ namespace _1RM.View
                     ShowSetting = true;
                     ShowAbout = false;
                     EditorViewModel = null;
-                    if (this.View != null)
-                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
-                }, o => IsShownList());
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => IsShownList);
             }
         }
 
@@ -228,9 +235,9 @@ namespace _1RM.View
                     ShowAbout = true;
                     ShowSetting = false;
                     EditorViewModel = null;
-                    if (this.View != null)
-                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
-                }, o => IsShownList());
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => IsShownList);
             }
         }
 
@@ -243,11 +250,26 @@ namespace _1RM.View
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
                     this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    if (this.View != null)
-                        ((MainWindowView)this.View).PopupMenu.IsOpen = false;
-                }, o => IsShownList());
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => IsShownList);
             }
         }
+
+        private RelayCommand? _cmdReOrder;
+        public RelayCommand CmdReOrder
+        {
+            get
+            {
+                return _cmdReOrder ??= new RelayCommand((o) =>
+                {
+                    ServerListViewModel.CmdReOrder.Execute(o);
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => IsShownList);
+            }
+        }
+
         #endregion CMD
 
 
