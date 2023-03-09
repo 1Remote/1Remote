@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:_1RM.Controls">
 
     <Style x:Key="GridOneRow" TargetType="Grid">
         <Setter Property="Height" Value="Auto"></Setter>
@@ -33,5 +34,10 @@
                 <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
             </Setter.Value>
         </Setter>-->
+    </Style>
+
+    <Style TargetType="controls:BindableAvalonEditor">
+        <Setter Property="MaxWidth" Value="290"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
     </Style>
 </ResourceDictionary>

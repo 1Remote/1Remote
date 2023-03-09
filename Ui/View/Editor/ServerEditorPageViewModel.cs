@@ -710,7 +710,6 @@ namespace _1RM.View.Editor
                             }
                         }
                         existedNames = existedNames.Distinct().ToList();
-
                         var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
                         MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                         IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());

@@ -99,6 +99,7 @@ namespace _1RM.Service.DataSource
         {
             try
             {
+                config.LastReadFromDataSourceMillisecondsTimestamp = 0;
                 if (config is SqliteSource { DataSourceName: LOCAL_DATA_SOURCE_NAME } localConfig)
                 {
                     return InitLocalDataSource(localConfig);
