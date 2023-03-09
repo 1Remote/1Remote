@@ -38,7 +38,7 @@ namespace _1RM.Model
                 var sb = new StringBuilder();
                 for (int i = 0; i < MarcoNames.Count; i++)
                 {
-                    sb.AppendLine($@"%{MarcoDescriptions[i]}%      ->      {MarcoNames[i]}");
+                    sb.AppendLine($@"`{MarcoDescriptions[i]}`      ->      {MarcoNames[i]}");
                 }
                 return sb.ToString();
             }

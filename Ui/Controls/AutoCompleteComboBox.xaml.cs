@@ -68,15 +68,15 @@ namespace _1RM.Controls
 
         protected override void OnGotFocus(RoutedEventArgs e)
         {
-            if (Items.Count > 0)
-                IsDropDownOpen = true;
+            //if (Items.Count > 0)
+            //    IsDropDownOpen = true;
             ClearSelectAllBehavior();
         }
 
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
-            if (Items.Count > 0)
-                IsDropDownOpen = true;
+            //if (Items.Count > 0)
+            //    IsDropDownOpen = true;
             ClearSelectAllBehavior();
         }
     }
@@ -115,7 +115,7 @@ namespace _1RM.Controls
 
         private static void TextChanged(AutoCompleteComboBox o, string newValue)
         {
-            if(o.Selections == null) return;
+            if (o.Selections == null) return;
             if (!o.Selections.Any()) return;
             if (o._textChangedEnabled == false) return;
             o._textChangedEnabled = false;

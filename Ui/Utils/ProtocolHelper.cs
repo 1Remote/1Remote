@@ -60,7 +60,6 @@ namespace _1RM.Utils
 
         public static void RunWithoutHosting(this Runner runner, ProtocolBase protocol)
         {
-            if (runner.IsRunWithoutHosting()) return;
             if (runner is not ExternalRunner er) return;
             var (exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
 
@@ -90,6 +89,13 @@ namespace _1RM.Utils
         private static Tuple<string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner er, ProtocolBase protocol)
         {
             var exePath = er.ExePath;
+            var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
+            if (tmp.Item1 == false)
+            {
+                MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
+                return null;
+            }
+            exePath = tmp.Item2;
 
             // prepare args
             var exeArguments = er.Arguments;
@@ -103,6 +109,7 @@ namespace _1RM.Utils
                         break;
                 }
             }
+            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments);
 
             // make environment variables
             var environmentVariables = new Dictionary<string, string>();

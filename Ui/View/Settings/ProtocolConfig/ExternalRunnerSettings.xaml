@@ -69,7 +69,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Exe path'}"></TextBlock>
@@ -99,7 +99,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
@@ -158,7 +158,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
@@ -258,7 +258,7 @@
             <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in 1Remote tab view?'}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Hosting'}"></TextBlock>

@@ -38,7 +38,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -48,8 +48,9 @@
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0" Width="Auto" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     </StackPanel>
                 </Grid>
-                <TextBox Grid.Column="1" Text="{Binding PuttyExePath, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
-                         FlowDirection="RightToLeft"
+                <TextBox Grid.Column="1" Text="{Binding PuttyExePath, UpdateSourceTrigger=PropertyChanged}" 
+                         VerticalContentAlignment="Center"
+                         TextWrapping="Wrap"
                          ></TextBox>
                 <Button Grid.Column="2" 
                         Style="{StaticResource ButtonPrimaryStyle}" 
@@ -61,7 +62,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -72,7 +73,7 @@
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
