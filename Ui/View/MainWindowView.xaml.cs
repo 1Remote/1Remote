@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -90,6 +91,19 @@ namespace PRM.View
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (this.ShowInTaskbar)
+            {
+                Vm.HideMe();
+                e.Cancel = true;
+            }
+            else
+            {
+                base.OnClosing(e);
+            }
         }
 
 

@@ -49,9 +49,6 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='StoreRelease'">
-		<Reference Include="System.Runtime.WindowsRuntime">
-			<HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
-		</Reference>
 		<Reference Include="Windows">
 			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
 			<IsWinMDFile>true</IsWinMDFile>
