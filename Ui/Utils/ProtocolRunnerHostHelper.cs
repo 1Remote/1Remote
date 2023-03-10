@@ -61,18 +61,6 @@ namespace PRM.Utils
             if (runner is not ExternalRunner er) return null;
 
             var exePath = er.ExePath;
-            var args = er.Arguments;
-            if (runner is ExternalRunnerForSSH runnerForSsh)
-            {
-                switch (protocolServerBase)
-                {
-                    case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
-                    case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
-                        args = runnerForSsh.ArgumentsForPrivateKey;
-                        break;
-                }
-            }
-
             var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
             if (tmp.Item1 == false)
             {
@@ -82,11 +70,23 @@ namespace PRM.Utils
             exePath = tmp.Item2;
 
 
-            // make exeArguments and environment variables
-            string exeArguments;
+            string exeArguments = er.Arguments;
+            if (runner is ExternalRunnerForSSH runnerForSsh)
+            {
+                switch (protocolServerBase)
+                {
+                    case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
+                    case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
+                        exeArguments = runnerForSsh.ArgumentsForPrivateKey;
+                        break;
+                }
+            }
+            exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, exeArguments);
+
+
+            // make environment variables
             var environmentVariables = new Dictionary<string, string>();
             {
-                exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
                 foreach (var kv in er.EnvironmentVariables)
                 {
                     environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
