@@ -52,7 +52,7 @@ namespace PRM.Model.DAO.Dapper
                 catch (Exception e)
                 {
                     MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", _databaseType.ToString() } });
-                    MessageBoxHelper.ErrorAlert(EnumDbStatus.AccessDenied.GetErrorInfo() + " ----> ", e.Message);
+                    MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
                 }
             }
         }
