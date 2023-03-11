@@ -16,7 +16,7 @@ $build = [int] ($fileContent | Select-String 'public const uint Build = (\d+)').
 $preRelease = ($fileContent | Select-String 'public const string PreRelease = "(.*)";').Matches[0].Groups[1].Value
 
 # Construct the version string
-if ($preRelease -eq "" && $build -eq 0) {
+if ($preRelease -eq "" -and $build -eq 0) {
     $versionString = "$major.$minor.$patch"
 } elseif ($preRelease -eq "") {
     $versionString = "$major.$minor.$patch.$build"
@@ -24,7 +24,12 @@ if ($preRelease -eq "" && $build -eq 0) {
     $versionString = "$major.$minor.$patch.$build-$preRelease"
 }
 
-Write-Output $versionString
-
 # Set the current directory back to the original location
 Set-Location $originalDirectory
+
+# Write-Output $versionString
+# Write-Output "::set-output name=Version::$versionString"
+"BuildVersion=$versionString" >> $env:GITHUB_ENV
+
+# echo "Version=$versionString" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
