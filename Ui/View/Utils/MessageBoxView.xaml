@@ -12,6 +12,7 @@
                   SizeToContent="WidthAndHeight"
                   WindowStyle="None"
                   Background="Transparent"
+                  Topmost="True"
                   AllowsTransparency="True"
                   FlowDirection="{Binding PageViewModel.FlowDirection}"
                   ShowInTaskbar="False"

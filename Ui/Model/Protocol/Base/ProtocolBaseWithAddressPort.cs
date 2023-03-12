@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
+using System.ComponentModel;
 using Shawn.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
@@ -50,7 +52,21 @@ namespace _1RM.Model.Protocol.Base
         }
 
 
-        private bool? _isAutoAlternateAddressSwitching = false;
+        private bool? _IsPingBeforeConnect = true;
+        [JsonIgnore]
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsPingBeforeConnect
+        {
+            get => _IsPingBeforeConnect;
+            set => SetAndNotifyIfChanged(ref _IsPingBeforeConnect, value);
+        }
+
+
+        private bool? _isAutoAlternateAddressSwitching = true;
+        [JsonIgnore]
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsAutoAlternateAddressSwitching
         {
             get => _isAutoAlternateAddressSwitching;
