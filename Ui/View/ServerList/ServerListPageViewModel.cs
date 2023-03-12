@@ -194,7 +194,7 @@ namespace _1RM.View.ServerList
             }
 
             AppData.OnDataReloaded += RebuildVmServerList;
-            ApplySort(ServerOrderBy);
+            ApplySort();
         }
 
 
@@ -237,29 +237,7 @@ namespace _1RM.View.ServerList
                     RaisePropertyChanged(nameof(SelectedCount));
                     UpdateNote();
 
-                    ApplySort(ServerOrderBy);
-                    if (this.View is ServerListPageView v)
-                    {
-                        var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
-                        if (cvs != null)
-                        {
-                            if (SourceService.AdditionalSources.Count > 0)
-                            {
-                                if (cvs.GroupDescriptions.Count == 0)
-                                {
-                                    cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
-                                }
-                            }
-
-                            if (SourceService.AdditionalSources.Count == 0)
-                            {
-                                if (cvs.GroupDescriptions.Count > 0)
-                                {
-                                    cvs.GroupDescriptions.Clear();
-                                }
-                            }
-                        }
-                    }
+                    ApplySort();
                 });
             }
         }
@@ -274,8 +252,9 @@ namespace _1RM.View.ServerList
             }
         }
 
-        private void ApplySort(EnumServerOrderBy orderBy)
+        public void ApplySort()
         {
+            var orderBy = ServerOrderBy;
             if (this.View is ServerListPageView v)
             {
                 Execute.OnUIThread(() =>
@@ -320,6 +299,22 @@ namespace _1RM.View.ServerList
                                 break;
                         }
                         //cvs.Refresh();
+                    }
+
+
+                    if (cvs != null)
+                    {
+                        if (SourceService.AdditionalSources.Any(x => x.Value.CachedProtocols.Count > 0))
+                        {
+                            if (cvs.GroupDescriptions.Count == 0)
+                            {
+                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
+                            }
+                        }
+                        else
+                        {
+                            cvs.GroupDescriptions.Clear();
+                        }
                     }
                 });
             }
@@ -436,7 +431,7 @@ namespace _1RM.View.ServerList
                     if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
-                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
                             return;
                         source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                     }
@@ -452,7 +447,7 @@ namespace _1RM.View.ServerList
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
                     if (path == null) return;
 
-                    var id = MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -501,7 +496,7 @@ namespace _1RM.View.ServerList
                     if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
-                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
                             return;
                         source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                     }
@@ -514,7 +509,7 @@ namespace _1RM.View.ServerList
 
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    var id = MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -555,7 +550,7 @@ namespace _1RM.View.ServerList
                     if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                     {
                         var vm = new DataSourceSelectorViewModel();
-                        if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
                             return;
                         source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                     }
@@ -713,7 +708,7 @@ namespace _1RM.View.ServerList
                             ServerOrderBy = newOrderBy;
                         }
                     }
-                    ApplySort(ServerOrderBy);
+                    ApplySort();
                 });
             }
         }

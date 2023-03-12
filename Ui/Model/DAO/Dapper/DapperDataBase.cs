@@ -74,7 +74,7 @@ namespace _1RM.Model.DAO.Dapper
                 catch (Exception e)
                 {
                     MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "_databaseType", _databaseType.ToString() } });
-                    MessageBoxHelper.ErrorAlert(EnumDatabaseStatus.AccessDenied.GetErrorInfo() + " ----> ", e.Message);
+                    MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
                 }
             }
         }

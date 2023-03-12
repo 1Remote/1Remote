@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using _1RM.Service;
@@ -71,20 +72,23 @@ namespace _1RM.View
                 App.Close();
 #endif
             };
-            this.Closing += (sender, args) =>
-            {
-                if (this.ShowInTaskbar)
-                {
-                    vm.HideMe();
-                    args.Cancel = true;
-                }
-            };
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
 
-
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (this.ShowInTaskbar)
+            {
+                Vm.HideMe();
+                e.Cancel = true;
+            }
+            else
+            {
+                base.OnClosing(e);
+            }
+        }
 
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)

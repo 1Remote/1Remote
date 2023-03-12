@@ -656,7 +656,7 @@ namespace _1RM.View.Editor
                         cmd = Server.CommandAfterDisconnected;
                     }
 
-                    var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -711,9 +711,7 @@ namespace _1RM.View.Editor
                         }
                         existedNames = existedNames.Distinct().ToList();
                         var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
-                        MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
-                        IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>());
-                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                        MaskLayerController.ShowDialogWithMask(vm);
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
             }

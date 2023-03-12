@@ -184,6 +184,7 @@ namespace _1RM.Model
             bool ret = false;
             StopTick();
             var needReload = dataSource.NeedRead();
+
             if (dataSource.Database_InsertServer(protocolServer))
             {
                 ret = true;
@@ -193,12 +194,20 @@ namespace _1RM.Model
                     VmItemList.Add(@new);
                     IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
                     IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
+
+
+                    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
+                        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
+                    {
+                        // if is additional database and need to set up group by database name!
+                        IoC.Get<ServerListPageViewModel>().ApplySort();
+                    }
                 }
             }
 
             if (needReload)
             {
-                ReloadServerList();
+                ReloadServerList(focus: true);
             }
             else
             {

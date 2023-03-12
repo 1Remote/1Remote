@@ -148,4 +148,38 @@ public static class MaskLayerController
     {
         HideMask(null, layerContainer);
     }
+
+    public static bool? ShowDialogWithMask(object viewModel, object? ownerViewModel = null, bool doNotHideMaskIfReturnTrue = false)
+    {
+        IMaskLayerContainer? layerContainer = null;
+        var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
+        if (ownerViewModel is IMaskLayerContainer mlc)
+        {
+            layerContainer = mlc;
+        }
+        else if (ownerViewModel == null && mainWindowViewModel?.View is Window { ShowInTaskbar: true })
+        {
+            layerContainer = mainWindowViewModel;
+        }
+
+        long layerId = 0;
+        if (layerContainer != null)
+            layerId = MaskLayerController.ShowProcessingRing(assignLayerContainer: layerContainer);
+
+        var ret = IoC.Get<IWindowManager>().ShowDialog(viewModel, IoC.Get<MainWindowViewModel>());
+
+        if (layerContainer != null)
+        {
+            if (ret == true && doNotHideMaskIfReturnTrue == true)
+            {
+
+            }
+            else
+            {
+                MaskLayerController.HideMask(layerId, layerContainer);
+            }
+        }
+
+        return ret;
+    }
 }

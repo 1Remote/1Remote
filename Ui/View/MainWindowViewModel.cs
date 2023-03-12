@@ -99,7 +99,7 @@ namespace _1RM.View
                 if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                 {
                     var vm = new DataSourceSelectorViewModel();
-                    if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) != true)
+                    if (MaskLayerController.ShowDialogWithMask(vm) != true)
                         return;
                     source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                 }
@@ -131,7 +131,7 @@ namespace _1RM.View
                 if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
                 {
                     var vm = new DataSourceSelectorViewModel();
-                    if (IoC.Get<IWindowManager>().ShowDialog(vm) != true)
+                    if (MaskLayerController.ShowDialogWithMask(vm) != true)
                         return;
                     source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
                 }

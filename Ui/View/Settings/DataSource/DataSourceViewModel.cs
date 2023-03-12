@@ -12,6 +12,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.View.Editor;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -83,53 +84,45 @@ namespace _1RM.View.Settings.DataSource
                         return;
                     }
 
+                    DataSourceBase? dataSource = null;
                     switch (type.ToLower())
                     {
                         case "sqlite":
                             {
-                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new SqliteSettingViewModel(this);
-                                if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
-                                {
-                                    SourceConfigs.Add(vm.New);
-                                    _configurationService.AdditionalDataSource.Add(vm.New);
-                                    _configurationService.Save();
-
-                                    Task.Factory.StartNew(() =>
-                                    {
-                                        _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                    });
-                                }
-                                else
-                                {
-                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                }
+                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true) != true)
+                                    return;
+                                dataSource = vm.New;
                                 break;
                             }
                         case "mysql":
                             {
-                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                                 var vm = new MysqlSettingViewModel(this);
-                                if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
-                                {
-                                    SourceConfigs.Add(vm.New);
-                                    _configurationService.AdditionalDataSource.Add(vm.New);
-                                    _configurationService.Save();
-                                    Task.Factory.StartNew(() =>
-                                    {
-                                        _dataSourceService.AddOrUpdateDataSource(vm.New);
-                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                    });
-                                }
-                                else
-                                {
-                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                }
+                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true) != true)
+                                    return;
+                                dataSource = vm.New;
                                 break;
                             }
                         default:
                             throw new ArgumentOutOfRangeException($"{type} is not a vaild type");
+                    }
+                    
+                    if (dataSource != null)
+                    {
+                        SourceConfigs.Add(dataSource);
+                        _configurationService.AdditionalDataSource.Add(dataSource);
+                        _configurationService.Save();
+                        Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                _dataSourceService.AddOrUpdateDataSource(dataSource);
+                            }
+                            finally
+                            {
+                                MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                            }
+                        });
                     }
                 });
             }
@@ -145,55 +138,30 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdEdit ??= new RelayCommand((o) =>
                 {
-                    switch (o)
+                    if (o is not DataSourceBase dataSource) return;
+
+                    object? vm = dataSource switch
                     {
-                        case SqliteSource sqliteConfig:
-                            {
-                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
-                                var vm = new SqliteSettingViewModel(this, sqliteConfig);
-                                if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
-                                {
-                                    _configurationService.Save();
-                                    Task.Factory.StartNew(() =>
-                                    {
-                                        _dataSourceService.AddOrUpdateDataSource(sqliteConfig);
-                                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                    });
-                                }
-                                else
-                                {
-                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                }
-                                break;
-                            }
-                        case MysqlSource mysqlConfig:
-                            {
-                                var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
-                                var vm = new MysqlSettingViewModel(this, mysqlConfig);
-                                if (IoC.Get<IWindowManager>().ShowDialog(vm, IoC.Get<MainWindowViewModel>()) == true)
-                                {
-                                    _configurationService.Save();
-                                    Task.Factory.StartNew(() =>
-                                    {
-                                        try
-                                        {
-                                            _dataSourceService.AddOrUpdateDataSource(mysqlConfig);
-                                        }
-                                        finally
-                                        {
-                                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                                }
-                                break;
-                            }
-                        default:
-                            throw new NotSupportedException($"{o?.GetType()} is not a supported type");
-                    }
+                        SqliteSource sqliteConfig => new SqliteSettingViewModel(this, sqliteConfig),
+                        MysqlSource mysqlConfig => new MysqlSettingViewModel(this, mysqlConfig),
+                        _ => throw new NotSupportedException($"{o?.GetType()} is not a supported type")
+                    };
+
+                    if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true) != true)
+                        return;
+
+                    _configurationService.Save();
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            _dataSourceService.AddOrUpdateDataSource(dataSource);
+                        }
+                        finally
+                        {
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                        }
+                    });
                 });
             }
         }
