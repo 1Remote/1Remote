@@ -77,13 +77,13 @@ jobs:
         id: get_version
         run: ./scripts/Get-Version.ps1
         
-      ## Build Net4.8
-      #- name: Build Net4.8
-      #  run: msbuild $env:Main_Project -t:rebuild -property:Configuration=ReleaseNet48
-      #- uses: actions/upload-artifact@v3
-      #  with:
-      #    name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
-      #    path: Ui/bin/ReleaseNet48/net48
+      # Build Net4.8
+      - name: Publish the application Net4.8
+        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
+          path: Ui/bin/Release/net4.8-windows/publish
   
       # Publish the application
       - name: Publish the application
