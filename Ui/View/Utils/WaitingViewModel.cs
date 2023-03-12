@@ -17,7 +17,7 @@ namespace _1RM.View.Utils
     /// <summary>
     /// Default implementation of IMessageBoxViewModel, and is therefore the ViewModel shown by default by ShowMessageBox
     /// </summary>
-    public class WaitingViewModel : NotifyPropertyChangedBaseScreen
+    public class WaitingViewModel : MaskLayerContainerScreenBase
     {
         private string _title = "";
         public string Title

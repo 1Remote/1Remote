@@ -190,7 +190,10 @@ namespace _1RM.Service
             protocolClone.ConnectPreprocess();
 
             // apply alternate credential
-            ApplyAlternateCredential(ref protocolClone, assignCredentialName);
+            if(false == ApplyAlternateCredential(ref protocolClone, assignCredentialName))
+            {
+                return;
+            }
 
             // run script before connected
             protocolClone.RunScriptBeforeConnect();

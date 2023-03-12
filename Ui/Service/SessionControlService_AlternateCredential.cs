@@ -28,17 +28,15 @@ namespace _1RM.Service
 {
     public partial class SessionControlService
     {
-        private static void ApplyAlternateCredential(ref ProtocolBase serverClone, string assignCredentialName)
+        private static bool ApplyAlternateCredential(ref ProtocolBase serverClone, string assignCredentialName)
         {
-            if (serverClone is not ProtocolBaseWithAddressPort protocol
-                || protocol.AlternateCredentials.Count <= 0)
-                return;
+            if (serverClone is not ProtocolBaseWithAddressPort protocol)
+                return true;
+
+            bool ret = false;
 
 
-            bool addressIsSwitched = false;
-            bool useAssignCredential = false;
             bool canAddressAutoSwitch = protocol.IsAutoAlternateAddressSwitching == true;
-
             var newCredential = protocol.GetCredential();
 
 
@@ -54,15 +52,22 @@ namespace _1RM.Service
                 {
                     canAddressAutoSwitch = false;
                 }
-                useAssignCredential = newCredential.SetCredential(assignCredential);
+                newCredential.SetCredential(assignCredential);
             }
 
+            // TODO: 连接前 ping 一下
             // auto switching address
-            if (canAddressAutoSwitch)
+            if (canAddressAutoSwitch || protocol.IsPingBeforeConnect == true)
             {
+                var credentials = new List<Credential>()
+                {
+                    newCredential,
+                };
+                credentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
+
                 WaitingViewModel? dlg = null;
-                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate("Automatic address switching");
-                var message = IoC.Get<LanguageService>().Translate("Detecting your alternate host...");
+                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate((credentials.Count > 1 ? "Automatic address switching" : "Availability detection"));
+                var message = IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {credentials.Count} {(credentials.Count > 1 ? "addresses" : "address")}";
                 Execute.OnUIThreadSync(() =>
                 {
                     // show a progress window
@@ -75,13 +80,6 @@ namespace _1RM.Service
                 });
 
                 int maxWaitSeconds = 5;
-                var credentials = new List<Credential>()
-                {
-                    newCredential,
-                };
-                credentials.AddRange(protocol.AlternateCredentials
-                    .Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
-
                 var cts = new CancellationTokenSource();
                 var tasks = new List<Task<Credential?>>();
                 for (int i = 0; i < credentials.Count; i++)
@@ -121,7 +119,13 @@ namespace _1RM.Service
                     SimpleLogHelper.Info("Auto switching address.");
                     newCredential.SetAddress(tasks[t].Result!);
                     newCredential.SetPort(tasks[t].Result!);
-                    addressIsSwitched = true;
+                    ret = true;
+                }
+                else
+                {
+                    // none of this address is connectable
+                    ret = false;
+                    MessageBoxHelper.ErrorAlert(IoC.Get<LanguageService>().Translate("We are not able to connet to xxx", protocol.DisplayName), ownerViewModel: dlg);
                 }
 
                 Execute.OnUIThreadSync(() =>
@@ -131,10 +135,8 @@ namespace _1RM.Service
             }
 
 
-            if (addressIsSwitched || useAssignCredential)
-            {
-                protocol.SetCredential(newCredential);
-            }
+            protocol.SetCredential(newCredential);
+            return ret;
         }
     }
 }

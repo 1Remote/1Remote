@@ -60,7 +60,7 @@ namespace _1RM.View
                 if ((_configurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > _configurationService.Engagement.DoNotShowAgainVersion)
                     && _configurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
                     && _configurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
-                    && _configurationService.Engagement.ConnectCount > 30
+                    && _configurationService.Engagement.ConnectCount > 100
                    )
                 {
                     // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews

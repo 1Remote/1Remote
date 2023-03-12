@@ -139,7 +139,7 @@ if __name__ == '__main__':
     g = glossary()
     g.load_csv(CSV_FILE_NAME + '.csv')
     # make a backup
-    if os.path.exists(CSV_FILE_NAME + '.csv'):
+    if os.path.exists(CSV_FILE_NAME + '_backup.csv'):
         os.remove(CSV_FILE_NAME + '_backup.csv')
     os.rename(CSV_FILE_NAME + '.csv', CSV_FILE_NAME + '_backup.csv')
     g.save_csv(CSV_FILE_NAME + '.csv')
