@@ -183,7 +183,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        var id = MaskLayerController.ShowProcessingRing(assignLayerContainer: this);
+                        MaskLayerController.ShowProcessingRing(assignLayerContainer: this);
                         try
                         {
                             var config = new MysqlSource()

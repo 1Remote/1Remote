@@ -5,23 +5,24 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View.Editor
 {
     public class DataSourceSelectorViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly ConfigurationService _configurationService;
         private readonly DataSourceService _dataSourceService;
         public DataSourceSelectorViewModel()
         {
-            _configurationService = IoC.Get<ConfigurationService>();
+            var configurationService = IoC.Get<ConfigurationService>();
             _dataSourceService = IoC.Get<DataSourceService>();
 
-            Debug.Assert(_configurationService.AdditionalDataSource.Count > 0);
+            Debug.Assert(configurationService.AdditionalDataSource.Count > 0);
 
-            _sourceConfigs.Add(_configurationService.LocalDataSource);
-            _sourceConfigs.AddRange(_configurationService.AdditionalDataSource);
+            _sourceConfigs.Add(configurationService.LocalDataSource);
+            _sourceConfigs.AddRange(configurationService.AdditionalDataSource);
             _selectedSource = _sourceConfigs.First();
         }
 

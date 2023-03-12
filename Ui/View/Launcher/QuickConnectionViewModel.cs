@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -19,7 +12,6 @@ using _1RM.View.Editor;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 
 namespace _1RM.View.Launcher
@@ -238,6 +230,7 @@ namespace _1RM.View.Launcher
                     {
                         protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.UserName;
                         protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
+                        pwdDlg.Password = "";
                     }
                     else
                     {

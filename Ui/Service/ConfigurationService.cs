@@ -241,6 +241,7 @@ namespace _1RM.Service
 
         public void Save()
         {
+            AdditionalDataSource = AdditionalDataSource.Distinct().ToList();
             if (!CanSave) return;
             lock (this)
             {

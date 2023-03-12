@@ -37,7 +37,7 @@ namespace _1RM.Service.DataSource.Model
         public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
 
         [JsonIgnore]
-        public virtual long LastReadFromDataSourceMillisecondsTimestamp { get; set; } = 0;
+        protected virtual long LastReadFromDataSourceMillisecondsTimestamp { get; set; } = 0;
         [JsonIgnore]
         public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
@@ -50,6 +50,11 @@ namespace _1RM.Service.DataSource.Model
                 return LastReadFromDataSourceMillisecondsTimestamp < DataSourceDataUpdateTimestamp;
             }
             return false;
+        }
+
+        public void MarkToNeedRead()
+        {
+            LastReadFromDataSourceMillisecondsTimestamp = 0;
         }
 
 
