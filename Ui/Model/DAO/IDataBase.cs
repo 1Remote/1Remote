@@ -22,7 +22,7 @@ namespace PRM.Model.DAO
     {
         void CloseConnection();
 
-        void OpenConnection();
+        void OpenConnection(bool showErrorAlert = false);
         void OpenConnection(DatabaseType type, string newConnectionString);
 
         bool IsConnected();

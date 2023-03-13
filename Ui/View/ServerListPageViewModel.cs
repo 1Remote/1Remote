@@ -148,7 +148,7 @@ namespace PRM.View
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
                 {
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         AppData.DeleteServer(id);
@@ -305,7 +305,7 @@ namespace PRM.View
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
-                    if(!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if(!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
@@ -356,7 +356,7 @@ namespace PRM.View
             {
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
                     GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
@@ -416,7 +416,7 @@ namespace PRM.View
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))

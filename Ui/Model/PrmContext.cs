@@ -62,7 +62,9 @@ namespace PRM.Model
                 DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
                 var ret = DataService.Database_SelfCheck();
                 if (ret == EnumDbStatus.OK)
+                {
                     _appData.SetDbOperator(DataService);
+                }
                 return ret;
             }
             catch (Exception e)
