@@ -253,7 +253,7 @@ namespace PRM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     // bulk edit
                     if (IsBuckEdit == true && _sharedTypeInBuckEdit != null && _serversInBuckEdit != null)
                     {

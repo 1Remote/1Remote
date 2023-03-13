@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
+using Stylet;
 
 namespace PRM.Controls.NoteDisplay
 {
@@ -45,11 +46,23 @@ namespace PRM.Controls.NoteDisplay
         }
 
 
+        private NoteDisplayAndEditor _noteDisplayAndEditor;
         public NoteIcon(ProtocolBase server)
         {
             Server = server;
             InitializeComponent();
             IsBriefNoteShown = false;
+            Execute.OnUIThreadSync(() =>
+            {
+                _noteDisplayAndEditor = new NoteDisplayAndEditor()
+                {
+                    Server = Server,
+                    Width = 400,
+                    Height = 300,
+                    EditEnable = true,
+                    CloseEnable = false,
+                };
+            });
         }
 
         private void OnMouseMove(object sender, MouseEventArgs args)
@@ -102,14 +115,7 @@ namespace PRM.Controls.NoteDisplay
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
-                PopupNoteContent.Content = new NoteDisplayAndEditor()
-                {
-                    Server = Server,
-                    Width = 400,
-                    Height = 300,
-                    EditEnable = true,
-                    CloseEnable = false,
-                };
+                PopupNoteContent.Content = _noteDisplayAndEditor;
             }
             await Task.Yield();
             PopupNote.IsOpen = false;
@@ -123,14 +129,7 @@ namespace PRM.Controls.NoteDisplay
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
-                PopupNoteContent.Content = new NoteDisplayAndEditor()
-                {
-                    Server = Server,
-                    Width = 400,
-                    Height = 300,
-                    EditEnable = true,
-                    CloseEnable = false,
-                };
+                PopupNoteContent.Content = _noteDisplayAndEditor;
             }
             await Task.Yield();
             PopupNote.IsOpen = false;

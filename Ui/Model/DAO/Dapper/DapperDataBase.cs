@@ -28,7 +28,7 @@ namespace PRM.Model.DAO.Dapper
             }
         }
 
-        public virtual void OpenConnection()
+        public virtual void OpenConnection(bool showErrorAlert = false)
         {
             if (string.IsNullOrWhiteSpace(_connectionString))
                 return;
@@ -52,7 +52,8 @@ namespace PRM.Model.DAO.Dapper
                 catch (Exception e)
                 {
                     MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", _databaseType.ToString() } });
-                    MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
+                    if (showErrorAlert)
+                        MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
                 }
             }
         }
