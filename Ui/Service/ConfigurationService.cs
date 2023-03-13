@@ -14,6 +14,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using VariableKeywordMatcher.Provider.DirectMatch;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
@@ -254,6 +255,7 @@ namespace _1RM.Service
                     File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
                 }
 
+                
                 DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
 
                 CanSave = true;

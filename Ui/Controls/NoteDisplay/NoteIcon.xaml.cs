@@ -5,7 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource;
 using Shawn.Utils;
+using Stylet;
 
 namespace _1RM.Controls.NoteDisplay
 {
@@ -44,12 +46,23 @@ namespace _1RM.Controls.NoteDisplay
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
+        private NoteDisplayAndEditor _noteDisplayAndEditor;
         public NoteIcon(ProtocolBase server)
         {
             Server = server;
             InitializeComponent();
             IsBriefNoteShown = false;
+            Execute.OnUIThreadSync(() =>
+            {
+                _noteDisplayAndEditor = new NoteDisplayAndEditor()
+                {
+                    Server = Server,
+                    Width = 400,
+                    Height = 300,
+                    EditEnable = Server.GetDataSource()?.IsWritable == true,
+                    CloseEnable = false,
+                };
+            });
         }
 
         private void OnMouseMove(object sender, MouseEventArgs args)
@@ -102,14 +115,7 @@ namespace _1RM.Controls.NoteDisplay
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
-                PopupNoteContent.Content = new NoteDisplayAndEditor()
-                {
-                    Server = Server,
-                    Width = 400,
-                    Height = 300,
-                    EditEnable = true,
-                    CloseEnable = false,
-                };
+                PopupNoteContent.Content = _noteDisplayAndEditor;
             }
             await Task.Yield();
             PopupNote.IsOpen = false;
@@ -123,14 +129,7 @@ namespace _1RM.Controls.NoteDisplay
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor)
             {
-                PopupNoteContent.Content = new NoteDisplayAndEditor()
-                {
-                    Server = Server,
-                    Width = 400,
-                    Height = 300,
-                    EditEnable = true,
-                    CloseEnable = false,
-                };
+                PopupNoteContent.Content = _noteDisplayAndEditor;
             }
             await Task.Yield();
             PopupNote.IsOpen = false;

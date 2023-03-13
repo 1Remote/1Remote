@@ -142,7 +142,8 @@ namespace _1RM.View.ServerList
             if (e.LeftButton == MouseButtonState.Pressed
                 && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom)
             {
-                if (sender is ListBoxItem item)
+                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } item 
+                    && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
                 {
                     DragDrop.DoDragDrop(item, item.DataContext, DragDropEffects.Move);
                     item.IsSelected = true;

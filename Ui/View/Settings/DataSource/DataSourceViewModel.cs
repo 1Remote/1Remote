@@ -17,6 +17,7 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 
 namespace _1RM.View.Settings.DataSource
@@ -79,7 +80,8 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (o is not string type)
+                    if (o is not string type
+                        || _configurationService.AdditionalDataSource.Count >= 2)
                     {
                         return;
                     }
@@ -106,8 +108,9 @@ namespace _1RM.View.Settings.DataSource
                         default:
                             throw new ArgumentOutOfRangeException($"{type} is not a vaild type");
                     }
-                    
-                    if (dataSource != null)
+
+                    if (dataSource != null
+                        && _configurationService.AdditionalDataSource.Count < 2)
                     {
                         SourceConfigs.Add(dataSource);
                         _configurationService.AdditionalDataSource.Add(dataSource);
@@ -124,7 +127,10 @@ namespace _1RM.View.Settings.DataSource
                             }
                         });
                     }
-                });
+                }, _ =>
+                        IoPermissionHelper.HasWritePermissionOnFile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath)
+                        && _configurationService.AdditionalDataSource.Count < 2
+                    );
             }
         }
 
@@ -180,7 +186,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (o is DataSourceBase configBase && configBase != LocalSource)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: this))
+                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                         {
                             if (_configurationService.AdditionalDataSource.Contains(configBase))
                             {
@@ -194,7 +200,8 @@ namespace _1RM.View.Settings.DataSource
                             });
                         }
                     }
-                });
+                }, _ =>
+                    IoPermissionHelper.HasWritePermissionOnFile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath));
             }
         }
     }

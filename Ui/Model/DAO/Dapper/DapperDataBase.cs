@@ -37,14 +37,14 @@ namespace _1RM.Model.DAO.Dapper
 
         public IDbConnection? Connection => _dbConnection;
 
-        public override void OpenConnection()
+        protected override bool OpenConnection(bool showErrorAlert = false)
         {
             if (string.IsNullOrWhiteSpace(_connectionString))
-                return;
-            if (IsConnected()) return;
+                return false;
+            if (IsConnected()) return true;
             lock (this)
             {
-                if (IsConnected()) return;
+                if (IsConnected()) return true;
                 if (_dbConnection == null)
                 {
                     _dbConnection?.Close();
@@ -70,12 +70,17 @@ namespace _1RM.Model.DAO.Dapper
                 try
                 {
                     _dbConnection.Open();
+                    return IsConnected();
                 }
                 catch (Exception e)
                 {
                     MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "_databaseType", _databaseType.ToString() } });
-                    MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
+                    if (showErrorAlert)
+                    {
+                        MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
+                    }
                 }
+                return false;
             }
         }
 
@@ -111,8 +116,7 @@ namespace _1RM.Model.DAO.Dapper
 
         public override void InitTables()
         {
-            OpenConnection();
-            if (!IsConnected()) return;
+            if(!OpenConnection(true)) return;
             _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
     `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
@@ -140,8 +144,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return null;
+                if (!OpenConnection()) return null;
                 Debug.Assert(id > 0);
                 var dbServer =
                     _dbConnection?.QueryFirstOrDefault<Server>(
@@ -155,8 +158,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return null;
+                if (!OpenConnection()) return null;
 #pragma warning disable CS8619
                 return _dbConnection?.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
 #pragma warning restore CS8619 
@@ -167,8 +169,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return 0;
+                if (!OpenConnection()) return 0;
                 return _dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0;
             }
         }
@@ -188,8 +189,7 @@ VALUES
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return string.Empty;
+                if (!OpenConnection(true)) return string.Empty;
                 if (protocolBase.IsTmpSession())
                     protocolBase.Id = Ulid.NewUlid().ToString();
                 var server = protocolBase.ToDbServer();
@@ -204,8 +204,7 @@ VALUES
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return 0;
+                if (!OpenConnection(true)) return 0;
                 var rng = new NUlid.Rng.MonotonicUlidRng();
                 foreach (var protocolBase in protocolBases)
                 {
@@ -229,8 +228,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return false;
+                if (!OpenConnection(true)) return false;
                 var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -242,8 +240,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return false;
+                if (!OpenConnection(true)) return false;
                 var dbss = servers.Select(x => x.ToDbServer());
                 var ret = _dbConnection?.Execute(SqlUpdate, dbss) > 0;
                 if (ret)
@@ -256,8 +253,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return false;
+                if (!OpenConnection(true)) return false;
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -269,8 +265,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return false;
+                if (!OpenConnection(true)) return false;
                 var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
                 if (ret)
                     SetDataUpdateTimestamp();
@@ -287,8 +282,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return null;
+                if (!OpenConnection()) return null;
                 var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                     new { Key = key, });
                 return config?.Value;
@@ -307,8 +301,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                OpenConnection();
-                if (!IsConnected()) return false;
+                if (!OpenConnection(true)) return false;
                 var existed = GetConfigPrivate(key) != null;
                 return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
             }
