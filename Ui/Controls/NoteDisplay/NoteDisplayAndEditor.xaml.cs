@@ -119,13 +119,13 @@ namespace PRM.Controls.NoteDisplay
 
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+            if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
             if (Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();
                 IoC.Get<GlobalData>().UpdateServer(Server, doInvoke: false);
-                EndEdit();
             }
+            EndEdit();
         }
 
         private void ButtonCancelEdit_OnClick(object sender, RoutedEventArgs e)

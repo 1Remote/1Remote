@@ -85,7 +85,7 @@ namespace PRM.Service
             return EnumDbStatus.OK;
         }
 
-        public bool Database_SelfChek_ShowError()
+        public bool Database_SelfCheck_ShowError()
         {
             var res = Database_SelfCheck();
             if (res != EnumDbStatus.OK)

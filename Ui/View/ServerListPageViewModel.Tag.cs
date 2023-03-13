@@ -186,7 +186,7 @@ namespace PRM.View
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
@@ -222,7 +222,7 @@ namespace PRM.View
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
-                    if (!IoC.Get<DataService>().Database_SelfChek_ShowError()) return;
+                    if (!IoC.Get<DataService>().Database_SelfCheck_ShowError()) return;
                     var obj = o as Tag;
                     if (obj == null)
                         return;
