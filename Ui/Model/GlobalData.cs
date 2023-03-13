@@ -34,44 +34,6 @@ namespace _1RM.Model
             _timer.Start();
         }
 
-        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                var mainWindowViewModel = IoC.Get<MainWindowViewModel>();
-                var listPageViewModel = IoC.Get<ServerListPageViewModel>();
-                var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
-                // do not reload when any selected / launcher is shown / editor view is show
-                if (mainWindowViewModel.EditorViewModel != null
-                    || listPageViewModel.VmServerList.Any(x => x.IsSelected)
-                    || launcherWindowViewModel.View?.IsVisible == true)
-                {
-                    return;
-                }
-
-                if (ReloadServerList())
-                {
-                    SimpleLogHelper.Debug("check database update - reload data");
-                }
-                else
-                {
-                    SimpleLogHelper.Debug("check database update - no need reload");
-                }
-            }
-            finally
-            {
-                lock (this)
-                {
-                    if (_timerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
-                    {
-                        _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
-                        _timer.Start();
-                    }
-                }
-                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-            }
-        }
-
         private DataSourceService? _sourceService;
         private readonly ConfigurationService _configurationService;
 
@@ -381,6 +343,43 @@ namespace _1RM.Model
                     _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
                     _timer.Start();
                 }
+            }
+        }
+
+        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                var mainWindowViewModel = IoC.Get<MainWindowViewModel>();
+                var listPageViewModel = IoC.Get<ServerListPageViewModel>();
+                var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
+                // do not reload when any selected / launcher is shown / editor view is show
+                if (mainWindowViewModel.EditorViewModel != null
+                    || listPageViewModel.VmServerList.Any(x => x.IsSelected)
+                    || launcherWindowViewModel.View?.IsVisible == true)
+                {
+                    return;
+                }
+
+                if (ReloadServerList())
+                {
+                    SimpleLogHelper.Debug("check database update - reload data" + _timer.GetHashCode());
+                }
+                else
+                {
+                    SimpleLogHelper.Debug("check database update - no need reload" + _timer.GetHashCode());
+                }
+            }
+            finally
+            {
+                lock (this)
+                {
+                    if (_timerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
+                    {
+                        _timer.Start();
+                    }
+                }
+                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
             }
         }
     }

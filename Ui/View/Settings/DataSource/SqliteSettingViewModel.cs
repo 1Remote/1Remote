@@ -125,7 +125,7 @@ namespace _1RM.View.Settings.DataSource
                         MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"), ownerViewModel: this);
                         return;
                     }
-                    
+
                     Task.Factory.StartNew(() =>
                     {
                         try

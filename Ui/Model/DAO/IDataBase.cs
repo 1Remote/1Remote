@@ -23,7 +23,7 @@ namespace _1RM.Model.DAO
     public abstract class IDatabase
     {
         public abstract void CloseConnection();
-        public abstract void OpenConnection();
+        protected abstract bool OpenConnection(bool showErrorAlert = false);
         public abstract void OpenNewConnection(DatabaseType type, string newConnectionString);
 
         public abstract bool IsConnected();
