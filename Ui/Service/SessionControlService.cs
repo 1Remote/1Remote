@@ -347,7 +347,14 @@ namespace PRM.Service
                 try
                 {
                     // run script before connected
-                    server.RunScriptBeforeConnect();
+                    {
+                        int code = server.RunScriptBeforeConnect();
+                        if (0 != code)
+                        {
+                            MessageBoxHelper.ErrorAlert($"Script ExitCode = {code}, connection abort!");
+                            return;
+                        }
+                    }
 
                     var runner = ProtocolRunnerHostHelper.GetRunner(_context, server, server.Protocol, assignRunnerName)!;
                     switch (server)

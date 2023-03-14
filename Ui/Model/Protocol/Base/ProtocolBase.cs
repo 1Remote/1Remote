@@ -289,21 +289,24 @@ namespace PRM.Model.Protocol.Base
             return clone;
         }
 
-        public void RunScriptBeforeConnect()
+        public int RunScriptBeforeConnect()
         {
+            int exitCode = 0;
             try
             {
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
                     var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandBeforeConnected);
-                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
+                    exitCode =  WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
                 }
             }
             catch (Exception e)
             {
+                exitCode = 1;
                 SimpleLogHelper.Error(e);
                 MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
             }
+            return exitCode;
         }
 
         public void RunScriptAfterDisconnected()

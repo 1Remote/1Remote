@@ -142,11 +142,14 @@ namespace PRM.Service
 
         public string Translate(string key)
         {
+            if (string.IsNullOrEmpty(key) || _applicationResourceDictionary == null)
+                return key;
+
             key = key.Trim(new[] { '\'' });
             if (_applicationResourceDictionary.Contains(key))
                 return _applicationResourceDictionary[key].ToString() ?? key;
 
-            MsAppCenterHelper.Error(new DirectoryNotFoundException($"int {_languageCode}, key not found: {key}"));
+            MsAppCenterHelper.Error(new Exception($"int {_languageCode}, key not found: {key}"));
 #if DEBUG
             var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);
             tw.WriteLine(key);
