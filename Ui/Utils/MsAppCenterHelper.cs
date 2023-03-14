@@ -48,7 +48,10 @@ namespace _1RM.Utils
             properties ??= new Dictionary<string, string>();
             if(!properties.ContainsKey("Version"))
                 properties.Add("Version", AppVersion.Version);
-            Crashes.TrackError(e, properties, attachments?.ToArray());
+            if (attachments != null)
+                Crashes.TrackError(e, properties, attachments.ToArray());
+            else
+                Crashes.TrackError(e, properties);
 #endif
         }
 
