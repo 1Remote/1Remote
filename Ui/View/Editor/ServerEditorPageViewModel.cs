@@ -547,7 +547,11 @@ namespace PRM.View.Editor
                                 var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
                                 if (string.IsNullOrEmpty(tuple.Item2) == false)
                                     MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
-                                WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
+                                var code = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
+                                if (code != 0)
+                                {
+                                    MessageBoxHelper.Info($"Exit code: {code}");
+                                }
                             }
                         }
                         catch (Exception ex)
