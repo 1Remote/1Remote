@@ -160,18 +160,26 @@ namespace _1RM.Service.DataSource
 
         public static void AdditionalSourcesSaveToProfile(string path, List<DataSourceBase> sources)
         {
-            if (sources.Count == 0)
+            try
             {
-                var fi = new FileInfo(path);
-                if (fi.Exists)
-                    fi.Delete();
+                if (sources.Count == 0)
+                {
+                    var fi = new FileInfo(path);
+                    if (fi.Exists)
+                        fi.Delete();
+                }
+                else
+                {
+                    var fi = new FileInfo(path);
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                    if (IoPermissionHelper.HasWritePermissionOnFile(path))
+                        File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
+                }
             }
-            else
+            finally
             {
-                var fi = new FileInfo(path);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
+                
             }
         }
     }

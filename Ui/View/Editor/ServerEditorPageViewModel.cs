@@ -668,7 +668,11 @@ namespace _1RM.View.Editor
                                     MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
                                 else
                                     MessageBoxHelper.Info($"We will run: '{cmd}'");
-                                WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
+                                var code = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
+                                if (code != 0)
+                                {
+                                    MessageBoxHelper.Info($"Exit code: {code}");
+                                }
                             }
                         }
                         catch (Exception ex)

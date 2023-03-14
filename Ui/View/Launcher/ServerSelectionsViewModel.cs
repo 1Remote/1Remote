@@ -233,6 +233,7 @@ namespace _1RM.View.Launcher
             if (string.IsNullOrEmpty(keyword))
             {
                 RebuildVmServerList();
+                TagFilters = new List<TagFilter>();
                 return;
             }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
@@ -196,7 +197,14 @@ namespace _1RM.Service
             }
 
             // run script before connected
-            protocolClone.RunScriptBeforeConnect();
+            {
+                int code = protocolClone.RunScriptBeforeConnect();
+                if (0 != code)
+                {
+                    MessageBoxHelper.ErrorAlert($"Script ExitCode = {code}, connection abort!");
+                    return;
+                }
+            }
 
             // dispatch for specified protocol
             if (protocolClone is RdpApp rdpApp)
