@@ -19,7 +19,7 @@
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" />
             </Border.Effect>
-            <Grid>
+            <Grid Name="Main">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>

@@ -142,6 +142,7 @@
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Aktivieren (Einzel-Monitor)</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">Aktivieren (alle Monitore)</s:String>
     <s:String x:Key="Display the connection bar when use the full screen">Zeigen Sie die Anschlussleiste an, wenn Sie den vollständigen Bildschirm verwenden</s:String>
+    <s:String x:Key="Pin the connection bar by default">Fixieren Sie die Verbindungsleiste standardmäßig</s:String>
     <s:String x:Key="New session always use full screen">Neue Sitzung Verwenden Sie immer den vollständigen Bildschirm</s:String>
     <s:String x:Key="New session use full screen if the last session is full screen">Neue Sitzung Vollbild Verwenden Sie den Vollbild, wenn die letzte Sitzung Vollbild ist</s:String>
     <s:String x:Key="Resolution">Auflösung</s:String>

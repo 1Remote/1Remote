@@ -155,7 +155,22 @@ namespace _1RM.Model.Protocol
         public bool? IsFullScreenWithConnectionBar
         {
             get => _isFullScreenWithConnectionBar;
-            set => SetAndNotifyIfChanged(ref _isFullScreenWithConnectionBar, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _isFullScreenWithConnectionBar, value);
+                if (value == false)
+                {
+                    IsPinTheConnectionBarByDefault = false;
+                }
+            }
+        }
+
+
+        private bool? _isPinTheConnectionBarByDefault = true;
+        public bool? IsPinTheConnectionBarByDefault
+        {
+            get => _isPinTheConnectionBarByDefault;
+            set => SetAndNotifyIfChanged(ref _isPinTheConnectionBarByDefault, value);
         }
 
         private ERdpWindowResizeMode? _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;

@@ -230,8 +230,11 @@ namespace _1RM.View.Host.ProtocolHosts
             Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init conn bar");
             _rdpClient.AdvancedSettings6.DisplayConnectionBar = _rdpSettings.IsFullScreenWithConnectionBar == true;
-            _rdpClient.AdvancedSettings6.ConnectionBarShowPinButton = true;
-            _rdpClient.AdvancedSettings6.PinConnectionBar = false;
+            if (_rdpClient.AdvancedSettings6.DisplayConnectionBar)
+            {
+                _rdpClient.AdvancedSettings6.ConnectionBarShowPinButton = true;
+                _rdpClient.AdvancedSettings6.PinConnectionBar = _rdpSettings.IsPinTheConnectionBarByDefault == true;
+            }
             _rdpClient.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
             _rdpClient.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdpClient.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;

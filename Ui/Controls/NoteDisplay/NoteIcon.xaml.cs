@@ -65,49 +65,43 @@ namespace _1RM.Controls.NoteDisplay
             });
         }
 
+        private bool NoteTest(Button button, MouseEventArgs args)
+        {
+            if (PopupNoteContent.Content is not NoteDisplayAndEditor editor)
+            {
+                return false;
+            }
+            if (button.ActualWidth > 0)
+            {
+                var p1 = args.MouseDevice.GetPosition(button);
+                SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
+                if (p1.Y < button.ActualHeight)
+                {
+                    if (p1.X < 0 || p1.Y < 0 || p1.X > button.ActualWidth)
+                        PopupNote.IsOpen = false;
+                }
+                else
+                {
+                    var p3 = args.MouseDevice.GetPosition(editor);
+                    SimpleLogHelper.Debug($"PopupNoteContent: {p3.X}, {p3.Y}, {editor.Main.ActualWidth} X {editor.Main.ActualHeight}");
+                    if (p3.X < 0)
+                        PopupNote.IsOpen = false;
+                    if (p3.X > editor.Main.ActualWidth)
+                        PopupNote.IsOpen = false;
+                    if (p3.Y > editor.Main.ActualHeight)
+                        PopupNote.IsOpen = false;
+                }
+                return true;
+            }
+
+            return false;
+        }
+
         private void OnMouseMove(object sender, MouseEventArgs args)
         {
             if (PopupNote.IsOpen == false) return;
-            if (ButtonShowNote.ActualWidth > 0)
-            {
-                var p1 = args.MouseDevice.GetPosition(ButtonShowNote);
-                //SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
-                if (p1.X < 0 || p1.Y < 0)
-                    PopupNote.IsOpen = false;
-                else if (p1.Y < ButtonShowNote.ActualHeight && p1.X > ButtonShowNote.ActualWidth)
-                    PopupNote.IsOpen = false;
-                else if (p1.Y >= ButtonShowNote.ActualHeight)
-                {
-                    var p3 = args.MouseDevice.GetPosition(PopupNoteContent);
-                    if (p3.X > PopupNoteContent.ActualWidth)
-                        PopupNote.IsOpen = false;
-                    if (p3.Y > PopupNoteContent.ActualHeight)
-                        PopupNote.IsOpen = false;
-                }
-            }
-            if (ButtonBriefNote.ActualWidth > 0)
-            {
-                var p2 = args.MouseDevice.GetPosition(ButtonBriefNote);
-                //SimpleLogHelper.Debug($"ButtonBriefNote: {p2.X}, {p2.Y}, h= {ButtonBriefNote.ActualHeight}, w= {ButtonBriefNote.ActualWidth}");
-                if (p2.X < 0 || p2.Y < 0)
-                    PopupNote.IsOpen = false;
-                else if (p2.Y < ButtonBriefNote.ActualHeight && p2.X > ButtonBriefNote.ActualWidth)
-                    PopupNote.IsOpen = false;
-                else if (p2.Y >= ButtonBriefNote.ActualHeight)
-                {
-                    var p3 = args.MouseDevice.GetPosition(PopupNoteContent);
-                    if (p3.X > PopupNoteContent.ActualWidth)
-                        PopupNote.IsOpen = false;
-                    if (p3.Y > PopupNoteContent.ActualHeight)
-                        PopupNote.IsOpen = false;
-                }
-            }
-
-            if (PopupNote.IsOpen == false)
-            {
-                this.MouseMove -= OnMouseMove;
-                PopupNoteContent.Content = null;
-            }
+            NoteTest(ButtonShowNote, args);
+            NoteTest(ButtonBriefNote, args);
         }
 
 
