@@ -142,6 +142,7 @@
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Ativar (monitor único)</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">Ativar (vários monitores)</s:String>
     <s:String x:Key="Display the connection bar when use the full screen">Exibir a barra de conexão ao usar a tela cheia</s:String>
+    <s:String x:Key="Pin the connection bar by default">Fixar a barra de conexão por padrão</s:String>
     <s:String x:Key="New session always use full screen">Nova sessão sempre usará tela cheia</s:String>
     <s:String x:Key="New session use full screen if the last session is full screen">Nova sessão usará tela cheia se a última sessão foi em tela cheia</s:String>
     <s:String x:Key="Resolution">Resolução</s:String>

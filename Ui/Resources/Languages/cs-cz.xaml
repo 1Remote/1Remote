@@ -142,6 +142,7 @@
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Zapnout (jeden monitor)</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">Zapnout (více monitorů)</s:String>
     <s:String x:Key="Display the connection bar when use the full screen">Ukazovat lištu připojení v režimu na celou obrazovku</s:String>
+    <s:String x:Key="Pin the connection bar by default">Připnout lištu připojení ve výchozím nastavení</s:String>
     <s:String x:Key="New session always use full screen">Nová relace bude vždy na celou obrazovku</s:String>
     <s:String x:Key="New session use full screen if the last session is full screen">Nová relace bude na celou obrazovku pokud ta předchozí také byla</s:String>
     <s:String x:Key="Resolution">Rozlišení</s:String>

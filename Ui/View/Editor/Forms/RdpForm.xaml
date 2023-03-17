@@ -172,7 +172,12 @@
                                             </Style>
                                         </CheckBox.Style>
                                     </CheckBox>
-                                    <CheckBox Content="{DynamicResource 'Display the connection bar when use the full screen'}" IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                                    <CheckBox Content="{DynamicResource 'Display the connection bar when use the full screen'}" 
+                                              Margin="0 0 0 5"
+                                              IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                                    <CheckBox Content="{DynamicResource 'Pin the connection bar by default'}" 
+                                              IsChecked="{Binding IsPinTheConnectionBarByDefault}" 
+                                              IsEnabled="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
