@@ -20,6 +20,7 @@ using PRM.View.Host;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using Screen = System.Windows.Forms.Screen;
@@ -73,13 +74,16 @@ namespace PRM.Service
             if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId.ToString()))
             {
                 SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId.ToString()}");
-                if (_connectionId2Hosts[serverId.ToString()].ParentWindow is TabWindowBase t)
+                if (_connectionId2Hosts[serverId.ToString()].ParentWindow is { } win)
                 {
-                    var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
-                    if (s != null)
-                        t.GetViewModel().SelectedItem = s;
+                    if (win is TabWindowBase tab)
+                    {
+                        var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                        if (s != null)
+                            tab.GetViewModel().SelectedItem = s;
+                    }
 
-                    if (t.IsClosed)
+                    if (win.IsClosed)
                     {
                         MarkProtocolHostToClose(new string[] { serverId.ToString() });
                         CleanupProtocolsAndWindows();
@@ -88,8 +92,15 @@ namespace PRM.Service
 
                     try
                     {
-                        if (t.IsClosing == false) t.Show();
-                        if (t.IsClosing == false) t.Activate();
+                        Execute.OnUIThreadSync(() =>
+                        {
+                            if (win.IsClosing == false)
+                            {
+                                win.WindowState = win.WindowState == WindowState.Minimized ? WindowState.Normal : win.WindowState;
+                                win.Show();
+                                win.Activate();
+                            }
+                        });
                     }
                     catch (Exception e)
                     {
@@ -290,10 +301,7 @@ namespace PRM.Service
                         tab.AddItem(new TabItemViewModel(host, server.DisplayName));
                         _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                         host.Conn();
-                        if (tab.WindowState == WindowState.Minimized)
-                        {
-                            tab.WindowState = WindowState.Normal;
-                        }
+                        tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
                         tab.Activate();
                     });
                 }
