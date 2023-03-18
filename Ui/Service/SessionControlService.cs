@@ -22,6 +22,7 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using _1RM.Service.DataSource;
 using System.Collections.Generic;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace _1RM.Service
 {
@@ -122,13 +123,16 @@ namespace _1RM.Service
             if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId))
             {
                 SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
-                if (_connectionId2Hosts[serverId].ParentWindow is TabWindowBase t)
+                if (_connectionId2Hosts[serverId].ParentWindow is { } win)
                 {
-                    var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
-                    if (s != null)
-                        t.GetViewModel().SelectedItem = s;
+                    if (win is TabWindowBase tab)
+                    {
+                        var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                        if (s != null)
+                            tab.GetViewModel().SelectedItem = s;
+                    }
 
-                    if (t.IsClosed)
+                    if (win.IsClosed)
                     {
                         MarkProtocolHostToClose(new string[] { serverId.ToString() });
                         CleanupProtocolsAndWindows();
@@ -139,9 +143,16 @@ namespace _1RM.Service
                     {
                         Execute.OnUIThreadSync(() =>
                         {
-                            t.Show();
-                            t.Activate();
+                            if (win.IsClosing == false)
+                            {
+                                win.WindowState = win.WindowState == WindowState.Minimized ? WindowState.Normal : win.WindowState;
+                                win.Show();
+                                win.Activate();
+                            }
                         });
+
+                        var vmServer = _appData.GetItemById(server.DataSourceName, server.Id);
+                        vmServer?.UpdateConnectTime();
                     }
                     catch (Exception e)
                     {
@@ -150,6 +161,7 @@ namespace _1RM.Service
                         CleanupProtocolsAndWindows();
                     }
                 }
+
                 if (_connectionId2Hosts[serverId].ParentWindow != null)
                 {
                     if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
