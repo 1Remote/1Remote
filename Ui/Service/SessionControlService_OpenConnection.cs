@@ -138,13 +138,9 @@ namespace _1RM.Service
             Execute.OnUIThreadSync(() =>
             {
                 tab ??= this.GetOrCreateTabWindow(assignTabToken);
-                if (tab == null)
-                    return;
-
-                Execute.OnUIThreadSync(() =>
-                {
-                    tab.Show();
-                });
+                if (tab == null) return;
+                if (tab.IsClosing) return;
+                tab.Show();
 
                 // get display area size for host
                 Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
@@ -153,10 +149,7 @@ namespace _1RM.Service
                 tab.GetViewModel().AddItem(new TabItemViewModel(host, displayName));
                 _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                 host.Conn();
-                if (tab.WindowState == WindowState.Minimized)
-                {
-                    tab.WindowState = WindowState.Normal;
-                }
+                tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
                 tab.Activate();
             });
         }
