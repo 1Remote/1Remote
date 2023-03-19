@@ -55,7 +55,6 @@ namespace _1RM.Service
                 newCredential.SetCredential(assignCredential);
             }
 
-            // TODO: 连接前 ping 一下
             // auto switching address
             if (canAddressAutoSwitch || protocol.IsPingBeforeConnect == true)
             {

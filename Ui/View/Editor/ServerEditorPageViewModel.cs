@@ -532,7 +532,7 @@ namespace _1RM.View.Editor
                 {
                     if (protocolType == typeof(RDP))
                     {
-                        ProtocolEditControl = new RdpForm(Server, isBuckEdit: IsBuckEdit);
+                        ProtocolEditControl = new RdpForm(Server);
                     }
                     else if (protocolType == typeof(RdpApp))
                     {
