@@ -29,6 +29,8 @@ This App Will Rename to 1Remote in the feature..
 
 ## Installation
 
+### Stable
+
 Latest Version: 0.7.2.7
 
 Use one of the following methods to install the application:
@@ -38,12 +40,16 @@ Use one of the following methods to install the application:
 - [Winget](https://github.com/microsoft/winget-cli): `winget install premotem`
 - [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
+### Nightly-Preview
+
+- [Nightly](https://github.com/1Remote/1Remote/releases/tag/Nightly)
+
 ### Requirements
 
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
 
-P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use 1Remote in Win7.
+> P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use 1Remote in Win7.
 
 ### [Quick start](https://github.com/1Remote/1Remote/wiki/Quick-start)
 
