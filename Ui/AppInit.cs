@@ -295,6 +295,11 @@ namespace _1RM
                 MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
                 MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationService.Launcher.LauncherEnabled}");
                 MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationService.Theme.ThemeName}");
+#if NETFRAMEWORK
+                MsAppCenterHelper.TraceSpecial($"App start with - Net", $"4.8");
+#else
+                MsAppCenterHelper.TraceSpecial($"App start with - Net", $"6.x");
+#endif
             }
 
             KittyConfig.CleanUpOldConfig();
