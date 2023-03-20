@@ -103,19 +103,19 @@ namespace PRM.Service
             var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
             about.Click += (sender, args) =>
             {
-                //HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM");
+                //HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
                 IoC.Get<MainWindowViewModel>().ShowMe(true);
                 IoC.Get<MainWindowViewModel>().CmdGoAboutPage.Execute();
             };
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/wiki");
+                HyperlinkHelper.OpenUriBySystem("https://1remote.github.io/usage/quick-start/");
             };
             var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
             exit.Click += (sender, args) =>
