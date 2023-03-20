@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Model;
@@ -223,8 +225,15 @@ namespace PRM.Utils.KiTTY
                 kitty.Close();
             }
 
-            File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
-                @"
+            for (int i = 0; i < 3; i++)
+            {
+                if (i > 0)
+                    Thread.Sleep(100);
+                try
+                {
+
+                    File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
+                        @"
 [Agent]
 [ConfigBox]
 dblclick=open
@@ -266,6 +275,13 @@ maxchar=85
 [Launcher]
 reload=yes
 ");
+                    break;
+                }
+                catch (Exception e)
+                {
+                    MsAppCenterHelper.Error(e);
+                }
+            }
         }
 
         public static string GetKittyExeFullName()

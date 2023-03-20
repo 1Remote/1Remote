@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using PRM.Model.Protocol;
+using PRM.Utils;
 using Shawn.Utils;
 
 namespace PRM.Service
@@ -199,7 +200,14 @@ namespace PRM.Service
                 var fi = new FileInfo(AppPathHelper.Instance.LocalityJsonPath);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
+                try
+                {
+                    File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
+                }
+                catch (Exception e)
+                {
+                    MsAppCenterHelper.Error(e);
+                }
                 CanSave = true;
             }
         }

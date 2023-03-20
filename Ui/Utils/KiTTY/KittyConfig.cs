@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Microsoft.Win32;
 using Shawn.Utils;
 
@@ -391,10 +393,23 @@ namespace PRM.Utils.KiTTY
                         sb.AppendLine($@"{item.Key}\{item.Value}\");
                 }
 
-                var fi = new FileInfo(configPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i > 0)
+                        Thread.Sleep(100);
+                    try
+                    {
+                        var fi = new FileInfo(configPath);
+                        if (fi?.Directory?.Exists == false)
+                            fi.Directory.Create();
+                        File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                }
             }
             catch (Exception e)
             {
