@@ -6,10 +6,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using PRM.Model.DAO;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
@@ -210,10 +212,23 @@ namespace PRM.Service
             {
                 if (!CanSave) return;
                 CanSave = false;
-                var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                for (int i = 0; i < 3; i++)
+                {
+                    if(i > 0)
+                        Thread.Sleep(100);
+                    try
+                    {
+                        var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
+                        if (fi?.Directory?.Exists == false)
+                            fi.Directory.Create();
+                        File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                }
                 CanSave = true;
             }
 

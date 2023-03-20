@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PRM.Model;
@@ -12,6 +13,7 @@ using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.ProtocolRunner;
 using PRM.Model.ProtocolRunner.Default;
+using PRM.Utils;
 using Shawn.Utils;
 
 namespace PRM.Service
@@ -190,7 +192,20 @@ namespace PRM.Service
                     }
                 }
                 var file = Path.Combine(AppPathHelper.Instance.ProtocolRunnerDirPath, $"{protocolName}.json");
-                File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i > 0)
+                        Thread.Sleep(100);
+                    try
+                    {
+                        File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                }
             }
         }
     }

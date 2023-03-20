@@ -5,11 +5,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MSTSCLib;
+using Newtonsoft.Json;
 using PRM.Model;
+using PRM.Model.DAO.Dapper;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.ProtocolRunner;
@@ -131,7 +134,20 @@ namespace PRM.Service
             // write a .rdp file for mstsc.exe
             if (_context.DataService != null)
             {
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context.DataService).ToString());
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i > 0)
+                        Thread.Sleep(100);
+                    try
+                    {
+                        File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context.DataService).ToString());
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                }
                 var p = new Process
                 {
                     StartInfo =
@@ -178,7 +194,20 @@ namespace PRM.Service
             // write a .rdp file for mstsc.exe
             if (_context.DataService != null)
             {
-                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context.DataService).ToString());
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i > 0)
+                        Thread.Sleep(100);
+                    try
+                    {
+                        File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context.DataService).ToString());
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                }
                 var p = new Process
                 {
                     StartInfo =
