@@ -151,7 +151,7 @@
                     </Hyperlink>
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://github.com/1Remote/1Remote/wiki/%5BProtocol%5D--Protocol-Runners" TextDecorations="{x:Null}" 
+                    <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/runner/" TextDecorations="{x:Null}" 
                                controls1:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>
@@ -209,7 +209,7 @@
                     </Hyperlink>
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://github.com/1Remote/1Remote/wiki/%5BProtocol%5D--Protocol-Runners" TextDecorations="{x:Null}" 
+                    <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/runner/" TextDecorations="{x:Null}" 
                                controls1:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>

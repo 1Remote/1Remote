@@ -107,7 +107,7 @@ namespace _1RM.Service
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
-                HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/wiki");
+                HyperlinkHelper.OpenUriBySystem("https://1remote.github.io/usage/quick-start/");
             };
             var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
