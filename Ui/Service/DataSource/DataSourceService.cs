@@ -67,22 +67,11 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
-        public EnumDatabaseStatus InitLocalDataSource(SqliteSource? sqliteConfig = null)
+        public EnumDatabaseStatus InitLocalDataSource(SqliteSource sqliteConfig)
         {
-            if (sqliteConfig == null)
-            {
-                // sqliteConfig == null means we need init a new local data source.
-                // so read from configs and find where db is.
-                sqliteConfig = IoC.Get<ConfigurationService>().LocalDataSource;
-                if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
-                    sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
-                var fi = new FileInfo(sqliteConfig.Path);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-            }
-
             LocalDataSource?.Database_CloseConnection();
             sqliteConfig.DataSourceName = LOCAL_DATA_SOURCE_NAME;
+            sqliteConfig.MarkAsNeedRead();
             if (!IoPermissionHelper.HasWritePermissionOnFile(sqliteConfig.Path))
             {
                 LocalDataSource = null;
@@ -99,7 +88,7 @@ namespace _1RM.Service.DataSource
         {
             try
             {
-                config.MarkToNeedRead(); // reload database
+                config.MarkAsNeedRead(); // reload database
                 if (config is SqliteSource { DataSourceName: LOCAL_DATA_SOURCE_NAME } localConfig)
                 {
                     return InitLocalDataSource(localConfig);

@@ -59,7 +59,7 @@
                 <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
                       Background="Transparent" Width="20" Height="20" 
                       Margin="5 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                    <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                 </Grid>
                 <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
                            Text="{Binding DisplayName}" 

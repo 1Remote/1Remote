@@ -52,7 +52,7 @@ namespace _1RM.Service.DataSource.Model
             return false;
         }
 
-        public void MarkToNeedRead()
+        public void MarkAsNeedRead()
         {
             LastReadFromDataSourceMillisecondsTimestamp = 0;
         }

@@ -60,7 +60,7 @@
                     </Style>
                 </StackPanel.Resources>
                 <Grid Background="Transparent" Width="20" Height="20" Margin="5 0 0 0" VerticalAlignment="Center">
-                    <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                    <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                 </Grid>
                 <TextBlock Text="{x:Static service:AppPathHelper.APP_DISPLAY_NAME}" Margin=" 5 0 0 0" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="-" Margin="5 0 0 0" TextTrimming="CharacterEllipsis"/>

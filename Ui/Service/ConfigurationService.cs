@@ -190,6 +190,7 @@ namespace _1RM.Service
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
 
+            LocalDataSource.Path = _cfg.SqliteDatabasePath;
             LocalDataSource.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SqliteSource.Path))

@@ -106,6 +106,7 @@
 	  <None Remove="Resources\Icons\001_APP\011_Nginx.png" />
 	  <None Remove="Resources\Icons\001_APP\011_NoMachine.png" />
 	  <None Remove="Resources\Icons\001_APP\011_Wordpress.png" />
+	  <None Remove="Resources\Image\Logo\logo32.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -290,6 +291,7 @@
 		<Resource Include="Resources\Icons\20210106\20210106_105.png" />
 		<Resource Include="Resources\Image\Logo\author_avatar.jpg" />
 		<Resource Include="Resources\Image\Logo\logo256.png" />
+		<Resource Include="Resources\Image\Logo\logo32.png" />
 		<Resource Include="Resources\Image\Logo\logo64.png" />
 		<Resource Include="Resources\KiTTY\kitty_portable.exe" />
 		<Resource Include="Resources\KiTTY\PuttyThemes.json" />

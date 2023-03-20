@@ -56,7 +56,7 @@
             <Grid Background="Transparent" Name="WinTitleBar">
                 <StackPanel Orientation="Horizontal">
                     <Grid Background="Transparent" Width="24" Height="24" Margin="5">
-                        <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                        <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                     </Grid>
                     <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
                 </StackPanel>
@@ -375,7 +375,7 @@
                             </MenuItem>
                             <MenuItem Command="{Binding CmdGoAboutPage}">
                                 <MenuItem.Icon>
-                                    <Image Source="/Resources/Image/Logo/logo64.png" Width="20"></Image>
+                                    <Image Source="/Resources/Image/Logo/logo32.png" Width="20"></Image>
                                 </MenuItem.Icon>
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
