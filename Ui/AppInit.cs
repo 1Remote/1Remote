@@ -273,7 +273,18 @@ namespace _1RM
             // Init data sources controller
             var dataSourceService = IoC.Get<DataSourceService>();
             GlobalData.SetDataSourceService(dataSourceService);
-            _localDataConnectionStatus = dataSourceService.InitLocalDataSource();
+
+            // read from configs and find where db is.
+            {
+                var sqliteConfig = ConfigurationService!.LocalDataSource;
+                if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
+                    sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                var fi = new FileInfo(sqliteConfig.Path);
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
+                _localDataConnectionStatus = dataSourceService.InitLocalDataSource(sqliteConfig);
+            }
+
             // read from primary database
             IoC.Get<GlobalData>().ReloadServerList(true);
             // read from AdditionalDataSource async

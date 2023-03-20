@@ -48,7 +48,7 @@
         <Grid Grid.Row="0" Margin="0 20 0 0">
             <StackPanel HorizontalAlignment="Center">
                 <Grid HorizontalAlignment="Center">
-                    <Image Source="/Resources/Image/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
+                    <Image Source="/Resources/Image/Logo/logo64.png" Width="80" HorizontalAlignment="Left"></Image>
                 </Grid>
                 <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static Rm:Assert.APP_NAME}"></TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
