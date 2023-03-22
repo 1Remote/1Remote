@@ -9,7 +9,8 @@
 		<UseWindowsForms>True</UseWindowsForms>
 		<RootNamespace>_1RM</RootNamespace>
 		<AssemblyName>1Remote</AssemblyName>
-		<ApplicationIcon>LOGO.ico</ApplicationIcon>
+		<ApplicationIcon Condition="'$(Configuration)'=='Debug'">LOGO_D.ico</ApplicationIcon>
+		<ApplicationIcon Condition="'$(Configuration)'!='Debug'">LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreRelease;ReleaseNet48</Configurations>
 		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
@@ -70,6 +71,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="LOGO_D.ico" />
 	  <None Remove="Resources\Icons\000_OS\000_Win10_1.png" />
 	  <None Remove="Resources\Icons\000_OS\000_Win10_2.png" />
 	  <None Remove="Resources\Icons\000_OS\000_Win11_0.png" />
@@ -150,6 +152,7 @@
 
 	<ItemGroup>
 		<Resource Include="LOGO.ico" />
+		<Resource Include="LOGO_D.ico" />
 		<Resource Include="Resources\Icons\000_OS\000_Win10_1.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win11_0.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win11_1.png" />

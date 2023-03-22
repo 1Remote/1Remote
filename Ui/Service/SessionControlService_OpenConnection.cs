@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Utils;
 using _1RM.View.Host;
+using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -29,10 +31,14 @@ namespace _1RM.Service
                           new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+            var text = rdp.ToRdpConfig().ToString();
 
             // write a .rdp file for mstsc.exe
+            if (RetryHelper.Try(() =>
+                {
+                    File.WriteAllText(rdpFile, text);
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -76,9 +82,14 @@ namespace _1RM.Service
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
+            // write a .rdp file for mstsc.exet.Replace(c.ToString(), ""));
+            var text = remoteApp.ToRdpConfig().ToString();
             // write a .rdp file for mstsc.exe
+            if (RetryHelper.Try(() =>
+                {
+                    File.WriteAllText(rdpFile, text);
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
-                File.WriteAllText(rdpFile, remoteApp.ToRdpConfig().ToString());
                 var p = new Process
                 {
                     StartInfo =

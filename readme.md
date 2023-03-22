@@ -51,7 +51,7 @@ Use one of the following methods to install the application:
 
 > P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use 1Remote in Win7.
 
-### [Quick start](https://github.com/1Remote/1Remote/wiki/Quick-start)
+### [Quick start](https://1remote.github.io/usage/quick-start/)
 
 1. Open PRemote.exe.
 

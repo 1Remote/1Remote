@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using _1RM.Service;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using Shawn.Utils;
 
 namespace _1RM.Utils.KiTTY.Model
@@ -412,7 +413,11 @@ namespace _1RM.Utils.KiTTY.Model
                 var fi = new FileInfo(configPath);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
+
+                RetryHelper.Try(() =>
+                {
+                    File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
             }
             catch (Exception e)
             {

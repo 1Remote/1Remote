@@ -13,6 +13,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
+using _1RM.Utils;
 
 namespace _1RM.Service
 {
@@ -194,7 +195,10 @@ namespace _1RM.Service
                     }
                 }
                 var file = Path.Combine(AppPathHelper.Instance.ProtocolRunnerDirPath, $"{protocolName}.json");
-                File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
+                RetryHelper.Try(() =>
+                {
+                    File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
             }
         }
     }
