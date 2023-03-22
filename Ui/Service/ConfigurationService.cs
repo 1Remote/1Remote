@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using _1RM.Model.DAO;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -253,7 +254,11 @@ namespace _1RM.Service
                     var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
                     if (fi?.Directory?.Exists == false)
                         fi.Directory.Create();
-                    File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+
+                    RetryHelper.Try(() =>
+                    {
+                        File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+                    }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 }
 
                 

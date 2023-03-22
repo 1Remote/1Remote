@@ -14,6 +14,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils.KiTTY.Model;
 using _1RM.Model.ProtocolRunner.Default;
+using System.Text;
 
 namespace _1RM.Utils.KiTTY
 {
@@ -138,8 +139,11 @@ namespace _1RM.Utils.KiTTY
             var fi = new FileInfo(kittyFullName);
             if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
-            File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
-                @"
+
+            RetryHelper.Try(() =>
+            {
+                File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
+                    @"
 [Agent]
 [ConfigBox]
 dblclick=open
@@ -181,6 +185,7 @@ maxchar=85
 [Launcher]
 reload=yes
 ");
+            }, actionOnError: exception => MsAppCenterHelper.Error(exception));
         }
 
         public static string GetInternalKittyExeFullName()

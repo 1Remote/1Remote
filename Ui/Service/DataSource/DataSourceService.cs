@@ -10,6 +10,7 @@ using _1RM.Model;
 using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using _1RM.View;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Newtonsoft.Json;
@@ -163,7 +164,10 @@ namespace _1RM.Service.DataSource
                     if (fi?.Directory?.Exists == false)
                         fi.Directory.Create();
                     if (IoPermissionHelper.HasWritePermissionOnFile(path))
-                        File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
+                        RetryHelper.Try(() =>
+                        {
+                            File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
+                        }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 }
             }
             finally

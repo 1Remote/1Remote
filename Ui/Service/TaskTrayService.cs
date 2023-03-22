@@ -42,7 +42,11 @@ namespace _1RM.Service
         public void TaskTrayInit()
         {
             Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
+#if DEBUG
+            var icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO_D.ico")).Stream);
+#else
             var icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream);
+#endif
             Debug.Assert(icon != null);
             Executor.OnUIThread(() =>
             {

@@ -12,6 +12,7 @@ using _1RM.Model.Protocol;
 using _1RM.View.Launcher;
 using Shawn.Utils;
 using _1RM.View;
+using _1RM.Utils;
 
 namespace _1RM.Service
 {
@@ -255,7 +256,11 @@ namespace _1RM.Service
                 var fi = new FileInfo(AppPathHelper.Instance.LocalityJsonPath);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
+
+                RetryHelper.Try(() =>
+                {
+                    File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 CanSave = true;
             }
         }

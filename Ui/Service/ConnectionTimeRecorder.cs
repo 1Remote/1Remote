@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using _1RM.View;
 using Newtonsoft.Json;
+using Shawn.Utils;
 
 namespace _1RM.Service
 {
@@ -33,7 +35,10 @@ namespace _1RM.Service
 
         public static void Save()
         {
-            File.WriteAllText(Path, JsonConvert.SerializeObject(ConnectTimeData));
+            RetryHelper.Try(() =>
+            {
+                File.WriteAllText(Path, JsonConvert.SerializeObject(ConnectTimeData));
+            }, actionOnError: exception => MsAppCenterHelper.Error(exception));
         }
 
         /// <summary>
