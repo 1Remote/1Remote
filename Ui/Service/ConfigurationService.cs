@@ -24,9 +24,14 @@ namespace PRM.Service
         public DateTime InstallTime = DateTime.Today;
         public bool DoNotShowAgain = false;
         public string DoNotShowAgainVersionString = "";
+        public DateTime LastRequestRatingsTime = DateTime.MinValue;
         [Newtonsoft.Json.JsonIgnore]
         public VersionHelper.Version DoNotShowAgainVersion => VersionHelper.Version.FromString(DoNotShowAgainVersionString);
-        public DateTime LastRequestRatingsTime = DateTime.MinValue;
+
+
+        public string BreakingChangeAlertVersionString = "";
+        [Newtonsoft.Json.JsonIgnore]
+        public VersionHelper.Version BreakingChangeAlertVersion => VersionHelper.Version.FromString(BreakingChangeAlertVersionString);
         public int ConnectCount = 0;
     }
     public class GeneralConfig
