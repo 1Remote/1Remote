@@ -27,39 +27,35 @@ This App Will Rename to 1Remote in the feature..
 - Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://github.com/1Remote/1Remote/wiki/%5BProtocol%5D--Protocol-Runners)
 - Portable - just unpack and run
 
-## Installation
-
-### Stable
+## 🚩Installation
 
 Latest Version: 0.7.2.7
 
-Use one of the following methods to install the application:
+|| Stable的 | Preview |
+|---| --- | --- |
+| Download | <li>[GitHub release](https://github.com/1Remote/1Remote/releases)</li><li>[Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)</li><li>[Winget](https://github.com/microsoft/winget-cli): `winget install premotem`</li><li>[Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`</li> | [Nightly](https://github.com/1Remote/1Remote/releases/tag/Nightly) |
 
-- [GitHub release](https://github.com/1Remote/1Remote/releases)
-- [Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
-- [Winget](https://github.com/microsoft/winget-cli): `winget install premotem`
-- [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
-### Nightly-Preview
+💥New Features in Preview:
 
-- [Nightly](https://github.com/1Remote/1Remote/releases/tag/Nightly)
+- [x] [MySQL support](https://1remote.github.io/usage/database/data-synchronization/#by-using-mysql)
+- [x] [Custom servers order by drag](https://1remote.github.io/usage/overview/#sorting)
+- [x] [Multi-Credentials for RDP\VNC\SHH...(e.g. keep root and normal-user credentials in one server)](https://1remote.github.io/usage/alternative-credential/#addedit)
+- [x] Multi-Address for RDP\VNC\SHH... (e.g. 192.168.0.100 for LAN, and xxx.xx.xxx.xx for WAN)
+- [x] [Auto switching between multi-addresses (you don't have to select the address manually)](https://1remote.github.io/usage/alternative-credential/#auto-switching-address)
+- [x] [Servers sharing within team (e.g. share servers with your colleagues)](https://1remote.github.io/usage/team/team-sharing/)
 
-### Requirements
+### ⚠Requirements
 
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
 
 > P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use 1Remote in Win7.
 
-### [Quick start](https://1remote.github.io/usage/quick-start/)
+### 🗺[Quick start](https://1remote.github.io/usage/quick-start/)
 
-1. Open PRemote.exe.
 
-2. Click "+" button and fill address\username\password... then save
-
-3. Press <kbd>Alt</kbd> + <kbd>M</kbd> Open the launcher, type keyword to find your server, press <kbd>enter</kbd> to start session
-
-## Overview
+## 👓Overview
 
 <img src="https://raw.githubusercontent.com/1Remote/PRemoteM/Doc/DocPic/maindemo.png" width="800" />
 
