@@ -288,7 +288,7 @@
                 <Setter Property="HeaderPrefixContent">
                     <Setter.Value>
                         <Grid Margin="5 0" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
-                            <Grid Width="24" Height="24" VerticalAlignment="Center">
+                            <Grid Width="20" Height="20" VerticalAlignment="Center">
                                 <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                             </Grid>
                         </Grid>

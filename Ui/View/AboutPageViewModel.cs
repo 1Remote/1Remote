@@ -1,8 +1,10 @@
 ﻿using System.Timers;
-using System.Windows.Input;
 using _1RM.Service;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Controls;
+using Stylet;
 
 namespace _1RM.View
 {
@@ -26,9 +28,6 @@ namespace _1RM.View
                 checker.CheckUpdateAsync();
             };
             checker.CheckUpdateAsync();
-
-
-            CurrentVersion = _1Remote.Security.Config.Salt;
         }
 
         ~AboutPageViewModel()
@@ -37,7 +36,7 @@ namespace _1RM.View
             _checkUpdateTimer?.Dispose();
         }
 
-        public string CurrentVersion { get; }
+        public string CurrentVersion => AppVersion.Version;
 
 
         private string _newVersion = "";
@@ -55,10 +54,27 @@ namespace _1RM.View
             set => SetAndNotifyIfChanged(ref _newVersionUrl, value);
         }
 
-        private void OnNewVersionRelease(string version, string url)
+        private bool _isBreakingNewVersion;
+        public bool IsBreakingNewVersion
+        {
+            get => _isBreakingNewVersion;
+            set => SetAndNotifyIfChanged(ref _isBreakingNewVersion, value);
+        }
+
+        private void OnNewVersionRelease(string version, string url, bool b)
         {
             this.NewVersion = version;
             this.NewVersionUrl = url;
+            this.IsBreakingNewVersion = b;
+            var v = IoC.Get<ConfigurationService>().Engagement.BreakingChangeAlertVersion;
+            if (this.IsBreakingNewVersion
+                && VersionHelper.Version.FromString(version) > v)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    IoC.Get<IWindowManager>().ShowDialog(IoC.Get<BreakingChangeUpdateViewModel>());
+                });
+            }
         }
 
 
@@ -74,7 +90,30 @@ namespace _1RM.View
             }
         }
 
-
+        private RelayCommand? _cmdUpdate;
+        public RelayCommand CmdUpdate
+        {
+            get
+            {
+                return _cmdUpdate ??= new RelayCommand((o) =>
+                {
+                    if (IsBreakingNewVersion)
+                    {
+                        MaskLayerController.ShowProcessingRing();
+                        IoC.Get<IWindowManager>().ShowDialog(IoC.Get<BreakingChangeUpdateViewModel>(), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                        MaskLayerController.HideMask();
+                    }
+                    else
+                    {
+#if FOR_MICROSOFT_STORE_ONLY
+                        HyperlinkHelper.OpenUriBySystem("ms-windows-store://review/?productid=9PNMNF92JNFP");
+#else
+                        HyperlinkHelper.OpenUriBySystem(NewVersionUrl);
+#endif
+                    }
+                });
+            }
+        }
 
         private RelayCommand? _cmdConsoleToggle;
         public RelayCommand CmdConsoleToggle
