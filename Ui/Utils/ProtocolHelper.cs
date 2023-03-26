@@ -61,7 +61,8 @@ namespace _1RM.Utils
         public static void RunWithoutHosting(this Runner runner, ProtocolBase protocol)
         {
             if (runner is not ExternalRunner er) return;
-            var (exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
+            var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
+            if (!isOk) return;
 
             var startInfo = new ProcessStartInfo();
             if (environmentVariables?.Count > 0)
@@ -71,10 +72,11 @@ namespace _1RM.Utils
                         startInfo.EnvironmentVariables.Add(kv.Key, kv.Value);
                     startInfo.EnvironmentVariables[kv.Key] = kv.Value;
                 }
+
             startInfo.UseShellExecute = false;
             startInfo.FileName = exePath;
             startInfo.Arguments = exeArguments;
-            var process = new Process() { StartInfo = startInfo };
+            var process = new Process() {StartInfo = startInfo};
             process.Start();
 
             Task.Factory.StartNew(() =>
@@ -85,15 +87,18 @@ namespace _1RM.Utils
         }
 
 
-
-        private static Tuple<string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner er, ProtocolBase protocol)
+        /// <summary>
+        /// return (noError?, exePath, exeArguments, environmentVariables)
+        /// </summary>
+        private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner er, ProtocolBase protocol)
         {
             var exePath = er.ExePath;
             var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
             if (tmp.Item1 == false)
             {
                 MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
-                return null;
+                return new Tuple<bool, string, string, Dictionary<string, string>>(false, "", "",
+                    new Dictionary<string, string>());
             }
             exePath = tmp.Item2;
 
@@ -120,7 +125,7 @@ namespace _1RM.Utils
                 }
             }
 
-            return new Tuple<string, string, Dictionary<string, string>>(exePath, exeArguments, environmentVariables);
+            return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }
 
         public static HostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowBase? tab = null)
@@ -128,9 +133,12 @@ namespace _1RM.Utils
             Debug.Assert(runner.IsRunWithoutHosting() == false);
             if (runner is ExternalRunner er)
             {
-                var (exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
-                var integrateHost = IntegrateHost.Create(protocol, exePath, exeArguments, environmentVariables);
-                return integrateHost;
+                var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
+                if (isOk)
+                {
+                    var integrateHost = IntegrateHost.Create(protocol, exePath, exeArguments, environmentVariables);
+                    return integrateHost;
+                }
             }
 
             switch (protocol)

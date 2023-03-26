@@ -457,6 +457,7 @@ namespace _1RM.View.Editor
 
         private void UpdateServerWhenProtocolChanged(Type newProtocolType)
         {
+            if(string.IsNullOrEmpty(newProtocolType?.FullName)) return;
             // change protocol
             var protocolServerBaseAssembly = typeof(ProtocolBase).Assembly;
             var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
