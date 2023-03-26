@@ -29,9 +29,9 @@ This App Will Rename to 1Remote in the feature..
 
 ## 🚩Installation
 
-Latest Version: 0.7.2.7
+Latest Version: 0.7.2.8
 
-|| Stable的 | Preview |
+|| Stable | Preview |
 |---| --- | --- |
 | Download | <li>[GitHub release](https://github.com/1Remote/1Remote/releases)</li><li>[Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)</li><li>[Winget](https://github.com/microsoft/winget-cli): `winget install premotem`</li><li>[Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`</li> | [Nightly](https://github.com/1Remote/1Remote/releases/tag/Nightly) |
 
