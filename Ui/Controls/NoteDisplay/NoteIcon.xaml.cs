@@ -46,7 +46,7 @@ namespace _1RM.Controls.NoteDisplay
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private NoteDisplayAndEditor _noteDisplayAndEditor;
+        private NoteDisplayAndEditor? _noteDisplayAndEditor;
         public NoteIcon(ProtocolBase server)
         {
             Server = server;
@@ -107,7 +107,8 @@ namespace _1RM.Controls.NoteDisplay
 
         private async void ButtonShowNote_OnMouseEnter(object sender, MouseEventArgs e)
         {
-            if (PopupNoteContent.Content is not NoteDisplayAndEditor)
+            if (PopupNoteContent.Content is not NoteDisplayAndEditor
+                && _noteDisplayAndEditor != null)
             {
                 PopupNoteContent.Content = _noteDisplayAndEditor;
             }
@@ -121,7 +122,8 @@ namespace _1RM.Controls.NoteDisplay
 
         private async void ButtonBriefNote_OnClick(object sender, RoutedEventArgs e)
         {
-            if (PopupNoteContent.Content is not NoteDisplayAndEditor)
+            if (PopupNoteContent.Content is not NoteDisplayAndEditor
+                && _noteDisplayAndEditor != null)
             {
                 PopupNoteContent.Content = _noteDisplayAndEditor;
             }
