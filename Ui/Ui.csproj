@@ -113,6 +113,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="1Remote.Security" Version="1.0.0" />
+		<PackageReference Include="1Remote.VncSharpCore" Version="1.2.1" />
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
 		<PackageReference Include="CredentialManagement" Version="1.0.2" />
 		<PackageReference Include="Dapper" Version="2.0.123" />
@@ -137,7 +138,6 @@
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils.WpfResources\Shawn.Utils.WpfResources.csproj" />
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj" />
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils\Shawn.Utils.csproj" />
-		<ProjectReference Include="..\VncSharpCore\VncSharpCore\VncSharpCore.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
