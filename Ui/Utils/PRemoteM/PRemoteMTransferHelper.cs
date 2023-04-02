@@ -66,7 +66,7 @@ namespace _1RM.Utils.PRemoteM
                             Debug.Assert(localSource != null);
                             localSource!.Database_InsertServer(_servers);
                             IoC.Get<GlobalData>().ReloadServerList(true);
-                            MessageBoxHelper.Info($"All done! You may need to delete `{_dbPath}`...", ownerViewModel: IoC.Get<MainWindowViewModel>());
+                            MessageBoxHelper.Info($"All done! \r\n\r\nYou may want to delete the old data at:\r\n`{_dbPath}`.", ownerViewModel: IoC.Get<MainWindowViewModel>());
                         }
                         catch (Exception e)
                         {

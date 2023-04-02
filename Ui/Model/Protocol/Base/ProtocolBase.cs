@@ -10,6 +10,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using FluentFTP.Helpers;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -291,7 +292,22 @@ namespace _1RM.Model.Protocol.Base
             return clone;
         }
 
-        public int RunScriptBeforeConnect()
+        private Dictionary<string, string> GetEnvironmentVariablesForScript()
+        {
+            var evs = new Dictionary<string, string>
+            {
+                { "SESSION_ID", this.GetHashCode().ToString() },
+                { "SERVER_ID", this.Id },
+                { "SERVER_NAME", this.DisplayName },
+                { "SERVER_HOST", "" },
+                { "SERVER_TAGS", string.Join(',',this.Tags) }
+            };
+            if (this is ProtocolBaseWithAddressPort p)
+                evs["SERVER_HOST"] = $"{p.Address}:{p.Port}";
+            return evs;
+        }
+
+        public int RunScriptBeforeConnect(bool isTestRun = false)
         {
             int exitCode = 0;
             try
@@ -299,32 +315,67 @@ namespace _1RM.Model.Protocol.Base
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
                     var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandBeforeConnected);
-                    exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false, isHideWindow: HideCommandBeforeConnectedWindow);
+
+                    if (isTestRun)
+                    {
+                        if (string.IsNullOrEmpty(tuple.Item2) == false)
+                            MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                        else
+                            MessageBoxHelper.Info($"We will run: '{CommandBeforeConnected}'");
+                    }
+
+                    exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false,
+                        isHideWindow: HideCommandBeforeConnectedWindow && isTestRun != true,
+                        workingDirectory: tuple.Item3,
+                        envVariables: GetEnvironmentVariablesForScript());
+
+                    if (isTestRun)
+                    {
+                        MessageBoxHelper.Info($"The exit code of the script = {exitCode}.\r\nOnce the code != 0, we will terminate your connection request.");
+                    }
                 }
             }
             catch (Exception e)
             {
                 exitCode = 1;
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
             }
             return exitCode;
         }
 
-        public void RunScriptAfterDisconnected()
+        public void RunScriptAfterDisconnected(bool isTestRun = false)
         {
+            int exitCode = 0;
             try
             {
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
                     var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(CommandAfterDisconnected);
-                    WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true, isHideWindow: true);
+
+                    if (isTestRun)
+                    {
+                        if (string.IsNullOrEmpty(tuple.Item2) == false)
+                            MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
+                        else
+                            MessageBoxHelper.Info($"We will run: '{CommandBeforeConnected}'");
+                    }
+
+                    exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true,
+                        isHideWindow: isTestRun != true,
+                        workingDirectory: tuple.Item3,
+                        envVariables: GetEnvironmentVariablesForScript());
+
+                    if (isTestRun)
+                    {
+                        MessageBoxHelper.Info($"The exit code of the script = {exitCode}.");
+                    }
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert(e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
             }
         }
 

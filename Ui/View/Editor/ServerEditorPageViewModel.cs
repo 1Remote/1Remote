@@ -647,43 +647,18 @@ namespace _1RM.View.Editor
             {
                 return _cmdTestScript ??= new RelayCommand((o) =>
                 {
-                    string cmd;
-                    if (o?.ToString()?.ToLower() == "before")
-                    {
-                        cmd = Server.CommandBeforeConnected;
-                    }
-                    else
-                    {
-                        cmd = Server.CommandAfterDisconnected;
-                    }
-
                     MaskLayerController.ShowProcessingRing(assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
-                        try
+                        if (o?.ToString()?.ToLower() == "before")
                         {
-                            if (!string.IsNullOrWhiteSpace(cmd))
-                            {
-                                var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(cmd);
-                                if (string.IsNullOrEmpty(tuple.Item2) == false)
-                                    MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
-                                else
-                                    MessageBoxHelper.Info($"We will run: '{cmd}'");
-                                var code = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isHideWindow: false);
-                                if (code != 0)
-                                {
-                                    MessageBoxHelper.Info($"Exit code: {code}");
-                                }
-                            }
+                            Server.RunScriptBeforeConnect(true);
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            MessageBoxHelper.ErrorAlert(ex.Message);
+                            Server.RunScriptAfterDisconnected(true);
                         }
-                        finally
-                        {
-                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                        }
+                        MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                     });
                 });
             }

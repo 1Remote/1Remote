@@ -91,7 +91,7 @@
                     </FrameworkElement.CommandBindings>
                     <Grid Margin="10">
                         <wpf:MarkdownViewer Name="MarkdownViewer"
-                                        Foreground="{DynamicResource PrimaryTextBrush}">
+                                            Foreground="{DynamicResource PrimaryTextBrush}">
                         </wpf:MarkdownViewer>
 
                         <Grid Name="GridEditor">
