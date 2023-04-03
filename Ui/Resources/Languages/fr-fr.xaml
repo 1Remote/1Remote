@@ -67,7 +67,7 @@
     <s:String x:Key="Custom">Coutume</s:String>
     <s:String x:Key="All">Tous</s:String>
     <s:String x:Key="Protocol">Protocole</s:String>
-    <s:String x:Key="Cameras">Cameras</s:String>
+    <s:String x:Key="Cameras">Appareils photo</s:String>
     <s:String x:Key="Upload">Télécharger</s:String>
     <s:String x:Key="filter_mainwindow">Mots-clés ou '#' + nom de tag</s:String>
     <s:String x:Key="Search (Ctrl+F)">Rechercher (Ctrl + F)</s:String>
@@ -124,7 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">Vous modifiez en masse :</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Nombre d'éléments sélectionnés:</s:String>
     <s:String x:Key="server_editor_group_title_common">Commun</s:String>
-    <s:String x:Key="Connection">Lien</s:String>
+    <s:String x:Key="Connection">Connexion</s:String>
     <s:String x:Key="server_editor_group_title_display">Affichage</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Avantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serveur de passerelle RD</s:String>
@@ -151,7 +151,7 @@
     <s:String x:Key="Custom resolution (fixed)">Résolution personnalisée (fixe)</s:String>
     <s:String x:Key="Full-screen resolution (stretch)">Résolution en plein écran (étirement)</s:String>
     <s:String x:Key="Full-screen resolution (fixed)">Résolution en plein écran (fixe)</s:String>
-    <s:String x:Key="Scale">Échelle</s:String>
+    <s:String x:Key="Scale">Escalader</s:String>
     <s:String x:Key="server_editor_display_rdp_performance">Performance</s:String>
     <s:String x:Key="server_editor_display_rdp_performance_auto">Jugement automatique (par vitesse de connexion)</s:String>
     <s:String x:Key="server_editor_display_rdp_performance_high">Élevé (couleur 32 bits avec prise en charge complète des fonctionnalités)</s:String>
@@ -175,7 +175,7 @@
     <s:String x:Key="server_editor_advantage_ssh_startup_auto_command">Commande automatique</s:String>
     <s:String x:Key="server_editor_advantage_ssh_startup_auto_kitty_session_tip">prendre en charge la configuration externe en sélectionnant un chemin de fichier de session de KiTTY</s:String>
     <s:String x:Key="server_editor_advantage_sftp_startup_path">Chemin de démarrage</s:String>
-    <s:String x:Key="server_editor_gateway_mode">Lien</s:String>
+    <s:String x:Key="server_editor_gateway_mode">Connexion</s:String>
     <s:String x:Key="server_editor_gateway_mode_automatically_detect">Détecter automatiquement les paramètres du serveur RD Gateway</s:String>
     <s:String x:Key="server_editor_gateway_mode_use_these">Utilisez les paramètres de serveur de passerelle Bureau à distance suivants</s:String>
     <s:String x:Key="server_editor_gateway_mode_do_not_use">Ne pas utiliser de serveur de passerelle pour le Bureau à distance</s:String>
@@ -189,7 +189,7 @@
     <s:String x:Key="In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.">Dans ce mode, RDP démarrera la session de la manière 'mstsc.exe xxxx.rdp' dans CMD, il peut offrir plus de paramètres personnalisés.</s:String>
     <s:String x:Key="Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.">Remarque : Ce mode sera automatiquement activé s'il y a plus de 2 moniteurs avec une mise à l'échelle d'affichage différente sur votre PC et que vous avez sélectionné le mode plein écran.</s:String>
     <s:String x:Key="Additional settings">Paramètres additionnels</s:String>
-    <s:String x:Key="Preview rdp file">Aperçu du fichier rdp</s:String>
+    <s:String x:Key="Preview rdp file">Prévisualiser le fichier rdp</s:String>
     <s:String x:Key="Check monitor number">Vérifier le numéro du moniteur</s:String>
     <s:String x:Key="server_editor_remote_app_name">Nom de l'application</s:String>
     <s:String x:Key="server_editor_remote_app_name_tag">nom de l'application (par exemple bonjour)</s:String>
@@ -227,7 +227,7 @@
     <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Attention : certains exe ne peuvent pas être hébergés par 1Remote, veuillez tester par vous-même.</s:String>
     <s:String x:Key="Show environment variables">Afficher les variables d'environnement</s:String>
     <s:String x:Key="Add environment variables">Ajouter des variables d'environnement</s:String>
-    <s:String x:Key="write permissions alert">Nous n'avons pas les droits d'écriture pour le répertoire `{0}` !&#10;S'il vous plaît essayez:&#10;1. exécuter en tant qu'administrateur&#10;2. modifier les autorisations de répertoire ou de fichier&#10;3. déplacer 1Remote vers un autre dossier</s:String>
+    <s:String x:Key="write permissions alert">Nous n'avons pas les droits d'écriture pour le répertoire `{0}` !\nS'il vous plaît essayez:\n1. exécuter en tant qu'administrateur\n2. modifier les autorisations de répertoire ou de fichier\n3. déplacer 1Remote vers un autre dossier</s:String>
     <s:String x:Key="Follow system">Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur)</s:String>
     <s:String x:Key="tag_tooltips">Clic gauche : définir ce tag comme filtre{0}Ctrl + clic gauche : ajouter ce tag à la liste d'inclusion {0}Ctrl + clic droit : ajouter ce tag à la liste d'exclusion</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Voulez-vous vraiment fermer la connexion?</s:String>

@@ -36,7 +36,7 @@
     <s:String x:Key="Connect">Verbinden</s:String>
     <s:String x:Key="Connect (New window)">Verbinden (Neues Fenster)</s:String>
     <s:String x:Key="Note">Note</s:String>
-    <s:String x:Key="Share">Teilen</s:String>
+    <s:String x:Key="Share">Aktie</s:String>
     <s:String x:Key="Copy">Kopieren</s:String>
     <s:String x:Key="Enabled">Aktiv</s:String>
     <s:String x:Key="Helper">Helfer</s:String>
@@ -67,7 +67,7 @@
     <s:String x:Key="Custom">Benutzerdefiniert</s:String>
     <s:String x:Key="All">Alle</s:String>
     <s:String x:Key="Protocol">Protokoll</s:String>
-    <s:String x:Key="Cameras">Cameras</s:String>
+    <s:String x:Key="Cameras">Kameras</s:String>
     <s:String x:Key="Upload">Hochladen</s:String>
     <s:String x:Key="filter_mainwindow">Schlüsselwörter oder '#' + Tag-Name</s:String>
     <s:String x:Key="Search (Ctrl+F)">Suche (STRG + F)</s:String>
@@ -164,7 +164,7 @@
     <s:String x:Key="server_editor_advantage_disk_drives">Laufwerke</s:String>
     <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Ton</s:String>
-    <s:String x:Key="server_editor_advantage_sounds_disabled">Deaktiviert</s:String>
+    <s:String x:Key="server_editor_advantage_sounds_disabled">Behinderte</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Lokal spielen</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">Spielen Sie auf der Fernbedienung</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">Audio Aufnahme</s:String>
@@ -196,7 +196,7 @@
     <s:String x:Key="server_editor_remote_app_fullname">Pfad zum Programm</s:String>
     <s:String x:Key="server_editor_remote_app_fullname_tag">vollständiger Programm-Pfad auf dem Server (z. B. C:\\Apps\\hallo.exe)</s:String>
     <s:String x:Key="about_page_how_to_use">Handbuch im Github Wiki</s:String>
-    <s:String x:Key="about_page_feedback">Feedback</s:String>
+    <s:String x:Key="about_page_feedback">Rückmeldung</s:String>
     <s:String x:Key="guidance_introduce">Mit 1Remote können Sie jederzeit und überall eine Remote-Sitzung eröffnen.</s:String>
     <s:String x:Key="guidance_feature_launcher_key">Rufen Sie den Launcher auf mit</s:String>
     <s:String x:Key="guidance_feature_launcher_select">Server auswählen mit</s:String>
@@ -227,12 +227,12 @@
     <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Vorsicht: some exe can not be hosted by 1Remote, please test by your self.</s:String>
     <s:String x:Key="Show environment variables">Show umgebungsvariablen</s:String>
     <s:String x:Key="Add environment variables">Fügen Sie Umgebungsvariablen hinzu</s:String>
-    <s:String x:Key="write permissions alert">Wir haben keine Schreibrechte für das Verzeichnis `{0}`!&#10;Bitte versuche:&#10;1. als Administrator ausführen&#10;2. Verzeichnis- oder Dateiberechtigungen ändern&#10;3. Verschieben Sie 1Remote in einen anderen Ordner</s:String>
+    <s:String x:Key="write permissions alert">Wir haben keine Schreibrechte für das Verzeichnis `{0}`!\nBitte versuche:\n1. als Administrator ausführen\n2. Verzeichnis- oder Dateiberechtigungen ändern\n3. Verschieben Sie 1Remote in einen anderen Ordner</s:String>
     <s:String x:Key="Follow system">Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher)</s:String>
     <s:String x:Key="tag_tooltips">Linksklick : Dieses Tag als Filter festlegen{0}Strg + Linksklick : Dieses Tag zur Einschlussliste hinzufügen {0}Strg + Rechtsklick : Dieses Tag zur Ausschlussliste hinzufügen</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Möchten Sie die Verbindung wirklich beenden?</s:String>
     <s:String x:Key="Hi there,">Hi,</s:String>
-    <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">Ich hoffe, dass Sie diese App nützlich finden. Wenn Sie meine Arbeit unterstützen möchten, können Sie mir einen Kaffee spendieren oder eine nette Bewertung abgeben. Vielen Dank!</s:String>
+    <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">Ich hoffe, dass Sie diese App nützlich finden. Wenn Sie meine Arbeit unterstützen möchten, können Sie mir einen Kaffee spendieren oder eine nette Bewertung abgeben. Danke!</s:String>
     <s:String x:Key="Give suggestions">Geben Sie Anregungen</s:String>
     <s:String x:Key="Buy a coffee">Kaffee kaufen</s:String>
     <s:String x:Key="Give nice review">Geben Sie eine schöne Bewertung ab</s:String>
