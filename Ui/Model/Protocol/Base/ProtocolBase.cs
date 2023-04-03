@@ -300,7 +300,7 @@ namespace _1RM.Model.Protocol.Base
                 { "SERVER_ID", this.Id },
                 { "SERVER_NAME", this.DisplayName },
                 { "SERVER_HOST", "" },
-                { "SERVER_TAGS", string.Join(',',this.Tags) }
+                { "SERVER_TAGS", string.Join(",", this.Tags.ToArray()) }
             };
             if (this is ProtocolBaseWithAddressPort p)
                 evs["SERVER_HOST"] = $"{p.Address}:{p.Port}";

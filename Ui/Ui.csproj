@@ -17,7 +17,7 @@
 		<TargetFramework Condition="'$(Configuration)'=='ReleaseNet48'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreDebug'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net48</TargetFramework>
-		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>
+		<!--<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>-->
 		<!--<TargetPlatformMinVersion Condition="'$(Configuration)'!='ReleaseNet48'">10.0.17763.0</TargetPlatformMinVersion>-->
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
