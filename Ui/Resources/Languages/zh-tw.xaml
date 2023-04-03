@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <s:String x:Key="key">zh-tw</s:String>
+    <s:String x:Key="﻿key">zh-tw</s:String>
     <s:String x:Key="language_code-ISO">zh-TW</s:String>
     <s:String x:Key="language_code-google">zh-TW</s:String>
     <s:String x:Key="language_name">正體中文(zh-TW)</s:String>
@@ -233,7 +233,7 @@
     <s:String x:Key="Add environment variables">新增環境變數</s:String>
     <s:String x:Key="Selected">已選取</s:String>
     <s:String x:Key="Custom">自訂</s:String>
-    <s:String x:Key="write permissions alert">我們沒有對 `{0}` 的存取權限！&#10;請嘗試使用以下方式來解決此問題：&#10;1. 使用系統管理員身分執行&#10;2. 修改該目錄的權限設定&#10;3. 將 PRemoteM 移動到其他位置</s:String>
+    <s:String x:Key="write permissions alert">我們沒有對 `{0}` 的存取權限！\n請嘗試使用以下方式來解決此問題：\n1. 使用系統管理員身分執行\n2. 修改該目錄的權限設定\n3. 將 PRemoteM 移動到其他位置</s:String>
     <s:String x:Key="Follow system">與系統相同 (Windows Server 2012 R2 及以上的伺服器)</s:String>
     <s:String x:Key="Scale">縮放</s:String>
     <s:String x:Key="tag_tooltips">滑鼠左鍵：過濾出該標籤{0}Ctrl + 滑鼠左鍵：將該標籤加入至過濾清單 {0}Ctrl + 滑鼠右鍵：將該標籤加入到排除清單</s:String>

@@ -6,8 +6,9 @@ import copy
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
 
-Special_Marks_in_XAML_Content = ['&', '<', '>', '\r', '\n']
-Special_Characters_in_XAML_Content = ['&amp;', '&lt;', '&gt;', '&#13;', '&#10;']
+Special_Marks_in_XAML_Content = ["&", "<", ">", "\r", "\n"]
+# Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "&#13;", "&#10;"]
+Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "\\r", "\\n"]
 Forbidden_Characters_in_XAML_Key = ['"', "'", *Special_Marks_in_XAML_Content]
 Forbidden_Characters_in_XAML_Key_Values = ['&quot;', '&apos;', *Special_Characters_in_XAML_Content]
 
@@ -137,7 +138,7 @@ if __name__ == '__main__':
 
     g = glossary()
     g.load_csv(CSV_FILE_NAME + '.csv')
-    # g.save_csv(CSV_FILE_NAME + '.csv')
+    g.save_csv(CSV_FILE_NAME + '.csv')
 
     http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
     proxies = {'http': http_proxy, 'https': http_proxy}
