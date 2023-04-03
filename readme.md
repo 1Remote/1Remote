@@ -33,7 +33,7 @@ Latest Version: 0.7.2.8
 
 ### 🗺[Quick start](https://1remote.github.io/usage/quick-start/)
 
-### 🔻[Download](!https://1remote.github.io/download/)
+### 🔻[Download](https://1remote.github.io/download/)
 
 
 ## 👓Overview
