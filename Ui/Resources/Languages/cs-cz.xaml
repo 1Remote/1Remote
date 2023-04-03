@@ -67,7 +67,7 @@
     <s:String x:Key="Custom">Uživatelsky určené</s:String>
     <s:String x:Key="All">Vše</s:String>
     <s:String x:Key="Protocol">Protokol</s:String>
-    <s:String x:Key="Cameras">Cameras</s:String>
+    <s:String x:Key="Cameras">Kamery</s:String>
     <s:String x:Key="Upload">nahrát</s:String>
     <s:String x:Key="filter_mainwindow">Klíčová slova nebo „#“ + název štítku</s:String>
     <s:String x:Key="Search (Ctrl+F)">Hledat (Ctrl + F)</s:String>
@@ -227,7 +227,7 @@
     <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Upozornění: hostování některých spustitelných souborů pomocí 1Remote nefunguje – je třeba si vyzkoušet.</s:String>
     <s:String x:Key="Show environment variables">Zobrazit proměnné prostředí</s:String>
     <s:String x:Key="Add environment variables">Přidat proměnné prostředí</s:String>
-    <s:String x:Key="write permissions alert">&#10;Chybí oprávnění pro zápis do složky „{0}“!&#10;Vyzkoušejte:&#10;1. spustit coby správce&#10;2. upravit práva na souboru a/nebo složce&#10;3. přesunout 1Remote do jiné složky</s:String>
+    <s:String x:Key="write permissions alert">\nChybí oprávnění pro zápis do složky „{0}“!\nVyzkoušejte:\n1. spustit coby správce\n2. upravit práva na souboru a/nebo složce\n3. přesunout 1Remote do jiné složky</s:String>
     <s:String x:Key="Follow system">Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější)</s:String>
     <s:String x:Key="tag_tooltips">Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Opravdu chcete spojení zavřít?</s:String>

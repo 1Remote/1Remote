@@ -227,7 +227,7 @@
     <s:String x:Key="Caution: some exe can not be hosted in 1Remote.">Caution: some exe can not be hosted by 1Remote, please test by your self.</s:String>
     <s:String x:Key="Show environment variables">Show environment variables</s:String>
     <s:String x:Key="Add environment variables">Add environment variables</s:String>
-    <s:String x:Key="write permissions alert">We don't have write permissions for the `{0}` directory!&#10;Please try:&#10;1. run as administrator&#10;2. change directory or file permissions &#10;3. move 1Remote to another folder</s:String>
+    <s:String x:Key="write permissions alert">We don't have write permissions for the `{0}` directory!\nPlease try:\n1. run as administrator\n2. change directory or file permissions \n3. move 1Remote to another folder</s:String>
     <s:String x:Key="Follow system">Follow system(Supported server: Windows Server 2012 R2 and above)</s:String>
     <s:String x:Key="tag_tooltips">Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Are you sure you want to close the connection?</s:String>

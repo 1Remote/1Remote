@@ -6,8 +6,9 @@ import copy
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
 
-Special_Marks_in_XAML_Content = ['&', '<', '>', '\r', '\n']
-Special_Characters_in_XAML_Content = ['&amp;', '&lt;', '&gt;', '&#13;', '&#10;']
+Special_Marks_in_XAML_Content = ["&", "<", ">", "\r", "\n"]
+# Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "&#13;", "&#10;"]
+Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "\\r", "\\n"]
 Forbidden_Characters_in_XAML_Key = ['"', "'", *Special_Marks_in_XAML_Content]
 Forbidden_Characters_in_XAML_Key_Values = ['&quot;', '&apos;', *Special_Characters_in_XAML_Content]
 
@@ -43,7 +44,7 @@ class glossary:
     def load_csv(self, csv_file_name: str, encoding: str = 'utf-8'):
         lines = []  # [[key, english_word, a, b, c, d], [key1, w1, ...], ...]
         with open(csv_file_name, mode='r', encoding=encoding)as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f, delimiter=";")
             for row in reader:
                 if len(row) > 0:
                     lines.append(row)
@@ -62,7 +63,7 @@ class glossary:
             line = [column[row] for column in self.columns]
             lines.append([self.keys[row], self.english_words[row], *line])
         with open(csv_file_name, 'w', encoding=encoding, newline='') as f:
-            writer = csv.writer(f)
+            writer = csv.writer(f, delimiter=";")
             writer.writerows(lines)
 
     def do_translate(self, translator: Translator):
@@ -147,7 +148,14 @@ if __name__ == '__main__':
     http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
     proxies = {'http': http_proxy, 'https': http_proxy}
     translator = Translator(proxies=proxies)
-    # print(translator.translate('hi\r\nsun rise', dest='de').text)
+    # print(translator.translate('hi\r\nsun rise', dest='de').text
+
+    if path.exists("glossary_for_PRemoteM.csv"):
+        prm = glossary()
+        prm.load_csv("glossary_for_PRemoteM.csv")
+        g.merge_columns(prm)
+        g.save_csv(CSV_FILE_NAME + '.csv')
+
 
     # translate
     t = g.clone()

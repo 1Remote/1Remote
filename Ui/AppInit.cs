@@ -327,6 +327,10 @@ namespace _1RM
                 return;
             }
 
+#if DEBUG
+            MessageBoxHelper.ErrorAlert(LanguageService?.Translate(@"write permissions alert", "123") ?? "write permissions error:" + "123123");
+#endif
+
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
