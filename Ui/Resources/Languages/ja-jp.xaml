@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <s:String x:Key="key">ja-jp</s:String>
+    <s:String x:Key="﻿key">ja-jp</s:String>
     <s:String x:Key="language_code-ISO">ja-JP</s:String>
     <s:String x:Key="language_code-google">ja</s:String>
     <s:String x:Key="language_name">日本語(ja-JP)</s:String>
@@ -233,7 +233,7 @@
     <s:String x:Key="Add environment variables">環境変数を追加する</s:String>
     <s:String x:Key="Selected">選択済み</s:String>
     <s:String x:Key="Custom">カスタム</s:String>
-    <s:String x:Key="write permissions alert">`{0}`ディレクトリへの書き込み権限がありません！&#10;してみてください：&#10;1.管理者として実行&#10;2.ディレクトリまたはファイルのアクセス許可を変更します&#10;3.PRemoteMを別のフォルダーに移動します</s:String>
+    <s:String x:Key="write permissions alert">`{0}`ディレクトリへの書き込み権限がありません！\nしてみてください：\n1.管理者として実行\n2.ディレクトリまたはファイルのアクセス許可を変更します\n3.PRemoteMを別のフォルダーに移動します</s:String>
     <s:String x:Key="Follow system">システムに従ってください（サポートされているサーバー：Windows Server 2012 R2以降）</s:String>
     <s:String x:Key="Scale">規模</s:String>
     <s:String x:Key="tag_tooltips">左クリック：このタグをフィルターに設定{0} Ctrl +左クリック：このタグを包含リストに追加{0} Ctrl +右クリック：このタグを除外リストに追加</s:String>

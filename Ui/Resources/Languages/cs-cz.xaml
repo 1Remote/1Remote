@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <s:String x:Key="key">cs-cz</s:String>
+    <s:String x:Key="﻿key">cs-cz</s:String>
     <s:String x:Key="language_code-ISO">cs-CZ</s:String>
     <s:String x:Key="language_code-google">cs</s:String>
     <s:String x:Key="language_name">čeština (cs-CZ)</s:String>
@@ -118,7 +118,7 @@
     <s:String x:Key="import_from_csv">z mRemoteNG csv</s:String>
     <s:String x:Key="import_done_0_items_added">Úspěšně naimportováno, {0} položek přidáno.</s:String>
     <s:String x:Key="import_failure_with_data_format_error">Chyba ve formátu dat!</s:String>
-    <s:String x:Key="server_editor_different_options">&lt;různé předvolby&gt;</s:String>
+    <s:String x:Key="server_editor_different_options">&lt;different options&gt;</s:String>
     <s:String x:Key="server_editor_bulk_editing">Hromadné upravování</s:String>
     <s:String x:Key="server_editor_bulk_editing_title">Hromadně upravujete:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Počet vybraných položek:</s:String>
@@ -233,7 +233,7 @@
     <s:String x:Key="Add environment variables">Přidat proměnné prostředí</s:String>
     <s:String x:Key="Selected">Vybráno</s:String>
     <s:String x:Key="Custom">Uživatelsky určené</s:String>
-    <s:String x:Key="write permissions alert">&#10;Chybí oprávnění pro zápis do složky „{0}“!&#10;Vyzkoušejte:&#10;1. spustit coby správce&#10;2. upravit práva na souboru a/nebo složce&#10;3. přesunout PRemoteM do jiné složky</s:String>
+    <s:String x:Key="write permissions alert">\nChybí oprávnění pro zápis do složky „{0}“!\nVyzkoušejte:\n1. spustit coby správce\n2. upravit práva na souboru a/nebo složce\n3. přesunout PRemoteM do jiné složky</s:String>
     <s:String x:Key="Follow system">Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější)</s:String>
     <s:String x:Key="Scale">Měřítko</s:String>
     <s:String x:Key="tag_tooltips">Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných</s:String>

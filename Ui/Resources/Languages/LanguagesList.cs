@@ -10,6 +10,7 @@ public static class LanguagesResources
         "fr-fr.xaml",
         "pt-br.xaml",
         "ja-jp.xaml",
-        "zh-tw.xaml"
+        "zh-tw.xaml",
+        "gl-es.xaml"
     };
 }

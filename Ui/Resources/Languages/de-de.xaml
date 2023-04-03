@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <s:String x:Key="key">de-de</s:String>
+    <s:String x:Key="﻿key">de-de</s:String>
     <s:String x:Key="language_code-ISO">de-DE</s:String>
     <s:String x:Key="language_code-google">de</s:String>
     <s:String x:Key="language_name">Deutsch (de-DE)</s:String>
@@ -233,7 +233,7 @@
     <s:String x:Key="Add environment variables">Fügen Sie Umgebungsvariablen hinzu</s:String>
     <s:String x:Key="Selected">Ausgewählt</s:String>
     <s:String x:Key="Custom">Benutzerdefiniert</s:String>
-    <s:String x:Key="write permissions alert">Wir haben keine Schreibrechte für das Verzeichnis `{0}`!&#10;Bitte versuche:&#10;1. als Administrator ausführen&#10;2. Verzeichnis- oder Dateiberechtigungen ändern&#10;3. Verschieben Sie PRemoteM in einen anderen Ordner</s:String>
+    <s:String x:Key="write permissions alert">Wir haben keine Schreibrechte für das Verzeichnis `{0}`!\nBitte versuche:\n1. als Administrator ausführen\n2. Verzeichnis- oder Dateiberechtigungen ändern\n3. Verschieben Sie PRemoteM in einen anderen Ordner</s:String>
     <s:String x:Key="Follow system">Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher)</s:String>
     <s:String x:Key="Scale">Skala</s:String>
     <s:String x:Key="tag_tooltips">Linksklick : Dieses Tag als Filter festlegen{0}Strg + Linksklick : Dieses Tag zur Einschlussliste hinzufügen {0}Strg + Rechtsklick : Dieses Tag zur Ausschlussliste hinzufügen</s:String>

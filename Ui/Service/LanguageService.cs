@@ -56,6 +56,8 @@ namespace PRM.Service
             AddLanguage(code, r["language_name"].ToString()!, r);
         }
 
+        private static readonly string[] Special_Marks_in_XAML_Content = { "&", "<", ">", "\r", "\n" };
+        private static readonly string[] Special_Characters_in_XAML_Content = { "&amp;", "&lt;", "&gt;", "\\r", "\\n" };
         private static ResourceDictionary? GetResourceDictionaryByXamlUri(string path)
         {
             try
@@ -63,6 +65,17 @@ namespace PRM.Service
                 var resourceDictionary = MultiLanguageHelper.LangDictFromXamlUri(new Uri(path));
                 if (resourceDictionary != null)
                 {
+                    foreach (var key in resourceDictionary.Keys)
+                    {
+                        if (resourceDictionary[key] is string val)
+                        {
+                            for (int j = 0; j < Special_Characters_in_XAML_Content.Length; j++)
+                            {
+                                val = val.Replace(Special_Characters_in_XAML_Content[j], Special_Marks_in_XAML_Content[j]);
+                            }
+                            resourceDictionary[key] = val;
+                        }
+                    }
                     return resourceDictionary;
                 }
             }
@@ -81,6 +94,17 @@ namespace PRM.Service
                 var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(path);
                 if (resourceDictionary != null)
                 {
+                    foreach (var key in resourceDictionary.Keys)
+                    {
+                        if (resourceDictionary[key] is string val)
+                        {
+                            for (int j = 0; j < Special_Characters_in_XAML_Content.Length; j++)
+                            {
+                                val = val.Replace(Special_Characters_in_XAML_Content[j], Special_Marks_in_XAML_Content[j]);
+                            }
+                            resourceDictionary[key] = val;
+                        }
+                    }
                     return resourceDictionary;
                 }
             }
