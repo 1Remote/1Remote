@@ -11,10 +11,10 @@
 	<Identity
 	  Name="16536Shawn.V.Workshop.PRemoteM"
 	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
-	  Version="1.0.70.0" />
+	  Version="1.0.72.0" />
 
 	<Properties>
-		<DisplayName>PRemoteM</DisplayName>
+		<DisplayName>1Remote</DisplayName>
 		<PublisherDisplayName>Shawn Veck</PublisherDisplayName>
 		<Logo>Images\PackageLogo.png</Logo>
 		<!-- If you don't want virtualization of file system writes to the user's AppData folder, then include the property, and set it to disabled. https://docs.microsoft.com/zh-cn/windows/msix/desktop/flexible-virtualization -->
@@ -35,9 +35,12 @@
 		  Executable="$targetnametoken$.exe"
 		  EntryPoint="$targetentrypoint$">
 			<uap:VisualElements
-			  DisplayName="PRemoteM"
-			  Description="Your personal remote manager." Square150x150Logo="Images\Square150x150Logo.png" BackgroundColor="transparent" Square44x44Logo="Images\Square44x44Logo.png">
-				<uap:DefaultTile  Square71x71Logo="Images\SmallTile.png" ShortName="PRemoteM" >
+			  DisplayName="1Remote"
+			  Description="Your remote manager." 
+			  Square150x150Logo="Images\Square150x150Logo.png" 
+			  BackgroundColor="transparent" 
+			  Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile  Square71x71Logo="Images\SmallTile.png" ShortName="1Remote"   Square310x310Logo="Images\LargeTile.png" Wide310x150Logo="Images\WideTile.png">
 					<uap:ShowNameOnTiles>
 						<uap:ShowOn Tile="square150x150Logo"/>
 					</uap:ShowNameOnTiles>
@@ -54,9 +57,9 @@
 			<Extensions>
 				<desktop:Extension Category="windows.startupTask" EntryPoint="Windows.FullTrustApplication">
 					<desktop:StartupTask
-						TaskId="PRemoteM"
+						TaskId="1Remote"
 						Enabled="true"
-						DisplayName="PRemoteM" />
+						DisplayName="1Remote" />
 				</desktop:Extension>
 			</Extensions>
 		</Application>
