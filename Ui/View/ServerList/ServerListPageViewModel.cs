@@ -177,6 +177,11 @@ namespace _1RM.View.ServerList
             }
 
             RebuildVmServerList();
+            AppData.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(AppData.TagList))
+                    OnTagsChanged();
+            };
         }
 
         protected override void OnViewLoaded()
