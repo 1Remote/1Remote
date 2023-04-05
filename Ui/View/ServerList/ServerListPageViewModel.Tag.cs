@@ -24,6 +24,27 @@ namespace _1RM.View.ServerList
         private string _selectedTabName = TAB_ALL_NAME;
         public string SelectedTabName { get => _selectedTabName; private set => SetAndNotifyIfChanged(ref _selectedTabName, value); }
 
+
+        private void OnTagsChanged()
+        {
+            // 当修改了tags后，将无效的tag筛选器移除。
+            var needRemove = new List<string>();
+            var filters = TagFilters.ToList();
+            foreach (var filter in filters)
+            {
+                if (AppData.TagList.All(x => x.Name != filter.TagName))
+                {
+                    needRemove.Add(filter.TagName);
+                }
+            }
+
+            if (!needRemove.Any()) return;
+            foreach (var tag in needRemove)
+            {
+                FilterTagsControl(tag, TagFilter.FilterTagsControlAction.Remove);
+            }
+        }
+
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
@@ -82,11 +103,13 @@ namespace _1RM.View.ServerList
         private void FilterTagsControl(object? o, TagFilter.FilterTagsControlAction action)
         {
             string newTagName;
-            if (o is Tag obj && AppData.TagList.Any(x => x.Name == obj.Name))
+            if (o is Tag obj
+                && (AppData.TagList.Any(x => x.Name == obj.Name) || action == TagFilter.FilterTagsControlAction.Remove))
             {
                 newTagName = obj.Name;
             }
-            else if (o is string str && AppData.TagList.Any(x => x.Name == str))
+            else if (o is string str
+                     && (AppData.TagList.Any(x => x.Name == str) || action == TagFilter.FilterTagsControlAction.Remove))
             {
                 newTagName = str;
             }
