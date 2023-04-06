@@ -23,6 +23,17 @@ namespace _1RM.Utils
         /// </summary>
         public static bool Confirm(string content, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
+            return Confirm(content,
+                IoC.Get<ILanguageService>().Translate("OK"),
+                IoC.Get<ILanguageService>().Translate("Cancel"),
+                title, useNativeBox, ownerViewModel);
+        }
+
+        /// <summary>
+        /// show a confirm box on owner, the default value owner is MainWindowViewModel
+        /// </summary>
+        public static bool Confirm(string content, string yesButtonText, string noButtonText, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
+        {
             if (string.IsNullOrEmpty(title))
                 title = IoC.Get<ILanguageService>().Translate("Warning");
 
@@ -56,14 +67,17 @@ namespace _1RM.Utils
                     buttons: MessageBoxButton.YesNo,
                     buttonLabels: new Dictionary<MessageBoxResult, string>()
                     {
-                        { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
-                        { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
+                        { MessageBoxResult.Yes, yesButtonText},
+                        { MessageBoxResult.No, noButtonText},
                     });
                 if (vm is Screen screen)
                 {
                     screen.Activated += MessageBoxOnActivated;
                 }
-                IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewAware ?? mainWindowViewModel);
+                Execute.OnUIThreadSync(() =>
+                {
+                    IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewAware ?? mainWindowViewModel);
+                });
                 var ret = MessageBoxResult.Yes == vm.ClickedButton;
                 if (layerContainer != null)
                     MaskLayerController.HideMask(layerId, layerContainer);

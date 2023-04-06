@@ -905,25 +905,29 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 return _cmdShowTransmitDstPath ??= new RelayCommand((o) =>
                 {
-                    if (Trans?.IsConnected() != true)
-                        return;
-                    if (o is TransmitTask t)
+                    try
                     {
-                        var dst = t.TransmitDstDirectoryPath;
-                        if (dst != null && string.IsNullOrEmpty(dst) == false)
+                        if (Trans?.IsConnected() != true)
+                            return;
+                        if (o is TransmitTask t)
                         {
-                            if (t.TransmissionType == ETransmissionType.HostToServer)
+                            var dst = t.TransmitDstDirectoryPath;
+                            if (dst != null && string.IsNullOrEmpty(dst) == false)
                             {
-                                ShowFolder(dst);
-                            }
-                            else
-                            {
-                                if (Directory.Exists(dst))
+                                if (t.TransmissionType == ETransmissionType.HostToServer)
                                 {
-                                    System.Diagnostics.Process.Start("explorer.exe", dst);
+                                    ShowFolder(dst);
+                                }
+                                else
+                                {
+                                    SelectFileHelper.OpenInExplorerAndSelect(dst);
                                 }
                             }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
                     }
                 });
             }

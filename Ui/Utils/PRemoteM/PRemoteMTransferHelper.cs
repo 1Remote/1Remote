@@ -19,6 +19,7 @@ using com.github.xiangyuecn.rsacsharp;
 using Dapper;
 using Newtonsoft.Json;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Utils.PRemoteM
 {
@@ -45,7 +46,8 @@ namespace _1RM.Utils.PRemoteM
         {
             if (_servers?.Any() == true)
             {
-                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from `{_dbPath}`?", "Data transfer", ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from PRemoteM?\r\n\r\nWe will read form database:\r\n  `{_dbPath}`", 
+                        "Data transfer from PRemoteM", ownerViewModel: IoC.Get<MainWindowViewModel>()))
                 {
                     MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", assignLayerContainer: IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
@@ -66,7 +68,14 @@ namespace _1RM.Utils.PRemoteM
                             Debug.Assert(localSource != null);
                             localSource!.Database_InsertServer(_servers);
                             IoC.Get<GlobalData>().ReloadServerList(true);
-                            MessageBoxHelper.Info($"All done! \r\n\r\nYou may want to delete the old data at:\r\n`{_dbPath}`.", ownerViewModel: IoC.Get<MainWindowViewModel>());
+                            if (MessageBoxHelper.Confirm($"All done! \r\n\r\nYou may want to backup and delete the old data at:\r\n`{_dbPath}`.",
+                                    yesButtonText: "Show old database in explorer",
+                                    noButtonText: "Continue",
+                                    title: "Data transfer from PRemoteM",
+                                    ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                            {
+                                SelectFileHelper.OpenInExplorerAndSelect(_dbPath);
+                            }
                         }
                         catch (Exception e)
                         {
