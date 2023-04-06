@@ -39,23 +39,6 @@ namespace _1RM.Service
                     File.WriteAllText(rdpFile, text);
                 }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
-                var p = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = "cmd.exe",
-                        UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true
-                    }
-                };
-                p.Start();
-                string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
-                p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
-                p.StandardInput.WriteLine("exit");
-
                 // delete tmp rdp file, ETA 10s
                 Task.Factory.StartNew(() =>
                 {
@@ -70,6 +53,30 @@ namespace _1RM.Service
                         SimpleLogHelper.Error(e);
                     }
                 });
+
+                try
+                {
+                    var p = new Process
+                    {
+                        StartInfo =
+                    {
+                        FileName = "cmd.exe",
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                    };
+                    p.Start();
+                    string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
+                    p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
+                    p.StandardInput.WriteLine("exit");
+                }
+                catch (Exception e)
+                {
+                    MsAppCenterHelper.Error(e);
+                }
             }
         }
 
@@ -195,7 +202,7 @@ namespace _1RM.Service
             protocolClone.ConnectPreprocess();
 
             // apply alternate credential
-            if(false == ApplyAlternateCredential(ref protocolClone, assignCredentialName))
+            if (false == ApplyAlternateCredential(ref protocolClone, assignCredentialName))
             {
                 return;
             }

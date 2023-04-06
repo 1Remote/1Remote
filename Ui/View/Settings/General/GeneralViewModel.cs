@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Settings.General
 {
@@ -83,6 +83,28 @@ namespace _1RM.View.Settings.General
                 {
                     _configurationService.Save();
                 }
+            }
+        }
+
+        public string LogPath => SimpleLogHelper.GetFileFullName();
+
+
+        private RelayCommand? _cmdExploreTo = null;
+        public RelayCommand CmdExploreTo
+        {
+            get
+            {
+                return _cmdExploreTo ??= new RelayCommand((o) =>
+                {
+                    try
+                    {
+                        SelectFileHelper.OpenInExplorerAndSelect(LogPath);
+                    }
+                    catch (Exception e)
+                    {
+                        MsAppCenterHelper.Error(e);
+                    }
+                });
             }
         }
     }

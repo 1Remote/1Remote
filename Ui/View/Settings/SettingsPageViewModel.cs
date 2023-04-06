@@ -45,10 +45,10 @@ namespace _1RM.View.Settings
         }
 
 
-        private INotifyPropertyChanged _selectedViewModel = IoC.Get<GeneralSettingViewModel>();
+        private INotifyPropertyChanged? _selectedViewModel;
         public INotifyPropertyChanged SelectedViewModel
         {
-            get => _selectedViewModel;
+            get => _selectedViewModel ??= IoC.Get<GeneralSettingViewModel>();
             set => SetAndNotifyIfChanged(ref _selectedViewModel, value);
         }
 
@@ -148,6 +148,7 @@ namespace _1RM.View.Settings
                     _configurationService.Save();
                     IoC.Get<ProtocolConfigurationService>().Save();
                     IoC.Get<MainWindowViewModel>().ShowList(false);
+                    _selectedViewModel = null;
                 });
             }
         }
