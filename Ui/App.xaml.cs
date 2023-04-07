@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Utils;
 
@@ -21,6 +23,12 @@ namespace _1RM
         public static bool ExitingFlag = false;
         public static void Close(int exitCode = 0)
         {
+            // workaround
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(5 * 1000);
+                Environment.Exit(1);
+            });
             ExitingFlag = true;
             Application.Current.Dispatcher.Invoke(() =>
             {
