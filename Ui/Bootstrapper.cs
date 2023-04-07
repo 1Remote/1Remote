@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using _1RM.Model;
@@ -10,6 +12,7 @@ using _1RM.View.ErrorReport;
 using _1RM.View.Launcher;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -144,6 +147,12 @@ namespace _1RM
 
         protected override void OnExit(ExitEventArgs e)
         {
+            // workaround
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(5 * 1000);
+                Environment.Exit(1);
+            });
             IoC.Get<TaskTrayService>().TaskTrayDispose();
             _namedPipeHelper?.Dispose();
             IoC.Get<SessionControlService>()?.Release();
