@@ -56,6 +56,8 @@ Global
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Debug|x86.Build.0 = StoreDebug|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Debug|x86.Deploy.0 = StoreDebug|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|Any CPU.ActiveCfg = StoreRelease|Any CPU
+		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|Any CPU.Build.0 = StoreRelease|Any CPU
+		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|Any CPU.Deploy.0 = StoreRelease|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|x64.ActiveCfg = StoreRelease|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|x64.Build.0 = StoreRelease|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.Release|x64.Deploy.0 = StoreRelease|Any CPU

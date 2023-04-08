@@ -280,8 +280,8 @@ namespace _1RM.Service
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(true, Assert.APP_NAME);
-                SetSelfStartingHelper.SetSelfStartByStartupTask(false, Assert.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(true, Assert.AppName);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(false, Assert.AppName);
 #else
                 SetSelfStartingHelper.SetSelfStartByRegistryKey(true, Assert.APP_NAME);
                 SetSelfStartingHelper.SetSelfStartByRegistryKey(false, Assert.APP_NAME);
@@ -301,7 +301,7 @@ namespace _1RM.Service
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, Assert.APP_NAME);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, Assert.AppName);
 #else
                 SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{Assert.APP_NAME}\")");
                 SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, Assert.APP_NAME);

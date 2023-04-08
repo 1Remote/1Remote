@@ -177,7 +177,6 @@
 
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-
                 <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>

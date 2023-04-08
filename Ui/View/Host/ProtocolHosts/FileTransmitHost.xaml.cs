@@ -9,6 +9,8 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol.FileTransmit;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using Stylet;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -92,7 +94,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void TvFileList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            _vmRemote.CmdListViewDoubleClick.Execute();
+            if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) is ListViewItem item)
+            {
+                _vmRemote.CmdListViewDoubleClick.Execute();
+            }
         }
 
         private void TextBox_OnGotFocus(object sender, RoutedEventArgs e)

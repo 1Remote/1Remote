@@ -42,7 +42,7 @@
 		System.Data.SQLite from NuGet, interop dll not copied to output directory
 		https://stackoverflow.com/questions/26768005/system-data-sqlite-from-nuget-interop-dll-not-copied-to-output-directory-->
 		<ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
-		<CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
+		<CopySQLiteInteropFiles>true</CopySQLiteInteropFiles>
 		<CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
 		<CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
 	</PropertyGroup>
