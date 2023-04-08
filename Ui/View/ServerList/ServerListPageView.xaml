@@ -28,78 +28,7 @@
             </CollectionViewSource>
 
 
-            <Style TargetType="{x:Type Expander}">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0 "/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Expander}">
-                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}" 
-                                    Background="{TemplateBinding Background}" 
-                                    CornerRadius="0"
-                                    SnapsToDevicePixels="True">
-                                <StackPanel MinHeight="25">
-                                    <ToggleButton x:Name="HeaderSite"
-                                                  Cursor="Hand"
-                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                                  Content="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}"
-                                                  FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"
-                                                  FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}"
-                                                  FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                  MinWidth="0" 
-                                                  MinHeight="0" 
-                                                  Padding="{TemplateBinding Padding}" 
-                                                  VerticalContentAlignment="Center">
-                                        <ToggleButton.Style>
-                                            <Style TargetType="{x:Type ToggleButton}">
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                            <Border Padding="{TemplateBinding Padding}" Background="Transparent">
-                                                                <StackPanel Orientation="Horizontal" Background="Transparent">
-                                                                    <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"  />
-                                                                    <Path x:Name="arrow" 
-                                                                          Data="M170.263273 747.101091C90.949818 667.554909 46.545455 574.836364 46.545455 519.586909v-13.218909c0-111.616 180.642909-376.087273 465.454545-376.087273 82.990545 0 156.346182 22.109091 219.368727 55.761455l-52.317091 52.317091A390.190545 390.190545 0 0 0 512 200.098909c-240.221091 0-395.636364 227.560727-395.636364 306.269091v13.218909c0 38.493091 37.329455 112.453818 103.330909 178.036364l-49.431272 49.477818zM977.454545 505.809455v13.777454c-0.977455 115.060364-177.803636 376.040727-465.454545 376.040727-98.769455 0-184.552727-32.069818-255.022545-78.382545L106.123636 968.145455a34.816 34.816 0 0 1-49.338181 0 34.909091 34.909091 0 0 1 0-49.384728L917.876364 57.716364a34.909091 34.909091 0 1 1 49.384727 49.384727l-143.080727 143.080727c97.559273 84.014545 152.669091 192.046545 153.274181 255.627637z m-365.195636-43.752728l-151.226182 151.179637c15.36 7.959273 32.488727 12.8 50.920728 12.8 62.370909 0 113.105455-50.734545 113.105454-113.105455a109.195636 109.195636 0 0 0-12.8-50.874182z m295.377455 44.032c-0.465455-48.733091-49.431273-137.122909-132.933819-206.475636l-111.616 111.662545c19.828364 29.090909 31.883636 63.860364 31.883637 101.655273a183.109818 183.109818 0 0 1-182.923637 182.923636c-37.841455 0-72.610909-12.055273-101.701818-31.930181l-102.493091 102.493091c57.576727 35.141818 126.231273 59.345455 204.194909 59.345454 236.404364 0 394.845091-218.158545 395.636364-306.501818v-13.172364zM512 399.872c1.722182 0 3.304727 0.418909 5.026909 0.512l58.321455-58.321455A180.270545 180.270545 0 0 0 512 330.053818a183.109818 183.109818 0 0 0-182.923636 182.923637c0 22.341818 4.608 43.566545 11.962181 63.348363l58.321455-58.321454c0-1.722182-0.465455-3.304727-0.465455-5.026909 0-62.370909 50.734545-113.105455 113.105455-113.105455z" 
-                                                                          HorizontalAlignment="Left"  
-                                                                          SnapsToDevicePixels="False" 
-                                                                          Fill="{DynamicResource BackgroundTextBrush}"
-                                                                          Stroke="{DynamicResource BackgroundTextBrush}" 
-                                                                          StrokeThickness="0" 
-                                                                          VerticalAlignment="Center" 
-                                                                          Stretch="Uniform"
-                                                                          Width="16" Height="16"
-                                                                          Margin="10 0 0 0" />
-                                                                </StackPanel>
-                                                            </Border>
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsChecked" Value="True">
-                                                                    <Setter Property="Visibility" TargetName="arrow" Value="Collapsed"></Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter Property="Visibility" TargetName="arrow" Value="Visible"></Setter>
-                                                                </Trigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </ToggleButton.Style>
-                                    </ToggleButton>
-                                    <ContentPresenter x:Name="ExpandSite" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" DockPanel.Dock="Bottom" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                </StackPanel>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsExpanded" Value="True">
-                                    <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+            <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource ExpanderWithAnEye}"></Style>
 
 
 
@@ -139,9 +68,11 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <EventSetter Event="MouseMove" Handler="listboxItem_PreviewMouseMoveEvent"/>
-                <EventSetter Event="Drop" Handler="listboxItem_OnDrop"/>
+                <EventSetter Event="MouseMove" Handler="UIElement_PreviewMouseMoveEvent"/>
+                <!--drop effect-->
                 <Setter Property="AllowDrop" Value="true"/>
+                <EventSetter Event="Drop" Handler="UIElement_OnDrop"/>
+                <!--drop end event-->
             </Style>
 
             <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
@@ -297,9 +228,9 @@
                                             Margin="0 0 5 0">
                                         <Grid Height="10" Width="8">
                                             <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                          StrokeThickness="2" Stretch="Uniform" />
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="2" Stretch="Uniform" />
                                         </Grid>
                                     </Button>
                                 </Grid>
@@ -548,33 +479,64 @@
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
                                 <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="AllowDrop" Value="true"/>
+                                    <!--drop end event-->
+                                    <EventSetter Event="Drop" Handler="UIElement_OnDrop"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                <Expander IsExpanded="True" 
-                                                          Background="{DynamicResource BackgroundBrush}" 
-                                                          Foreground="{DynamicResource BackgroundTextBrush}" 
-                                                          BorderThickness="0">
-                                                    <Expander.Header>
-                                                        <StackPanel Orientation="Horizontal">
+                                                <Grid>
+                                                    <Expander IsExpanded="True" 
+                                                              Background="{DynamicResource BackgroundBrush}" 
+                                                              Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                              BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" AllowDrop="True">
+                                                                <CheckBox Margin="6 0 0 0" Width="20" Height="20" HorizontalAlignment="Left"
+                                                                          x:Name="HeaderCheckBox" 
+                                                                          Tag="{Binding Name}"
+                                                                          Click="ItemsCheckBox_OnClick"
+                                                                >
+                                                                </CheckBox>
 
-                                                            <CheckBox Margin="6 0 10 0" Width="20" Height="20" HorizontalAlignment="Left"
-                                                                      x:Name="HeaderCheckBox" 
-                                                                      Tag="{Binding Name}"
-                                                                      Click="ItemsCheckBox_OnClick"
-                                                                      >
-                                                            </CheckBox>
 
-                                                            <TextBlock FontWeight="Bold" 
-                                                                       FontSize="16"
-                                                                       Text="{Binding Path=Name}" 
-                                                                       Margin="5,0,0,0"/>
-                                                        </StackPanel>
-                                                    </Expander.Header>
-                                                    <Expander.Content>
-                                                        <ItemsPresenter />
-                                                    </Expander.Content>
-                                                </Expander>
+                                                                <!--drag this element to sort groups-->
+                                                                <StackPanel Background="Transparent" 
+                                                                            Cursor="SizeNS"
+                                                                            Orientation="Horizontal"
+                                                                            ToolTip="Drag to reorder groups"
+                                                                            PreviewMouseDown="UIElement_OnPreviewMouseDown"
+                                                                            PreviewMouseMove="UIElement_PreviewMouseMoveEvent">
+                                                                    <Grid Background="Transparent">
+                                                                        <Grid.Style>
+                                                                            <Style TargetType="Grid">
+                                                                                <Setter Property="Opacity" Value="0.2"></Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Opacity" Value="1"></Setter>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Grid.Style>
+                                                                        <Path Fill="{DynamicResource PrimaryTextBrush}"
+                                                                              Width="15" Height="15"
+                                                                              Stretch="Uniform"
+                                                                              Data="M108.208681 670.888449c20.874205-16.374376 50.998058-12.87451 67.372434 7.999695l124.495258 158.368968V48.03717c0-26.498991 21.499181-47.998172 47.998172-47.998171S396.072717 21.53818 396.072717 48.03717v927.964658c0 20.499219-12.999505 38.623529-32.373767 45.373272-4.99981 1.749933-10.374605 2.6249-15.624405 2.6249-14.499448 0-28.498915-6.499752-37.748562-18.3743L100.08399 738.260883C83.709614 717.511673 87.334476 687.262825 108.208681 670.888449zM634.063653 2.663899c19.249267-6.749743 40.748448-0.374986 53.372967 15.7494l210.241993 267.364817c16.374376 20.74921 12.749514 50.998058-8.12469 67.372434-20.74921 16.374376-50.998058 12.87451-67.372434-7.999695l-124.495259-158.368969v789.219942c0 26.498991-21.499181 47.998172-47.998172 47.998172s-47.998172-21.499181-47.998172-47.998172V48.03717c0.124995-20.374224 13.1245-38.623529 32.373767-45.373271z m0 0"></Path>
+                                                                    </Grid>
+
+                                                                    <TextBlock FontWeight="Bold" 
+                                                                               FontSize="16"
+                                                                               Text="{Binding Path=Name}" 
+                                                                               Margin="0,0,0,0"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <Expander.Content>
+                                                            <ItemsPresenter />
+                                                        </Expander.Content>
+                                                    </Expander>
+
+                                                </Grid>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>

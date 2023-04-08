@@ -1,6 +1,6 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -9,7 +9,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View.ServerList
 {
@@ -34,6 +36,7 @@ namespace _1RM.View.ServerList
 
         private void ServerListItemSource_OnFilter(object sender, FilterEventArgs e)
         {
+            // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
             if (e.Item is ProtocolBaseViewModel t
                 && DataContext is ServerListPageViewModel vm)
             // If filter is turned on, filter completed items.
@@ -49,10 +52,10 @@ namespace _1RM.View.ServerList
                 }
                 t.IsVisible = e.Accepted;
 
-                // if any additional database, then clear all selected: 有多个数据源时，清除所有勾选项目，因为这种情况下无法控制 grouped checkbox，显示上会有BUG
+
                 if (IoC.Get<DataSourceService>().AdditionalSources.Any())
                 {
-                    t.IsSelected = false;
+                    RefreshHeaderCheckBox();
                 }
             }
         }
@@ -92,90 +95,196 @@ namespace _1RM.View.ServerList
             else
             {
                 var expander = MyVisualTreeHelper.VisualUpwardSearch<Expander>(checkBox);
-                if (expander?.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+                RefreshCheckExpanderHeaderCheckBoxState(expander);
+            }
+        }
+
+        private static void RefreshCheckExpanderHeaderCheckBoxState(Expander? expander)
+        {
+            if (expander?.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+            {
+                var group = (CollectionViewGroup)expander.DataContext;
+                if (group.Items.OfType<ProtocolBaseViewModel>().Any(x => x.IsSelected))
                 {
-                    var group = (CollectionViewGroup)expander.DataContext;
-                    if (group.Items.OfType<ProtocolBaseViewModel>().Any(x => x.IsSelected))
-                    {
-                        if (group.Items.OfType<ProtocolBaseViewModel>().All(x => x.IsSelected))
-                            headerCheckBox.IsChecked = true;
-                        else
-                            headerCheckBox.IsChecked = null;
-                    }
+                    if (group.Items.OfType<ProtocolBaseViewModel>().All(x => x.IsSelected))
+                        headerCheckBox.IsChecked = true;
                     else
-                    {
-                        headerCheckBox.IsChecked = false;
-                    }
+                        headerCheckBox.IsChecked = null;
+                }
+                else
+                {
+                    headerCheckBox.IsChecked = false;
                 }
             }
         }
 
+        private readonly DebounceDispatcher _debounceDispatcher = new();
         public void RefreshHeaderCheckBox()
         {
             if (_lvServerCards == null) return;
-            Dispatcher.Invoke(() =>
+            Execute.OnUIThreadSync(() =>
             {
-                var expanderList = MyVisualTreeHelper.FindVisualChilds<Expander>(_lvServerCards);
-                foreach (var expander in expanderList)
+                _debounceDispatcher.Debounce(200, (obj) =>
                 {
-                    if (expander.FindName("HeaderCheckBox") is CheckBox headerCheckBox)
+                    if (_lvServerCards != null)
                     {
-                        var group = (CollectionViewGroup)expander.DataContext;
-                        if (group.Items.OfType<ProtocolBaseViewModel>().Any(x => x.IsSelected))
+                        var expanderList = MyVisualTreeHelper.FindVisualChilds<Expander>(_lvServerCards);
+                        foreach (var expander in expanderList)
                         {
-                            if (group.Items.OfType<ProtocolBaseViewModel>().All(x => x.IsSelected))
-                                headerCheckBox.IsChecked = true;
-                            else
-                                headerCheckBox.IsChecked = null;
-                        }
-                        else
-                        {
-                            headerCheckBox.IsChecked = false;
+                            RefreshCheckExpanderHeaderCheckBoxState(expander);
                         }
                     }
-                }
+                });
             });
         }
 
-        void listboxItem_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
+
+        private void UIElement_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed
-                && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom)
+            // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
+            if (sender is DependencyObject obj)
             {
-                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } item 
+                var item = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                if (item != null)
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+        void UIElement_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
+        {
+            SimpleLogHelper.Warning($"{e.LeftButton} + {sender is Grid}");
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                // drag ListBoxItem
+                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
+                    && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
                     && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
                 {
-                    DragDrop.DoDragDrop(item, item.DataContext, DragDropEffects.Move);
-                    item.IsSelected = true;
+                    var dataObj = new DataObject();
+                    dataObj.SetData("DragSource", listBoxItem);
+                    DragDrop.DoDragDrop(listBoxItem, dataObj, DragDropEffects.Move);
+                    listBoxItem.IsSelected = true;
+                }
+                // drag GroupItem
+                else if (sender is DependencyObject obj)
+                {
+                    GroupItem? groupItem = null;
+                    if (sender is GroupItem gi) // 直接 drag GroupItem
+                    {
+                        groupItem = gi;
+                    }
+                    else // drag GroupItem header 中的元素
+                    {
+                        groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                    }
+                    if (groupItem != null)
+                    {
+                        var dataObj = new DataObject();
+                        dataObj.SetData("DragSource", groupItem);
+                        DragDrop.DoDragDrop(groupItem, dataObj, DragDropEffects.Move);
+                    }
                 }
             }
         }
 
-
-        void listboxItem_OnDrop(object sender, DragEventArgs e)
+        void UIElement_OnDrop(object sender, DragEventArgs e)
         {
+            // item move
             if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
-                && e.Data.GetData(typeof(ProtocolBaseViewModel)) is ProtocolBaseViewModel toBeMoved
-                && ((ListBoxItem)(sender)).DataContext is ProtocolBaseViewModel target
+                && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMoved } listBoxItem
+                && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target }
                 && toBeMoved != target)
             {
-                var vm = IoC.Get<ServerListPageViewModel>();
-                int removedIdx = vm.VmServerList.IndexOf(toBeMoved);
-                int targetIdx = vm.VmServerList.IndexOf(target);
+                var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
+                int removedIdx = items.IndexOf(toBeMoved);
+                int targetIdx = items.IndexOf(target);
+#if DEBUG
+                SimpleLogHelper.Debug($"Before Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
+                SimpleLogHelper.Debug($"Drop: {toBeMoved.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
+#endif
                 if (removedIdx == targetIdx - 1)
                 {
                     (toBeMoved, target) = (target, toBeMoved);// swap
-                    removedIdx = vm.VmServerList.IndexOf(toBeMoved);
-                    targetIdx = vm.VmServerList.IndexOf(target);
+                    removedIdx = items.IndexOf(toBeMoved);
+                    targetIdx = items.IndexOf(target);
                 }
                 if (removedIdx >= 0
                     && targetIdx >= 0
                     && removedIdx != targetIdx)
                 {
-                    vm.VmServerList.RemoveAt(removedIdx);
-                    targetIdx = vm.VmServerList.IndexOf(target);
-                    vm.VmServerList.Insert(targetIdx, toBeMoved);
-                    IoC.Get<LocalityService>().ServerCustomOrderRebuild(vm.VmServerList);
+                    items.RemoveAt(removedIdx);
+                    targetIdx = items.IndexOf(target);
+                    items.Insert(targetIdx, toBeMoved);
+                    IoC.Get<LocalityService>().ServerCustomOrderRebuild(items);
+                    IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+#if DEBUG
+                    SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
+#endif
+                }
+            }
+            // group move
+            else if (LvServerCards.IsGrouping == true
+                && e.Data.GetData("DragSource") is GroupItem { DataContext: CollectionViewGroup { Name: string toBeMovedName } toBeMovedGroupItem }
+                && IoC.Get<DataSourceService>().AdditionalSources.Any()
+                && LvServerCards?.Items?.Groups?.Count > 0)
+            {
+                string targetGroupName = toBeMovedName;
+                // GroupItem drop to ListBoxItem
+                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol })
+                {
+                    targetGroupName = protocol.DataSourceName;
+                }
+                // GroupItem drop to something in GroupItem
+                else if (sender is DependencyObject obj)
+                {
+                    GroupItem? groupItem = null;
+                    if (sender is GroupItem gi) // 直接 drag GroupItem
+                    {
+                        groupItem = gi;
+                    }
+                    else // drag GroupItem header 中的元素
+                    {
+                        groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                    }
+                    if (groupItem is GroupItem { DataContext: CollectionViewGroup { Name: string name } })
+                    {
+                        targetGroupName = name;
+                    }
+                }
+
+                if (targetGroupName != toBeMovedName)
+                {
+                    var groups = LvServerCards.Items.Groups.Cast<CollectionViewGroup>().ToList();
+                    var targetGroupItem = groups.FirstOrDefault(x => x.Name.ToString() == targetGroupName);
+                    if (targetGroupItem != null)
+                    {
+                        int removedIdx = groups.IndexOf(toBeMovedGroupItem);
+                        int targetIdx = groups.IndexOf(targetGroupItem);
+#if DEBUG
+                        SimpleLogHelper.Debug($"groups Before Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
+                        SimpleLogHelper.Debug($"groups Drop: {toBeMovedGroupItem.Name.ToString()}({removedIdx}) -> {targetGroupItem.Name.ToString()}({targetIdx})");
+#endif
+                        if (removedIdx == targetIdx - 1)
+                        {
+                            (toBeMovedGroupItem, targetGroupItem) = (targetGroupItem, toBeMovedGroupItem);// swap
+                            removedIdx = groups.IndexOf(toBeMovedGroupItem);
+                            targetIdx = groups.IndexOf(targetGroupItem);
+                        }
+                        if (removedIdx >= 0
+                            && targetIdx >= 0
+                            && removedIdx != targetIdx)
+                        {
+                            groups.RemoveAt(removedIdx);
+                            targetIdx = groups.IndexOf(targetGroupItem);
+                            groups.Insert(targetIdx, toBeMovedGroupItem);
+                            IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString()).ToArray());
+                            IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+#if DEBUG
+                            SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
+#endif
+                        }
+                    }
                 }
             }
         }
