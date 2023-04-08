@@ -2,7 +2,7 @@ namespace _1RM
 {
     internal static class Assert
     {
-        private const string AppName = "1Remote";
+        public const string AppName = "1Remote";
 #if DEBUG
         public const string APP_NAME = $"{AppName}_Debug";
 #if FOR_MICROSOFT_STORE_ONLY

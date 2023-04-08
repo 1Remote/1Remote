@@ -124,6 +124,13 @@ namespace _1RM.Service.DataSource.Model
             {
                 dataBaseRef.OpenNewConnection(DatabaseType, connectionString);
             }
+            catch (DllNotFoundException e)
+            {
+                SimpleLogHelper.Error(e);
+                MsAppCenterHelper.Error(e);
+                MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
+                Environment.Exit(2);
+            }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);

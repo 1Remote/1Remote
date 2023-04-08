@@ -165,6 +165,10 @@ namespace _1RM.View.Host.ProtocolHosts
             if (RemoteItems?.Count > 0)
             {
                 ObservableCollection<RemoteItem> remoteItemInfos;
+                foreach (var remoteItem in RemoteItems)
+                {
+                    remoteItem.IsSelected = false;
+                }
                 switch (RemoteItemsOrderBy)
                 {
                     case -1:
@@ -594,70 +598,67 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdListViewDoubleClick == null)
+                return _cmdListViewDoubleClick ??= new RelayCommand((o) =>
                 {
-                    _cmdListViewDoubleClick = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (RemoteItems.Any(x => x.IsRenaming == true))
                     {
-                        if (Trans?.IsConnected() != true)
+                        CmdEndRenaming.Execute();
+                    }
+                    else if (SelectedRemoteItem?.IsDirectory == true)
+                    {
+                        ShowFolder(SelectedRemoteItem.FullName);
+                    }
+                    else if (SelectedRemoteItem?.IsSymlink == false)
+                    {
+                        const int limit = 1;
+                        var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
+                        msg = msg.Replace("1 MB", $"{limit} MB");
+                        var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
+                        if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
+                            && false == MessageBoxHelper.Confirm(msg, ownerViewModel: vm == null ? this : vm))
+                        {
                             return;
-                        if (RemoteItems.Any(x => x.IsRenaming == true))
-                        {
-                            CmdEndRenaming.Execute();
                         }
-                        else if (SelectedRemoteItem?.IsDirectory == true)
-                        {
-                            ShowFolder(SelectedRemoteItem.FullName);
-                        }
-                        else if (SelectedRemoteItem?.IsSymlink == false)
-                        {
-                            const int limit = 1;
-                            var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
-                            msg = msg.Replace("1 MB", $"{limit} MB");
-                            var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
-                            if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
-                                && false == MessageBoxHelper.Confirm(msg, ownerViewModel: vm == null ? this : vm))
-                            {
-                                return;
-                            }
-                            try
-                            {
-                                var tmpPath = Path.Combine(Path.GetTempPath(), SelectedRemoteItem.Name);
-                                if (File.Exists(tmpPath))
-                                {
-                                    File.SetAttributes(tmpPath, FileAttributes.Temporary);
-                                    File.Delete(tmpPath);
-                                }
 
-                                var fi = new FileInfo(tmpPath);
-                                var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, fi!.Directory!.FullName, ris);
-                                AddTransmitTask(t);
-                                t.StartTransmitAsync(this.RemoteItems);
-                                t.OnTaskEnd += (status, exception) =>
-                                {
-                                    var item = t.Items.FirstOrDefault();
-                                    if (item != null)
-                                    {
-                                        // set read only
-                                        File.SetAttributes(item.DstPath, FileAttributes.ReadOnly);
-                                        var psi = new System.Diagnostics.ProcessStartInfo
-                                        {
-                                            UseShellExecute = true,
-                                            FileName = item.DstPath
-                                        };
-                                        System.Diagnostics.Process.Start(psi);
-                                    }
-                                };
-                            }
-                            catch (Exception e)
+                        try
+                        {
+                            var tmpPath = Path.Combine(Path.GetTempPath(), SelectedRemoteItem.Name);
+                            if (File.Exists(tmpPath))
                             {
-                                IoMessageLevel = 2;
-                                IoMessage = e.Message;
+                                File.SetAttributes(tmpPath, FileAttributes.Temporary);
+                                File.Delete(tmpPath);
                             }
+
+                            var fi = new FileInfo(tmpPath);
+                            var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
+                            var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, fi!.Directory!.FullName, ris);
+                            AddTransmitTask(t);
+                            t.StartTransmitAsync(this.RemoteItems);
+                            t.OnTaskEnd += (status, exception) =>
+                            {
+                                var item = t.Items.FirstOrDefault();
+                                if (item != null)
+                                {
+                                    // set read only
+                                    File.SetAttributes(item.DstPath, FileAttributes.ReadOnly);
+                                    var psi = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        UseShellExecute = true,
+                                        FileName = item.DstPath
+                                    };
+                                    System.Diagnostics.Process.Start(psi);
+                                }
+                            };
                         }
-                    });
-                }
-                return _cmdListViewDoubleClick;
+                        catch (Exception e)
+                        {
+                            IoMessageLevel = 2;
+                            IoMessage = e.Message;
+                        }
+                    }
+                });
             }
         }
 
