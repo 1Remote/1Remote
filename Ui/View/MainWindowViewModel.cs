@@ -389,6 +389,7 @@ namespace _1RM.View
                     {
                         if (_mainFilterString == MainFilterString)
                         {
+                            // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
                             ServerListViewModel.RefreshCollectionViewSource();
                         }
                     });

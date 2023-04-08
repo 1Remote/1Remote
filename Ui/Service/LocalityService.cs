@@ -42,6 +42,7 @@ namespace _1RM.Service
         public WindowStyle TabWindowStyle = WindowStyle.SingleBorderWindow;
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
         public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
+        public Dictionary<string, int> ServerGroupedOrder = new Dictionary<string, int>();
         public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalities = new ConcurrentDictionary<string, RdpLocalSetting>();
         public List<QuickConnectionItem> QuickConnectionHistory = new List<QuickConnectionItem>();
     }
@@ -173,6 +174,7 @@ namespace _1RM.Service
         private readonly LocalitySettings _localitySettings;
 
         public Dictionary<string, int> ServerCustomOrder => _localitySettings.ServerCustomOrder;
+        public Dictionary<string, int> ServerGroupedOrder => _localitySettings.ServerGroupedOrder;
 
         #region Interface
 
@@ -240,6 +242,17 @@ namespace _1RM.Service
             foreach (var server in servers)
             {
                 _localitySettings.ServerCustomOrder.Add(server.Id, i);
+                ++i;
+            }
+            Save();
+        }
+        public void ServerGroupedOrderRebuild(string?[] groupNames)
+        {
+            int i = 0;
+            _localitySettings.ServerGroupedOrder.Clear();
+            foreach (var str in groupNames)
+            {
+                _localitySettings.ServerGroupedOrder.Add(str, i);
                 ++i;
             }
             Save();

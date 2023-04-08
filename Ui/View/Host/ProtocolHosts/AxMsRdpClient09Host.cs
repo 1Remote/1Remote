@@ -10,6 +10,7 @@ using AxMSTSCLib;
 using MSTSCLib;
 using _1RM.Model.Protocol;
 using _1RM.Service;
+using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -246,6 +247,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     case null:
                     case ERdpWindowResizeMode.AutoResize:
                     case ERdpWindowResizeMode.FixedFullScreen:
+                    case ERdpWindowResizeMode.StretchFullScreen:
                         SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height, true);
                         break;
                     case ERdpWindowResizeMode.Stretch:
@@ -253,7 +255,9 @@ namespace _1RM.View.Host.ProtocolHosts
                         SetRdpResolution((uint)(_rdpSettings.RdpWidth ?? 800), (uint)(_rdpSettings.RdpHeight ?? 600), true);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        MsAppCenterHelper.Error(new ArgumentOutOfRangeException($"{_rdpSettings.RdpWindowResizeMode} is not processed!"));
+                        SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height, true);
+                        break;
                 }
             }
         }

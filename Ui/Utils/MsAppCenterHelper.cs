@@ -86,8 +86,7 @@ namespace _1RM.Utils
         {
             var properties = new Dictionary<string, string>
             {
-                { "View", viewName },
-                { "Action", isShow ? "Show":"Hide" },
+                { "View", (isShow ? "Show":"Hide") + viewName },
             };
             Trace(EventName.View, properties);
         }

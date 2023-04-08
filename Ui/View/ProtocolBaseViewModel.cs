@@ -16,19 +16,6 @@ namespace _1RM.View
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
         public string DataSourceName => Server.DataSourceName;
-        public bool IsEditable { get; private set; } = false;
-        public bool IsViewable { get; private set; } = false;
-
-        public string Id => Server.Id;
-
-        public string DisplayName => Server.DisplayName;
-        public string SubTitle => Server.SubTitle;
-        public string ProtocolDisplayNameInShort => Server.ProtocolDisplayName;
-
-        /// <summary>
-        /// like: "#work #asd", display in launcher page.
-        /// </summary>
-        public string TagString { get; private set; }
 
         public int CustomOrder
         {
@@ -42,6 +29,38 @@ namespace _1RM.View
                     return int.MaxValue;
             }
         }
+
+
+        public string GroupedOrder
+        {
+            get
+            {
+                int i = 65535;
+                char mark = IoC.Get<DataSourceService>().LocalDataSource?.DataSourceName == DataSourceName ? '!' : '#';
+                if (IoC.TryGet<LocalityService>() != null)
+                {
+                    var orders = IoC.Get<LocalityService>().ServerGroupedOrder;
+                    if (orders.ContainsKey(DataSourceName) == true)
+                        i = orders[DataSourceName];
+                }
+                return $"{i}_{mark}_{DataSourceName}";
+            }
+        }
+
+
+        public bool IsEditable { get; private set; } = false;
+        public bool IsViewable { get; private set; } = false;
+
+        public string Id => Server.Id;
+
+        public string DisplayName => Server.DisplayName;
+        public string SubTitle => Server.SubTitle;
+        public string ProtocolDisplayNameInShort => Server.ProtocolDisplayName;
+
+        /// <summary>
+        /// like: "#work #asd", display in launcher page.
+        /// </summary>
+        public string TagString { get; private set; }
 
 
         private ProtocolBase _server;

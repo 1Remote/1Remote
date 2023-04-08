@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
 using _1RM.Model.DAO;
@@ -268,17 +269,14 @@ namespace _1RM.View.ServerList
                     if (cvs != null)
                     {
                         cvs.SortDescriptions.Clear();
+                        cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.GroupedOrder), ListSortDirection.Ascending));
                         switch (orderBy)
                         {
                             case EnumServerOrderBy.IdAsc:
                                 cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Id), ListSortDirection.Ascending));
                                 break;
                             case EnumServerOrderBy.Custom:
-                                //cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.CustomOrder), ListSortDirection.Ascending));
-                                // in order to implement the `custom` order 
-                                // !!! VmItemList should order by CustomOrder by default
-                                // !!! and the SortDescriptions should be empty!
-                                cvs.SortDescriptions.Clear();
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.CustomOrder), ListSortDirection.Ascending));
                                 break;
                             case EnumServerOrderBy.ProtocolAsc:
                                 cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Ascending));
@@ -329,7 +327,11 @@ namespace _1RM.View.ServerList
         {
             if (this.View is ServerListPageView v)
             {
-                Execute.OnUIThread(() => { CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh(); });
+                Execute.OnUIThread(() =>
+                {
+                    // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
+                    CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh();
+                });
             }
         }
 
@@ -340,11 +342,6 @@ namespace _1RM.View.ServerList
                 item.IsSelected = false;
             }
 
-            RefreshHeaderCheckBox();
-        }
-
-        public void RefreshHeaderCheckBox()
-        {
             if (this.View is ServerListPageView view)
             {
                 view.RefreshHeaderCheckBox();
@@ -352,15 +349,14 @@ namespace _1RM.View.ServerList
         }
 
 
-        private string _filterString2 = "";
+        private string _lastFilterString = "";
         private TagAndKeywordEncodeHelper.KeywordDecoded? _keywordDecoded = null;
         public bool TestMatchKeywords(ProtocolBase server)
         {
-            string filterString = IoC.Get<MainWindowViewModel>().MainFilterString;
-            if (_filterString2 != filterString)
+            if (_lastFilterString != IoC.Get<MainWindowViewModel>().MainFilterString)
             {
-                _filterString2 = filterString;
-                _keywordDecoded = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
+                _lastFilterString = IoC.Get<MainWindowViewModel>().MainFilterString;
+                _keywordDecoded = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString);
                 TagFilters = _keywordDecoded.TagFilterList;
             }
 
