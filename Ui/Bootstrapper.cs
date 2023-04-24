@@ -169,9 +169,19 @@ namespace _1RM
                 lock (this)
                 {
                     SimpleLogHelper.Fatal(e.Exception);
-                    var errorReport = new ErrorReportWindow(e.Exception);
-                    errorReport.ShowDialog();
-                    App.Close(100);
+                    Execute.OnUIThread(() =>
+                    {
+                        if (!App.ExitingFlag)
+                            try
+                            {
+                                var errorReport = new ErrorReportWindow(e.Exception);
+                                errorReport.ShowDialog();
+                            }
+                            finally
+                            {
+                                App.Close(100);
+                            }
+                    });
                 }
             e.Handled = true;
         }

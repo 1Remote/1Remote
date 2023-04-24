@@ -74,7 +74,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 return;
             }
 
-            if (ParentWindow is FullScreenWindowView f && f.IsLoaded == false)
+            if (ParentWindow is FullScreenWindowView { IsLoaded: false })
             {
                 return;
             }

@@ -153,7 +153,7 @@ namespace _1RM.View.ServerList
         }
         void UIElement_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
         {
-            SimpleLogHelper.Warning($"{e.LeftButton} + {sender is Grid}");
+            //SimpleLogHelper.Debug($"{e.LeftButton} + {sender is Grid}");
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 // drag ListBoxItem

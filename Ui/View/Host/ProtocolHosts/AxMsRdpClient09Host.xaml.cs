@@ -269,24 +269,30 @@ namespace _1RM.View.Host.ProtocolHosts
 
             // purpose is not clear
             ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
-            // enable then usb disk can be redirect
-            ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = _rdpSettings.EnableRedirectDrivesPlugIn == true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
-            if (_rdpClient.AdvancedSettings9.RedirectDrives || _rdpSettings.EnableRedirectDrivesPlugIn == true)
+
+            if (_rdpSettings.EnableDiskDrives == true 
+                || _rdpSettings.EnableRedirectDrivesPlugIn == true)
             {
                 _rdpClient.AdvancedSettings9.RedirectDrives = true;
-                // disable disk
-                if (_rdpClient.AdvancedSettings9.RedirectDrives == false)
+
+                // enable then usb disk can be redirect
+                if (_rdpSettings.EnableRedirectDrivesPlugIn == true)
                 {
-                    var ocx = (MSTSCLib.IMsRdpClientNonScriptable7)_rdpClient.GetOcx();
-                    ocx.DriveCollection.RescanDrives(false);
-                    for (int i = 0; i < ocx.DriveCollection.DriveCount; i++)
-                    {
-                        ocx.DriveCollection.DriveByIndex[(uint)i].RedirectionState = false;
-                    }
+                    ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
+                    RedirectDevice();
                 }
             }
 
-            RedirectDevice();
+            // disable local disk
+            if (_rdpSettings.EnableDiskDrives == false)
+            {
+                var ocx = (MSTSCLib.IMsRdpClientNonScriptable7)_rdpClient.GetOcx();
+                ocx.DriveCollection.RescanDrives(false);
+                for (int i = 0; i < ocx.DriveCollection.DriveCount; i++)
+                {
+                    ocx.DriveCollection.DriveByIndex[(uint)i].RedirectionState = false;
+                }
+            }
 
 
             _rdpClient.AdvancedSettings9.RedirectClipboard = _rdpSettings.EnableClipboard == true;
