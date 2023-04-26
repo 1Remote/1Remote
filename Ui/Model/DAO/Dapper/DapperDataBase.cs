@@ -29,8 +29,6 @@ namespace _1RM.Model.DAO.Dapper
                 if (_databaseType == DatabaseType.Sqlite)
                 {
                     System.Data.SQLite.SQLiteConnection.ClearAllPools();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
                 }
             }
         }
