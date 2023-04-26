@@ -12,6 +12,7 @@ using MySql.Data.MySqlClient;
 using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
+using System.Windows;
 
 namespace _1RM.Model.DAO.Dapper
 {
@@ -70,8 +71,17 @@ namespace _1RM.Model.DAO.Dapper
                     _dbConnection.Open();
                     return IsConnected();
                 }
+                catch (MySqlException mse)
+                {
+                    SimpleLogHelper.Error(mse);
+                    if (showErrorAlert)
+                    {
+                        MessageBoxHelper.ErrorAlert("Access Denied: " + mse.Message);
+                    }
+                }
                 catch (Exception e)
                 {
+                    SimpleLogHelper.Error(e);
                     MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "_databaseType", _databaseType.ToString() } });
                     if (showErrorAlert)
                     {
@@ -179,7 +189,7 @@ VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
 
         /// <summary>
-        /// return new id
+        /// return new id or empty string
         /// </summary>
         /// <param name="protocolBase"></param>
         /// <returns></returns>
@@ -187,14 +197,25 @@ VALUES
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return string.Empty;
-                if (protocolBase.IsTmpSession())
-                    protocolBase.Id = Ulid.NewUlid().ToString();
-                var server = protocolBase.ToDbServer();
-                var ret = _dbConnection?.Execute(SqlInsert, server);
-                if (ret > 0)
-                    SetDataUpdateTimestamp();
-                return ret > 0 ? server.Id : string.Empty;
+                try
+                {
+                    int affCount = 0;
+                    if (!OpenConnection(true)) return string.Empty;
+                    if (protocolBase.IsTmpSession())
+                        protocolBase.Id = Ulid.NewUlid().ToString();
+                    var server = protocolBase.ToDbServer();
+                    affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
+                    if (affCount > 0)
+                    {
+                        SetDataUpdateTimestamp();
+                        return server.Id;
+                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+                return string.Empty;
             }
         }
 
@@ -202,18 +223,26 @@ VALUES
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return 0;
-                var rng = new NUlid.Rng.MonotonicUlidRng();
-                foreach (var protocolBase in protocolBases)
+                int affCount = 0;
+                try
                 {
-                    if (protocolBase.IsTmpSession())
-                        protocolBase.Id = Ulid.NewUlid(rng).ToString();
+                    if (!OpenConnection(true)) return 0;
+                    var rng = new NUlid.Rng.MonotonicUlidRng();
+                    foreach (var protocolBase in protocolBases)
+                    {
+                        if (protocolBase.IsTmpSession())
+                            protocolBase.Id = Ulid.NewUlid(rng).ToString();
+                    }
+                    var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
+                    affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
+                    if (affCount > 0)
+                        SetDataUpdateTimestamp();
                 }
-                var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
-                var ret = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
-                if (ret > 0)
-                    SetDataUpdateTimestamp();
-                return ret;
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+                return affCount;
             }
         }
 
@@ -226,10 +255,18 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return false;
-                var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
-                if (ret)
-                    SetDataUpdateTimestamp();
+                bool ret = false;
+                try
+                {
+                    if (!OpenConnection(true)) return false;
+                    ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+                    if (ret)
+                        SetDataUpdateTimestamp();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
                 return ret;
             }
         }
@@ -238,11 +275,19 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return false;
-                var dbss = servers.Select(x => x.ToDbServer());
-                var ret = _dbConnection?.Execute(SqlUpdate, dbss) > 0;
-                if (ret)
-                    SetDataUpdateTimestamp();
+                bool ret = false;
+                try
+                {
+                    if (!OpenConnection(true)) return false;
+                    var items = servers.Select(x => x.ToDbServer());
+                    ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
+                    if (ret)
+                        SetDataUpdateTimestamp();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
                 return ret;
             }
         }
@@ -251,11 +296,19 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return false;
-                var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
-                if (ret)
-                    SetDataUpdateTimestamp();
-                return ret;
+                try
+                {
+                    if (!OpenConnection(true)) return false;
+                    var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+                    if (ret)
+                        SetDataUpdateTimestamp();
+                    return ret;
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+                return false;
             }
         }
 
@@ -263,11 +316,19 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return false;
-                var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
-                if (ret)
-                    SetDataUpdateTimestamp();
-                return ret;
+                try
+                {
+                    if (!OpenConnection(true)) return false;
+                    var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
+                    if (ret)
+                        SetDataUpdateTimestamp();
+                    return ret;
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+                return false;
             }
         }
 
@@ -280,28 +341,49 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         {
             lock (this)
             {
-                if (!OpenConnection()) return null;
-                var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
-                    new { Key = key, });
-                return config?.Value;
+                try
+                {
+                    if (!OpenConnection()) return null;
+                    var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
+                        new { Key = key, });
+                    return config?.Value;
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    return null;
+                }
             }
         }
 
         private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
         private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+        private static readonly string SqlDeleteConfig = $@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
 
-        public override bool SetConfig(string key, string value)
+        public override bool SetConfig(string key, string? value)
         {
             return SetConfigPrivate(key, value);
         }
 
-        protected bool SetConfigPrivate(string key, string value)
+        protected bool SetConfigPrivate(string key, string? value)
         {
             lock (this)
             {
-                if (!OpenConnection(true)) return false;
-                var existed = GetConfigPrivate(key) != null;
-                return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
+                try
+                {
+                    if (!OpenConnection(true)) return false;
+                    var existed = GetConfigPrivate(key) != null;
+                    if (existed && value == null)
+                    {
+                        return _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, }) > 0;
+                    }
+                    return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    return false;
+                }
             }
         }
 
@@ -325,10 +407,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                     && long.TryParse(val, out var t)
                     && t > 0)
                     return t;
-
-                var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                SetConfigPrivate("UpdateTimestamp", now.ToString());
-                return now;
+                return long.MinValue;
             }
         }
     }

@@ -28,13 +28,13 @@ namespace _1RM.Model.DAO
                     break;
 
                 case EnumDatabaseStatus.NotConnectedYet:
-                    return "database: Primary database is notConnected!";
+                    return "database: database is notConnected!";
 
                 case EnumDatabaseStatus.LostConnection:
-                    return "database: Primary database lost connection!";
+                    return "database: database lost connection!";
 
                 case EnumDatabaseStatus.EncryptKeyError:
-                    return $"database: your primary database is encrypted by a third-part build {Assert.APP_NAME}, this app can not read your data correctly!";
+                    return $"database: your database is encrypted by a third-part build {Assert.APP_NAME}, this app can not read your data correctly!";
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
