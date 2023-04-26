@@ -101,9 +101,9 @@ namespace _1RM
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
-            builder.Bind<ProcessingRingViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
 
+            builder.Bind<ProcessingRingViewModel>().ToSelf();
             builder.Bind<IMessageBoxViewModel>().To<MessageBoxViewModel>();
             base.ConfigureIoC(builder);
         }
