@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using _1Remote.Security;
 using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 using _1RM.View;
-using com.github.xiangyuecn.rsacsharp;
-using JsonKnownTypes;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Crypto;
 using Shawn.Utils;
 using Stylet;
 
@@ -79,7 +71,6 @@ namespace _1RM.Service.DataSource.Model
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 if (Database_OpenConnection() == false)
                 {
-                    Status = EnumDatabaseStatus.AccessDenied;
                     return CachedProtocols;
                 }
                 var protocols = Database_GetServers();
@@ -206,12 +197,15 @@ namespace _1RM.Service.DataSource.Model
             var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
-            GetDataBase()?.AddServer(tmp);
-            server.Id = tmp.Id;
+            var dbId = GetDataBase().AddServer(tmp);
+            if (string.IsNullOrEmpty(dbId))
+                return false;
+            server.Id = dbId;
             server.DataSourceName = this.DataSourceName;
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             CachedProtocols.Add(new ProtocolBaseViewModel(server));
-            return string.IsNullOrEmpty(server.Id) == false;
+            Status = EnumDatabaseStatus.OK;
+            return true;
         }
 
         public bool Database_InsertServer(List<ProtocolBase> servers)
@@ -224,14 +218,14 @@ namespace _1RM.Service.DataSource.Model
                 tmp.EncryptToDatabaseLevel();
                 cloneList.Add(tmp);
             }
-            GetDataBase()?.AddServer(cloneList);
+            int affCount = GetDataBase().AddServer(cloneList);
             for (int i = 0; i < servers.Count(); i++)
             {
                 servers[i].Id = cloneList[i].Id;
                 CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
             }
             LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            return servers.All(x => string.IsNullOrEmpty(x.Id) == false);
+            return affCount == servers.Count;
         }
 
         public bool Database_UpdateServer(ProtocolBase org)
@@ -246,6 +240,7 @@ namespace _1RM.Service.DataSource.Model
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 var old = CachedProtocols.First(x => x.Id == org.Id);
                 old.Server = org;
+                Status = EnumDatabaseStatus.OK;
             }
             return ret;
         }
@@ -272,6 +267,7 @@ namespace _1RM.Service.DataSource.Model
                     // invoke main list ui change & invoke launcher ui change
                     old.Server = protocolServer;
                 }
+                Status = EnumDatabaseStatus.OK;
             }
             return ret;
         }
@@ -286,6 +282,7 @@ namespace _1RM.Service.DataSource.Model
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols.RemoveAll(x => x.Id == id);
                 }
+                Status = EnumDatabaseStatus.OK;
                 return ret;
             }
             return false;
@@ -302,6 +299,7 @@ namespace _1RM.Service.DataSource.Model
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols.RemoveAll(x => enumerable.Contains(x.Id));
                 }
+                Status = EnumDatabaseStatus.OK;
                 return ret;
             }
             return false;

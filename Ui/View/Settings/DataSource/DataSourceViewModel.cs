@@ -1,24 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using _1RM.Controls;
-using _1RM.Model;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using _1RM.View.Editor;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
-using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
@@ -40,13 +31,6 @@ namespace _1RM.View.Settings.DataSource
                 _sourceConfigs.Add(config);
             }
         }
-
-
-        private RelayCommand? _cmdApply;
-        public RelayCommand CmdApply => _cmdApply ??= new RelayCommand((o) =>
-        {
-            // 保存配置修改
-        });
 
         public int DatabaseCheckPeriod
         {

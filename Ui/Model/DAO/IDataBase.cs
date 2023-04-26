@@ -66,7 +66,7 @@ namespace _1RM.Model.DAO
 
         public abstract string? GetConfig(string key);
 
-        public abstract bool SetConfig(string key, string value);
+        public abstract bool SetConfig(string key, string? value);
 
         public abstract void SetDataUpdateTimestamp(long time = -1);
         public abstract long GetDataUpdateTimestamp();
@@ -136,9 +136,9 @@ namespace _1RM.Model.DAO
         {
             try
             {
-                iDatabase.SetConfig("permission_check", "true"); // insert
-                iDatabase.SetConfig("permission_check", "true"); // update
-                return true;
+                return iDatabase.SetConfig("permission_check", null) // delete
+                && iDatabase.SetConfig("permission_check", "true") // insert
+                 && iDatabase.SetConfig("permission_check", "true"); // update
             }
             catch (Exception e)
             {
