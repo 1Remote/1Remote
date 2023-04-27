@@ -234,7 +234,7 @@ namespace _1RM.Service.DataSource.Model
             var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
-            var ret = GetDataBase()?.UpdateServer(tmp) == true;
+            var ret = GetDataBase().UpdateServer(tmp) == true;
             if (ret == true)
             {
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -256,7 +256,7 @@ namespace _1RM.Service.DataSource.Model
                 cloneList.Add(tmp);
             }
 
-            var ret = GetDataBase()?.UpdateServer(cloneList) == true;
+            var ret = GetDataBase().UpdateServer(cloneList) == true;
             if (ret == true)
             {
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -276,7 +276,7 @@ namespace _1RM.Service.DataSource.Model
         {
             if (_isWritable)
             {
-                var ret = GetDataBase()?.DeleteServer(id) == true;
+                var ret = GetDataBase().DeleteServer(id) == true;
                 if (ret == true)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -293,7 +293,7 @@ namespace _1RM.Service.DataSource.Model
             if (_isWritable)
             {
                 var enumerable = ids.ToArray();
-                var ret = GetDataBase()?.DeleteServer(enumerable) == true;
+                var ret = GetDataBase().DeleteServer(enumerable) == true;
                 if (ret == true)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -307,7 +307,7 @@ namespace _1RM.Service.DataSource.Model
 
         protected List<ProtocolBase> Database_GetServers()
         {
-            var ps = GetDataBase()?.GetServers() ?? new List<ProtocolBase>();
+            var ps = GetDataBase().GetServers() ?? new List<ProtocolBase>();
             foreach (var protocolBase in ps)
             {
                 protocolBase.DataSourceName = DataSourceName;
@@ -317,7 +317,7 @@ namespace _1RM.Service.DataSource.Model
 
         public int Database_GetServersCount()
         {
-            return GetDataBase()?.GetServerCount() ?? 0;
+            return GetDataBase().GetServerCount();
         }
     }
 }

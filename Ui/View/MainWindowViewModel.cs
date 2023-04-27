@@ -91,8 +91,8 @@ namespace _1RM.View
         public Action? OnMainWindowViewLoaded = null;
         protected override void OnViewLoaded()
         {
-
-            GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, animation) =>
+            base.OnViewLoaded();
+            GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, isInAnimationShow) =>
             {
                 // select save to which source
                 DataSourceBase? source = null;
