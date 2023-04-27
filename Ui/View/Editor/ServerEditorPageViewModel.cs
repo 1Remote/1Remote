@@ -305,132 +305,153 @@ namespace _1RM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+
+                    // TODO check if the data sources is ok
                     // bulk edit
                     if (IsBuckEdit == true)
                     {
-                        if (_sharedTypeInBuckEdit == null) throw new NullReferenceException($"{nameof(_sharedTypeInBuckEdit)} should not be null!");
-                        if (_serversInBuckEdit == null) throw new NullReferenceException($"{nameof(_serversInBuckEdit)} should not be null!");
-                        // copy the same value properties
-                        var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                        foreach (var property in properties)
+                    }
+
+                    MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());
+
+                    Task.Factory.StartNew(() =>
+                    {
+
+                        bool ret = false;
+                        // bulk edit
+                        if (IsBuckEdit == true)
                         {
-                            if (property.SetMethod?.IsPublic == true
-                                && property.SetMethod.IsAbstract == false
-                                && property.Name != nameof(ProtocolBase.Id)
-                                && property.Name != nameof(ProtocolBase.Tags)
-                                && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials))
+                            if (_sharedTypeInBuckEdit == null) throw new NullReferenceException($"{nameof(_sharedTypeInBuckEdit)} should not be null!");
+                            if (_serversInBuckEdit == null) throw new NullReferenceException($"{nameof(_serversInBuckEdit)} should not be null!");
+                            // copy the same value properties
+                            var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                            foreach (var property in properties)
                             {
-                                var obj = property.GetValue(Server);
-                                if (obj == null)
-                                    continue;
-                                else if (obj.ToString() == Server.ServerEditorDifferentOptions)
-                                    continue;
-                                else
-                                    foreach (var server in _serversInBuckEdit)
-                                    {
-                                        property.SetValue(server, obj);
-                                    }
-                            }
-                        }
-
-
-                        // merge tags
-                        foreach (var server in _serversInBuckEdit)
-                        {
-                            // process old tags, remove the not existed tags.
-                            foreach (var tag in server.Tags.ToArray())
-                            {
-                                if (_sharedTagsInBuckEdit.Contains(tag) == true)
+                                if (property.SetMethod?.IsPublic == true
+                                    && property.SetMethod.IsAbstract == false
+                                    && property.Name != nameof(ProtocolBase.Id)
+                                    && property.Name != nameof(ProtocolBase.Tags)
+                                    && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials))
                                 {
-                                    if (Server.Tags.Contains(tag) == false)
-                                        server.Tags.Remove(tag);
-                                }
-                                else
-                                {
-                                    if (Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
-                                        server.Tags.Remove(tag);
-                                }
-                            }
-
-                            // add new tags
-                            foreach (var tag in Server.Tags.Where(tag => tag != Server.ServerEditorDifferentOptions))
-                            {
-                                server.Tags.Add(tag);
-                            }
-                            server.Tags = server.Tags.Distinct().ToList();
-
-
-                            // merge credentials
-                            if (server is ProtocolBaseWithAddressPort protocol
-                                && Server is ProtocolBaseWithAddressPort newServer)
-                            {
-                                foreach (var credential in protocol.AlternateCredentials.ToArray())
-                                {
-                                    if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential)))
-                                    {
-                                        if (newServer.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                    var obj = property.GetValue(Server);
+                                    if (obj == null)
+                                        continue;
+                                    else if (obj.ToString() == Server.ServerEditorDifferentOptions)
+                                        continue;
+                                    else
+                                        foreach (var server in _serversInBuckEdit)
                                         {
-                                            protocol.AlternateCredentials.Remove(credential);
+                                            property.SetValue(server, obj);
                                         }
+                                }
+                            }
+
+
+                            // merge tags
+                            foreach (var server in _serversInBuckEdit)
+                            {
+                                // process old tags, remove the not existed tags.
+                                foreach (var tag in server.Tags.ToArray())
+                                {
+                                    if (_sharedTagsInBuckEdit.Contains(tag) == true)
+                                    {
+                                        if (Server.Tags.Contains(tag) == false)
+                                            server.Tags.Remove(tag);
                                     }
                                     else
                                     {
-                                        if (newServer.AlternateCredentials.All(x => x.Name != Server.ServerEditorDifferentOptions && x.IsEditable != false))
-                                        {
-                                            protocol.AlternateCredentials.Remove(credential);
-                                        }
+                                        if (Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
+                                            server.Tags.Remove(tag);
                                     }
                                 }
 
-                                foreach (var credential in newServer.AlternateCredentials.Where(x => x.Name != Server.ServerEditorDifferentOptions))
+                                // add new tags
+                                foreach (var tag in Server.Tags.Where(tag => tag != Server.ServerEditorDifferentOptions))
                                 {
-                                    if (protocol.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                    server.Tags.Add(tag);
+                                }
+                                server.Tags = server.Tags.Distinct().ToList();
+
+
+                                // merge credentials
+                                if (server is ProtocolBaseWithAddressPort protocol
+                                    && Server is ProtocolBaseWithAddressPort newServer)
+                                {
+                                    foreach (var credential in protocol.AlternateCredentials.ToArray())
                                     {
-                                        protocol.AlternateCredentials.Add(credential);
+                                        if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential)))
+                                        {
+                                            if (newServer.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                            {
+                                                protocol.AlternateCredentials.Remove(credential);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (newServer.AlternateCredentials.All(x => x.Name != Server.ServerEditorDifferentOptions && x.IsEditable != false))
+                                            {
+                                                protocol.AlternateCredentials.Remove(credential);
+                                            }
+                                        }
                                     }
+
+                                    foreach (var credential in newServer.AlternateCredentials.Where(x => x.Name != Server.ServerEditorDifferentOptions))
+                                    {
+                                        if (protocol.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
+                                        {
+                                            protocol.AlternateCredentials.Add(credential);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // save
+                            _globalData.UpdateServer(_serversInBuckEdit);
+                        }
+                        else
+                        {
+                            MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
+
+                            // edit
+                            if (IsAddMode == false
+                                && Server.IsTmpSession() == false)
+                            {
+                                ret = _globalData.UpdateServer(Server);
+                            }
+                            // add
+                            else if (IsAddMode && _addToDataSource != null)
+                            {
+                                ret = _globalData.AddServer(Server, _addToDataSource);
+                            }
+
+                            if (ret && Server is RDP rdp)
+                            {
+                                try
+                                {
+                                    // try read user name & password from CredentialManagement.
+                                    using var cred = new CredentialManagement.Credential()
+                                    {
+                                        Target = "TERMSRV/" + rdp.Address,
+                                        Type = CredentialType.Generic,
+                                        Password = rdp.Password,
+                                        Username = rdp.UserName,
+                                        PersistanceType = PersistanceType.LocalComputer,
+                                    };
+                                    cred.Save();
+                                }
+                                catch (Exception)
+                                {
+                                    // ignored
                                 }
                             }
                         }
 
-                        // save
-                        _globalData.UpdateServer(_serversInBuckEdit);
-                    }
-                    // edit
-                    else if (IsAddMode == false
-                             && Server.IsTmpSession() == false)
-                    {
-                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
-                        _globalData.UpdateServer(Server);
-                    }
-                    // add
-                    else if (IsAddMode && _addToDataSource != null)
-                    {
-                        MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
-                        _globalData.AddServer(Server, _addToDataSource);
-                    }
+                        if (ret)
+                            IoC.Get<MainWindowViewModel>().ShowList(true);
 
-                    if (IsBuckEdit == false && Server is RDP rdp)
-                    {
-                        try
-                        {
-                            // try read user name & password from CredentialManagement.
-                            using var cred = new CredentialManagement.Credential()
-                            {
-                                Target = "TERMSRV/" + rdp.Address,
-                                Type = CredentialType.Generic,
-                                Password = rdp.Password,
-                                Username = rdp.UserName,
-                                PersistanceType = PersistanceType.LocalComputer,
-                            };
-                            cred.Save();
-                        }
-                        catch (Exception)
-                        {
-                            // ignored
-                        }
-                    }
+                        MaskLayerController.HideMask();
+                    });
 
-                    IoC.Get<MainWindowViewModel>().ShowList(true);
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? true)));
                 return _cmdSave;
             }

@@ -180,15 +180,19 @@ namespace _1RM.Model
             return ret;
         }
 
-        public void UpdateServer(ProtocolBase protocolServer)
+        public bool UpdateServer(ProtocolBase protocolServer)
         {
             StopTick();
             Debug.Assert(protocolServer.IsTmpSession() == false);
-            if (_sourceService == null) return;
+            if (_sourceService == null) return false;
             var source = protocolServer.GetDataSource();
+            if (source == null) return false;
             var needReload = source?.NeedRead() ?? false;
-            if (source == null || source.IsWritable == false) return;
-            source.Database_UpdateServer(protocolServer);
+            if (source == null || source.IsWritable == false) return false;
+            if (!source.Database_UpdateServer(protocolServer))
+            {
+                return false;
+            }
 
 
             if (needReload)
@@ -206,6 +210,7 @@ namespace _1RM.Model
             }
 
             StartTick();
+            return true;
         }
 
         public void UpdateServer(IEnumerable<ProtocolBase> protocolServers)

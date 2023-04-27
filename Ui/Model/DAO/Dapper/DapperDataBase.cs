@@ -371,7 +371,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             {
                 try
                 {
-                    if (!OpenConnection(true)) return false;
+                    if (!OpenConnection()) return false;
                     var existed = GetConfigPrivate(key) != null;
                     if (existed && value == null)
                     {
