@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using _1RM.Model.DAO;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
@@ -14,7 +16,7 @@ namespace _1RM.View.Editor
     public class DataSourceSelectorViewModel : NotifyPropertyChangedBaseScreen
     {
         private readonly DataSourceService _dataSourceService;
-        public DataSourceSelectorViewModel()
+        protected DataSourceSelectorViewModel()
         {
             var configurationService = IoC.Get<ConfigurationService>();
             _dataSourceService = IoC.Get<DataSourceService>();
@@ -71,6 +73,22 @@ namespace _1RM.View.Editor
                 {
                     this.RequestClose(false);
                 });
+            }
+        }
+
+
+        public static DataSourceBase? SelectDataSource()
+        {
+            if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any())
+            {
+                var vm = new DataSourceSelectorViewModel();
+                if (MaskLayerController.ShowDialogWithMask(vm) != true)
+                    return null;
+                return IoC.Get<DataSourceService>().GetDataSource(vm.SelectedSource.DataSourceName);
+            }
+            else
+            {
+                return IoC.Get<DataSourceService>().LocalDataSource;
             }
         }
     }

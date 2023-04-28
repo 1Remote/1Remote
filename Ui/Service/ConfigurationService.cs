@@ -162,7 +162,7 @@ namespace _1RM.Service
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
-        public SqliteSource LocalDataSource { get; } = new SqliteSource();
+        public SqliteSource LocalDataSource { get; } = new SqliteSource("Local");
 
         public int DatabaseCheckPeriod
         {

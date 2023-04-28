@@ -10,31 +10,36 @@ namespace _1RM.Model.DAO.Dapper
     /// </summary>
     public sealed class DapperDatabaseFree : DapperDatabase
     {
-        /// <inheritdoc />
-        public override void InitTables()
+        public DapperDatabaseFree(string databaseName, DatabaseType databaseType) : base(databaseName, databaseType)
         {
-            lock (this)
-            {
-                OpenConnection();
-                base.InitTables();
-                CloseConnection();
-            }
         }
 
         /// <inheritdoc />
-        public override ProtocolBase? GetServer(int id)
+        public override Result InitTables()
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.GetServer(id);
+                var ret = base.InitTables();
                 CloseConnection();
                 return ret;
             }
         }
 
+        ///// <inheritdoc />
+        //public override ProtocolBase? GetServer(int id)
+        //{
+        //    lock (this)
+        //    {
+        //        OpenConnection();
+        //        var ret = base.GetServer(id);
+        //        CloseConnection();
+        //        return ret;
+        //    }
+        //}
+
         /// <inheritdoc />
-        public override List<ProtocolBase>? GetServers()
+        public override ResultSelects GetServers()
         {
             lock (this)
             {
@@ -44,7 +49,7 @@ namespace _1RM.Model.DAO.Dapper
                 return ret;
             }
         }
-        public override int GetServerCount()
+        public override ResultLong GetServerCount()
         {
             lock (this)
             {
@@ -56,19 +61,19 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override string AddServer(ProtocolBase protocolBase)
+        public override Result AddServer(ref ProtocolBase protocolBase)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.AddServer(protocolBase);
+                var ret = base.AddServer(ref protocolBase);
                 CloseConnection();
                 return ret;
             }
         }
 
         /// <inheritdoc />
-        public override int AddServer(IEnumerable<ProtocolBase> protocolBases)
+        public override Result AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
             lock (this)
             {
@@ -80,7 +85,7 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override bool UpdateServer(ProtocolBase server)
+        public override Result UpdateServer(ProtocolBase server)
         {
             lock (this)
             {
@@ -92,7 +97,7 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override bool UpdateServer(IEnumerable<ProtocolBase> servers)
+        public override Result UpdateServer(IEnumerable<ProtocolBase> servers)
         {
             lock (this)
             {
@@ -104,7 +109,7 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override bool DeleteServer(string id)
+        public override Result DeleteServer(string id)
         {
             lock (this)
             {
@@ -117,7 +122,7 @@ namespace _1RM.Model.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override bool DeleteServer(IEnumerable<string> ids)
+        public override Result DeleteServer(IEnumerable<string> ids)
         {
             lock (this)
             {
@@ -130,7 +135,7 @@ namespace _1RM.Model.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override string? GetConfig(string key)
+        public override ResultString GetConfig(string key)
         {
             lock (this)
             {
@@ -142,7 +147,7 @@ namespace _1RM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override bool SetConfig(string key, string value)
+        public override Result SetConfig(string key, string? value)
         {
             lock (this)
             {

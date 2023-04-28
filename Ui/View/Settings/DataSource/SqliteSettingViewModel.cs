@@ -29,7 +29,7 @@ namespace _1RM.View.Settings.DataSource
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
 
-        public readonly SqliteSource New = new SqliteSource();
+        public readonly SqliteSource New;
         private readonly DataSourceViewModel _dataSourceViewModel;
 
         public SqliteSettingViewModel(DataSourceViewModel dataSourceViewModel, SqliteSource? sqliteConfig = null)
@@ -40,6 +40,7 @@ namespace _1RM.View.Settings.DataSource
             // Edit mode
             if (OrgSqliteConfig != null)
             {
+                New = new SqliteSource(OrgSqliteConfig.Name);
                 Name = OrgSqliteConfig.DataSourceName;
                 Path = OrgSqliteConfig.Path;
                 New.Database_SelfCheck();
@@ -49,6 +50,10 @@ namespace _1RM.View.Settings.DataSource
                     NameWritable = false;
                 }
                 OrgSqliteConfig?.Database_CloseConnection();
+            }
+            else
+            {
+                New = new SqliteSource("tmp");
             }
         }
 

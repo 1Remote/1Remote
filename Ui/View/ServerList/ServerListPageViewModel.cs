@@ -428,21 +428,8 @@ namespace _1RM.View.ServerList
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
                     // select save to which source
-                    DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
-                    {
-                        var vm = new DataSourceSelectorViewModel();
-                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                            return;
-                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
-                    }
-                    else
-                    {
-                        source = SourceService.LocalDataSource;
-                    }
-                    if (source == null) return;
-
-
+                    var source = DataSourceSelectorViewModel.SelectDataSource();
+                    if (source?.IsWritable != true) return;
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
@@ -493,21 +480,8 @@ namespace _1RM.View.ServerList
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
                     // select save to which source
-                    DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
-                    {
-                        var vm = new DataSourceSelectorViewModel();
-                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                            return;
-                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
-                    }
-                    else
-                    {
-                        source = SourceService.LocalDataSource;
-                    }
-                    if (source == null) return;
-
-
+                    var source = DataSourceSelectorViewModel.SelectDataSource();
+                    if (source?.IsWritable != true) return;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
                     MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
@@ -547,21 +521,8 @@ namespace _1RM.View.ServerList
                 return _cmdImportFromRdp ??= new RelayCommand((o) =>
                 {
                     // select save to which source
-                    DataSourceBase? source = null;
-                    if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
-                    {
-                        var vm = new DataSourceSelectorViewModel();
-                        if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                            return;
-                        source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
-                    }
-                    else
-                    {
-                        source = SourceService.LocalDataSource;
-                    }
-                    if (source == null) return;
-
-
+                    var source = DataSourceSelectorViewModel.SelectDataSource();
+                    if (source?.IsWritable != true) return;
                     var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
                     if (path == null) return;
 
@@ -590,18 +551,22 @@ namespace _1RM.View.ServerList
                                 // ignored
                             }
 
-                            if (AppData.AddServer(rdp, source))
+                            var ret = AppData.AddServer(rdp, source);
+                            if (ret.IsSuccess)
                             {
                                 MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"));
-                                return;
+                            }
+                            else
+                            {
+                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
                             }
                         }
                     }
                     catch (Exception e)
                     {
                         SimpleLogHelper.Debug(e);
+                        MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                     }
-                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                 });
             }
         }
@@ -621,7 +586,11 @@ namespace _1RM.View.ServerList
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         var servers = ss.Select(x => x.Server);
-                        AppData.DeleteServer(servers);
+                        var ret = AppData.DeleteServer(servers);
+                        if (!ret.IsSuccess)
+                        {
+                            MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                        }
                     }
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }

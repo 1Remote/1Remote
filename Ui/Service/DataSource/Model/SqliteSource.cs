@@ -14,6 +14,9 @@ namespace _1RM.Service.DataSource.Model
 {
     public sealed partial class SqliteSource : DataSourceBase
     {
+        public readonly string Name;
+        private readonly IDatabase _database;
+
         private string _path = "";
         public string Path
         {
@@ -27,8 +30,10 @@ namespace _1RM.Service.DataSource.Model
             }
         }
 
-        public SqliteSource() : base()
+        public SqliteSource(string name) : base()
         {
+            Name = name;
+            _database = new DapperDatabaseFree(Name, DatabaseType);
             SimpleLogHelper.Debug(nameof(SqliteSource) + " Construct: " + this.GetHashCode());
         }
 
@@ -49,7 +54,6 @@ namespace _1RM.Service.DataSource.Model
 
 
 
-        private readonly IDatabase _database = new DapperDatabaseFree();
         public override IDatabase GetDataBase()
         {
             return _database;
