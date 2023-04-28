@@ -13,41 +13,69 @@ using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
 using System.Windows;
+using Stylet;
+
+// ReSharper disable InconsistentNaming
 
 namespace _1RM.Model.DAO.Dapper
 {
     public class DapperDatabase : IDatabase
     {
+        public DapperDatabase(string databaseName, DatabaseType databaseType) : base(databaseName, databaseType)
+        {
+        }
+
         protected IDbConnection? _dbConnection;
-        protected string _connectionString = "";
-        protected DatabaseType _databaseType = DatabaseType.Sqlite;
+        public IDbConnection? Connection => _dbConnection;
 
         public override void CloseConnection()
         {
             lock (this)
             {
                 _dbConnection?.Close();
-                if (_databaseType == DatabaseType.Sqlite)
+                if (DatabaseType == DatabaseType.Sqlite)
                 {
                     System.Data.SQLite.SQLiteConnection.ClearAllPools();
                 }
             }
         }
 
-        public IDbConnection? Connection => _dbConnection;
 
-        protected override bool OpenConnection(bool showErrorAlert = false)
+        /// <summary>
+        /// create a IDatabase instance and open connection
+        /// </summary>
+        /// <param name="newConnectionString"></param>
+        public override Result OpenNewConnection(string newConnectionString)
         {
-            if (string.IsNullOrWhiteSpace(_connectionString))
-                return false;
-            if (IsConnected()) return true;
             lock (this)
             {
-                if (IsConnected()) return true;
+                if (_connectionString == newConnectionString && IsConnected())
+                    return Result.Success();
+                if (string.IsNullOrWhiteSpace(newConnectionString))
+                    return Result.Success();
+                _connectionString = newConnectionString;
+                _dbConnection?.Close();
+                _dbConnection?.Dispose();
+                _dbConnection = null;
+                return OpenConnection();
+            }
+        }
+
+        protected virtual Result OpenConnection(string actionInfo = "TXT: We can not connect to")
+        {
+            if (string.IsNullOrWhiteSpace(_connectionString))
+            {
+                return Result.Fail(actionInfo, DatabaseName, "TXT: the connection string is null!");
+            }
+
+            if (IsConnected()) return Result.Success();
+            lock (this)
+            {
+                if (IsConnected()) return Result.Success();
                 if (_dbConnection == null)
                 {
                     _dbConnection?.Close();
-                    switch (_databaseType)
+                    switch (DatabaseType)
                     {
                         case DatabaseType.MySql:
                             _dbConnection = new MySqlConnection(_connectionString);
@@ -62,55 +90,41 @@ namespace _1RM.Model.DAO.Dapper
                         //case DatabaseType.Oracle:
                         //    break;
                         default:
-                            throw new NotImplementedException(_databaseType.ToString() + " not supported!");
+                            throw new NotImplementedException(DatabaseType.ToString() + " not supported!");
                     }
                 }
 
+                string error = "";
                 try
                 {
                     _dbConnection.Open();
-                    return IsConnected();
+                    return Result.Success();
+                }
+                catch (DllNotFoundException e)
+                {
+                    SimpleLogHelper.Error(e);
+                    MsAppCenterHelper.Error(e);
+                    MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
+                    Environment.Exit(2);
                 }
                 catch (MySqlException mse)
                 {
                     SimpleLogHelper.Error(mse);
-                    if (showErrorAlert)
-                    {
-                        MessageBoxHelper.ErrorAlert("Access Denied: " + mse.Message);
-                    }
+                    error = mse.Message;
+                }
+                catch (TimeoutException te)
+                {
+                    SimpleLogHelper.Error(te);
+                    error = te.Message;
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "_databaseType", _databaseType.ToString() } });
-                    if (showErrorAlert)
-                    {
-                        MessageBoxHelper.ErrorAlert("Access Denied: " + e.Message);
-                    }
+                    error = e.Message;
+                    MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
                 }
-                return false;
-            }
-        }
 
-        public override void OpenNewConnection(DatabaseType type, string newConnectionString)
-        {
-            lock (this)
-            {
-                if (_databaseType == type && _connectionString == newConnectionString && IsConnected())
-                    return;
-
-                if (string.IsNullOrWhiteSpace(newConnectionString))
-                    return;
-
-                _databaseType = type;
-                _connectionString = newConnectionString;
-
-                _dbConnection?.Close();
-                _dbConnection?.Dispose();
-                //if (_databaseType == DatabaseType.Sqlite)
-                //    SQLiteConnection.ClearAllPools();
-                _dbConnection = null;
-                OpenConnection();
+                return Result.Fail(actionInfo, DatabaseName, error);
             }
         }
 
@@ -122,10 +136,15 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        public override void InitTables()
+        public override Result InitTables()
         {
-            if(!OpenConnection(true)) return;
-            _dbConnection?.Execute(@$"
+            const string info = "TXT: We can not create tables on";
+            var result = OpenConnection(info);
+            if (!result.IsSuccess) return result;
+
+            try
+            {
+                _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
     `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
                                         NOT NULL
@@ -135,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
 ");
 
 
-            _dbConnection?.Execute(@$"
+                _dbConnection?.Execute(@$"
 CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
                                              NOT NULL
@@ -145,40 +164,82 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 ");
-            base.SetEncryptionTest();
-        }
-
-        public override ProtocolBase? GetServer(int id)
-        {
-            lock (this)
-            {
-                if (!OpenConnection()) return null;
-                Debug.Assert(id > 0);
-                var dbServer =
-                    _dbConnection?.QueryFirstOrDefault<Server>(
-                        $"SELECT * FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
-                        new { Id = id });
-                return dbServer?.ToProtocolServerBase();
+                base.SetEncryptionTest();
             }
+            catch (Exception e)
+            {
+                // 创建失败时，可能是只读权限的用户，再测试一下读权限
+                if (!GetConfig("EncryptionTest").IsSuccess)
+                {
+                    return Result.Fail(info, DatabaseName, e.Message);
+                }
+            }
+            return Result.Success();
         }
 
-        public override List<ProtocolBase>? GetServers()
+        ///// <summary>
+        ///// 查询 id 对应的服务器信息，如果查询不到，返回查询成功+结果为null
+        ///// </summary>
+        //public override ResultSelect GetServer(int id)
+        //{
+        //    lock (this)
+        //    {
+        //        var result = OpenConnection();
+        //        if (!result.IsSuccess) return ResultSelect.Fail(result.ErrorInfo);
+        //        try
+        //        {
+        //            Debug.Assert(id > 0);
+        //            var dbServer =
+        //                _dbConnection.QueryFirstOrDefault<Server>(
+        //                    $"SELECT * FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
+        //                    new { Id = id });
+        //            var p = dbServer.ToProtocolServerBase();
+        //            return ResultSelect.Success(p);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            return ResultSelect.Fail(info, DatabaseName, e.Message);
+        //        }
+        //    }
+        //}
+
+        public override ResultSelects GetServers()
         {
+            const string info = "TXT: We can not select from";
             lock (this)
             {
-                if (!OpenConnection()) return null;
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return ResultSelects.Fail(result.ErrorInfo);
 #pragma warning disable CS8619
-                return _dbConnection?.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+                try
+                {
+                    var ps = _dbConnection.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+                    return ResultSelects.Success(ps);
+                }
+                catch (Exception e)
+                {
+                    return ResultSelects.Fail(info, DatabaseName, e.Message);
+                }
 #pragma warning restore CS8619 
             }
         }
 
-        public override int GetServerCount()
+        public override ResultLong GetServerCount()
         {
+            const string info = "TXT: We can not select from";
             lock (this)
             {
-                if (!OpenConnection()) return 0;
-                return _dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0;
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return ResultLong.Fail(result.ErrorInfo);
+
+                try
+                {
+                    return ResultLong.Success(_dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0);
+                }
+                catch (Exception e)
+                {
+                    return ResultLong.Fail(info, DatabaseName, e.Message);
+                }
             }
         }
 
@@ -189,44 +250,45 @@ VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
 
         /// <summary>
-        /// return new id or empty string
+        /// 插入成功后会更新 protocolBase.Id
         /// </summary>
-        /// <param name="protocolBase"></param>
-        /// <returns></returns>
-        public override string AddServer(ProtocolBase protocolBase)
+        public override Result AddServer(ref ProtocolBase protocolBase)
         {
+            const string info = "TXT: We can not insert into";
             lock (this)
             {
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
+
                 try
                 {
-                    int affCount = 0;
-                    if (!OpenConnection(true)) return string.Empty;
                     if (protocolBase.IsTmpSession())
                         protocolBase.Id = Ulid.NewUlid().ToString();
                     var server = protocolBase.ToDbServer();
-                    affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
+                    int affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
                     if (affCount > 0)
-                    {
                         SetDataUpdateTimestamp();
-                        return server.Id;
-                    }
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
-                return string.Empty;
             }
         }
 
-        public override int AddServer(IEnumerable<ProtocolBase> protocolBases)
+        /// <summary>
+        /// 插入成功后会更新 protocolBase.Id
+        /// </summary>
+        public override Result AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
+            const string info = "TXT: We can not insert into";
             lock (this)
             {
-                int affCount = 0;
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
                 try
                 {
-                    if (!OpenConnection(true)) return 0;
                     var rng = new NUlid.Rng.MonotonicUlidRng();
                     foreach (var protocolBase in protocolBases)
                     {
@@ -234,15 +296,15 @@ VALUES
                             protocolBase.Id = Ulid.NewUlid(rng).ToString();
                     }
                     var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
-                    affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
+                    var affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
                     if (affCount > 0)
                         SetDataUpdateTimestamp();
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
-                return affCount;
             }
         }
 
@@ -251,107 +313,129 @@ VALUES
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
 `{nameof(Server.Json)}` = @{nameof(Server.Json)}
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
-        public override bool UpdateServer(ProtocolBase server)
+        public override Result UpdateServer(ProtocolBase server)
         {
+            const string info = "TXT: We can not update on";
             lock (this)
             {
-                bool ret = false;
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
                 try
                 {
-                    if (!OpenConnection(true)) return false;
-                    ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+                    var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
                     if (ret)
+                    {
                         SetDataUpdateTimestamp();
+                    }
+                    else
+                    {
+                        // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                    }
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
+                    return ResultString.Fail(info, DatabaseName, e.Message);
                 }
-                return ret;
             }
         }
 
-        public override bool UpdateServer(IEnumerable<ProtocolBase> servers)
+        public override Result UpdateServer(IEnumerable<ProtocolBase> servers)
         {
+            const string info = "TXT: We can not update on";
             lock (this)
             {
-                bool ret = false;
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
                 try
                 {
-                    if (!OpenConnection(true)) return false;
                     var items = servers.Select(x => x.ToDbServer());
-                    ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
+                    var ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
                     if (ret)
+                    {
                         SetDataUpdateTimestamp();
+                    }
+                    else
+                    {
+                        // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                    }
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
+                    return ResultString.Fail(info, DatabaseName, e.Message);
                 }
-                return ret;
             }
         }
 
-        public override bool DeleteServer(string id)
+        public override Result DeleteServer(string id)
         {
+            const string info = "TXT: We can not delete from";
             lock (this)
             {
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
                 try
                 {
-                    if (!OpenConnection(true)) return false;
                     var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
                     if (ret)
                         SetDataUpdateTimestamp();
-                    return ret;
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
-                return false;
             }
         }
 
-        public override bool DeleteServer(IEnumerable<string> ids)
+        public override Result DeleteServer(IEnumerable<string> ids)
         {
+            const string info = "TXT: We can not delete from";
             lock (this)
             {
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
                 try
                 {
-                    if (!OpenConnection(true)) return false;
                     var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
                     if (ret)
                         SetDataUpdateTimestamp();
-                    return ret;
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
-                return false;
             }
         }
 
-        public override string? GetConfig(string key)
+        public override ResultString GetConfig(string key)
         {
             return GetConfigPrivate(key);
         }
 
-        protected string? GetConfigPrivate(string key)
+        protected ResultString GetConfigPrivate(string key)
         {
+            const string info = "TXT: We can read from";
             lock (this)
             {
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return ResultString.Fail(result.ErrorInfo);
                 try
                 {
-                    if (!OpenConnection()) return null;
                     var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                         new { Key = key, });
-                    return config?.Value;
+                    return ResultString.Success(config?.Value);
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    return null;
+                    return ResultString.Fail(info, DatabaseName, e.Message);
                 }
             }
         }
@@ -360,29 +444,39 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
         private static readonly string SqlDeleteConfig = $@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
 
-        public override bool SetConfig(string key, string? value)
+        public override Result SetConfig(string key, string? value)
         {
             return SetConfigPrivate(key, value);
         }
 
-        protected bool SetConfigPrivate(string key, string? value)
+        protected Result SetConfigPrivate(string key, string? value)
         {
+            const string info = "TXT: We can not update on";
             lock (this)
             {
+                var result = OpenConnection(info);
+                if (!result.IsSuccess) return result;
+
+                var get = GetConfigPrivate(key);
+                if (!get.IsSuccess) return Result.Fail(get.ErrorInfo);
                 try
                 {
-                    if (!OpenConnection()) return false;
-                    var existed = GetConfigPrivate(key) != null;
+                    bool existed = !string.IsNullOrEmpty(get.Result);
+                    bool ret = true;
                     if (existed && value == null)
                     {
-                        return _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, }) > 0;
+                        ret = _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, }) > 0;
                     }
-                    return _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
+                    else
+                    {
+                        ret = _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
+                    }
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    return false;
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
             }
         }
@@ -403,8 +497,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             lock (this)
             {
                 var val = GetConfigPrivate("UpdateTimestamp");
-                if (val != null
-                    && long.TryParse(val, out var t)
+                if (long.TryParse(val.Result, out var t)
                     && t > 0)
                     return t;
                 return long.MinValue;

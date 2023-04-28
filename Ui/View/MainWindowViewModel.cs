@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using _1RM.Model;
 using _1RM.Model.DAO;
+using _1RM.Model.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
@@ -94,24 +95,12 @@ namespace _1RM.View
             base.OnViewLoaded();
             GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, isInAnimationShow) =>
             {
-                // select save to which source
-                DataSourceBase? source = null;
-                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
+                var source = DataSourceSelectorViewModel.SelectDataSource();
+                if (source?.IsWritable == true)
                 {
-                    var vm = new DataSourceSelectorViewModel();
-                    if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                        return;
-                    source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
+                    EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
+                    ShowMe();
                 }
-                else
-                {
-                    source = SourceService.LocalDataSource;
-                }
-
-                if (source == null) return;
-                if (source.IsWritable == false) return;
-                EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
-                ShowMe();
             };
 
             GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
@@ -126,24 +115,12 @@ namespace _1RM.View
 
             GlobalEventHelper.OnGoToServerAddPage += (tagNames, isInAnimationShow) =>
             {
-                // select save to which source
-                DataSourceBase? source = null;
-                if (ConfigurationService.AdditionalDataSource.Any(x => x.Status == EnumDatabaseStatus.OK))
+                var source = DataSourceSelectorViewModel.SelectDataSource();
+                //if(source?.IsWritable == true)
                 {
-                    var vm = new DataSourceSelectorViewModel();
-                    if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                        return;
-                    source = SourceService.GetDataSource(vm.SelectedSource.DataSourceName);
+                    EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
+                    ShowMe();
                 }
-                else
-                {
-                    source = SourceService.GetDataSource();
-                }
-                if (source == null) return;
-                if (source.IsWritable == false) return;
-
-                EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
-                ShowMe();
             };
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>

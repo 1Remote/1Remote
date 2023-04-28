@@ -59,87 +59,75 @@ namespace _1RM.Service.DataSource.Model
         {
             lock (this)
             {
-                var count = Database_GetServersCount();
-
-                if (count == CachedProtocols.Count
-                    && focus == false
+                if (focus == false
                     && LastReadFromDataSourceMillisecondsTimestamp >= DataSourceDataUpdateTimestamp)
                 {
                     return CachedProtocols;
                 }
 
                 LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                if (Database_OpenConnection() == false)
+                var result = Database_GetServers();
+                if (result.IsSuccess)
+                {
+                    CachedProtocols = new List<ProtocolBaseViewModel>(result.ProtocolBases.Count);
+                    foreach (var protocol in result.ProtocolBases)
+                    {
+                        try
+                        {
+                            Execute.OnUIThreadSync(() =>
+                            {
+                                var vm = new ProtocolBaseViewModel(protocol);
+                                CachedProtocols.Add(vm);
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Info(e);
+                        }
+                    }
+                    SetStatus(true);
+                }
+                else
                 {
                     return CachedProtocols;
                 }
-                var protocols = Database_GetServers();
-                CachedProtocols = new List<ProtocolBaseViewModel>(protocols.Count);
-                foreach (var protocol in protocols)
-                {
-                    try
-                    {
-                        Execute.OnUIThreadSync(() =>
-                        {
-                            var vm = new ProtocolBaseViewModel(protocol);
-                            CachedProtocols.Add(vm);
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Info(e);
-                    }
-                }
-
-                Status = EnumDatabaseStatus.OK;
                 return CachedProtocols;
             }
         }
 
         public abstract IDatabase GetDataBase();
 
+        private void SetStatus(bool isConnected)
+        {
+            if (isConnected)
+            {
+                Status = EnumDatabaseStatus.OK;
+            }
+            else
+            {
+                Status = Status != EnumDatabaseStatus.NotConnectedYet ? EnumDatabaseStatus.LostConnection : EnumDatabaseStatus.AccessDenied;
+            }
+        }
+
         public bool Database_OpenConnection(int connectTimeOutSeconds = 5)
         {
-            var dataBaseRef = GetDataBase();
+            var dataBase = GetDataBase();
             // open db or create db.
 
 
             var connectionString = GetConnectionString(connectTimeOutSeconds);
             if (connectionString != _lastConnectionString)
             {
-                dataBaseRef.CloseConnection();
+                dataBase.CloseConnection();
                 _lastConnectionString = connectionString;
             }
 
-            try
+            var result = dataBase.OpenNewConnection(connectionString);
+            if (!result.IsSuccess)
             {
-                dataBaseRef.OpenNewConnection(DatabaseType, connectionString);
+                SimpleLogHelper.Error(result.ErrorInfo);
             }
-            catch (DllNotFoundException e)
-            {
-                SimpleLogHelper.Error(e);
-                MsAppCenterHelper.Error(e);
-                MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
-                Environment.Exit(2);
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-            }
-
-            // check connectable
-            if (dataBaseRef.IsConnected() == false)
-            {
-                if (Status != EnumDatabaseStatus.NotConnectedYet)
-                {
-                    Status = EnumDatabaseStatus.LostConnection;
-                }
-                else
-                {
-                    Status = EnumDatabaseStatus.AccessDenied;
-                }
-                return false;
-            }
+            SetStatus(dataBase.IsConnected() == true);
             return true;
         }
 
@@ -157,167 +145,180 @@ namespace _1RM.Service.DataSource.Model
             if (Database_OpenConnection(connectTimeOutSeconds) == false)
                 return Status;
 
-            var dataBaseRef = GetDataBase();
+            var dataBase = GetDataBase();
 
 
 
             // try create table
-            try
+            var ret = dataBase.InitTables();
+            if (ret.IsSuccess == false)
             {
-                dataBaseRef.InitTables();
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Warning(e);
-                Status = EnumDatabaseStatus.AccessDenied;
+                SetStatus(false);
+                SimpleLogHelper.Warning(ret.ErrorInfo);
+                return Status;
             }
 
+            // check writable
+            IsWritable = dataBase.CheckWritable();
+
             // check readable
-            IsWritable = dataBaseRef.CheckWritable();
-            var isReadable = dataBaseRef.CheckReadable();
-            if (isReadable == false)
+            if (!dataBase.GetConfig("EncryptionTest").IsSuccess)
             {
-                Status = EnumDatabaseStatus.AccessDenied;
+                SetStatus(false);
                 return Status;
             }
 
             // check if encryption key is matched
-            if (dataBaseRef.CheckEncryptionTest() == false)
+            if (dataBase.CheckEncryptionTest() == false)
             {
                 Status = EnumDatabaseStatus.EncryptKeyError;
                 return Status;
             }
 
-            Status = EnumDatabaseStatus.OK;
+            SetStatus(true);
             return Status;
         }
 
-        public bool Database_InsertServer(ProtocolBase server)
+        public Result Database_InsertServer(ProtocolBase server)
         {
             var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             tmp.EncryptToDatabaseLevel();
-            var dbId = GetDataBase().AddServer(tmp);
-            if (string.IsNullOrEmpty(dbId))
-                return false;
-            server.Id = dbId;
-            server.DataSourceName = this.DataSourceName;
-            LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            CachedProtocols.Add(new ProtocolBaseViewModel(server));
-            Status = EnumDatabaseStatus.OK;
-            return true;
+            var result = GetDataBase().AddServer(ref tmp);
+            if (result.IsSuccess)
+            {
+                server.Id = tmp.Id;
+                server.DataSourceName = this.DataSourceName;
+                SetStatus(true);
+            }
+            return result;
         }
 
-        public bool Database_InsertServer(List<ProtocolBase> servers)
-        {
-            var cloneList = new List<ProtocolBase>();
-            foreach (var server in servers)
-            {
-                var tmp = (ProtocolBase)server.Clone();
-                tmp.SetNotifyPropertyChangedEnabled(false);
-                tmp.EncryptToDatabaseLevel();
-                cloneList.Add(tmp);
-            }
-            int affCount = GetDataBase().AddServer(cloneList);
-            for (int i = 0; i < servers.Count(); i++)
-            {
-                servers[i].Id = cloneList[i].Id;
-                CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
-            }
-            LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            return affCount == servers.Count;
-        }
-
-        public bool Database_UpdateServer(ProtocolBase org)
-        {
-            Debug.Assert(org.IsTmpSession() == false);
-            var tmp = (ProtocolBase)org.Clone();
-            tmp.SetNotifyPropertyChangedEnabled(false);
-            tmp.EncryptToDatabaseLevel();
-            var ret = GetDataBase().UpdateServer(tmp) == true;
-            if (ret == true)
-            {
-                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                var old = CachedProtocols.First(x => x.Id == org.Id);
-                old.Server = org;
-                Status = EnumDatabaseStatus.OK;
-            }
-            return ret;
-        }
-
-        public bool Database_UpdateServer(IEnumerable<ProtocolBase> servers)
-        {
-            var cloneList = new List<ProtocolBase>();
-            foreach (var server in servers)
-            {
-                var tmp = (ProtocolBase)server.Clone();
-                tmp.SetNotifyPropertyChangedEnabled(false);
-                tmp.EncryptToDatabaseLevel();
-                cloneList.Add(tmp);
-            }
-
-            var ret = GetDataBase().UpdateServer(cloneList) == true;
-            if (ret == true)
-            {
-                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                // update viewmodel
-                foreach (var protocolServer in servers)
-                {
-                    var old = CachedProtocols.First(x => x.Id == protocolServer.Id);
-                    // invoke main list ui change & invoke launcher ui change
-                    old.Server = protocolServer;
-                }
-                Status = EnumDatabaseStatus.OK;
-            }
-            return ret;
-        }
-
-        public bool Database_DeleteServer(string id)
+        public Result Database_InsertServer(List<ProtocolBase> servers)
         {
             if (_isWritable)
             {
-                var ret = GetDataBase().DeleteServer(id) == true;
-                if (ret == true)
+                var cloneList = new List<ProtocolBase>();
+                foreach (var server in servers)
+                {
+                    var tmp = (ProtocolBase)server.Clone();
+                    tmp.SetNotifyPropertyChangedEnabled(false);
+                    tmp.EncryptToDatabaseLevel();
+                    cloneList.Add(tmp);
+                }
+                var ret = GetDataBase().AddServer(cloneList);
+                if (ret.IsSuccess)
+                {
+                    for (int i = 0; i < servers.Count(); i++)
+                    {
+                        servers[i].Id = cloneList[i].Id;
+                        CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
+                    }
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    SetStatus(true);
+                }
+                return ret;
+            }
+            return Result.Success();
+        }
+
+        public Result Database_UpdateServer(ProtocolBase org)
+        {
+            if (_isWritable)
+            {
+                Debug.Assert(org.IsTmpSession() == false);
+                var tmp = (ProtocolBase)org.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                tmp.EncryptToDatabaseLevel();
+                var ret = GetDataBase().UpdateServer(tmp);
+                if (ret.IsSuccess)
+                {
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    var old = CachedProtocols.First(x => x.Id == org.Id);
+                    old.Server = org;
+                    SetStatus(true);
+                }
+                return ret;
+            }
+            return Result.Success();
+        }
+
+        public Result Database_UpdateServer(IEnumerable<ProtocolBase> servers)
+        {
+            if (_isWritable)
+            {
+                var cloneList = new List<ProtocolBase>();
+                foreach (var server in servers)
+                {
+                    var tmp = (ProtocolBase)server.Clone();
+                    tmp.SetNotifyPropertyChangedEnabled(false);
+                    tmp.EncryptToDatabaseLevel();
+                    cloneList.Add(tmp);
+                }
+
+                var ret = GetDataBase().UpdateServer(cloneList);
+                if (ret.IsSuccess)
+                {
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    // update viewmodel
+                    foreach (var protocolServer in servers)
+                    {
+                        var old = CachedProtocols.First(x => x.Id == protocolServer.Id);
+                        // invoke main list ui change & invoke launcher ui change
+                        old.Server = protocolServer;
+                    }
+                    SetStatus(true);
+                }
+                return ret;
+            }
+            return Result.Success();
+        }
+
+        public Result Database_DeleteServer(string id)
+        {
+            if (_isWritable)
+            {
+                var ret = GetDataBase().DeleteServer(id);
+                if (ret.IsSuccess)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols.RemoveAll(x => x.Id == id);
+                    SetStatus(true);
                 }
-                Status = EnumDatabaseStatus.OK;
                 return ret;
             }
-            return false;
+            return Result.Success();
         }
 
-        public bool Database_DeleteServer(IEnumerable<string> ids)
+        public Result Database_DeleteServer(IEnumerable<string> ids)
         {
             if (_isWritable)
             {
                 var enumerable = ids.ToArray();
-                var ret = GetDataBase().DeleteServer(enumerable) == true;
-                if (ret == true)
+                var ret = GetDataBase().DeleteServer(enumerable);
+                if (ret.IsSuccess)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols.RemoveAll(x => enumerable.Contains(x.Id));
+                    SetStatus(true);
                 }
-                Status = EnumDatabaseStatus.OK;
                 return ret;
             }
-            return false;
+            return Result.Success();
         }
 
-        protected List<ProtocolBase> Database_GetServers()
+        private ResultSelects Database_GetServers()
         {
-            var ps = GetDataBase().GetServers() ?? new List<ProtocolBase>();
-            foreach (var protocolBase in ps)
+            var ret = GetDataBase().GetServers();
+            if (ret.IsSuccess)
             {
-                protocolBase.DataSourceName = DataSourceName;
+                foreach (var protocolBase in ret.ProtocolBases)
+                {
+                    protocolBase.DataSourceName = DataSourceName;
+                }
+                SetStatus(true);
             }
-            return ps;
-        }
-
-        public int Database_GetServersCount()
-        {
-            return GetDataBase().GetServerCount();
+            return ret;
         }
     }
 }

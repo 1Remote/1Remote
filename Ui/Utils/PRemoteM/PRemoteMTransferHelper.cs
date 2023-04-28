@@ -163,7 +163,7 @@ namespace _1RM.Utils.PRemoteM
 
         private static void StartTask()
         {
-            var dataBase = new DapperDatabaseFree();
+            var dataBase = new DapperDatabaseFree("PRemoteM", DatabaseType.Sqlite);
             try
             {
                 if (_dbPathList?.Count > 0 == false)
@@ -175,7 +175,7 @@ namespace _1RM.Utils.PRemoteM
                 {
                     _dbPath = dbPath;
 
-                    dataBase.OpenNewConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(dbPath));
+                    dataBase.OpenNewConnection(DbExtensions.GetSqliteConnectionString(dbPath));
 
                     // check connection
                     if (dataBase.IsConnected() != true)

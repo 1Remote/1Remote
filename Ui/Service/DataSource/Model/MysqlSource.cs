@@ -81,9 +81,11 @@ namespace _1RM.Service.DataSource.Model
 
 
 
-        private readonly IDatabase _database = new DapperDatabase();
+        private IDatabase? _database = null;
         public override IDatabase GetDataBase()
         {
+            _database ??= new DapperDatabase(DatabaseName, DatabaseType.MySql);
+            _database.DatabaseName = DatabaseName;
             return _database;
         }
 
@@ -94,20 +96,10 @@ namespace _1RM.Service.DataSource.Model
         public static bool TestConnection(string host, int port, string dbName, string userName, string password)
         {
             var str = DbExtensions.GetMysqlConnectionString(host, port, dbName, userName, password, 2);
-            var db = new DapperDatabase();
-            try
-            {
-                db.OpenNewConnection(DatabaseType.MySql, str);
-                return db.IsConnected();
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                db.CloseConnection();
-            }
+            var db = new DapperDatabase(dbName, DatabaseType.MySql);
+            var ret = db.OpenNewConnection(str);
+            db.CloseConnection();
+            return ret.IsSuccess;
         }
     }
 }

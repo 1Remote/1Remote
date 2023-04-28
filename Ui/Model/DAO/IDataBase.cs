@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
+using _1RM.View;
 using Shawn.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+// ReSharper disable InconsistentNaming
 
 namespace _1RM.Model.DAO
 {
@@ -20,60 +22,198 @@ namespace _1RM.Model.DAO
         Sqlite,
     }
 
+
+    public class Result
+    {
+        public bool IsSuccess;
+        public string ErrorInfo = String.Empty;
+        private static readonly Result _SUCCESS = new Result() { IsSuccess = true };
+        public static Result Success()
+        {
+            return _SUCCESS;
+        }
+
+        public static string GetErrorInfo(string message, string databaseName, string reason)
+        {
+            return $"{message.TrimEnd()} `{databaseName}`\r\n:{reason}";
+        }
+        public static Result Fail(string message, string databaseName, string reason)
+        {
+            return new Result() { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+        }
+        public static Result Fail(string message)
+        {
+            return new Result() { IsSuccess = false, ErrorInfo = message };
+        }
+    }
+
+    //public class ResultSelect : Result
+    //{
+    //    public readonly ProtocolBase? ProtocolBase;
+    //    public ResultSelect(ProtocolBase? protocolBase)
+    //    {
+    //        ProtocolBase = protocolBase;
+    //    }
+    //    public static ResultSelect Success(ProtocolBase? protocolBase)
+    //    {
+    //        return new ResultSelect(protocolBase) { IsSuccess = true };
+    //    }
+    //    public new static ResultSelect Fail(string message, string databaseName, string reason)
+    //    {
+    //        return new ResultSelect(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+    //    }
+    //}
+
+    public class ResultSelects : Result
+    {
+        public readonly List<ProtocolBase> ProtocolBases;
+
+        public ResultSelects(List<ProtocolBase> protocolBases)
+        {
+            ProtocolBases = protocolBases;
+        }
+        public static ResultSelects Success(List<ProtocolBase?> protocolBases)
+        {
+            return new ResultSelects(protocolBases) { IsSuccess = true };
+        }
+        public new static ResultSelects Fail(string message, string databaseName, string reason)
+        {
+            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+        }
+        public static ResultSelects Fail(string message)
+        {
+            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = message };
+        }
+    }
+    public class ResultVms : Result
+    {
+        public readonly List<ProtocolBaseViewModel> ProtocolBases;
+
+        public ResultVms(List<ProtocolBaseViewModel> protocolBases)
+        {
+            ProtocolBases = protocolBases;
+        }
+        public static ResultVms Success(List<ProtocolBaseViewModel> protocolBases)
+        {
+            return new ResultVms(protocolBases) { IsSuccess = true };
+        }
+        public new static ResultVms Fail(string message, string databaseName, string reason)
+        {
+            return new ResultVms(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+        }
+        //public new static ResultVms Fail(string message)
+        //{
+        //    return new ResultVms(null!) { IsSuccess = false, ErrorInfo = message };
+        //}
+    }
+    public class ResultLong : Result
+    {
+        public readonly int Result;
+
+        public ResultLong(int result)
+        {
+            Result = result;
+        }
+        public static ResultLong Success(int result)
+        {
+            return new ResultLong(result) { IsSuccess = true };
+        }
+        public new static ResultLong Fail(string message, string databaseName, string reason)
+        {
+            return new ResultLong(0) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
+        }
+        public new static ResultLong Fail(string message)
+        {
+            return new ResultLong(0) { IsSuccess = false, ErrorInfo = message };
+        }
+    }
+    public class ResultString : Result
+    {
+        public readonly string? Result;
+
+        public ResultString(string? result)
+        {
+            Result = result;
+        }
+        public static ResultString Success(string? result)
+        {
+            return new ResultString(result) { IsSuccess = true };
+        }
+        public new static ResultString Fail(string message, string databaseName, string reason)
+        {
+            return new ResultString(string.Empty) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
+        }
+        public new static ResultString Fail(string message)
+        {
+            return new ResultString(string.Empty) { IsSuccess = false, ErrorInfo = message };
+        }
+    }
+
+
     public abstract class IDatabase
     {
+        public string DatabaseName;
+        protected readonly DatabaseType DatabaseType;
+        protected string _connectionString = "";
+
+        protected IDatabase(string databaseName, DatabaseType databaseType)
+        {
+            DatabaseName = databaseName;
+            DatabaseType = databaseType;
+        }
+
         public abstract void CloseConnection();
-        protected abstract bool OpenConnection(bool showErrorAlert = false);
-        public abstract void OpenNewConnection(DatabaseType type, string newConnectionString);
+        public abstract Result OpenNewConnection(string newConnectionString);
 
         public abstract bool IsConnected();
 
         /// <summary>
         /// create tables
         /// </summary>
-        public abstract void InitTables();
+        public abstract Result InitTables();
 
-        public abstract ProtocolBase? GetServer(int id);
+        //public abstract ResultSelect GetServer(int id);
 
-        public abstract List<ProtocolBase>? GetServers();
+        public abstract ResultSelects GetServers();
 
-        public abstract int GetServerCount();
+        //public abstract ResultLong GetServerCount();
 
         /// <summary>
         /// insert and return id
         /// </summary>
         /// <param name="protocolBase"></param>
         /// <returns></returns>
-        public abstract string AddServer(ProtocolBase protocolBase);
+        public abstract Result AddServer(ref ProtocolBase protocolBase);
         /// <summary>
         /// insert and return count
         /// </summary>
         /// <returns></returns>
-        public abstract int AddServer(IEnumerable<ProtocolBase> protocolBases);
+        public abstract Result AddServer(IEnumerable<ProtocolBase> protocolBases);
 
         /// <summary>
         /// update server by id
         /// </summary>
-        public abstract bool UpdateServer(ProtocolBase server);
-        public abstract bool UpdateServer(IEnumerable<ProtocolBase> servers);
+        public abstract Result UpdateServer(ProtocolBase server);
+        public abstract Result UpdateServer(IEnumerable<ProtocolBase> servers);
 
         /// <summary>
         /// delete server by id, if id lower than 0 delete all data.
         /// </summary>
         /// <param name="id"></param>
-        public abstract bool DeleteServer(string id);
-        public abstract bool DeleteServer(IEnumerable<string> ids);
+        public abstract Result DeleteServer(string id);
+        public abstract Result DeleteServer(IEnumerable<string> ids);
 
-        public abstract string? GetConfig(string key);
+        public abstract ResultString GetConfig(string key);
 
-        public abstract bool SetConfig(string key, string? value);
+        public abstract Result SetConfig(string key, string? value);
 
         public abstract void SetDataUpdateTimestamp(long time = -1);
         public abstract long GetDataUpdateTimestamp();
 
         protected void SetEncryptionTest()
         {
-            if (string.IsNullOrEmpty(GetConfig("EncryptionTest")))
+            var get = GetConfig("EncryptionTest");
+            if (string.IsNullOrEmpty(get.Result))
             {
                 SetConfig("EncryptionTest", UnSafeStringEncipher.SimpleEncrypt("EncryptionTest"));
             }
@@ -82,11 +222,7 @@ namespace _1RM.Model.DAO
         public bool CheckEncryptionTest()
         {
             var et = GetConfig("EncryptionTest");
-            if (UnSafeStringEncipher.SimpleDecrypt(et ?? "") != "EncryptionTest")
-            {
-                return false;
-            }
-            return true;
+            return UnSafeStringEncipher.SimpleDecrypt(et.Result ?? "") == "EncryptionTest";
         }
     }
 
@@ -104,41 +240,41 @@ namespace _1RM.Model.DAO
 
 
 
-        private static string? TryGetConfig(this IDatabase iDatabase, string key)
-        {
-            try
-            {
-                var val = iDatabase.GetConfig(key) ?? "";
-                return val;
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                return null;
-            }
-        }
+        //private static string? TryGetConfig(this IDatabase iDatabase, string key)
+        //{
+        //    try
+        //    {
+        //        var val = iDatabase.GetConfig(key) ?? "";
+        //        return val;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        SimpleLogHelper.Error(e);
+        //        return null;
+        //    }
+        //}
 
-        private static bool TrySetConfig(this IDatabase iDatabase, string key, string value)
-        {
-            try
-            {
-                iDatabase.SetConfig(key, value ?? "");
-                return true;
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                return false;
-            }
-        }
+        //private static bool TrySetConfig(this IDatabase iDatabase, string key, string value)
+        //{
+        //    try
+        //    {
+        //        iDatabase.SetConfig(key, value ?? "");
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        SimpleLogHelper.Error(e);
+        //        return false;
+        //    }
+        //}
 
         public static bool CheckWritable(this IDatabase iDatabase)
         {
             try
             {
-                return iDatabase.SetConfig("permission_check", null) // delete
-                && iDatabase.SetConfig("permission_check", "true") // insert
-                 && iDatabase.SetConfig("permission_check", "true"); // update
+                return iDatabase.SetConfig("permission_check", null).IsSuccess // delete
+                && iDatabase.SetConfig("permission_check", "true").IsSuccess // insert
+                 && iDatabase.SetConfig("permission_check", "true").IsSuccess; // update
             }
             catch (Exception e)
             {
@@ -147,26 +283,9 @@ namespace _1RM.Model.DAO
             }
         }
 
-        public static bool CheckReadable(this IDatabase iDatabase)
-        {
-            try
-            {
-                iDatabase.SetConfig("permission_check", "true"); // update
-            }
-            catch
-            {
-                // ignored
-            }
-
-            try
-            {
-                var val = iDatabase.GetConfig("permission_check");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //public static bool CheckReadable(this IDatabase iDatabase)
+        //{
+        //    return iDatabase.GetConfig("EncryptionTest").IsSuccess;
+        //}
     }
 }
