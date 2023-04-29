@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Reflection;
 using _1Remote.Security;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Utils;
 using JsonKnownTypes;
 using Newtonsoft.Json;

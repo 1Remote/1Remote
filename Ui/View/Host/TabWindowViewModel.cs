@@ -12,7 +12,7 @@ using _1RM.View.Host.ProtocolHosts;
  using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO.Dapper;
 
 namespace _1RM.View.Host
 {

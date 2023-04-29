@@ -3,7 +3,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Dapper;
 
-namespace _1RM.Model.DAO.Dapper
+namespace _1RM.Service.DataSource.DAO.Dapper
 {
     /// <summary>
     /// DapperDb no occupation version
@@ -26,18 +26,6 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        ///// <inheritdoc />
-        //public override ProtocolBase? GetServer(int id)
-        //{
-        //    lock (this)
-        //    {
-        //        OpenConnection();
-        //        var ret = base.GetServer(id);
-        //        CloseConnection();
-        //        return ret;
-        //    }
-        //}
-
         /// <inheritdoc />
         public override ResultSelects GetServers()
         {
@@ -45,16 +33,6 @@ namespace _1RM.Model.DAO.Dapper
             {
                 OpenConnection();
                 var ret = base.GetServers();
-                CloseConnection();
-                return ret;
-            }
-        }
-        public override ResultLong GetServerCount()
-        {
-            lock (this)
-            {
-                OpenConnection();
-                var ret = base.GetServerCount();
                 CloseConnection();
                 return ret;
             }
@@ -108,17 +86,6 @@ namespace _1RM.Model.DAO.Dapper
             }
         }
 
-        /// <inheritdoc />
-        public override Result DeleteServer(string id)
-        {
-            lock (this)
-            {
-                OpenConnection();
-                var ret = base.DeleteServer(id);
-                CloseConnection();
-                return ret;
-            }
-        }
 
 
         /// <inheritdoc />
@@ -159,17 +126,18 @@ namespace _1RM.Model.DAO.Dapper
         }
 
 
-        public override void SetDataUpdateTimestamp(long time = -1)
+        public override Result SetDataUpdateTimestamp(long time = -1)
         {
             lock (this)
             {
                 OpenConnection();
-                base.SetDataUpdateTimestamp(time);
+                var ret = base.SetDataUpdateTimestamp(time);
                 CloseConnection();
+                return ret;
             }
         }
 
-        public override long GetDataUpdateTimestamp()
+        public override ResultLong GetDataUpdateTimestamp()
         {
             lock (this)
             {

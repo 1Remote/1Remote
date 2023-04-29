@@ -1,6 +1,6 @@
 ﻿using _1RM.Model.Protocol.Base;
 
-namespace _1RM.Model.DAO
+namespace _1RM.Service.DataSource.DAO
 {
     public interface IDataBaseServer
     {

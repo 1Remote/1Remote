@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Model;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
@@ -116,7 +117,7 @@ namespace _1RM.View
             GlobalEventHelper.OnGoToServerAddPage += (tagNames, isInAnimationShow) =>
             {
                 var source = DataSourceSelectorViewModel.SelectDataSource();
-                //if(source?.IsWritable == true)
+                if(source?.IsWritable == true)
                 {
                     EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
                     ShowMe();

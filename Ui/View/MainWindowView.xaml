@@ -596,10 +596,10 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
+            <ContentControl PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
+                            PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+                            s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
         </Grid>
-        <ContentControl PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
-                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
-                        s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
 
     </Grid>
 </styles:WindowChromeBase>

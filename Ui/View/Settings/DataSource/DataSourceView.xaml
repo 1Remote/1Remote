@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
              xmlns:dataSource="clr-namespace:_1RM.Service.DataSource"
-             xmlns:dao="clr-namespace:_1RM.Model.DAO"
+             xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:DataSourceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">

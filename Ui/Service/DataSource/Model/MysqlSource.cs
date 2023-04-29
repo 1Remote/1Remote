@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO.Dapper;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Utils;
 using Newtonsoft.Json;
 

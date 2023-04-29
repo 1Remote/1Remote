@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using _1RM.Model.DAO;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.DAO;
 // ReSharper disable once InconsistentlySynchronizedField
 // ReSharper disable InconsistentlySynchronizedField
 

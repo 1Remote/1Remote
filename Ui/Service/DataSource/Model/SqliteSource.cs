@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO.Dapper;
+using _1RM.Service.DataSource.DAO;
 using Newtonsoft.Json;
 using Shawn.Utils;
 

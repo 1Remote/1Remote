@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using _1RM.Model;
-using _1RM.Model.DAO;
 using _1RM.Service;
 using _1RM.View;
 using _1RM.View.Guidance;
@@ -17,6 +14,8 @@ using _1RM.Service.DataSource;
 using _1RM.Utils;
 using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
+using _1RM.Service.DataSource.DAO;
+using _1RM.View.Utils;
 
 namespace _1RM
 {
@@ -75,7 +74,7 @@ namespace _1RM
 
             LanguageService = new LanguageService(App.ResourceDictionary!);
             LanguageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
-            #region Portable mode or not
+            #region Portable or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
                 var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME));
@@ -285,14 +284,6 @@ namespace _1RM
                 _localDataConnectionStatus = dataSourceService.InitLocalDataSource(sqliteConfig);
             }
 
-            // read from primary database
-            IoC.Get<GlobalData>().ReloadServerList(true);
-            // read from AdditionalDataSource async
-            Task.Factory.StartNew(() =>
-            {
-                Task.WaitAll(ConfigurationService!.AdditionalDataSource.Select(config => Task.Factory.StartNew(() => { dataSourceService.AddOrUpdateDataSource(config, doReload: false); })).ToArray());
-                IoC.Get<GlobalData>().ReloadServerList();
-            });
             // init session controller
             IoC.Get<SessionControlService>();
         }
@@ -327,10 +318,6 @@ namespace _1RM
                 return;
             }
 
-//#if DEBUG
-//            MessageBoxHelper.ErrorAlert(LanguageService?.Translate(@"write permissions alert", "123") ?? "write permissions error:" + "123123");
-//#endif
-
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
@@ -344,6 +331,25 @@ namespace _1RM
                 };
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }
+
+
+
+
+            MaskLayerController.ShowProcessingRing();
+            Task.Factory.StartNew(() =>
+            {
+                //// read from primary database
+                //IoC.Get<GlobalData>().ReloadServerList(true);
+                // read from AdditionalDataSource async
+                if (ConfigurationService!.AdditionalDataSource.Any())
+                    Task.WaitAll(ConfigurationService!.AdditionalDataSource.Select(config =>
+                        Task.Factory.StartNew(() =>
+                        {
+                            IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
+                        })).ToArray());
+                IoC.Get<GlobalData>().ReloadServerList(true);
+                MaskLayerController.HideMask();
+            });
         }
     }
 }

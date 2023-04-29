@@ -12,7 +12,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model;
-using _1RM.Model.DAO;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Resources.Icons;
@@ -187,18 +188,6 @@ namespace _1RM.View.ServerList
 
         protected override void OnViewLoaded()
         {
-            if (GlobalEventHelper.OnRequestDeleteServer == null)
-            {
-                GlobalEventHelper.OnRequestDeleteServer += server =>
-                {
-                    if (string.IsNullOrEmpty(server.Id) == false
-                        && true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
-                    {
-                        AppData.DeleteServer(server);
-                    }
-                };
-            }
-
             AppData.OnDataReloaded += RebuildVmServerList;
             ApplySort();
         }
@@ -585,12 +574,17 @@ namespace _1RM.View.ServerList
                     if (!(ss?.Count > 0)) return;
                     if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
-                        var servers = ss.Select(x => x.Server);
-                        var ret = AppData.DeleteServer(servers);
-                        if (!ret.IsSuccess)
+                        MaskLayerController.ShowProcessingRing();
+                        Task.Factory.StartNew(() =>
                         {
-                            MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
-                        }
+                            var servers = ss.Select(x => x.Server);
+                            var ret = AppData.DeleteServer(servers);
+                            if (!ret.IsSuccess)
+                            {
+                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                            }
+                            MaskLayerController.HideMask();
+                        });
                     }
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }

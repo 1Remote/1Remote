@@ -4,14 +4,16 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
-using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
+using Stylet;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM.Model
@@ -34,7 +36,7 @@ namespace _1RM.Model
             _timer.Start();
         }
 
-        private DataSourceService _sourceService;
+        private DataSourceService? _sourceService;
         private readonly ConfigurationService _configurationService;
 
         public void SetDataSourceService(DataSourceService sourceService)
@@ -112,13 +114,17 @@ namespace _1RM.Model
                 foreach (var additionalSource in _sourceService.AdditionalSources)
                 {
                     // 对于断线的数据源，隔一段时间后尝试重连
-                    if (additionalSource.Value.Status == EnumDatabaseStatus.LostConnection)
+                    // TODO try to reconnect when network is available
+                    if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
                     {
+#if DEBUG
+                        if (additionalSource.Value.StatueTime.AddMinutes(1) < DateTime.Now)
+#else
                         if (additionalSource.Value.StatueTime.AddMinutes(10) < DateTime.Now)
+#endif
                         {
                             additionalSource.Value.Database_SelfCheck();
                         }
-                        continue;
                     }
 
                     if (needRead == false)
@@ -287,53 +293,6 @@ namespace _1RM.Model
             }
         }
 
-        public Result DeleteServer(ProtocolBase protocolServer)
-        {
-            StopTick();
-            try
-            {
-                Debug.Assert(protocolServer.IsTmpSession() == false);
-
-                var source = protocolServer.GetDataSource();
-                var needReload = source?.NeedRead() ?? false;
-                if (source == null || source.IsWritable == false)
-                {
-                    // 正常情况下，不应该执行到这个地方
-                    return Result.Fail($"TXT: We can not delete on `{protocolServer.DataSourceName}` because `{protocolServer.DataSourceName}` is readonly for you");
-                };
-
-                var ret = source.Database_DeleteServer(protocolServer.Id);
-                if (ret.IsSuccess)
-                {
-                    if (needReload == false)
-                    {
-                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                        if (old != null)
-                        {
-                            VmItemList.Remove(old);
-                            IoC.Get<ServerListPageViewModel>()?.VmServerList?.Remove(old); // invoke main list ui change
-                            IoC.Get<ServerSelectionsViewModel>()?.VmServerList?.Remove(old); // invoke launcher ui change
-                        }
-                    }
-
-                    if (needReload)
-                    {
-                        ReloadServerList();
-                    }
-                    else
-                    {
-                        ReadTagsFromServers();
-                        IoC.Get<ServerListPageViewModel>().ClearSelection();
-                    }
-                }
-                return ret;
-            }
-            finally
-            {
-                StartTick();
-            }
-        }
-
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
             StopTick();
@@ -362,8 +321,13 @@ namespace _1RM.Model
                                     if (old != null)
                                     {
                                         VmItemList.Remove(old);
-                                        IoC.Get<ServerListPageViewModel>().VmServerList.Remove(old); // invoke main list ui change
-                                        IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
+                                        Execute.OnUIThread(() =>
+                                        {
+                                            if (IoC.Get<ServerListPageViewModel>().VmServerList.Contains(old))
+                                                IoC.Get<ServerListPageViewModel>().VmServerList.Remove(old); // invoke main list ui change
+                                            if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
+                                                IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
+                                        });
                                     }
                                 }
                             }
@@ -397,6 +361,11 @@ namespace _1RM.Model
                 {
                     return Result.Success();
                 }
+            }
+            catch (Exception e)
+            {
+                MsAppCenterHelper.Error(e);
+                throw;
             }
             finally
             {
@@ -444,12 +413,17 @@ namespace _1RM.Model
 
                 if (ReloadServerList())
                 {
-                    SimpleLogHelper.Debug("check database update - reload data" + _timer.GetHashCode());
+                    SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
                 }
                 else
                 {
-                    SimpleLogHelper.Debug("check database update - no need reload" + _timer.GetHashCode());
+                    SimpleLogHelper.Debug("check database update - no need reload by timer " + _timer.GetHashCode());
                 }
+            }
+            catch (Exception ex)
+            {
+                MsAppCenterHelper.Error(ex);
+                throw;
             }
             finally
             {

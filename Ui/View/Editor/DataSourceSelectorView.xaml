@@ -6,7 +6,7 @@
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                          xmlns:editor="clr-namespace:_1RM.View.Editor"
                          xmlns:model="clr-namespace:_1RM.Service.DataSource.Model"
-                         xmlns:dao="clr-namespace:_1RM.Model.DAO"
+                         xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
                          WindowStyle="None"

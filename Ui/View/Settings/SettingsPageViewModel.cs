@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using _1RM.Model;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
@@ -23,6 +22,7 @@ using _1RM.View.Settings.General;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Settings.ProtocolConfig;
 using _1RM.View.Settings.Theme;
+using _1RM.Service.DataSource.DAO;
 
 namespace _1RM.View.Settings
 {
