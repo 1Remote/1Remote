@@ -7,10 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using _1RM.Model;
-using _1RM.Model.DAO;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
@@ -306,13 +306,6 @@ namespace _1RM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-
-                    // TODO check if the data sources is ok
-                    // bulk edit
-                    if (IsBuckEdit == true)
-                    {
-                    }
-
                     MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());
 
                     Task.Factory.StartNew(() =>

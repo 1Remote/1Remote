@@ -17,7 +17,7 @@ using Stylet;
 
 // ReSharper disable InconsistentNaming
 
-namespace _1RM.Model.DAO.Dapper
+namespace _1RM.Service.DataSource.DAO.Dapper
 {
     public class DapperDatabase : IDatabase
     {
@@ -35,7 +35,7 @@ namespace _1RM.Model.DAO.Dapper
                 _dbConnection?.Close();
                 if (DatabaseType == DatabaseType.Sqlite)
                 {
-                    System.Data.SQLite.SQLiteConnection.ClearAllPools();
+                    SQLiteConnection.ClearAllPools();
                 }
             }
         }
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 ");
-                base.SetEncryptionTest();
+                SetEncryptionTest();
             }
             catch (Exception e)
             {
@@ -176,32 +176,6 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
             return Result.Success();
         }
-
-        ///// <summary>
-        ///// 查询 id 对应的服务器信息，如果查询不到，返回查询成功+结果为null
-        ///// </summary>
-        //public override ResultSelect GetServer(int id)
-        //{
-        //    lock (this)
-        //    {
-        //        var result = OpenConnection();
-        //        if (!result.IsSuccess) return ResultSelect.Fail(result.ErrorInfo);
-        //        try
-        //        {
-        //            Debug.Assert(id > 0);
-        //            var dbServer =
-        //                _dbConnection.QueryFirstOrDefault<Server>(
-        //                    $"SELECT * FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)}",
-        //                    new { Id = id });
-        //            var p = dbServer.ToProtocolServerBase();
-        //            return ResultSelect.Success(p);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            return ResultSelect.Fail(info, DatabaseName, e.Message);
-        //        }
-        //    }
-        //}
 
         public override ResultSelects GetServers()
         {
@@ -224,27 +198,26 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        public override ResultLong GetServerCount()
-        {
-            const string info = "TXT: We can not select from";
-            lock (this)
-            {
-                var result = OpenConnection(info);
-                if (!result.IsSuccess) return ResultLong.Fail(result.ErrorInfo);
+        //public override ResultLong GetServerCount()
+        //{
+        //    const string info = "TXT: We can not select from";
+        //    lock (this)
+        //    {
+        //        var result = OpenConnection(info);
+        //        if (!result.IsSuccess) return ResultLong.Fail(result.ErrorInfo);
+        //        try
+        //        {
+        //            return ResultLong.Success(_dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            return ResultLong.Fail(info, DatabaseName, e.Message);
+        //        }
+        //    }
+        //}
 
-                try
-                {
-                    return ResultLong.Success(_dbConnection?.ExecuteScalar<int>($"SELECT COUNT(*) FROM `{Server.TABLE_NAME}`") ?? 0);
-                }
-                catch (Exception e)
-                {
-                    return ResultLong.Fail(info, DatabaseName, e.Message);
-                }
-            }
-        }
 
-
-        static readonly string SqlInsert = $@"INSERT INTO `{Server.TABLE_NAME}`
+        private const string SqlInsert = $@"INSERT INTO `{Server.TABLE_NAME}`
 (`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
 VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
@@ -370,28 +343,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public override Result DeleteServer(string id)
-        {
-            const string info = "TXT: We can not delete from";
-            lock (this)
-            {
-                var result = OpenConnection(info);
-                if (!result.IsSuccess) return result;
-                try
-                {
-                    var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
-                    if (ret)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                    return Result.Fail(info, DatabaseName, e.Message);
-                }
-            }
-        }
-
         public override Result DeleteServer(IEnumerable<string> ids)
         {
             const string info = "TXT: We can not delete from";
@@ -481,26 +432,27 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        public override void SetDataUpdateTimestamp(long time = -1)
+        public override Result SetDataUpdateTimestamp(long time = -1)
         {
             lock (this)
             {
                 var timestamp = time;
                 if (time <= 0)
                     timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                SetConfigPrivate("UpdateTimestamp", timestamp.ToString());
+                return SetConfigPrivate("UpdateTimestamp", timestamp.ToString());
             }
         }
 
-        public override long GetDataUpdateTimestamp()
+        public override ResultLong GetDataUpdateTimestamp()
         {
             lock (this)
             {
                 var val = GetConfigPrivate("UpdateTimestamp");
+                if (!val.IsSuccess) return ResultLong.Fail(val.ErrorInfo);
                 if (long.TryParse(val.Result, out var t)
                     && t > 0)
-                    return t;
-                return long.MinValue;
+                    return ResultLong.Success(t);
+                return ResultLong.Success(0);
             }
         }
     }

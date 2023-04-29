@@ -47,9 +47,6 @@ namespace _1RM.Model
         public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolBase> servers, bool showAnimation = true);
         public static OnRequestGoToServerMultipleEditPageDelegate? OnRequestGoToServerMultipleEditPage { get; set; } = null;
 
-        public delegate void OnRequestDeleteServerDelegate(ProtocolBase server);
-        public static OnRequestDeleteServerDelegate? OnRequestDeleteServer { get; set; } = null;
-
 
         /// <summary>
         /// Invoke to notify language was changed.

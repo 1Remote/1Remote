@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Utils;
 using _1RM.View;
 using Newtonsoft.Json;
@@ -15,6 +15,7 @@ namespace _1RM.Service.DataSource.Model
     public abstract partial class DataSourceBase : NotifyPropertyChangedBase
     {
         private bool _isWritable = true;
+
         [JsonIgnore]
         public bool IsWritable
         {
@@ -28,18 +29,58 @@ namespace _1RM.Service.DataSource.Model
         [JsonIgnore]
         public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
 
+
+        private EnumDatabaseStatus? _dataSourceDataUpdateStatus = null;
+        private long _lastReadFromDataSourceMillisecondsTimestamp = 0;
         [JsonIgnore]
-        protected virtual long LastReadFromDataSourceMillisecondsTimestamp { get; set; } = 0;
+        protected virtual long LastReadFromDataSourceMillisecondsTimestamp
+        {
+            get => _lastReadFromDataSourceMillisecondsTimestamp;
+            set
+            {
+                _lastReadFromDataSourceMillisecondsTimestamp = value;
+                _dataSourceDataUpdateStatus = Status;
+            }
+        }
+
         [JsonIgnore]
-        public virtual long DataSourceDataUpdateTimestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        private long _dataSourceDataUpdateTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
 
         public virtual bool NeedRead()
         {
             if (Status == EnumDatabaseStatus.OK)
             {
                 var dataBase = GetDataBase();
-                DataSourceDataUpdateTimestamp = dataBase.GetDataUpdateTimestamp();
-                return LastReadFromDataSourceMillisecondsTimestamp < DataSourceDataUpdateTimestamp;
+                var ret = dataBase.GetDataUpdateTimestamp();
+                if (!ret.IsSuccess)
+                {
+                    SetStatus(false);
+                }
+                else
+                {
+                    _dataSourceDataUpdateTimestamp = ret.Result;
+                    return LastReadFromDataSourceMillisecondsTimestamp < _dataSourceDataUpdateTimestamp;
+                }
+            }
+
+
+
+            if (_dataSourceDataUpdateStatus != null
+                && _dataSourceDataUpdateStatus != Status)
+            {
+                // 数据库状态改变
+                _dataSourceDataUpdateStatus = Status;
+                return true;
+            }
+
+
+            if (Status != EnumDatabaseStatus.OK)
+            {
+                // 当连接不成功时，设置为 0，以便下次重新连接
+                _lastReadFromDataSourceMillisecondsTimestamp = 0;
+                if (CachedProtocols.Count > 0)
+                    return true;
             }
             return false;
         }
@@ -60,15 +101,15 @@ namespace _1RM.Service.DataSource.Model
             lock (this)
             {
                 if (focus == false
-                    && LastReadFromDataSourceMillisecondsTimestamp >= DataSourceDataUpdateTimestamp)
+                    && LastReadFromDataSourceMillisecondsTimestamp >= _dataSourceDataUpdateTimestamp)
                 {
                     return CachedProtocols;
                 }
 
-                LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 var result = Database_GetServers();
                 if (result.IsSuccess)
                 {
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols = new List<ProtocolBaseViewModel>(result.ProtocolBases.Count);
                     foreach (var protocol in result.ProtocolBases)
                     {
@@ -89,7 +130,7 @@ namespace _1RM.Service.DataSource.Model
                 }
                 else
                 {
-                    return CachedProtocols;
+                    CachedProtocols.Clear();
                 }
                 return CachedProtocols;
             }
@@ -149,7 +190,7 @@ namespace _1RM.Service.DataSource.Model
 
 
 
-            // try create table
+            // create table
             var ret = dataBase.InitTables();
             if (ret.IsSuccess == false)
             {
@@ -209,12 +250,12 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().AddServer(cloneList);
                 if (ret.IsSuccess)
                 {
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     for (int i = 0; i < servers.Count(); i++)
                     {
                         servers[i].Id = cloneList[i].Id;
                         CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
                     }
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     SetStatus(true);
                 }
                 return ret;
@@ -274,21 +315,6 @@ namespace _1RM.Service.DataSource.Model
             return Result.Success();
         }
 
-        public Result Database_DeleteServer(string id)
-        {
-            if (_isWritable)
-            {
-                var ret = GetDataBase().DeleteServer(id);
-                if (ret.IsSuccess)
-                {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    CachedProtocols.RemoveAll(x => x.Id == id);
-                    SetStatus(true);
-                }
-                return ret;
-            }
-            return Result.Success();
-        }
 
         public Result Database_DeleteServer(IEnumerable<string> ids)
         {

@@ -2,7 +2,7 @@
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 
-namespace _1RM.Model.DAO.Dapper
+namespace _1RM.Service.DataSource.DAO.Dapper
 {
     public class Server : IDataBaseServer
     {

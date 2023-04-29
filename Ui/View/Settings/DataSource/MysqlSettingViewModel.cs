@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using _1RM.Model;
-using _1RM.Service;
-using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
-using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Stylet;
 
 namespace _1RM.View.Settings.DataSource
 {
@@ -116,6 +105,13 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
+                    //bool anyDifferent = (Name != _orgMysqlConfig?.DataSourceName
+                    //                    || Host != _orgMysqlConfig?.Host
+                    //                    || Port != _orgMysqlConfig?.Port.ToString()
+                    //                    || DatabaseName != _orgMysqlConfig?.DatabaseName
+                    //                    || UserName != _orgMysqlConfig?.UserName
+                    //                    || Password != _orgMysqlConfig?.Password
+                    //    );
                     if (_orgMysqlConfig != null)
                     {
                         _orgMysqlConfig.DataSourceName = Name.Trim();
@@ -147,13 +143,6 @@ namespace _1RM.View.Settings.DataSource
                          && string.IsNullOrWhiteSpace(DatabaseName) == false
                          && string.IsNullOrWhiteSpace(UserName) == false
                          && string.IsNullOrWhiteSpace(Password) == false
-                         && (Name != _orgMysqlConfig?.DataSourceName
-                            || Host != _orgMysqlConfig?.Host
-                            || Port != _orgMysqlConfig?.Port.ToString()
-                            || DatabaseName != _orgMysqlConfig?.DatabaseName
-                            || UserName != _orgMysqlConfig?.UserName
-                            || Password != _orgMysqlConfig?.Password
-                            )
                         ));
             }
         }

@@ -3,9 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using _1RM.Model.DAO.Dapper;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 using _1RM.View;
@@ -14,6 +11,9 @@ using Shawn.Utils;
 
 namespace _1RM.Service
 {
+    /// <summary>
+    /// keep the last connect time of each server, in order to sort the server list
+    /// </summary>
     public static class ConnectTimeRecorder
     {
         public static string Path { get; private set; } = "";

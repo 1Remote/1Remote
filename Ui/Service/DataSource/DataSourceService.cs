@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using _1RM.Model;
-using _1RM.Model.DAO;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
@@ -78,15 +78,18 @@ namespace _1RM.Service.DataSource
                 LocalDataSource = null;
                 return EnumDatabaseStatus.AccessDenied;
             }
+            var ret = sqliteConfig.Database_SelfCheck();
             LocalDataSource = sqliteConfig;
-            var ret = LocalDataSource.Database_SelfCheck();
             RaisePropertyChanged(nameof(LocalDataSource));
             return ret;
         }
 
-
+        /// <summary>
+        /// 添加并启用一个新的数据源（如果该数据源已存在，则更新），返回数据源的连接状态
+        /// </summary>
         public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5, bool doReload = true)
         {
+            if (connectTimeOutSeconds <= 0) connectTimeOutSeconds = 2;
             try
             {
                 config.MarkAsNeedRead(); // reload database
@@ -96,16 +99,23 @@ namespace _1RM.Service.DataSource
                 }
 
                 // remove the old one
-                var olds = AdditionalSources.Where(x => x.Value == config);
-                foreach (var pair in olds)
                 {
-                    AdditionalSources.TryRemove(pair.Key, out var _);
+                    var olds = AdditionalSources.Where(x => x.Value == config);
+                    foreach (var pair in olds)
+                    {
+                        AdditionalSources.TryRemove(pair.Key, out var tmp);
+                        tmp?.Database_CloseConnection();
+                    }
+
+                    {
+                        AdditionalSources.TryRemove(config.DataSourceName, out var tmp);
+                        tmp?.Database_CloseConnection();
+                    }
                 }
-                AdditionalSources.TryRemove(config.DataSourceName, out var _);
 
 
                 config.Database_CloseConnection();
-                var ret = config.Database_SelfCheck();
+                var ret = config.Database_SelfCheck(connectTimeOutSeconds = 2);
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
                 return ret;
             }
@@ -172,7 +182,7 @@ namespace _1RM.Service.DataSource
             }
             finally
             {
-                
+
             }
         }
     }

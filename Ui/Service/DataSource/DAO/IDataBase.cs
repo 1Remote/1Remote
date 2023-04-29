@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View;
 using Shawn.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 // ReSharper disable InconsistentNaming
 
-namespace _1RM.Model.DAO
+namespace _1RM.Service.DataSource.DAO
 {
     public enum DatabaseType
     {
@@ -26,7 +27,7 @@ namespace _1RM.Model.DAO
     public class Result
     {
         public bool IsSuccess;
-        public string ErrorInfo = String.Empty;
+        public string ErrorInfo = string.Empty;
         private static readonly Result _SUCCESS = new Result() { IsSuccess = true };
         public static Result Success()
         {
@@ -35,34 +36,20 @@ namespace _1RM.Model.DAO
 
         public static string GetErrorInfo(string message, string databaseName, string reason)
         {
-            return $"{message.TrimEnd()} `{databaseName}`\r\n:{reason}";
+            // TODO because
+            return $@"{message.TrimEnd()} `{databaseName}`
+{IoC.Get<LanguageService>().Translate("because")}:
+{reason}";
         }
         public static Result Fail(string message, string databaseName, string reason)
         {
-            return new Result() { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+            return new Result() { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
         }
         public static Result Fail(string message)
         {
             return new Result() { IsSuccess = false, ErrorInfo = message };
         }
     }
-
-    //public class ResultSelect : Result
-    //{
-    //    public readonly ProtocolBase? ProtocolBase;
-    //    public ResultSelect(ProtocolBase? protocolBase)
-    //    {
-    //        ProtocolBase = protocolBase;
-    //    }
-    //    public static ResultSelect Success(ProtocolBase? protocolBase)
-    //    {
-    //        return new ResultSelect(protocolBase) { IsSuccess = true };
-    //    }
-    //    public new static ResultSelect Fail(string message, string databaseName, string reason)
-    //    {
-    //        return new ResultSelect(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
-    //    }
-    //}
 
     public class ResultSelects : Result
     {
@@ -72,49 +59,29 @@ namespace _1RM.Model.DAO
         {
             ProtocolBases = protocolBases;
         }
-        public static ResultSelects Success(List<ProtocolBase?> protocolBases)
+        public static ResultSelects Success(List<ProtocolBase> protocolBases)
         {
             return new ResultSelects(protocolBases) { IsSuccess = true };
         }
         public new static ResultSelects Fail(string message, string databaseName, string reason)
         {
-            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
+            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
         }
-        public static ResultSelects Fail(string message)
+        public new static ResultSelects Fail(string message)
         {
             return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = message };
         }
     }
-    public class ResultVms : Result
-    {
-        public readonly List<ProtocolBaseViewModel> ProtocolBases;
 
-        public ResultVms(List<ProtocolBaseViewModel> protocolBases)
-        {
-            ProtocolBases = protocolBases;
-        }
-        public static ResultVms Success(List<ProtocolBaseViewModel> protocolBases)
-        {
-            return new ResultVms(protocolBases) { IsSuccess = true };
-        }
-        public new static ResultVms Fail(string message, string databaseName, string reason)
-        {
-            return new ResultVms(null!) { IsSuccess = false, ErrorInfo = Result.GetErrorInfo(message, databaseName, reason) };
-        }
-        //public new static ResultVms Fail(string message)
-        //{
-        //    return new ResultVms(null!) { IsSuccess = false, ErrorInfo = message };
-        //}
-    }
     public class ResultLong : Result
     {
-        public readonly int Result;
+        public readonly long Result;
 
-        public ResultLong(int result)
+        public ResultLong(long result)
         {
             Result = result;
         }
-        public static ResultLong Success(int result)
+        public static ResultLong Success(long result)
         {
             return new ResultLong(result) { IsSuccess = true };
         }
@@ -196,19 +163,14 @@ namespace _1RM.Model.DAO
         public abstract Result UpdateServer(ProtocolBase server);
         public abstract Result UpdateServer(IEnumerable<ProtocolBase> servers);
 
-        /// <summary>
-        /// delete server by id, if id lower than 0 delete all data.
-        /// </summary>
-        /// <param name="id"></param>
-        public abstract Result DeleteServer(string id);
         public abstract Result DeleteServer(IEnumerable<string> ids);
 
         public abstract ResultString GetConfig(string key);
 
         public abstract Result SetConfig(string key, string? value);
 
-        public abstract void SetDataUpdateTimestamp(long time = -1);
-        public abstract long GetDataUpdateTimestamp();
+        public abstract Result SetDataUpdateTimestamp(long time = -1);
+        public abstract ResultLong GetDataUpdateTimestamp();
 
         protected void SetEncryptionTest()
         {

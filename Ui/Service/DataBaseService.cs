@@ -1,16 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using com.github.xiangyuecn.rsacsharp;
-using _1RM.Model.DAO;
-using _1RM.Model.DAO.Dapper;
-using _1RM.Model.Protocol;
+﻿using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 
 namespace _1RM.Service
 {
-
     public static class DataService
     {
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
@@ -28,15 +21,15 @@ namespace _1RM.Service
             switch (server)
             {
                 case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                {
-                    ssh.PrivateKey = UnSafeStringEncipher.EncryptOnce(ssh.PrivateKey);
-                    break;
-                }
+                    {
+                        ssh.PrivateKey = UnSafeStringEncipher.EncryptOnce(ssh.PrivateKey);
+                        break;
+                    }
                 case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                {
-                    rdp.GatewayPassword = UnSafeStringEncipher.EncryptOnce(rdp.GatewayPassword);
-                    break;
-                }
+                    {
+                        rdp.GatewayPassword = UnSafeStringEncipher.EncryptOnce(rdp.GatewayPassword);
+                        break;
+                    }
             }
         }
 

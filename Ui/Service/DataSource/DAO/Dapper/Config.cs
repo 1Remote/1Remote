@@ -1,4 +1,4 @@
-﻿namespace _1RM.Model.DAO.Dapper
+﻿namespace _1RM.Service.DataSource.DAO.Dapper
 {
     public class Config
     {

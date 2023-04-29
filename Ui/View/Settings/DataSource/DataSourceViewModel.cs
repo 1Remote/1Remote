@@ -93,24 +93,20 @@ namespace _1RM.View.Settings.DataSource
                             throw new ArgumentOutOfRangeException($"{type} is not a vaild type");
                     }
 
-                    if (dataSource != null
-                        && _configurationService.AdditionalDataSource.Count < 2)
+                    SourceConfigs.Add(dataSource);
+                    _configurationService.AdditionalDataSource.Add(dataSource);
+                    _configurationService.Save();
+                    Task.Factory.StartNew(() =>
                     {
-                        SourceConfigs.Add(dataSource);
-                        _configurationService.AdditionalDataSource.Add(dataSource);
-                        _configurationService.Save();
-                        Task.Factory.StartNew(() =>
+                        try
                         {
-                            try
-                            {
-                                _dataSourceService.AddOrUpdateDataSource(dataSource);
-                            }
-                            finally
-                            {
-                                MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                            }
-                        });
-                    }
+                            _dataSourceService.AddOrUpdateDataSource(dataSource);
+                        }
+                        finally
+                        {
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                        }
+                    });
                 }, _ =>
                         IoPermissionHelper.HasWritePermissionOnFile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath)
                         && _configurationService.AdditionalDataSource.Count < 2

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using _1RM.Service;
 
-namespace _1RM.Model.DAO
+namespace _1RM.Service.DataSource.DAO
 {
     public enum EnumDatabaseStatus
     {
