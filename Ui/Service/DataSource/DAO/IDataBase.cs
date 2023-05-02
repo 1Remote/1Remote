@@ -36,9 +36,8 @@ namespace _1RM.Service.DataSource.DAO
 
         public static string GetErrorInfo(string message, string databaseName, string reason)
         {
-            // TODO because
             return $@"{message.TrimEnd()} `{databaseName}`
-{IoC.Get<LanguageService>().Translate("because")}:
+{IoC.Get<LanguageService>().Translate("because:")}
 {reason}";
         }
         public static Result Fail(string message, string databaseName, string reason)

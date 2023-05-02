@@ -120,7 +120,7 @@ namespace _1RM.Model
 #if DEBUG
                         if (additionalSource.Value.StatueTime.AddMinutes(1) < DateTime.Now)
 #else
-                        if (additionalSource.Value.StatueTime.AddMinutes(10) < DateTime.Now)
+                        if (additionalSource.Value.StatueTime.AddMinutes(5) < DateTime.Now)
 #endif
                         {
                             additionalSource.Value.Database_SelfCheck();
@@ -149,9 +149,13 @@ namespace _1RM.Model
 
         public Result AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
+            string info = IoC.Get<LanguageService>().Translate("We can not insert into database:");
             StopTick();
+            if (dataSource.IsWritable == false)
+            {
+                return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is readonly for you");
+            }
             var needReload = dataSource.NeedRead();
-
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
@@ -188,17 +192,18 @@ namespace _1RM.Model
         public Result UpdateServer(ProtocolBase protocolServer)
         {
             StopTick();
+            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
             try
             {
                 Debug.Assert(protocolServer.IsTmpSession() == false);
                 var source = protocolServer.GetDataSource();
                 if (source == null)
                 {
-                    return Result.Fail($"TXT: We can not update on `{protocolServer.DataSourceName}` because `{protocolServer.DataSourceName}` is not initialized yet");
+                    return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is not initialized yet");
                 }
                 else if (source.IsWritable == false)
                 {
-                    return Result.Fail($"TXT: We can not update on `{protocolServer.DataSourceName}` because `{protocolServer.DataSourceName}` is readonly for you");
+                    return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is readonly for you");
                 }
 
                 var needReload = source.NeedRead();

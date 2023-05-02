@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">資格情報を表示</s:String>
     <s:String x:Key="Sorting">並べ替え</s:String>
     <s:String x:Key="Sort by drag">ドラッグで並べ替え</s:String>
+    <s:String x:Key="We can not connect database:">データベースに接続できません:</s:String>
+    <s:String x:Key="We can not create tables on database:">データベースにテーブルを作成できません:</s:String>
+    <s:String x:Key="We can not insert into database:">データベースに挿入できません:</s:String>
+    <s:String x:Key="We can not update on database:">データベースを更新できません:</s:String>
+    <s:String x:Key="We can not read from database:">データベースから読み取ることができません:</s:String>
+    <s:String x:Key="We can not select from database:">データベースから選択できません:</s:String>
+    <s:String x:Key="We can not delete from database:">データベースから削除できません:</s:String>
+    <s:String x:Key="because:">なぜなら：</s:String>
 </ResourceDictionary>

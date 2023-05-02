@@ -74,8 +74,8 @@ class glossary:
                     continue
                 # 没有内容时才进行翻译
                 if column[row] == '':
-                    print('translating to [', column[0], ']: ', self.english_words[row])
                     txt = translator.translate(Special_Marks_to_Characters_in_XAML(self.english_words[row]), dest=column[self.ROW_LANG_CODE_GOOGLE]).text
+                    print('translating to [', column[0], ']: ', self.english_words[row], ' ---> ', txt)
                     column[row] = txt
 
     def merge_columns(self, src):

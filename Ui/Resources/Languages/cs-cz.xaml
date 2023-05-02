@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">Zobrazit informace o přihlašovacích údajích</s:String>
     <s:String x:Key="Sorting">Řazení</s:String>
     <s:String x:Key="Sort by drag">Seřadit přetažením</s:String>
+    <s:String x:Key="We can not connect database:">Nemůžeme se připojit k databázi:</s:String>
+    <s:String x:Key="We can not create tables on database:">Nemůžeme vytvářet tabulky v databázi:</s:String>
+    <s:String x:Key="We can not insert into database:">Nemůžeme vložit do databáze:</s:String>
+    <s:String x:Key="We can not update on database:">Nemůžeme aktualizovat databázi:</s:String>
+    <s:String x:Key="We can not read from database:">Nemůžeme číst z databáze:</s:String>
+    <s:String x:Key="We can not select from database:">Nemůžeme vybrat z databáze:</s:String>
+    <s:String x:Key="We can not delete from database:">Nemůžeme odstranit z databáze:</s:String>
+    <s:String x:Key="because:">protože:</s:String>
 </ResourceDictionary>
