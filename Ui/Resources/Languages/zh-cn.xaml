@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">显示地址账号信息</s:String>
     <s:String x:Key="Sorting"> 排序</s:String>
     <s:String x:Key="Sort by drag"> 自定义拖拽排序</s:String>
+    <s:String x:Key="We can not connect database:">无法连接到数据库</s:String>
+    <s:String x:Key="We can not create tables on database:">无法创建数据表：</s:String>
+    <s:String x:Key="We can not insert into database:">无法插入数据：</s:String>
+    <s:String x:Key="We can not update on database:">无法更新数据：</s:String>
+    <s:String x:Key="We can not read from database:">无法读取数据：</s:String>
+    <s:String x:Key="We can not select from database:">无法查询数据：</s:String>
+    <s:String x:Key="We can not delete from database:">无法删除数据：</s:String>
+    <s:String x:Key="because:">原因是:</s:String>
 </ResourceDictionary>

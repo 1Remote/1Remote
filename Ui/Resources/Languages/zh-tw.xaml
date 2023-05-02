@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">顯示憑據信息</s:String>
     <s:String x:Key="Sorting">排序</s:String>
     <s:String x:Key="Sort by drag">拖動排序</s:String>
+    <s:String x:Key="We can not connect database:">我們無法連接數據庫：</s:String>
+    <s:String x:Key="We can not create tables on database:">我們不能在數據庫上創建表：</s:String>
+    <s:String x:Key="We can not insert into database:">我們不能插入數據庫：</s:String>
+    <s:String x:Key="We can not update on database:">我們無法更新數據庫：</s:String>
+    <s:String x:Key="We can not read from database:">我們無法從數據庫中讀取：</s:String>
+    <s:String x:Key="We can not select from database:">我們不能從數據庫中選擇：</s:String>
+    <s:String x:Key="We can not delete from database:">我們不能從數據庫中刪除：</s:String>
+    <s:String x:Key="because:">因為：</s:String>
 </ResourceDictionary>

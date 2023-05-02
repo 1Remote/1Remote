@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">Afficher les informations d'identification</s:String>
     <s:String x:Key="Sorting">Tri</s:String>
     <s:String x:Key="Sort by drag">Trier par glissement</s:String>
+    <s:String x:Key="We can not connect database:">Nous ne pouvons pas nous connecter à la base de données :</s:String>
+    <s:String x:Key="We can not create tables on database:">Nous ne pouvons pas créer de tables sur la base de données :</s:String>
+    <s:String x:Key="We can not insert into database:">Nous ne pouvons pas insérer dans la base de données :</s:String>
+    <s:String x:Key="We can not update on database:">Nous ne pouvons pas mettre à jour sur la base de données :</s:String>
+    <s:String x:Key="We can not read from database:">Nous ne pouvons pas lire à partir de la base de données :</s:String>
+    <s:String x:Key="We can not select from database:">Nous ne pouvons pas sélectionner dans la base de données :</s:String>
+    <s:String x:Key="We can not delete from database:">Nous ne pouvons pas supprimer de la base de données :</s:String>
+    <s:String x:Key="because:">parce que:</s:String>
 </ResourceDictionary>

@@ -267,4 +267,12 @@
     <s:String x:Key="Show credentials info">Show credentials info</s:String>
     <s:String x:Key="Sorting"> Sorting</s:String>
     <s:String x:Key="Sort by drag"> Sort by drag</s:String>
+    <s:String x:Key="We can not connect database:">We We can not connect database:</s:String>
+    <s:String x:Key="We can not create tables on database:">We can not create tables on database:</s:String>
+    <s:String x:Key="We can not insert into database:">We can not insert into database:</s:String>
+    <s:String x:Key="We can not update on database:">We can not update on database:</s:String>
+    <s:String x:Key="We can not read from database:">We can not read from database:</s:String>
+    <s:String x:Key="We can not select from database:">We can not select from database:</s:String>
+    <s:String x:Key="We can not delete from database:">We can not delete from database:</s:String>
+    <s:String x:Key="because:">because:</s:String>
 </ResourceDictionary>

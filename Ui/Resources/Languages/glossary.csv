@@ -289,3 +289,11 @@ XXX is not existed!;`{0}` is not existed!;`{0}` 不存在！;`{0}` is not existe
 Show credentials info;Show credentials info;显示地址账号信息;;;;;;;
 Sorting; Sorting; 排序;;;;;;;
 Sort by drag; Sort by drag; 自定义拖拽排序;;;;;;;
+We can not connect database:;We We can not connect database:;无法连接到数据库;;;;;;;
+We can not create tables on database:;We can not create tables on database:;无法创建数据表：;;;;;;;
+We can not insert into database:;We can not insert into database:;无法插入数据：;;;;;;;
+We can not update on database:;We can not update on database:;无法更新数据：;;;;;;;
+We can not read from database:;We can not read from database:;无法读取数据：;;;;;;;
+We can not select from database:;We can not select from database:;无法查询数据：;;;;;;;
+We can not delete from database:;We can not delete from database:;无法删除数据：;;;;;;;
+because:;because:;原因是:;;;;;;;
