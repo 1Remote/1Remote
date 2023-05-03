@@ -131,7 +131,7 @@
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=DataContext.CmdSelect}"
                                             CommandParameter="{Binding}"
                                             >
-                                        <!--<Button.Style>
+                                        <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
@@ -146,7 +146,7 @@
                                                     </MultiDataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Button.Style>-->
+                                        </Button.Style>
                                     </Button>
                                 </Grid>
                                 <DataTemplate.Triggers>
