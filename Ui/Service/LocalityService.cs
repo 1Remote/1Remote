@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Documents;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol;
+using _1RM.Service.DataSource;
 using _1RM.View.Launcher;
 using Shawn.Utils;
 using _1RM.View;
@@ -23,6 +24,7 @@ namespace _1RM.Service
         ProtocolDesc = 1,
         NameAsc = 2,
         NameDesc = 3,
+
         //TagAsc = 4,
         //TagDesc = 5,
         AddressAsc = 6,
@@ -43,13 +45,13 @@ namespace _1RM.Service
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
         public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
         public Dictionary<string, int> ServerGroupedOrder = new Dictionary<string, int>();
+        public Dictionary<string, bool> ServerGroupedIsExpanded = new Dictionary<string, bool>();
         public ConcurrentDictionary<string, RdpLocalSetting> RdpLocalities = new ConcurrentDictionary<string, RdpLocalSetting>();
         public List<QuickConnectionItem> QuickConnectionHistory = new List<QuickConnectionItem>();
     }
 
     public sealed class LocalityService
     {
-
         public double MainWindowWidth
         {
             get => _localitySettings.MainWindowWidth;
@@ -155,7 +157,6 @@ namespace _1RM.Service
         }
 
 
-
         public EnumServerOrderBy ServerOrderBy
         {
             get => _localitySettings.ServerOrderBy;
@@ -175,6 +176,7 @@ namespace _1RM.Service
 
         public Dictionary<string, int> ServerCustomOrder => _localitySettings.ServerCustomOrder;
         public Dictionary<string, int> ServerGroupedOrder => _localitySettings.ServerGroupedOrder;
+        public Dictionary<string, bool> ServerGroupedIsExpanded => _localitySettings.ServerGroupedIsExpanded;
 
         #region Interface
 
@@ -186,6 +188,7 @@ namespace _1RM.Service
             {
                 return v;
             }
+
             return null;
         }
 
@@ -204,6 +207,7 @@ namespace _1RM.Service
             {
                 _localitySettings.RdpLocalities.TryRemove(obsolete, out _);
             }
+
             Save();
         }
 
@@ -219,6 +223,7 @@ namespace _1RM.Service
             {
                 _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);
             }
+
             Save();
         }
 
@@ -232,6 +237,7 @@ namespace _1RM.Service
             {
                 _localitySettings.QuickConnectionHistory.RemoveRange(50, _localitySettings.QuickConnectionHistory.Count - 50);
             }
+
             Save();
         }
 
@@ -244,8 +250,10 @@ namespace _1RM.Service
                 _localitySettings.ServerCustomOrder.Add(server.Id, i);
                 ++i;
             }
+
             Save();
         }
+
         public void ServerGroupedOrderRebuild(string?[] groupNames)
         {
             int i = 0;
@@ -258,7 +266,36 @@ namespace _1RM.Service
             Save();
         }
 
+        public void ServerGroupedSetIsExpanded(string name, bool isExpanded)
+        {
+            try
+            {
+                if (ServerGroupedIsExpanded.ContainsKey(name))
+                    ServerGroupedIsExpanded[name] = isExpanded;
+                else
+                    ServerGroupedIsExpanded.Add(name, isExpanded);
+                var ds = IoC.TryGet<DataSourceService>();
+                if (ds != null)
+                {
+                    foreach (var key in ServerGroupedIsExpanded.Keys.ToArray())
+                    {
+                        if (ds.LocalDataSource?.Name != key && ds.AdditionalSources.All(x => x.Key != key))
+                        {
+                            ServerGroupedIsExpanded.Remove(key);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MsAppCenterHelper.Error(e);
+                _localitySettings.ServerGroupedIsExpanded = new Dictionary<string, bool>();
+            }
+            Save();
+        }
+
         public bool CanSave = true;
+
         private void Save()
         {
             if (!CanSave) return;
@@ -270,10 +307,8 @@ namespace _1RM.Service
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
 
-                RetryHelper.Try(() =>
-                {
-                    File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8);
-                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
+                RetryHelper.Try(() => { File.WriteAllText(AppPathHelper.Instance.LocalityJsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8); },
+                    actionOnError: exception => MsAppCenterHelper.Error(exception));
                 CanSave = true;
             }
         }

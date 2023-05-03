@@ -98,14 +98,13 @@ namespace _1RM.Service.DataSource.Model
         /// <returns></returns>
         public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus = false)
         {
+            if (focus == false
+                && LastReadFromDataSourceMillisecondsTimestamp >= _dataSourceDataUpdateTimestamp)
+            {
+                return CachedProtocols;
+            }
             lock (this)
             {
-                if (focus == false
-                    && LastReadFromDataSourceMillisecondsTimestamp >= _dataSourceDataUpdateTimestamp)
-                {
-                    return CachedProtocols;
-                }
-
                 var result = Database_GetServers();
                 if (result.IsSuccess)
                 {

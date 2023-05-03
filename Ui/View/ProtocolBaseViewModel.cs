@@ -30,7 +30,7 @@ namespace _1RM.View
             }
         }
 
-
+        #region Grouped
         public string GroupedOrder
         {
             get
@@ -47,6 +47,39 @@ namespace _1RM.View
             }
         }
 
+
+        private readonly DebounceDispatcher _debounceDispatcher = new();
+        private bool? _groupedIsExpanded = null;
+        public bool GroupedIsExpanded
+        {
+            set
+            {
+                if (IoC.TryGet<LocalityService>() != null
+                    && SetAndNotifyIfChanged(ref _groupedIsExpanded, value))
+                {
+                    _debounceDispatcher.Debounce(1000, (_) =>
+                    {
+                        IoC.Get<LocalityService>().ServerGroupedSetIsExpanded(DataSourceName, value);
+                    });
+                }
+            }
+            get
+            {
+                if (_groupedIsExpanded == null)
+                {
+                    var ret = true;
+                    if (IoC.TryGet<LocalityService>() != null)
+                    {
+                        var tmp = IoC.Get<LocalityService>().ServerGroupedIsExpanded;
+                        if (tmp.ContainsKey(DataSourceName) == true)
+                            ret = tmp[DataSourceName];
+                    }
+                    _groupedIsExpanded = ret;
+                }
+                return _groupedIsExpanded.Value;
+            }
+        }
+        #endregion
 
         public bool IsEditable { get; private set; } = false;
         public bool IsViewable { get; private set; } = false;
@@ -199,7 +232,6 @@ namespace _1RM.View
             get => _lastConnectTime;
             set => SetAndNotifyIfChanged(ref _lastConnectTime, value);
         }
-
         #region CMD
 
         private RelayCommand? _cmdConnServer;
