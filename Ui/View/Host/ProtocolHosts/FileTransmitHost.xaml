@@ -471,7 +471,7 @@
 
 
 
-            <Grid Grid.Row="2">
+            <Border Grid.Row="2" BorderBrush="{StaticResource DefaultBorderBrush}" BorderThickness="0 2 0 0">
                 <ListView x:Name="ListViewTransmitTasks"
                           Background="{DynamicResource  PrimaryMidBrush}" 
                           ItemsSource="{Binding TransmitTasks}" 
@@ -614,7 +614,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ListView>
-            </Grid>
+            </Border>
 
             <Grid Grid.Row="3" Height="30">
                 <Grid.Style>
@@ -624,9 +624,6 @@
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="-1">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="0">
-                                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
                                 <Setter Property="Background" Value="Yellow"></Setter>
@@ -640,6 +637,20 @@
                 <TextBlock Margin="5 0" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" 
                            Text="{Binding IoMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}">
+                    <TextBlock.Resources>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
+                                    <Setter Property="Foreground" Value="White"></Setter>
+                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IoMessageLevel}" Value="2">
+                                    <Setter Property="Foreground" Value="White"></Setter>
+                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Resources>
                 </TextBlock>
             </Grid>
         </Grid>
@@ -652,8 +663,7 @@
 
 
 
-        <Grid 
-            Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
+        <Grid Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
             <Grid Background="Black" Opacity="{Binding GridLoadingBgOpacity}"></Grid>
             <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
         </Grid>

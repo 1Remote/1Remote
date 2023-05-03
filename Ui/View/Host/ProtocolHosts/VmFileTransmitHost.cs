@@ -869,7 +869,7 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-        private void DoUpload(List<string> filePathList)
+        public void DoUpload(List<string> filePathList)
         {
             var fis = new List<FileInfo>();
             var dis = new List<DirectoryInfo>();
@@ -964,7 +964,12 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly CancellationTokenSource _consumingTransmitTaskCancellationTokenSource = new CancellationTokenSource();
 
 
-        public double GridLoadingBgOpacity { get; set; } = 1;
+        public double GridLoadingBgOpacity
+        {
+            get => _gridLoadingBgOpacity;
+            set => _gridLoadingBgOpacity = value;
+        }
+
         private Visibility _gridLoadingVisibility = Visibility.Collapsed;
         public Visibility GridLoadingVisibility
         {
@@ -980,23 +985,21 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-
-
-
-
+        private int _ioMessageLevel = 0;
         /// <summary>
         /// level: 0 normal; 1 warning(yellow); 2 error(red);
         /// </summary>
-        public int IoMessageLevel { get; set; } = 0;
+        public int IoMessageLevel
+        {
+            get => _ioMessageLevel;
+            set => SetAndNotifyIfChanged(ref _ioMessageLevel, value);
+        }
+
         private string _ioMessage = "";
         public string IoMessage
         {
             get => _ioMessage;
-            set
-            {
-                SetAndNotifyIfChanged(ref _ioMessage, value);
-                RaisePropertyChanged(nameof(IoMessageLevel));
-            }
+            set => SetAndNotifyIfChanged(ref _ioMessage, value);
         }
 
 
@@ -1083,6 +1086,8 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private ObservableCollection<TransmitTask> _transmitTasks = new ObservableCollection<TransmitTask>();
+        private double _gridLoadingBgOpacity = 1;
+
         public ObservableCollection<TransmitTask> TransmitTasks
         {
             get => _transmitTasks;
