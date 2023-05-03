@@ -397,14 +397,14 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 if (!get.IsSuccess) return Result.Fail(get.ErrorInfo);
                 try
                 {
-                    bool existed = !string.IsNullOrEmpty(get.Result);
                     bool ret = true;
-                    if (existed && value == null)
+                    if (value == null)
                     {
                         ret = _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, }) > 0;
                     }
                     else
                     {
+                        bool existed = !string.IsNullOrEmpty(get.Result);
                         ret = _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
                     }
                     return Result.Success();
