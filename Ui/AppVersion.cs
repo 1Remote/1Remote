@@ -15,10 +15,32 @@ namespace _1RM
         public static string Version => VersionData.ToString();
 
 
-        public static readonly string[] UpdateUrls =
-        {
-            "https://github.com/1Remote/1Remote",
-            "https://github.com/1Remote/PRemoteM",
-        };
+        public static string[] UpdateCheckUrls =>
+            string.IsNullOrEmpty(PreRelease)
+                ? new[]
+                {
+                    "https://1remote.org/download/",
+                    "https://github.com/1Remote/1Remote",
+                }
+                : new[]
+                {
+                    "https://github.com/1Remote/1Remote/releases/expanded_assets/Nightly",
+                    "https://1remote.org/download/",
+                    "https://github.com/1Remote/1Remote",
+                };
+
+        public static string[] UpdatePublishUrls =>
+            string.IsNullOrEmpty(PreRelease)
+                ? new[]
+                {
+                    "https://1remote.org/download/",
+                    "https://github.com/1Remote/1Remote",
+                }
+                : new[]
+                {
+                    "https://github.com/1Remote/1Remote/releases/tag/Nightly",
+                    "https://1remote.org/download/",
+                    "https://github.com/1Remote/1Remote",
+                };
     }
 }
