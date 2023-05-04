@@ -149,11 +149,7 @@ namespace _1RM
 
                     if (_isNewUser)
                     {
-                        if (PRemoteMTransferHelper.IsNeedTransfer())
-                        {
-                            PRemoteMTransferHelper.ReadAsync();
-                        }
-
+                        PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
                         // 新用户显示引导窗口
                         var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, NewConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
@@ -323,7 +319,7 @@ namespace _1RM
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
                 {
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
-                    if (_isNewUser && PRemoteMTransferHelper.IsNeedTransfer())
+                    if (_isNewUser)
                     {
                         // import form PRemoteM db
                         PRemoteMTransferHelper.TransAsync();
@@ -334,8 +330,10 @@ namespace _1RM
 
 
 
-
-            MaskLayerController.ShowProcessingRing();
+            if (!_isNewUser)
+            {
+                MaskLayerController.ShowProcessingRing();
+            }
             Task.Factory.StartNew(() =>
             {
                 //// read from primary database
@@ -348,7 +346,10 @@ namespace _1RM
                             IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
                         })).ToArray());
                 IoC.Get<GlobalData>().ReloadServerList(true);
-                MaskLayerController.HideMask();
+                if (!_isNewUser)
+                {
+                    MaskLayerController.HideMask();
+                }
             });
         }
     }

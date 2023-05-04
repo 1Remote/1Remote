@@ -167,5 +167,15 @@ namespace _1RM.Controls.NoteDisplay
         {
             e.Handled = true;
         }
+
+        private void Ignore_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Ignore_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }
