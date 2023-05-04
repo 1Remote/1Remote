@@ -7,8 +7,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using _1RM.Controls.NoteDisplay;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Utils;
+using Microsoft.AppCenter.Crashes;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -156,136 +159,177 @@ namespace _1RM.View.ServerList
             //SimpleLogHelper.Debug($"{e.LeftButton} + {sender is Grid}");
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                // drag ListBoxItem
-                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
-                    && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
-                    && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
+                try
                 {
-                    var dataObj = new DataObject();
-                    dataObj.SetData("DragSource", listBoxItem);
-                    DragDrop.DoDragDrop(listBoxItem, dataObj, DragDropEffects.Move);
-                    listBoxItem.IsSelected = true;
-                }
-                // drag GroupItem
-                else if (sender is DependencyObject obj)
-                {
-                    GroupItem? groupItem = null;
-                    if (sender is GroupItem gi) // 直接 drag GroupItem
-                    {
-                        groupItem = gi;
-                    }
-                    else // drag GroupItem header 中的元素
-                    {
-                        groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
-                    }
-                    if (groupItem != null)
+                    // drag ListBoxItem
+                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
+                        && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
+                        && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
                     {
                         var dataObj = new DataObject();
-                        dataObj.SetData("DragSource", groupItem);
-                        DragDrop.DoDragDrop(groupItem, dataObj, DragDropEffects.Move);
+                        dataObj.SetData("DragSource", listBoxItem);
+                        DragDrop.DoDragDrop(listBoxItem, dataObj, DragDropEffects.Move);
+                        listBoxItem.IsSelected = true;
                     }
+                    // drag GroupItem
+                    else if (sender is DependencyObject obj)
+                    {
+                        if (e.OriginalSource is DependencyObject os)
+                        {
+                            if (null != MyVisualTreeHelper.VisualUpwardSearch<NoteDisplayAndEditor>(os))
+                            {
+                                return;
+                            }
+                        }
+                        GroupItem? groupItem = null;
+                        if (sender is GroupItem gi) // 直接 drag GroupItem
+                        {
+                            groupItem = gi;
+                        }
+                        else // drag GroupItem header 中的元素
+                        {
+                            groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                        }
+                        if (groupItem != null)
+                        {
+                            var dataObj = new DataObject();
+                            dataObj.SetData("DragSource", groupItem);
+                            DragDrop.DoDragDrop(groupItem, dataObj, DragDropEffects.Move);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var ps = new Dictionary<string, string>
+                    {
+                        { "Sender", sender.GetType().Name },
+                        { "e.Source", e.Source.GetType().Name },
+                        { "e.OriginalSource", e.OriginalSource.GetType().Name }
+                    };
+                    MsAppCenterHelper.Error(ex, properties: ps);
                 }
             }
         }
 
         void UIElement_OnDrop(object sender, DragEventArgs e)
         {
-            // item move
-            if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
-                && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMoved } listBoxItem
-                && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target }
-                && toBeMoved != target)
+            try
             {
-                var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
-                int removedIdx = items.IndexOf(toBeMoved);
-                int targetIdx = items.IndexOf(target);
-#if DEBUG
-                SimpleLogHelper.Debug($"Before Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
-                SimpleLogHelper.Debug($"Drop: {toBeMoved.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
-#endif
-                if (removedIdx == targetIdx - 1)
+                if (e.OriginalSource is DependencyObject os)
                 {
-                    (toBeMoved, target) = (target, toBeMoved);// swap
-                    removedIdx = items.IndexOf(toBeMoved);
-                    targetIdx = items.IndexOf(target);
-                }
-                if (removedIdx >= 0
-                    && targetIdx >= 0
-                    && removedIdx != targetIdx)
-                {
-                    items.RemoveAt(removedIdx);
-                    targetIdx = items.IndexOf(target);
-                    items.Insert(targetIdx, toBeMoved);
-                    IoC.Get<LocalityService>().ServerCustomOrderRebuild(items);
-                    IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
-#if DEBUG
-                    SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
-#endif
-                }
-            }
-            // group move
-            else if (LvServerCards.IsGrouping == true
-                && e.Data.GetData("DragSource") is GroupItem { DataContext: CollectionViewGroup { Name: string toBeMovedName } toBeMovedGroupItem }
-                && IoC.Get<DataSourceService>().AdditionalSources.Any()
-                && LvServerCards?.Items?.Groups?.Count > 0)
-            {
-                string targetGroupName = toBeMovedName;
-                // GroupItem drop to ListBoxItem
-                if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol })
-                {
-                    targetGroupName = protocol.DataSourceName;
-                }
-                // GroupItem drop to something in GroupItem
-                else if (sender is DependencyObject obj)
-                {
-                    GroupItem? groupItem = null;
-                    if (sender is GroupItem gi) // 直接 drag GroupItem
+                    if (null != MyVisualTreeHelper.VisualUpwardSearch<NoteDisplayAndEditor>(os))
                     {
-                        groupItem = gi;
-                    }
-                    else // drag GroupItem header 中的元素
-                    {
-                        groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
-                    }
-                    if (groupItem is GroupItem { DataContext: CollectionViewGroup { Name: string name } })
-                    {
-                        targetGroupName = name;
+                        return;
                     }
                 }
 
-                if (targetGroupName != toBeMovedName)
+                // item move
+                if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
+                    && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMoved } listBoxItem
+                    && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target }
+                    && toBeMoved != target)
                 {
-                    var groups = LvServerCards.Items.Groups.Cast<CollectionViewGroup>().ToList();
-                    var targetGroupItem = groups.FirstOrDefault(x => x.Name.ToString() == targetGroupName);
-                    if (targetGroupItem != null)
+                    var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
+                    int removedIdx = items.IndexOf(toBeMoved);
+                    int targetIdx = items.IndexOf(target);
+#if DEBUG
+                    SimpleLogHelper.Debug($"Before Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
+                    SimpleLogHelper.Debug($"Drop: {toBeMoved.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
+#endif
+                    if (removedIdx == targetIdx - 1)
                     {
-                        int removedIdx = groups.IndexOf(toBeMovedGroupItem);
-                        int targetIdx = groups.IndexOf(targetGroupItem);
+                        (toBeMoved, target) = (target, toBeMoved);// swap
+                        removedIdx = items.IndexOf(toBeMoved);
+                        targetIdx = items.IndexOf(target);
+                    }
+                    if (removedIdx >= 0
+                        && targetIdx >= 0
+                        && removedIdx != targetIdx)
+                    {
+                        items.RemoveAt(removedIdx);
+                        targetIdx = items.IndexOf(target);
+                        items.Insert(targetIdx, toBeMoved);
+                        IoC.Get<LocalityService>().ServerCustomOrderRebuild(items);
+                        IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
-                        SimpleLogHelper.Debug($"groups Before Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
-                        SimpleLogHelper.Debug($"groups Drop: {toBeMovedGroupItem.Name.ToString()}({removedIdx}) -> {targetGroupItem.Name.ToString()}({targetIdx})");
+                        SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
 #endif
-                        if (removedIdx == targetIdx - 1)
+                    }
+                }
+                // group move
+                else if (LvServerCards.IsGrouping == true
+                    && e.Data.GetData("DragSource") is GroupItem { DataContext: CollectionViewGroup { Name: string toBeMovedName } toBeMovedGroupItem }
+                    && IoC.Get<DataSourceService>().AdditionalSources.Any()
+                    && LvServerCards?.Items?.Groups?.Count > 0)
+                {
+                    string targetGroupName = toBeMovedName;
+                    // GroupItem drop to ListBoxItem
+                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol })
+                    {
+                        targetGroupName = protocol.DataSourceName;
+                    }
+                    // GroupItem drop to something in GroupItem
+                    else if (sender is DependencyObject obj)
+                    {
+                        GroupItem? groupItem = null;
+                        if (sender is GroupItem gi) // 直接 drag GroupItem
                         {
-                            (toBeMovedGroupItem, targetGroupItem) = (targetGroupItem, toBeMovedGroupItem);// swap
-                            removedIdx = groups.IndexOf(toBeMovedGroupItem);
-                            targetIdx = groups.IndexOf(targetGroupItem);
+                            groupItem = gi;
                         }
-                        if (removedIdx >= 0
-                            && targetIdx >= 0
-                            && removedIdx != targetIdx)
+                        else // drag GroupItem header 中的元素
                         {
-                            groups.RemoveAt(removedIdx);
-                            targetIdx = groups.IndexOf(targetGroupItem);
-                            groups.Insert(targetIdx, toBeMovedGroupItem);
-                            IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString()).ToArray());
-                            IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+                            groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                        }
+                        if (groupItem is GroupItem { DataContext: CollectionViewGroup { Name: string name } })
+                        {
+                            targetGroupName = name;
+                        }
+                    }
+
+                    if (targetGroupName != toBeMovedName)
+                    {
+                        var groups = LvServerCards.Items.Groups.Cast<CollectionViewGroup>().ToList();
+                        var targetGroupItem = groups.FirstOrDefault(x => x.Name.ToString() == targetGroupName);
+                        if (targetGroupItem != null)
+                        {
+                            int removedIdx = groups.IndexOf(toBeMovedGroupItem);
+                            int targetIdx = groups.IndexOf(targetGroupItem);
 #if DEBUG
-                            SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
+                            SimpleLogHelper.Debug($"groups Before Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
+                            SimpleLogHelper.Debug($"groups Drop: {toBeMovedGroupItem.Name.ToString()}({removedIdx}) -> {targetGroupItem.Name.ToString()}({targetIdx})");
 #endif
+                            if (removedIdx == targetIdx - 1)
+                            {
+                                (toBeMovedGroupItem, targetGroupItem) = (targetGroupItem, toBeMovedGroupItem);// swap
+                                removedIdx = groups.IndexOf(toBeMovedGroupItem);
+                                targetIdx = groups.IndexOf(targetGroupItem);
+                            }
+                            if (removedIdx >= 0
+                                && targetIdx >= 0
+                                && removedIdx != targetIdx)
+                            {
+                                groups.RemoveAt(removedIdx);
+                                targetIdx = groups.IndexOf(targetGroupItem);
+                                groups.Insert(targetIdx, toBeMovedGroupItem);
+                                IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString()).ToArray());
+                                IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+#if DEBUG
+                                SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
+#endif
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                var ps = new Dictionary<string, string>
+                {
+                    { "Sender", sender.GetType().Name },
+                    { "e.Source", e.Source.GetType().Name },
+                    { "e.OriginalSource", e.OriginalSource.GetType().Name }
+                };
+                MsAppCenterHelper.Error(ex, properties: ps);
             }
         }
     }

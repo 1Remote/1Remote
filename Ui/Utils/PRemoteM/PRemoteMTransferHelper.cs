@@ -27,27 +27,102 @@ namespace _1RM.Utils.PRemoteM
     internal class PRemoteMTransferHelper
     {
         private static string _dbPath = "";
-        private static List<string>? _dbPathList = null;
-        private static List<ProtocolBase> _servers = new List<ProtocolBase>();
+        private static readonly List<ProtocolBase> _servers = new List<ProtocolBase>();
         public static bool IsReading = false;
 
-        public static bool IsNeedTransfer()
+        public static void RunIsNeedTransferCheckAsync()
         {
-            _dbPathList ??= FindDatabase();
-            return _dbPathList.Count > 0;
+            Task.Factory.StartNew(() =>
+            {
+
+                var dbPaths = new List<string>();
+                {
+                    var appNames = new string[]
+                    {
+                        "PRemoteM",
+#if DEBUG
+                        "PRemoteM_Debug",
+#else
+#endif
+                    };
+
+
+                    foreach (var appName in appNames)
+                    {
+                        var basePaths = new List<string>()
+                        {
+                            Environment.CurrentDirectory,
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName),
+                        };
+
+                        foreach (var basePath in basePaths)
+                        {
+                            if (Directory.Exists(basePath))
+                            {
+                                try
+                                {
+                                    string profileJsonPath = Path.Combine(basePath, appName + ".json");
+                                    if (File.Exists(profileJsonPath))
+                                    {
+                                        var tmp = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(profileJsonPath));
+                                        if (tmp != null)
+                                        {
+                                            string dbPath = (tmp["Database"]["SqliteDatabasePath"]).ToString();
+                                            if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
+                                            {
+                                                dbPaths.Add(dbPath);
+                                            }
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                    // ignored
+                                }
+
+                                {
+                                    var dbPath = Path.Combine(basePath, "PRemoteM.db");
+                                    if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
+                                    {
+                                        dbPaths.Add(dbPath);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                ReadFromDbSync(dbPaths);
+            });
         }
 
-        public static void ReadAsync()
+        public static void TransFromDatabase(string databasePath)
         {
-            IsReading = true;
-            Task.Factory.StartNew(StartTask);
+            if (string.IsNullOrEmpty(databasePath))
+            {
+                return;
+            }
+
+            if (File.Exists(databasePath) == false)
+            {
+                return;
+            }
+
+            Task.Factory.StartNew(() =>
+            {
+                MaskLayerController.ShowProcessingRing();
+                ReadFromDbSync(new List<string>
+                {
+                    databasePath,
+                });
+                TransAsync();
+            });
         }
 
         public static void TransAsync()
         {
-            if (_servers?.Any() == true)
+            if (_servers.Any() == true)
             {
-                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from PRemoteM?\r\n\r\nWe will read form database:\r\n  `{_dbPath}`", 
+                if (MessageBoxHelper.Confirm($"Do you want to transfer sessions from PRemoteM?\r\n\r\nWe will read form database:\r\n  `{_dbPath}`",
                         "Data transfer from PRemoteM", ownerViewModel: IoC.Get<MainWindowViewModel>()))
                 {
                     MaskLayerController.ShowProcessingRing(msg: "Data transfer in progress", assignLayerContainer: IoC.Get<MainWindowViewModel>());
@@ -90,89 +165,36 @@ namespace _1RM.Utils.PRemoteM
                     });
                 }
             }
+            else
+            {
+                MaskLayerController.HideMask();
+            }
         }
 
         private static void Clear()
         {
-            _dbPathList = null;
             _servers.Clear();
         }
-
-        private static List<string> FindDatabase()
-        {
-            var dbPaths = new List<string>();
-            var appNames = new string[] {
-                "PRemoteM",
-#if DEBUG
-                "PRemoteM_Debug",
-#endif
-            };
-
-
-            foreach (var appName in appNames)
-            {
-                var basePaths = new List<string>()
-                {
-                    Environment.CurrentDirectory,
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName),
-                };
-
-                foreach (var basePath in basePaths)
-                {
-                    if (Directory.Exists(basePath))
-                    {
-                        try
-                        {
-                            string profileJsonPath = Path.Combine(basePath, appName + ".json");
-                            if (File.Exists(profileJsonPath))
-                            {
-                                var tmp = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(profileJsonPath));
-                                if (tmp != null)
-                                {
-                                    string dbPath = (tmp["Database"]["SqliteDatabasePath"]).ToString();
-                                    if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
-                                    {
-                                        dbPaths.Add(dbPath);
-                                    }
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        {
-                            var dbPath = Path.Combine(basePath, "PRemoteM.db");
-                            if (File.Exists(dbPath) && dbPaths.Contains(dbPath) == false)
-                            {
-                                dbPaths.Add(dbPath);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return dbPaths;
-        }
-
 
         private static string DecryptOrReturnOriginalString(RSA? ras, string originalString)
         {
             return ras?.DecodeOrNull(originalString) ?? originalString;
         }
 
-        private static void StartTask()
+        private static void ReadFromDbSync(List<string> dbPathList)
         {
+            IsReading = true;
             var dataBase = new DapperDatabaseFree("PRemoteM", DatabaseType.Sqlite);
+            _servers.Clear();
+
             try
             {
-                if (_dbPathList?.Count > 0 == false)
+                if (dbPathList.Count > 0 == false)
                 {
                     return;
                 }
 
-                foreach (var dbPath in _dbPathList)
+                foreach (var dbPath in dbPathList)
                 {
                     _dbPath = dbPath;
 
@@ -212,7 +234,6 @@ namespace _1RM.Utils.PRemoteM
                     var dbServers = dataBase.Connection?.Query<PRemoteMServer>($"SELECT * FROM `Server`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
                     if (dbServers?.Count > 0)
                     {
-                        _servers.Clear();
                         foreach (var server in dbServers)
                         {
                             if (server is { })

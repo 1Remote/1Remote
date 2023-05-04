@@ -61,10 +61,15 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             }
         }
 
+        private static string Translate(string key)
+        {
+            return IoC.TryGet<LanguageService>()?.Translate(key) ?? key;
+        }
+
         protected virtual Result OpenConnection(string actionInfo = "")
         {
             if (string.IsNullOrWhiteSpace(actionInfo))
-                actionInfo = IoC.Get<LanguageService>().Translate("We can not connect database:");
+                actionInfo = Translate("We can not connect database:");
 
             if (string.IsNullOrWhiteSpace(_connectionString))
             {
@@ -141,7 +146,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
         public override Result InitTables()
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not create tables on database:");
+            string info = Translate("We can not create tables on database:");
             var result = OpenConnection(info);
             if (!result.IsSuccess) return result;
 
@@ -182,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 
         public override ResultSelects GetServers()
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not select from database:");
+            string info = Translate("We can not select from database:");
 
             lock (this)
             {
@@ -212,7 +217,7 @@ VALUES
         /// </summary>
         public override Result AddServer(ref ProtocolBase protocolBase)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not insert into database:");
+            string info = Translate("We can not insert into database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -240,7 +245,7 @@ VALUES
         /// </summary>
         public override Result AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not insert into database:");
+            string info = Translate("We can not insert into database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -273,7 +278,7 @@ VALUES
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public override Result UpdateServer(ProtocolBase server)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
+            string info = Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -301,7 +306,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public override Result UpdateServer(IEnumerable<ProtocolBase> servers)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
+            string info = Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -330,7 +335,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public override Result DeleteServer(IEnumerable<string> ids)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not delete from database:");
+            string info = Translate("We can not delete from database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -357,7 +362,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         protected ResultString GetConfigPrivate(string key)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not read from database:");
+            string info = Translate("We can not read from database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -387,7 +392,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         protected Result SetConfigPrivate(string key, string? value)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
+            string info = Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);
