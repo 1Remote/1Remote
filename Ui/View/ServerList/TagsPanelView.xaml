@@ -37,10 +37,13 @@
 
         <!-- tag list: the page to config which tag should be display. -->
         <Grid Grid.Row="1">
-            <ListBox Name="ListBoxTags" ItemsSource="{Binding Source={StaticResource TagItemSource}}" Margin="50 0" Visibility="Visible" MinHeight="300" MinWidth="500">
+            <ListBox Name="ListBoxTags" ItemsSource="{Binding Source={StaticResource TagItemSource}}" Margin="50 0" 
+                     Visibility="Visible" MinHeight="300" MinWidth="500">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
-                        <ItemsPresenter></ItemsPresenter>
+                        <ScrollViewer>
+                            <ItemsPresenter></ItemsPresenter>
+                        </ScrollViewer>
                     </ControlTemplate>
                 </ListBox.Template>
                 <ItemsControl.ItemsPanel>

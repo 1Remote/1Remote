@@ -24,7 +24,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
-                    <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Span"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
