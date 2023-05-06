@@ -164,50 +164,24 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             if (RemoteItems?.Count > 0)
             {
-                ObservableCollection<RemoteItem> remoteItemInfos;
                 foreach (var remoteItem in RemoteItems)
                 {
                     remoteItem.IsSelected = false;
                 }
-                switch (RemoteItemsOrderBy)
+
+                var remoteItemInfos = RemoteItemsOrderBy switch
                 {
-                    case -1:
-                    default:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderBy<RemoteItem, int>(RemoteItems, a => a.IsDirectory ? 1 : 2).ThenBy(x => x.Name));
-                        break;
-
-                    case 0:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderBy<RemoteItem, string>(RemoteItems, x => x.Name));
-                        break;
-
-                    case 1:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderByDescending<RemoteItem, string>(RemoteItems, x => x.Name));
-                        break;
-
-                    case 2:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderBy<RemoteItem, ulong>(RemoteItems, x => x.ByteSize));
-                        break;
-
-                    case 3:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderByDescending<RemoteItem, ulong>(RemoteItems, x => x.ByteSize));
-                        break;
-
-                    case 4:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderBy<RemoteItem, DateTime>(RemoteItems, x => x.LastUpdate));
-                        break;
-
-                    case 5:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderByDescending<RemoteItem, DateTime>(RemoteItems, x => x.LastUpdate));
-                        break;
-
-                    case 6:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderBy<RemoteItem, string>(RemoteItems, x => x.FileType).ThenBy(x => x.Name));
-                        break;
-
-                    case 7:
-                        remoteItemInfos = new ObservableCollection<RemoteItem>(Enumerable.OrderByDescending<RemoteItem, string>(RemoteItems, x => x.FileType).ThenBy(x => x.Name));
-                        break;
-                }
+                    -1 => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, int>(a => a.IsDirectory ? 1 : 2).ThenBy(x => x.Name)),
+                    0 => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, string>(x => x.Name)),
+                    1 => new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending<RemoteItem, string>(x => x.Name)),
+                    2 => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, ulong>(x => x.ByteSize)),
+                    3 => new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending<RemoteItem, ulong>(x => x.ByteSize)),
+                    4 => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, DateTime>(x => x.LastUpdate)),
+                    5 => new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending<RemoteItem, DateTime>(x => x.LastUpdate)),
+                    6 => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, string>(x => x.FileType).ThenBy(x => x.Name)),
+                    7 => new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending<RemoteItem, string>(x => x.FileType).ThenBy(x => x.Name)),
+                    _ => new ObservableCollection<RemoteItem>(RemoteItems.OrderBy<RemoteItem, int>(a => a.IsDirectory ? 1 : 2).ThenBy(x => x.Name))
+                };
                 RemoteItems = remoteItemInfos;
             }
         }
@@ -431,42 +405,39 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdDelete == null)
+                return _cmdDelete ??= new RelayCommand((o) =>
                 {
-                    _cmdDelete = new RelayCommand((o) =>
+                    if (SelectedRemoteItem != null)
                     {
-                        if (SelectedRemoteItem != null)
-                        {
-                            if (Trans?.IsConnected() != true)
-                                return;
+                        if (Trans?.IsConnected() != true)
+                            return;
 
-                            var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
-                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: vm == null ? this : vm))
+                        var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
+                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: vm == null ? this : vm))
+                        {
+                            foreach (var itemInfo in RemoteItems)
                             {
-                                foreach (var itemInfo in RemoteItems)
+                                if (itemInfo.IsSelected)
                                 {
-                                    if (itemInfo.IsSelected)
+                                    var selected = itemInfo.FullName;
+                                    try
                                     {
-                                        var selected = itemInfo.FullName;
-                                        try
-                                        {
-                                            Trans.Delete(selected);
-                                            IoMessageLevel = 0;
-                                            IoMessage = $"Delete {selected}";
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            IoMessageLevel = 2;
-                                            IoMessage = $"Delete {selected}: " + e.Message;
-                                        }
+                                        Trans.Delete(selected);
+                                        IoMessageLevel = 0;
+                                        IoMessage = $"Delete {selected}";
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        IoMessageLevel = 2;
+                                        IoMessage = $"Delete {selected}: " + e.Message;
                                     }
                                 }
                             }
                         }
-                        ShowFolder(CurrentPath, showIoMessage: false);
-                    });
-                }
-                return _cmdDelete;
+                    }
+
+                    ShowFolder(CurrentPath, showIoMessage: false);
+                });
             }
         }
 
@@ -476,22 +447,18 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdBeginRenaming == null)
+                return _cmdBeginRenaming ??= new RelayCommand((o) =>
                 {
-                    _cmdBeginRenaming = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (SelectedRemoteItem != null
+                        && SelectedRemoteItem.Name != "."
+                        && SelectedRemoteItem.Name != ".."
+                        && SelectedRemoteItem.Name != "/")
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (SelectedRemoteItem != null
-                            && SelectedRemoteItem.Name != "."
-                            && SelectedRemoteItem.Name != ".."
-                            && SelectedRemoteItem.Name != "/")
-                        {
-                            SelectedRemoteItem.IsRenaming = true;
-                        }
-                    });
-                }
-                return _cmdBeginRenaming;
+                        SelectedRemoteItem.IsRenaming = true;
+                    }
+                });
             }
         }
 
@@ -501,56 +468,53 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdEndRenaming == null)
+                return _cmdEndRenaming ??= new RelayCommand((o) =>
                 {
-                    _cmdEndRenaming = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (RemoteItems.Any(x => x.IsRenaming == true))
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (RemoteItems.Any(x => x.IsRenaming == true))
+                        foreach (var item in RemoteItems.Where(x => x.IsRenaming == true))
                         {
-                            foreach (var item in RemoteItems.Where(x => x.IsRenaming == true))
+                            var newPath = CurrentPath + "/" + item.Name;
+                            if (string.IsNullOrEmpty(item.FullName) || !Trans.Exists(item.FullName))
                             {
-                                var newPath = CurrentPath + "/" + item.Name;
-                                if (string.IsNullOrEmpty(item.FullName) || !Trans.Exists(item.FullName))
+                                // add
+                                if (item.IsDirectory)
                                 {
-                                    // add
-                                    if (item.IsDirectory)
-                                    {
-                                        try
-                                        {
-                                            Trans.CreateDirectory(newPath);
-                                            IoMessageLevel = 0;
-                                            IoMessage = $"Create folder {newPath}";
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            IoMessageLevel = 2;
-                                            IoMessage = $"Create folder {newPath}: " + e.Message;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // edit
                                     try
                                     {
-                                        Trans.RenameFile(item.FullName, newPath);
+                                        Trans.CreateDirectory(newPath);
                                         IoMessageLevel = 0;
-                                        IoMessage = $"Move {item.FullName} => {newPath}";
+                                        IoMessage = $"Create folder {newPath}";
                                     }
                                     catch (Exception e)
                                     {
                                         IoMessageLevel = 2;
-                                        IoMessage = $"Move {item.FullName} => {newPath}: " + e.Message;
+                                        IoMessage = $"Create folder {newPath}: " + e.Message;
                                     }
                                 }
                             }
-                            ShowFolder(CurrentPath, showIoMessage: false);
+                            else
+                            {
+                                // edit
+                                try
+                                {
+                                    Trans.RenameFile(item.FullName, newPath);
+                                    IoMessageLevel = 0;
+                                    IoMessage = $"Move {item.FullName} => {newPath}";
+                                }
+                                catch (Exception e)
+                                {
+                                    IoMessageLevel = 2;
+                                    IoMessage = $"Move {item.FullName} => {newPath}: " + e.Message;
+                                }
+                            }
                         }
-                    });
-                }
-                return _cmdEndRenaming;
+
+                        ShowFolder(CurrentPath, showIoMessage: false);
+                    }
+                });
             }
         }
 
@@ -560,32 +524,29 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdCancelRenaming == null)
+                return _cmdCancelRenaming ??= new RelayCommand((o) =>
                 {
-                    _cmdCancelRenaming = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (RemoteItems.Any(x => x.IsRenaming == true))
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (RemoteItems.Any(x => x.IsRenaming == true))
+                        var selected = "";
+                        if (SelectedRemoteItem != null
+                            && SelectedRemoteItem.Name != "."
+                            && SelectedRemoteItem.Name != ".."
+                            && SelectedRemoteItem.Name != "/")
                         {
-                            var selected = "";
-                            if (SelectedRemoteItem != null
-                                && SelectedRemoteItem.Name != "."
-                                && SelectedRemoteItem.Name != ".."
-                                && SelectedRemoteItem.Name != "/")
-                            {
-                                selected = SelectedRemoteItem.FullName;
-                            }
-                            CmdGoToPathCurrent.Execute();
-                            var item = RemoteItems.Where(x => x.FullName == selected);
-                            if (item.Any())
-                            {
-                                SelectedRemoteItem = item.First();
-                            }
+                            selected = SelectedRemoteItem.FullName;
                         }
-                    });
-                }
-                return _cmdCancelRenaming;
+
+                        CmdGoToPathCurrent.Execute();
+                        var item = RemoteItems.Where(x => x.FullName == selected);
+                        if (item.Any())
+                        {
+                            SelectedRemoteItem = item.First();
+                        }
+                    }
+                });
             }
         }
 
@@ -668,26 +629,23 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdGoToPathCurrent == null)
+                return _cmdGoToPathCurrent ??= new RelayCommand((o) =>
                 {
-                    _cmdGoToPathCurrent = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    var selected = "";
+                    if (SelectedRemoteItem != null)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        var selected = "";
-                        if (SelectedRemoteItem != null)
-                        {
-                            selected = SelectedRemoteItem.FullName;
-                        }
-                        ShowFolder(CurrentPathEdit);
-                        var item = RemoteItems.Where(x => x.FullName == selected);
-                        if (!string.IsNullOrEmpty(selected) && item.Any())
-                        {
-                            SelectedRemoteItem = item.First();
-                        }
-                    });
-                }
-                return _cmdGoToPathCurrent;
+                        selected = SelectedRemoteItem.FullName;
+                    }
+
+                    ShowFolder(CurrentPathEdit);
+                    var item = RemoteItems.Where(x => x.FullName == selected);
+                    if (!string.IsNullOrEmpty(selected) && item.Any())
+                    {
+                        SelectedRemoteItem = item.First();
+                    }
+                });
             }
         }
 
@@ -697,22 +655,18 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdGoToParent == null)
+                return _cmdGoToParent ??= new RelayCommand((o) =>
                 {
-                    _cmdGoToParent = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    SimpleLogHelper.Debug($"call CmdGoToParent");
+                    if (CurrentPath == "/")
+                        return;
+                    if (CurrentPath?.LastIndexOf("/") >= 0)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        SimpleLogHelper.Debug($"call CmdGoToParent");
-                        if (CurrentPath == "/")
-                            return;
-                        if (CurrentPath?.LastIndexOf("/") >= 0)
-                        {
-                            ShowFolder(CurrentPath.Substring(0, CurrentPath.LastIndexOf("/")));
-                        }
-                    });
-                }
-                return _cmdGoToParent;
+                        ShowFolder(CurrentPath.Substring(0, CurrentPath.LastIndexOf("/")));
+                    }
+                });
             }
         }
 
@@ -722,22 +676,18 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             get
             {
-                if (_cmdGoToPathPrevious == null)
+                return _cmdGoToPathPrevious ??= new RelayCommand((o) =>
                 {
-                    _cmdGoToPathPrevious = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (_pathHistoryPrevious.Count > 0)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (_pathHistoryPrevious.Count > 0)
-                        {
-                            SimpleLogHelper.Debug($"call CmdGoToPathPrevious");
-                            var p = _pathHistoryPrevious.Pop();
-                            _pathHistoryFollowing.Push(CurrentPath);
-                            ShowFolder(p, 1);
-                        }
-                    });
-                }
-                return _cmdGoToPathPrevious;
+                        SimpleLogHelper.Debug($"call CmdGoToPathPrevious");
+                        var p = _pathHistoryPrevious.Pop();
+                        _pathHistoryFollowing.Push(CurrentPath);
+                        ShowFolder(p, 1);
+                    }
+                });
             }
         }
 

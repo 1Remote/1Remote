@@ -89,7 +89,7 @@ namespace _1RM.Model
 
         public ProtocolBaseViewModel? GetItemById(string dataSourceName, string serverId)
         {
-            return VmItemList.FirstOrDefault(x => x.Server.DataSourceName == dataSourceName
+            return VmItemList.FirstOrDefault(x => x.Server.DataSource?.DataSourceName == dataSourceName
                                                   && x.Id == serverId);
         }
 
@@ -153,7 +153,7 @@ namespace _1RM.Model
             StopTick();
             if (dataSource.IsWritable == false)
             {
-                return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is readonly for you");
+                return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
             }
             var needReload = dataSource.NeedRead();
             var ret = dataSource.Database_InsertServer(protocolServer);
@@ -199,11 +199,11 @@ namespace _1RM.Model
                 var source = protocolServer.GetDataSource();
                 if (source == null)
                 {
-                    return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is not initialized yet");
+                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is not initialized yet");
                 }
                 else if (source.IsWritable == false)
                 {
-                    return Result.Fail(info, protocolServer.DataSourceName, $"`{protocolServer.DataSourceName}` is readonly for you");
+                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
                 }
 
                 var needReload = source.NeedRead();
@@ -237,7 +237,7 @@ namespace _1RM.Model
             StopTick();
             try
             {
-                var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
+                var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;
                 var failMsgs = new List<string>();
@@ -303,7 +303,7 @@ namespace _1RM.Model
             StopTick();
             try
             {
-                var groupedServers = protocolServers.GroupBy(x => x.DataSourceName);
+                var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;
                 var failMsgs = new List<string>();

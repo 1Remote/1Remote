@@ -20,16 +20,18 @@ namespace _1RM.Controls.NoteDisplay
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnServerChanged));
         private static void OnServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var server1 = e.NewValue as ProtocolBase;
-            var server0 = e.OldValue as ProtocolBase;
             if (d is NoteDisplayAndEditor control)
             {
                 control.EndEdit();
-                if (server0 != null)
+                if (e.OldValue is ProtocolBase server0)
+                {
                     server0.PropertyChanged -= control.ServerOnPropertyChanged;
-                if (server1 != null)
+                }
+                if (e.NewValue is ProtocolBase server1)
+                {
                     server1.PropertyChanged += control.ServerOnPropertyChanged;
-                control.EditEnable = control.EditEnable && server1?.GetDataSource()?.IsWritable == true;
+                    control.EditEnable = control.EditEnable && server1.GetDataSource()?.IsWritable == true;
+                }
             }
         }
 

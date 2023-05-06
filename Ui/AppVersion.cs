@@ -1,4 +1,4 @@
-using Shawn.Utils;
+using static Shawn.Utils.VersionHelper;
 
 namespace _1RM
 {
@@ -11,7 +11,7 @@ namespace _1RM
         public const string PreRelease = "beta.03"; // e.g. "alpha" "beta.2"
 
 
-        public static readonly VersionHelper.Version VersionData = new VersionHelper.Version(Major, Minor, Patch, Build, PreRelease);
+        public static readonly Version VersionData = new Version(Major, Minor, Patch, Build, PreRelease);
         public static string Version => VersionData.ToString();
 
 

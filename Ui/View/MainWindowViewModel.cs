@@ -107,7 +107,7 @@ namespace _1RM.View
             GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
             {
                 if (SourceService.LocalDataSource == null) return;
-                var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSourceName == serverToEdit.DataSourceName)?.Server;
+                var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSource == serverToEdit.DataSource)?.Server;
                 if (server == null) return;
                 if (server.GetDataSource()?.IsWritable != true) return;
                 EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);

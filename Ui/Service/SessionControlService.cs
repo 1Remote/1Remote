@@ -141,7 +141,7 @@ namespace _1RM.Service
                             }
                         });
 
-                        var vmServer = _appData.GetItemById(server.DataSourceName, server.Id);
+                        var vmServer = _appData.GetItemById(server.DataSource?.DataSourceName ?? "", server.Id);
                         vmServer?.UpdateConnectTime();
                     }
                     catch (Exception e)

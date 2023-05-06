@@ -20,7 +20,7 @@ namespace _1RM.Service
     public partial class SessionControlService
     {
         #region Open Via Different
-        private void ConnectRdpByMstsc(in RDP rdp)
+        private static void ConnectRdpByMstsc(in RDP rdp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
@@ -77,7 +77,7 @@ namespace _1RM.Service
             }
         }
 
-        private void ConnectRemoteApp(in RdpApp remoteApp)
+        private static void ConnectRemoteApp(in RdpApp remoteApp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{remoteApp.DisplayName}_{remoteApp.Port}_{remoteApp.UserName}";
@@ -189,7 +189,7 @@ namespace _1RM.Service
 
             // update the last conn time
             {
-                var vmServer = _appData.GetItemById(protocol.DataSourceName, protocol.Id);
+                var vmServer = _appData.GetItemById(protocol.DataSource?.DataSourceName ?? "", protocol.Id);
                 vmServer?.UpdateConnectTime();
             }
             #endregion
@@ -224,7 +224,7 @@ namespace _1RM.Service
             {
                 if (rdp.IsNeedRunWithMstsc())
                 {
-                    this.ConnectRdpByMstsc(rdp);
+                    ConnectRdpByMstsc(rdp);
                     return;
                 }
                 // rdp full screen

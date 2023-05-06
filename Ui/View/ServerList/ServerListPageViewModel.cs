@@ -296,7 +296,7 @@ namespace _1RM.View.ServerList
                         {
                             if (cvs.GroupDescriptions.Count == 0)
                             {
-                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSourceName)));
+                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSource)));
                             }
                         }
                         else

@@ -129,7 +129,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void TvFileList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) is ListViewItem item)
+            if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) != null)
             {
                 _vmRemote.CmdListViewDoubleClick.Execute();
             }
@@ -165,8 +165,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void ListViewColumnHeaderClick(object sender, RoutedEventArgs e)
         {
-            var headerClicked = e.OriginalSource as GridViewColumnHeader;
-            if (headerClicked == null)
+            if (e.OriginalSource is not GridViewColumnHeader headerClicked)
                 return;
             var p = headerClicked.Parent as GridViewHeaderRowPresenter;
             foreach (var t in p!.Columns)

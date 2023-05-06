@@ -7,6 +7,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -15,7 +16,8 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
-        public string DataSourceName => Server.DataSourceName;
+        public DataSourceBase? DataSource => Server.DataSource;
+        public string DataSourceName => DataSource?.DataSourceName ?? "";
 
         public int CustomOrder
         {
@@ -36,14 +38,14 @@ namespace _1RM.View
             get
             {
                 int i = 65535;
-                char mark = IoC.Get<DataSourceService>().LocalDataSource?.DataSourceName == DataSourceName ? '!' : '#';
+                char mark = IoC.Get<DataSourceService>().LocalDataSource == DataSource ? '!' : '#';
                 if (IoC.TryGet<LocalityService>() != null)
                 {
                     var orders = IoC.Get<LocalityService>().ServerGroupedOrder;
                     if (orders.ContainsKey(DataSourceName) == true)
                         i = orders[DataSourceName];
                 }
-                return $"{i}_{mark}_{DataSourceName}";
+                return $"{i}_{mark}_{DataSource}";
             }
         }
 
@@ -119,9 +121,8 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(DisplayName));
                     RaisePropertyChanged(nameof(SubTitle));
                     RaisePropertyChanged(nameof(ProtocolDisplayNameInShort));
-                    var dataSource = IoC.Get<DataSourceService>().GetDataSource(_server.DataSourceName);
-                    IsViewable = IsEditable = dataSource?.IsWritable == true;
-                    RaisePropertyChanged(nameof(DataSourceName));
+                    IsViewable = IsEditable = _server.DataSource?.IsWritable == true;
+                    RaisePropertyChanged(nameof(DataSource));
                     RaisePropertyChanged(nameof(IsViewable));
                     RaisePropertyChanged(nameof(IsEditable));
                     if (DisplayNameControl != null)

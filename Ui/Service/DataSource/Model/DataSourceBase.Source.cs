@@ -228,7 +228,7 @@ namespace _1RM.Service.DataSource.Model
             if (result.IsSuccess)
             {
                 server.Id = tmp.Id;
-                server.DataSourceName = this.DataSourceName;
+                server.DataSource = this;
                 SetStatus(true);
             }
             return result;
@@ -250,7 +250,7 @@ namespace _1RM.Service.DataSource.Model
                 if (ret.IsSuccess)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    for (int i = 0; i < servers.Count(); i++)
+                    for (int i = 0; i < servers.Count; i++)
                     {
                         servers[i].Id = cloneList[i].Id;
                         CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
@@ -339,7 +339,7 @@ namespace _1RM.Service.DataSource.Model
             {
                 foreach (var protocolBase in ret.ProtocolBases)
                 {
-                    protocolBase.DataSourceName = DataSourceName;
+                    protocolBase.DataSource = this;
                 }
                 SetStatus(true);
             }
