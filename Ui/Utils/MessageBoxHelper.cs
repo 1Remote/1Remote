@@ -87,10 +87,7 @@ namespace _1RM.Utils
 
         private static void MessageBoxOnActivated(object? sender, ActivationEventArgs e)
         {
-            if (sender is Screen screen
-                && screen.View is Window dlgWindow
-                && dlgWindow.Owner is Window
-                && dlgWindow.IsLoaded == false)
+            if (sender is Screen { View: Window { Owner: { }, IsLoaded: false } dlgWindow })
             {
                 dlgWindow.Loaded -= MessageBoxOnLoaded;
                 dlgWindow.Loaded += MessageBoxOnLoaded;

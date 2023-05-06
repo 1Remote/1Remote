@@ -43,7 +43,7 @@ namespace _1RM.View.Editor
             var server = new RDP
             {
                 Tags = presetTagNames?.Count == 0 ? new List<string>() : new List<string>(presetTagNames!),
-                DataSourceName = addToDataSource.DataSourceName,
+                DataSource = addToDataSource,
             };
             return new ServerEditorPageViewModel(globalData, server, addToDataSource);
         }
@@ -77,7 +77,7 @@ namespace _1RM.View.Editor
             Server = (ProtocolBase)server.Clone();
             if (addToDataSource != null)
             {
-                Server.DataSourceName = addToDataSource.DataSourceName;
+                Server.DataSource = addToDataSource;
                 Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             _orgServer = (ProtocolBase)Server.Clone();

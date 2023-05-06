@@ -254,11 +254,11 @@ namespace _1RM.Service
             Save();
         }
 
-        public void ServerGroupedOrderRebuild(string?[] groupNames)
+        public void ServerGroupedOrderRebuild(string[] groupNames)
         {
             int i = 0;
             _localitySettings.ServerGroupedOrder.Clear();
-            foreach (var str in groupNames)
+            foreach (var str in groupNames.Distinct())
             {
                 _localitySettings.ServerGroupedOrder.Add(str, i);
                 ++i;

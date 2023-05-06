@@ -346,7 +346,6 @@ namespace _1RM.Model.Protocol.Base
 
         public void RunScriptAfterDisconnected(bool isTestRun = false)
         {
-            int exitCode = 0;
             try
             {
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
@@ -361,7 +360,7 @@ namespace _1RM.Model.Protocol.Base
                             MessageBoxHelper.Info($"We will run: '{CommandBeforeConnected}'");
                     }
 
-                    exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true,
+                    var exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true,
                         isHideWindow: isTestRun != true,
                         workingDirectory: tuple.Item3,
                         envVariables: GetEnvironmentVariablesForScript());
@@ -404,6 +403,6 @@ namespace _1RM.Model.Protocol.Base
         }
 
         [JsonIgnore]
-        public string DataSourceName = "";
+        public DataSourceBase? DataSource;
     }
 }

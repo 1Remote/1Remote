@@ -191,11 +191,13 @@ namespace _1RM.Service.DataSource
     {
         public static DataSourceBase? GetDataSource(this ProtocolBase protocol)
         {
-            return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSourceName);
+            return protocol.DataSource;
+            //return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSource);
         }
         public static DataSourceBase? GetDataSource(this ProtocolBaseViewModel protocol)
         {
-            return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSourceName);
+            return protocol.DataSource;
+            //return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSource);
         }
     }
 }

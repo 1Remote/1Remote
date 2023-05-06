@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
 using Shawn.Utils;
@@ -39,6 +40,10 @@ namespace _1RM.Service.DataSource.DAO
             return $@"{message.TrimEnd()} `{databaseName}`
 {IoC.Get<LanguageService>().Translate("because:")}
 {reason}";
+        }
+        public static Result Fail(string message, DataSourceBase? database, string reason)
+        {
+            return Fail(message, database?.DataSourceName ?? "", reason);
         }
         public static Result Fail(string message, string databaseName, string reason)
         {

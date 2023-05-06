@@ -10,6 +10,7 @@ using System.Windows.Input;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using Microsoft.AppCenter.Crashes;
 using Shawn.Utils;
@@ -90,9 +91,10 @@ namespace _1RM.View.ServerList
             if (checkBox.Name == "HeaderCheckBox")
             {
                 var group = (CollectionViewGroup)checkBox.DataContext;
-                foreach (ProtocolBaseViewModel item in group.Items)
+                foreach (var obj in group.Items)
                 {
-                    item.IsSelected = checkBox.IsChecked == true;
+                    if(obj is ProtocolBaseViewModel item)
+                        item.IsSelected = checkBox.IsChecked == true;
                 }
             }
             else
@@ -225,21 +227,21 @@ namespace _1RM.View.ServerList
 
                 // item move
                 if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
-                    && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMoved } listBoxItem
+                    && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMovedProtocol } listBoxItem
                     && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target }
-                    && toBeMoved != target)
+                    && toBeMovedProtocol != target)
                 {
                     var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
-                    int removedIdx = items.IndexOf(toBeMoved);
+                    int removedIdx = items.IndexOf(toBeMovedProtocol);
                     int targetIdx = items.IndexOf(target);
 #if DEBUG
                     SimpleLogHelper.Debug($"Before Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
-                    SimpleLogHelper.Debug($"Drop: {toBeMoved.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
+                    SimpleLogHelper.Debug($"Drop: {toBeMovedProtocol.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
 #endif
                     if (removedIdx == targetIdx - 1)
                     {
-                        (toBeMoved, target) = (target, toBeMoved);// swap
-                        removedIdx = items.IndexOf(toBeMoved);
+                        (toBeMovedProtocol, target) = (target, toBeMovedProtocol);// swap
+                        removedIdx = items.IndexOf(toBeMovedProtocol);
                         targetIdx = items.IndexOf(target);
                     }
                     if (removedIdx >= 0
@@ -248,7 +250,7 @@ namespace _1RM.View.ServerList
                     {
                         items.RemoveAt(removedIdx);
                         targetIdx = items.IndexOf(target);
-                        items.Insert(targetIdx, toBeMoved);
+                        items.Insert(targetIdx, toBeMovedProtocol);
                         IoC.Get<LocalityService>().ServerCustomOrderRebuild(items);
                         IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
@@ -258,45 +260,37 @@ namespace _1RM.View.ServerList
                 }
                 // group move
                 else if (LvServerCards.IsGrouping == true
-                    && e.Data.GetData("DragSource") is GroupItem { DataContext: CollectionViewGroup { Name: string toBeMovedName } toBeMovedGroupItem }
+                    && e.Data.GetData("DragSource") is GroupItem { DataContext: CollectionViewGroup { Name: DataSourceBase toBeMovedDataSource } toBeMovedGroupItem }
                     && IoC.Get<DataSourceService>().AdditionalSources.Any()
                     && LvServerCards?.Items?.Groups?.Count > 0)
                 {
-                    string targetGroupName = toBeMovedName;
+                    DataSourceBase? targetGroup = null;
                     // GroupItem drop to ListBoxItem
-                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol })
+                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel { DataSource: {} } protocol })
                     {
-                        targetGroupName = protocol.DataSourceName;
+                        targetGroup = protocol.DataSource;
                     }
                     // GroupItem drop to something in GroupItem
                     else if (sender is DependencyObject obj)
                     {
-                        GroupItem? groupItem = null;
-                        if (sender is GroupItem gi) // 直接 drag GroupItem
+                        var groupItem = (sender is GroupItem gi) ? gi : MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
+                        if (groupItem is { DataContext: CollectionViewGroup { Name: DataSourceBase ds } })
                         {
-                            groupItem = gi;
-                        }
-                        else // drag GroupItem header 中的元素
-                        {
-                            groupItem = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
-                        }
-                        if (groupItem is GroupItem { DataContext: CollectionViewGroup { Name: string name } })
-                        {
-                            targetGroupName = name;
+                            targetGroup = ds;
                         }
                     }
 
-                    if (targetGroupName != toBeMovedName)
+                    if (targetGroup != null && targetGroup != toBeMovedDataSource)
                     {
                         var groups = LvServerCards.Items.Groups.Cast<CollectionViewGroup>().ToList();
-                        var targetGroupItem = groups.FirstOrDefault(x => x.Name.ToString() == targetGroupName);
+                        var targetGroupItem = groups.FirstOrDefault(x => x.Name == targetGroup);
                         if (targetGroupItem != null)
                         {
                             int removedIdx = groups.IndexOf(toBeMovedGroupItem);
                             int targetIdx = groups.IndexOf(targetGroupItem);
 #if DEBUG
                             SimpleLogHelper.Debug($"groups Before Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
-                            SimpleLogHelper.Debug($"groups Drop: {toBeMovedGroupItem.Name.ToString()}({removedIdx}) -> {targetGroupItem.Name.ToString()}({targetIdx})");
+                            SimpleLogHelper.Debug($"groups Drop: {toBeMovedGroupItem.Name}({removedIdx}) -> {targetGroupItem.Name}({targetIdx})");
 #endif
                             if (removedIdx == targetIdx - 1)
                             {
@@ -311,7 +305,7 @@ namespace _1RM.View.ServerList
                                 groups.RemoveAt(removedIdx);
                                 targetIdx = groups.IndexOf(targetGroupItem);
                                 groups.Insert(targetIdx, toBeMovedGroupItem);
-                                IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString()).ToArray());
+                                IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString() ?? "").Where(x=> string.IsNullOrEmpty(x) == false).ToArray());
                                 IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
                                 SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
@@ -369,11 +363,11 @@ namespace _1RM.View.ServerList
         {
             if (value.Length == 2
                 && value[0] is IEnumerable<ProtocolBaseViewModel> protocolBaseViewModels
-                && value[1] is string groupName)
+                && value[1] is DataSourceBase dataSource)
             {
-                if (protocolBaseViewModels.Where(x => x.Server.DataSourceName == groupName).Any(x => x.IsSelected))
+                if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).Any(x => x.IsSelected))
                 {
-                    if (protocolBaseViewModels.Where(x => x.Server.DataSourceName == groupName).All(x => x.IsSelected))
+                    if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).All(x => x.IsSelected))
                         return true;
                     return null;
                 }

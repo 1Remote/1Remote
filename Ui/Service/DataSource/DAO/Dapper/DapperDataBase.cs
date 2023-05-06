@@ -83,23 +83,15 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 if (_dbConnection == null)
                 {
                     _dbConnection?.Close();
-                    switch (DatabaseType)
+                    _dbConnection = DatabaseType switch
                     {
-                        case DatabaseType.MySql:
-                            _dbConnection = new MySqlConnection(_connectionString);
-                            break;
-                        case DatabaseType.Sqlite:
-                            _dbConnection = new SQLiteConnection(_connectionString);
-                            break;
-                        //case DatabaseType.SqlServer:
-                        //    break;
-                        //case DatabaseType.PostgreSQL:
-                        //    break;
-                        //case DatabaseType.Oracle:
-                        //    break;
-                        default:
-                            throw new NotImplementedException(DatabaseType.ToString() + " not supported!");
-                    }
+                        DatabaseType.MySql => new MySqlConnection(_connectionString),
+                        DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
+                        DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                        DatabaseType.PostgreSQL => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                        DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                        _ => throw new NotImplementedException(DatabaseType.ToString() + " not supported!")
+                    };
                 }
 
                 string error = "";
@@ -193,17 +185,17 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             {
                 var result = OpenConnection(info);
                 if (!result.IsSuccess) return ResultSelects.Fail(result.ErrorInfo);
-#pragma warning disable CS8619
                 try
                 {
-                    var ps = _dbConnection.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
-                    return ResultSelects.Success(ps);
+                    var ps = _dbConnection.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`")
+                                                            .Select(x => x?.ToProtocolServerBase())
+                                                            .Where(x => x != null).ToList();
+                    return ResultSelects.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
                 {
                     return ResultSelects.Fail(info, DatabaseName, e.Message);
                 }
-#pragma warning restore CS8619 
             }
         }
 

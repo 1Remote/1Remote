@@ -32,6 +32,11 @@ namespace _1RM.Service.DataSource.Model
             };
         }
 
+        public override string ToString()
+        {
+            return DataSourceName;
+        }
+
         private EnumDatabaseStatus _status = EnumDatabaseStatus.NotConnectedYet;
         [JsonIgnore]
         public EnumDatabaseStatus Status
