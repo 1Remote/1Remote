@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
              xmlns:dataSource="clr-namespace:_1RM.Service.DataSource"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:DataSourceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -43,38 +44,72 @@
                 <DataGridTemplateColumn Width="Auto" Header="">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Background="Transparent" Cursor="Hand" ToolTip="{Binding StatusInfo}">
-                                <Path Height="16" Width="16" UseLayoutRounding="True" 
-                                      Fill="Green" Stretch="Uniform">
-                                    <Path.Style>
-                                        <Style TargetType="Path">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            <Setter Property="Data" Value="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsWritable}" Value="False">
-                                                    <Setter Property="Data" Value="M640 170.666667H213.333333v682.666666h597.333334V341.333333h-170.666667V170.666667zM128 127.658667C128 104.277333 147.072 85.333333 170.624 85.333333H682.666667l213.333333 213.333334v597.034666A42.666667 42.666667 0 0 1 853.632 938.666667H170.368A42.666667 42.666667 0 0 1 128 896.341333V127.658667zM640 469.333333h42.666667v213.333334H341.333333v-213.333334h42.666667v-42.666666a128 128 0 0 1 256 0v42.666666z m-85.333333 0v-42.666666a42.666667 42.666667 0 0 0-85.333334 0v42.666666h85.333334z"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
-                                </Path>
-                                <Path Height="16" Width="16" UseLayoutRounding="True" 
-                                      Data="M512 981.333333C251.733333 981.333333 42.666667 772.266667 42.666667 512S251.733333 42.666667 512 42.666667s469.333333 209.066667 469.333333 469.333333-209.066667 469.333333-469.333333 469.333333z m0-409.6l98.133333 98.133334c8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8 17.066667-17.066667 17.066667-42.666667 0-59.733334L571.733333 512l98.133334-98.133333c8.533333-8.533333 12.8-17.066667 12.8-29.866667 0-12.8-4.266667-21.333333-12.8-29.866667-8.533333-8.533333-17.066667-12.8-29.866667-12.8-12.8 0-21.333333 4.266667-29.866667 12.8L512 452.266667 413.866667 354.133333C405.333333 345.6 396.8 341.333333 384 341.333333c-12.8 0-21.333333 4.266667-29.866667 12.8-8.533333 8.533333-12.8 17.066667-12.8 29.866667 0 12.8 4.266667 21.333333 12.8 29.866667l98.133334 98.133333-98.133334 98.133333c-17.066667 17.066667-17.066667 42.666667 0 59.733334 8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8l98.133333-98.133334z" 
-                                      Fill="Red" Stretch="Uniform">
-                                    <Path.Style>
-                                        <Style TargetType="Path">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
-                                </Path>
-                            </Grid>
+                            <!--Show database status-->
+                            <Button Margin="0 0 0 0"
+                                    Background="Transparent"
+                                    attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                    attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:DataSourceView}, Path=DataContext.CmdRefreshDataSource}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip="{Binding StatusInfo}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <Path Height="16" Width="16" UseLayoutRounding="True" Stretch="Uniform">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                                                            <Setter Property="Fill" Value="Red"></Setter>
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                        <Condition Binding="{Binding IsWritable}" Value="True"/>
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <MultiDataTrigger.Setters>
+                                                                        <Setter Property="Data" Value="{StaticResource GeometryCloudConnected}"></Setter>
+                                                                        <Setter Property="Fill" Value="Green"></Setter>
+                                                                    </MultiDataTrigger.Setters>
+                                                                </MultiDataTrigger>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                        <Condition Binding="{Binding IsWritable}" Value="False"/>
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <MultiDataTrigger.Setters>
+                                                                        <Setter Property="Data" Value="{StaticResource GeometryCloudConnectedReadonly}"></Setter>
+                                                                        <Setter Property="Fill" Value="Green"></Setter>
+                                                                    </MultiDataTrigger.Setters>
+                                                                </MultiDataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <!--Show reconnect button when hover-->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Grid>
+                                                            <Path Height="16" Width="16" UseLayoutRounding="True" Stretch="Uniform">
+                                                                <Path.Style>
+                                                                    <Style TargetType="Path">
+                                                                        <Setter Property="Data" Value="{StaticResource GeometryRefresh}"></Setter>
+                                                                        <Setter Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                                    </Style>
+                                                                </Path.Style>
+                                                            </Path>
+                                                        </Grid>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

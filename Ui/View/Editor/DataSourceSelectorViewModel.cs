@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using _1RM.Model;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -72,6 +73,29 @@ namespace _1RM.View.Editor
                 return _cmdCancel ??= new RelayCommand((o) =>
                 {
                     this.RequestClose(false);
+                });
+            }
+        }
+
+
+        private RelayCommand? _cmdRefreshDataSource;
+        public RelayCommand CmdRefreshDataSource
+        {
+            get
+            {
+                return _cmdRefreshDataSource ??= new RelayCommand((o) =>
+                {
+                    if (o is DataSourceBase dataSource)
+                    {
+                        if (dataSource.Status != EnumDatabaseStatus.OK)
+                        {
+                            dataSource.ReconnectTime = DateTime.MinValue;
+                        }
+                        else
+                        {
+                            IoC.Get<GlobalData>().CheckUpdateTime = DateTime.MinValue;
+                        }
+                    }
                 });
             }
         }
