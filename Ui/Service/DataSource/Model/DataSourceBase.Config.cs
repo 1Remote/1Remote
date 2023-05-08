@@ -45,14 +45,21 @@ namespace _1RM.Service.DataSource.Model
             set
             {
                 SetAndNotifyIfChanged(ref _status, value);
-                StatueTime = DateTime.Now;
                 StatusInfo = Status == EnumDatabaseStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
+                if (Status != EnumDatabaseStatus.OK)
+                {
+#if DEBUG
+                    ReconnectTime = DateTime.Now.AddMinutes(1);
+#else
+                    ReconnectTime = DateTime.Now.AddMinutes(5);
+#endif
+                }
+                else
+                {
+                    ReconnectTime = DateTime.MinValue;
+                }
             }
         }
-
-
-        [JsonIgnore]
-        public DateTime StatueTime = DateTime.MinValue;
 
 
         private string _statusInfo = "";
@@ -61,6 +68,16 @@ namespace _1RM.Service.DataSource.Model
         {
             get => _statusInfo;
             set => SetAndNotifyIfChanged(ref _statusInfo, value);
+        }
+
+        [JsonIgnore]
+        public DateTime ReconnectTime = DateTime.MinValue;
+        private string _reconnectInfo = "";
+        [JsonIgnore]
+        public string ReconnectInfo
+        {
+            get => _reconnectInfo;
+            set => SetAndNotifyIfChanged(ref _reconnectInfo, value);
         }
 
 

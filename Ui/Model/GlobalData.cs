@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using System.Windows.Interop;
+using System.Windows.Media;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -28,7 +30,8 @@ namespace _1RM.Model
             ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
 
-            _timer = new Timer(_configurationService.DatabaseCheckPeriod * 1000)
+            CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
+            _timer = new Timer(1000)
             {
                 AutoReset = false,
             };
@@ -101,51 +104,54 @@ namespace _1RM.Model
         /// <param name="focus"></param>
         public bool ReloadServerList(bool focus = false)
         {
-            if (_sourceService == null)
+            try
             {
-                return false;
-            }
-
-
-            var needRead = false;
-            if (focus == false)
-            {
-                needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
-                foreach (var additionalSource in _sourceService.AdditionalSources)
+                if (_sourceService == null)
                 {
-                    // 对于断线的数据源，隔一段时间后尝试重连
-                    // TODO try to reconnect when network is available
-                    if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
+                    return false;
+                }
+
+
+                var needRead = false;
+                if (focus == false)
+                {
+                    needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
+                    foreach (var additionalSource in _sourceService.AdditionalSources)
                     {
-#if DEBUG
-                        if (additionalSource.Value.StatueTime.AddMinutes(1) < DateTime.Now)
-#else
-                        if (additionalSource.Value.StatueTime.AddMinutes(5) < DateTime.Now)
-#endif
+                        // 断线的数据源，除非强制读取，否则都忽略
+                        if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
                         {
-                            additionalSource.Value.Database_SelfCheck();
+                            if (focus)
+                                additionalSource.Value.Database_SelfCheck();
+                            else
+                                continue;
+                        }
+
+                        if (needRead == false)
+                        {
+                            needRead |= additionalSource.Value.NeedRead();
                         }
                     }
-
-                    if (needRead == false)
-                    {
-                        needRead |= additionalSource.Value.NeedRead();
-                    }
                 }
-            }
 
-            if (focus || needRead)
+                if (focus || needRead)
+                {
+                    // read from db
+                    VmItemList = _sourceService.GetServers(focus);
+                    ConnectTimeRecorder.Cleanup();
+                    ReadTagsFromServers();
+                    OnDataReloaded?.Invoke();
+
+                    return true;
+                }
+                return false;
+            }
+            finally
             {
-                // read from db
-                VmItemList = _sourceService.GetServers(focus);
-                ConnectTimeRecorder.Cleanup();
-                ReadTagsFromServers();
-                OnDataReloaded?.Invoke();
-
-                return true;
             }
-            return false;
         }
+
+
 
         public Result AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
@@ -395,16 +401,24 @@ namespace _1RM.Model
                 _timerStopFlag = false;
                 if (_timer.Enabled == false && _configurationService.DatabaseCheckPeriod > 0)
                 {
-                    _timer.Interval = _configurationService.DatabaseCheckPeriod * 1000;
                     _timer.Start();
                 }
             }
         }
 
+        public DateTime CheckUpdateTime;
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             try
             {
+                if (_sourceService == null)
+                    return;
+
+                var ds = new List<DataSourceBase>();
+                if (_sourceService.LocalDataSource != null)
+                    ds.Add(_sourceService.LocalDataSource);
+                ds.AddRange(_sourceService.AdditionalSources.Values);
+
                 var mainWindowViewModel = IoC.Get<MainWindowViewModel>();
                 var listPageViewModel = IoC.Get<ServerListPageViewModel>();
                 var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
@@ -413,17 +427,85 @@ namespace _1RM.Model
                     || listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
+                    foreach (var s in ds)
+                    {
+                        s.ReconnectInfo = "TXT: pause";
+                    }
                     return;
                 }
 
-                if (ReloadServerList())
+
+                var checkUpdateEtc = Math.Max((CheckUpdateTime - DateTime.Now).Seconds, 0);
+                var minReconnectEtc = int.MaxValue;
+
+
+                var needReconns = new List<DataSourceBase>();
+                foreach (var s in ds.Where(x => x.Status != EnumDatabaseStatus.OK))
                 {
-                    SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
+                    if (s.ReconnectTime > DateTime.Now)
+                    {
+                        minReconnectEtc = Math.Min((s.ReconnectTime - DateTime.Now).Seconds, minReconnectEtc);
+                    }
+                    else
+                    {
+                        minReconnectEtc = 0;
+                        needReconns.Add(s);
+                    }
                 }
-                else
+
+                var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
+
+                var msg = minEtc > 0
+                    ? $"TXT: check update in {minEtc}s"
+                    : "TXT: checking";
+
+                foreach (var s in ds)
                 {
-                    SimpleLogHelper.Debug("check database update - no need reload by timer " + _timer.GetHashCode());
+                    if (s.Status != EnumDatabaseStatus.OK)
+                    {
+                        if ((s.ReconnectTime - DateTime.Now).Seconds > 0)
+                        {
+                            s.ReconnectInfo = $"TXT: reconnect in {(s.ReconnectTime - DateTime.Now).Seconds}s";
+                        }
+                        else
+                        {
+                            s.ReconnectInfo = $"TXT: reconnecting";
+                        }
+                    }
+                    else
+                    {
+                        s.ReconnectInfo = msg;
+                    }
                 }
+
+                if (minEtc > 0 && minReconnectEtc > 0)
+                {
+                    return;
+                }
+
+                // reconnect 
+                foreach (var dataSource in needReconns.Where(x => x.ReconnectTime < DateTime.Now))
+                {
+                    if (dataSource.Database_SelfCheck() == EnumDatabaseStatus.OK)
+                    {
+                        minEtc = 0;
+                    }
+                }
+
+                if (minEtc == 0)
+                {
+                    if (ReloadServerList())
+                    {
+                        SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
+                    }
+                    else
+                    {
+                        SimpleLogHelper.Debug("check database update - no need reload by timer " + _timer.GetHashCode());
+                    }
+                }
+
+                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+                CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
             }
             catch (Exception ex)
             {
@@ -439,7 +521,6 @@ namespace _1RM.Model
                         _timer.Start();
                     }
                 }
-                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
             }
         }
     }
