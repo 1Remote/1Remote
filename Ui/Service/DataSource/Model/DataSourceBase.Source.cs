@@ -127,10 +127,10 @@ namespace _1RM.Service.DataSource.Model
                     }
                     SetStatus(true);
                 }
-                else
-                {
-                    CachedProtocols.Clear();
-                }
+                //else
+                //{
+                //    CachedProtocols.Clear();
+                //}
                 return CachedProtocols;
             }
         }
@@ -183,7 +183,10 @@ namespace _1RM.Service.DataSource.Model
         public virtual EnumDatabaseStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
             if (Database_OpenConnection(connectTimeOutSeconds) == false)
+            {
+                SetStatus(false);
                 return Status;
+            }
 
             var dataBase = GetDataBase();
 

@@ -282,6 +282,7 @@ namespace _1RM
 
             // init session controller
             IoC.Get<SessionControlService>();
+            IoC.Get<MainWindowViewModel>();
         }
 
 

@@ -13,6 +13,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:serverList="clr-namespace:_1RM.View.ServerList"
+             xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              mc:Ignorable="d"
              Background="White"
              d:DataContext="{d:DesignInstance serverList:ServerListPageViewModel}"
@@ -489,25 +490,25 @@
                                                     <Expander IsExpanded="{Binding Items[0].GroupedIsExpanded}"
                                                               Background="{DynamicResource BackgroundBrush}" 
                                                               Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                              Style="{StaticResource ExpanderWithAnEye}"
                                                               BorderThickness="0">
                                                         <Expander.Header>
                                                             <StackPanel Orientation="Horizontal" AllowDrop="True">
                                                                 <CheckBox Margin="6 0 0 0" Width="20" Height="20" HorizontalAlignment="Left"
                                                                           x:Name="HeaderCheckBox" 
-                                                                          Tag="{Binding Name}"
                                                                           Click="ItemsCheckBox_OnClick"
                                                                 >
                                                                 </CheckBox>
 
 
-                                                                <!--drag this element to sort groups-->
                                                                 <StackPanel Background="Transparent" 
-                                                                            Cursor="SizeNS"
-                                                                            Orientation="Horizontal"
-                                                                            ToolTip="Drag to reorder groups"
-                                                                            PreviewMouseDown="UIElement_OnPreviewMouseDown"
-                                                                            PreviewMouseMove="UIElement_PreviewMouseMoveEvent">
-                                                                    <Grid Background="Transparent">
+                                                                            Orientation="Horizontal">
+                                                                    <!--drag this element to sort groups-->
+                                                                    <Grid Background="Transparent"
+                                                                          Cursor="SizeNS"
+                                                                          ToolTip="Drag to reorder groups"
+                                                                          PreviewMouseDown="UIElement_OnPreviewMouseDown"
+                                                                          PreviewMouseMove="UIElement_PreviewMouseMoveEvent">
                                                                         <Grid.Style>
                                                                             <Style TargetType="Grid">
                                                                                 <Setter Property="Opacity" Value="0.2"></Setter>
@@ -528,6 +529,86 @@
                                                                                FontSize="16"
                                                                                Text="{Binding Path=Name}" 
                                                                                Margin="0,0,0,0"/>
+
+
+                                                                    <!--Show database status-->
+                                                                    <Button Margin="10 0 0 0"
+                                                                            Background="Transparent"
+                                                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdRefreshDataSource}"
+                                                                            CommandParameter="{Binding Name}"
+                                                                            ToolTip="{Binding Name.StatusInfo}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                                                                <Setter Property="Content">
+                                                                                    <Setter.Value>
+                                                                                        <Path Height="20" Width="20" 
+                                                                                                UseLayoutRounding="True" Stretch="Uniform">
+                                                                                            <Path.Style>
+                                                                                                <Style TargetType="Path">
+                                                                                                    <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                                                                                                    <Setter Property="Fill" Value="Red"></Setter>
+                                                                                                    <Style.Triggers>
+                                                                                                        <MultiDataTrigger>
+                                                                                                            <MultiDataTrigger.Conditions>
+                                                                                                                <Condition Binding="{Binding Name.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                                                                <Condition Binding="{Binding Name.IsWritable}" Value="True"/>
+                                                                                                            </MultiDataTrigger.Conditions>
+                                                                                                            <MultiDataTrigger.Setters>
+                                                                                                                <Setter Property="Data" Value="{StaticResource GeometryCloudConnected}"></Setter>
+                                                                                                                <Setter Property="Fill" Value="Green"></Setter>
+                                                                                                            </MultiDataTrigger.Setters>
+                                                                                                        </MultiDataTrigger>
+                                                                                                        <MultiDataTrigger>
+                                                                                                            <MultiDataTrigger.Conditions>
+                                                                                                                <Condition Binding="{Binding Name.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                                                                <Condition Binding="{Binding Name.IsWritable}" Value="False"/>
+                                                                                                            </MultiDataTrigger.Conditions>
+                                                                                                            <MultiDataTrigger.Setters>
+                                                                                                                <Setter Property="Data" Value="{StaticResource GeometryCloudConnectedReadonly}"></Setter>
+                                                                                                                <Setter Property="Fill" Value="Green"></Setter>
+                                                                                                            </MultiDataTrigger.Setters>
+                                                                                                        </MultiDataTrigger>
+                                                                                                    </Style.Triggers>
+                                                                                                </Style>
+                                                                                            </Path.Style>
+                                                                                        </Path>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <!--Show reconnect button when hover-->
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Content">
+                                                                                            <Setter.Value>
+                                                                                                <Grid Height="20" Width="20" >
+                                                                                                    <Path Height="16" Width="16" 
+                                                                                                            UseLayoutRounding="True" Stretch="Uniform">
+                                                                                                        <Path.Style>
+                                                                                                            <Style TargetType="Path">
+                                                                                                                <Setter Property="Data" Value="{StaticResource GeometryRefresh}"></Setter>
+                                                                                                                <Setter Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                                                                            </Style>
+                                                                                                        </Path.Style>
+                                                                                                    </Path>
+                                                                                                </Grid>
+                                                                                            </Setter.Value>
+                                                                                        </Setter>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                    </Button>
+
+
+                                                                    <!--Show reconnect info if lost connect-->
+                                                                    <TextBlock FontSize="12" Margin="5 0 0 0" 
+                                                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                                                               Opacity="0.5"
+                                                                               Visibility="{Binding Name.Status, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}"
+                                                                               VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name.ReconnectInfo}"></TextBlock>
+
+
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </Expander.Header>

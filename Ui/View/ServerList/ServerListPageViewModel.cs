@@ -16,6 +16,8 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Resources.Icons;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
@@ -731,5 +733,28 @@ namespace _1RM.View.ServerList
         }
 
         #endregion
+
+
+        private RelayCommand? _cmdRefreshDataSource;
+        public RelayCommand CmdRefreshDataSource
+        {
+            get
+            {
+                return _cmdRefreshDataSource ??= new RelayCommand((o) =>
+                {
+                    if (o is DataSourceBase dataSource)
+                    {
+                        if (dataSource.Status != EnumDatabaseStatus.OK)
+                        {
+                            dataSource.ReconnectTime = DateTime.MinValue;
+                        }
+                        else
+                        {
+                            AppData.CheckUpdateTime = DateTime.MinValue;
+                        }
+                    }
+                });
+            }
+        
     }
 }
