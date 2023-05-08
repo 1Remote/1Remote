@@ -7,6 +7,7 @@
                          xmlns:editor="clr-namespace:_1RM.View.Editor"
                          xmlns:model="clr-namespace:_1RM.Service.DataSource.Model"
                          xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
+                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
                          WindowStyle="None"
@@ -72,40 +73,72 @@
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="SelectSource2"></ColumnDefinition>
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="SelectSource3"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
-                                        <!--<Path Height="20" Margin="10 0 0 0" UseLayoutRounding="True" Data="M884.736 22.528c-44.032-38.912-97.28-23.552-149.504 23.552-8.192 7.168-15.36 14.336-23.552 22.528-12.288 13.312-24.576 27.648-35.84 43.008-12.288-5.12-25.6-8.192-39.936-8.192H199.68c-57.344 0-104.448 47.104-104.448 104.448v436.224c0 57.344 47.104 104.448 104.448 104.448h307.2c4.096 20.48 6.144 34.816 6.144 34.816s0 4.096 1.024 9.216c-2.048 38.912-1.024 79.872 2.048 116.736 4.096 49.152 11.264 91.136 21.504 113.664l6.144-3.072c-14.336-44.032-20.48-102.4-17.408-168.96 4.096-102.4 27.648-225.28 70.656-354.304 73.728-194.56 175.104-350.208 269.312-423.936-86.016 76.8-200.704 325.632-235.52 417.792-38.912 103.424-65.536 199.68-82.944 292.864 28.672-87.04 120.832-123.904 120.832-123.904s45.056-55.296 98.304-135.168c-31.744 7.168-82.944 19.456-100.352 26.624-25.6 11.264-32.768 14.336-32.768 14.336S716.8 515.072 788.48 491.52c96.256-154.624 203.776-373.76 96.256-468.992zM512 475.136c10.24 20.48 18.432 47.104 23.552 66.56 1.024 5.12 2.048 10.24 3.072 14.336 2.048 9.216 3.072 16.384 3.072 16.384l-4.096-12.288c-1.024-2.048-1.024-4.096-2.048-6.144 0-1.024-1.024-2.048-1.024-3.072-6.144-13.312-22.528-41.984-29.696-55.296-6.144 18.432-11.264 34.816-16.384 50.176 20.48 37.888 32.768 102.4 32.768 102.4s-1.024-4.096-6.144-18.432c-4.096-13.312-27.648-53.248-32.768-62.464-9.216 33.792-13.312 57.344-9.216 63.488 5.12 8.192 9.216 21.504 14.336 35.84H199.68c-11.264 0-21.504-9.216-21.504-21.504V207.872c0-11.264 9.216-21.504 21.504-21.504H624.64c-53.248 91.136-95.232 199.68-112.64 288.768z" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>-->
-                                        <Grid Margin="10 0 0 0" Background="Transparent" 
-                                              ToolTip="{Binding StatusInfo}">
-                                            <Path Height="16" Width="16" UseLayoutRounding="True" 
-                                                  Fill="Green" Stretch="Uniform">
-                                                <Path.Style>
-                                                    <Style TargetType="Path">
-                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                        <Setter Property="Data" Value="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z"></Setter>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding IsWritable}" Value="False">
-                                                                <Setter Property="Data" Value="M640 170.666667H213.333333v682.666666h597.333334V341.333333h-170.666667V170.666667zM128 127.658667C128 104.277333 147.072 85.333333 170.624 85.333333H682.666667l213.333333 213.333334v597.034666A42.666667 42.666667 0 0 1 853.632 938.666667H170.368A42.666667 42.666667 0 0 1 128 896.341333V127.658667zM640 469.333333h42.666667v213.333334H341.333333v-213.333334h42.666667v-42.666666a128 128 0 0 1 256 0v42.666666z m-85.333333 0v-42.666666a42.666667 42.666667 0 0 0-85.333334 0v42.666666h85.333334z"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <Path Height="16" Width="16" UseLayoutRounding="True" 
-                                                  Data="M512 981.333333C251.733333 981.333333 42.666667 772.266667 42.666667 512S251.733333 42.666667 512 42.666667s469.333333 209.066667 469.333333 469.333333-209.066667 469.333333-469.333333 469.333333z m0-409.6l98.133333 98.133334c8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8 17.066667-17.066667 17.066667-42.666667 0-59.733334L571.733333 512l98.133334-98.133333c8.533333-8.533333 12.8-17.066667 12.8-29.866667 0-12.8-4.266667-21.333333-12.8-29.866667-8.533333-8.533333-17.066667-12.8-29.866667-12.8-12.8 0-21.333333 4.266667-29.866667 12.8L512 452.266667 413.866667 354.133333C405.333333 345.6 396.8 341.333333 384 341.333333c-12.8 0-21.333333 4.266667-29.866667 12.8-8.533333 8.533333-12.8 17.066667-12.8 29.866667 0 12.8 4.266667 21.333333 12.8 29.866667l98.133334 98.133333-98.133334 98.133333c-17.066667 17.066667-17.066667 42.666667 0 59.733334 8.533333 8.533333 17.066667 12.8 29.866667 12.8 12.8 0 21.333333-4.266667 29.866667-12.8l98.133333-98.133334z" 
-                                                  Fill="Red" Stretch="Uniform">
-                                                <Path.Style>
-                                                    <Style TargetType="Path">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
-                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                        </Grid>
+                                        <!--Show database status-->
+                                        <Button Margin="10 0 0 0"
+                                                Background="Transparent"
+                                                attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=editor:DataSourceSelectorView}, Path=DataContext.CmdRefreshDataSource}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip="{Binding StatusInfo}">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <Path Height="20" Width="20" Stretch="Uniform">
+                                                                <Path.Style>
+                                                                    <Style TargetType="Path">
+                                                                        <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                                                                        <Setter Property="Fill" Value="Red"></Setter>
+                                                                        <Style.Triggers>
+                                                                            <MultiDataTrigger>
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                                    <Condition Binding="{Binding IsWritable}" Value="True"/>
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <MultiDataTrigger.Setters>
+                                                                                    <Setter Property="Data" Value="{StaticResource GeometryCloudConnected}"></Setter>
+                                                                                    <Setter Property="Fill" Value="Green"></Setter>
+                                                                                </MultiDataTrigger.Setters>
+                                                                            </MultiDataTrigger>
+                                                                            <MultiDataTrigger>
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}"/>
+                                                                                    <Condition Binding="{Binding IsWritable}" Value="False"/>
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <MultiDataTrigger.Setters>
+                                                                                    <Setter Property="Data" Value="{StaticResource GeometryCloudConnectedReadonly}"></Setter>
+                                                                                    <Setter Property="Fill" Value="Green"></Setter>
+                                                                                </MultiDataTrigger.Setters>
+                                                                            </MultiDataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Path.Style>
+                                                            </Path>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <!--Show reconnect button when hover-->
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Content">
+                                                                <Setter.Value>
+                                                                    <Grid Height="20" Width="20">
+                                                                        <Path Height="16" Width="16" UseLayoutRounding="True" Stretch="Uniform">
+                                                                            <Path.Style>
+                                                                                <Style TargetType="Path">
+                                                                                    <Setter Property="Data" Value="{StaticResource GeometryRefresh}"></Setter>
+                                                                                    <Setter Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                                                </Style>
+                                                                            </Path.Style>
+                                                                        </Path>
+                                                                    </Grid>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                         <TextBlock Grid.Column="1" FontSize="16" 
                                                    Text="{Binding DataSourceName}" 
                                                    ToolTip="{Binding DataSourceName}" 
