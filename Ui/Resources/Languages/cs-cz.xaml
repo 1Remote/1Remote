@@ -275,4 +275,9 @@
     <s:String x:Key="We can not select from database:">Nemůžeme vybrat z databáze:</s:String>
     <s:String x:Key="We can not delete from database:">Nemůžeme odstranit z databáze:</s:String>
     <s:String x:Key="because:">protože:</s:String>
+    <s:String x:Key="Pause">Pauza</s:String>
+    <s:String x:Key="Updating">Aktualizace</s:String>
+    <s:String x:Key="Reconnecting">Opětovné připojení</s:String>
+    <s:String x:Key="Next update check">Další kontrola aktualizace</s:String>
+    <s:String x:Key="Next auto reconnect">Další automatické opětovné připojení</s:String>
 </ResourceDictionary>

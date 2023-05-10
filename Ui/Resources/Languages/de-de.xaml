@@ -275,4 +275,9 @@
     <s:String x:Key="We can not select from database:">Wir können nicht aus der Datenbank auswählen:</s:String>
     <s:String x:Key="We can not delete from database:">Wir können nicht aus der Datenbank löschen:</s:String>
     <s:String x:Key="because:">Weil:</s:String>
+    <s:String x:Key="Pause">Pause</s:String>
+    <s:String x:Key="Updating">Aktualisierung</s:String>
+    <s:String x:Key="Reconnecting">Wiederverbinden</s:String>
+    <s:String x:Key="Next update check">Nächster Update-Check</s:String>
+    <s:String x:Key="Next auto reconnect">Nächste automatische Wiederverbindung</s:String>
 </ResourceDictionary>

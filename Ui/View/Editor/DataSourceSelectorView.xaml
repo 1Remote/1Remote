@@ -30,10 +30,12 @@
 
                     <TextBlock Text="{DynamicResource 'Please select a Data Source'}" 
                                Margin="15" FontSize="20" Height="30" 
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                HorizontalAlignment="Center" ></TextBlock>
 
                     <ListBox MaxHeight="400" Width="500" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="True"
                              ItemsSource="{Binding SourceConfigs}" Grid.IsSharedSizeScope="True">
                         <ListBox.Template>
                             <ControlTemplate TargetType="ListBox">
@@ -142,6 +144,7 @@
                                         <TextBlock Grid.Column="1" FontSize="16" 
                                                    Text="{Binding DataSourceName}" 
                                                    ToolTip="{Binding DataSourceName}" 
+                                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                                    Margin="5 0" 
                                                    VerticalAlignment="Center"></TextBlock>
                                         <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -155,6 +158,7 @@
                                                        TextTrimming="CharacterEllipsis"></TextBlock>
                                             <TextBlock FontSize="16" Text="{Binding Description}" 
                                                        ToolTip="{Binding Description}" 
+                                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                                        Margin="5 0 10 0" 
                                                        VerticalAlignment="Center" 
                                                        TextTrimming="CharacterEllipsis"></TextBlock>

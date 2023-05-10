@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -223,9 +224,13 @@ namespace _1RM.View
         public bool IsVisible
         {
             get => _isVisible;
-            set => SetAndNotifyIfChanged(ref _isVisible, value);
+            private set => SetAndNotifyIfChanged(ref _isVisible, value);
         }
 
+        public virtual void SetIsVisible(bool isVisible)
+        {
+            IsVisible = isVisible;
+        }
 
         private DateTime _lastConnectTime = DateTime.MinValue;
         public DateTime LastConnectTime
@@ -233,6 +238,8 @@ namespace _1RM.View
             get => _lastConnectTime;
             set => SetAndNotifyIfChanged(ref _lastConnectTime, value);
         }
+
+
         #region CMD
 
         private RelayCommand? _cmdConnServer;
@@ -267,5 +274,18 @@ namespace _1RM.View
         }
 
         #endregion CMD
+    }
+
+    public class ProtocolBaseViewModelDummy : ProtocolBaseViewModel
+    {
+        public ProtocolBaseViewModelDummy(DataSourceBase source) : base(new Dummy() { DataSource =  source})
+        {
+            base.SetIsVisible(false);
+        }
+
+        public override void SetIsVisible(bool isVisible)
+        {
+            base.SetIsVisible(false);
+        }
     }
 }

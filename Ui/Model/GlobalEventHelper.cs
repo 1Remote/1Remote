@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.Model;
 using _1RM.View;
 
 namespace _1RM.Model
@@ -22,8 +23,7 @@ namespace _1RM.Model
         /// Go to server edit by server id, if id == 0 goto add page
         /// </summary>
         /// <param name="presetTagNames">preset tag names</param>
-        /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, bool showAnimation = true);
+        public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, DataSourceBase? assignDataSource = null);
         public static OnGoToServerAddPageDelegate? OnGoToServerAddPage { get; set; } = null;
 
         public delegate void OnRequestGoToServerDuplicatePageDelegate(ProtocolBase server, bool showAnimation = true);

@@ -309,3 +309,8 @@ We can not read from database:;We can not read from database:;无法读取数据
 We can not select from database:;We can not select from database:;无法查询数据：;Nemůžeme vybrat z databáze:;Wir können nicht aus der Datenbank auswählen:;Nous ne pouvons pas sélectionner dans la base de données :;Não podemos selecionar do banco de dados:;データベースから選択できません:;我們不能從數據庫中選擇：;Non podemos seleccionar da base de datos:
 We can not delete from database:;We can not delete from database:;无法删除数据：;Nemůžeme odstranit z databáze:;Wir können nicht aus der Datenbank löschen:;Nous ne pouvons pas supprimer de la base de données :;Não podemos excluir do banco de dados:;データベースから削除できません:;我們不能從數據庫中刪除：;Non podemos eliminar da base de datos:
 because:;because:;原因是:;protože:;Weil:;parce que:;porque:;なぜなら：;因為：;porque:
+Pause;Pause;暂停;Pauza;Pause;Pause;Pausa;一時停止;暫停;Pausa
+Updating;Updating;正在更新;Aktualizace;Aktualisierung;Mise à jour;Atualizando;更新中;更新中;Actualizando
+Reconnecting; Reconnecting; 正在重连;Opětovné připojení;Wiederverbinden;Reconnexion;Reconectando;再接続中;重新連接;Reconectando
+Next update check; Next update check; 下次更新检查;Další kontrola aktualizace;Nächster Update-Check;Vérification de la prochaine mise à jour;Verificação da próxima atualização;次回更新確認;下次更新檢查;Próxima revisión de actualización
+Next auto reconnect; Next auto reconnect; 下次自动重连;Další automatické opětovné připojení;Nächste automatische Wiederverbindung;Prochaine reconnexion automatique;Próxima reconexão automática;次回の自動再接続;下次自動重連;Próxima conexión automática

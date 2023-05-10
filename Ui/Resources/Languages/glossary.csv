@@ -297,3 +297,8 @@ We can not read from database:;We can not read from database:;无法读取数据
 We can not select from database:;We can not select from database:;无法查询数据：;;;;;;;
 We can not delete from database:;We can not delete from database:;无法删除数据：;;;;;;;
 because:;because:;原因是:;;;;;;;
+Pause;Pause;暂停;;;;;;;
+Updating;Updating;正在更新;;;;;;;
+Reconnecting; Reconnecting; 正在重连;;;;;;;
+Next update check; Next update check; 下次更新检查;;;;;;;
+Next auto reconnect; Next auto reconnect; 下次自动重连;;;;;;;

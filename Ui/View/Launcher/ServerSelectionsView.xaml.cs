@@ -173,7 +173,7 @@ namespace _1RM.View.Launcher
             // 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
             if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is ListBoxItem { Content: ProtocolBaseViewModel baseViewModel })
             {
-                ShowActionsList(baseViewModel.Server);
+                ShowActionsList(baseViewModel);
             }
         }
 
@@ -208,22 +208,22 @@ namespace _1RM.View.Launcher
 
 
 
-        public void ShowActionsList(ProtocolBase? protocolBase = null)
+        public void ShowActionsList(ProtocolBaseViewModel? protocol = null)
         {
             if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
             if (this.DataContext is not ServerSelectionsViewModel vm) return;
 
-            if (protocolBase == null)
+            if (protocol == null)
             {
                 if (vm.SelectedIndex < 0
                     || vm.SelectedIndex >= vm.VmServerList.Count)
                 {
                     return;
                 }
-                protocolBase = vm.VmServerList[vm.SelectedIndex].Server;
+                protocol = vm.VmServerList[vm.SelectedIndex];
             }
 
-            vm.Actions = new ObservableCollection<ProtocolAction>(protocolBase.GetActions());
+            vm.Actions = new ObservableCollection<ProtocolAction>(protocol.GetActions());
             vm.SelectedActionIndex = 0;
 
             GridActionsList.Visibility = Visibility.Visible;

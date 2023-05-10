@@ -23,9 +23,6 @@
             <CollectionViewSource x:Key="ServerListItemSource" 
                                   Source="{Binding VmServerList}"
                                   Filter="ServerListItemSource_OnFilter">
-                <!--<CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="DataSourceName"></PropertyGroupDescription>
-                </CollectionViewSource.GroupDescriptions>-->
             </CollectionViewSource>
 
 
@@ -77,7 +74,7 @@
             </Style>
 
             <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
-                <Grid>
+                <Grid Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Setter Property="Height" Value="164"></Setter>
@@ -97,7 +94,9 @@
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource ServerItemHeight}"></controls:ServerListItem>
+                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource ServerItemHeight}"
+                                             Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}"
+                                             ></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -470,10 +469,9 @@
                          ItemsSource="{Binding Source={StaticResource ServerListItemSource}}"
                          BorderThickness="0" Background="Transparent"
                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                         VirtualizingPanel.CacheLengthUnit="Item"
-                         VirtualizingPanel.CacheLength="5"
-                         VirtualizingPanel.ScrollUnit="Item"
                          VirtualizingPanel.IsVirtualizing="True"
+                         VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                         VirtualizingPanel.ScrollUnit="Pixel"
                          Style="{DynamicResource ServerListStyle}">
 
                     <ListBox.GroupStyle>
@@ -533,6 +531,7 @@
 
                                                                     <!--Show database status-->
                                                                     <Button Margin="10 0 0 0"
+                                                                            x:Name="ButtonDbStatus"
                                                                             Background="Transparent"
                                                                             attachProperty:VisionElement.BackgroundAccent="Transparent"
                                                                             attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
@@ -557,6 +556,7 @@
                                                                                                             </MultiDataTrigger.Conditions>
                                                                                                             <MultiDataTrigger.Setters>
                                                                                                                 <Setter Property="Data" Value="{StaticResource GeometryCloudConnected}"></Setter>
+                                                                                                                <Setter Property="Opacity" Value="0.2"></Setter>
                                                                                                                 <Setter Property="Fill" Value="Green"></Setter>
                                                                                                             </MultiDataTrigger.Setters>
                                                                                                         </MultiDataTrigger>
@@ -567,6 +567,7 @@
                                                                                                             </MultiDataTrigger.Conditions>
                                                                                                             <MultiDataTrigger.Setters>
                                                                                                                 <Setter Property="Data" Value="{StaticResource GeometryCloudConnectedReadonly}"></Setter>
+                                                                                                                <Setter Property="Opacity" Value="0.2"></Setter>
                                                                                                                 <Setter Property="Fill" Value="Green"></Setter>
                                                                                                             </MultiDataTrigger.Setters>
                                                                                                         </MultiDataTrigger>
@@ -605,9 +606,50 @@
                                                                     <TextBlock FontSize="12" Margin="5 0 0 0" 
                                                                                Foreground="{DynamicResource PrimaryTextBrush}"
                                                                                Opacity="0.5"
-                                                                               Visibility="{Binding Name.Status, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}"
-                                                                               VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name.ReconnectInfo}"></TextBlock>
+                                                                               VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name.ReconnectInfo}">
+                                                                        <TextBlock.Style>
+                                                                            <Style TargetType="TextBlock">
+                                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding Name.Status, Converter={StaticResource ConverterIsEqual2Static}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}" Value="False">
+                                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding ElementName=ButtonDbStatus, Path=IsMouseOver}" Value="True">
+                                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </TextBlock.Style>
+                                                                    </TextBlock>
 
+
+                                                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdAdd}"
+                                                                            CommandParameter="{Binding Name}"
+                                                                            IsEnabled="{Binding Name.IsWritable}"
+                                                                            Visibility="{Binding Name.Status, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}"
+                                                                            Background="Transparent"
+                                                                            Margin="10 0 0 0"
+                                                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                                                            Style="{StaticResource ButtonBarAccentStyle}">
+                                                                        <Grid Height="12" Width="12" >
+                                                                            <Path Data="{StaticResource GeometryCross}" 
+                                                                                Stretch="Uniform" Name="Path"
+                                                                              Height="12" Width="12" 
+                                                                              Fill="{DynamicResource PrimaryTextBrush}">
+                                                                                <Path.Style>
+                                                                                    <Style TargetType="Path">
+                                                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=IsMouseOver}" Value="True">
+                                                                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Path.Style>
+                                                                            </Path>
+                                                                        </Grid>
+                                                                    </Button>
 
                                                                 </StackPanel>
                                                             </StackPanel>

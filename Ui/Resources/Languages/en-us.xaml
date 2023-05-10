@@ -275,4 +275,9 @@
     <s:String x:Key="We can not select from database:">We can not select from database:</s:String>
     <s:String x:Key="We can not delete from database:">We can not delete from database:</s:String>
     <s:String x:Key="because:">because:</s:String>
+    <s:String x:Key="Pause">Pause</s:String>
+    <s:String x:Key="Updating">Updating</s:String>
+    <s:String x:Key="Reconnecting"> Reconnecting</s:String>
+    <s:String x:Key="Next update check"> Next update check</s:String>
+    <s:String x:Key="Next auto reconnect"> Next auto reconnect</s:String>
 </ResourceDictionary>

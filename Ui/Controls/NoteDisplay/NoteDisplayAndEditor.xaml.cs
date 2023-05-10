@@ -30,7 +30,7 @@ namespace _1RM.Controls.NoteDisplay
                 if (e.NewValue is ProtocolBase server1)
                 {
                     server1.PropertyChanged += control.ServerOnPropertyChanged;
-                    control.EditEnable = control.EditEnable && server1.GetDataSource()?.IsWritable == true;
+                    control.EditEnable = control.EditEnable && server1.DataSource?.IsWritable == true;
                 }
             }
         }

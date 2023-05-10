@@ -7,6 +7,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Launcher;
@@ -35,9 +36,10 @@ namespace _1RM.Model
 
     public static class ProtocolActionHelper
     {
-        public static List<ProtocolAction> GetActions(this ProtocolBase server)
+        public static List<ProtocolAction> GetActions(this ProtocolBaseViewModel vm)
         {
-            bool writable = server.GetDataSource()?.IsWritable != false;
+            var server = vm.Server;
+            bool writable = server.DataSource?.IsWritable != false;
             #region Build Actions
             var actions = new List<ProtocolAction>();
             {
@@ -77,7 +79,7 @@ namespace _1RM.Model
                     }
                 }
 
-                if (writable)
+                if (writable && (vm.DataSource == null || vm.DataSource.Status == EnumDatabaseStatus.OK))
                 {
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
                     {
