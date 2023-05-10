@@ -275,4 +275,9 @@
     <s:String x:Key="We can not select from database:">Nous ne pouvons pas sélectionner dans la base de données :</s:String>
     <s:String x:Key="We can not delete from database:">Nous ne pouvons pas supprimer de la base de données :</s:String>
     <s:String x:Key="because:">parce que:</s:String>
+    <s:String x:Key="Pause">Pause</s:String>
+    <s:String x:Key="Updating">Mise à jour</s:String>
+    <s:String x:Key="Reconnecting">Reconnexion</s:String>
+    <s:String x:Key="Next update check">Vérification de la prochaine mise à jour</s:String>
+    <s:String x:Key="Next auto reconnect">Prochaine reconnexion automatique</s:String>
 </ResourceDictionary>

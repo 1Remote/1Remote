@@ -54,7 +54,7 @@ namespace _1RM.View.ServerList
                     e.Accepted = false;
                     t.IsSelected = false;
                 }
-                t.IsVisible = e.Accepted;
+                t.SetIsVisible(e.Accepted);
 
 
                 if (IoC.Get<DataSourceService>().AdditionalSources.Any())

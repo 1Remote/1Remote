@@ -89,17 +89,11 @@ namespace _1RM.View.ServerList
             get
             {
                 var items = VmServerList.Where(x => x.IsVisible);
+                if (items.All(x => x.IsSelected))
+                    return true;
                 if (items.Any(x => x.IsSelected))
-                {
-                    if (items.All(x => x.IsSelected))
-                        return true;
-                    else
-                        return null;
-                }
-                else
-                {
-                    return false;
-                }
+                    return null;
+                return false;
             }
             set
             {
@@ -140,7 +134,7 @@ namespace _1RM.View.ServerList
 
         private void UpdateNote()
         {
-            Execute.OnUIThreadSync(() =>
+            Execute.OnUIThread(() =>
             {
                 foreach (var item in VmServerList.Where(x => x.HoverNoteDisplayControl != null))
                 {
@@ -176,7 +170,6 @@ namespace _1RM.View.ServerList
                 BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
             }
 
-            RebuildVmServerList();
             AppData.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(AppData.TagList))
@@ -193,43 +186,107 @@ namespace _1RM.View.ServerList
 
         public void AppendServer(ProtocolBaseViewModel viewModel)
         {
-            Execute.OnUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 viewModel.PropertyChanged -= VmServerPropertyChanged;
                 viewModel.PropertyChanged += VmServerPropertyChanged;
                 VmServerList.Add(viewModel);
+                VmServerListDummyNode();
             });
+        }
+
+        public void DeleteServer(string id)
+        {
+            var viewModel = VmServerList.FirstOrDefault(x => x.Id == id);
+            if (viewModel != null)
+            {
+                DeleteServer(viewModel);
+            }
+        }
+        public void DeleteServer(ProtocolBaseViewModel viewModel)
+        {
+            Execute.OnUIThreadSync(() =>
+            {
+                viewModel.PropertyChanged -= VmServerPropertyChanged;
+                if (VmServerList.Contains(viewModel))
+                {
+                    VmServerList.Remove(viewModel);
+                    SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list");
+                }
+                else
+                {
+                    SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list, but not found in list");
+                }
+                VmServerListDummyNode();
+            });
+        }
+
+        public void VmServerListDummyNode()
+        {
+            if (SourceService.LocalDataSource != null)
+            {
+                if (VmServerList.All(x => x.DataSource != SourceService.LocalDataSource))
+                {
+                    VmServerList.Add(new ProtocolBaseViewModelDummy(SourceService.LocalDataSource!));
+                    SimpleLogHelper.Debug($"Add dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                }
+                else if (VmServerList.Any(x => x.DataSource == SourceService.LocalDataSource && x is not ProtocolBaseViewModelDummy)
+                         && VmServerList.FirstOrDefault(x => x.DataSource == SourceService.LocalDataSource && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                {
+                    VmServerList.Remove(dummy);
+                    SimpleLogHelper.Debug($"Remove dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                }
+            }
+            foreach (var source in SourceService.AdditionalSources)
+            {
+                if (VmServerList.All(x => x.DataSource != source.Value))
+                {
+                    VmServerList.Add(new ProtocolBaseViewModelDummy(source.Value));
+                    SimpleLogHelper.Debug($"Add dummy server for `{source.Value.DataSourceName}`");
+                }
+                else if (VmServerList.Any(x => x.DataSource == source.Value && x is not ProtocolBaseViewModelDummy)
+                         && VmServerList.FirstOrDefault(x => x.DataSource == source.Value && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                {
+                    VmServerList.Remove(dummy);
+                    SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
+                }
+            }
+            ApplySort();
         }
 
         private void RebuildVmServerList()
         {
             lock (this)
             {
+                var list = AppData.VmItemList.ToList();
                 Execute.OnUIThread(() =>
                 {
                     VmServerList = new ObservableCollection<ProtocolBaseViewModel>(
                         // in order to implement the `custom` order 
                         // !!! VmItemList should order by CustomOrder by default
-                        AppData.VmItemList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id));
-                    RaisePropertyChanged(nameof(VmServerList));
+                        list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id)
+                        );
                     SelectedServerViewModelListItem = null;
-                    VmServerList.CollectionChanged += (s, e) =>
-                    {
-                        RaisePropertyChanged(nameof(IsAnySelected));
-                        RaisePropertyChanged(nameof(IsSelectedAll));
-                        RaisePropertyChanged(nameof(SelectedCount));
-                    };
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;
                         vs.PropertyChanged -= VmServerPropertyChanged;
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
+                    VmServerList.CollectionChanged += (s, e) =>
+                    {
+                        RaisePropertyChanged(nameof(IsAnySelected));
+                        RaisePropertyChanged(nameof(IsSelectedAll));
+                        RaisePropertyChanged(nameof(SelectedCount));
+                    };
+
                     RaisePropertyChanged(nameof(IsAnySelected));
                     RaisePropertyChanged(nameof(IsSelectedAll));
                     RaisePropertyChanged(nameof(SelectedCount));
                     UpdateNote();
 
+                    VmServerListDummyNode();
+                    RaisePropertyChanged(nameof(VmServerList));
                     ApplySort();
                 });
             }
@@ -250,7 +307,7 @@ namespace _1RM.View.ServerList
             var orderBy = ServerOrderBy;
             if (this.View is ServerListPageView v)
             {
-                Execute.OnUIThread(() =>
+                Execute.OnUIThreadSync(() =>
                 {
                     var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
                     if (cvs != null)
@@ -294,16 +351,18 @@ namespace _1RM.View.ServerList
 
                     if (cvs != null)
                     {
-                        if (SourceService.AdditionalSources.Any(x => x.Value.CachedProtocols.Count > 0))
+                        if (SourceService.AdditionalSources.Count > 0)
                         {
                             if (cvs.GroupDescriptions.Count == 0)
                             {
                                 cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSource)));
+                                SimpleLogHelper.Debug("GroupDescriptions = ProtocolBase.DataSource");
                             }
                         }
                         else
                         {
                             cvs.GroupDescriptions.Clear();
+                            SimpleLogHelper.Debug("GroupDescriptions = null");
                         }
                     }
                 });
@@ -364,9 +423,9 @@ namespace _1RM.View.ServerList
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (this.View is ServerListPageView view)
+                    if (View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(Enumerable.Where<TagFilter>(TagFilters, x => x.IsIncluded == true).Select(x => x.TagName).ToList());
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where<TagFilter>(x => x.IsIncluded == true).Select(x => x.TagName).ToList(), o as DataSourceBase);
                 });
             }
         }
@@ -576,6 +635,7 @@ namespace _1RM.View.ServerList
                         Task.Factory.StartNew(() =>
                         {
                             var servers = ss.Select(x => x.Server);
+                            SimpleLogHelper.Debug($" {string.Join('、', servers.Select(x => x.DisplayName))} to be deleted");
                             var ret = AppData.DeleteServer(servers);
                             if (!ret.IsSuccess)
                             {
@@ -602,7 +662,7 @@ namespace _1RM.View.ServerList
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
                     }
-                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
+                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable && x.DataSource?.Status == EnumDatabaseStatus.OK));
             }
         }
 
@@ -755,6 +815,6 @@ namespace _1RM.View.ServerList
                     }
                 });
             }
-        
+        }
     }
 }

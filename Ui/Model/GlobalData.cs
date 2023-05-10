@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Timers;
-using System.Windows.Interop;
-using System.Windows.Media;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -202,7 +201,7 @@ namespace _1RM.Model
             try
             {
                 Debug.Assert(protocolServer.IsTmpSession() == false);
-                var source = protocolServer.GetDataSource();
+                var source = protocolServer.DataSource;
                 if (source == null)
                 {
                     return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is not initialized yet");
@@ -249,7 +248,7 @@ namespace _1RM.Model
                 var failMsgs = new List<string>();
                 foreach (var groupedServer in groupedServers)
                 {
-                    var source = groupedServer.First().GetDataSource();
+                    var source = groupedServer.First().DataSource;
                     if (source?.IsWritable == true)
                     {
                         needReload |= source.NeedRead();
@@ -315,11 +314,12 @@ namespace _1RM.Model
                 var failMsgs = new List<string>();
                 foreach (var groupedServer in groupedServers)
                 {
-                    var source = groupedServer.First().GetDataSource();
+                    var source = groupedServer.First().DataSource;
                     if (source?.IsWritable == true)
                     {
                         needReload |= source.NeedRead();
                         var tmp = source.Database_DeleteServer(groupedServer.Select(x => x.Id));
+                        SimpleLogHelper.Debug($"DeleteServer: {string.Join('、', groupedServer.Select(x => x.Id))}, needReload = {needReload}, tmp.IsSuccess = {tmp.IsSuccess}");
                         if (tmp.IsSuccess)
                         {
                             isAnySuccess = true;
@@ -331,14 +331,18 @@ namespace _1RM.Model
                                     var old = GetItemById(source.DataSourceName, protocolServer.Id);
                                     if (old != null)
                                     {
+                                        SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
                                         VmItemList.Remove(old);
+                                        IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
                                         Execute.OnUIThread(() =>
                                         {
-                                            if (IoC.Get<ServerListPageViewModel>().VmServerList.Contains(old))
-                                                IoC.Get<ServerListPageViewModel>().VmServerList.Remove(old); // invoke main list ui change
                                             if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
                                                 IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
                                         });
+                                    }
+                                    else
+                                    {
+                                        SimpleLogHelper.Warning($"Remote server {protocolServer.DisplayName} of `{source.DataSourceName}` removed from GlobalData but not found in VmItemList");
                                     }
                                 }
                             }
@@ -355,7 +359,7 @@ namespace _1RM.Model
                 {
                     if (needReload)
                     {
-                        ReloadServerList();
+                        ReloadServerList(needReload);
                     }
                     else
                     {
@@ -406,6 +410,39 @@ namespace _1RM.Model
             }
         }
 
+        /// <summary>
+        /// return time string like 1d 2h 3m 4s
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        private static string GetTime(int seconds)
+        {
+            var sb = new StringBuilder();
+            if (seconds > 86400)
+            {
+                sb.Append($"{seconds / 86400}d ");
+                seconds %= 86400;
+            }
+
+            if (seconds > 3600)
+            {
+                sb.Append($"{seconds / 3600}h ");
+                seconds %= 3600;
+            }
+
+            if (seconds > 60)
+            {
+                sb.Append($"{seconds / 60}m ");
+                seconds %= 60;
+            }
+
+            if (seconds > 0)
+            {
+                sb.Append($"{seconds}s ");
+            }
+            return sb.ToString();
+        }
+
         public DateTime CheckUpdateTime;
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
@@ -427,9 +464,10 @@ namespace _1RM.Model
                     || listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
+                    var pause = IoC.Get<LanguageService>().Translate("Pause");
                     foreach (var s in ds)
                     {
-                        s.ReconnectInfo = "TXT: pause";
+                        s.ReconnectInfo = pause;
                     }
                     return;
                 }
@@ -455,9 +493,15 @@ namespace _1RM.Model
 
                 var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
 
+
+                var msgUpdating = IoC.Get<LanguageService>().Translate("Updating");
+                var msgNextUpdate = IoC.Get<LanguageService>().Translate("Next update check");
+                var msgNextReconnect = IoC.Get<LanguageService>().Translate("Next auto reconnect");
+                var msgReconnecting = IoC.Get<LanguageService>().Translate("Reconnecting");
+
                 var msg = minEtc > 0
-                    ? $"TXT: check update in {minEtc}s"
-                    : "TXT: checking";
+                    ? $"{msgNextUpdate} {GetTime(minEtc)}"
+                    : msgUpdating;
 
                 foreach (var s in ds)
                 {
@@ -465,11 +509,11 @@ namespace _1RM.Model
                     {
                         if ((s.ReconnectTime - DateTime.Now).Seconds > 0)
                         {
-                            s.ReconnectInfo = $"TXT: reconnect in {(s.ReconnectTime - DateTime.Now).Seconds}s";
+                            s.ReconnectInfo = $"{msgNextReconnect} {GetTime((s.ReconnectTime - DateTime.Now).Seconds)}";
                         }
                         else
                         {
-                            s.ReconnectInfo = $"TXT: reconnecting";
+                            s.ReconnectInfo = msgReconnecting;
                         }
                     }
                     else

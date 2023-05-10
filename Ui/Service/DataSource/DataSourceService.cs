@@ -187,17 +187,17 @@ namespace _1RM.Service.DataSource
         }
     }
 
-    public static class DataSourceServiceExtend
-    {
-        public static DataSourceBase? GetDataSource(this ProtocolBase protocol)
-        {
-            return protocol.DataSource;
-            //return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSource);
-        }
-        public static DataSourceBase? GetDataSource(this ProtocolBaseViewModel protocol)
-        {
-            return protocol.DataSource;
-            //return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSource);
-        }
-    }
+    //public static class DataSourceServiceExtend
+    //{
+    //    public static DataSourceBase? GetDataSource(this ProtocolBase protocol)
+    //    {
+    //        return protocol.DataSource;
+    //        //return IoC.Get<DataSourceService>().GetDataSource(protocol.DataSource);
+    //    }
+    //    public static DataSourceBase? GetDataSource(this ProtocolBaseViewModel protocol)
+    //    {
+    //        return protocol.DataSource;
+    //        //return IoC.Get<DataSourceService>().GetDataSource(protocol.Server.DataSource);
+    //    }
+    //}
 }

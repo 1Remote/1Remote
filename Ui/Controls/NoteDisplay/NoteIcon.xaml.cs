@@ -59,7 +59,7 @@ namespace _1RM.Controls.NoteDisplay
                     Server = Server,
                     Width = 400,
                     Height = 300,
-                    EditEnable = Server.GetDataSource()?.IsWritable == true,
+                    EditEnable = Server.DataSource?.IsWritable == true,
                     CloseEnable = false,
                 };
             });

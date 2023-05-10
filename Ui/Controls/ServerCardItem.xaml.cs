@@ -41,7 +41,7 @@ namespace _1RM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.Server.GetActions();
+            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.GetActions();
             PopupCardSettingMenu.IsOpen = true;
         }
 

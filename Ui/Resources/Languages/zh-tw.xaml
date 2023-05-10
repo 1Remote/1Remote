@@ -275,4 +275,9 @@
     <s:String x:Key="We can not select from database:">我們不能從數據庫中選擇：</s:String>
     <s:String x:Key="We can not delete from database:">我們不能從數據庫中刪除：</s:String>
     <s:String x:Key="because:">因為：</s:String>
+    <s:String x:Key="Pause">暫停</s:String>
+    <s:String x:Key="Updating">更新中</s:String>
+    <s:String x:Key="Reconnecting">重新連接</s:String>
+    <s:String x:Key="Next update check">下次更新檢查</s:String>
+    <s:String x:Key="Next auto reconnect">下次自動重連</s:String>
 </ResourceDictionary>

@@ -108,16 +108,15 @@ namespace _1RM.View
             {
                 if (SourceService.LocalDataSource == null) return;
                 var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSource == serverToEdit.DataSource)?.Server;
-                if (server == null) return;
-                if (server.GetDataSource()?.IsWritable != true) return;
+                if (server is not { DataSource: { IsWritable: true, Status: EnumDatabaseStatus.OK } }) return;
                 EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
                 ShowMe();
             };
 
-            GlobalEventHelper.OnGoToServerAddPage += (tagNames, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerAddPage += (tagNames, assignDataSource) =>
             {
-                var source = DataSourceSelectorViewModel.SelectDataSource();
-                if(source?.IsWritable == true)
+                var source = assignDataSource ?? DataSourceSelectorViewModel.SelectDataSource();
+                if (source?.IsWritable == true)
                 {
                     EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
                     ShowMe();
@@ -126,15 +125,13 @@ namespace _1RM.View
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                var serverBases = servers.Where(x => x.GetDataSource()?.IsWritable == true).ToArray();
-                if (serverBases.Length > 1)
+                var serverBases = servers.Where(x => x.DataSource is { IsWritable: true, Status: EnumDatabaseStatus.OK }).ToArray();
+                EditorViewModel = serverBases.Length switch
                 {
-                    EditorViewModel = ServerEditorPageViewModel.BuckEdit(_appData, serverBases);
-                }
-                else if (serverBases.Length == 1)
-                {
-                    EditorViewModel = ServerEditorPageViewModel.Edit(_appData, serverBases.First());
-                }
+                    > 1 => ServerEditorPageViewModel.BuckEdit(_appData, serverBases),
+                    1 => ServerEditorPageViewModel.Edit(_appData, serverBases.First()),
+                    _ => EditorViewModel
+                };
                 ShowMe();
             };
 
