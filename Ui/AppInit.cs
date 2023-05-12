@@ -303,6 +303,8 @@ namespace _1RM
 
             KittyConfig.CleanUpOldConfig();
 
+
+            bool appStartMinimized = true;
             if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
             {
                 string error = _localDataConnectionStatus.GetErrorInfo();
@@ -311,10 +313,8 @@ namespace _1RM
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
                     MessageBoxHelper.ErrorAlert(error);
                 };
-                IoC.Get<MainWindowViewModel>().ShowMe();
-                return;
+                appStartMinimized = false;
             }
-
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
@@ -325,16 +325,19 @@ namespace _1RM
                         // import form PRemoteM db
                         PRemoteMTransferHelper.TransAsync();
                     }
+                    else
+                    {
+                        MaskLayerController.ShowProcessingRing();
+                    }
                 };
+                appStartMinimized = false;
+            }
+            if (!appStartMinimized)
+            {
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }
 
 
-
-            if (!_isNewUser)
-            {
-                MaskLayerController.ShowProcessingRing();
-            }
             Task.Factory.StartNew(() =>
             {
                 //// read from primary database
@@ -347,10 +350,7 @@ namespace _1RM
                             IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
                         })).ToArray());
                 IoC.Get<GlobalData>().ReloadServerList(true);
-                if (!_isNewUser)
-                {
-                    MaskLayerController.HideMask();
-                }
+                MaskLayerController.HideMask();
             });
         }
     }
