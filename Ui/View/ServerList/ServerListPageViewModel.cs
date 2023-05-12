@@ -180,6 +180,12 @@ namespace _1RM.View.ServerList
         protected override void OnViewLoaded()
         {
             AppData.OnDataReloaded += RebuildVmServerList;
+            if (AppData.VmItemList.Count > 0)
+            {
+                // this view may be loaded after the data is loaded(when MainWindow start minimized)
+                // so we need to rebuild the list here
+                RebuildVmServerList();
+            }
             ApplySort();
         }
 
