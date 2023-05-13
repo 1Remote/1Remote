@@ -29,7 +29,8 @@ namespace _1RM.View.Editor
     public class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
-        private readonly DataSourceBase? _addToDataSource = null; // target data source in add mode 
+        public DataSourceBase? AddToDataSource { get; private set; } = null;
+        public EnumDatabaseStatus DataSourceStatus => Server.DataSource?.Status ?? EnumDatabaseStatus.LostConnection;
 
         public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
@@ -50,13 +51,14 @@ namespace _1RM.View.Editor
 
         public static ServerEditorPageViewModel Duplicate(GlobalData globalData, DataSourceBase dataSource, ProtocolBase server)
         {
+            Debug.Assert(server.IsTmpSession() == false);
             return new ServerEditorPageViewModel(globalData, server, dataSource);
         }
 
         public static ServerEditorPageViewModel Edit(GlobalData globalData, ProtocolBase server)
         {
             Debug.Assert(server.IsTmpSession() == false);
-            return new ServerEditorPageViewModel(globalData, server);
+            return new ServerEditorPageViewModel(globalData, server, null);
         }
 
         public static ServerEditorPageViewModel BuckEdit(GlobalData globalData, IEnumerable<ProtocolBase> servers)
@@ -67,18 +69,22 @@ namespace _1RM.View.Editor
         /// <summary>
         /// Add or Edit or Duplicate
         /// </summary>
-        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase? addToDataSource = null)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase? addToDataSource)
         {
             _globalData = globalData;
-            _addToDataSource = addToDataSource;
+            AddToDataSource = addToDataSource;
 
             server.DecryptToConnectLevel();
 
             Server = (ProtocolBase)server.Clone();
-            if (addToDataSource != null)
+            if (AddToDataSource != null) // Add or Duplicate mode
             {
-                Server.DataSource = addToDataSource;
+                Server.DataSource = AddToDataSource;
                 Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
+            }
+            else // edit mode
+            {
+                AddToDataSource = Server.DataSource;
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = "";
@@ -115,7 +121,7 @@ namespace _1RM.View.Editor
 
         private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
-            _addToDataSource = null;
+            AddToDataSource = servers.FirstOrDefault()?.DataSource;
             _globalData = globalData;
             var serverBases = servers.Select(x => x.Clone()).ToArray();
             // decrypt
@@ -240,6 +246,7 @@ namespace _1RM.View.Editor
             if (_serversInBuckEdit.All(x => x.GetType() == _sharedTypeInBuckEdit))
                 UpdateRunners(_serversInBuckEdit.First().Protocol);
             ReflectProtocolEditControl(_sharedTypeInBuckEdit);
+            Debug.Assert(IsBuckEdit == true);
         }
 
         #endregion
@@ -415,9 +422,9 @@ namespace _1RM.View.Editor
                                     ret = _globalData.UpdateServer(Server);
                                 }
                                 // add
-                                else if (IsAddMode && _addToDataSource != null)
+                                else if (IsAddMode && AddToDataSource != null)
                                 {
-                                    ret = _globalData.AddServer(Server, _addToDataSource);
+                                    ret = _globalData.AddServer(Server, AddToDataSource);
                                 }
 
                                 if (ret.IsSuccess && Server is RDP rdp)

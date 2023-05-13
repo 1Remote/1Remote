@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using _1RM.Model.Protocol.Base;
+﻿using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.DAO;
 using _1RM.Utils;
 using _1RM.View;
-using _1RM.View.Launcher;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
+using System;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace _1RM.Model
 {
@@ -79,7 +75,7 @@ namespace _1RM.Model
                     }
                 }
 
-                if (writable && (vm.DataSource == null || vm.DataSource.Status == EnumDatabaseStatus.OK))
+                if (writable)
                 {
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () =>
                     {

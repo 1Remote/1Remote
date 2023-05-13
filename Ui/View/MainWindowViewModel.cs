@@ -106,9 +106,8 @@ namespace _1RM.View
 
             GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
             {
-                if (SourceService.LocalDataSource == null) return;
                 var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSource == serverToEdit.DataSource)?.Server;
-                if (server is not { DataSource: { IsWritable: true, Status: EnumDatabaseStatus.OK } }) return;
+                if (server is not { DataSource: { IsWritable: true } }) return;
                 EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
                 ShowMe();
             };

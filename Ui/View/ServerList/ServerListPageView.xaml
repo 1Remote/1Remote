@@ -602,6 +602,35 @@
                                                                     </Button>
 
 
+                                                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdAdd}"
+                                                                            CommandParameter="{Binding Name}"
+                                                                            IsEnabled="{Binding Name.IsWritable}"
+                                                                            Visibility="{Binding Name.Status, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}"
+                                                                            Background="Transparent"
+                                                                            Margin="5 0 0 0"
+                                                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                                                            Style="{StaticResource ButtonBarAccentStyle}">
+                                                                        <Grid Height="12" Width="12" >
+                                                                            <Path Data="{StaticResource GeometryCross}" 
+                                                                                Stretch="Uniform" Name="Path"
+                                                                              Height="12" Width="12" 
+                                                                              Fill="{DynamicResource PrimaryTextBrush}">
+                                                                                <Path.Style>
+                                                                                    <Style TargetType="Path">
+                                                                                        <Setter Property="Opacity" Value="0.5"></Setter>
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=IsMouseOver}" Value="True">
+                                                                                                <Setter Property="Opacity" Value="1"></Setter>
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Path.Style>
+                                                                            </Path>
+                                                                        </Grid>
+                                                                    </Button>
+
+
                                                                     <!--Show reconnect info if lost connect-->
                                                                     <TextBlock FontSize="12" Margin="5 0 0 0" 
                                                                                Foreground="{DynamicResource PrimaryTextBrush}"
@@ -621,35 +650,6 @@
                                                                             </Style>
                                                                         </TextBlock.Style>
                                                                     </TextBlock>
-
-
-                                                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdAdd}"
-                                                                            CommandParameter="{Binding Name}"
-                                                                            IsEnabled="{Binding Name.IsWritable}"
-                                                                            Visibility="{Binding Name.Status, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}"
-                                                                            Background="Transparent"
-                                                                            Margin="10 0 0 0"
-                                                                            attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                                                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                                                            Style="{StaticResource ButtonBarAccentStyle}">
-                                                                        <Grid Height="12" Width="12" >
-                                                                            <Path Data="{StaticResource GeometryCross}" 
-                                                                                Stretch="Uniform" Name="Path"
-                                                                              Height="12" Width="12" 
-                                                                              Fill="{DynamicResource PrimaryTextBrush}">
-                                                                                <Path.Style>
-                                                                                    <Style TargetType="Path">
-                                                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                                                        <Style.Triggers>
-                                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=IsMouseOver}" Value="True">
-                                                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                                                            </DataTrigger>
-                                                                                        </Style.Triggers>
-                                                                                    </Style>
-                                                                                </Path.Style>
-                                                                            </Path>
-                                                                        </Grid>
-                                                                    </Button>
 
                                                                 </StackPanel>
                                                             </StackPanel>

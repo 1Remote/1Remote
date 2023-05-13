@@ -668,7 +668,7 @@ namespace _1RM.View.ServerList
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
                     }
-                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable && x.DataSource?.Status == EnumDatabaseStatus.OK));
+                }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
 

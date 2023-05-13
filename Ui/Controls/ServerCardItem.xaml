@@ -8,6 +8,7 @@
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:model="clr-namespace:_1RM.Model"
+             xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -42,6 +43,22 @@
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Path Height="14" Width="14" Margin="3 3" UseLayoutRounding="True" Stretch="Uniform" HorizontalAlignment="Right">
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                                    <Setter Property="Fill" Value="Red"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataSourceStatus}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                    </Grid>
 
                     <Grid Grid.Row="0" Opacity="0.4" Grid.RowSpan="3" 
                           Background="{Binding Server.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
