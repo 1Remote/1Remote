@@ -11,6 +11,7 @@
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:editor="clr-namespace:_1RM.View.Editor"
              xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
+             xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
              Background="White"
@@ -548,9 +549,25 @@
                         <Button Name="ButtonSave"
                                 Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Left"
+                                attachProperty:VisionElement.BorderBrushOnMouseOver="{DynamicResource AccentMidBrush}"
+                                attachProperty:VisionElement.BorderBrushOnMouseDown="{DynamicResource AccentMidBrush}"
                                 Command="{Binding CmdSave}"
-                                Style="{StaticResource ButtonAccentStyle}"
-                                Content="{DynamicResource Save}">
+                                Style="{StaticResource ButtonPrimaryStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="0 0 5 0">
+                                <Border Height="16" Width="16" CornerRadius="2" Margin="0 0 5 0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataSourceStatus}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Path Fill="Red" Height="14" Width="14" UseLayoutRounding="True" Stretch="Uniform" Data="{StaticResource GeometryCloudDisconnected}"/>
+                                </Border>
+                                <TextBlock Text="{DynamicResource Save}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                            </StackPanel>
                         </Button>
 
                         <Button Padding="0 1 0 0" Width="80" Height="25"

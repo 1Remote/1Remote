@@ -7,6 +7,7 @@
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:serverList="clr-namespace:_1RM.View.ServerList"
+             xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
@@ -30,6 +31,23 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
+
+
+
+
+                <Path Height="14" Width="14" UseLayoutRounding="True" Stretch="Uniform">
+                    <Path.Style>
+                        <Style TargetType="Path">
+                            <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                            <Setter Property="Fill" Value="Red"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DataSourceStatus}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
 
                 <CheckBox Margin="10 0" 
                           Width="20" Height="20" 

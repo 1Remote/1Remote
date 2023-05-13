@@ -8,6 +8,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -17,6 +18,7 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
+        public EnumDatabaseStatus DataSourceStatus => Server.DataSource?.Status ?? EnumDatabaseStatus.LostConnection;
         public DataSourceBase? DataSource => Server.DataSource;
         public string DataSourceName => DataSource?.DataSourceName ?? "";
 
