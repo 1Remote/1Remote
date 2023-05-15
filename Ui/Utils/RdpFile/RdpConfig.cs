@@ -344,7 +344,7 @@ namespace _1RM.Utils.RdpFile
         /// The user password in a binary hash value. Will be overruled by RDP+.
         /// </summary>
         [RdpConfName("password 51:b:")]
-        public string Password { get; } = "";
+        public string Password { get; set; } = "";
 
         private readonly string _additionalSettings;
 
@@ -368,22 +368,12 @@ namespace _1RM.Utils.RdpFile
             var settings = new Dictionary<string, string>();
 
             // set all public properties by reflection
-            foreach (var prop in typeof(RdpConfig).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.Name != nameof(this.Password)))
+            foreach (var prop in typeof(RdpConfig).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 foreach (RdpConfNameAttribute attr in prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false))
                 {
                     settings.Add(attr.Name, prop.GetValue(this)!.ToString()!);
                 }
-            }
-
-            // set password
-            if ((this.Password ?? "") != "")
-            {
-                var attr = typeof(RdpConfig)
-                    .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
-                    ?.GetCustomAttributes(typeof(RdpConfNameAttribute), false)
-                    .First() as RdpConfNameAttribute;
-                settings.Add(attr!.Name, this.Password!); 
             }
 
 
