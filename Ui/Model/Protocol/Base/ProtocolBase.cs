@@ -403,6 +403,6 @@ namespace _1RM.Model.Protocol.Base
         }
 
         [JsonIgnore]
-        public DataSourceBase? DataSource;
+        public DataSourceBase? DataSource { get; set; }
     }
 }

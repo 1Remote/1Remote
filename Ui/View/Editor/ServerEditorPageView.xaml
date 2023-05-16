@@ -558,7 +558,7 @@
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DataSourceStatus}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                                <DataTrigger Binding="{Binding Server.DataSource.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
