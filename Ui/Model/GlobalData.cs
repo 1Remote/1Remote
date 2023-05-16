@@ -420,25 +420,25 @@ namespace _1RM.Model
             var sb = new StringBuilder();
             if (seconds > 86400)
             {
-                sb.Append($"{seconds / 86400}d ");
+                sb.Append($"{seconds / 86400}d");
                 seconds %= 86400;
             }
 
             if (seconds > 3600)
             {
-                sb.Append($"{seconds / 3600}h ");
+                sb.Append($"{seconds / 3600}h");
                 seconds %= 3600;
             }
 
             if (seconds > 60)
             {
-                sb.Append($"{seconds / 60}m ");
+                sb.Append($"{seconds / 60}m");
                 seconds %= 60;
             }
 
             if (seconds > 0)
             {
-                sb.Append($"{seconds}s ");
+                sb.Append($"{seconds}s");
             }
             return sb.ToString();
         }
@@ -473,21 +473,21 @@ namespace _1RM.Model
                 }
 
 
-                var checkUpdateEtc = Math.Max((CheckUpdateTime - DateTime.Now).Seconds, 0);
+                var checkUpdateEtc = Math.Max((int)(CheckUpdateTime - DateTime.Now).TotalSeconds, 0);
                 var minReconnectEtc = int.MaxValue;
 
 
-                var needReconns = new List<DataSourceBase>();
+                var needReconnect = new List<DataSourceBase>();
                 foreach (var s in ds.Where(x => x.Status != EnumDatabaseStatus.OK))
                 {
                     if (s.ReconnectTime > DateTime.Now)
                     {
-                        minReconnectEtc = Math.Min((s.ReconnectTime - DateTime.Now).Seconds, minReconnectEtc);
+                        minReconnectEtc = Math.Min((int)(s.ReconnectTime - DateTime.Now).TotalSeconds, minReconnectEtc);
                     }
                     else
                     {
                         minReconnectEtc = 0;
-                        needReconns.Add(s);
+                        needReconnect.Add(s);
                     }
                 }
 
@@ -507,9 +507,10 @@ namespace _1RM.Model
                 {
                     if (s.Status != EnumDatabaseStatus.OK)
                     {
-                        if ((s.ReconnectTime - DateTime.Now).Seconds > 0)
+                        var seconds = (int)(s.ReconnectTime - DateTime.Now).TotalSeconds;
+                        if (seconds > 0)
                         {
-                            s.ReconnectInfo = $"{msgNextReconnect} {GetTime((s.ReconnectTime - DateTime.Now).Seconds)}";
+                            s.ReconnectInfo = $"{msgNextReconnect} {GetTime(seconds)}";
                         }
                         else
                         {
@@ -528,7 +529,7 @@ namespace _1RM.Model
                 }
 
                 // reconnect 
-                foreach (var dataSource in needReconns.Where(x => x.ReconnectTime < DateTime.Now))
+                foreach (var dataSource in needReconnect.Where(x => x.ReconnectTime < DateTime.Now))
                 {
                     if (dataSource.Database_SelfCheck() == EnumDatabaseStatus.OK)
                     {

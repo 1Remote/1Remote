@@ -41,7 +41,7 @@
                             <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
                             <Setter Property="Fill" Value="Red"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DataSourceStatus}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                <DataTrigger Binding="{Binding DataSource.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>

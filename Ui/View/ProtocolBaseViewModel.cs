@@ -18,7 +18,6 @@ namespace _1RM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
-        public EnumDatabaseStatus DataSourceStatus => Server.DataSource?.Status ?? EnumDatabaseStatus.LostConnection;
         public DataSourceBase? DataSource => Server.DataSource;
         public string DataSourceName => DataSource?.DataSourceName ?? "";
 
@@ -280,7 +279,7 @@ namespace _1RM.View
 
     public class ProtocolBaseViewModelDummy : ProtocolBaseViewModel
     {
-        public ProtocolBaseViewModelDummy(DataSourceBase source) : base(new Dummy() { DataSource =  source})
+        public ProtocolBaseViewModelDummy(DataSourceBase source) : base(new Dummy() { DataSource = source })
         {
             base.SetIsVisible(false);
         }

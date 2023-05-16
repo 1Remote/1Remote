@@ -30,7 +30,6 @@ namespace _1RM.View.Editor
     {
         private readonly GlobalData _globalData;
         public DataSourceBase? AddToDataSource { get; private set; } = null;
-        public EnumDatabaseStatus DataSourceStatus => Server.DataSource?.Status ?? EnumDatabaseStatus.LostConnection;
 
         public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
