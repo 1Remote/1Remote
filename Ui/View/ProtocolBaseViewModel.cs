@@ -69,18 +69,15 @@ namespace _1RM.View
             }
             get
             {
-                if (_groupedIsExpanded == null)
+                var ret = true;
+                if (IoC.TryGet<LocalityService>() != null)
                 {
-                    var ret = true;
-                    if (IoC.TryGet<LocalityService>() != null)
-                    {
-                        var tmp = IoC.Get<LocalityService>().ServerGroupedIsExpanded;
-                        if (tmp.ContainsKey(DataSourceName) == true)
-                            ret = tmp[DataSourceName];
-                    }
-                    _groupedIsExpanded = ret;
+                    var tmp = IoC.Get<LocalityService>().ServerGroupedIsExpanded;
+                    if (tmp.ContainsKey(DataSourceName) == true)
+                        ret = tmp[DataSourceName];
                 }
-                return _groupedIsExpanded.Value;
+                _groupedIsExpanded = ret;
+                return ret;
             }
         }
         #endregion

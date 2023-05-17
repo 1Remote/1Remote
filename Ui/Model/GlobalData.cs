@@ -117,13 +117,11 @@ namespace _1RM.Model
                     needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
                     foreach (var additionalSource in _sourceService.AdditionalSources)
                     {
-                        // 断线的数据源，除非强制读取，否则都忽略
+                        // 断线的数据源，除非强制读取，否则都忽略，断线的数据源在 timer 里会自动重连
                         if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
                         {
-                            if (focus)
-                                additionalSource.Value.Database_SelfCheck();
-                            else
-                                continue;
+                            if (!focus) continue;
+                            additionalSource.Value.Database_SelfCheck();
                         }
 
                         if (needRead == false)
@@ -415,7 +413,7 @@ namespace _1RM.Model
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns></returns>
-        private static string GetTime(int seconds)
+        private static string GetTime(long seconds)
         {
             var sb = new StringBuilder();
             if (seconds > 86400)
@@ -473,8 +471,13 @@ namespace _1RM.Model
                 }
 
 
-                var checkUpdateEtc = Math.Max((int)(CheckUpdateTime - DateTime.Now).TotalSeconds, 0);
-                var minReconnectEtc = int.MaxValue;
+                long checkUpdateEtc = 0;
+                if (CheckUpdateTime > DateTime.Now)
+                {
+                    var ts = CheckUpdateTime - DateTime.Now;
+                    checkUpdateEtc = (long)ts.TotalSeconds;
+                }
+                long minReconnectEtc = int.MaxValue;
 
 
                 var needReconnect = new List<DataSourceBase>();
@@ -482,7 +485,7 @@ namespace _1RM.Model
                 {
                     if (s.ReconnectTime > DateTime.Now)
                     {
-                        minReconnectEtc = Math.Min((int)(s.ReconnectTime - DateTime.Now).TotalSeconds, minReconnectEtc);
+                        minReconnectEtc = Math.Min((long)(s.ReconnectTime - DateTime.Now).TotalSeconds, minReconnectEtc);
                     }
                     else
                     {
@@ -496,20 +499,18 @@ namespace _1RM.Model
 
                 var msgUpdating = IoC.Get<LanguageService>().Translate("Updating");
                 var msgNextUpdate = IoC.Get<LanguageService>().Translate("Next update check");
+                var msg = minEtc > 0 ? $"{msgNextUpdate} {GetTime(minEtc)}" : msgUpdating;
+
+
                 var msgNextReconnect = IoC.Get<LanguageService>().Translate("Next auto reconnect");
                 var msgReconnecting = IoC.Get<LanguageService>().Translate("Reconnecting");
-
-                var msg = minEtc > 0
-                    ? $"{msgNextUpdate} {GetTime(minEtc)}"
-                    : msgUpdating;
-
                 foreach (var s in ds)
                 {
                     if (s.Status != EnumDatabaseStatus.OK)
                     {
-                        var seconds = (int)(s.ReconnectTime - DateTime.Now).TotalSeconds;
-                        if (seconds > 0)
+                        if (s.ReconnectTime > DateTime.Now)
                         {
+                            var seconds = (long)(s.ReconnectTime - DateTime.Now).TotalSeconds;
                             s.ReconnectInfo = $"{msgNextReconnect} {GetTime(seconds)}";
                         }
                         else
