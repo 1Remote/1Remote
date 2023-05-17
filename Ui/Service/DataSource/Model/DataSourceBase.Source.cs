@@ -78,11 +78,10 @@ namespace _1RM.Service.DataSource.Model
             if (Status != EnumDatabaseStatus.OK)
             {
                 // 当连接不成功时，设置为 0，以便下次重新连接
-                _lastReadFromDataSourceMillisecondsTimestamp = 0;
-                if (CachedProtocols.Count > 0)
-                    return true;
+                MarkAsNeedRead();
             }
-            return false;
+
+            return true;
         }
 
         public void MarkAsNeedRead()
@@ -98,11 +97,12 @@ namespace _1RM.Service.DataSource.Model
         /// <returns></returns>
         public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus = false)
         {
-            if (focus == false
-                && LastReadFromDataSourceMillisecondsTimestamp >= _dataSourceDataUpdateTimestamp)
+            if (Status != EnumDatabaseStatus.OK
+                || focus == false && !NeedRead())
             {
                 return CachedProtocols;
             }
+
             lock (this)
             {
                 var result = Database_GetServers();
@@ -218,6 +218,10 @@ namespace _1RM.Service.DataSource.Model
                 return Status;
             }
 
+            if (Status != EnumDatabaseStatus.OK)
+            {
+                MarkAsNeedRead();
+            }
             SetStatus(true);
             return Status;
         }
@@ -252,7 +256,6 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().AddServer(cloneList);
                 if (ret.IsSuccess)
                 {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     for (int i = 0; i < servers.Count; i++)
                     {
                         servers[i].Id = cloneList[i].Id;
@@ -276,7 +279,6 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().UpdateServer(tmp);
                 if (ret.IsSuccess)
                 {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     var old = CachedProtocols.First(x => x.Id == org.Id);
                     old.Server = org;
                     SetStatus(true);
@@ -302,7 +304,6 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().UpdateServer(cloneList);
                 if (ret.IsSuccess)
                 {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     // update viewmodel
                     foreach (var protocolServer in servers)
                     {
@@ -326,7 +327,6 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().DeleteServer(enumerable);
                 if (ret.IsSuccess)
                 {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CachedProtocols.RemoveAll(x => enumerable.Contains(x.Id));
                     SetStatus(true);
                 }

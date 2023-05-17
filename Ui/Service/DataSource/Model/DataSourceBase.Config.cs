@@ -49,9 +49,9 @@ namespace _1RM.Service.DataSource.Model
                     if (Status != EnumDatabaseStatus.OK)
                     {
 #if DEBUG
-                        ReconnectTime = DateTime.Now.AddMinutes(5);
+                        ReconnectTime = DateTime.Now.AddMinutes(0.3);
 #else
-                        ReconnectTime = DateTime.Now.AddMinutes(5);
+                        ReconnectTime = DateTime.Now.AddMinutes(1);
 #endif
                     }
                     else
