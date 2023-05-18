@@ -46,18 +46,9 @@ namespace _1RM.Service.DataSource.Model
             {
                 if (SetAndNotifyIfChanged(ref _status, value))
                 {
-                    if (Status != EnumDatabaseStatus.OK)
-                    {
-#if DEBUG
-                        ReconnectTime = DateTime.Now.AddMinutes(0.3);
-#else
-                        ReconnectTime = DateTime.Now.AddMinutes(1);
-#endif
-                    }
-                    else
-                    {
-                        ReconnectTime = DateTime.MinValue;
-                    }
+                    ReconnectTime = Status != EnumDatabaseStatus.OK ? 
+                        DateTime.Now.AddSeconds(IoC.TryGet<ConfigurationService>()?.DatabaseReconnectPeriod ?? 60 * 5) 
+                        : DateTime.MinValue;
                 }
                 StatusInfo = Status == EnumDatabaseStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
             }

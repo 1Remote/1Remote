@@ -16,16 +16,29 @@
         </CollectionViewSource>
 
         <local:ConverterTagName x:Key="ConverterTagName" />
+        <local:ConverterTagNameCount x:Key="ConverterTagNameCount" />
     </UserControl.Resources>
 
     <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Margin="20">
-            <TextBox Name="TbFilter"
+        <Grid Row="1" Margin="5">
+            <!--<Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>-->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="{Binding GlobalData.TagList.Count, StringFormat={}{0}tags}" 
+                           Foreground="{DynamicResource BackgroundTextBrush}"
+                           FontSize="18"
+                           ></TextBlock>
+            </StackPanel>
+            <TextBox Grid.Column="0" Name="TbFilter"
                      attachProperty:FocusExtension.IsFocused="{Binding FilterIsFocused}"
                      Height="40"
                      Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}" 
@@ -36,9 +49,11 @@
         </Grid>
 
         <!-- tag list: the page to config which tag should be display. -->
-        <Grid Grid.Row="1">
-            <ListBox Name="ListBoxTags" ItemsSource="{Binding Source={StaticResource TagItemSource}}" Margin="50 0" 
-                     Visibility="Visible" MinHeight="300" MinWidth="500">
+        <Grid Grid.Row="3">
+            <ListBox Name="ListBoxTags" Margin="0 10 0 0"
+                     ItemsSource="{Binding Source={StaticResource TagItemSource}}" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     >
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ScrollViewer>
@@ -53,6 +68,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="TXT:UnPin" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                  Command="{Binding CmdTagPin}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="TXT:Pin" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                  Command="{Binding CmdTagPin}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource Delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource Rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource Connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
@@ -72,29 +91,18 @@
                 </ListBox.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="model:Tag">
-                        <Border CornerRadius="{StaticResource DefaultCornerRadius}" 
-                                BorderThickness="1" 
-                                BorderBrush="{DynamicResource DefaultBorderBrush}" 
-                                Margin="10"
-                                Padding="5">
-                            <Grid Width="300">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-
-                                <Grid>
-                                    <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
-                                            Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
-                                            HorizontalAlignment="Left"></Button>
-                                </Grid>
-
-                                <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                    <TextBlock Text="{Binding ItemsCount}" Margin="10 0" VerticalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
-                                    <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                        <Grid Margin="5">
+                            <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
+                                            HorizontalAlignment="Left">
+                                <Button.Content>
+                                    <MultiBinding Converter="{StaticResource ConverterTagNameCount}">
+                                        <Binding Path="Name"></Binding>
+                                        <Binding Path=" ItemsCount"></Binding>
+                                        <Binding Path=" IsPinned"></Binding>
+                                    </MultiBinding>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ListBox>

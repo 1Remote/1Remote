@@ -359,10 +359,10 @@
                             </StackPanel>
                         </CheckBox>
                         <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
-                            <Run Text="{DynamicResource 'In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.'}"></Run>
+                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="{DynamicResource 'In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.'}"></Run>
                         </TextBlock>
                         <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
-                            <Run Text="{DynamicResource 'Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.'}"></Run>
+                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="{DynamicResource 'Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.'}"></Run>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>

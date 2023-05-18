@@ -335,14 +335,34 @@ namespace _1RM.View.ServerList
         {
             if (value is string tagName)
             {
-                return "#" + tagName;
+                return $"{tagName}";
             }
             return value;
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+    }
+
+
+    public class ConverterTagNameCount : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length == 3
+                && values[0] is string tagName
+                && values[1] is int count
+                && values[2] is bool isPinned)
+            {
+                return isPinned ? $"📌 {tagName} ({count})" : $"{tagName} ({count})";
+            }
+            return values[0];
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 

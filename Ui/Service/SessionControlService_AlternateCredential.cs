@@ -28,45 +28,66 @@ namespace _1RM.Service
 {
     public partial class SessionControlService
     {
-        private static bool ApplyAlternateCredential(ref ProtocolBase serverClone, string assignCredentialName)
+        /// <summary>
+        /// 为指定的 protocol 应用指定的 credential，并 ping 一下，如果 ping 失败则返回 false
+        /// </summary>
+        private static bool ApplyAlternateCredentialAndPingIfNeeded(ref ProtocolBase serverClone, string assignCredentialName)
         {
             if (serverClone is not ProtocolBaseWithAddressPort protocol)
                 return true;
+            if (serverClone is RDP rdp && rdp.GatewayMode != EGatewayMode.DoNotUseGateway)
+                return true;
 
-            bool ret = false;
 
-
-            bool canAddressAutoSwitch = protocol.IsAutoAlternateAddressSwitching == true;
             var newCredential = protocol.GetCredential();
 
 
-            // use assign credential
+            // use assign credential 应用指定的 credential
             var assignCredentialNameClone = assignCredentialName;
             var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialNameClone);
             if (assignCredential != null)
             {
-                // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
-                if (string.IsNullOrEmpty(assignCredential.Address) == false
-                    || string.IsNullOrEmpty(assignCredential.Port) == false
-                   )
-                {
-                    canAddressAutoSwitch = false;
-                }
                 newCredential.SetCredential(assignCredential);
             }
 
-            // auto switching address
-            if (canAddressAutoSwitch || protocol.IsPingBeforeConnect == true)
+            // 判断是否需要  ping
+            // ping before connect
+            var pingCredentials = new List<Credential>();
+            if (protocol.IsPingBeforeConnect == true)
             {
-                var credentials = new List<Credential>()
-                {
-                    newCredential,
-                };
-                credentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
+                pingCredentials.Add(newCredential);
+            }
 
+            // 判断是否需要自动切换地址
+            if (protocol.IsAutoAlternateAddressSwitching == true)
+            {
+                // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
+                // 如果 assignCredential 中有 host 或 port，说明用户指定了连接的地址，因此禁用 `AutoAlternateAddressSwitching`
+                var canAddressAutoSwitch = string.IsNullOrEmpty(assignCredential?.Address) && string.IsNullOrEmpty(assignCredential?.Port);
+
+                // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
+                // 如果所有的 alternate credential 中都没有 host 或 port，则禁用 `AutoAlternateAddressSwitching`
+                if (canAddressAutoSwitch
+                    && protocol.AlternateCredentials.All(x => string.IsNullOrEmpty(x.Address) && string.IsNullOrEmpty(x.Port)))
+                {
+                    canAddressAutoSwitch = false;
+                }
+
+                if (canAddressAutoSwitch)
+                {
+                    if (pingCredentials.Count == 0)
+                        pingCredentials.Add(newCredential);
+                    pingCredentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
+                }
+            }
+
+            var ret = true;
+            // pingCredentials 不为空 说明需要 ping
+            if (pingCredentials.Any())
+            {
                 WaitingViewModel? dlg = null;
-                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate((credentials.Count > 1 ? "Automatic address switching" : "Availability detection"));
-                var message = IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {credentials.Count} {(credentials.Count > 1 ? "addresses" : "address")}";
+                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate((pingCredentials.Count > 1 ? "Automatic address switching" : "Availability detection"));
+                var message = IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {pingCredentials.Count} {(pingCredentials.Count > 1 ? "addresses" : "address")}";
                 Execute.OnUIThreadSync(() =>
                 {
                     // show a progress window
@@ -78,13 +99,13 @@ namespace _1RM.Service
                     IoC.Get<IWindowManager>().ShowWindow(dlg);
                 });
 
-                int maxWaitSeconds = 5;
+                const int maxWaitSeconds = 5;
                 var cts = new CancellationTokenSource();
                 var tasks = new List<Task<Credential?>>();
-                for (int i = 0; i < credentials.Count; i++)
+                for (int i = 0; i < pingCredentials.Count; i++)
                 {
                     var sleep = i * 50;
-                    var x = credentials[i];
+                    var x = pingCredentials[i];
                     tasks.Add(Task.Factory.StartNew(() =>
                     {
                         // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测

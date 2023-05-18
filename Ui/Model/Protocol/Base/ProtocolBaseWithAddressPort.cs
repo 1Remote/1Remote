@@ -52,19 +52,17 @@ namespace _1RM.Model.Protocol.Base
         }
 
 
-        private bool? _IsPingBeforeConnect = true;
-        [JsonIgnore]
+        private bool? _isPingBeforeConnect = true;
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsPingBeforeConnect
         {
-            get => _IsPingBeforeConnect;
-            set => SetAndNotifyIfChanged(ref _IsPingBeforeConnect, value);
+            get => _isPingBeforeConnect;
+            set => SetAndNotifyIfChanged(ref _isPingBeforeConnect, value);
         }
 
 
         private bool? _isAutoAlternateAddressSwitching = true;
-        [JsonIgnore]
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsAutoAlternateAddressSwitching

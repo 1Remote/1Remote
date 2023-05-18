@@ -199,7 +199,7 @@ namespace _1RM.Service
             protocolClone.ConnectPreprocess();
 
             // apply alternate credential
-            if (false == ApplyAlternateCredential(ref protocolClone, assignCredentialName))
+            if (false == ApplyAlternateCredentialAndPingIfNeeded(ref protocolClone, assignCredentialName))
             {
                 return;
             }

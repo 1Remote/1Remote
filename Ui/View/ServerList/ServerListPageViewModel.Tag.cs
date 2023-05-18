@@ -227,7 +227,6 @@ namespace _1RM.View.ServerList
                 });
             }
         }
-
         #endregion
     }
 }

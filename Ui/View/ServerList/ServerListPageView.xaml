@@ -900,16 +900,15 @@
                                   attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
                                   Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <ItemsControl
-                                    Name="ListBoxTags"
-                                    ItemsSource="{Binding AppData.TagList}"
-                                    Background="{DynamicResource PrimaryMidBrush}"
-                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                    BorderThickness="0"
-                                    Margin="0"
-                                    Padding="0">
+                            <ItemsControl Name="ListBoxTags"
+                                          ItemsSource="{Binding AppData.TagList}"
+                                          Background="{DynamicResource PrimaryMidBrush}"
+                                          Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
+                                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                          BorderThickness="0"
+                                          Margin="0"
+                                          Padding="0">
                                 <ItemsControl.Style>
                                     <Style TargetType="ItemsControl">
                                         <Setter Property="Template">
@@ -932,10 +931,22 @@
                                         <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}">
                                             <Grid.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="{DynamicResource Delete}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="{DynamicResource Rename}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="{DynamicResource Connect}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="{DynamicResource 'Connect (New window)'}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" CommandParameter="{Binding}"/>
+                                                    <!--<MenuItem Header="{DynamicResource Delete}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
+                                                              CommandParameter="{Binding}"/>-->
+                                                    <MenuItem Header="{DynamicResource Rename}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
+                                                              CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="{DynamicResource Connect}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
+                                                              CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
+                                                              CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="TXT:UnPin" 
+                                                              Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                              CommandParameter="{Binding}"/>
                                                 </ContextMenu>
                                             </Grid.ContextMenu>
                                             <Button MinWidth="80"
@@ -949,7 +960,7 @@
                                                                 <ControlTemplate TargetType="{x:Type Button}">
                                                                     <Grid>
                                                                         <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="true"></Border>
-                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                                        <ContentPresenter Margin="2 0" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                                                     </Grid>
                                                                 </ControlTemplate>
                                                             </Setter.Value>

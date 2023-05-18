@@ -52,7 +52,6 @@ namespace _1RM.View
         }
 
 
-        private readonly DebounceDispatcher _debounceDispatcher = new();
         private bool? _groupedIsExpanded = null;
         public bool GroupedIsExpanded
         {
@@ -61,10 +60,7 @@ namespace _1RM.View
                 if (IoC.TryGet<LocalityService>() != null
                     && SetAndNotifyIfChanged(ref _groupedIsExpanded, value))
                 {
-                    _debounceDispatcher.Debounce(1000, (_) =>
-                    {
-                        IoC.Get<LocalityService>().ServerGroupedSetIsExpanded(DataSourceName, value);
-                    });
+                    IoC.Get<LocalityService>().ServerGroupedSetIsExpanded(DataSourceName, value);
                 }
             }
             get
