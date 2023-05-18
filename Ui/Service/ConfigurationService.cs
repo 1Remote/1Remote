@@ -129,6 +129,7 @@ namespace _1RM.Service
         public LauncherConfig Launcher { get; set; } = new LauncherConfig();
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public int DatabaseCheckPeriod { get; set; } = 20;
+        public int DatabaseReconnectPeriod { get; set; } = 60 * 5;
 
         private string _sqliteDatabasePath = "./" + Assert.APP_NAME + ".db";
         public string SqliteDatabasePath
@@ -163,6 +164,11 @@ namespace _1RM.Service
         {
             get => _cfg.DatabaseCheckPeriod >= 0 ? (_cfg.DatabaseCheckPeriod > 99 ? 99 : _cfg.DatabaseCheckPeriod) : 0;
             set => _cfg.DatabaseCheckPeriod = value >= 0 ? (value > 99 ? 99 : value) : 0;
+        }
+        public int DatabaseReconnectPeriod
+        {
+            get => _cfg.DatabaseReconnectPeriod >= 0 ? (_cfg.DatabaseReconnectPeriod > 60 * 60 ? 60 * 60 : _cfg.DatabaseReconnectPeriod) : 0;
+            set => _cfg.DatabaseReconnectPeriod = value >= 0 ? (value > 60 * 60 ? 60 * 60 : value) : 0;
         }
 
 

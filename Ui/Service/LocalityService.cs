@@ -29,7 +29,7 @@ namespace _1RM.Service
         //TagDesc = 5,
         AddressAsc = 6,
         AddressDesc = 7,
-        Custom,
+        Custom = 999,
     }
 
     internal class LocalitySettings

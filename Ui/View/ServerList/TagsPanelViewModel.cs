@@ -218,5 +218,21 @@ namespace _1RM.View.ServerList
                 });
             }
         }
+
+
+
+        private RelayCommand? _cmdTagPin;
+        public RelayCommand CmdTagPin
+        {
+            get
+            {
+                return _cmdTagPin ??= new RelayCommand((o) =>
+                {
+                    if (o is not Tag obj)
+                        return;
+                    obj.IsPinned = !obj.IsPinned;
+                });
+            }
+        }
     }
 }
