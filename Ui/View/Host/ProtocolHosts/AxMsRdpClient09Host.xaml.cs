@@ -9,6 +9,7 @@ using MSTSCLib;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -836,18 +837,18 @@ namespace _1RM.View.Host.ProtocolHosts
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
                 if (_rdpSettings.IsTmpSession() == false)
-                    IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, true, -1);
+                    LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, -1);
                 return ScreenInfoEx.GetAllScreensSize();
             }
 
-            int screenIndex = IoC.Get<LocalityService>().RdpLocalityGet(_rdpSettings.Id)?.FullScreenLastSessionScreenIndex ?? -1;
+            int screenIndex = LocalityConnectRecorder.RdpCacheGet(_rdpSettings.Id)?.FullScreenLastSessionScreenIndex ?? -1;
             if (screenIndex < 0
                 || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
             {
                 screenIndex = this.ParentWindow != null ? ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index : ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
             if (_rdpSettings.IsTmpSession() == false)
-                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, true, screenIndex);
+                LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, screenIndex);
             return System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds;
         }
 

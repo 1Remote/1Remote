@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using _1RM.Model;
 using Newtonsoft.Json;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
@@ -141,7 +142,6 @@ namespace _1RM.Service
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
-
         public static Configuration Load(string path)
         {
             var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
@@ -177,6 +177,7 @@ namespace _1RM.Service
         /// <summary>
         /// Tags that show on the tab bar of the main window
         /// </summary>
+        [Obsolete("this property become useless since 20230524, use LocalityService.TagDict instead")]
         public List<string> PinnedTags
         {
             set => _cfg.PinnedTags = value;

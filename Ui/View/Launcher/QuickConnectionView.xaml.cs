@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using _1RM.Model;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.View.Editor;
 using Stylet;
 
@@ -114,7 +115,7 @@ namespace _1RM.View.Launcher
                 if (vm.ConnectHistory.Contains(qci))
                 {
                     vm.ConnectHistory.Remove(qci);
-                    IoC.Get<LocalityService>().QuickConnectionHistoryRemove(qci);
+                    LocalityConnectRecorder.QuickConnectionHistoryRemove(qci);
                 }
                 vm.SelectedIndex = 0;
             }

@@ -7,6 +7,7 @@ using _1RM.Service;
 using _1RM.Utils.RdpFile;
 using Shawn.Utils;
 using System.Collections.Generic;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using Shawn.Utils.Wpf;
 
@@ -702,7 +703,7 @@ namespace _1RM.Model.Protocol
         {
             if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
                 || this.IsConnWithFullScreen == true
-                || IoC.Get<LocalityService>().RdpLocalityGet(this.Id.ToString())?.FullScreenLastSessionIsFullScreen == true)
+                || LocalityConnectRecorder.RdpCacheGet(this.Id)?.FullScreenLastSessionIsFullScreen == true)
                 return true;
             return false;
         }

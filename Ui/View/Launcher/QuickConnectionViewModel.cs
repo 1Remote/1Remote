@@ -7,6 +7,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using Shawn.Utils;
@@ -126,7 +127,7 @@ namespace _1RM.View.Launcher
 
         public void RebuildConnectionHistory()
         {
-            var list = IoC.Get<LocalityService>().QuickConnectionHistory.ToList();
+            var list = LocalityConnectRecorder.QuickConnectionHistoryGet();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
@@ -157,7 +158,7 @@ namespace _1RM.View.Launcher
                 return;
             }
 
-            var newList = IoC.Get<LocalityService>().QuickConnectionHistory.Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
+            var newList = LocalityConnectRecorder.QuickConnectionHistoryGet().Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
             var list = newList?.ToList() ?? new List<QuickConnectionItem>();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
@@ -241,7 +242,7 @@ namespace _1RM.View.Launcher
                 MsAppCenterHelper.TraceSpecial("Quick connect", server.Protocol);
 
                 // save history
-                IoC.Get<LocalityService>().QuickConnectionHistoryAdd(new QuickConnectionItem() { Host = host, Protocol = protocol });
+                LocalityConnectRecorder.QuickConnectionHistoryAdd(new QuickConnectionItem() { Host = host, Protocol = protocol });
                 GlobalEventHelper.OnRequestQuickConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - {nameof(QuickConnectionView)}");
             }
         }

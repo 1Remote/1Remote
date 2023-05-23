@@ -9,6 +9,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Host;
 using Shawn.Utils;

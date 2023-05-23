@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -44,7 +45,7 @@ namespace _1RM.View.Host
                     screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
                 else if (host.ProtocolServer is RDP rdp
                          && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
-                         && IoC.Get<LocalityService>().RdpLocalityGet(rdp.Id) is { } setting
+                         && LocalityConnectRecorder.RdpCacheGet(rdp.Id) is { } setting
                          && setting.FullScreenLastSessionScreenIndex >= 0
                          && setting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
                     screenEx = ScreenInfoEx.GetCurrentScreen(setting.FullScreenLastSessionScreenIndex);

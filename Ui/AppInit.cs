@@ -15,6 +15,7 @@ using _1RM.Utils;
 using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.Locality;
 using _1RM.View.Utils;
 
 namespace _1RM
@@ -32,26 +33,6 @@ namespace _1RM
             }
         }
 
-        private static void CreateDirIfNotExist(string path, bool isFile)
-        {
-            DirectoryInfo? di = null;
-            if (isFile)
-            {
-                var fi = new FileInfo(path);
-                if (fi.Directory?.Exists == false)
-                {
-                    di = fi.Directory;
-                }
-            }
-            else
-            {
-                di = new DirectoryInfo(path);
-            }
-            if (di?.Exists == false)
-            {
-                di.Create();
-            }
-        }
 
         public static void InitOnStartup()
         {
@@ -194,19 +175,28 @@ namespace _1RM
                     WritePermissionCheck(paths.LogFilePath, true);
                     //WritePermissionCheck(paths.SqliteDbDefaultPath, true);
                     WritePermissionCheck(paths.KittyDirPath, false);
-                    WritePermissionCheck(paths.LocalityJsonPath, true);
+                    WritePermissionCheck(paths.LocalityDirPath, false);
                 }
 
                 // 文件夹创建
                 {
                     var paths = AppPathHelper.Instance;
-                    CreateDirIfNotExist(paths.BaseDirPath, false);
-                    CreateDirIfNotExist(paths.ProtocolRunnerDirPath, false);
-                    CreateDirIfNotExist(paths.ProfileJsonPath, true);
-                    CreateDirIfNotExist(paths.LogFilePath, true);
-                    CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
-                    CreateDirIfNotExist(paths.KittyDirPath, false);
-                    CreateDirIfNotExist(paths.LocalityJsonPath, true);
+                    AppPathHelper.CreateDirIfNotExist(paths.BaseDirPath, false);
+                    AppPathHelper.CreateDirIfNotExist(paths.ProtocolRunnerDirPath, false);
+                    AppPathHelper.CreateDirIfNotExist(paths.ProfileJsonPath, true);
+                    AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
+                    AppPathHelper.CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
+                    AppPathHelper.CreateDirIfNotExist(paths.KittyDirPath, false);
+                    AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
+                    AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
+                    if (File.Exists(paths.LocalityJsonPath))
+                    {
+                        File.Move(paths.LocalityJsonPath, LocalityService.JsonPath);
+                    }
+                    if (File.Exists(paths.LocalityConnectTimeRecord))
+                    {
+                        File.Move(paths.LocalityConnectTimeRecord, Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json"));
+                    }
                 }
             }
             #endregion
@@ -220,9 +210,6 @@ namespace _1RM
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Info;
                 SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 // init log file placement
-                var fi = new FileInfo(AppPathHelper.Instance.LogFilePath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
                 SimpleLogHelper.LogFileName = AppPathHelper.Instance.LogFilePath;
             }
 

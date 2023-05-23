@@ -10,6 +10,7 @@ using AxMSTSCLib;
 using MSTSCLib;
 using _1RM.Model.Protocol;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -218,7 +219,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     _rdpClient!.FullScreen = false;
                     if (_rdpSettings.IsTmpSession() == false)
                     {
-                        IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+                        LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
                     }
                     return;
                 }
@@ -274,7 +275,7 @@ namespace _1RM.View.Host.ProtocolHosts
             ParentWindowSetToWindow();
             if (_rdpSettings.IsTmpSession() == false)
             {
-                IoC.Get<LocalityService>().RdpLocalityUpdate(_rdpSettings.Id, false);
+                LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
             }
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
         }

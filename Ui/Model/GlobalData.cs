@@ -10,6 +10,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Launcher;
@@ -26,7 +27,6 @@ namespace _1RM.Model
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
-            ConnectTimeRecorder.Init(AppPathHelper.Instance.ConnectTimeRecord);
             ReloadServerList();
 
             CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
@@ -65,8 +65,6 @@ namespace _1RM.Model
 
         private void ReadTagsFromServers()
         {
-            var pinnedTags = _configurationService.PinnedTags;
-
             // get distinct tag from servers
             var tags = new List<Tag>();
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
@@ -75,7 +73,19 @@ namespace _1RM.Model
                 {
                     var tn = tagName.Trim().ToLower();
                     if (tags.All(x => !string.Equals(x.Name, tn, StringComparison.CurrentCultureIgnoreCase)))
-                        tags.Add(new Tag(tn, pinnedTags.Contains(tn), SaveOnPinnedChanged) { ItemsCount = 1 });
+                    {
+                        bool isPinned = false;
+                        int customOrder = int.MaxValue;
+                        if (LocalityTagService.TagDict.ContainsKey(tn))
+                        {
+                            isPinned = LocalityTagService.TagDict[tn].IsPinned;
+                        }
+                        else if(_configurationService.PinnedTags.Contains(tn))
+                        {
+                            isPinned = true;
+                        }
+                        tags.Add(new Tag(tn, isPinned, customOrder, SaveTagChanged) { ItemsCount = 1 });
+                    }
                     else
                         tags.First(x => x.Name.ToLower() == tn).ItemsCount++;
                 }
@@ -84,10 +94,9 @@ namespace _1RM.Model
             TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
         }
 
-        private void SaveOnPinnedChanged()
+        private void SaveTagChanged()
         {
-            _configurationService.PinnedTags = TagList.Where(x => x.IsPinned).Select(x => x.Name).ToList();
-            _configurationService.Save();
+            LocalityTagService.UpdateTags(TagList);
         }
 
         public ProtocolBaseViewModel? GetItemById(string dataSourceName, string serverId)
@@ -136,7 +145,7 @@ namespace _1RM.Model
                 {
                     // read from db
                     VmItemList = _sourceService.GetServers(focus);
-                    ConnectTimeRecorder.Cleanup();
+                    LocalityConnectRecorder.Cleanup();
                     ReadTagsFromServers();
                     OnDataReloaded?.Invoke();
 

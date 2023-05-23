@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using _1RM.Service;
+using _1RM.Service.Locality;
 
 namespace _1RM.View.Host
 {

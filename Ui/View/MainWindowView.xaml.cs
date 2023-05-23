@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Utils;
 using Shawn.Utils;
