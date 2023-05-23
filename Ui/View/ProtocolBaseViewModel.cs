@@ -6,10 +6,9 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service;
 using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -21,32 +20,15 @@ namespace _1RM.View
         public DataSourceBase? DataSource => Server.DataSource;
         public string DataSourceName => DataSource?.DataSourceName ?? "";
 
-        public int CustomOrder
-        {
-            get
-            {
-                if (IoC.TryGet<LocalityService>() == null)
-                    return 0;
-                else if (IoC.Get<LocalityService>().ServerCustomOrder.ContainsKey(Id) == true)
-                    return IoC.Get<LocalityService>().ServerCustomOrder[Id];
-                else
-                    return int.MaxValue;
-            }
-        }
+        public int CustomOrder => LocalityListViewService.ServerCustomOrderGet(Id);
 
         #region Grouped
         public string GroupedOrder
         {
             get
             {
-                int i = 65535;
-                char mark = IoC.Get<DataSourceService>().LocalDataSource == DataSource ? '!' : '#';
-                if (IoC.TryGet<LocalityService>() != null)
-                {
-                    var orders = IoC.Get<LocalityService>().ServerGroupedOrder;
-                    if (orders.ContainsKey(DataSourceName) == true)
-                        i = orders[DataSourceName];
-                }
+                var i = LocalityListViewService.GroupedOrderGet(dataSourceName: DataSourceName);
+                var mark = IoC.Get<DataSourceService>().LocalDataSource == DataSource ? '!' : '#'; // ! for local, # for remote to make local first when i is same.
                 return $"{i}_{mark}_{DataSource}";
             }
         }
@@ -60,19 +42,13 @@ namespace _1RM.View
                 if (IoC.TryGet<LocalityService>() != null
                     && SetAndNotifyIfChanged(ref _groupedIsExpanded, value))
                 {
-                    IoC.Get<LocalityService>().ServerGroupedSetIsExpanded(DataSourceName, value);
+                    LocalityListViewService.GroupedIsExpandedSet(DataSourceName, value);
                 }
             }
             get
             {
-                var ret = true;
-                if (IoC.TryGet<LocalityService>() != null)
-                {
-                    var tmp = IoC.Get<LocalityService>().ServerGroupedIsExpanded;
-                    if (tmp.ContainsKey(DataSourceName) == true)
-                        ret = tmp[DataSourceName];
-                }
-                _groupedIsExpanded = ret;
+                var ret = LocalityListViewService.GroupedIsExpandedGet(DataSourceName);
+                _groupedIsExpanded = LocalityListViewService.GroupedIsExpandedGet(DataSourceName);
                 return ret;
             }
         }
@@ -109,7 +85,7 @@ namespace _1RM.View
                             HoverNoteDisplayControl = new NoteIcon(this.Server);
                         });
                     }
-                    LastConnectTime = ConnectTimeRecorder.Get(Server);
+                    LastConnectTime = LocalityConnectRecorder.Get(Server);
                     TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
                     RaisePropertyChanged(nameof(TagString));
                     RaisePropertyChanged(nameof(Id));
@@ -142,7 +118,7 @@ namespace _1RM.View
                     HoverNoteDisplayControl = new NoteIcon(this.Server);
                 });
             }
-            LastConnectTime = ConnectTimeRecorder.Get(Server);
+            LastConnectTime = LocalityConnectRecorder.Get(Server);
             TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
         }
 

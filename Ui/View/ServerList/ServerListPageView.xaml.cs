@@ -11,6 +11,7 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using Microsoft.AppCenter.Crashes;
 using Shawn.Utils;
@@ -165,7 +166,7 @@ namespace _1RM.View.ServerList
                 {
                     // drag ListBoxItem
                     if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
-                        && IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
+                        && LocalityListViewService.ServerOrderByGet() == EnumServerOrderBy.Custom
                         && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
                     {
                         var dataObj = new DataObject();
@@ -226,7 +227,7 @@ namespace _1RM.View.ServerList
                 }
 
                 // item move
-                if (IoC.Get<LocalityService>().ServerOrderBy == EnumServerOrderBy.Custom
+                if (LocalityListViewService.ServerOrderByGet() == EnumServerOrderBy.Custom
                     && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMovedProtocol } listBoxItem
                     && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target }
                     && toBeMovedProtocol != target)
@@ -251,7 +252,7 @@ namespace _1RM.View.ServerList
                         items.RemoveAt(removedIdx);
                         targetIdx = items.IndexOf(target);
                         items.Insert(targetIdx, toBeMovedProtocol);
-                        IoC.Get<LocalityService>().ServerCustomOrderRebuild(items);
+                        LocalityListViewService.ServerCustomOrderSave(items);
                         IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
                         SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
@@ -305,7 +306,7 @@ namespace _1RM.View.ServerList
                                 groups.RemoveAt(removedIdx);
                                 targetIdx = groups.IndexOf(targetGroupItem);
                                 groups.Insert(targetIdx, toBeMovedGroupItem);
-                                IoC.Get<LocalityService>().ServerGroupedOrderRebuild(groups.Select(x => x.Name.ToString() ?? "").Where(x=> string.IsNullOrEmpty(x) == false).ToArray());
+                                LocalityListViewService.GroupedOrderSave(groups.Select(x => x.Name.ToString() ?? "").Where(x=> string.IsNullOrEmpty(x) == false).ToArray());
                                 IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
                                 SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));

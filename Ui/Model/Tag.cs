@@ -12,15 +12,17 @@ namespace _1RM.Model
 {
     public class Tag : NotifyPropertyChangedBase
     {
-        private readonly Action _saveOnPinnedChanged;
-        public Tag(string name, bool isPinned, Action saveOnPinnedChanged)
+        private readonly Action _onConfigPropertyChanged;
+        public Tag(string name, bool isPinned, int customOrder, Action onConfigPropertyChanged)
         {
-            _name = name;
+            _name = name.ToLower();
             _isPinned = isPinned;
-            this._saveOnPinnedChanged = saveOnPinnedChanged;
+            _customOrder = customOrder;
+            this._onConfigPropertyChanged = onConfigPropertyChanged;
         }
 
-        private string _name = "";
+        private string _name;
+        [JsonIgnore]
         public string Name
         {
             get => _name;
@@ -29,6 +31,7 @@ namespace _1RM.Model
 
 
         private int _itemsCount = 0;
+        [JsonIgnore]
         public int ItemsCount
         {
             get => _itemsCount;
@@ -36,13 +39,26 @@ namespace _1RM.Model
         }
 
         private bool _isPinned = false;
+
         public bool IsPinned
         {
             get => _isPinned;
             set
             {
                 SetAndNotifyIfChanged(ref _isPinned, value);
-                _saveOnPinnedChanged.Invoke();
+                _onConfigPropertyChanged.Invoke();
+            }
+        }
+
+
+        private int _customOrder;
+        public int CustomOrder
+        {
+            get => _customOrder;
+            set
+            {
+                SetAndNotifyIfChanged(ref _customOrder, value);
+                _onConfigPropertyChanged.Invoke();
             }
         }
     }

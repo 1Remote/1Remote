@@ -14,6 +14,7 @@
              xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
+             xmlns:locality="clr-namespace:_1RM.Service.Locality"
              mc:Ignorable="d"
              Background="White"
              d:DataContext="{d:DesignInstance serverList:ServerListPageViewModel}"
@@ -305,13 +306,13 @@
                                                          attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                          Background="{DynamicResource BackgroundBrush}"
                                                          Foreground="{DynamicResource BackgroundTextBrush}"
-                                                         Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
+                                                         Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -322,7 +323,7 @@
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolDesc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolDesc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -339,13 +340,13 @@
                                 attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                 Background="{DynamicResource BackgroundBrush}"
                                 Foreground="{DynamicResource BackgroundTextBrush}"
-                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.NameAsc}">
+                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.NameAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameAsc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameAsc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -356,7 +357,7 @@
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameDesc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameDesc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -433,13 +434,13 @@
                                 attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                 Background="{DynamicResource BackgroundBrush}"
                                 Foreground="{DynamicResource BackgroundTextBrush}"
-                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.AddressAsc}">
+                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressAsc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -450,7 +451,7 @@
                                     <Path.Style>
                                         <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressDesc}">
+                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressDesc}">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>

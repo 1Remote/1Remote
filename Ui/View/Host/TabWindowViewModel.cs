@@ -13,8 +13,9 @@ using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils.Wpf;
 using Stylet;
 using _1RM.Service.DataSource.DAO.Dapper;
+ using _1RM.Service.Locality;
 
-namespace _1RM.View.Host
+ namespace _1RM.View.Host
 {
     public class TabWindowViewModel : MaskLayerContainerScreenBase, IDisposable
     {

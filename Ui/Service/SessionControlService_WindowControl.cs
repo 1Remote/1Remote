@@ -22,6 +22,7 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using _1RM.Service.DataSource;
 using System.Collections.Generic;
+using _1RM.Service.Locality;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace _1RM.Service

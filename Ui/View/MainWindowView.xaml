@@ -9,6 +9,7 @@
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                   xmlns:service="clr-namespace:_1RM.Service"
                   xmlns:Rm="clr-namespace:_1RM"
+                  xmlns:locality="clr-namespace:_1RM.Service.Locality"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -183,14 +184,14 @@
                                         <Setter Property="SnapsToDevicePixels" Value="True" />
                                     </Style>
                                 </MenuItem.Resources>
-                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.IdAsc}">
+                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.IdAsc}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.IdAsc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.IdAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -207,17 +208,17 @@
 
 
 
-                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
+                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolDesc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -231,7 +232,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -242,7 +243,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolDesc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -255,17 +256,17 @@
                                 </MenuItem>
 
 
-                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.NameAsc}">
+                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.NameAsc}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameAsc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameDesc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -279,7 +280,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameAsc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameAsc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -290,7 +291,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameDesc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -303,17 +304,17 @@
                                 </MenuItem>
 
 
-                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.AddressAsc}">
+                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressAsc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressDesc}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -327,7 +328,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressAsc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -338,7 +339,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressDesc}">
+                                                            <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -351,14 +352,14 @@
                                 </MenuItem>
 
 
-                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static service:EnumServerOrderBy.Custom}">
+                                <MenuItem Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.Custom}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.Custom}">
+                                                        <DataTrigger Binding="{Binding ServerListViewModel.ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.Custom}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>

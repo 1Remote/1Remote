@@ -11,6 +11,7 @@ using System.Windows.Interop;
 using Dragablz;
 using _1RM.Model;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;

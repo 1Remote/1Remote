@@ -14,6 +14,26 @@ namespace _1RM.Service
     {
         public readonly string BaseDirPath;
 
+        public static void CreateDirIfNotExist(string path, bool isFile)
+        {
+            DirectoryInfo? di = null;
+            if (isFile)
+            {
+                var fi = new FileInfo(path);
+                if (fi.Directory?.Exists == false)
+                {
+                    di = fi.Directory;
+                }
+            }
+            else
+            {
+                di = new DirectoryInfo(path);
+            }
+            if (di?.Exists == false)
+            {
+                di.Create();
+            }
+        }
         public AppPathHelper(string baseDirPath)
         {
             BaseDirPath = baseDirPath;
@@ -35,7 +55,7 @@ namespace _1RM.Service
             && WritePermissionCheck(paths.LogFilePath, true)
             && WritePermissionCheck(paths.SqliteDbDefaultPath, true)
             && WritePermissionCheck(paths.KittyDirPath, false)
-            && WritePermissionCheck(paths.LocalityJsonPath, true))
+            && WritePermissionCheck(paths.LocalityDirPath, true))
             {
                 return true;
             }
@@ -51,8 +71,12 @@ namespace _1RM.Service
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{Assert.APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");
+
+        public string LocalityDirPath => Path.Combine(BaseDirPath, ".locality");
+        [Obsolete("after 20230523, use LocalityDirPath")]
         public string LocalityJsonPath => Path.Combine(BaseDirPath, "Locality.json");
-        public string ConnectTimeRecord => Path.Combine(BaseDirPath, "ConnectionRecords.json");
+        [Obsolete("after 20230523, use LocalityDirPath")]
+        public string LocalityConnectTimeRecord => Path.Combine(BaseDirPath, "ConnectionRecords.json");
 
 
 

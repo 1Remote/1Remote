@@ -18,6 +18,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
@@ -72,12 +73,12 @@ namespace _1RM.View.ServerList
 
         public EnumServerOrderBy ServerOrderBy
         {
-            get => IoC.Get<LocalityService>().ServerOrderBy;
+            get => LocalityListViewService.ServerOrderByGet();
             set
             {
-                if (value != IoC.Get<LocalityService>().ServerOrderBy)
+                if (value != LocalityListViewService.ServerOrderByGet())
                 {
-                    IoC.Get<LocalityService>().ServerOrderBy = value;
+                    LocalityListViewService.ServerOrderBySet(value);
                     RaisePropertyChanged();
                 }
             }
