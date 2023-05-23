@@ -32,12 +32,12 @@ namespace _1RM.Controls
         }
         public List<string> Tags
         {
-            get
+            get => (List<string>)GetValue(TagsProperty);
+            set
             {
-                var obj = GetValue(TagsProperty);
-                return obj == null ? new List<string>() : (List<string>)GetValue(TagsProperty);
+                var obj = value?.Select(x => x.ToLower()).Distinct().ToList() ?? new List<string>();
+                SetValue(TagsProperty, obj);
             }
-            set => SetValue(TagsProperty, value);
         }
 
 
@@ -48,12 +48,17 @@ namespace _1RM.Controls
         }
         public List<string> TagsForSelect
         {
-            get
+            get => (List<string>)GetValue(TagsForSelectProperty);
+            set
             {
-                var obj = GetValue(TagsProperty);
-                return obj == null ? new List<string>() : (List<string>)GetValue(TagsForSelectProperty);
+                var tags = new List<string>();
+                if (value != null)
+                {
+                    tags = value.Select(x => x.ToLower()).Distinct().ToList();
+                }
+                SetValue(TagsForSelectProperty, tags);
             }
-            set => SetValue(TagsForSelectProperty, value);
+
         }
 
 
@@ -74,26 +79,28 @@ namespace _1RM.Controls
 
         private void AddNewTag(string newTag)
         {
-            newTag = newTag.Trim().Replace(" ", "");
-            if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(newTag) != true)
+            newTag = TagAndKeywordEncodeHelper.RectifyTagName(newTag);
+            if (string.IsNullOrEmpty(newTag) == false
+                && Tags.Any(x => string.Equals(x, newTag, StringComparison.CurrentCultureIgnoreCase)) != true)
             {
-                Tags.Add(TagAndKeywordEncodeHelper.RectifyTagName(newTag));
+                Tags.Add(newTag);
             }
             TbNewTag.Text = "";
             Tags = Tags; // raise notify
-            TbNewTag.Selections = TagsForSelect.Where(x => Tags?.Contains(x) != true);
+            TbNewTag.Selections = TagsForSelect?.Where(x => Tags?.Contains(x) != true);
         }
 
-        private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
+
+        private void TbNewTag_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
             {
-                AddNewTag(TbNewTag.Text);
                 e.Handled = true;
             }
-            else if (TbNewTag.Text.IndexOf(" ", StringComparison.Ordinal) > 0)
+
+            if (TbNewTag.Text.IndexOf(" ", StringComparison.Ordinal) > 0)
             {
-                TbNewTag.Text = TbNewTag.Text.Replace(" ", "");
+                TbNewTag.Text = TagAndKeywordEncodeHelper.RectifyTagName(TbNewTag.Text);
             }
         }
 
@@ -111,7 +118,7 @@ namespace _1RM.Controls
                 {
                     Tags.Remove(b.Tag.ToString()!);
                     Tags = Tags; // raise notify
-                    TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
+                    TbNewTag.Selections = TagsForSelect?.Where(x => Tags.Contains(x) == false);
                 }
             }
         }

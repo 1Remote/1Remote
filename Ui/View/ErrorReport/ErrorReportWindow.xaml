@@ -157,7 +157,7 @@
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
+                          Fill="White" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </Button>
         </Grid>

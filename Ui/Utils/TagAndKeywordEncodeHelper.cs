@@ -14,7 +14,7 @@ namespace _1RM.Utils
     {
         public static string RectifyTagName(string name)
         {
-            return name.Replace("#", "").Replace(" ", "").Trim();
+            return name.Replace("#", "").Replace(" ", "-").Trim().ToLower();
         }
 
         public class KeywordDecoded

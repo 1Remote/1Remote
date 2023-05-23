@@ -28,10 +28,6 @@
         </Grid.RowDefinitions>
 
         <Grid Row="1" Margin="5">
-            <!--<Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>-->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="{Binding GlobalData.TagList.Count, StringFormat={}{0}tags}" 
                            Foreground="{DynamicResource BackgroundTextBrush}"
@@ -46,6 +42,13 @@
                      PreviewKeyUp="TbFilter_OnKeyUp"
                      Width="300"
             ></TextBox>
+        </Grid>
+
+        <Grid Row="2">
+            <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
+                       Opacity="0.5"
+                       HorizontalAlignment="Center"
+                       Text="TXT: This is your list of tags. Right click for a context menu to pin them on header."></TextBlock>
         </Grid>
 
         <!-- tag list: the page to config which tag should be display. -->

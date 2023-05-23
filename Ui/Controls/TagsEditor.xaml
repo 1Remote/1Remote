@@ -69,7 +69,8 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition Width="20"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <self:AutoCompleteComboBox x:Name="TbNewTag" PreviewKeyDown="TextBoxOnKeyDown"
+                    <self:AutoCompleteComboBox x:Name="TbNewTag" 
+                                               PreviewKeyDown="TbNewTag_OnPreviewKeyDown"
                                                Margin="0 0 5 0"></self:AutoCompleteComboBox>
                     <Button Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" VerticalAlignment="Stretch" Click="Button_OnClick">+</Button>
                 </Grid>
