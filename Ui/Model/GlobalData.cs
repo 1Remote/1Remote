@@ -73,10 +73,11 @@ namespace _1RM.Model
             {
                 foreach (var tagName in tagNames)
                 {
-                    if (tags.All(x => x.Name != tagName))
-                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), SaveOnPinnedChanged) { ItemsCount = 1 });
+                    var tn = tagName.Trim().ToLower();
+                    if (tags.All(x => !string.Equals(x.Name, tn, StringComparison.CurrentCultureIgnoreCase)))
+                        tags.Add(new Tag(tn, pinnedTags.Contains(tn), SaveOnPinnedChanged) { ItemsCount = 1 });
                     else
-                        tags.First(x => x.Name == tagName).ItemsCount++;
+                        tags.First(x => x.Name.ToLower() == tn).ItemsCount++;
                 }
             }
 
