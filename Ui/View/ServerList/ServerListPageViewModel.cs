@@ -84,6 +84,8 @@ namespace _1RM.View.ServerList
             }
         }
 
+        public ObservableCollection<Tag> HeaderTags { get; set; } = new ObservableCollection<Tag>();
+
 
         public bool? IsSelectedAll
         {
@@ -273,6 +275,7 @@ namespace _1RM.View.ServerList
                         // !!! VmItemList should order by CustomOrder by default
                         list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id)
                         );
+                    HeaderTags = new BindableCollection<Tag>(AppData.TagList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
                     SelectedServerViewModelListItem = null;
                     foreach (var vs in VmServerList)
                     {
@@ -294,6 +297,7 @@ namespace _1RM.View.ServerList
 
                     VmServerListDummyNode();
                     RaisePropertyChanged(nameof(VmServerList));
+                    RaisePropertyChanged(nameof(HeaderTags));
                     ApplySort();
                 });
             }

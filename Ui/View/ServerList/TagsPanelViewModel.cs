@@ -9,6 +9,7 @@ using _1RM.Controls;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Utils;
 using Shawn.Utils;
@@ -62,10 +63,20 @@ namespace _1RM.View.ServerList
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    if (o is not Tag obj)
+                    var tagName = "";
+                    if (o is Tag tag)
+                        tagName = tag.Name;
+                    else if (o is string str)
+                        tagName = str;
+                    else if (o is TagFilter tagFilter)
+                        tagName = tagFilter.TagName;
+                    else
+                        return;
+                    tagName = tagName.ToLower();
+                    if (!LocalityTagService.TagDict.ContainsKey(tagName))
                         return;
 
-                    var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(obj.Name) && x.IsEditable).Select(x => x.Server).ToArray();
+                    var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(tagName) && x.IsEditable).Select(x => x.Server).ToArray();
 
                     if (protocolServerBases.Any() != true)
                     {
@@ -77,16 +88,16 @@ namespace _1RM.View.ServerList
 
                     foreach (var server in protocolServerBases)
                     {
-                        if (server.Tags.Contains(obj.Name))
+                        if (server.Tags.Contains(tagName))
                         {
-                            server.Tags.Remove(obj.Name);
+                            server.Tags.Remove(tagName);
                         }
                     }
                     IoC.Get<GlobalData>().UpdateServer(protocolServerBases);
 
 
                     var tagFilters = IoC.Get<ServerListPageViewModel>().TagFilters;
-                    var delete = tagFilters.FirstOrDefault(x => x.TagName == obj.Name);
+                    var delete = tagFilters.FirstOrDefault(x => x.TagName == tagName);
                     if (delete != null)
                     {
                         var tmp = tagFilters.ToList();
@@ -108,10 +119,20 @@ namespace _1RM.View.ServerList
             {
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
-                    if (o is not Tag obj)
+                    var tagName = "";
+                    if (o is Tag tag)
+                        tagName = tag.Name;
+                    else if (o is string str)
+                        tagName = str;
+                    else if (o is TagFilter tagFilter)
+                        tagName = tagFilter.TagName;
+                    else
+                        return;
+                    tagName = tagName.ToLower();
+                    if (!LocalityTagService.TagDict.ContainsKey(tagName))
                         return;
 
-                    string oldTagName = obj.Name;
+                    string oldTagName = tagName;
 
                     var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(oldTagName) && x.IsEditable).Select(x => x.Server).ToArray();
 
@@ -124,12 +145,12 @@ namespace _1RM.View.ServerList
                     {
                         if (string.IsNullOrWhiteSpace(str))
                             return IoC.Get<ILanguageService>().Translate("Can not be empty!");
-                        if (str == obj.Name)
+                        if (str == tagName)
                             return "";
                         if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
                             return IoC.Get<ILanguageService>().Translate("XXX is already existed!", str);
                         return "";
-                    }), defaultResponse: obj.Name, ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    }), defaultResponse: tagName, ownerViewModel: IoC.Get<MainWindowViewModel>());
 
                     if (newTagName == null || string.IsNullOrEmpty(newTagName))
                         return;
@@ -164,7 +185,7 @@ namespace _1RM.View.ServerList
                     // restore display scene
                     if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == newTagName))
                     {
-                        IoC.Get<GlobalData>().TagList.First(x => x.Name == newTagName).IsPinned = obj.IsPinned;
+                        IoC.Get<GlobalData>().TagList.First(x => x.Name == newTagName).IsPinned = LocalityTagService.TagDict[tagName].IsPinned;
                     }
                 });
             }
@@ -179,12 +200,22 @@ namespace _1RM.View.ServerList
             {
                 return _cmdTagConnect ??= new RelayCommand((o) =>
                 {
-                    if (o is not Tag obj)
+                    var tagName = "";
+                    if (o is Tag tag)
+                        tagName = tag.Name;
+                    else if (o is string str)
+                        tagName = str;
+                    else if (o is TagFilter tagFilter)
+                        tagName = tagFilter.TagName;
+                    else
+                        return;
+                    tagName = tagName.ToLower();
+                    if (!LocalityTagService.TagDict.ContainsKey(tagName))
                         return;
 
                     foreach (var vmProtocolServer in IoC.Get<GlobalData>().VmItemList.ToArray())
                     {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
+                        if (vmProtocolServer.Server.Tags.Contains(tagName))
                         {
                             GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}");
                             Thread.Sleep(100);
@@ -203,13 +234,23 @@ namespace _1RM.View.ServerList
             {
                 return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
                 {
-                    if (o is not Tag obj)
+                    var tagName = "";
+                    if (o is Tag tag)
+                        tagName = tag.Name;
+                    else if (o is string str)
+                        tagName = str;
+                    else if (o is TagFilter tagFilter)
+                        tagName = tagFilter.TagName;
+                    else
+                        return;
+                    tagName = tagName.ToLower();
+                    if (!LocalityTagService.TagDict.ContainsKey(tagName))
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();
                     foreach (var vmProtocolServer in IoC.Get<GlobalData>().VmItemList.ToArray())
                     {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
+                        if (vmProtocolServer.Server.Tags.Contains(tagName))
                         {
                             GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
                             Thread.Sleep(100);
@@ -228,9 +269,34 @@ namespace _1RM.View.ServerList
             {
                 return _cmdTagPin ??= new RelayCommand((o) =>
                 {
-                    if (o is not Tag obj)
+                    if (o is string tagName2)
+                    {
+                        var t = IoC.Get<GlobalData>().TagList.FirstOrDefault(x => string.Equals(x.Name, tagName2, StringComparison.CurrentCultureIgnoreCase));
+                        if (t != null)
+                        {
+                            t.IsPinned = !t.IsPinned;
+                        }
                         return;
-                    obj.IsPinned = !obj.IsPinned;
+                    }
+
+                    if (o is Tag tag)
+                    {
+                        tag.IsPinned = !tag.IsPinned;
+                        return;
+                    }
+
+                    if (o is TagFilter tagFilter)
+                    {
+                        var tagName = tagFilter.TagName.ToLower();
+                        if (!LocalityTagService.TagDict.ContainsKey(tagName))
+                            return;
+                        var t = IoC.Get<GlobalData>().TagList.FirstOrDefault(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase));
+                        if (t != null)
+                        {
+                            t.IsPinned = !t.IsPinned;
+                            tagFilter.RaiseIsPinned();
+                        }
+                    }
                 });
             }
         }

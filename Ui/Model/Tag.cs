@@ -13,16 +13,15 @@ namespace _1RM.Model
     public class Tag : NotifyPropertyChangedBase
     {
         private readonly Action _onConfigPropertyChanged;
-        public Tag(string name, bool isPinned, int customOrder, Action onConfigPropertyChanged)
+        public Tag(string? name, bool isPinned, int customOrder, Action onConfigPropertyChanged)
         {
-            _name = name.ToLower();
+            _name = name?.ToLower() ?? ""; // json deserialization will set null to string
             _isPinned = isPinned;
             _customOrder = customOrder;
             this._onConfigPropertyChanged = onConfigPropertyChanged;
         }
 
         private string _name;
-        [JsonIgnore]
         public string Name
         {
             get => _name;
@@ -55,11 +54,7 @@ namespace _1RM.Model
         public int CustomOrder
         {
             get => _customOrder;
-            set
-            {
-                SetAndNotifyIfChanged(ref _customOrder, value);
-                _onConfigPropertyChanged.Invoke();
-            }
+            set => SetAndNotifyIfChanged(ref _customOrder, value);
         }
     }
 }
