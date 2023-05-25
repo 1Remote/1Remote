@@ -9,6 +9,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
@@ -27,8 +28,6 @@ namespace _1RM.Model
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
-            ReloadServerList();
-
             CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
             _timer = new Timer(1000)
             {
@@ -47,8 +46,8 @@ namespace _1RM.Model
         }
 
 
-        private ObservableCollection<Tag> _tagList = new ObservableCollection<Tag>();
-        public ObservableCollection<Tag> TagList
+        private List<Tag> _tagList = new List<Tag>();
+        public List<Tag> TagList
         {
             get => _tagList;
             private set => SetAndNotifyIfChanged(ref _tagList, value);
@@ -63,7 +62,7 @@ namespace _1RM.Model
         public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
 
-        private void ReadTagsFromServers()
+        public void ReadTagsFromServers()
         {
             // get distinct tag from servers
             var tags = new List<Tag>();
@@ -79,6 +78,7 @@ namespace _1RM.Model
                         if (LocalityTagService.TagDict.ContainsKey(tn))
                         {
                             isPinned = LocalityTagService.TagDict[tn].IsPinned;
+                            customOrder = LocalityTagService.TagDict[tn].CustomOrder;
                         }
                         else if(_configurationService.PinnedTags.Contains(tn))
                         {
@@ -91,7 +91,13 @@ namespace _1RM.Model
                 }
             }
 
-            TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
+            TagList = new List<Tag>(tags.OrderBy(x => x.Name));
+
+            foreach (var viewModel in VmItemList)
+            {
+                if(viewModel.Server.Tags.Count > 0)
+                    viewModel.ReLoadTags();
+            }
         }
 
         private void SaveTagChanged()

@@ -1,8 +1,10 @@
 ﻿using System;
+using _1RM.Service.Locality;
+using Shawn.Utils;
 
 namespace _1RM.Model
 {
-    public class TagFilter
+    public class TagFilter : NotifyPropertyChangedBase
     {
         public enum FilterTagsControlAction
         {
@@ -33,6 +35,14 @@ namespace _1RM.Model
         public string TagName { get; }
         public bool IsExcluded { get; }
         public bool IsIncluded => !IsExcluded;
+
+
+        public bool IsPinned => LocalityTagService.IsPinned(TagName);
+
+        public void RaiseIsPinned()
+        {
+            RaisePropertyChanged(nameof(IsPinned));
+        }
 
         public override string ToString()
         {

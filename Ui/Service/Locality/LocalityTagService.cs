@@ -43,7 +43,7 @@ namespace _1RM.Service.Locality
             }
         }
 
-        public static bool CanSave { get; private set; }= true;
+        public static bool CanSave { get; private set; } = true;
         private static void Save()
         {
             if (!CanSave) return;
@@ -63,8 +63,10 @@ namespace _1RM.Service.Locality
         public static void UpdateTags(IEnumerable<Tag> tags)
         {
             Load();
+            int i = 0;
             foreach (var tag in tags)
             {
+                tag.CustomOrder = i++;
                 var key = tag.Name.ToLower();
                 if (_settings.TagDict.ContainsKey(key))
                 {
@@ -85,6 +87,15 @@ namespace _1RM.Service.Locality
                 Load();
                 return _settings.TagDict;
             }
+        }
+
+        public static bool IsPinned(string key)
+        {
+            if (TagDict.TryGetValue(key.ToLower(), out var tag))
+            {
+                return tag.IsPinned;
+            } 
+            return false;
         }
     }
 }

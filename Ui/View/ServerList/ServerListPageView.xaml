@@ -67,10 +67,10 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <EventSetter Event="MouseMove" Handler="UIElement_PreviewMouseMoveEvent"/>
                 <!--drop effect-->
                 <Setter Property="AllowDrop" Value="true"/>
-                <EventSetter Event="Drop" Handler="UIElement_OnDrop"/>
+                <EventSetter Event="MouseMove" Handler="ServerList_PreviewMouseMoveEvent"/>
+                <EventSetter Event="Drop" Handler="ServerList_OnDrop"/>
                 <!--drop end event-->
             </Style>
 
@@ -95,7 +95,8 @@
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource ServerItemHeight}"
+                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" 
+                                             MinHeight="{StaticResource ServerItemHeight}"
                                              Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}"
                                              ></controls:ServerListItem>
                 </Grid>
@@ -193,7 +194,32 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="model:TagFilter">
                             <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
-                                <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
+                                      ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{DynamicResource Unpin}" 
+                                                      Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                      CommandParameter="{Binding}"/>
+                                            <MenuItem Header="{DynamicResource Pin}" 
+                                                      Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                      CommandParameter="{Binding}"/>
+                                            <!--<MenuItem Header="{DynamicResource Delete}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
+                                                              CommandParameter="{Binding}"/>-->
+                                            <MenuItem Header="{DynamicResource Rename}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
+                                                      CommandParameter="{Binding}"/>
+                                            <MenuItem Header="{DynamicResource Connect}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
+                                                      CommandParameter="{Binding}"/>
+                                            <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
+                                                      CommandParameter="{Binding}"/>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
                                     <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
                                                VerticalAlignment="Center" HorizontalAlignment="Center"
                                                Margin="5 5 15 5">
@@ -481,7 +507,7 @@
                                 <Style TargetType="{x:Type GroupItem}">
                                     <Setter Property="AllowDrop" Value="true"/>
                                     <!--drop end event-->
-                                    <EventSetter Event="Drop" Handler="UIElement_OnDrop"/>
+                                    <EventSetter Event="Drop" Handler="ServerList_OnDrop"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type GroupItem}">
@@ -506,8 +532,8 @@
                                                                     <Grid Background="Transparent"
                                                                           Cursor="SizeNS"
                                                                           ToolTip="Drag to reorder groups"
-                                                                          PreviewMouseDown="UIElement_OnPreviewMouseDown"
-                                                                          PreviewMouseMove="UIElement_PreviewMouseMoveEvent">
+                                                                          PreviewMouseDown="ServerList_OnPreviewMouseDown"
+                                                                          PreviewMouseMove="ServerList_PreviewMouseMoveEvent">
                                                                         <Grid.Style>
                                                                             <Style TargetType="Grid">
                                                                                 <Setter Property="Opacity" Value="0.2"></Setter>
@@ -876,15 +902,14 @@
                                 <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" />
                                 <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TagListViewModel}" Value="{x:Null}">
+                                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                                    </DataTrigger>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding TagListViewModel}" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-                                        <Setter Property="Cursor" Value="Arrow" />
-                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding AppData.TagList.Count}" Value="0">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     </DataTrigger>
@@ -902,7 +927,7 @@
                                   Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ItemsControl Name="ListBoxTags"
-                                          ItemsSource="{Binding AppData.TagList}"
+                                          ItemsSource="{Binding HeaderTags}"
                                           Background="{DynamicResource PrimaryMidBrush}"
                                           Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                           ScrollViewer.VerticalScrollBarVisibility="Hidden"
@@ -929,7 +954,12 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="model:Tag">
-                                        <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}">
+                                        <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
+                                              AllowDrop="True"
+                                              MouseMove="TagList_PreviewMouseMoveEvent"
+                                              Drop="TagList_OnDrop"
+                                              Background="Transparent"
+                                            >
                                             <Grid.ContextMenu>
                                                 <ContextMenu>
                                                     <!--<MenuItem Header="{DynamicResource Delete}" 
@@ -944,32 +974,24 @@
                                                     <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                                               CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="TXT:UnPin" 
+                                                    <MenuItem Header="{DynamicResource Unpin}" 
                                                               Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
                                                               CommandParameter="{Binding}"/>
                                                 </ContextMenu>
                                             </Grid.ContextMenu>
-                                            <Button MinWidth="80"
-                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}"
-                                                    CommandParameter="{Binding Name}"
-                                                    Content="{Binding Name, Converter={StaticResource ConverterTagName}}">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                                        <Setter Property="Template">
-                                                            <Setter.Value>
-                                                                <ControlTemplate TargetType="{x:Type Button}">
-                                                                    <Grid>
-                                                                        <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="true"></Border>
-                                                                        <ContentPresenter Margin="2 0" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                                                    </Grid>
-                                                                </ControlTemplate>
-                                                            </Setter.Value>
-                                                        </Setter>
+                                            <Grid Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                  MouseLeftButtonDown="HeaderTag_OnClick"
+                                                  Tag="{Binding Name}"
+                                            >
+                                                <Grid.Style>
+                                                    <Style TargetType="Grid">
+                                                        <Setter Property="MinWidth" Value="50" />
+                                                        <Setter Property="Cursor" Value="Hand" />
+                                                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
-                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                                             </Trigger>
                                                             <DataTrigger Value="True">
                                                                 <DataTrigger.Binding>
@@ -979,7 +1001,6 @@
                                                                     </MultiBinding>
                                                                 </DataTrigger.Binding>
                                                                 <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                                                 <Setter Property="Cursor" Value="Arrow" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding IsPinned}" Value="False">
@@ -987,8 +1008,32 @@
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
-                                                </Button.Style>
-                                            </Button>
+                                                </Grid.Style>
+                                                <TextBlock Text="{Binding Name}" 
+                                                           Margin="8 0"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
+                                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                                </DataTrigger>
+                                                                <DataTrigger Value="True">
+                                                                    <DataTrigger.Binding>
+                                                                        <MultiBinding Converter="{StaticResource ConverterIsEqual}" >
+                                                                            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
+                                                                            <Binding Path="Name" Mode="OneWay"></Binding>
+                                                                        </MultiBinding>
+                                                                    </DataTrigger.Binding>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                            <!--<TextBlock Text="{Binding Name}" Background="Red" Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"></TextBlock>-->
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
