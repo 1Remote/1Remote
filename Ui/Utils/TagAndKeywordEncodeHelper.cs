@@ -12,9 +12,9 @@ namespace _1RM.Utils
 {
     public static class TagAndKeywordEncodeHelper
     {
-        public static string RectifyTagName(string name)
+        public static string RectifyTagName(string? name)
         {
-            return name.Replace("#", "").Replace(" ", "-").Trim().ToLower();
+            return name?.Replace("#", "").Replace(" ", "-").Trim().ToLower() ?? "";
         }
 
         public class KeywordDecoded

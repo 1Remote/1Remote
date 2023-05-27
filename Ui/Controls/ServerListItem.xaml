@@ -86,12 +86,12 @@
                 </Grid>
 
                 <!--display name-->
-                <Grid Grid.Column="3" ToolTip="{Binding Server.DisplayName}" Background="Transparent">
+                <Grid Grid.Column="3" ToolTip="{Binding Tags}" Background="Transparent">
                     <TextBlock Margin="5 0 10 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
                 </Grid>
 
                 <!--tags-->
-                <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                <ItemsControl Grid.Column="4" Margin="5 0 10 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Tags}">
                     <ItemsControl.Resources>
                         <serverList:ConverterTagName x:Key="ConverterTagName" />
                     </ItemsControl.Resources>
@@ -101,9 +101,35 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="system:String">
-                            <Grid Margin="3">
-                                <Button Content="{Binding Converter={StaticResource ConverterTagName}}" HorizontalAlignment="Left">
+                        <DataTemplate DataType="model:Tag">
+                            <Grid Margin="3"
+                                  PreviewMouseDown="UIElement_OnPreviewMouseDown"
+                                  Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{DynamicResource Unpin}" 
+                                                  Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Pin}" 
+                                                  Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Rename}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Delete}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <!--<MenuItem Header="{DynamicResource Connect}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
+                                                      CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
+                                                      CommandParameter="{Binding}"/>-->
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Button Content="{Binding Name}" HorizontalAlignment="Left" MinWidth="10" MinHeight="10">
                                     <Button.ToolTip>
                                         <Label Content="{x:Static system:Environment.NewLine}" 
                                                ContentStringFormat="{DynamicResource tag_tooltips}"/>
@@ -111,7 +137,7 @@
                                     <Button.InputBindings>
                                         <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
                                         <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Alt+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                                     </Button.InputBindings>
                                 </Button>
                             </Grid>

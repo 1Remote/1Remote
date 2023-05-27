@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using System.Windows.Input;
 using _1RM.Controls;
 using _1RM.Model;
@@ -9,6 +10,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View.ServerList
 {
@@ -19,14 +21,21 @@ namespace _1RM.View.ServerList
         public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
 
 
-        public bool IsTagFiltersShown { get; set; }
+        private bool _isTagFiltersShown;
+        public bool IsTagFiltersShown
+        {
+            get => _isTagFiltersShown;
+            set => SetAndNotifyIfChanged(ref _isTagFiltersShown, value);
+        }
 
         private string _selectedTabName = TAB_ALL_NAME;
         public string SelectedTabName { get => _selectedTabName; private set => SetAndNotifyIfChanged(ref _selectedTabName, value); }
 
 
-        private void OnTagsChanged()
+        private void OnGlobalDataTagListChanged()
         {
+            HeaderTags = new BindableCollection<Tag>(AppData.TagList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
+
             // 当修改了tags后，将无效的tag筛选器移除。
             var needRemove = new List<string>();
             var filters = TagFilters.ToList();
@@ -84,7 +93,6 @@ namespace _1RM.View.ServerList
                     {
                         IsTagFiltersShown = false;
                     }
-                    RaisePropertyChanged(nameof(IsTagFiltersShown));
 
                     if (SelectedTabName == tagName) return;
                     SelectedTabName = tagName;
@@ -103,19 +111,21 @@ namespace _1RM.View.ServerList
         private void FilterTagsControl(object? o, TagFilter.FilterTagsControlAction action)
         {
             string newTagName;
-            if (o is Tag obj
-                && (AppData.TagList.Any(x => x.Name == obj.Name) || action == TagFilter.FilterTagsControlAction.Remove))
             {
-                newTagName = obj.Name;
-            }
-            else if (o is string str
-                     && (AppData.TagList.Any(x => x.Name == str) || action == TagFilter.FilterTagsControlAction.Remove))
-            {
-                newTagName = str;
-            }
-            else
-            {
-                return;
+                if (o is Tag obj
+                    && (AppData.TagList.Any(x => x.Name == obj.Name) || action == TagFilter.FilterTagsControlAction.Remove))
+                {
+                    newTagName = obj.Name;
+                }
+                else if (o is string str
+                         && (AppData.TagList.Any(x => x.Name == str) || action == TagFilter.FilterTagsControlAction.Remove))
+                {
+                    newTagName = str;
+                }
+                else
+                {
+                    return;
+                }
             }
 
             TagListViewModel = null;
@@ -159,35 +169,34 @@ namespace _1RM.View.ServerList
             }
         }
 
-
-
-        private RelayCommand? _cmdShowTabByName;
-        public RelayCommand CmdShowTabByName
+        private RelayCommand? _cmdShowMainTab;
+        public RelayCommand CmdShowMainTab
         {
             get
             {
-                return _cmdShowTabByName ??= new RelayCommand((o) =>
+                return _cmdShowMainTab ??= new RelayCommand((o) =>
                 {
-                    string? tabName = (string?)o;
-                    TagFilters = new List<TagFilter>();
-                    if (tabName is TAB_TAGS_LIST_NAME)
-                    {
-                        TagListViewModel = TagsPanelViewModel;
-                        SelectedTabName = TAB_NONE_SELECTED;
-                    }
-                    else if (tabName is TAB_ALL_NAME)
-                    {
-                        TagListViewModel = null;
-                        SelectedTabName = TAB_ALL_NAME;
-                        IoC.Get<MainWindowViewModel>().SetMainFilterString(null, null);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
+                    if(TagFilters.Any()) TagFilters = new List<TagFilter>();
+                    TagListViewModel = null;
+                    SelectedTabName = TAB_ALL_NAME;
+                    IoC.Get<MainWindowViewModel>().SetMainFilterString(null, null);
                 });
             }
         }
+
+        private RelayCommand? _cmdShowTagTab;
+        public RelayCommand CmdShowTagTab
+        {
+            get
+            {
+                return _cmdShowTagTab ??= new RelayCommand((o) =>
+                {
+                    TagListViewModel = TagsPanelViewModel;
+                    SelectedTabName = TAB_NONE_SELECTED;
+                });
+            }
+        }
+
 
         private RelayCommand? _cmdTagAddIncluded;
         public RelayCommand CmdTagAddIncluded
