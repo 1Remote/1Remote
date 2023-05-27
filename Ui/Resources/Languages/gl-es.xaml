@@ -229,7 +229,7 @@
     <s:String x:Key="Add environment variables">Engadir variables de entorno</s:String>
     <s:String x:Key="write permissions alert">Non temos permisos de escritura para o cartafol '{0}' ! Por favor, intenta:\n1.executar coma administrador\n2. cambiar os permisos do cartafol ou do arquivo</s:String>
     <s:String x:Key="Follow system">Seguir sistema (servidor soportado: Windows Server 2012 R2 e superior)</s:String>
-    <s:String x:Key="tag_tooltips">Clic esquerdo : pon esta etiqueta coma filtro{0}Ctrl + Clic esquerdo : engadir esta etiqueta a lista incluída {0}Ctrl + clic dereito :  engadir esta etiqueta a lista de excluídos</s:String>
+    <s:String x:Key="tag_tooltips">Clic esquerdo : pon esta etiqueta coma filtro{0}Ctrl + Clic esquerdo : engadir esta etiqueta a lista incluída {0}Alt + Clic esquerdo :  engadir esta etiqueta a lista de excluídos</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Estás seguro de que queres pechar a conexión?</s:String>
     <s:String x:Key="Hi there,">Olá,</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">Espero que atopes útil esta aplicación. Se queres apoiar o meu traballo, podes invitarme a un café ou deixarme unha boa reseña. Grazas!</s:String>
@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">Reconectando</s:String>
     <s:String x:Key="Next update check">Próxima revisión de actualización</s:String>
     <s:String x:Key="Next auto reconnect">Próxima conexión automática</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Esta é a túa lista de etiquetas. Fai clic co botón dereito no menú contextual para fixalos na cabeceira.</s:String>
 </ResourceDictionary>

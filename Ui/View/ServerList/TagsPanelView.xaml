@@ -48,7 +48,7 @@
             <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
                        Opacity="0.5"
                        HorizontalAlignment="Center"
-                       Text="TXT: This is your list of tags. Right click for a context menu to pin them on header."></TextBlock>
+                       Text="{DynamicResource 'This is your list of tags. Right click for a context menu to pin them on header.'}"></TextBlock>
         </Grid>
 
         <!-- tag list: the page to config which tag should be display. -->
@@ -71,9 +71,9 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="TXT:UnPin" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                        <MenuItem Header="{DynamicResource Unpin}" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2Visible}}"
                                   Command="{Binding CmdTagPin}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
-                        <MenuItem Header="TXT:Pin" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
+                        <MenuItem Header="{DynamicResource Pin}" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem.IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
                                   Command="{Binding CmdTagPin}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource Delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource Rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>

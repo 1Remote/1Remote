@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">Reconnexion</s:String>
     <s:String x:Key="Next update check">Vérification de la prochaine mise à jour</s:String>
     <s:String x:Key="Next auto reconnect">Prochaine reconnexion automatique</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Ceci est votre liste de balises. Faites un clic droit pour un menu contextuel pour les épingler sur l'en-tête.</s:String>
 </ResourceDictionary>

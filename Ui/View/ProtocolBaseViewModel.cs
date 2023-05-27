@@ -68,6 +68,13 @@ namespace _1RM.View
         /// </summary>
         public string TagString { get; private set; }
 
+        public List<Tag> Tags { get; private set; } = new List<Tag>();
+
+        public void ReLoadTags()
+        {
+            Tags = IoC.TryGet<GlobalData>()?.TagList.Where(x => _server.Tags.Contains(x.Name)).OrderBy(x => x.CustomOrder).ThenBy(x => x.Name).ToList() ?? new List<Tag>();
+            RaisePropertyChanged(nameof(Tags));
+        }
 
         private ProtocolBase _server;
         public ProtocolBase Server
@@ -78,6 +85,8 @@ namespace _1RM.View
                 if (_server != value)
                 {
                     _server = value;
+                    _server.Tags = _server.Tags.Select(x => x.ToLower()).ToList();
+
                     if (ConverterNoteToVisibility.IsVisible(Server.Note))
                     {
                         Execute.OnUIThreadSync(() =>
@@ -88,6 +97,7 @@ namespace _1RM.View
                     LastConnectTime = LocalityConnectRecorder.Get(Server);
                     TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
                     RaisePropertyChanged(nameof(TagString));
+                    ReLoadTags();
                     RaisePropertyChanged(nameof(Id));
                     RaisePropertyChanged(nameof(DisplayName));
                     RaisePropertyChanged(nameof(SubTitle));
@@ -237,6 +247,7 @@ namespace _1RM.View
         }
 
         private List<ProtocolAction>? _actions;
+
         public List<ProtocolAction>? Actions
         {
             get => _actions;

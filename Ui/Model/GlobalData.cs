@@ -92,12 +92,12 @@ namespace _1RM.Model
             }
 
             TagList = new List<Tag>(tags.OrderBy(x => x.Name));
-
             foreach (var viewModel in VmItemList)
             {
-                if(viewModel.Server.Tags.Count > 0)
+                if (viewModel.Server.Tags.Count > 0)
                     viewModel.ReLoadTags();
             }
+
         }
 
         private void SaveTagChanged()
@@ -251,7 +251,7 @@ namespace _1RM.Model
             }
         }
 
-        public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers)
+        public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool reloadTag = true)
         {
             StopTick();
             try
@@ -297,7 +297,8 @@ namespace _1RM.Model
                     }
                     else
                     {
-                        ReadTagsFromServers();
+                        if (reloadTag)
+                            ReadTagsFromServers();
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
                 }
