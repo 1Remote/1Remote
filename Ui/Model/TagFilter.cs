@@ -20,7 +20,7 @@ namespace _1RM.Model
         }
         protected TagFilter(string tagName, FilterType type)
         {
-            TagName = tagName;
+            _tagName = tagName;
             Type = type;
             IsExcluded = type == FilterType.Excluded;
         }
@@ -31,8 +31,13 @@ namespace _1RM.Model
         }
 
         public readonly FilterType Type;
+        private string _tagName;
+        public string TagName
+        {
+            get => _tagName;
+            set => SetAndNotifyIfChanged(ref _tagName, value);
+        }
 
-        public string TagName { get; }
         public bool IsExcluded { get; }
         public bool IsIncluded => !IsExcluded;
 

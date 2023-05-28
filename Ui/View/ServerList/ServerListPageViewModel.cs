@@ -84,7 +84,12 @@ namespace _1RM.View.ServerList
             }
         }
 
-        public ObservableCollection<Tag> HeaderTags { get; set; } = new ObservableCollection<Tag>();
+        private ObservableCollection<Tag> _headerTags = new ObservableCollection<Tag>();
+        public ObservableCollection<Tag> HeaderTags
+        {
+            get => _headerTags;
+            set => SetAndNotifyIfChanged(ref _headerTags, value);
+        }
 
 
         public bool? IsSelectedAll
@@ -175,9 +180,12 @@ namespace _1RM.View.ServerList
 
             AppData.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(AppData.TagList))
-                    OnTagsChanged();
+                if (args.PropertyName == nameof(GlobalData.TagList))
+                {
+                    OnGlobalDataTagListChanged();
+                }
             };
+            OnGlobalDataTagListChanged();
         }
 
         protected override void OnViewLoaded()
@@ -275,7 +283,6 @@ namespace _1RM.View.ServerList
                         // !!! VmItemList should order by CustomOrder by default
                         list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id)
                         );
-                    HeaderTags = new BindableCollection<Tag>(AppData.TagList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
                     SelectedServerViewModelListItem = null;
                     foreach (var vs in VmServerList)
                     {
@@ -297,7 +304,6 @@ namespace _1RM.View.ServerList
 
                     VmServerListDummyNode();
                     RaisePropertyChanged(nameof(VmServerList));
-                    RaisePropertyChanged(nameof(HeaderTags));
                     ApplySort();
                 });
             }

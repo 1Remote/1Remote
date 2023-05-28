@@ -43,7 +43,7 @@ namespace _1RM.View
                 {
                     localityService.MainWindowHeight = this.Height;
                     localityService.MainWindowWidth = this.Width;
-                    SimpleLogHelper.Info($"Main window resize to: w = {this.Width}, h = {this.Height}");
+                    SimpleLogHelper.Debug($"Main window resize to: w = {this.Width}, h = {this.Height}");
                 }
             };
 
@@ -152,7 +152,7 @@ namespace _1RM.View
             // When press Esc, clear all of the search keywords, but keep selected tags;
             if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
-            Vm.SetMainFilterString(s.TagFilterList, null);
+            Vm.SetMainFilterString(s.KeyWords.Count == 0 ? null : s.TagFilterList, null);
         }
     }
 }

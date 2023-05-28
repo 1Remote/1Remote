@@ -74,7 +74,7 @@ namespace _1RM.Service
                 {
                     this.OnRequestOpenConnection(item.Server, assignTabToken, assignRunnerName, fromView);
                 }
-                MsAppCenterHelper.TraceSessionOpen($"multiple sessions ({((list.Length >=5) ? ">=5" : list.Length.ToString())})", fromView);
+                MsAppCenterHelper.TraceSessionOpen($"multiple sessions ({((list.Length >= 5) ? ">=5" : list.Length.ToString())})", fromView);
                 return;
             }
             #endregion
@@ -337,7 +337,7 @@ namespace _1RM.Service
             PrintCacheCount();
             // 在正常的逻辑中，在关闭session时就应该把空窗体移除，不应该有空窗体的存在
             if (closeCount > 0)
-                SimpleLogHelper.Warning($@"CloseEmptyWindows: {closeCount} Empty Host closed");
+                SimpleLogHelper.DebugWarning($@"CloseEmptyWindows: {closeCount} Empty Host closed");
 
             if (_windowToBeDispose.IsEmpty == false)
             {

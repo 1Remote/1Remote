@@ -229,7 +229,7 @@
     <s:String x:Key="Add environment variables">添加环境变量</s:String>
     <s:String x:Key="write permissions alert">我们没有路径 `{0}` 的写入权限！\n请尝试用以下方法修复问题：\n1. 使用管理员权限运行程序\n2. 修改路径的权限设置 \n3. 将 1Remote 移动到其他目录</s:String>
     <s:String x:Key="Follow system">跟随系统(服务器要求Windows Server 2012 R2及以上)</s:String>
-    <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
+    <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Alt + 鼠标左键 : 将该标签添加到排除列表</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">确定要关闭连接么？</s:String>
     <s:String x:Key="Hi there,">你好呀！</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！</s:String>
@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting"> 正在重连</s:String>
     <s:String x:Key="Next update check"> 下次更新检查</s:String>
     <s:String x:Key="Next auto reconnect"> 下次自动重连</s:String>
+    <s:String x:Key="Pin">固定</s:String>
+    <s:String x:Key="Unpin">取消固定</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">这是您的标签列表。右键单击上下文菜单以将它们固定在标题上。</s:String>
 </ResourceDictionary>

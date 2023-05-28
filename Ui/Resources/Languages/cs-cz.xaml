@@ -229,7 +229,7 @@
     <s:String x:Key="Add environment variables">Přidat proměnné prostředí</s:String>
     <s:String x:Key="write permissions alert">\nChybí oprávnění pro zápis do složky „{0}“!\nVyzkoušejte:\n1. spustit coby správce\n2. upravit práva na souboru a/nebo složce\n3. přesunout 1Remote do jiné složky</s:String>
     <s:String x:Key="Follow system">Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější)</s:String>
-    <s:String x:Key="tag_tooltips">Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Ctrl + kliknutí pravým tlačítkem: přidat tento štítek do seznamu vynechaných</s:String>
+    <s:String x:Key="tag_tooltips">Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Alt + kliknutí levým tlačítkem: přidat tento štítek do seznamu vynechaných</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Opravdu chcete spojení zavřít?</s:String>
     <s:String x:Key="Hi there,">Zdravím,</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!</s:String>
@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">Opětovné připojení</s:String>
     <s:String x:Key="Next update check">Další kontrola aktualizace</s:String>
     <s:String x:Key="Next auto reconnect">Další automatické opětovné připojení</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Toto je váš seznam značek. Kliknutím pravým tlačítkem zobrazíte kontextovou nabídku a připnete je do záhlaví.</s:String>
 </ResourceDictionary>

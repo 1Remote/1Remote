@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">Wiederverbinden</s:String>
     <s:String x:Key="Next update check">Nächster Update-Check</s:String>
     <s:String x:Key="Next auto reconnect">Nächste automatische Wiederverbindung</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Dies ist Ihre Liste mit Tags. Klicken Sie mit der rechten Maustaste, um ein Kontextmenü aufzurufen, mit dem Sie sie in der Kopfzeile anheften können.</s:String>
 </ResourceDictionary>

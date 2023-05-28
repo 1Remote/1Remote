@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace _1RM.Service.Locality
 {
     public class LocalityTagSettings
     {
-        public Dictionary<string, Tag> TagDict = new Dictionary<string, Tag>();
+        public ConcurrentDictionary<string, Tag> TagDict = new ConcurrentDictionary<string, Tag>();
     }
 
 
@@ -60,6 +61,12 @@ namespace _1RM.Service.Locality
 
 
 
+        public static void UpdateTag(Tag tag)
+        {
+            Load();
+            _settings.TagDict.AddOrUpdate(tag.Name.ToLower(), tag, (_, _) => tag);
+            Save();
+        }
         public static void UpdateTags(IEnumerable<Tag> tags)
         {
             Load();
@@ -67,20 +74,12 @@ namespace _1RM.Service.Locality
             foreach (var tag in tags)
             {
                 tag.CustomOrder = i++;
-                var key = tag.Name.ToLower();
-                if (_settings.TagDict.ContainsKey(key))
-                {
-                    _settings.TagDict[key] = tag;
-                }
-                else
-                {
-                    _settings.TagDict.Add(key, tag);
-                }
+                _settings.TagDict.AddOrUpdate(tag.Name.ToLower(), tag, (_, _) => tag);
             }
             Save();
         }
 
-        public static Dictionary<string, Tag> TagDict
+        public static ConcurrentDictionary<string, Tag> TagDict
         {
             get
             {

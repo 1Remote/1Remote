@@ -86,6 +86,7 @@
 
                 <!--CONTENT-->
                 <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                         Name="InputBox"
                          Height="30" Margin="10 0 10 0"
                          Text="{Binding Response, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Padding="5"
                          KeyUp="{s:Action OnKeyUp}"

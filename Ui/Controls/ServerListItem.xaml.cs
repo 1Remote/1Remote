@@ -35,7 +35,7 @@ namespace _1RM.Controls
             ((ServerListItem)d).DataContext = value;
         }
 
-        public ProtocolBaseViewModel ProtocolBaseViewModel
+        public ProtocolBaseViewModel? ProtocolBaseViewModel
         {
             get => (ProtocolBaseViewModel)GetValue(ProtocolServerViewModelProperty);
             set => SetValue(ProtocolServerViewModelProperty, value);
@@ -69,6 +69,15 @@ namespace _1RM.Controls
         private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
         {
             ServerListPageView.ItemsCheckBox_OnClick_Static(sender, e);
+        }
+
+        private void UIElement_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // stop right click edit 
+            if (e.ChangedButton == MouseButton.Right)
+            {
+                e.Handled = true;
+            }
         }
     }
 }

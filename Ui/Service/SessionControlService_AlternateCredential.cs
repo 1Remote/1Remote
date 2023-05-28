@@ -136,7 +136,7 @@ namespace _1RM.Service
                 cts.Cancel(false);
                 if (tasks[t].Result != null)
                 {
-                    SimpleLogHelper.Info("Auto switching address.");
+                    SimpleLogHelper.DebugInfo("Auto switching address.");
                     newCredential.SetAddress(tasks[t].Result!);
                     newCredential.SetPort(tasks[t].Result!);
                     ret = true;
