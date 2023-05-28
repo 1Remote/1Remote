@@ -48,7 +48,9 @@ namespace _1RM.Service.DataSource
                     }
                     catch (Exception e)
                     {
+#if DEBUG
                         SimpleLogHelper.Warning(e);
+#endif
                     }
                 }
                 return ret;

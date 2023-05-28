@@ -229,7 +229,7 @@
     <s:String x:Key="Add environment variables">Adicionar variáveis de ambiente</s:String>
     <s:String x:Key="write permissions alert">Não temos permissões de gravação para o diretório `{0}`!\nPor favor, tente:\n1. `Executar como administrador`\n2. Alterar as permissões de diretório/arquivo \n3. Mover o 1Remote para outra pasta</s:String>
     <s:String x:Key="Follow system">Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior)</s:String>
-    <s:String x:Key="tag_tooltips">Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Ctrl + clique com o botão direito : adicione esta tag à lista de exclusão</s:String>
+    <s:String x:Key="tag_tooltips">Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Alt + clique com o botão esquerdo : adicione esta tag à lista de exclusão</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Tem certeza de que deseja encerrar a conexão?</s:String>
     <s:String x:Key="Hi there,">E ai,</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">Espero que ache este APP útil! Se quiser apoiar meu trabalho pode me pagar um cerveja ou me dar um elogio, obrigado!</s:String>
@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">Reconectando</s:String>
     <s:String x:Key="Next update check">Verificação da próxima atualização</s:String>
     <s:String x:Key="Next auto reconnect">Próxima reconexão automática</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Esta é a sua lista de tags. Clique com o botão direito para obter um menu de contexto para fixá-los no cabeçalho.</s:String>
 </ResourceDictionary>

@@ -66,6 +66,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             return IoC.TryGet<LanguageService>()?.Translate(key) ?? key;
         }
 
+        private Exception? _lastException = null;
         protected virtual Result OpenConnection(string actionInfo = "")
         {
             if (string.IsNullOrWhiteSpace(actionInfo))
@@ -98,6 +99,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 try
                 {
                     _dbConnection.Open();
+                    _lastException = null;
                     return Result.Success();
                 }
                 catch (DllNotFoundException e)
@@ -109,19 +111,27 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 }
                 catch (MySqlException mse)
                 {
-                    SimpleLogHelper.Error(mse);
+                    if (_lastException?.Message != mse.Message)
+                        SimpleLogHelper.Error(mse);
                     error = mse.Message;
+                    _lastException = mse;
                 }
                 catch (TimeoutException te)
                 {
-                    SimpleLogHelper.Error(te);
+                    if (_lastException?.Message != te.Message)
+                        SimpleLogHelper.Error(te);
                     error = te.Message;
+                    _lastException = te;
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
+                    if (_lastException?.Message != e.Message)
+                    {
+                        SimpleLogHelper.Error(e);
+                        MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
+                    }
                     error = e.Message;
-                    MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
+                    _lastException = e;
                 }
 
                 return Result.Fail(actionInfo, DatabaseName, error);
@@ -290,7 +300,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
                     return ResultString.Fail(info, DatabaseName, e.Message);
                 }
             }
@@ -319,7 +328,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
                     return ResultString.Fail(info, DatabaseName, e.Message);
                 }
             }
@@ -341,7 +349,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
                     return Result.Fail(info, DatabaseName, e.Message);
                 }
             }
@@ -367,7 +374,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
                     return ResultString.Fail(info, DatabaseName, e.Message);
                 }
             }
@@ -408,7 +414,6 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e);
                     return Result.Fail(info, DatabaseName, e.Message);
                 }
             }

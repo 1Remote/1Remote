@@ -206,9 +206,6 @@
                                                       Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
                                                       CommandParameter="{Binding}"/>
-                                            <!--<MenuItem Header="{DynamicResource Delete}" 
-                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
-                                                              CommandParameter="{Binding}"/>-->
                                             <MenuItem Header="{DynamicResource Rename}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
                                                       CommandParameter="{Binding}"/>
@@ -217,6 +214,9 @@
                                                       CommandParameter="{Binding}"/>
                                             <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
+                                                      CommandParameter="{Binding}"/>
+                                            <MenuItem Header="{DynamicResource Delete}" 
+                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
                                                       CommandParameter="{Binding}"/>
                                         </ContextMenu>
                                     </Grid.ContextMenu>
@@ -838,7 +838,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button MinWidth="80"
-                                        Command="{Binding CmdShowTabByName}" CommandParameter=""
+                                        Command="{Binding CmdShowMainTab}"
                                         Content="{DynamicResource All}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -879,8 +879,7 @@
 
                     <Button Grid.Column="1"
                             MinWidth="80"
-                            Command="{Binding CmdShowTabByName}"
-                            CommandParameter="{x:Static serverList:ServerListPageViewModel.TAB_TAGS_LIST_NAME}"
+                            Command="{Binding CmdShowTagTab}"
                             BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -962,9 +961,10 @@
                                             >
                                             <Grid.ContextMenu>
                                                 <ContextMenu>
-                                                    <!--<MenuItem Header="{DynamicResource Delete}" 
-                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
-                                                              CommandParameter="{Binding}"/>-->
+                                                    <MenuItem Header="{DynamicResource Unpin}" 
+                                                              Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                              CommandParameter="{Binding}"/>
                                                     <MenuItem Header="{DynamicResource Rename}" 
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
                                                               CommandParameter="{Binding}"/>
@@ -974,9 +974,8 @@
                                                     <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                                               CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="{DynamicResource Unpin}" 
-                                                              Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
-                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                    <MenuItem Header="{DynamicResource Delete}" 
+                                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
                                                               CommandParameter="{Binding}"/>
                                                 </ContextMenu>
                                             </Grid.ContextMenu>

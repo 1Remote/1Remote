@@ -47,6 +47,16 @@ namespace _1RM.View.Utils
             Response = defaultResponse;
         }
 
+        protected override void OnViewLoaded()
+        {
+            if (View is InputBoxView v)
+            {
+                v.InputBox.Focus();
+                v.InputBox.Text = Response;
+                v.InputBox.CaretIndex = v.InputBox.Text.Length;
+            }
+        }
+
 
         private bool TestValidator()
         {

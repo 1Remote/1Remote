@@ -60,6 +60,7 @@ namespace _1RM.Service.DataSource.Model
                 else
                 {
                     _dataSourceDataUpdateTimestamp = ret.Result;
+                    SimpleLogHelper.Debug($"{DataSourceName}：NeedRead = {LastReadFromDataSourceMillisecondsTimestamp} < {_dataSourceDataUpdateTimestamp} = {LastReadFromDataSourceMillisecondsTimestamp < _dataSourceDataUpdateTimestamp}");
                     return LastReadFromDataSourceMillisecondsTimestamp < _dataSourceDataUpdateTimestamp;
                 }
             }
@@ -122,7 +123,7 @@ namespace _1RM.Service.DataSource.Model
                         }
                         catch (Exception e)
                         {
-                            SimpleLogHelper.Info(e);
+                            SimpleLogHelper.DebugInfo(e);
                         }
                     }
                     SetStatus(true);
@@ -149,6 +150,7 @@ namespace _1RM.Service.DataSource.Model
             }
         }
 
+
         public bool Database_OpenConnection(int connectTimeOutSeconds = 5)
         {
             var dataBase = GetDataBase();
@@ -165,7 +167,7 @@ namespace _1RM.Service.DataSource.Model
             var result = dataBase.OpenNewConnection(connectionString);
             if (!result.IsSuccess)
             {
-                SimpleLogHelper.Error(result.ErrorInfo);
+                SimpleLogHelper.DebugError(result.ErrorInfo);
             }
             SetStatus(dataBase.IsConnected() == true);
             return true;
@@ -197,7 +199,7 @@ namespace _1RM.Service.DataSource.Model
             if (ret.IsSuccess == false)
             {
                 SetStatus(false);
-                SimpleLogHelper.Warning(ret.ErrorInfo);
+                SimpleLogHelper.DebugWarning(ret.ErrorInfo);
                 return Status;
             }
 

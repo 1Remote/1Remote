@@ -65,7 +65,7 @@ namespace _1RM.Service
         public const string FORCE_INTO_PORTABLE_MODE = "FORCE_INTO_PORTABLE_MODE";
         public const string FORCE_INTO_APPDATA_MODE = "FORCE_INTO_APPDATA_MODE";
 
-        public string LogFilePath => Path.Combine(BaseDirPath, "Logs", $"{Assert.APP_NAME}.log.md");
+        public string LogFilePath => Path.Combine(BaseDirPath, ".logs", $"{Assert.APP_NAME}.log.md");
         public string ProfileJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".json");
         public string ProfileAdditionalDataSourceJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".DataSources.json");
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{Assert.APP_NAME}.db");

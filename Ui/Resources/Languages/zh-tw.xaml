@@ -229,7 +229,7 @@
     <s:String x:Key="Add environment variables">新增環境變數</s:String>
     <s:String x:Key="write permissions alert">我們沒有對 `{0}` 的存取權限！\n請嘗試使用以下方式來解決此問題：\n1. 使用系統管理員身分執行\n2. 修改該目錄的權限設定\n3. 將 PRemoteM 移動到其他位置</s:String>
     <s:String x:Key="Follow system">與系統相同 (Windows Server 2012 R2 及以上的伺服器)</s:String>
-    <s:String x:Key="tag_tooltips">滑鼠左鍵：過濾出該標籤{0}Ctrl + 滑鼠左鍵：將該標籤加入至過濾清單 {0}Ctrl + 滑鼠右鍵：將該標籤加入到排除清單</s:String>
+    <s:String x:Key="tag_tooltips">滑鼠左鍵：過濾出該標籤{0}Ctrl + 滑鼠左鍵：將該標籤加入至過濾清單 {0}Alt + 滑鼠左鍵：將該標籤加入到排除清單</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">確定要關閉連線嗎？</s:String>
     <s:String x:Key="Hi there,">您好！</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">希望這個應用程式有幫助到您，如果想要支持我的專案，可以幫我買杯咖啡或給我一些評等，若有任何建議也歡迎您透過 GitHub 反映，謝謝您！</s:String>
@@ -280,4 +280,7 @@
     <s:String x:Key="Reconnecting">重新連接</s:String>
     <s:String x:Key="Next update check">下次更新檢查</s:String>
     <s:String x:Key="Next auto reconnect">下次自動重連</s:String>
+    <s:String x:Key="Pin">Pin</s:String>
+    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">這是您的標籤列表。右鍵單擊上下文菜單以將它們固定在標題上。</s:String>
 </ResourceDictionary>

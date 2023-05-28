@@ -258,9 +258,13 @@ namespace _1RM.View.ServerList
                         items.RemoveAt(removedIdx);
                         targetIdx = items.IndexOf(target) + append;  // re-calc targetIdx since collection changed
                         if (targetIdx > items.Count)
+                        {
                             items.Add(toBeMovedProtocol);
+                        }
                         else
+                        {
                             items.Insert(targetIdx, toBeMovedProtocol);
+                        }
                         LocalityListViewService.ServerCustomOrderSave(items);
                         IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
@@ -315,9 +319,13 @@ namespace _1RM.View.ServerList
                                 groups.RemoveAt(removedIdx);
                                 targetIdx = groups.IndexOf(targetGroupItem) + append;  // re-calc targetIdx since collection changed
                                 if (targetIdx > groups.Count)
+                                {
                                     groups.Add(toBeMovedGroupItem);
+                                }
                                 else
+                                {
                                     groups.Insert(targetIdx, toBeMovedGroupItem);
+                                }
                                 LocalityListViewService.GroupedOrderSave(groups.Select(x => x.Name.ToString() ?? "").Where(x => string.IsNullOrEmpty(x) == false).ToArray());
                                 IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
 #if DEBUG
@@ -428,11 +436,18 @@ namespace _1RM.View.ServerList
                         items.RemoveAt(removedIdx);
                         targetIdx = items.IndexOf(target) + append;  // re-calc targetIdx since collection changed
                         if (targetIdx > items.Count)
+                        {
                             items.Add(toBeMoved);
+                        }
                         else
+                        {
                             items.Insert(targetIdx, toBeMoved);
+                        }
                         LocalityTagService.UpdateTags(items);
-                        IoC.Get<GlobalData>().ReadTagsFromServers();
+                        foreach (var viewModel in vm.VmServerList)
+                        {
+                            viewModel.ReLoadTags();
+                        }
 #if DEBUG
                         SimpleLogHelper.Debug($"After Drop:" + string.Join(", ",
                                 items.Select((x, i) => new Tuple<string, bool, int>(x.Name, x.IsPinned, i))

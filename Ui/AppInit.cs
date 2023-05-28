@@ -203,12 +203,12 @@ namespace _1RM
 
             // logger init
             {
+                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Info;
+                SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
 #if DEBUG
                 SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 ConsoleManager.Show();
 #endif
-                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Info;
-                SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 // init log file placement
                 SimpleLogHelper.LogFileName = AppPathHelper.Instance.LogFilePath;
             }
@@ -255,6 +255,7 @@ namespace _1RM
             // Init data sources controller
             var dataSourceService = IoC.Get<DataSourceService>();
             GlobalData.SetDataSourceService(dataSourceService);
+            GlobalData.ReloadServerList(true);
 
             // read from configs and find where db is.
             {
