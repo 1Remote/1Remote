@@ -258,11 +258,11 @@
                         </StackPanel.Style>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="80" Text="W = " Margin="20 0 0 0"></TextBlock>
                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                            <TextBox Text="{Binding RdpWidth}" Width="50" HorizontalAlignment="Left"></TextBox>
+                            <TextBox Text="{Binding RdpWidth, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                         </Grid>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="40" Text="H = " Margin="5 0 0 0"></TextBlock>
                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                            <TextBox Text="{Binding RdpHeight}" Width="50" HorizontalAlignment="Left"></TextBox>
+                            <TextBox Text="{Binding RdpHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
