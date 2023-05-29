@@ -16,7 +16,7 @@
             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType= controls:AutoCompleteComboBox}, Path=Width}"
             x:Name="CbContent"
             FontSize="{Binding ElementName=UserControl, Path=FontSize, Mode=OneWay}"
-            Text="{Binding Text}"
+            Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
             IsEditable="True" 
             ItemsSource="{Binding Selections4Show}" 
             IsDropDownOpen="False"

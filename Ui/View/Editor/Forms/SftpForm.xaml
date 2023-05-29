@@ -80,7 +80,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
+                        <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <Button Content="{DynamicResource Select}" 
                             Click="ButtonOpenPrivateKey_OnClick" 
                             Style="{StaticResource ButtonPrimaryStyle}"
