@@ -122,6 +122,8 @@ namespace _1RM.Utils
         public static HostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowBase? tab = null)
         {
             Debug.Assert(runner.IsRunWithoutHosting() == false);
+
+            // custom runner
             if (runner is ExternalRunner er)
             {
                 var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
@@ -132,6 +134,7 @@ namespace _1RM.Utils
                 }
             }
 
+            // build-in runner
             switch (protocol)
             {
                 case RDP rdp:
@@ -141,7 +144,7 @@ namespace _1RM.Utils
                     }
                 case SSH ssh:
                     {
-                        var kittyRunner = new KittyRunner(ssh.ProtocolDisplayName);
+                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(ssh.ProtocolDisplayName);
                         var sessionName = $"{Assert.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
                         var ih = IntegrateHost.Create(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName));
@@ -150,7 +153,7 @@ namespace _1RM.Utils
                     }
                 case Telnet telnet:
                     {
-                        var kittyRunner = new KittyRunner(telnet.ProtocolDisplayName);
+                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(telnet.ProtocolDisplayName);
                         var sessionName = $"{Assert.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         telnet.ConfigKitty(sessionName, kittyRunner, "");
                         var ih = IntegrateHost.Create(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName));
