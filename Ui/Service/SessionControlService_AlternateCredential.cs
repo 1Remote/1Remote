@@ -28,6 +28,173 @@ namespace _1RM.Service
 {
     public partial class SessionControlService
     {
+        public static void CredentialTest()
+        {
+            {
+                var cts = new CancellationTokenSource();
+                var tasks = new List<Task>();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    int taskNumber = i + 1;
+                    var task = Task.Run(() =>
+                    {
+                        SimpleLogHelper.Debug($"Task {taskNumber} started");
+                        // Simulate some work
+                        Thread.Sleep(taskNumber * 1000);
+                        SimpleLogHelper.Debug($"Task {taskNumber} finished");
+                        return taskNumber;
+                    }, cts.Token);
+                    tasks.Add(task);
+                }
+
+                // Wait for any task to complete
+                int completedTaskIndex = Task.WaitAny(tasks.ToArray());
+
+                // Cancel the remaining tasks
+                cts.Cancel();
+
+                SimpleLogHelper.Debug(tasks.ToArray());
+
+                Console.WriteLine($"Task {completedTaskIndex + 1} completed first. Cancelling remaining tasks.");
+
+                foreach (var task in tasks)
+                {
+                    if (!task.IsCompleted)
+                    {
+                        task.ContinueWith(t => Console.WriteLine($"Task cancelled."));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Task done");
+                    }
+                }
+            }
+
+            var pingCredentials = new List<Credential>
+            {
+                new Credential()
+                {
+                    Address = "127.0.0.1", Port = "5000",
+                },
+                new Credential()
+                {
+                    Address = "127.0.1.1", Port = "5000",
+                },
+                new Credential()
+                {
+                    Address = "192.168.100.1", Port = "3389",
+                },
+                new Credential()
+                {
+                    Address = "172.20.65.31", Port = "3389",
+                },
+                new Credential()
+                {
+                    Address = "172.20.65.64", Port = "3389",
+                },
+                new Credential()
+                {
+                    Address = "172.20.65.65", Port = "3389",
+                },
+                new Credential()
+                {
+                    Address = "172.20.65.66", Port = "3389",
+                },
+            };
+
+            {
+                const int maxWaitSeconds = 10;
+                var items = new List<PingTestItem>();
+                foreach (var credential in pingCredentials)
+                {
+                    items.Add(new PingTestItem(credential.Address)
+                    {
+                        Status = PingTestItem.PingStatus.None,
+                    });
+                }
+
+                var dlg = new AlternateAddressSwitchingViewModel() { Title = DateTime.Now.ToString(), PingTestItems = items };
+                IoC.Get<IWindowManager>().ShowWindow(dlg);
+
+
+                var cts = new CancellationTokenSource();
+                var tasks = new List<Task<Credential?>>();
+                for (int i = 0; i < pingCredentials.Count; i++)
+                {
+                    var sleep = (i + 1) * 50;
+                    var x = pingCredentials[i];
+                    var y = items[i];
+                    var i1 = i;
+                    tasks.Add(new Task<Credential?>(() =>
+                    {
+                        var ii = i1;
+                        // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
+                        if (sleep > 0)
+                            Thread.Sleep(sleep);
+                        y.Status = PingTestItem.PingStatus.Testing;
+                        if (Credential.TestAddressPortIsAvailable(x.Address, x.Port, maxWaitSeconds * 1000))
+                        {
+                            y.Status = PingTestItem.PingStatus.Success;
+                            SimpleLogHelper.Debug($"task {ii} done");
+                            return x;
+                        }
+
+                        y.Status = PingTestItem.PingStatus.Failed;
+                        SimpleLogHelper.Debug($"task {ii} done");
+                        return null;
+                    }, cts.Token));
+                }
+
+                tasks.Add(new Task<Credential?>(() =>
+                {
+                    for (int i = 0; i < maxWaitSeconds; i++)
+                    {
+                        if (dlg != null)
+                        {
+                            dlg.Eta = (maxWaitSeconds - i) > 0 ? (maxWaitSeconds - i) : 0;
+                        }
+
+                        Thread.Sleep(1000);
+                    }
+
+                    return null;
+                }, cts.Token));
+
+                foreach (var task in tasks)
+                {
+                    task.Start();
+                }
+
+
+                var t = Task.WaitAny(tasks.ToArray());
+                cts.Cancel();
+                SimpleLogHelper.Debug($"cts.Cancel();");
+                dlg.Eta = 0;
+                Task.WaitAll(tasks.ToArray());
+                if (tasks[t].Result != null)
+                {
+                }
+                else
+                {
+
+                }
+
+
+                foreach (var task in tasks)
+                {
+                    if (!task.IsCompleted)
+                    {
+                        task.ContinueWith(t => Console.WriteLine($"Task {t.Result} cancelled."));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Task done");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 为指定的 protocol 应用指定的 credential，并 ping 一下，如果 ping 失败则返回 false
         /// </summary>
@@ -85,16 +252,15 @@ namespace _1RM.Service
             // pingCredentials 不为空 说明需要 ping
             if (pingCredentials.Any())
             {
-                WaitingViewModel? dlg = null;
+                AlternateAddressSwitchingViewModel? dlg = null;
                 var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate((pingCredentials.Count > 1 ? "Automatic address switching" : "Availability detection"));
                 var message = IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {pingCredentials.Count} {(pingCredentials.Count > 1 ? "addresses" : "address")}";
                 Execute.OnUIThreadSync(() =>
                 {
                     // show a progress window
-                    dlg = new WaitingViewModel
+                    dlg = new AlternateAddressSwitchingViewModel
                     {
                         Title = title,
-                        Message = message
                     };
                     IoC.Get<IWindowManager>().ShowWindow(dlg);
                 });
@@ -125,7 +291,7 @@ namespace _1RM.Service
                     {
                         if (dlg != null)
                         {
-                            dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
+                            //dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
                         }
                         Thread.Sleep(1000);
                     }
