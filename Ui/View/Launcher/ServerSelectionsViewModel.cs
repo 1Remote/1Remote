@@ -100,13 +100,6 @@ namespace _1RM.View.Launcher
                 {
                     RaisePropertyChanged(nameof(SelectedItem));
                     CalcNoteFieldVisibility();
-                    if (this.View is ServerSelectionsView view)
-                    {
-                        Execute.OnUIThread(() =>
-                        {
-                            view.ListBoxSelections.ScrollIntoView(view.ListBoxSelections.SelectedItem);
-                        });
-                    }
                 }
             }
         }
