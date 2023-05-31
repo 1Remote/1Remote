@@ -15,6 +15,7 @@ using _1RM.View.Settings;
 using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
+using System.Threading;
 
 namespace _1RM.View
 {
@@ -138,7 +139,7 @@ namespace _1RM.View
 
             //var vm = new _1RM.View.Utils.MessageBoxPageViewModel();
             //vm.Setup(messageBoxText: "content",
-            //    caption: "title",
+            //    caption: "title",s
             //    icon: MessageBoxImage.Warning,
             //    buttons: MessageBoxButton.OK,
             //    buttonLabels: new Dictionary<MessageBoxResult, string>()
@@ -326,6 +327,21 @@ namespace _1RM.View
             {
                 return _cmdExit ??= new RelayCommand((o) =>
                 {
+#if DEBUG
+                    // TODO REMOVE
+                    SessionControlService.CredentialTest();
+                    //var items = new List<PingTestItem>
+                    //{
+                    //    new PingTestItem("1") { Status = PingTestItem.PingStatus.Testing },
+                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
+                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
+                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
+                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
+                    //    new PingTestItem("3") { Status = PingTestItem.PingStatus.Success }
+                    //};
+                    //IoC.Get<IWindowManager>().ShowWindow(new AlternateAddressSwitchingViewModel() { Title = DateTime.Now.ToString(), PingTestItems = items });
+                    return;
+#endif
                     App.Close();
                 });
             }

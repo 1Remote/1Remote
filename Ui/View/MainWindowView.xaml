@@ -413,11 +413,11 @@
                 <Button Name="BtnMaximize" Style="{StaticResource ButtonBarPrimaryStyle}" Width="35" Height="35" VerticalAlignment="Top">
                     <Grid>
                         <Path Height="15" Width="15"
-                          StrokeThickness="0.5" 
-                          Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                          Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                          Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
-                          Stretch="Uniform">
+                              StrokeThickness="0.5" 
+                              Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                              Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
+                              Stretch="Uniform">
                             <Path.Style>
                                 <Style TargetType="Path">
                                     <Style.Triggers>
@@ -430,10 +430,10 @@
                         </Path>
 
                         <Path Height="15" Width="15"
-                          StrokeThickness="1" 
-                          Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                          Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
-                          Stretch="Uniform">
+                              StrokeThickness="1" 
+                              Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                              Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
+                              Stretch="Uniform">
                             <Path.Style>
                                 <Style TargetType="Path">
                                     <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -455,11 +455,11 @@
                     attachProperty:VisionElement.ForegroundOnMouseDown="White"
                     attachProperty:VisionElement.BackgroundOnMouseDown="Red">
                     <Path Height="15" Width="15"
-                      StrokeThickness="0.5" 
-                      Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                      Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                      Stretch="Uniform">
+                          StrokeThickness="0.5" 
+                          Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                          Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                          Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                          Stretch="Uniform">
                     </Path>
                 </Button>
             </StackPanel>

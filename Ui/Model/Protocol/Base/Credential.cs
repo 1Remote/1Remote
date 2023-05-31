@@ -86,15 +86,8 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _privateKeyPath, value);
         }
 
-        public static bool TestAddressPortIsAvailable(ProtocolBaseWithAddressPort protocol, Credential credential, int timeOutMillisecond = 0)
+        public static bool TestAddressPortIsAvailable(string address, string port, int timeOutMillisecond = 0)
         {
-            if (string.IsNullOrEmpty(credential.Address) && string.IsNullOrEmpty(credential.Port))
-            {
-                return false;
-            }
-
-            string address = string.IsNullOrEmpty(credential.Address) ? protocol.Address : credential.Address;
-            string port = string.IsNullOrEmpty(credential.Port) ? protocol.Port : credential.Port;
             try
             {
                 var p = int.Parse(port);
@@ -119,6 +112,16 @@ namespace _1RM.Model.Protocol.Base
                 // ignored
             }
             return false;
+        }
+        public static bool TestAddressPortIsAvailable(ProtocolBaseWithAddressPort protocol, Credential credential, int timeOutMillisecond = 0)
+        {
+            if (string.IsNullOrEmpty(credential.Address) && string.IsNullOrEmpty(credential.Port))
+            {
+                return false;
+            }
+            string address = string.IsNullOrEmpty(credential.Address) ? protocol.Address : credential.Address;
+            string port = string.IsNullOrEmpty(credential.Port) ? protocol.Port : credential.Port;
+            return TestAddressPortIsAvailable(address, port, timeOutMillisecond);
         }
 
         public void Trim()
