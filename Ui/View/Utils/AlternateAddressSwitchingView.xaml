@@ -48,7 +48,10 @@
                 <!-- System Button Area -->
                 <StackPanel Grid.Row="0" 
                             Orientation="Horizontal" HorizontalAlignment="Right" Background="Transparent">
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5 0" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Eta, StringFormat={}0s}" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5 0" 
+                               Foreground="{DynamicResource PrimaryTextBrush}" 
+                               Visibility="{Binding Eta, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
+                               Text="{Binding Eta, StringFormat={}0s}" />
                     <Button Style="{StaticResource ButtonBarPrimaryStyle}"
                             Command="{Binding CmdCloseContinue}"
                             Width="20" Height="20">

@@ -21,6 +21,7 @@ namespace _1RM.View.Utils
         {
             None,
             Testing,
+            Canceled,
             Failed,
             Success
         }

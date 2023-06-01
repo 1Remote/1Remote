@@ -1,27 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using _1RM.Model;
+using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Model.ProtocolRunner;
-using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Utils;
-using _1RM.View;
-using _1RM.View.Host;
-using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
-using Shawn.Utils.Wpf;
 using Stylet;
-using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
-using _1RM.Service.DataSource;
-using System.Collections.Generic;
 using _1RM.View.Utils;
 
 namespace _1RM.Service
@@ -30,47 +16,6 @@ namespace _1RM.Service
     {
         public static void CredentialTest()
         {
-            {
-                var cts = new CancellationTokenSource();
-                var tasks = new List<Task>();
-
-                for (int i = 0; i < 5; i++)
-                {
-                    int taskNumber = i + 1;
-                    var task = Task.Run(() =>
-                    {
-                        SimpleLogHelper.Debug($"Task {taskNumber} started");
-                        // Simulate some work
-                        Thread.Sleep(taskNumber * 1000);
-                        SimpleLogHelper.Debug($"Task {taskNumber} finished");
-                        return taskNumber;
-                    }, cts.Token);
-                    tasks.Add(task);
-                }
-
-                // Wait for any task to complete
-                int completedTaskIndex = Task.WaitAny(tasks.ToArray());
-
-                // Cancel the remaining tasks
-                cts.Cancel();
-
-                SimpleLogHelper.Debug(tasks.ToArray());
-
-                Console.WriteLine($"Task {completedTaskIndex + 1} completed first. Cancelling remaining tasks.");
-
-                foreach (var task in tasks)
-                {
-                    if (!task.IsCompleted)
-                    {
-                        task.ContinueWith(t => Console.WriteLine($"Task cancelled."));
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Task done");
-                    }
-                }
-            }
-
             var pingCredentials = new List<Credential>
             {
                 new Credential()
@@ -102,97 +47,110 @@ namespace _1RM.Service
                     Address = "172.20.65.66", Port = "3389",
                 },
             };
-
+            Task.Factory.StartNew(async () =>
             {
-                const int maxWaitSeconds = 10;
-                var items = new List<PingTestItem>();
-                foreach (var credential in pingCredentials)
-                {
-                    items.Add(new PingTestItem(credential.Address)
-                    {
-                        Status = PingTestItem.PingStatus.None,
-                    });
-                }
+                await FindFirstConnectableAddressAsync(pingCredentials, "test");
+            });
+        }
 
-                var dlg = new AlternateAddressSwitchingViewModel() { Title = DateTime.Now.ToString(), PingTestItems = items };
+        private static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string title)
+        {
+            // credentials 不为空 说明需要 ping
+            var credentials = pingCredentials.ToList();
+            if (!credentials.Any()) return null;
+
+            const int maxWaitSeconds = 10;
+            var pingTestItems = new List<PingTestItem>();
+            foreach (var credential in credentials)
+            {
+                pingTestItems.Add(new PingTestItem(credential.Address)
+                {
+                    Status = PingTestItem.PingStatus.None,
+                });
+            }
+            title = title + ": " + IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {credentials.Count()} {(credentials.Count() > 1 ? "addresses" : "address")}";
+            var dlg = new AlternateAddressSwitchingViewModel() { Title = title, PingTestItems = pingTestItems };
+            await Execute.OnUIThreadAsync(() =>
+            {
                 IoC.Get<IWindowManager>().ShowWindow(dlg);
+            });
 
 
-                var cts = new CancellationTokenSource();
-                var tasks = new List<Task<Credential?>>();
-                for (int i = 0; i < pingCredentials.Count; i++)
+            var cts = new CancellationTokenSource();
+            var tasks = new List<Task<bool?>>();
+            for (int i = 0; i < credentials.Count; i++)
+            {
+                var sleep = i * 100;
+                var credential = credentials[i];
+                var pingTestItem = pingTestItems[i];
+                tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    var sleep = (i + 1) * 50;
-                    var x = pingCredentials[i];
-                    var y = items[i];
-                    var i1 = i;
-                    tasks.Add(new Task<Credential?>(() =>
+                    // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
+                    if (sleep > 0)
+                        Task.Delay(sleep, cts.Token).Wait(cts.Token);
+                    var ret = TcpHelper.TestConnectionAsync(credential.Address, credential.Port, cts.Token, maxWaitSeconds * 1000).Result;
+                    pingTestItem.Status = ret switch
                     {
-                        var ii = i1;
-                        // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
-                        if (sleep > 0)
-                            Thread.Sleep(sleep);
-                        y.Status = PingTestItem.PingStatus.Testing;
-                        if (Credential.TestAddressPortIsAvailable(x.Address, x.Port, maxWaitSeconds * 1000))
-                        {
-                            y.Status = PingTestItem.PingStatus.Success;
-                            SimpleLogHelper.Debug($"task {ii} done");
-                            return x;
-                        }
-
-                        y.Status = PingTestItem.PingStatus.Failed;
-                        SimpleLogHelper.Debug($"task {ii} done");
-                        return null;
-                    }, cts.Token));
-                }
-
-                tasks.Add(new Task<Credential?>(() =>
-                {
-                    for (int i = 0; i < maxWaitSeconds; i++)
-                    {
-                        if (dlg != null)
-                        {
-                            dlg.Eta = (maxWaitSeconds - i) > 0 ? (maxWaitSeconds - i) : 0;
-                        }
-
-                        Thread.Sleep(1000);
-                    }
-
-                    return null;
+                        null => PingTestItem.PingStatus.Canceled,
+                        true => PingTestItem.PingStatus.Success,
+                        _ => PingTestItem.PingStatus.Failed
+                    };
+                    Task.Delay(500, cts.Token).Wait(cts.Token); // 避免界面关闭太快，根本看不清
+                    return ret;
                 }, cts.Token));
-
-                foreach (var task in tasks)
+            }
+            tasks.Add(Task.Factory.StartNew(() =>
+            {
+                for (int i = 0; i < maxWaitSeconds; i++)
                 {
-                    task.Start();
-                }
-
-
-                var t = Task.WaitAny(tasks.ToArray());
-                cts.Cancel();
-                SimpleLogHelper.Debug($"cts.Cancel();");
-                dlg.Eta = 0;
-                Task.WaitAll(tasks.ToArray());
-                if (tasks[t].Result != null)
-                {
-                }
-                else
-                {
-
-                }
-
-
-                foreach (var task in tasks)
-                {
-                    if (!task.IsCompleted)
+                    if (dlg != null)
                     {
-                        task.ContinueWith(t => Console.WriteLine($"Task {t.Result} cancelled."));
+                        //dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
                     }
-                    else
-                    {
-                        Console.WriteLine($"Task done");
-                    }
+                    Task.Delay(1000, cts.Token).Wait(cts.Token);
+                }
+                bool? ret = null;
+                return ret;
+            }, cts.Token));
+
+            int completedTaskIndex = -1;
+            var ts = tasks.ToArray();
+            while (ts.Any())
+            {
+                var completedTask = await Task.WhenAny(ts);
+                Console.WriteLine(completedTask.Result);
+                if (completedTask?.Result == true)
+                {
+                    completedTaskIndex = tasks.IndexOf(completedTask);
+                    Console.WriteLine($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
+                    break;
+                }
+                ts = ts.Where(t => t != completedTask).ToArray();
+            }
+
+            dlg.Eta = 0;
+            if (ts.Any())
+            {
+                try
+                {
+                    cts.Cancel();
+                    Task.WaitAll(tasks.ToArray());
+                }
+                catch (Exception e)
+                {
+                    // ignored
                 }
             }
+            await Execute.OnUIThreadAsync(() =>
+            {
+                dlg.RequestClose();
+            });
+            if (completedTaskIndex >= 0 && completedTaskIndex < tasks.Count)
+            {
+                SimpleLogHelper.DebugInfo("Auto switching address.");
+                return credentials[completedTaskIndex].CloneMe();
+            }
+            return null;
         }
 
         /// <summary>
@@ -249,7 +207,7 @@ namespace _1RM.Service
             }
 
             var ret = true;
-            // pingCredentials 不为空 说明需要 ping
+            // credentials 不为空 说明需要 ping
             if (pingCredentials.Any())
             {
                 AlternateAddressSwitchingViewModel? dlg = null;

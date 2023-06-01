@@ -171,7 +171,7 @@ namespace _1RM.Service
         }
         #endregion
 
-        private void Connect(in ProtocolBase protocol, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
+        private async void Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
         {
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(protocol))
