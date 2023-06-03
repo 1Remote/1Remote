@@ -330,16 +330,6 @@ namespace _1RM.View
 #if DEBUG
                     // TODO REMOVE
                     SessionControlService.CredentialTest();
-                    //var items = new List<PingTestItem>
-                    //{
-                    //    new PingTestItem("1") { Status = PingTestItem.PingStatus.Testing },
-                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
-                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
-                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
-                    //    new PingTestItem("2") { Status = PingTestItem.PingStatus.Failed },
-                    //    new PingTestItem("3") { Status = PingTestItem.PingStatus.Success }
-                    //};
-                    //IoC.Get<IWindowManager>().ShowWindow(new AlternateAddressSwitchingViewModel() { Title = DateTime.Now.ToString(), PingTestItems = items });
                     return;
 #endif
                     App.Close();

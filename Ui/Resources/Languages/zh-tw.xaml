@@ -260,8 +260,7 @@
     <s:String x:Key="Check if address is available before connect">連接前檢查地址是否可用</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">當默認主機或端口不可用時，將依次嘗試備用地址</s:String>
     <s:String x:Key="support multi-address multi-account">支持多地址多賬戶</s:String>
-    <s:String x:Key="Detecting available host...">檢測可用主機...</s:String>
-    <s:String x:Key="We are not able to connet to xxx">我們無法連接到“{0}”！</s:String>
+    <s:String x:Key="We are not able to connect to xxx">我們無法連接到“{0}”！</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` 已經存在！</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` 不存在！</s:String>
     <s:String x:Key="Show credentials info">顯示憑據信息</s:String>

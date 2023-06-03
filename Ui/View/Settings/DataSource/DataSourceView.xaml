@@ -98,7 +98,7 @@
                                                                 <Path.Style>
                                                                     <Style TargetType="Path">
                                                                         <Setter Property="Data" Value="{StaticResource GeometryRefresh}"></Setter>
-                                                                        <Setter Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                                                        <Setter Property="Fill" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                                                                     </Style>
                                                                 </Path.Style>
                                                             </Path>

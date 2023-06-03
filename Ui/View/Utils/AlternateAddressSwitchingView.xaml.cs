@@ -24,7 +24,7 @@ namespace _1RM.View.Utils
         {
             get; set;
         }
-        public static HashSet<AlternateAddressSwitchingView> _dialogs = new HashSet<AlternateAddressSwitchingView>();
+        private static readonly HashSet<AlternateAddressSwitchingView> _dialogs = new HashSet<AlternateAddressSwitchingView>();
         public AlternateAddressSwitchingView()
         {
             Loaded += OnLoaded;

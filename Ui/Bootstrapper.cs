@@ -165,7 +165,7 @@ namespace _1RM
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            if (!App.ExitingFlag)
+                if (!App.ExitingFlag)
                 lock (this)
                 {
                     SimpleLogHelper.Fatal(e.Exception);

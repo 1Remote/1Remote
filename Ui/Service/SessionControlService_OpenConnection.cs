@@ -200,9 +200,14 @@ namespace _1RM.Service
             protocolClone.ConnectPreprocess();
 
             // apply alternate credential
-            if (false == ApplyAlternateCredentialAndPingIfNeeded(ref protocolClone, assignCredentialName))
+            if (protocolClone is ProtocolBaseWithAddressPort p)
             {
-                return;
+                var c = await GetCredential(p, assignCredentialName);
+                if (c == null)
+                {
+                    return;
+                }
+                p.SetCredential(c);
             }
 
             // run script before connected
