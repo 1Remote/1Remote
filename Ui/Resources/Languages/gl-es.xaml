@@ -260,8 +260,7 @@
     <s:String x:Key="Check if address is available before connect">Comproba se o enderezo está dispoñible antes de conectar</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">Cando o host ou o porto predeterminado non estea dispoñible, probaranse os enderezos alternativos en secuencia</s:String>
     <s:String x:Key="support multi-address multi-account">admite varias contas de enderezos múltiples</s:String>
-    <s:String x:Key="Detecting available host...">Detectando host dispoñible...</s:String>
-    <s:String x:Key="We are not able to connet to xxx">Non podemos conectarnos a `{0}`!</s:String>
+    <s:String x:Key="We are not able to connect to xxx">Non podemos conectarnos a `{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` xa existe!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` non existe!</s:String>
     <s:String x:Key="Show credentials info">Mostrar información de credenciais</s:String>

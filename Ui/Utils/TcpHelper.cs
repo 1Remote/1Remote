@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Shawn.Utils;
 
 namespace _1RM.Utils
 {
@@ -20,25 +21,25 @@ namespace _1RM.Utils
                     timeOutMillisecond = 30 * 1000;
                 var timeoutTask = cancellationToken == null ? Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond)) : Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond), (CancellationToken)cancellationToken);
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
-                if (completedTask == timeoutTask)
+                if (completedTask == timeoutTask && completedTask.IsCanceled != true)
                 {
-                    Console.WriteLine("Connection timed out.");
+                    SimpleLogHelper.Debug("TcpHelper: Connection timed out.");
                     return false;
                 }
 
                 await connectTask;
 
-                Console.WriteLine("Connected to {0}:{1}", address, port);
+                SimpleLogHelper.Debug($"TcpHelper: Connected to {address}:{port}");
                 return true;
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Connection cancelled.");
+                SimpleLogHelper.Debug("TcpHelper: Connection cancelled.");
                 return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connecting to {0}:{1}: {2}", address, port, ex.Message);
+                SimpleLogHelper.Debug($"TcpHelper: Error connecting to {address}:{port}: {ex.Message}");
                 return false;
             }
         }
@@ -53,7 +54,7 @@ namespace _1RM.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connecting to {0}:{1}: {2}", address, portStr, ex.Message);
+                SimpleLogHelper.Debug("TcpHelper: Error connecting to {0}:{1}: {2}", address, portStr, ex.Message);
                 return false;
             }
         }

@@ -20,114 +20,131 @@ namespace _1RM.Service
             {
                 new Credential()
                 {
-                    Address = "127.0.0.1", Port = "5000",
-                },
-                new Credential()
-                {
+                    Name = "asfasdas",
                     Address = "127.0.1.1", Port = "5000",
                 },
+                //new Credential()
+                //{
+                //    Address = "127.0.0.1", Port = "5000",
+                //},
                 new Credential()
                 {
+                    Name = "xcv1",
                     Address = "192.168.100.1", Port = "3389",
                 },
+                //new Credential()
+                //{
+                //    Address = "172.20.65.31", Port = "3389",
+                //},
                 new Credential()
                 {
-                    Address = "172.20.65.31", Port = "3389",
-                },
-                new Credential()
-                {
+                    Name = "98vs",
                     Address = "172.20.65.64", Port = "3389",
                 },
                 new Credential()
                 {
+                    Name = "ggg232",
                     Address = "172.20.65.65", Port = "3389",
                 },
                 new Credential()
                 {
+                    Name = "zxd11",
                     Address = "172.20.65.66", Port = "3389",
                 },
             };
             Task.Factory.StartNew(async () =>
             {
-                await FindFirstConnectableAddressAsync(pingCredentials, "test");
+                var c = await FindFirstConnectableAddressAsync(pingCredentials, "test");
+                if (c != null)
+                {
+                    SimpleLogHelper.Debug($"Connected to {c.Address}:{c.Port}");
+                }
             });
         }
 
-        private static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string title)
+        /// <summary>
+        /// Find the first connectable address from the given credentials. if return null then no address is connectable.
+        /// </summary>
+        private static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string protocolDisplayName)
         {
-            // credentials 不为空 说明需要 ping
             var credentials = pingCredentials.ToList();
-            if (!credentials.Any()) return null;
-
             const int maxWaitSeconds = 10;
-            var pingTestItems = new List<PingTestItem>();
+            var cts = new CancellationTokenSource();
+
+            var uiPingItems = new List<PingTestItem>();
             foreach (var credential in credentials)
             {
-                pingTestItems.Add(new PingTestItem(credential.Address)
+                uiPingItems.Add(new PingTestItem(credential.Name, credential.Address)
                 {
-                    Status = PingTestItem.PingStatus.None,
+                    Status = PingStatus.None,
                 });
             }
-            title = title + ": " + IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {credentials.Count()} {(credentials.Count() > 1 ? "addresses" : "address")}";
-            var dlg = new AlternateAddressSwitchingViewModel() { Title = title, PingTestItems = pingTestItems };
+
+            var dlg = new AlternateAddressSwitchingViewModel(cts)
+            {
+                Title = protocolDisplayName + ": " + IoC.Get<LanguageService>().Translate("Availability detection"),
+                PingTestItems = uiPingItems
+            };
+
             await Execute.OnUIThreadAsync(() =>
             {
                 IoC.Get<IWindowManager>().ShowWindow(dlg);
             });
 
-
-            var cts = new CancellationTokenSource();
             var tasks = new List<Task<bool?>>();
+            // add tasks to ping each credential
             for (int i = 0; i < credentials.Count; i++)
             {
-                var sleep = i * 100;
+                // give each task a different sleep time to avoid all tasks start at the same time
                 var credential = credentials[i];
-                var pingTestItem = pingTestItems[i];
+                var pingTestItem = uiPingItems[i];
                 tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
-                    if (sleep > 0)
-                        Task.Delay(sleep, cts.Token).Wait(cts.Token);
+                    pingTestItem.Status = PingStatus.Pinging;
+                    var startTime = DateTime.UtcNow;
                     var ret = TcpHelper.TestConnectionAsync(credential.Address, credential.Port, cts.Token, maxWaitSeconds * 1000).Result;
+                    pingTestItem.Ping = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     pingTestItem.Status = ret switch
                     {
-                        null => PingTestItem.PingStatus.Canceled,
-                        true => PingTestItem.PingStatus.Success,
-                        _ => PingTestItem.PingStatus.Failed
+                        null => PingStatus.Canceled,
+                        true => PingStatus.Success,
+                        _ => PingStatus.Failed
                     };
-                    Task.Delay(500, cts.Token).Wait(cts.Token); // 避免界面关闭太快，根本看不清
+                    Task.Delay(200).Wait(); // 避免界面关闭太快，根本看不清
                     return ret;
                 }, cts.Token));
             }
+
+            // an extra task to update the message
             tasks.Add(Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < maxWaitSeconds; i++)
                 {
-                    if (dlg != null)
-                    {
-                        //dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
-                    }
+                    dlg.Eta = maxWaitSeconds - i;
                     Task.Delay(1000, cts.Token).Wait(cts.Token);
                 }
                 bool? ret = null;
                 return ret;
             }, cts.Token));
 
+            var delay = Task.Delay(500);
+
+            // wait for the first task with result true or all tasks completed
             int completedTaskIndex = -1;
             var ts = tasks.ToArray();
             while (ts.Any())
             {
                 var completedTask = await Task.WhenAny(ts);
-                Console.WriteLine(completedTask.Result);
                 if (completedTask?.Result == true)
                 {
                     completedTaskIndex = tasks.IndexOf(completedTask);
-                    Console.WriteLine($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
+                    SimpleLogHelper.DebugInfo($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
                     break;
                 }
                 ts = ts.Where(t => t != completedTask).ToArray();
             }
 
+            // cancel all tasks
             dlg.Eta = 0;
             if (ts.Any())
             {
@@ -141,146 +158,79 @@ namespace _1RM.Service
                     // ignored
                 }
             }
-            await Execute.OnUIThreadAsync(() =>
+
+            await delay;
+            if (dlg.IsCanceled)
             {
-                dlg.RequestClose();
-            });
+                return null;
+            }
+
+            // return the first credential when ping success
             if (completedTaskIndex >= 0 && completedTaskIndex < tasks.Count)
             {
-                SimpleLogHelper.DebugInfo("Auto switching address.");
+                // close the pop window
+                await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
                 return credentials[completedTaskIndex].CloneMe();
+            }
+            else
+            {
+                // none of the address is connectable
+                // show error message
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    dlg.Message = IoC.Get<LanguageService>().Translate("We are not able to connect to xxx", protocolDisplayName);
+                });
             }
             return null;
         }
 
+
         /// <summary>
-        /// 为指定的 protocol 应用指定的 credential，并 ping 一下，如果 ping 失败则返回 false
+        /// if return null then no address is connectable.
         /// </summary>
-        private static bool ApplyAlternateCredentialAndPingIfNeeded(ref ProtocolBase serverClone, string assignCredentialName)
+        private static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName)
         {
-            if (serverClone is not ProtocolBaseWithAddressPort protocol)
-                return true;
-            if (serverClone is RDP rdp && rdp.GatewayMode != EGatewayMode.DoNotUseGateway)
-                return true;
-
-
             var newCredential = protocol.GetCredential();
-
-
             // use assign credential 应用指定的 credential
-            var assignCredentialNameClone = assignCredentialName;
-            var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialNameClone);
+            var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
             if (assignCredential != null)
             {
                 newCredential.SetCredential(assignCredential);
             }
 
-            // 判断是否需要  ping
-            // ping before connect
-            var pingCredentials = new List<Credential>();
-            if (protocol.IsPingBeforeConnect == true)
+
+            // check if need to ping before connect
+            bool isPingBeforeConnect = protocol.IsPingBeforeConnect == true
+                                       // do not ping if rdp protocol and gateway is used
+                                       && protocol is not RDP { GatewayMode: EGatewayMode.DoNotUseGateway };
+            var isAutoAlternateAddressSwitching = protocol.IsAutoAlternateAddressSwitching == true
+                                                  // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
+                                                  && string.IsNullOrEmpty(assignCredential?.Address) && string.IsNullOrEmpty(assignCredential?.Port)
+                                                  // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
+                                                  && protocol.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
+
+            // if both `IsPingBeforeConnect` and `IsAutoAlternateAddressSwitching` are false, then return directly
+            if (isPingBeforeConnect == false && isAutoAlternateAddressSwitching == false)
+                return newCredential;
+
+
+            // a quick test for the first credential, if pass return directly to avoid window pop
+            var ret = await TcpHelper.TestConnectionAsync(newCredential.Address, newCredential.Port, null, 100);
+            if (ret == true)
+                return newCredential;
+
+            var credentials = new List<Credential> { newCredential };
+            if (isAutoAlternateAddressSwitching)
+                credentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
+
+            var connectableAddress = await FindFirstConnectableAddressAsync(credentials, protocol.DisplayName);
+            if (connectableAddress != null)
             {
-                pingCredentials.Add(newCredential);
+                newCredential.SetAddress(connectableAddress);
+                newCredential.SetPort(connectableAddress);
+                return newCredential;
             }
-
-            // 判断是否需要自动切换地址
-            if (protocol.IsAutoAlternateAddressSwitching == true)
-            {
-                // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
-                // 如果 assignCredential 中有 host 或 port，说明用户指定了连接的地址，因此禁用 `AutoAlternateAddressSwitching`
-                var canAddressAutoSwitch = string.IsNullOrEmpty(assignCredential?.Address) && string.IsNullOrEmpty(assignCredential?.Port);
-
-                // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
-                // 如果所有的 alternate credential 中都没有 host 或 port，则禁用 `AutoAlternateAddressSwitching`
-                if (canAddressAutoSwitch
-                    && protocol.AlternateCredentials.All(x => string.IsNullOrEmpty(x.Address) && string.IsNullOrEmpty(x.Port)))
-                {
-                    canAddressAutoSwitch = false;
-                }
-
-                if (canAddressAutoSwitch)
-                {
-                    if (pingCredentials.Count == 0)
-                        pingCredentials.Add(newCredential);
-                    pingCredentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
-                }
-            }
-
-            var ret = true;
-            // credentials 不为空 说明需要 ping
-            if (pingCredentials.Any())
-            {
-                AlternateAddressSwitchingViewModel? dlg = null;
-                var title = serverClone.DisplayName + " - " + IoC.Get<LanguageService>().Translate((pingCredentials.Count > 1 ? "Automatic address switching" : "Availability detection"));
-                var message = IoC.Get<LanguageService>().Translate("Detecting available host...") + $" form {pingCredentials.Count} {(pingCredentials.Count > 1 ? "addresses" : "address")}";
-                Execute.OnUIThreadSync(() =>
-                {
-                    // show a progress window
-                    dlg = new AlternateAddressSwitchingViewModel
-                    {
-                        Title = title,
-                    };
-                    IoC.Get<IWindowManager>().ShowWindow(dlg);
-                });
-
-                const int maxWaitSeconds = 5;
-                var cts = new CancellationTokenSource();
-                var tasks = new List<Task<Credential?>>();
-                for (int i = 0; i < pingCredentials.Count; i++)
-                {
-                    var sleep = i * 50;
-                    var x = pingCredentials[i];
-                    tasks.Add(Task.Factory.StartNew(() =>
-                    {
-                        // 根据排序休息一段时间，排在越后面休息时间越长，实现带优先级的检测
-                        if (sleep > 0)
-                            Thread.Sleep(sleep);
-                        if (Credential.TestAddressPortIsAvailable(protocol, x, maxWaitSeconds * 1000))
-                        {
-                            return x;
-                        }
-                        return null;
-                    }, cts.Token));
-                }
-
-                tasks.Add(Task.Factory.StartNew(() =>
-                {
-                    for (int i = 0; i < maxWaitSeconds; i++)
-                    {
-                        if (dlg != null)
-                        {
-                            //dlg.Message = $"{message} (eta {maxWaitSeconds - i}s)";
-                        }
-                        Thread.Sleep(1000);
-                    }
-                    return null as Credential;
-                }, cts.Token));
-
-                var t = Task.WaitAny(tasks.ToArray());
-                cts.Cancel(false);
-                if (tasks[t].Result != null)
-                {
-                    SimpleLogHelper.DebugInfo("Auto switching address.");
-                    newCredential.SetAddress(tasks[t].Result!);
-                    newCredential.SetPort(tasks[t].Result!);
-                    ret = true;
-                }
-                else
-                {
-                    // none of this address is connectable
-                    ret = false;
-                    MessageBoxHelper.ErrorAlert(IoC.Get<LanguageService>().Translate("We are not able to connet to xxx", protocol.DisplayName), ownerViewModel: dlg);
-                }
-
-                Execute.OnUIThreadSync(() =>
-                {
-                    dlg?.RequestClose();
-                });
-            }
-
-
-            protocol.SetCredential(newCredential);
-            return ret;
+            return null;
         }
     }
 }
