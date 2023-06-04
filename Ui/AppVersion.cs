@@ -8,7 +8,7 @@ namespace _1RM
         public const uint Minor = 0;
         public const uint Patch = 0;
         public const uint Build = 0;
-        public const string PreRelease = "beta.03"; // e.g. "alpha" "beta.2"
+        public const string PreRelease = "beta.04"; // e.g. "alpha" "beta.2"
 
 
         public static readonly Version VersionData = new Version(Major, Minor, Patch, Build, PreRelease);

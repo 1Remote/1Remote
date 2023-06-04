@@ -187,15 +187,17 @@ namespace _1RM
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.KittyDirPath, false);
-                    AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
+                    AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
                     if (File.Exists(paths.LocalityJsonPath))
                     {
-                        File.Move(paths.LocalityJsonPath, LocalityService.JsonPath);
+                        if (File.Exists(LocalityService.JsonPath) == false)
+                            File.Move(paths.LocalityJsonPath, LocalityService.JsonPath);
                     }
                     if (File.Exists(paths.LocalityConnectTimeRecord))
                     {
-                        File.Move(paths.LocalityConnectTimeRecord, Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json"));
+                        if (File.Exists(Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json")) == false)
+                            File.Move(paths.LocalityConnectTimeRecord, Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json"));
                     }
                 }
             }
