@@ -327,11 +327,6 @@ namespace _1RM.View
             {
                 return _cmdExit ??= new RelayCommand((o) =>
                 {
-#if DEBUG
-                    // TODO REMOVE
-                    SessionControlService.CredentialTest();
-                    return;
-#endif
                     App.Close();
                 });
             }
