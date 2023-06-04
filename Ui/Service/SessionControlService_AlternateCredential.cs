@@ -14,28 +14,35 @@ namespace _1RM.Service
 {
     public partial class SessionControlService
     {
+#if DEBUG
         public static void CredentialTest()
         {
             var pingCredentials = new List<Credential>
             {
                 new Credential()
                 {
+                    Name = "asfasdas12312312312",
+                    Address = "127.012311.131231231", Port = "5000",
+                },
+                new Credential()
+                {
                     Name = "asfasdas",
                     Address = "127.0.1.1", Port = "5000",
                 },
-                //new Credential()
-                //{
-                //    Address = "127.0.0.1", Port = "5000",
-                //},
+                new Credential()
+                {
+                    Address = "127.0.0.1", Port = "5000",
+                },
                 new Credential()
                 {
                     Name = "xcv1",
                     Address = "192.168.100.1", Port = "3389",
                 },
-                //new Credential()
-                //{
-                //    Address = "172.20.65.31", Port = "3389",
-                //},
+                new Credential()
+                {
+                    Name = "asfasdxxxxxxxxxxxxxxxxas12312312312",
+                    Address = "172.20.65.31", Port = "3389",
+                },
                 new Credential()
                 {
                     Name = "98vs",
@@ -61,20 +68,24 @@ namespace _1RM.Service
                 }
             });
         }
+#endif
+
 
         /// <summary>
         /// Find the first connectable address from the given credentials. if return null then no address is connectable.
         /// </summary>
         private static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string protocolDisplayName)
         {
-            var credentials = pingCredentials.ToList();
-            const int maxWaitSeconds = 10;
+            var credentials = pingCredentials.Select(x => x.CloneMe()).ToList();
+            const int maxWaitSeconds = 5;
             var cts = new CancellationTokenSource();
 
             var uiPingItems = new List<PingTestItem>();
             foreach (var credential in credentials)
             {
-                uiPingItems.Add(new PingTestItem(credential.Name, credential.Address)
+                credential.Address = string.IsNullOrEmpty(credential.Address) ? credentials.First().Address : credential.Address;
+                credential.Port = string.IsNullOrEmpty(credential.Port) ? credentials.First().Port : credential.Port;
+                uiPingItems.Add(new PingTestItem(credential.Name, credential.Address + ":" + credential.Port)
                 {
                     Status = PingStatus.None,
                 });
@@ -135,7 +146,7 @@ namespace _1RM.Service
             while (ts.Any())
             {
                 var completedTask = await Task.WhenAny(ts);
-                if (completedTask?.Result == true)
+                if (completedTask.IsCanceled == false && completedTask?.Result == true)
                 {
                     completedTaskIndex = tasks.IndexOf(completedTask);
                     SimpleLogHelper.DebugInfo($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
@@ -169,7 +180,7 @@ namespace _1RM.Service
             if (completedTaskIndex >= 0 && completedTaskIndex < tasks.Count)
             {
                 // close the pop window
-                await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
+                //await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
                 return credentials[completedTaskIndex].CloneMe();
             }
             else
@@ -191,6 +202,7 @@ namespace _1RM.Service
         private static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName)
         {
             var newCredential = protocol.GetCredential();
+            newCredential.Name = "default";
             // use assign credential 应用指定的 credential
             var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
             if (assignCredential != null)
@@ -202,7 +214,7 @@ namespace _1RM.Service
             // check if need to ping before connect
             bool isPingBeforeConnect = protocol.IsPingBeforeConnect == true
                                        // do not ping if rdp protocol and gateway is used
-                                       && protocol is not RDP { GatewayMode: EGatewayMode.DoNotUseGateway };
+                                       && protocol is not RDP { GatewayMode: EGatewayMode.UseTheseGatewayServerSettings };
             var isAutoAlternateAddressSwitching = protocol.IsAutoAlternateAddressSwitching == true
                                                   // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
                                                   && string.IsNullOrEmpty(assignCredential?.Address) && string.IsNullOrEmpty(assignCredential?.Port)

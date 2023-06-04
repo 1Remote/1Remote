@@ -569,7 +569,7 @@
                                             Grid.Column="2"
                                             Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
                                             Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    
+
                                     <ContentControl Grid.Column="3" x:Name="SuffixContentControl"
                                                     Content="{TemplateBinding HeaderSuffixContent}"
                                                     ContentStringFormat="{TemplateBinding HeaderSuffixContentStringFormat}"

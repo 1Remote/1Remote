@@ -99,7 +99,7 @@
                     </ItemsControl.Template>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="5 5 10 0" Background="Transparent">
+                            <Grid Margin="0 5 10 0" Background="Transparent">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
                                         <Setter Property="Opacity" Value="0.6"></Setter>
@@ -107,37 +107,66 @@
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">
                                                 <Setter Property="Opacity" Value="1"></Setter>
                                             </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Failed}">
+                                                <Setter Property="Opacity" Value="0.8"></Setter>
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Canceled}">
-                                                <Setter Property="Opacity" Value="0.3"></Setter>
+                                                <Setter Property="Opacity" Value="0.1"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="D"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="{Binding Name}"
-                                           MaxWidth="80"
                                            ToolTip="{Binding Name}"
                                            TextTrimming="CharacterEllipsis"
-                                           Margin="2 0" 
-                                           Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                           Margin="5 0 0 0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">
+                                                    <Setter Property="Foreground" Value="Green"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Failed}">
+                                                    <Setter Property="Foreground" Value="Red"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
                                 <TextBlock Grid.Column="1" Text="{Binding Address}"
                                            TextTrimming="CharacterEllipsis"
-                                           Margin="5 0" 
-                                           Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                           ToolTip="{Binding Address}"
+                                           Margin="5 0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">
+                                                    <Setter Property="Foreground" Value="Green"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Failed}">
+                                                    <Setter Property="Foreground" Value="Red"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
-                                <TextBlock Grid.Column="2" Text="{Binding Ping, StringFormat={}0ms}"
-                                           Opacity="0.5" FontSize="10" VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis"
+                                <TextBlock Grid.Column="1" Text="{Binding Ping, StringFormat={}  0ms}"
+                                           Opacity="0.8" FontSize="10" 
+                                           VerticalAlignment="Center"
                                            HorizontalAlignment="Right"
-                                           Margin="5 0" Foreground="{DynamicResource PrimaryTextBrush}">
+                                           Background="{DynamicResource PrimaryMidBrush}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -150,7 +179,7 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <Grid Grid.Column="3" Height="16" Width="16" Background="Transparent" ToolTip="{Binding Status}">
+                                <Grid Grid.Column="2" Height="16" Width="16" Background="Transparent" ToolTip="{Binding Status}">
                                     <Path Height="12" Width="12" UseLayoutRounding="True" Stretch="Uniform">
                                         <Path.Style>
                                             <Style TargetType="Path">
@@ -182,7 +211,7 @@
                                                     <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Canceled}">
                                                         <Setter Property="Data" Value="{StaticResource GeometrySandClock}"></Setter>
                                                         <Setter Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                                        <Setter Property="Opacity" Value="0.3"></Setter>
+                                                        <!--<Setter Property="Opacity" Value="0.3"></Setter>-->
                                                         <Setter Property="ToolTip" Value="Canceled"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
