@@ -180,7 +180,7 @@ namespace _1RM.Service
             if (completedTaskIndex >= 0 && completedTaskIndex < tasks.Count)
             {
                 // close the pop window
-                //await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
+                await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
                 return credentials[completedTaskIndex].CloneMe();
             }
             else
