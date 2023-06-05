@@ -219,6 +219,23 @@ namespace _1RM.View
             set => SetAndNotifyIfChanged(ref _lastConnectTime, value);
         }
 
+        private List<ProtocolAction>? _actions;
+
+        public List<ProtocolAction>? Actions
+        {
+            get => _actions;
+            set => SetAndNotifyIfChanged(ref _actions, value);
+        }
+
+        public void ClearActions()
+        {
+            Actions = null;
+        }
+        public void BuildActions()
+        {
+            Actions = this.GetActions();
+        }
+
 
         #region CMD
 
@@ -244,14 +261,6 @@ namespace _1RM.View
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: Server, showAnimation: true);
                 });
             }
-        }
-
-        private List<ProtocolAction>? _actions;
-
-        public List<ProtocolAction>? Actions
-        {
-            get => _actions;
-            set => SetAndNotifyIfChanged(ref _actions, value);
         }
 
         #endregion CMD

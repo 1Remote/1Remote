@@ -24,9 +24,9 @@ namespace _1RM.Controls
             }
         }
 
-        public ProtocolBaseViewModel ProtocolBaseViewModel
+        public ProtocolBaseViewModel? ProtocolBaseViewModel
         {
-            get => (ProtocolBaseViewModel)GetValue(ProtocolServerViewModelProperty);
+            get => GetValue(ProtocolServerViewModelProperty) as ProtocolBaseViewModel;
             set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
@@ -35,13 +35,13 @@ namespace _1RM.Controls
             InitializeComponent();
             PopupCardSettingMenu.Closed += (sender, args) =>
             {
-                ProtocolBaseViewModel.Actions = null;
+                ProtocolBaseViewModel?.ClearActions();
             };
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.GetActions();
+            ProtocolBaseViewModel?.BuildActions();
             PopupCardSettingMenu.IsOpen = true;
         }
 

@@ -47,13 +47,13 @@ namespace _1RM.Controls
             InitializeComponent();
             PopupCardSettingMenu.Closed += (sender, args) =>
             {
-                if (ProtocolBaseViewModel != null) ProtocolBaseViewModel.Actions = null;
+                ProtocolBaseViewModel?.ClearActions();
             };
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            if (ProtocolBaseViewModel != null) ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.GetActions();
+            ProtocolBaseViewModel?.GetActions();
             PopupCardSettingMenu.IsOpen = true;
         }
 
