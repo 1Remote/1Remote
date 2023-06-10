@@ -16,7 +16,11 @@ namespace _1RM.Utils
             using var client = new TcpClient();
             try
             {
+#if NETCOREAPP
                 var connectTask = cancellationToken == null ? client.ConnectAsync(address, port) : client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
+#else
+                var connectTask = client.ConnectAsync(address, port);
+#endif
                 if (timeOutMillisecond <= 0)
                     timeOutMillisecond = 30 * 1000;
                 var timeoutTask = cancellationToken == null ? Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond)) : Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond), (CancellationToken)cancellationToken);

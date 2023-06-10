@@ -334,7 +334,7 @@ namespace _1RM.Model
                     {
                         needReload |= source.NeedRead();
                         var tmp = source.Database_DeleteServer(groupedServer.Select(x => x.Id));
-                        SimpleLogHelper.Debug($"DeleteServer: {string.Join('、', groupedServer.Select(x => x.Id))}, needReload = {needReload}, tmp.IsSuccess = {tmp.IsSuccess}");
+                        SimpleLogHelper.Debug($"DeleteServer: {string.Join(", ", groupedServer.Select(x => x.Id))}, needReload = {needReload}, tmp.IsSuccess = {tmp.IsSuccess}");
                         if (tmp.IsSuccess)
                         {
                             isAnySuccess = true;

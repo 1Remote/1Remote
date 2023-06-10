@@ -652,7 +652,7 @@ namespace _1RM.View.ServerList
                         Task.Factory.StartNew(() =>
                         {
                             var servers = ss.Select(x => x.Server);
-                            SimpleLogHelper.Debug($" {string.Join('、', servers.Select(x => x.DisplayName))} to be deleted");
+                            SimpleLogHelper.Debug($" {string.Join(", ", servers.Select(x => x.DisplayName))} to be deleted");
                             var ret = AppData.DeleteServer(servers);
                             if (!ret.IsSuccess)
                             {

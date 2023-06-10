@@ -34,12 +34,15 @@ namespace _1RM
         }
 
 
-        public static void InitOnStartup()
+        public static void InitOnStartup(string[] args)
         {
             SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Disabled;
             // Set salt by github action with repository secret
             UnSafeStringEncipher.Init(Assert.STRING_SALT);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+
+            AppStartupHelper.Init(args); // in this method, it will call App.Close() if needed
+            MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
         }
 
         public LanguageService? LanguageService;
@@ -47,12 +50,12 @@ namespace _1RM
         public ConfigurationService? ConfigurationService;
         public ThemeService? ThemeService;
         public GlobalData GlobalData = null!;
-        public Configuration NewConfiguration = new();
 
         public void InitOnStart()
         {
             Debug.Assert(App.ResourceDictionary != null);
 
+            Configuration newConfiguration = new();
             LanguageService = new LanguageService(App.ResourceDictionary!);
             LanguageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
             #region Portable or not
@@ -127,12 +130,11 @@ namespace _1RM
                         }
                     }
 
-
                     if (_isNewUser)
                     {
                         PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, NewConfiguration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
@@ -226,23 +228,23 @@ namespace _1RM
                 }
                 else
                 {
-                    NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                    ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
+                    newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                    ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                ConfigurationService = new ConfigurationService(KeywordMatchService, NewConfiguration);
-            }
-            // make sure path is not empty
-            if (string.IsNullOrWhiteSpace(NewConfiguration.SqliteDatabasePath))
-            {
-                NewConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
             }
 
-            ConfigurationService.SetSelfStart();
+            // make sure path is not empty
+            if (string.IsNullOrWhiteSpace(ConfigurationService.LocalDataSource.Path))
+            {
+                ConfigurationService.LocalDataSource.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+            }
+
             ThemeService = new ThemeService(App.ResourceDictionary!, ConfigurationService.Theme);
             GlobalData = new GlobalData(ConfigurationService);
         }
@@ -273,6 +275,12 @@ namespace _1RM
             // init session controller
             IoC.Get<SessionControlService>();
             IoC.Get<MainWindowViewModel>();
+
+            if (_isNewUser)
+            {
+                ConfigurationService.SetSelfStart();
+            }
+            AppStartupHelper.ProcessArg();
         }
 
 
@@ -294,7 +302,8 @@ namespace _1RM
             KittyConfig.CleanUpOldConfig();
 
 
-            bool appStartMinimized = true;
+            bool appStartMinimized = AppStartupHelper.IsStartMinimized;
+
             if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
             {
                 string error = _localDataConnectionStatus.GetErrorInfo();
@@ -303,9 +312,8 @@ namespace _1RM
                     IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
                     MessageBoxHelper.ErrorAlert(error);
                 };
-                appStartMinimized = false;
             }
-            if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false || _isNewUser)
+            else
             {
                 IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
                 {
@@ -320,9 +328,11 @@ namespace _1RM
                         MaskLayerController.ShowProcessingRing();
                     }
                 };
-                appStartMinimized = false;
             }
-            if (!appStartMinimized)
+
+            if (appStartMinimized == false
+                || _localDataConnectionStatus != EnumDatabaseStatus.OK
+                || _isNewUser)
             {
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }

@@ -1,9 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using _1RM.Service;
 using _1RM.Utils;
+
 
 namespace _1RM
 {
@@ -13,9 +14,7 @@ namespace _1RM
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
-
-            AppInit.InitOnStartup();
+            AppInit.InitOnStartup(e.Args);
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
         }

@@ -112,11 +112,11 @@ namespace _1RM.Service
                 p.StandardInput.WriteLine("exit");
 
                 // delete tmp rdp file, ETA 10s
-                var t = new Task(() =>
+                var t = new Task(async () =>
                 {
                     try
                     {
-                        Thread.Sleep(1000 * 10);
+                        await Task.Delay(1000 * 10);
                         if (File.Exists(rdpFile))
                             File.Delete(rdpFile);
                     }
