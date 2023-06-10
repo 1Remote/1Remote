@@ -37,7 +37,8 @@ namespace _1RM.Service
         #region General
         public string CurrentLanguageCode = "en-us";
         public bool AppStartAutomatically = true;
-        public bool AppStartMinimized = true;
+        [Obsolete]
+        public bool AppStartMinimized = true; // TODO 移除参数
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
         [DefaultValue(true)]
@@ -273,8 +274,6 @@ namespace _1RM.Service
 
                 CanSave = true;
             }
-
-            SetSelfStart();
         }
 
         public static Exception? CheckSetSelfStart()
@@ -298,23 +297,34 @@ namespace _1RM.Service
         }
 
 
-        public Exception? SetSelfStart()
+        public static Exception? SetSelfStart(bool isInstall)
         {
             try
             {
 #if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, Assert.AppName);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(isInstall, Assert.AppName);
 #else
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{Assert.APP_NAME}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, Assert.APP_NAME);
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({isInstall}, \"{Assert.APP_NAME}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(isInstall, Assert.APP_NAME);
 #endif
-                return null;
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(e);
-                General.AppStartAutomatically = false;
                 return e;
+            }
+            return null;
+        }
+        public void SetSelfStart(bool? isInstall = null)
+        {
+            var appStartAutomatically = isInstall ?? General.AppStartAutomatically;
+            var e = SetSelfStart(appStartAutomatically);
+            if (e != null)
+            {
+                SimpleLogHelper.Error(e);
+            }
+            else
+            {
+                General.AppStartAutomatically = appStartAutomatically;
             }
         }
 

@@ -44,6 +44,7 @@ namespace _1RM.View.Settings.General
             {
                 if (SetAndNotifyIfChanged(ref _configurationService.General.AppStartAutomatically, value))
                 {
+                    _configurationService.SetSelfStart();
                     _configurationService.Save();
                 }
             }

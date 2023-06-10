@@ -28,46 +28,6 @@ namespace _1RM
         private readonly AppInit _appInit = new();
         private readonly DesktopResolutionWatcher _desktopResolutionWatcher = new();
 
-        public Bootstrapper()
-        {
-            OnlyOneAppInstanceCheck();
-        }
-
-        #region OnlyOneAppInstanceCheck
-#if FOR_MICROSOFT_STORE_ONLY
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
-#else
-        private readonly NamedPipeHelper _namedPipeHelper = new NamedPipeHelper(Assert.APP_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName));
-#endif
-        public void OnlyOneAppInstanceCheck()
-        {
-            if (_namedPipeHelper.IsServer == false)
-            {
-                try
-                {
-                    _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
-                    Environment.Exit(0);
-                }
-                catch
-                {
-                    Environment.Exit(1);
-                }
-            }
-            else
-            {
-                _namedPipeHelper.OnMessageReceived += message =>
-                {
-                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
-                    if (message == "ActivateMe")
-                    {
-                        IoC.Get<MainWindowViewModel>()?.ShowMe(true);
-                    }
-                };
-            }
-        }
-
-        #endregion
-
         protected override void OnStart()
         {
             // Step1
@@ -84,7 +44,6 @@ namespace _1RM
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
             builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
-            builder.Bind<Configuration>().ToInstance(_appInit.NewConfiguration);
             builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationService);
             builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
             builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);
@@ -154,7 +113,6 @@ namespace _1RM
                 Environment.Exit(1);
             });
             IoC.Get<TaskTrayService>().TaskTrayDispose();
-            _namedPipeHelper?.Dispose();
             IoC.Get<SessionControlService>()?.Release();
             if (IoC.Get<LauncherWindowViewModel>()?.View != null)
                 IoC.Get<LauncherWindowViewModel>()?.RequestClose();
