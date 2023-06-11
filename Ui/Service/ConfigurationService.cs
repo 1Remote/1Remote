@@ -36,7 +36,8 @@ namespace _1RM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-        public bool AppStartAutomatically = true;
+        [Obsolete]
+        public bool AppStartAutomatically = true; // TODO 移除该参数，直接读取是否自动启动并显示到界面上
         [Obsolete]
         public bool AppStartMinimized = true; // TODO 移除参数
         public bool ListPageIsCardView = false;
