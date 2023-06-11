@@ -24,11 +24,11 @@ namespace _1RM
     {
         private void WritePermissionCheck(string path, bool isFile)
         {
-            Debug.Assert(LanguageService != null);
+            Debug.Assert(LanguageServiceObj != null);
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
             if (flag == false)
             {
-                MessageBoxHelper.ErrorAlert(LanguageService?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
+                MessageBoxHelper.ErrorAlert(LanguageServiceObj?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
                 Environment.Exit(1);
             }
         }
@@ -37,27 +37,27 @@ namespace _1RM
         public static void InitOnStartup(string[] args)
         {
             SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Disabled;
+            AppStartupHelper.Init(args); // in this method, it will call App.Close() if needed
             // Set salt by github action with repository secret
             UnSafeStringEncipher.Init(Assert.STRING_SALT);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
-            AppStartupHelper.Init(args); // in this method, it will call App.Close() if needed
             MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
         }
 
-        public LanguageService? LanguageService;
-        public KeywordMatchService? KeywordMatchService;
-        public ConfigurationService? ConfigurationService;
-        public ThemeService? ThemeService;
-        public GlobalData GlobalData = null!;
+        public LanguageService? LanguageServiceObj;
+        public KeywordMatchService? KeywordMatchServiceObj;
+        public ConfigurationService? ConfigurationServiceObj;
+        public ThemeService? ThemeServiceObj;
+        public GlobalData GlobalDataObj = null!;
 
         public void InitOnStart()
         {
             Debug.Assert(App.ResourceDictionary != null);
 
             Configuration newConfiguration = new();
-            LanguageService = new LanguageService(App.ResourceDictionary!);
-            LanguageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
+            LanguageServiceObj = new LanguageService(App.ResourceDictionary!);
+            LanguageServiceObj.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
             #region Portable or not
             {
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
@@ -134,10 +134,14 @@ namespace _1RM
                     {
                         PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageService, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageServiceObj, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
+                        if (guidanceWindowViewModel.AppStartAutomatically)
+                        {
+                            ConfigurationService.SetSelfStart(true);
+                        }
                     }
 
                     // 自动创建标志文件
@@ -218,35 +222,35 @@ namespace _1RM
             }
 
 
-            KeywordMatchService = new KeywordMatchService();
+            KeywordMatchServiceObj = new KeywordMatchService();
             // read profile
             try
             {
                 if (File.Exists(AppPathHelper.Instance.ProfileJsonPath) == true)
                 {
-                    ConfigurationService = ConfigurationService.LoadFromAppPath(KeywordMatchService);
+                    ConfigurationServiceObj = ConfigurationService.LoadFromAppPath(KeywordMatchServiceObj);
                 }
                 else
                 {
                     newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                    ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
+                    ConfigurationServiceObj = new ConfigurationService(KeywordMatchServiceObj, newConfiguration);
                 }
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
                 newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
-                ConfigurationService = new ConfigurationService(KeywordMatchService, newConfiguration);
+                ConfigurationServiceObj = new ConfigurationService(KeywordMatchServiceObj, newConfiguration);
             }
 
             // make sure path is not empty
-            if (string.IsNullOrWhiteSpace(ConfigurationService.LocalDataSource.Path))
+            if (string.IsNullOrWhiteSpace(ConfigurationServiceObj.LocalDataSource.Path))
             {
-                ConfigurationService.LocalDataSource.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                ConfigurationServiceObj.LocalDataSource.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
             }
 
-            ThemeService = new ThemeService(App.ResourceDictionary!, ConfigurationService.Theme);
-            GlobalData = new GlobalData(ConfigurationService);
+            ThemeServiceObj = new ThemeService(App.ResourceDictionary!, ConfigurationServiceObj.Theme);
+            GlobalDataObj = new GlobalData(ConfigurationServiceObj);
         }
 
         private bool _isNewUser = false;
@@ -258,12 +262,12 @@ namespace _1RM
 
             // Init data sources controller
             var dataSourceService = IoC.Get<DataSourceService>();
-            GlobalData.SetDataSourceService(dataSourceService);
-            GlobalData.ReloadServerList(true);
+            GlobalDataObj.SetDataSourceService(dataSourceService);
+            GlobalDataObj.ReloadServerList(true);
 
             // read from configs and find where db is.
             {
-                var sqliteConfig = ConfigurationService!.LocalDataSource;
+                var sqliteConfig = ConfigurationServiceObj!.LocalDataSource;
                 if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
                     sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
                 var fi = new FileInfo(sqliteConfig.Path);
@@ -278,20 +282,19 @@ namespace _1RM
 
             if (_isNewUser)
             {
-                ConfigurationService.SetSelfStart();
+                ConfigurationServiceObj.SetSelfStart();
             }
-            AppStartupHelper.ProcessArg();
         }
 
 
         public void InitOnLaunch()
         {
-            if (_isNewUser == false && ConfigurationService != null)
+            if (_isNewUser == false && ConfigurationServiceObj != null)
             {
-                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationService.General.ListPageIsCardView}");
-                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationService.General.ConfirmBeforeClosingSession}");
-                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationService.Launcher.LauncherEnabled}");
-                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationService.Theme.ThemeName}");
+                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}");
+                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}");
+                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}");
+                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}");
 #if NETFRAMEWORK
                 MsAppCenterHelper.TraceSpecial($"App start with - Net", $"4.8");
 #else
@@ -303,37 +306,35 @@ namespace _1RM
 
 
             bool appStartMinimized = AppStartupHelper.IsStartMinimized;
-
-            if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
-            {
-                string error = _localDataConnectionStatus.GetErrorInfo();
-                IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
-                {
-                    IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
-                    MessageBoxHelper.ErrorAlert(error);
-                };
-            }
-            else
-            {
-                IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
-                {
-                    IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
-                    if (_isNewUser)
-                    {
-                        // import form PRemoteM db
-                        PRemoteMTransferHelper.TransAsync();
-                    }
-                    else
-                    {
-                        MaskLayerController.ShowProcessingRing();
-                    }
-                };
-            }
-
             if (appStartMinimized == false
                 || _localDataConnectionStatus != EnumDatabaseStatus.OK
                 || _isNewUser)
             {
+                if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
+                {
+                    string error = _localDataConnectionStatus.GetErrorInfo();
+                    IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
+                    {
+                        IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
+                        MessageBoxHelper.ErrorAlert(error);
+                    };
+                }
+                else
+                {
+                    IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
+                    {
+                        IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
+                        if (_isNewUser)
+                        {
+                            // import form PRemoteM db
+                            PRemoteMTransferHelper.TransAsync();
+                        }
+                        else
+                        {
+                            MaskLayerController.ShowProcessingRing();
+                        }
+                    };
+                }
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }
 
@@ -343,8 +344,8 @@ namespace _1RM
                 //// read from primary database
                 //IoC.Get<GlobalData>().ReloadServerList(true);
                 // read from AdditionalDataSource async
-                if (ConfigurationService!.AdditionalDataSource.Any())
-                    Task.WaitAll(ConfigurationService!.AdditionalDataSource.Select(config =>
+                if (ConfigurationServiceObj!.AdditionalDataSource.Any())
+                    Task.WaitAll(ConfigurationServiceObj!.AdditionalDataSource.Select(config =>
                         Task.Factory.StartNew(() =>
                         {
                             IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);

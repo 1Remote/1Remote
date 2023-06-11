@@ -40,13 +40,13 @@ namespace _1RM
         {
             // Step2
             // Configure the IoC container in here;
-            builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageService);
+            builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageServiceObj);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
-            builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchService);
-            builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationService);
-            builder.Bind<ThemeService>().ToInstance(_appInit.ThemeService);
-            builder.Bind<GlobalData>().ToInstance(_appInit.GlobalData);
+            builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchServiceObj);
+            builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationServiceObj);
+            builder.Bind<ThemeService>().ToInstance(_appInit.ThemeServiceObj);
+            builder.Bind<GlobalData>().ToInstance(_appInit.GlobalDataObj);
             builder.Bind<ProtocolConfigurationService>().ToSelf().InSingletonScope();
             builder.Bind<DataSourceService>().ToSelf().InSingletonScope();
             builder.Bind<LauncherService>().ToSelf().InSingletonScope();
@@ -101,6 +101,7 @@ namespace _1RM
             // init Database here after ui init, to show alert if db connection goes wrong.
             _appInit.InitOnLaunch();
             IoC.Get<TaskTrayService>().TaskTrayInit();
+            AppStartupHelper.ProcessWhenLaunch();
         }
 
 
@@ -123,7 +124,7 @@ namespace _1RM
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-                if (!App.ExitingFlag)
+            if (!App.ExitingFlag)
                 lock (this)
                 {
                     SimpleLogHelper.Fatal(e.Exception);
