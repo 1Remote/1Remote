@@ -20,9 +20,9 @@ using _1RM.View.Utils;
 
 namespace _1RM
 {
-    internal class AppInit
+    internal static class AppInitHelper
     {
-        private void WritePermissionCheck(string path, bool isFile)
+        private static void WritePermissionCheck(string path, bool isFile)
         {
             Debug.Assert(LanguageServiceObj != null);
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
@@ -45,13 +45,18 @@ namespace _1RM
             MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
         }
 
-        public LanguageService? LanguageServiceObj;
-        public KeywordMatchService? KeywordMatchServiceObj;
-        public ConfigurationService? ConfigurationServiceObj;
-        public ThemeService? ThemeServiceObj;
-        public GlobalData GlobalDataObj = null!;
+        public static LanguageService? LanguageServiceObj;
+        public static KeywordMatchService? KeywordMatchServiceObj;
+        public static ConfigurationService? ConfigurationServiceObj;
+        public static ThemeService? ThemeServiceObj;
+        public static GlobalData GlobalDataObj = null!;
 
-        public void InitOnStart()
+        public static bool DataIsLoaded = false;
+
+        private static bool _isNewUser = false;
+        private static EnumDatabaseStatus _localDataConnectionStatus;
+
+        public static void InitOnStart()
         {
             Debug.Assert(App.ResourceDictionary != null);
 
@@ -138,10 +143,6 @@ namespace _1RM
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
-                        if (guidanceWindowViewModel.AppStartAutomatically)
-                        {
-                            ConfigurationService.SetSelfStart(true);
-                        }
                     }
 
                     // 自动创建标志文件
@@ -253,10 +254,7 @@ namespace _1RM
             GlobalDataObj = new GlobalData(ConfigurationServiceObj);
         }
 
-        private bool _isNewUser = false;
-        private EnumDatabaseStatus _localDataConnectionStatus;
-
-        public void InitOnConfigure()
+        public static void InitOnConfigure()
         {
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
 
@@ -267,27 +265,22 @@ namespace _1RM
 
             // read from configs and find where db is.
             {
-                var sqliteConfig = ConfigurationServiceObj!.LocalDataSource;
-                if (string.IsNullOrWhiteSpace(sqliteConfig.Path))
-                    sqliteConfig.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
-                var fi = new FileInfo(sqliteConfig.Path);
+                var local = ConfigurationServiceObj!.LocalDataSource;
+                if (string.IsNullOrWhiteSpace(local.Path))
+                    local.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
+                var fi = new FileInfo(local.Path);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                _localDataConnectionStatus = dataSourceService.InitLocalDataSource(sqliteConfig);
+                _localDataConnectionStatus = dataSourceService.InitLocalDataSource(local);
             }
 
             // init session controller
             IoC.Get<SessionControlService>();
             IoC.Get<MainWindowViewModel>();
-
-            if (_isNewUser)
-            {
-                ConfigurationServiceObj.SetSelfStart();
-            }
         }
 
 
-        public void InitOnLaunch()
+        public static void InitOnLaunch()
         {
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
@@ -352,6 +345,8 @@ namespace _1RM
                         })).ToArray());
                 IoC.Get<GlobalData>().ReloadServerList(true);
                 MaskLayerController.HideMask();
+                DataIsLoaded = true;
+                AppStartupHelper.ProcessWhenDataLoaded();
             });
         }
     }

@@ -37,28 +37,19 @@ namespace _1RM.View.Settings.General
             }
         }
 
+
         public bool AppStartAutomatically
         {
-            get => _configurationService.General.AppStartAutomatically;
+            get => ConfigurationService.IsSelfStart();
             set
             {
-                if (SetAndNotifyIfChanged(ref _configurationService.General.AppStartAutomatically, value))
+                if (ConfigurationService.IsSelfStart() == value) return;
+                var e = ConfigurationService.SetSelfStart(value);
+                if (e != null)
                 {
-                    _configurationService.SetSelfStart();
-                    _configurationService.Save();
+                    MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
                 }
-            }
-        }
-
-        public bool AppStartMinimized
-        {
-            get => _configurationService.General.AppStartMinimized;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _configurationService.General.AppStartMinimized, value))
-                {
-                    _configurationService.Save();
-                }
+                RaisePropertyChanged();
             }
         }
 

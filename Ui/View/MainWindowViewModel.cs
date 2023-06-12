@@ -254,7 +254,10 @@ namespace _1RM.View
         {
             if (this.View is not MainWindowView)
             {
-                IoC.Get<IWindowManager>().ShowWindow(this);
+                Execute.OnUIThreadSync(() =>
+                {
+                    IoC.Get<IWindowManager>().ShowWindow(this);
+                });
                 return;
             }
             if (this.View is not MainWindowView { IsClosing: false } window) return;

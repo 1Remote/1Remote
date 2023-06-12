@@ -194,7 +194,7 @@ namespace _1RM.View.ServerList
 
                     foreach (var vmProtocolServer in IoC.Get<GlobalData>().VmItemList.ToArray())
                     {
-                        if (vmProtocolServer.Server.Tags.Contains(tagName))
+                        if (vmProtocolServer.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
                         {
                             GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}");
                             Thread.Sleep(100);

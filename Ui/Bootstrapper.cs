@@ -25,7 +25,6 @@ namespace _1RM
 {
     public class Bootstrapper : Bootstrapper<LauncherWindowViewModel>
     {
-        private readonly AppInit _appInit = new();
         private readonly DesktopResolutionWatcher _desktopResolutionWatcher = new();
 
         protected override void OnStart()
@@ -33,20 +32,20 @@ namespace _1RM
             // Step1
             // This is called just after the application is started, but before the IoC container is set up.
             // Set up things like logging, etc
-            _appInit.InitOnStart();
+            AppInitHelper.InitOnStart();
         }
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
             // Step2
             // Configure the IoC container in here;
-            builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(_appInit.LanguageServiceObj);
+            builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(AppInitHelper.LanguageServiceObj);
             builder.Bind<TaskTrayService>().ToSelf().InSingletonScope();
             builder.Bind<LocalityService>().ToSelf().InSingletonScope();
-            builder.Bind<KeywordMatchService>().ToInstance(_appInit.KeywordMatchServiceObj);
-            builder.Bind<ConfigurationService>().ToInstance(_appInit.ConfigurationServiceObj);
-            builder.Bind<ThemeService>().ToInstance(_appInit.ThemeServiceObj);
-            builder.Bind<GlobalData>().ToInstance(_appInit.GlobalDataObj);
+            builder.Bind<KeywordMatchService>().ToInstance(AppInitHelper.KeywordMatchServiceObj);
+            builder.Bind<ConfigurationService>().ToInstance(AppInitHelper.ConfigurationServiceObj);
+            builder.Bind<ThemeService>().ToInstance(AppInitHelper.ThemeServiceObj);
+            builder.Bind<GlobalData>().ToInstance(AppInitHelper.GlobalDataObj);
             builder.Bind<ProtocolConfigurationService>().ToSelf().InSingletonScope();
             builder.Bind<DataSourceService>().ToSelf().InSingletonScope();
             builder.Bind<LauncherService>().ToSelf().InSingletonScope();
@@ -76,7 +75,7 @@ namespace _1RM
             // Root ViewModel is launched.
             // Configure your services, etc, in here
             IoC.Init(this.Container);
-            _appInit.InitOnConfigure();
+            AppInitHelper.InitOnConfigure();
             _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
             {
                 GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
@@ -99,9 +98,8 @@ namespace _1RM
 
 
             // init Database here after ui init, to show alert if db connection goes wrong.
-            _appInit.InitOnLaunch();
+            AppInitHelper.InitOnLaunch();
             IoC.Get<TaskTrayService>().TaskTrayInit();
-            AppStartupHelper.ProcessWhenLaunch();
         }
 
 

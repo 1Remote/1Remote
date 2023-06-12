@@ -50,11 +50,8 @@ namespace _1RM.View.Guidance
 #endif
             Language = CultureInfo.CurrentCulture.Name.ToLower();
             ThemeName = new ThemeConfig().ThemeName;
-            AppStartAutomatically = true;
-            AppStartMinimized = true;
-#if DEBUG
-            AppStartAutomatically = false;
-            AppStartMinimized = false;
+#if !DEBUG
+            ConfigurationService.SetSelfStart(true);
 #endif
         }
 
@@ -74,28 +71,20 @@ namespace _1RM.View.Guidance
             }
         }
 
+
         public bool AppStartAutomatically
         {
-            get => _configuration.General.AppStartAutomatically;
+            get => ConfigurationService.IsSelfStart();
             set
             {
-                if (SetAndNotifyIfChanged(ref _configuration.General.AppStartAutomatically, value))
+                if (ConfigurationService.IsSelfStart() == value) return;
+                var e = ConfigurationService.SetSelfStart(value);
+                if (e != null)
                 {
-                    var e = ConfigurationService.CheckSetSelfStart();
-                    if (e != null)
-                    {
-                        _configuration.General.AppStartAutomatically = false;
-                        RaisePropertyChanged();
-                        MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
-                    }
+                    MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
                 }
+                RaisePropertyChanged();
             }
-        }
-
-        public bool AppStartMinimized
-        {
-            get => _configuration.General.AppStartMinimized;
-            set => SetAndNotifyIfChanged(ref _configuration.General.AppStartMinimized, value);
         }
 
         public bool ConfirmBeforeClosingSession
