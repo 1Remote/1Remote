@@ -14,7 +14,7 @@ namespace _1RM
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            AppInit.InitOnStartup(e.Args);
+            AppInitHelper.InitOnStartup(e.Args);
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
         }

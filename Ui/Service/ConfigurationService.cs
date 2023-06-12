@@ -36,10 +36,6 @@ namespace _1RM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-        [Obsolete]
-        public bool AppStartAutomatically = true; // TODO 移除该参数，直接读取是否自动启动并显示到界面上
-        [Obsolete]
-        public bool AppStartMinimized = true; // TODO 移除参数
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
         [DefaultValue(true)]
@@ -269,31 +265,10 @@ namespace _1RM.Service
                         File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
                     }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 }
-
                 
                 DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
 
                 CanSave = true;
-            }
-        }
-
-        public static Exception? CheckSetSelfStart()
-        {
-            try
-            {
-#if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(true, Assert.AppName);
-                SetSelfStartingHelper.SetSelfStartByStartupTask(false, Assert.AppName);
-#else
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(true, Assert.APP_NAME);
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(false, Assert.APP_NAME);
-#endif
-                return null;
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                return e;
             }
         }
 
@@ -315,17 +290,21 @@ namespace _1RM.Service
             }
             return null;
         }
-        public void SetSelfStart(bool? isInstall = null)
+
+        public static bool IsSelfStart()
         {
-            var appStartAutomatically = isInstall ?? General.AppStartAutomatically;
-            var e = SetSelfStart(appStartAutomatically);
-            if (e != null)
+            try
             {
-                SimpleLogHelper.Error(e);
+
+#if FOR_MICROSOFT_STORE_ONLY
+                return SetSelfStartingHelper.IsSelfStartByStartupTask(Assert.AppName);
+#else
+                return SetSelfStartingHelper.IsSelfStartByRegistryKey(Assert.APP_NAME);
+#endif
             }
-            else
+            catch (Exception e)
             {
-                General.AppStartAutomatically = appStartAutomatically;
+                return false;
             }
         }
 
