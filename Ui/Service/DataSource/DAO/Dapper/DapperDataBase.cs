@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
-using System.Diagnostics;
 using System.Linq;
 using Dapper;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service;
+using Microsoft.Data.Sqlite;
 using MySql.Data.MySqlClient;
 using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
-using System.Windows;
-using Stylet;
 
 // ReSharper disable InconsistentNaming
 
@@ -33,10 +28,6 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             lock (this)
             {
                 _dbConnection?.Close();
-                if (DatabaseType == DatabaseType.Sqlite)
-                {
-                    SQLiteConnection.ClearAllPools();
-                }
             }
         }
 
@@ -87,7 +78,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     _dbConnection = DatabaseType switch
                     {
                         DatabaseType.MySql => new MySqlConnection(_connectionString),
-                        DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
+                        DatabaseType.Sqlite => new SqliteConnection(_connectionString),
                         DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
                         DatabaseType.PostgreSQL => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
                         DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
