@@ -58,6 +58,7 @@ namespace _1RM.Service
             }
 
             #region DESKTOP_SHORTCUT
+#if !FOR_MICROSOFT_STORE_ONLY
             if (_args.Contains(DESKTOP_SHORTCUT_INSTALL))
             {
                 InstallDesktopShortcut(true);
@@ -66,6 +67,7 @@ namespace _1RM.Service
             {
                 InstallDesktopShortcut(false);
             }
+#endif
             if (_args.Contains(DESKTOP_SHORTCUT_INSTALL)) _args.Remove(DESKTOP_SHORTCUT_INSTALL);
             if (_args.Contains(DESKTOP_SHORTCUT_UNINSTALL)) _args.Remove(DESKTOP_SHORTCUT_UNINSTALL);
             #endregion
@@ -128,7 +130,7 @@ namespace _1RM.Service
                 NamedPipeHelper.OnMessageReceived += message =>
                 {
                     SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
-                    var strings = new HashSet<string>(message.Split(new []{ Separator }, StringSplitOptions.RemoveEmptyEntries).Distinct());
+                    var strings = new HashSet<string>(message.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Distinct());
                     ProcessArg(strings);
                 };
             }
@@ -163,9 +165,9 @@ namespace _1RM.Service
                         }
                     }
                 }
-                else if (arg.StartsWith("id:", StringComparison.OrdinalIgnoreCase))
+                else if (arg.StartsWith("ULID:", StringComparison.OrdinalIgnoreCase))
                 {
-                    var id = arg.Substring(3);
+                    var id = arg.Substring("ULID:".Length).Trim();
                     var server = IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase));
                     if (server != null && servers.Contains(server.Server) == false)
                     {
@@ -199,12 +201,12 @@ namespace _1RM.Service
         {
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             var shortcutPath = System.IO.Path.Combine(desktopPath, Assert.APP_DISPLAY_NAME + ".lnk");
+            if (System.IO.File.Exists(shortcutPath))
+            {
+                System.IO.File.Delete(shortcutPath);
+            }
             if (isInstall)
             {
-                if (System.IO.File.Exists(shortcutPath))
-                {
-                    System.IO.File.Delete(shortcutPath);
-                }
                 var shortcut = new IWshRuntimeLibrary.WshShell().CreateShortcut(shortcutPath);
                 shortcut.IconLocation =
                 shortcut.TargetPath = Process.GetCurrentProcess().MainModule!.FileName!;
@@ -212,13 +214,6 @@ namespace _1RM.Service
                 shortcut.Arguments = "";
                 shortcut.Description = Assert.APP_DISPLAY_NAME;
                 shortcut.Save();
-            }
-            else
-            {
-                if (System.IO.File.Exists(shortcutPath))
-                {
-                    System.IO.File.Delete(shortcutPath);
-                }
             }
         }
 #endif

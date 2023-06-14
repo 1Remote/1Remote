@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using _1RM.Model;
 using Newtonsoft.Json;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
@@ -297,7 +299,7 @@ namespace _1RM.Service
             {
 
 #if FOR_MICROSOFT_STORE_ONLY
-                return SetSelfStartingHelper.IsSelfStartByStartupTask(Assert.AppName);
+                return SetSelfStartingHelper.IsSelfStartByStartupTask(Assert.AppName).Result;
 #else
                 return SetSelfStartingHelper.IsSelfStartByRegistryKey(Assert.APP_NAME);
 #endif
