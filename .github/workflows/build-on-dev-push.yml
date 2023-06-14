@@ -87,14 +87,15 @@ jobs:
           echo ${{env.BuildVersion}}
           echo ${{env.PreRelease}}
 
-      # Publish the application Net4.8
-      - name: Publish the application Net4.8
-        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
-      # artifact
-      - uses: actions/upload-artifact@v3
-        with:
-          name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
-          path: Ui/bin/Release/net4.8-windows/publish
+      ## Publish the application Net4.8
+      #- name: Publish the application Net4.8
+      #  # not working run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
+      #  run: msbuild $env:Main_Project -t:rebuild -verbosity:diag -property:Configuration=ReleaseNet48
+      ## artifact
+      #- uses: actions/upload-artifact@v3
+      #  with:
+      #    name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
+      #    path: Ui/bin/ReleaseNet48/net48
 
       # Publish the application Net6.0
       - name: Publish the application
@@ -108,7 +109,7 @@ jobs:
     outputs:
       BuildVersion: ${{env.BuildVersion}}
       PreRelease: ${{env.PreRelease}}
-      artifact_net48: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
+      #artifact_net48: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
       artifact_net6x: 1Remote-${{env.BuildVersion}}-net6-x64
 
   # publish stable build, run only tag is not empty
@@ -144,17 +145,17 @@ jobs:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
-      # download artifact net4.8
-      - uses: actions/download-artifact@v2
-        with:
-          name: ${{needs.JobBuild.outputs.artifact_net48}}
-          path: ${{needs.JobBuild.outputs.artifact_net48}}
-      # zip
-      - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
-        with:
-          files: ${{needs.JobBuild.outputs.artifact_net48}}
-          dest: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      ## download artifact net4.8
+      #- uses: actions/download-artifact@v2
+      #  with:
+      #    name: ${{needs.JobBuild.outputs.artifact_net48}}
+      #    path: ${{needs.JobBuild.outputs.artifact_net48}}
+      ## zip
+      #- name: Easy Zip Files
+      #  uses: vimtor/action-zip@v1
+      #  with:
+      #    files: ${{needs.JobBuild.outputs.artifact_net48}}
+      #    dest: ${{needs.JobBuild.outputs.artifact_net48}}.zip
 
       # make release
       - name: Create Release
@@ -179,16 +180,16 @@ jobs:
           asset_name: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
           asset_content_type: application/zip
 
-      # upload package net4.8
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{needs.JobBuild.outputs.artifact_net48}}.zip
-          asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
-          asset_content_type: application/zip
+      ## upload package net4.8
+      #- name: Upload Release Asset
+      #  uses: actions/upload-release-asset@v1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #    asset_path: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      #    asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      #    asset_content_type: application/zip
 
       # set changelogs
       - uses: actions/setup-node@v3
@@ -230,17 +231,17 @@ jobs:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
-      # download artifact net4.8
-      - uses: actions/download-artifact@v2
-        with:
-          name: ${{needs.JobBuild.outputs.artifact_net48}}
-          path: ${{needs.JobBuild.outputs.artifact_net48}}
-      # zip
-      - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
-        with:
-          files: ${{needs.JobBuild.outputs.artifact_net48}}
-          dest: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      ## download artifact net4.8
+      #- uses: actions/download-artifact@v2
+      #  with:
+      #    name: ${{needs.JobBuild.outputs.artifact_net48}}
+      #    path: ${{needs.JobBuild.outputs.artifact_net48}}
+      ## zip
+      #- name: Easy Zip Files
+      #  uses: vimtor/action-zip@v1
+      #  with:
+      #    files: ${{needs.JobBuild.outputs.artifact_net48}}
+      #    dest: ${{needs.JobBuild.outputs.artifact_net48}}.zip
 
       # make release
       - name: Create Release
@@ -265,16 +266,16 @@ jobs:
           asset_name: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
           asset_content_type: application/zip
 
-      # upload package net4.8
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{needs.JobBuild.outputs.artifact_net48}}.zip
-          asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
-          asset_content_type: application/zip
+      ## upload package net4.8
+      #- name: Upload Release Asset
+      #  uses: actions/upload-release-asset@v1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #    asset_path: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      #    asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+      #    asset_content_type: application/zip
 
       # set changelogs
       - uses: actions/setup-node@v3
@@ -308,18 +309,6 @@ jobs:
         with:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
-
-      # # publish nightly with WebFreak001/deploy-nightly@v2.0.0
-      # - uses: WebFreak001/deploy-nightly@v2.0.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # automatically provided by github actions
-      #   with:
-      #     upload_url: https://uploads.github.com/repos/VShawn/CI_TEST/releases/96096169/assets{?name,label} # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
-      #     release_id: 96096169 # same as above (id can just be taken out the upload_url, it's used to find old releases)
-      #     asset_path: ${{needs.JobBuild.outputs.artifact_net6x}}.zip # path to archive to upload
-      #     asset_name: ${{needs.JobBuild.outputs.artifact_net6x}}-nightly-$$.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
-      #     asset_content_type: application/zip # required by GitHub API
-      #     max_releases: 10 # optional, if there are more releases than this matching the asset_name, the oldest ones are going to be deleted
 
       # for 1Remote project
       # publish nightly with WebFreak001/deploy-nightly@v2.0.0
