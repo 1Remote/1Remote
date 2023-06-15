@@ -192,6 +192,7 @@ namespace _1RM.Service
             {
                 var vmServer = _appData.GetItemById(protocol.DataSource?.DataSourceName ?? "", protocol.Id);
                 vmServer?.UpdateConnectTime();
+                IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenuIfConnectionStart();
             }
             #endregion
 

@@ -17,17 +17,24 @@ namespace _1RM.Utils
             try
             {
 #if NETCOREAPP
-                var connectTask = cancellationToken == null ? client.ConnectAsync(address, port) : client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
+                var cts = new CancellationTokenSource();
+                if (cancellationToken == null)
+                {
+                    cancellationToken = cts.Token;
+                }
+                cancellationToken ??= new CancellationToken();
+                var connectTask = client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
 #else
                 var connectTask = client.ConnectAsync(address, port);
 #endif
                 if (timeOutMillisecond <= 0)
                     timeOutMillisecond = 30 * 1000;
-                var timeoutTask = cancellationToken == null ? Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond)) : Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond), (CancellationToken)cancellationToken);
+                var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(timeOutMillisecond), (CancellationToken)cancellationToken);
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
                 if (completedTask == timeoutTask && completedTask.IsCanceled != true)
                 {
                     SimpleLogHelper.Debug("TcpHelper: Connection timed out.");
+                    cts.Cancel();
                     return false;
                 }
 

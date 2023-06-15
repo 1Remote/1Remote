@@ -97,6 +97,8 @@ namespace _1RM.Service
                 PingTestItems = uiPingItems
             };
 
+            SimpleLogHelper.Debug($"FindFirstConnectableAddressAsync in {uiPingItems.Count} address, showing dlg...");
+
             await Execute.OnUIThreadAsync(() =>
             {
                 IoC.Get<IWindowManager>().ShowWindow(dlg);
@@ -127,24 +129,31 @@ namespace _1RM.Service
             }
 
             // an extra task to update the message
-            tasks.Add(Task.Factory.StartNew(() =>
+            var countingTask = Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < maxWaitSeconds; i++)
                 {
                     dlg.Eta = maxWaitSeconds - i;
                     Task.Delay(1000, cts.Token).Wait(cts.Token);
                 }
+
                 bool? ret = null;
                 return ret;
-            }, cts.Token));
+            }, cts.Token);
+            tasks.Add(countingTask);
 
             var delay = Task.Delay(500);
 
             // wait for the first task with result true or all tasks completed
             int completedTaskIndex = -1;
             var ts = tasks.ToArray();
-            while (ts.Any())
+            while (true)
             {
+                if (ts.Any() == false
+                    || ts.Length == 1 && ts.FirstOrDefault() == countingTask)
+                {
+                    break;
+                }
                 var completedTask = await Task.WhenAny(ts);
                 if (completedTask.IsCanceled == false && completedTask?.Result == true)
                 {
@@ -207,6 +216,7 @@ namespace _1RM.Service
             var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
             if (assignCredential != null)
             {
+                SimpleLogHelper.Debug("using assign credential: " + assignCredentialName);
                 newCredential.SetCredential(assignCredential);
             }
 
