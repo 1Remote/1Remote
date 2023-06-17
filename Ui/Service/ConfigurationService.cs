@@ -16,6 +16,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
+using Google.Protobuf.WellKnownTypes;
 
 namespace _1RM.Service
 {
@@ -277,27 +278,16 @@ namespace _1RM.Service
 
         public static void SetSelfStart(bool isInstall)
         {
-            SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
-        }
 
-        public static bool IsSelfStart()
-        {
-            try
-            {
 #if FOR_MICROSOFT_STORE_ONLY
-                Task.Factory.StartNew(() =>
-                {
-                    SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, null);
-                });
-                return SetSelfStartingHelper.IsStartupTaskStateEnable;
-#else
-                return SetSelfStartingHelper.IsSelfStartByRegistryKey(Assert.APP_NAME);
-#endif
-            }
-            catch (Exception e)
+            Task.Factory.StartNew(() =>
             {
-                return false;
-            }
+                SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
+            }).Wait();
+#else
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({isInstall}, \"{Assert.APP_NAME}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(isInstall, Assert.APP_NAME);
+#endif
         }
 
 
