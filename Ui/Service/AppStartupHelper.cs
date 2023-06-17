@@ -30,71 +30,25 @@ namespace _1RM.Service
         public const string RUN_AUTO_AT_OS_START_UNINSTALL = "uninstall-startup";
         private static HashSet<string> _args = new HashSet<string>();
 
-#if FOR_MICROSOFT_STORE_ONLY
-        public static bool IsStartMinimized => true;
-#else
         public static bool IsStartMinimized { get; private set; } = false;
-#endif
         private static readonly NamedPipeHelper NamedPipeHelper = new NamedPipeHelper(Assert.APP_DISPLAY_NAME + "_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName));
 
-        public static void Init(string[] args)
+        public static async Task Init(List<string> args)
         {
-            args = args.Select(x => x.TrimStart('-')).Where(x => string.IsNullOrWhiteSpace(x) == false).Distinct().ToArray();
+            args = args.Select(x => x.TrimStart('-')).Where(x => string.IsNullOrWhiteSpace(x) == false).Distinct().ToList();
             _args = new HashSet<string>(args);
 
 
 
-            if (_args.Contains(UNINSTALL))
-            {
-                _args.Remove(UNINSTALL);
-                if (!_args.Contains(DESKTOP_SHORTCUT_UNINSTALL)) _args.Add(DESKTOP_SHORTCUT_UNINSTALL);
-                if (!_args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL)) _args.Add(RUN_AUTO_AT_OS_START_UNINSTALL);
-            }
-            if (_args.Contains(INSTALL))
-            {
-                _args.Remove(INSTALL);
-                if (!_args.Contains(DESKTOP_SHORTCUT_INSTALL)) _args.Add(DESKTOP_SHORTCUT_INSTALL);
-                if (!_args.Contains(RUN_AUTO_AT_OS_START_INSTALL)) _args.Add(RUN_AUTO_AT_OS_START_INSTALL);
-            }
 
-            #region DESKTOP_SHORTCUT
-#if !FOR_MICROSOFT_STORE_ONLY
-            if (_args.Contains(DESKTOP_SHORTCUT_INSTALL))
-            {
-                InstallDesktopShortcut(true);
-            }
-            if (_args.Contains(DESKTOP_SHORTCUT_UNINSTALL))
-            {
-                InstallDesktopShortcut(false);
-            }
-#endif
-            if (_args.Contains(DESKTOP_SHORTCUT_INSTALL)) _args.Remove(DESKTOP_SHORTCUT_INSTALL);
-            if (_args.Contains(DESKTOP_SHORTCUT_UNINSTALL)) _args.Remove(DESKTOP_SHORTCUT_UNINSTALL);
-            #endregion
-
-            #region RUN_AUTO_AT_OS_START
-            if (_args.Contains(RUN_AUTO_AT_OS_START_INSTALL))
-            {
-                ConfigurationService.SetSelfStart(true);
-            }
-            else if (_args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL))
-            {
-                ConfigurationService.SetSelfStart(false);
-            }
-            if (_args.Contains(RUN_AUTO_AT_OS_START_INSTALL)) _args.Remove(RUN_AUTO_AT_OS_START_INSTALL);
-            if (_args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL)) _args.Remove(RUN_AUTO_AT_OS_START_UNINSTALL);
-            #endregion
-
-            if (args.Length > 0 && _args.Count == 0)
+            if (args.Count > 0 && _args.Count == 0)
             {
                 // Exit when all args are processed
                 Environment.Exit(0);
             }
 
             #region APP_START_WITH_MINIMIZED
-#if !FOR_MICROSOFT_STORE_ONLY
             IsStartMinimized = _args.Contains(APP_START_MINIMIZED);
-#endif
             if (_args.Contains(APP_START_MINIMIZED)) _args.Remove(APP_START_MINIMIZED);
 
             #endregion
@@ -120,9 +74,26 @@ namespace _1RM.Service
             }
         }
 
-
-        public static void ProcessWhenDataLoaded()
+        private static bool IsCfgArg(string arg)
         {
+            return arg == UNINSTALL
+                       || arg == INSTALL
+                       || arg == DESKTOP_SHORTCUT_INSTALL
+                       || arg == DESKTOP_SHORTCUT_UNINSTALL
+                       || arg == RUN_AUTO_AT_OS_START_INSTALL
+                       || arg == RUN_AUTO_AT_OS_START_UNINSTALL;
+        }
+
+        private static bool IsAnyArgNeedAppInstance(IEnumerable<string> args)
+        {
+            return _args.Any(x=> IsCfgArg(x) == false);
+        }
+
+
+        private static ConfigurationService? _configuration = null;
+        public static void ProcessWhenDataLoaded(ConfigurationService cfg)
+        {
+            _configuration = cfg;
             ProcessArg(_args);
             _args.Clear();
             if (NamedPipeHelper.IsServer)
@@ -133,6 +104,58 @@ namespace _1RM.Service
                     var strings = new HashSet<string>(message.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Distinct());
                     ProcessArg(strings);
                 };
+            }
+        }
+
+
+        private static void ProcessCfgArgs(ref HashSet<string> args)
+        {
+            if (args.Contains(UNINSTALL))
+            {
+                args.Remove(UNINSTALL);
+                if (!args.Contains(DESKTOP_SHORTCUT_UNINSTALL)) args.Add(DESKTOP_SHORTCUT_UNINSTALL);
+                if (!args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL)) args.Add(RUN_AUTO_AT_OS_START_UNINSTALL);
+            }
+            if (args.Contains(INSTALL))
+            {
+                args.Remove(INSTALL);
+                if (!args.Contains(DESKTOP_SHORTCUT_INSTALL)) args.Add(DESKTOP_SHORTCUT_INSTALL);
+                if (!args.Contains(RUN_AUTO_AT_OS_START_INSTALL)) args.Add(RUN_AUTO_AT_OS_START_INSTALL);
+            }
+
+            #region DESKTOP_SHORTCUT
+#if !FOR_MICROSOFT_STORE_ONLY
+            if (args.Contains(DESKTOP_SHORTCUT_INSTALL))
+            {
+                InstallDesktopShortcut(true);
+            }
+            if (args.Contains(DESKTOP_SHORTCUT_UNINSTALL))
+            {
+                InstallDesktopShortcut(false);
+            }
+#endif
+            if (args.Contains(DESKTOP_SHORTCUT_INSTALL)) args.Remove(DESKTOP_SHORTCUT_INSTALL);
+            if (args.Contains(DESKTOP_SHORTCUT_UNINSTALL)) args.Remove(DESKTOP_SHORTCUT_UNINSTALL);
+            #endregion
+
+            #region RUN_AUTO_AT_OS_START
+            if (args.Contains(RUN_AUTO_AT_OS_START_INSTALL))
+            {
+                Task.Factory.StartNew(() => ConfigurationService.SetSelfStart(true)).Wait();
+            }
+            else if (args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL))
+            {
+                Task.Factory.StartNew(() => ConfigurationService.SetSelfStart(false)).Wait();
+            }
+            if (args.Contains(RUN_AUTO_AT_OS_START_INSTALL)) args.Remove(RUN_AUTO_AT_OS_START_INSTALL);
+            if (args.Contains(RUN_AUTO_AT_OS_START_UNINSTALL)) args.Remove(RUN_AUTO_AT_OS_START_UNINSTALL);
+            #endregion
+            foreach (var arg in args.ToArray())
+            {
+                if (IsCfgArg(arg))
+                {
+                    args.Remove(arg);
+                }
             }
         }
 

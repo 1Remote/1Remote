@@ -267,7 +267,7 @@ namespace _1RM.Service
                         File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
                     }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 }
-                
+
                 DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
 
                 CanSave = true;
@@ -275,31 +275,21 @@ namespace _1RM.Service
         }
 
 
-        public static Exception? SetSelfStart(bool isInstall)
+        public static void SetSelfStart(bool isInstall)
         {
-            try
-            {
-#if FOR_MICROSOFT_STORE_ONLY
-                SetSelfStartingHelper.SetSelfStartByStartupTask(isInstall, Assert.AppName);
-#else
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({isInstall}, \"{Assert.APP_NAME}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(isInstall, Assert.APP_NAME);
-#endif
-            }
-            catch (Exception e)
-            {
-                return e;
-            }
-            return null;
+            SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
         }
 
         public static bool IsSelfStart()
         {
             try
             {
-
 #if FOR_MICROSOFT_STORE_ONLY
-                return SetSelfStartingHelper.IsSelfStartByStartupTask(Assert.AppName).Result;
+                Task.Factory.StartNew(() =>
+                {
+                    SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, null);
+                });
+                return SetSelfStartingHelper.IsStartupTaskStateEnable;
 #else
                 return SetSelfStartingHelper.IsSelfStartByRegistryKey(Assert.APP_NAME);
 #endif

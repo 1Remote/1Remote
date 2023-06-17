@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View.Settings.General
 {
@@ -37,19 +40,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
-
+        private bool _appStartAutomatically = false;
         public bool AppStartAutomatically
         {
-            get => ConfigurationService.IsSelfStart();
+            get => _appStartAutomatically;
             set
             {
-                if (ConfigurationService.IsSelfStart() == value) return;
-                var e = ConfigurationService.SetSelfStart(value);
-                if (e != null)
+                Task.Factory.StartNew(() =>
                 {
-                    MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
-                }
-                RaisePropertyChanged();
+                    SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, value);
+                }).Wait();
+                _appStartAutomatically = value;
+                RaisePropertyChanged(nameof(AppStartAutomatically));
             }
         }
 

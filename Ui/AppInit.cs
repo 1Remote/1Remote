@@ -34,10 +34,9 @@ namespace _1RM
         }
 
 
-        public static void InitOnStartup(string[] args)
+        public static void Init()
         {
             SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Disabled;
-            AppStartupHelper.Init(args); // in this method, it will call App.Close() if needed
             // Set salt by github action with repository secret
             UnSafeStringEncipher.Init(Assert.STRING_SALT);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
@@ -346,7 +345,7 @@ namespace _1RM
                 IoC.Get<GlobalData>().ReloadServerList(true);
                 MaskLayerController.HideMask();
                 DataIsLoaded = true;
-                AppStartupHelper.ProcessWhenDataLoaded();
+                AppStartupHelper.ProcessWhenDataLoaded(ConfigurationServiceObj);
             });
         }
     }
