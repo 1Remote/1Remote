@@ -16,6 +16,7 @@ using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.Locality;
+using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 
 namespace _1RM
@@ -297,8 +298,7 @@ namespace _1RM
             KittyConfig.CleanUpOldConfig();
 
 
-            bool appStartMinimized = AppStartupHelper.IsStartMinimized;
-            if (appStartMinimized == false
+            if (AppStartupHelper.IsStartMinimized == false
                 || _localDataConnectionStatus != EnumDatabaseStatus.OK
                 || _isNewUser)
             {
@@ -345,7 +345,7 @@ namespace _1RM
                 IoC.Get<GlobalData>().ReloadServerList(true);
                 MaskLayerController.HideMask();
                 DataIsLoaded = true;
-                AppStartupHelper.ProcessWhenDataLoaded(ConfigurationServiceObj);
+                AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
             });
         }
     }

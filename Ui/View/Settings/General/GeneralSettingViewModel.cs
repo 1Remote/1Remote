@@ -46,12 +46,9 @@ namespace _1RM.View.Settings.General
             get => _appStartAutomatically;
             set
             {
-                Task.Factory.StartNew(() =>
-                {
-                    SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, value);
-                }).Wait();
+                ConfigurationService.SetSelfStart(value);
                 _appStartAutomatically = value;
-                RaisePropertyChanged(nameof(AppStartAutomatically));
+                RaisePropertyChanged();
             }
         }
 

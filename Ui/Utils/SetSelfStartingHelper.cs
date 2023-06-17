@@ -174,23 +174,18 @@ namespace _1RM.Utils
         public static bool IsSelfStartByRegistryKey(string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-#if !DEV
-            key?.DeleteValue(Assert.APP_NAME, false);
-#endif
             return key?.GetValueNames().Contains(appName) == true;
         }
 
         public static void SetSelfStartByRegistryKey(bool isSetSelfStart, string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-            if (IsSelfStartByRegistryKey(appName))
+            if (key?.GetValueNames().Contains(appName) == true)
             {
-                if (!isSetSelfStart)
-                {
-                    key?.DeleteValue(appName, false);
-                }
+                key?.DeleteValue(appName, false);
             }
-            else
+
+            if (isSetSelfStart)
             {
                 key?.SetValue(appName, $@"""{Process.GetCurrentProcess().MainModule!.FileName!}"" --{AppStartupHelper.APP_START_MINIMIZED}");
             }

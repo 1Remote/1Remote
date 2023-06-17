@@ -344,3 +344,4 @@ healthchecksdb
 /PRemoteM/zlib.NET
 /*.DotSettings
 /Ui/Resources/Languages/glossary_backup.csv
+/Ui/Properties/launchSettings.json
