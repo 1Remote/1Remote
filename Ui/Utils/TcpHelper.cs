@@ -16,12 +16,12 @@ namespace _1RM.Utils
             using var client = new TcpClient();
             try
             {
-#if NETCOREAPP
                 var cts = new CancellationTokenSource();
                 if (cancellationToken == null)
                 {
                     cancellationToken = cts.Token;
                 }
+#if NETCOREAPP
                 cancellationToken ??= new CancellationToken();
                 var connectTask = client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
 #else

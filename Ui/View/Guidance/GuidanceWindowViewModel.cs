@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Utils;
@@ -52,6 +53,7 @@ namespace _1RM.View.Guidance
             ThemeName = new ThemeConfig().ThemeName;
 #if !DEBUG
             ConfigurationService.SetSelfStart(true);
+            _appStartAutomatically = true;
 #endif
         }
 
@@ -71,19 +73,18 @@ namespace _1RM.View.Guidance
             }
         }
 
-
+        private bool _appStartAutomatically = false;
         public bool AppStartAutomatically
         {
-            get => ConfigurationService.IsSelfStart();
+            get => _appStartAutomatically;
             set
             {
-                if (ConfigurationService.IsSelfStart() == value) return;
-                var e = ConfigurationService.SetSelfStart(value);
-                if (e != null)
+                Task.Factory.StartNew(() =>
                 {
-                    MessageBoxHelper.ErrorAlert("Can not set auto start dur to: " + e.Message + " May be you can try 'run as administrator' to fix it.");
-                }
-                RaisePropertyChanged();
+                    SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, value);
+                }).Wait();
+                _appStartAutomatically = value;
+                RaisePropertyChanged(nameof(AppStartAutomatically));
             }
         }
 

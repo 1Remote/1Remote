@@ -45,12 +45,12 @@ namespace _1RM.View.ServerList
 
         public bool ListPageIsCardView
         {
-            get => IoC.Get<SettingsPageViewModel>().ListPageIsCardView;
+            get => IoC.Get<ConfigurationService>().General.ListPageIsCardView;
             set
             {
-                if (IoC.Get<SettingsPageViewModel>().ListPageIsCardView != value)
+                if (IoC.Get<ConfigurationService>().General.ListPageIsCardView != value)
                 {
-                    IoC.Get<SettingsPageViewModel>().ListPageIsCardView = value;
+                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = value;
                     RaisePropertyChanged();
                 }
                 if (value == true)

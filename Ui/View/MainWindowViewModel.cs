@@ -16,6 +16,8 @@ using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
 using System.Threading;
+using _1RM.View.Settings.General;
+using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View
 {
@@ -134,7 +136,9 @@ namespace _1RM.View
                 };
                 ShowMe();
             };
-
+#if FOR_MICROSOFT_STORE_ONLY
+            SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, null);
+#endif
             OnMainWindowViewLoaded?.Invoke();
 
             //var vm = new _1RM.View.Utils.MessageBoxPageViewModel();
@@ -194,6 +198,9 @@ namespace _1RM.View
                     ShowSetting = true;
                     ShowAbout = false;
                     EditorViewModel = null;
+#if FOR_MICROSOFT_STORE_ONLY
+                    IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsStartupTaskStateEnable;
+#endif
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
                 }, o => IsShownList);

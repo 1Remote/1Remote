@@ -1,20 +1,71 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Service;
-using _1RM.Utils;
+using Shawn.Utils;
+#if FOR_MICROSOFT_STORE_ONLY
+using Windows.ApplicationModel.Activation;
+#endif
 
 
 namespace _1RM
 {
+    static class Program
+    {
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            var argss = args.ToList();
+            AppInitHelper.Init();
+
+
+            {
+                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+                SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+                // init log file placement
+                SimpleLogHelper.LogFileName = @"D:\data.md";
+            }
+
+            SimpleLogHelper.Warning("test");
+
+#if FOR_MICROSOFT_STORE_ONLY
+            // see: https://stackoverflow.com/questions/57755792/how-can-i-handle-file-activation-from-a-wpf-app-which-is-running-as-uwp
+            var aea = Windows.ApplicationModel.AppInstance.GetActivatedEventArgs();
+            argss.Append(aea?.Kind.ToString());
+            if (aea?.Kind == ActivationKind.StartupTask)
+            {
+                // ref: https://blogs.windows.com/windowsdeveloper/2017/08/01/configure-app-start-log/
+                // If your app is enabled for startup activation, you should handle this case in your
+                // App class by overriding the OnActivated method.Check the IActivatedEventArgs.Kind
+                // to see if it is ActivationKind.StartupTask, and if so, case the IActivatedEventArgs
+                // to a StartupTaskActivatedEventArgs.From this, you can retrieve the TaskId, should
+                // you need it.
+                argss.Append(AppStartupHelper.APP_START_MINIMIZED);
+            }
+//#if DEV
+            if (File.Exists(@"D:\data.txt")) File.Delete(@"D:\data.txt");
+            File.WriteAllText(@"D:\data.txt", string.Join("\r\n", argss));
+//#endif
+            AppStartupHelper.Init(argss); // in this method, it will call Environment.Exit() if needed
+#endif
+
+
+
+            var application = new App();
+            application.InitializeComponent();
+            application.Run();
+        }
+    }
+
     public partial class App : Application
     {
         public static ResourceDictionary? ResourceDictionary { get; private set; } = null;
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            AppInitHelper.InitOnStartup(e.Args);
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
         }
@@ -34,5 +85,37 @@ namespace _1RM
                 Application.Current.Shutdown(exitCode);
             });
         }
+
+//#if FOR_MICROSOFT_STORE_ONLY
+//        public void OnProtocolActivated(IActivatedEventArgs args)
+//        {
+//            string txt = "" + args.Kind.ToString();
+//            if (File.Exists(@"D:\data2.txt")) File.Delete(@"D:\data.txt");
+//            switch (args.Kind)
+//            {
+//                case ActivationKind.Launch:
+//                    var largs = args as LaunchActivatedEventArgs;
+//                    txt += "\r\n" + largs.Arguments + "\r\n";
+//                    break;
+
+//                case ActivationKind.CommandLineLaunch:
+//                    CommandLineActivatedEventArgs cmdLineArgs = args as CommandLineActivatedEventArgs;
+//                    CommandLineActivationOperation operation = cmdLineArgs.Operation;
+//                    string cmdLineString = operation.Arguments;
+//                    string activationPath = operation.CurrentDirectoryPath;
+//                    txt += "\r\n" + cmdLineString + "\r\n" + activationPath;
+//                    break;
+
+//                case ActivationKind.StartupTask: 
+//                    // If your app is enabled for startup activation, you should handle this case in your
+//                    // App class by overriding the OnActivated method.Check the IActivatedEventArgs.Kind
+//                    // to see if it is ActivationKind.StartupTask, and if so, case the IActivatedEventArgs
+//                    // to a StartupTaskActivatedEventArgs.From this, you can retrieve the TaskId, should
+//                    // you need it.
+//                    break;
+//    }
+//            File.WriteAllText(@"D:\data2.txt", txt);
+//        }
+//#endif
     }
 }

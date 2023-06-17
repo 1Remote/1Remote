@@ -12,6 +12,11 @@ using _1RM.View;
 using _1RM.View.ErrorReport;
 using _1RM.View.Launcher;
 using _1RM.View.Settings;
+using _1RM.View.Settings.DataSource;
+using _1RM.View.Settings.General;
+using _1RM.View.Settings.Launcher;
+using _1RM.View.Settings.ProtocolConfig;
+using _1RM.View.Settings.Theme;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -58,6 +63,12 @@ namespace _1RM
             builder.Bind<QuickConnectionViewModel>().ToSelf().InSingletonScope();
             builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<GeneralSettingViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<DataSourceViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<LauncherSettingViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ThemeSettingViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ProtocolRunnerSettingsPageViewModel>().ToSelf().InSingletonScope();
+
             builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
 

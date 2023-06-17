@@ -6,12 +6,13 @@
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"  
   IgnorableNamespaces="uap rescap">
 
 	<Identity
 	  Name="16536Shawn.V.Workshop.PRemoteM"
 	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
-	  Version="1.0.77.0" />
+	  Version="1.0.78.0" />
 
 	<Properties>
 		<DisplayName>1Remote</DisplayName>
@@ -61,6 +62,11 @@
 						Enabled="true"
 						DisplayName="1Remote" />
 				</desktop:Extension>
+				<uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+					<uap3:AppExecutionAlias>
+						<desktop:ExecutionAlias Alias="1Remote.exe" />
+					</uap3:AppExecutionAlias>
+				</uap3:Extension>
 			</Extensions>
 		</Application>
 	</Applications>

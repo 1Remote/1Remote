@@ -199,40 +199,31 @@ namespace _1RM.Utils
 #endif
 
 #if STORE_UWP_METHOD
-
-        public static async Task<bool> IsSelfStartByStartupTask(string appName)
+        private static StartupTask? _startupTask = null;
+        public static bool IsStartupTaskStateEnable = false;
+        public static async void SetSelfStartByStartupTask(string appName, bool? isSetSelfStart = null)
         {
-            StartupTask startupTask = await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
-            switch (startupTask.State)
-            {
-                case StartupTaskState.Enabled:
-                case StartupTaskState.EnabledByPolicy:
-                    return true;
-                case StartupTaskState.Disabled:
-                case StartupTaskState.DisabledByUser:
-                case StartupTaskState.DisabledByPolicy:
-                default:
-                    return false;
-            }
-        }
-
-        public static async void SetSelfStartByStartupTask(bool isSetSelfStart, string appName)
-        {
-            var task = await StartupTask.GetAsync(appName);
-            var startupTask = await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
-            switch (startupTask.State)
+            _startupTask ??= await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
+            switch (_startupTask.State)
             {
                 case StartupTaskState.Disabled:
-                    if (isSetSelfStart)
+                    if (isSetSelfStart == true)
                     {
                         // Task is disabled but can be enabled.
-                        StartupTaskState newState = await startupTask.RequestEnableAsync(); // ensure that you are on a UI thread when you call RequestEnableAsync()
+                        var newState = await _startupTask.RequestEnableAsync(); // ensure that you are on a UI thread when you call RequestEnableAsync()
                         Debug.WriteLine("Request to enable startup, result = {0}", newState);
+                        IsStartupTaskStateEnable = true;
+                    }
+                    else
+                    {
+                        IsStartupTaskStateEnable = false;
                     }
 
                     break;
                 case StartupTaskState.DisabledByUser:
-                    if (isSetSelfStart)
+                case StartupTaskState.DisabledByPolicy:
+                    IsStartupTaskStateEnable = false;
+                    if (isSetSelfStart == true)
                     {
                         // Task is disabled and user must enable it manually.
                         MessageBox.Show("You have disabled this app's ability to run " +
@@ -241,13 +232,17 @@ namespace _1RM.Utils
                             "Warning");
                     }
                     break;
-                case StartupTaskState.DisabledByPolicy:
-                    Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
-                    break;
+                //Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
+                //break;
                 case StartupTaskState.Enabled:
                     if (isSetSelfStart == false)
                     {
-                        task.Disable();
+                        _startupTask.Disable();
+                        IsStartupTaskStateEnable = false;
+                    }
+                    else
+                    {
+                        IsStartupTaskStateEnable = true;
                     }
                     break;
             }
