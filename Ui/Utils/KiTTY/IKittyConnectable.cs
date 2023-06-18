@@ -42,7 +42,13 @@ namespace _1RM.Utils.KiTTY
             WriteKiTTYDefaultConfig(kittyRunner.PuttyExePath);
 
             // create session config
-            var puttyOption = new KittyConfig(sessionName, iKittyConnectable.ExternalKittySessionConfigPath);
+            var puttyOption = new KittyConfig(sessionName);
+
+            puttyOption.Set(EnumKittyConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
+
+            puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+
+
             if (iKittyConnectable is SSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))

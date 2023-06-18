@@ -95,7 +95,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
-          path: Ui/bin/ReleaseNet48/net48
+          path: Ui/bin/Release/net4.8-windows/publish
 
       # Publish the application Net6.0
       - name: Publish the application
@@ -109,7 +109,7 @@ jobs:
     outputs:
       BuildVersion: ${{env.BuildVersion}}
       PreRelease: ${{env.PreRelease}}
-      #artifact_net48: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
+      artifact_net48: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
       artifact_net6x: 1Remote-${{env.BuildVersion}}-net6-x64
 
   # publish stable build, run only tag is not empty

@@ -80,13 +80,33 @@
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Themes}"></TextBlock>
 
                 <ComboBox Grid.Column="1" ItemsSource="{Binding PuttyThemeNames}"
-                      SelectedItem="{Binding PuttyThemeName}">
+                          SelectedItem="{Binding PuttyThemeName}">
                 </ComboBox>
 
                 <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
-                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
-                    (?)
-                </Hyperlink>
+                    <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                        (?)
+                    </Hyperlink>
+                </TextBlock>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Character set"></TextBlock>
+
+                <ComboBox Grid.Column="1" ItemsSource="{Binding CodePages}"
+                          SelectedItem="{Binding LineCodePage}">
+                </ComboBox>
+
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
+                    <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                        (?)
+                    </Hyperlink>
                 </TextBlock>
             </Grid>
         </StackPanel>

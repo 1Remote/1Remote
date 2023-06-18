@@ -107,7 +107,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)'=='StoreRelease'">
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
-	  <Optimize>False</Optimize>
+	  <Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -490,11 +490,11 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot;" />
+		<Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-BuildDate.ps1 -filePath .\Ui\AppVersion.cs" />
 	</Target>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot; -isRevert" />
+		<Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-BuildDate.ps1 -filePath .\Ui\AppVersion.cs -isRevert" />
 	</Target>
 
 	<ItemGroup>

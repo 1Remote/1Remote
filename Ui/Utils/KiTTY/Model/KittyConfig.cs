@@ -50,11 +50,24 @@ namespace _1RM.Utils.KiTTY.Model
             return ret;
         }
 
-        public KittyConfig(string sessionName, string? overwritePath = null)
+        public KittyConfig(string sessionName)
         {
             SessionName = sessionName;
             InitDefault();
-            if (!string.IsNullOrEmpty(overwritePath))
+
+            // DISABLED ALT + F4
+            if (Options.Any(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase)))
+            {
+                var oldItem = Options.First(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase));
+                oldItem.Value = 0;
+            }
+            else
+                Set(EnumKittyConfigKey.AltF4, 0x00000000); // DISABLED ALTF4
+        }
+
+        public void ApplyOverwriteSession(string? overwritePath = null)
+        {
+            if (!string.IsNullOrEmpty(overwritePath) && File.Exists(overwritePath))
             {
                 var overWrite = Read(overwritePath!);
                 foreach (var item in overWrite)
@@ -71,15 +84,6 @@ namespace _1RM.Utils.KiTTY.Model
                     }
                 }
             }
-
-            // DISABLED ALT + F4
-            if (Options.Any(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase)))
-            {
-                var oldItem = Options.First(x => string.Equals(x.Key, EnumKittyConfigKey.AltF4.ToString(), StringComparison.CurrentCultureIgnoreCase));
-                oldItem.Value = 0;
-            }
-            else
-                Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AltF4.ToString(), 0x00000000)); // DISABLED ALTF4
         }
 
         private void InitDefault()
@@ -88,202 +92,202 @@ namespace _1RM.Utils.KiTTY.Model
 
             #region Default
 
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TerminalType.ToString(), "xterm"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TerminalSpeed.ToString(), "38400,38400"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TerminalModes.ToString(), "INTR=A,QUIT=A,ERASE=A,KILL=A,EOF=A,EOL=A,EOL2=A,START=A,STOP=A,SUSP=A,DSUSP=A,REPRINT=A,WERASE=A,LNEXT=A,FLUSH=A,SWTCH=A,STATUS=A,DISCARD=A,IGNPAR=A,PARMRK=A,INPCK=A,ISTRIP=A,INLCR=A,IGNCR=A,ICRNL=A,IUCLC=A,IXON=A,IXANY=A,IXOFF=A,IMAXBEL=A,ISIG=A,ICANON=A,XCASE=A,ECHO=A,ECHOE=A,ECHOK=A,ECHONL=A,NOFLSH=A,TOSTOP=A,IEXTEN=A,ECHOCTL=A,ECHOKE=A,PENDIN=A,OPOST=A,OLCUC=A,ONLCR=A,OCRNL=A,ONOCR=A,ONLRET=A,CS7=A,CS8=A,PARENB=A,PARODD=A,"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyExcludeList.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyHost.ToString(), "proxy"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyUsername.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyPassword.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyTelnetCommand.ToString(), "connect %host %port\\n"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Environment.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.UserName.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LocalUserName.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Cipher.ToString(), "aes,blowfish,3des,WARN,arcfour,des"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.KEX.ToString(), "dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RekeyBytes.ToString(), "1G"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.GSSLibs.ToString(), "gssapi32,sspi,custom"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.GSSCustom.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LogHost.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PublicKeyFile.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RemoteCommand.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Answerback.ToString(), "PuTTY"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BellWaveFile.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WinTitle.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour0.ToString(), "187,187,187"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour1.ToString(), "255,255,255"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour2.ToString(), "0,0,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour3.ToString(), "85,85,85"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour4.ToString(), "0,0,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour5.ToString(), "0,255,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour6.ToString(), "0,0,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour7.ToString(), "85,85,85"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour8.ToString(), "187,0,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour9.ToString(), "255,85,85"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour10.ToString(), "0,187,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour11.ToString(), "85,255,85"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour12.ToString(), "187,187,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour13.ToString(), "255,255,85"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour14.ToString(), "0,0,187"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour15.ToString(), "85,85,255"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour16.ToString(), "187,0,187"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour17.ToString(), "255,85,255"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour18.ToString(), "0,187,187"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour19.ToString(), "85,255,255"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour20.ToString(), "187,187,187"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Colour21.ToString(), "255,255,255"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness0.ToString(), "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness32.ToString(), "0,1,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness64.ToString(), "1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,2"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness96.ToString(), "1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness128.ToString(), "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness160.ToString(), "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness192.ToString(), "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Wordness224.ToString(), "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LineCodePage.ToString(), "UTF-8"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Printer.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.X11Display.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.X11AuthFile.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PortForwardings.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BoldFont.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WideFont.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WideBoldFont.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialLine.ToString(), "COM1"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WindowClass.ToString(), ""));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Present.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LogType.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LogFlush.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SSHLogOmitPasswords.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SSHLogOmitData.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PortNumber.ToString(), 0x00000016));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CloseOnExit.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WarnOnClose.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PingInterval.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PingIntervalSecs.ToString(), 0x0000003c));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TCPNoDelay.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TCPKeepalives.ToString(), 0x0000001E)); // seconds between keepalives
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AddressFamily.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyDNS.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyLocalhost.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyMethod.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ProxyPort.ToString(), 0x00000050));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.UserNameFromEnvironment.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoPTY.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Compression.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TryAgent.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AgentFwd.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.GssapiFwd.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ChangeUsername.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RekeyTime.ToString(), 0x0000003c));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SshNoAuth.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SshBanner.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AuthTIS.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AuthKI.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AuthGSSAPI.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SshNoShell.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SshProt.ToString(), 0x00000002));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SSH2DES.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RFCEnviron.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PassiveTelnet.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BackspaceIsDelete.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RXVTHomeEnd.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LinuxFunctionKeys.ToString(), 0x00000002));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoApplicationKeys.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoApplicationCursors.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoMouseReporting.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoRemoteResize.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoAltScreen.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoRemoteWinTitle.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RemoteQTitleAction.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoDBackspace.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NoRemoteCharset.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ApplicationCursorKeys.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ApplicationKeypad.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.NetHackKeypad.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AltSpace.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AltOnly.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ComposeKey.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CtrlAltKeys.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TelnetKey.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TelnetRet.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LocalEcho.ToString(), 0x00000002));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LocalEdit.ToString(), 0x00000002));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AlwaysOnTop.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FullScreenOnAltEnter.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.HideMousePtr.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SunkenEdge.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WindowBorder.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CurType.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BlinkCur.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Beep.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BeepInd.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BellOverload.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BellOverloadN.ToString(), 0x00000005));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BellOverloadT.ToString(), 0x000007d0));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BellOverloadS.ToString(), 0x00001388));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollbackLines.ToString(), 0x00002000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.DECOriginMode.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.AutoWrapMode.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LFImpliesCR.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CRImpliesLF.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.DisableArabicShaping.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.DisableBidi.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.WinNameAlways.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TermWidth.ToString(), 0x00000050));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TermHeight.ToString(), 0x00000018));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontIsBold.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontCharSet.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Font.ToString(), "Consolas"));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontHeight.ToString(), 12));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontCharSet.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontQuality.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.FontVTMode.ToString(), 0x00000004));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.UseSystemColours.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.TryPalette.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ANSIColour.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Xterm256Colour.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BoldAsColour.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RawCNP.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.PasteRTF.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.MouseIsXterm.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.MouseOverride.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RectSelect.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CJKAmbigWide.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.UTF8Override.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.CapsLockCyr.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollBar.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollBarFullScreen.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollOnKey.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollOnDisp.ToString(), 0x00000f001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.EraseToScrollback.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LockSize.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BCE.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BlinkText.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.X11Forward.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.X11AuthType.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LocalPortAcceptAll.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.RemotePortAcceptAll.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugIgnore1.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugPlainPW1.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugRSA1.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugIgnore2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugHMAC2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugDeriveKey2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugRSAPad2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugPKSessID2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugRekey2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.BugMaxPkt2.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.StampUtmp.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.LoginShell.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ScrollbarOnLeft.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ShadowBold.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.ShadowBoldOffset.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialSpeed.ToString(), 0x00002580));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialDataBits.ToString(), 0x00000008));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialStopHalfbits.ToString(), 0x00000002));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialParity.ToString(), 0x00000000));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialFlowControl.ToString(), 0x00000001));
-            Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Autocommand.ToString(), ""));
+            Set(EnumKittyConfigKey.TerminalType, "xterm");
+            Set(EnumKittyConfigKey.TerminalSpeed, "38400,38400");
+            Set(EnumKittyConfigKey.TerminalModes, "INTR=A,QUIT=A,ERASE=A,KILL=A,EOF=A,EOL=A,EOL2=A,START=A,STOP=A,SUSP=A,DSUSP=A,REPRINT=A,WERASE=A,LNEXT=A,FLUSH=A,SWTCH=A,STATUS=A,DISCARD=A,IGNPAR=A,PARMRK=A,INPCK=A,ISTRIP=A,INLCR=A,IGNCR=A,ICRNL=A,IUCLC=A,IXON=A,IXANY=A,IXOFF=A,IMAXBEL=A,ISIG=A,ICANON=A,XCASE=A,ECHO=A,ECHOE=A,ECHOK=A,ECHONL=A,NOFLSH=A,TOSTOP=A,IEXTEN=A,ECHOCTL=A,ECHOKE=A,PENDIN=A,OPOST=A,OLCUC=A,ONLCR=A,OCRNL=A,ONOCR=A,ONLRET=A,CS7=A,CS8=A,PARENB=A,PARODD=A,");
+            Set(EnumKittyConfigKey.ProxyExcludeList, "");
+            Set(EnumKittyConfigKey.ProxyHost, "proxy");
+            Set(EnumKittyConfigKey.ProxyUsername, "");
+            Set(EnumKittyConfigKey.ProxyPassword, "");
+            Set(EnumKittyConfigKey.ProxyTelnetCommand, "connect %host %port\\n");
+            Set(EnumKittyConfigKey.Environment, "");
+            Set(EnumKittyConfigKey.UserName, "");
+            Set(EnumKittyConfigKey.LocalUserName, "");
+            Set(EnumKittyConfigKey.Cipher, "aes,blowfish,3des,WARN,arcfour,des");
+            Set(EnumKittyConfigKey.KEX, "dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
+            Set(EnumKittyConfigKey.RekeyBytes, "1G");
+            Set(EnumKittyConfigKey.GSSLibs, "gssapi32,sspi,custom");
+            Set(EnumKittyConfigKey.GSSCustom, "");
+            Set(EnumKittyConfigKey.LogHost, "");
+            Set(EnumKittyConfigKey.PublicKeyFile, "");
+            Set(EnumKittyConfigKey.RemoteCommand, "");
+            Set(EnumKittyConfigKey.Answerback, "PuTTY");
+            Set(EnumKittyConfigKey.BellWaveFile, "");
+            Set(EnumKittyConfigKey.WinTitle, "");
+            Set(EnumKittyConfigKey.Colour0, "187,187,187");
+            Set(EnumKittyConfigKey.Colour1, "255,255,255");
+            Set(EnumKittyConfigKey.Colour2, "0,0,0");
+            Set(EnumKittyConfigKey.Colour3, "85,85,85");
+            Set(EnumKittyConfigKey.Colour4, "0,0,0");
+            Set(EnumKittyConfigKey.Colour5, "0,255,0");
+            Set(EnumKittyConfigKey.Colour6, "0,0,0");
+            Set(EnumKittyConfigKey.Colour7, "85,85,85");
+            Set(EnumKittyConfigKey.Colour8, "187,0,0");
+            Set(EnumKittyConfigKey.Colour9, "255,85,85");
+            Set(EnumKittyConfigKey.Colour10, "0,187,0");
+            Set(EnumKittyConfigKey.Colour11, "85,255,85");
+            Set(EnumKittyConfigKey.Colour12, "187,187,0");
+            Set(EnumKittyConfigKey.Colour13, "255,255,85");
+            Set(EnumKittyConfigKey.Colour14, "0,0,187");
+            Set(EnumKittyConfigKey.Colour15, "85,85,255");
+            Set(EnumKittyConfigKey.Colour16, "187,0,187");
+            Set(EnumKittyConfigKey.Colour17, "255,85,255");
+            Set(EnumKittyConfigKey.Colour18, "0,187,187");
+            Set(EnumKittyConfigKey.Colour19, "85,255,255");
+            Set(EnumKittyConfigKey.Colour20, "187,187,187");
+            Set(EnumKittyConfigKey.Colour21, "255,255,255");
+            Set(EnumKittyConfigKey.Wordness0, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
+            Set(EnumKittyConfigKey.Wordness32, "0,1,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1");
+            Set(EnumKittyConfigKey.Wordness64, "1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,2");
+            Set(EnumKittyConfigKey.Wordness96, "1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1");
+            Set(EnumKittyConfigKey.Wordness128, "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1");
+            Set(EnumKittyConfigKey.Wordness160, "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1");
+            Set(EnumKittyConfigKey.Wordness192, "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2");
+            Set(EnumKittyConfigKey.Wordness224, "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2");
+            Set(EnumKittyConfigKey.LineCodePage, "UTF-8");
+            Set(EnumKittyConfigKey.Printer, "");
+            Set(EnumKittyConfigKey.X11Display, "");
+            Set(EnumKittyConfigKey.X11AuthFile, "");
+            Set(EnumKittyConfigKey.PortForwardings, "");
+            Set(EnumKittyConfigKey.BoldFont, "");
+            Set(EnumKittyConfigKey.WideFont, "");
+            Set(EnumKittyConfigKey.WideBoldFont, "");
+            Set(EnumKittyConfigKey.SerialLine, "COM1");
+            Set(EnumKittyConfigKey.WindowClass, "");
+            Set(EnumKittyConfigKey.Present, 0x00000001);
+            Set(EnumKittyConfigKey.LogType, 0x00000000);
+            Set(EnumKittyConfigKey.LogFlush, 0x00000001);
+            Set(EnumKittyConfigKey.SSHLogOmitPasswords, 0x00000001);
+            Set(EnumKittyConfigKey.SSHLogOmitData, 0x00000000);
+            Set(EnumKittyConfigKey.PortNumber, 0x00000016);
+            Set(EnumKittyConfigKey.CloseOnExit, 0x00000001);
+            Set(EnumKittyConfigKey.WarnOnClose, 0x00000000);
+            Set(EnumKittyConfigKey.PingInterval, 0x00000000);
+            Set(EnumKittyConfigKey.PingIntervalSecs, 0x0000003c);
+            Set(EnumKittyConfigKey.TCPNoDelay, 0x00000001);
+            Set(EnumKittyConfigKey.TCPKeepalives, 0x0000001E); // seconds between keepalives
+            Set(EnumKittyConfigKey.AddressFamily, 0x00000000);
+            Set(EnumKittyConfigKey.ProxyDNS, 0x00000001);
+            Set(EnumKittyConfigKey.ProxyLocalhost, 0x00000000);
+            Set(EnumKittyConfigKey.ProxyMethod, 0x00000000);
+            Set(EnumKittyConfigKey.ProxyPort, 0x00000050);
+            Set(EnumKittyConfigKey.UserNameFromEnvironment, 0x00000000);
+            Set(EnumKittyConfigKey.NoPTY, 0x00000000);
+            Set(EnumKittyConfigKey.Compression, 0x00000001);
+            Set(EnumKittyConfigKey.TryAgent, 0x00000001);
+            Set(EnumKittyConfigKey.AgentFwd, 0x00000000);
+            Set(EnumKittyConfigKey.GssapiFwd, 0x00000000);
+            Set(EnumKittyConfigKey.ChangeUsername, 0x00000000);
+            Set(EnumKittyConfigKey.RekeyTime, 0x0000003c);
+            Set(EnumKittyConfigKey.SshNoAuth, 0x00000000);
+            Set(EnumKittyConfigKey.SshBanner, 0x00000001);
+            Set(EnumKittyConfigKey.AuthTIS, 0x00000000);
+            Set(EnumKittyConfigKey.AuthKI, 0x00000001);
+            Set(EnumKittyConfigKey.AuthGSSAPI, 0x00000001);
+            Set(EnumKittyConfigKey.SshNoShell, 0x00000000);
+            Set(EnumKittyConfigKey.SshProt, 0x00000002);
+            Set(EnumKittyConfigKey.SSH2DES, 0x00000000);
+            Set(EnumKittyConfigKey.RFCEnviron, 0x00000000);
+            Set(EnumKittyConfigKey.PassiveTelnet, 0x00000000);
+            Set(EnumKittyConfigKey.BackspaceIsDelete, 0x00000001);
+            Set(EnumKittyConfigKey.RXVTHomeEnd, 0x00000000);
+            Set(EnumKittyConfigKey.LinuxFunctionKeys, 0x00000002);
+            Set(EnumKittyConfigKey.NoApplicationKeys, 0x00000000);
+            Set(EnumKittyConfigKey.NoApplicationCursors, 0x00000000);
+            Set(EnumKittyConfigKey.NoMouseReporting, 0x00000000);
+            Set(EnumKittyConfigKey.NoRemoteResize, 0x00000001);
+            Set(EnumKittyConfigKey.NoAltScreen, 0x00000000);
+            Set(EnumKittyConfigKey.NoRemoteWinTitle, 0x00000000);
+            Set(EnumKittyConfigKey.RemoteQTitleAction, 0x00000001);
+            Set(EnumKittyConfigKey.NoDBackspace, 0x00000000);
+            Set(EnumKittyConfigKey.NoRemoteCharset, 0x00000000);
+            Set(EnumKittyConfigKey.ApplicationCursorKeys, 0x00000000);
+            Set(EnumKittyConfigKey.ApplicationKeypad, 0x00000000);
+            Set(EnumKittyConfigKey.NetHackKeypad, 0x00000000);
+            Set(EnumKittyConfigKey.AltSpace, 0x00000000);
+            Set(EnumKittyConfigKey.AltOnly, 0x00000000);
+            Set(EnumKittyConfigKey.ComposeKey, 0x00000000);
+            Set(EnumKittyConfigKey.CtrlAltKeys, 0x00000001);
+            Set(EnumKittyConfigKey.TelnetKey, 0x00000000);
+            Set(EnumKittyConfigKey.TelnetRet, 0x00000001);
+            Set(EnumKittyConfigKey.LocalEcho, 0x00000002);
+            Set(EnumKittyConfigKey.LocalEdit, 0x00000002);
+            Set(EnumKittyConfigKey.AlwaysOnTop, 0x00000000);
+            Set(EnumKittyConfigKey.FullScreenOnAltEnter, 0x00000000);
+            Set(EnumKittyConfigKey.HideMousePtr, 0x00000000);
+            Set(EnumKittyConfigKey.SunkenEdge, 0x00000000);
+            Set(EnumKittyConfigKey.WindowBorder, 0x00000000);
+            Set(EnumKittyConfigKey.CurType, 0x00000000);
+            Set(EnumKittyConfigKey.BlinkCur, 0x00000000);
+            Set(EnumKittyConfigKey.Beep, 0x00000001);
+            Set(EnumKittyConfigKey.BeepInd, 0x00000000);
+            Set(EnumKittyConfigKey.BellOverload, 0x00000001);
+            Set(EnumKittyConfigKey.BellOverloadN, 0x00000005);
+            Set(EnumKittyConfigKey.BellOverloadT, 0x000007d0);
+            Set(EnumKittyConfigKey.BellOverloadS, 0x00001388);
+            Set(EnumKittyConfigKey.ScrollbackLines, 0x00002000);
+            Set(EnumKittyConfigKey.DECOriginMode, 0x00000000);
+            Set(EnumKittyConfigKey.AutoWrapMode, 0x00000001);
+            Set(EnumKittyConfigKey.LFImpliesCR, 0x00000000);
+            Set(EnumKittyConfigKey.CRImpliesLF, 0x00000000);
+            Set(EnumKittyConfigKey.DisableArabicShaping, 0x00000000);
+            Set(EnumKittyConfigKey.DisableBidi, 0x00000000);
+            Set(EnumKittyConfigKey.WinNameAlways, 0x00000001);
+            Set(EnumKittyConfigKey.TermWidth, 0x00000050);
+            Set(EnumKittyConfigKey.TermHeight, 0x00000018);
+            Set(EnumKittyConfigKey.FontIsBold, 0x00000000);
+            Set(EnumKittyConfigKey.FontCharSet, 0x00000000);
+            Set(EnumKittyConfigKey.Font, "Consolas");
+            Set(EnumKittyConfigKey.FontHeight, 12);
+            Set(EnumKittyConfigKey.FontCharSet, 0x00000000);
+            Set(EnumKittyConfigKey.FontQuality, 0x00000000);
+            Set(EnumKittyConfigKey.FontVTMode, 0x00000004);
+            Set(EnumKittyConfigKey.UseSystemColours, 0x00000000);
+            Set(EnumKittyConfigKey.TryPalette, 0x00000000);
+            Set(EnumKittyConfigKey.ANSIColour, 0x00000001);
+            Set(EnumKittyConfigKey.Xterm256Colour, 0x00000001);
+            Set(EnumKittyConfigKey.BoldAsColour, 0x00000001);
+            Set(EnumKittyConfigKey.RawCNP, 0x00000000);
+            Set(EnumKittyConfigKey.PasteRTF, 0x00000000);
+            Set(EnumKittyConfigKey.MouseIsXterm, 0x00000000);
+            Set(EnumKittyConfigKey.MouseOverride, 0x00000001);
+            Set(EnumKittyConfigKey.RectSelect, 0x00000000);
+            Set(EnumKittyConfigKey.CJKAmbigWide, 0x00000000);
+            Set(EnumKittyConfigKey.UTF8Override, 0x00000001);
+            Set(EnumKittyConfigKey.CapsLockCyr, 0x00000000);
+            Set(EnumKittyConfigKey.ScrollBar, 0x00000000);
+            Set(EnumKittyConfigKey.ScrollBarFullScreen, 0x00000000);
+            Set(EnumKittyConfigKey.ScrollOnKey, 0x00000000);
+            Set(EnumKittyConfigKey.ScrollOnDisp, 0x00000f001);
+            Set(EnumKittyConfigKey.EraseToScrollback, 0x00000001);
+            Set(EnumKittyConfigKey.LockSize, 0x00000000);
+            Set(EnumKittyConfigKey.BCE, 0x00000001);
+            Set(EnumKittyConfigKey.BlinkText, 0x00000000);
+            Set(EnumKittyConfigKey.X11Forward, 0x00000000);
+            Set(EnumKittyConfigKey.X11AuthType, 0x00000001);
+            Set(EnumKittyConfigKey.LocalPortAcceptAll, 0x00000000);
+            Set(EnumKittyConfigKey.RemotePortAcceptAll, 0x00000000);
+            Set(EnumKittyConfigKey.BugIgnore1, 0x00000000);
+            Set(EnumKittyConfigKey.BugPlainPW1, 0x00000000);
+            Set(EnumKittyConfigKey.BugRSA1, 0x00000000);
+            Set(EnumKittyConfigKey.BugIgnore2, 0x00000000);
+            Set(EnumKittyConfigKey.BugHMAC2, 0x00000000);
+            Set(EnumKittyConfigKey.BugDeriveKey2, 0x00000000);
+            Set(EnumKittyConfigKey.BugRSAPad2, 0x00000000);
+            Set(EnumKittyConfigKey.BugPKSessID2, 0x00000000);
+            Set(EnumKittyConfigKey.BugRekey2, 0x00000000);
+            Set(EnumKittyConfigKey.BugMaxPkt2, 0x00000000);
+            Set(EnumKittyConfigKey.StampUtmp, 0x00000001);
+            Set(EnumKittyConfigKey.LoginShell, 0x00000001);
+            Set(EnumKittyConfigKey.ScrollbarOnLeft, 0x00000000);
+            Set(EnumKittyConfigKey.ShadowBold, 0x00000000);
+            Set(EnumKittyConfigKey.ShadowBoldOffset, 0x00000001);
+            Set(EnumKittyConfigKey.SerialSpeed, 0x00002580);
+            Set(EnumKittyConfigKey.SerialDataBits, 0x00000008);
+            Set(EnumKittyConfigKey.SerialStopHalfbits, 0x00000002);
+            Set(EnumKittyConfigKey.SerialParity, 0x00000000);
+            Set(EnumKittyConfigKey.SerialFlowControl, 0x00000001);
+            Set(EnumKittyConfigKey.Autocommand, "");
 
             #endregion Default
         }
