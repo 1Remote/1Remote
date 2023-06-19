@@ -23,7 +23,6 @@ using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
-using _1RM.View.Settings;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils;

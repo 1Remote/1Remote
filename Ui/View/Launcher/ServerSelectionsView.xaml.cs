@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using _1RM.Model;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
@@ -128,7 +117,7 @@ namespace _1RM.View.Launcher
                             {
                                 if (tb.CaretIndex == tb.Text.Length)
                                 {
-                                    ShowActionsList();
+                                    ShowActionsList(vm.SelectedItem ?? vm.VmServerList[vm.SelectedIndex]);
                                     return;
                                 }
                             }
@@ -166,18 +155,6 @@ namespace _1RM.View.Launcher
         }
 
 
-
-        private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
-            // 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
-            if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is ListBoxItem { Content: ProtocolBaseViewModel baseViewModel })
-            {
-                ShowActionsList(baseViewModel);
-            }
-        }
-
-
         private void ListBoxActions_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             HideActionsList();
@@ -208,21 +185,12 @@ namespace _1RM.View.Launcher
 
 
 
-        public void ShowActionsList(ProtocolBaseViewModel? protocol = null)
+        public void ShowActionsList(ProtocolBaseViewModel protocol)
         {
             if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
             if (this.DataContext is not ServerSelectionsViewModel vm) return;
 
-            if (protocol == null)
-            {
-                if (vm.SelectedIndex < 0
-                    || vm.SelectedIndex >= vm.VmServerList.Count)
-                {
-                    return;
-                }
-                protocol = vm.VmServerList[vm.SelectedIndex];
-            }
-
+            vm.SelectedIndex = vm.VmServerList.IndexOf(protocol);
             vm.Actions = new ObservableCollection<ProtocolAction>(protocol.GetActions());
             vm.SelectedActionIndex = 0;
 
@@ -276,14 +244,6 @@ namespace _1RM.View.Launcher
             vm.SelectedIndex = index;
         }
 
-        private void ListBoxSelections_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
-            if (this.DataContext is not ServerSelectionsViewModel vm) return;
-
-            if (e.ClickCount == 2)
-                OpenSessionAndHide();
-        }
 
         private void ButtonShowNote_OnClick(object sender, RoutedEventArgs e)
         {
@@ -299,6 +259,29 @@ namespace _1RM.View.Launcher
                 }
             }
             vm.CmdShowNoteField.Execute();
+        }
+
+
+        private void ListBoxSelections_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
+            if (this.DataContext is not ServerSelectionsViewModel vm) return;
+
+            if (e.ClickCount == 2)
+                OpenSessionAndHide();
+        }
+
+
+
+        private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
+            // 鼠标右键打开菜单时，SelectedIndex 还未改变，打开的菜单实际是上一个选中项目的菜单，可以通过listbox item 中绑定右键action来修复，也可以向上搜索虚拟树找到右键时所选的项
+            if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is ListBoxItem { Content: ProtocolBaseViewModel baseViewModel })
+            {
+                ShowActionsList(baseViewModel);
+                e.Handled = true;
+            }
         }
     }
 }
