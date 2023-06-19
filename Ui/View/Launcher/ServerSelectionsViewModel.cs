@@ -100,6 +100,13 @@ namespace _1RM.View.Launcher
                 {
                     RaisePropertyChanged(nameof(SelectedItem));
                     CalcNoteFieldVisibility();
+                    if (this.View is ServerSelectionsView view)
+                    {
+                        Execute.OnUIThreadSync(() =>
+                        {
+                            view.ListBoxSelections.ScrollIntoView(view.ListBoxSelections.SelectedItem);
+                        });
+                    }
                 }
             }
         }
@@ -424,5 +431,23 @@ namespace _1RM.View.Launcher
         }
 
         #endregion
+
+
+
+
+        private RelayCommand? _cmdShowActionsList;
+        public RelayCommand CmdShowActionsList
+        {
+            get
+            {
+                return _cmdShowActionsList ??= new RelayCommand((o) =>
+                {
+                    if (this.View is ServerSelectionsView view && o is ProtocolBaseViewModel p)
+                    {
+                        view.ShowActionsList(p);
+                    }
+                });
+            }
+        }
     }
 }

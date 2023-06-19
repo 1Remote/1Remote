@@ -77,13 +77,8 @@ namespace _1RM.Service
             }
         }
 
-        public void ReloadTaskTrayContextMenuIfConnectionStart()
-        {
-            if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray)
-                ReloadTaskTrayContextMenu();
-        }
 
-        private void ReloadTaskTrayContextMenu()
+        public void ReloadTaskTrayContextMenu()
         {
             Execute.OnUIThreadSync(() =>
             {

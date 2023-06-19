@@ -323,13 +323,16 @@ namespace _1RM
                         }
                         else
                         {
-                            MaskLayerController.ShowProcessingRing();
+                            MaskLayerController.ShowProcessingRing("", IoC.Get<MainWindowViewModel>());
                         }
                     };
                 }
                 IoC.Get<MainWindowViewModel>().ShowMe();
             }
-
+            else
+            {
+                MaskLayerController.ShowProcessingRing("", IoC.Get<MainWindowViewModel>());
+            }
 
             Task.Factory.StartNew(() =>
             {
@@ -343,9 +346,11 @@ namespace _1RM
                             IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
                         })).ToArray());
                 IoC.Get<GlobalData>().ReloadServerList(true);
-                MaskLayerController.HideMask();
+                MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
                 DataIsLoaded = true;
                 AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
+                if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
+                    IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
             });
         }
     }
