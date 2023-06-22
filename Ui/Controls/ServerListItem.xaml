@@ -86,7 +86,7 @@
                 </Grid>
 
                 <!--display name-->
-                <Grid Grid.Column="3" ToolTip="{Binding Tags}" Background="Transparent">
+                <Grid Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent">
                     <TextBlock Margin="5 0 10 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
                 </Grid>
 

@@ -88,12 +88,21 @@ namespace _1RM.View
             {
                 ServerSelectionsViewVisibility = Visibility.Visible;
                 ReSetWindowHeight();
+            }
+        }
 
-                SetHotKey(_configurationService.Launcher.LauncherEnabled,
-                    _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey);
-                window.Deactivated += (s, a) => { HideMe(); };
-                window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
-                ServerSelectionsViewModel.CalcNoteFieldVisibility();
+        public void SetHotKey()
+        {
+            if (this.View is LauncherWindowView { IsClosing: false } window)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    SetHotKey(_configurationService.Launcher.LauncherEnabled,
+                        _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey);
+                    window.Deactivated += (s, a) => { HideMe(); };
+                    window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
+                    ServerSelectionsViewModel.CalcNoteFieldVisibility();
+                });
             }
         }
 

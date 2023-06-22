@@ -145,7 +145,6 @@ namespace _1RM.Service
 
             // OPEN SERVER CONNECTION
             var servers = new List<ProtocolBase>();
-            var from = new List<string>();
             foreach (var arg in args)
             {
                 if (arg.StartsWith("#"))
@@ -158,7 +157,6 @@ namespace _1RM.Service
                             && servers.Contains(server.Server) == false)
                         {
                             servers.Add(server.Server);
-                            from.Add("CLI tag");
                         }
                     }
                 }
@@ -169,7 +167,6 @@ namespace _1RM.Service
                     if (server != null && servers.Contains(server.Server) == false)
                     {
                         servers.Add(server.Server);
-                        from.Add("CLI id");
                     }
                 }
                 else
@@ -180,17 +177,12 @@ namespace _1RM.Service
                         if (servers.Contains(server.Server) == false)
                         {
                             servers.Add(server.Server);
-                            from.Add("CLI name");
                         }
                     }
                 }
             }
 
-            for (var i = 0; i < servers.Count; i++)
-            {
-                GlobalEventHelper.OnRequestServerConnect?.Invoke(servers[i], fromView: from[i]);
-                Thread.Sleep(100);
-            }
+            GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
         }
 
         private static void InstallDesktopShortcut(bool isInstall)

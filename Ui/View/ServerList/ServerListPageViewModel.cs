@@ -760,16 +760,8 @@ namespace _1RM.View.ServerList
             {
                 return _cmdConnectSelected ??= new RelayCommand((o) =>
                 {
-                    var selected = VmServerList.Where(x => x.IsSelected == true).ToArray();
-                    string token = "";
-                    // set tab token, show in new tab
-                    if (selected.Length > 1)
-                        token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in VmServerList.Where(x => x.IsSelected == true).ToArray())
-                    {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
-                        Thread.Sleep(50);
-                    }
+                    var selected = VmServerList.Where(x => x.IsSelected == true).Select(x=>x.Server).ToArray();
+                    GlobalEventHelper.OnRequestServersConnect?.Invoke(selected, fromView: $"{nameof(MainWindowView)}");
                 });
             }
         }

@@ -18,6 +18,8 @@ namespace _1RM.Model
         /// </summary>
         public static OnRequestServerConnectDelegate? OnRequestServerConnect { get; set; } = null;
 
+        public delegate void OnRequestServersConnectDelegate(IEnumerable<ProtocolBase> server, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "");
+        public static OnRequestServersConnectDelegate? OnRequestServersConnect { get; set; } = null;
 
         /// <summary>
         /// Go to server edit by server id, if id == 0 goto add page
