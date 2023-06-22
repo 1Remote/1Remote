@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace _1RM.Service
             _appData = appData;
             GlobalEventHelper.OnRequestServerConnect += this.OnRequestOpenConnection;
             GlobalEventHelper.OnRequestQuickConnect += this.OnRequestOpenConnection;
+            GlobalEventHelper.OnRequestServersConnect += this.OnRequestOpenConnection;
         }
 
         public void Release()
@@ -69,11 +71,11 @@ namespace _1RM.Service
             // if server == null, then start multiple sessions
             if (serverOrg == null)
             {
-                var list = _appData.VmItemList.Where(x => x.IsSelected).ToArray();
-                foreach (var item in list)
-                {
-                    this.OnRequestOpenConnection(item.Server, assignTabToken, assignRunnerName, fromView);
-                }
+                var list = _appData.VmItemList
+                    .Where(x => x.IsSelected)
+                    .Select(x => x.Server)
+                    .ToArray();
+                OnRequestOpenConnection(list, in fromView, in assignTabToken, in assignRunnerName, in assignCredentialName);
                 MsAppCenterHelper.TraceSessionOpen($"multiple sessions ({((list.Length >= 5) ? ">=5" : list.Length.ToString())})", fromView);
                 return;
             }
@@ -91,6 +93,28 @@ namespace _1RM.Service
             Task.Factory.StartNew(() =>
             {
                 Connect(org, view, tabToken, runnerName, credentialName);
+            }).ContinueWith(t =>
+            {
+                if (t.Exception != null)
+                {
+                    SimpleLogHelper.Fatal(t.Exception);
+                }
+            });
+        }
+
+        private void OnRequestOpenConnection(IEnumerable<ProtocolBase> protocolBases, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
+        {
+            CleanupProtocolsAndWindows();
+            var view = fromView;
+            var tabToken = assignTabToken;
+            var runnerName = assignRunnerName;
+            var credentialName = assignCredentialName;
+            Task.Factory.StartNew(() =>
+            {
+                foreach (var org in protocolBases)
+                {
+                    Connect(org, view, tabToken, runnerName, credentialName);
+                }
             }).ContinueWith(t =>
             {
                 if (t.Exception != null)

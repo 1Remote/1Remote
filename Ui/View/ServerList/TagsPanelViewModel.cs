@@ -191,15 +191,11 @@ namespace _1RM.View.ServerList
                     var tagName = GetTagNameFromObject(o);
                     if (string.IsNullOrEmpty(tagName) || !LocalityTagService.TagDict.ContainsKey(tagName))
                         return;
-
-                    foreach (var vmProtocolServer in IoC.Get<GlobalData>().VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}");
-                            Thread.Sleep(100);
-                        }
-                    }
+                    var servers = IoC.Get<GlobalData>().VmItemList
+                        .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                        .Select(x => x.Server)
+                        .ToArray();
+                    GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: $"{nameof(MainWindowView)}");
                 });
             }
         }
@@ -218,14 +214,11 @@ namespace _1RM.View.ServerList
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in IoC.Get<GlobalData>().VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Contains(tagName))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Server, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
-                            Thread.Sleep(100);
-                        }
-                    }
+                    var servers = IoC.Get<GlobalData>().VmItemList
+                        .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                        .Select(x => x.Server)
+                        .ToArray();
+                    GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: $"{nameof(MainWindowView)}", assignTabToken: token);
                 });
             }
         }

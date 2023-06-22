@@ -67,7 +67,7 @@ namespace _1RM.Model
                     foreach (var runner in protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
-                        if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
+                        if (runner is ExternalRunner { IsExeExisted: false }) continue;
                         actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (via {runner.Name})", () =>
                         {
                             GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - {runner.Name}", assignRunnerName: runner.Name);

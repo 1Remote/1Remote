@@ -351,6 +351,7 @@ namespace _1RM
                 AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
                 if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
                     IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+                IoC.Get<LauncherWindowViewModel>().SetHotKey();
             });
         }
     }
