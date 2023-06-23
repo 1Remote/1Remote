@@ -23,18 +23,20 @@ namespace _1RM
 #if FOR_MICROSOFT_STORE_ONLY
             // see: https://stackoverflow.com/questions/57755792/how-can-i-handle-file-activation-from-a-wpf-app-which-is-running-as-uwp
             var aea = Windows.ApplicationModel.AppInstance.GetActivatedEventArgs();
-            argss.Append(aea?.Kind.ToString());
+            argss.Add(aea?.Kind.ToString() ?? "");
             if (aea?.Kind == ActivationKind.StartupTask)
             {
                 // ref: https://blogs.windows.com/windowsdeveloper/2017/08/01/configure-app-start-log/
                 // If your app is enabled for startup activation, you should handle this case in your
                 // App class by overriding the OnActivated method.Check the IActivatedEventArgs.Kind
                 // to see if it is ActivationKind.StartupTask, and if so, case the IActivatedEventArgs
-                // to a StartupTaskActivatedEventArgs.From this, you can retrieve the TaskId, should
-                // you need it.
-                argss.Append(AppStartupHelper.APP_START_MINIMIZED);
+                // to a StartupTaskActivatedEventArgs.
+                argss.Add(AppStartupHelper.APP_START_MINIMIZED);
             }
 #if DEV
+            string kind = aea?.Kind.ToString() ?? "null";
+            if (File.Exists(@"D:\1remtoe_arg_Kind.txt")) kind = File.ReadAllText(@"D:\1remtoe_arg_Kind.txt") + "\r\n" + kind;
+            File.WriteAllText(@"D:\1remtoe_arg_Kind.txt", kind);
             if (File.Exists(@"D:\1remtoe_arg_data.txt")) File.Delete(@"D:\1remtoe_arg_data.txt");
             File.WriteAllText(@"D:\1remtoe_arg_data.txt", string.Join("\r\n", argss));
 #endif

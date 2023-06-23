@@ -297,7 +297,7 @@ namespace _1RM
 
             KittyConfig.CleanUpOldConfig();
 
-
+            var mvm = IoC.Get<MainWindowViewModel>();
             if (AppStartupHelper.IsStartMinimized == false
                 || _localDataConnectionStatus != EnumDatabaseStatus.OK
                 || _isNewUser)
@@ -305,54 +305,51 @@ namespace _1RM
                 if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
                 {
                     string error = _localDataConnectionStatus.GetErrorInfo();
-                    IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
+                    mvm.OnMainWindowViewLoaded += () =>
                     {
-                        IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.SettingsData);
+                        mvm.ShowMe(goPage: EnumMainWindowPage.SettingsData);
                         MessageBoxHelper.ErrorAlert(error);
                     };
                 }
                 else
                 {
-                    IoC.Get<MainWindowViewModel>().OnMainWindowViewLoaded += () =>
+                    mvm.OnMainWindowViewLoaded += () =>
                     {
-                        IoC.Get<MainWindowViewModel>().ShowMe(goPage: EnumMainWindowPage.List);
+                        mvm.ShowMe(goPage: EnumMainWindowPage.List);
                         if (_isNewUser)
                         {
                             // import form PRemoteM db
                             PRemoteMTransferHelper.TransAsync();
                         }
-                        else
-                        {
-                            MaskLayerController.ShowProcessingRing("", IoC.Get<MainWindowViewModel>());
-                        }
                     };
                 }
-                IoC.Get<MainWindowViewModel>().ShowMe();
+                mvm.ShowMe();
             }
-            else
+            
+            if(_isNewUser == false)
             {
-                MaskLayerController.ShowProcessingRing("", IoC.Get<MainWindowViewModel>());
+                MaskLayerController.ShowProcessingRing("", mvm);
+                Task.Factory.StartNew(() =>
+                {
+                    //// read from primary database
+                    //IoC.Get<GlobalData>().ReloadServerList(true);
+                    // read from AdditionalDataSource async
+                    if (ConfigurationServiceObj!.AdditionalDataSource.Any())
+                        Task.WaitAll(ConfigurationServiceObj!.AdditionalDataSource.Select(config =>
+                            Task.Factory.StartNew(() =>
+                            {
+                                IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
+                            })).ToArray());
+                    IoC.Get<GlobalData>().ReloadServerList(true);
+                    MaskLayerController.HideMask(mvm);
+                    DataIsLoaded = true;
+                    AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
+                    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
+                        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+                    IoC.Get<LauncherWindowViewModel>().SetHotKey();
+                });
             }
 
-            Task.Factory.StartNew(() =>
-            {
-                //// read from primary database
-                //IoC.Get<GlobalData>().ReloadServerList(true);
-                // read from AdditionalDataSource async
-                if (ConfigurationServiceObj!.AdditionalDataSource.Any())
-                    Task.WaitAll(ConfigurationServiceObj!.AdditionalDataSource.Select(config =>
-                        Task.Factory.StartNew(() =>
-                        {
-                            IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
-                        })).ToArray());
-                IoC.Get<GlobalData>().ReloadServerList(true);
-                MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
-                DataIsLoaded = true;
-                AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
-                if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
-                    IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
-                IoC.Get<LauncherWindowViewModel>().SetHotKey();
-            });
         }
     }
 }
