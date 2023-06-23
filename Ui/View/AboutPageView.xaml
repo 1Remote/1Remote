@@ -85,7 +85,7 @@
                                         <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="Version"></TextBlock>
-                                    <TextBlock Grid.Column="1"  Name="TbVersion" Text="{Binding CurrentVersion}" Margin="0"></TextBlock>
+                                    <TextBlock Grid.Column="1" Name="TbVersion" Text="{Binding CurrentVersion}" Margin="0" ToolTip="{x:Static Rm:AppVersion.BuildDate}"></TextBlock>
                                 </Grid>
                                 <Grid>
                                     <Grid.Style>
@@ -145,9 +145,6 @@
                         <StackPanel Orientation="Vertical" Margin="20 0 0 0">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support" Background="Transparent">
-                                    <!--<TextBlock.InputBindings>
-                                        <MouseBinding Gesture="Control+WheelClick" Command="{Binding CmdConsoleToggle}"></MouseBinding>
-                                    </TextBlock.InputBindings>-->
                                 </TextBlock>
                                 <StackPanel>
                                     <Grid Style="{StaticResource RowGrid}">

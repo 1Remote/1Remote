@@ -19,7 +19,8 @@ if (!(Test-Path -Path $filePath -PathType Leaf)) {
     exit 2
 }
 
-$time = Get-Date -Format 'yyMMddHHmm'
+$time = Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffzzz'
+$time = "Built at: $time"
 $target = "public const string BuildDate = .*;"
 $newVersion = "public const string BuildDate = """ + $time + """;"
 $newVersion2 = "public const string BuildDate = """";"

@@ -145,17 +145,5 @@ namespace _1RM.View
                 });
             }
         }
-
-        private RelayCommand? _cmdConsoleToggle;
-        public RelayCommand CmdConsoleToggle
-        {
-            get
-            {
-                return _cmdConsoleToggle ??= new RelayCommand((o) =>
-                {
-                    ConsoleManager.Toggle();
-                });
-            }
-        }
     }
 }
