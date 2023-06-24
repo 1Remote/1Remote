@@ -94,7 +94,6 @@
     <s:String x:Key="Toggle Cards/List">カード/リストの切り替え</s:String>
     <s:String x:Key="system_options_general_title">全般的</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">OS起動時に自動実行</s:String>
-    <s:String x:Key="system_options_general_start_minimized">最小化して開始</s:String>
     <s:String x:Key="Confirm before closing">閉店前に確認</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">ログファイル</s:String>

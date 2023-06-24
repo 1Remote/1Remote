@@ -181,7 +181,6 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdCancel ??= new RelayCommand((o) =>
                 {
-                    New.Database_CloseConnection();
                     this.RequestClose(false);
                 }, o => OrgSqliteConfig == null);
             }

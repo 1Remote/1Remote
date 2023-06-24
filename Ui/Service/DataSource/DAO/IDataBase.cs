@@ -197,7 +197,7 @@ namespace _1RM.Service.DataSource.DAO
     {
         public static string GetSqliteConnectionString(string dbPath)
         {
-            return $"Data Source={dbPath};";
+            return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
         }
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
         {

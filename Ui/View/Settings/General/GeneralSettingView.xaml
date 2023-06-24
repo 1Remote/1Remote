@@ -72,7 +72,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Startup}"></TextBlock>
-                <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource 'Run automatically at OS startup'}" VerticalAlignment="Center"></CheckBox>
             </Grid>
 
             <Grid Style="{StaticResource GridOneRow}" Margin="0">

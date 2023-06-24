@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
-using _1RM.Utils;
 using _1RM.View;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -225,6 +224,7 @@ namespace _1RM.Service.DataSource.Model
                 MarkAsNeedRead();
             }
             SetStatus(true);
+            dataBase.CloseConnection();
             return Status;
         }
 
