@@ -73,7 +73,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
-                                       Text="{DynamicResource system_options_general_start_when_win_login}">
+                                       Text="{DynamicResource 'Run automatically at OS startup'}">
                     </TextBlock>
                     <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
                 </Grid>

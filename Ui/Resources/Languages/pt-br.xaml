@@ -93,8 +93,7 @@
     <s:String x:Key="host_reconecting_info">Reconectando...</s:String>
     <s:String x:Key="Toggle Cards/List">Alternar Cartões/Lista</s:String>
     <s:String x:Key="system_options_general_title">Geral</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">Executar automaticamente na inicialização do SO</s:String>
-    <s:String x:Key="system_options_general_start_minimized">Iniciar minimizado</s:String>
+    <s:String x:Key="system_options_general_start_when_win_login">Executar automaticamente na inicialização do SO(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirme antes de fechar</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Arquivo de LOG</s:String>

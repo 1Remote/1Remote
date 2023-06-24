@@ -93,8 +93,7 @@
     <s:String x:Key="host_reconecting_info">Opětovné připojování…</s:String>
     <s:String x:Key="Toggle Cards/List">Přepnout mezi kartami/seznamem</s:String>
     <s:String x:Key="system_options_general_title">Obecné</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">Spouštět automaticky při přihlášení do systému</s:String>
-    <s:String x:Key="system_options_general_start_minimized">Spouštět minimalizované</s:String>
+    <s:String x:Key="system_options_general_start_when_win_login">Spouštět automaticky při přihlášení do systému(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Zavírat až po potvrzení</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Soubor se záznamem událostí</s:String>

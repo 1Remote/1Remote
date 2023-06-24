@@ -78,7 +78,7 @@ namespace _1RM.View.Settings.DataSource
                         case "sqlite":
                             {
                                 var vm = new SqliteSettingViewModel(this);
-                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true) != true)
+                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true, ownerViewModel: IoC.Get<MainWindowViewModel>()) != true)
                                     return;
                                 dataSource = vm.New;
                                 break;
@@ -86,7 +86,7 @@ namespace _1RM.View.Settings.DataSource
                         case "mysql":
                             {
                                 var vm = new MysqlSettingViewModel(this);
-                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true) != true)
+                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true, ownerViewModel: IoC.Get<MainWindowViewModel>()) != true)
                                     return;
                                 dataSource = vm.New;
                                 break;

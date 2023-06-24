@@ -161,7 +161,6 @@
 		<PackageReference Include="FluentFTP" Version="37.0.2" />
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.7" PrivateAssets="none" />
 		<PackageReference Include="MySql.Data" Version="8.0.30" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
@@ -169,6 +168,7 @@
 		<PackageReference Include="NUlid" Version="1.7.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />
 		<PackageReference Include="Stylet" Version="1.3.6" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
 		<PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
 		<PackageReference Include="VariableKeywordMatcherIn1" Version="1.0.11" />
 		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
