@@ -496,30 +496,4 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot; -isRevert&#xD;&#xA;powershell.exe ..\scripts\Set-BuildDate.ps1 -filePath .\Ui\AppVersion.cs -isRevert" />
 	</Target>
-
-	<ItemGroup>
-	  <Content Remove="C:\Users\Shawn\.nuget\packages\stub.system.data.sqlite.core.netframework\1.0.117\buildTransitive\net46\..\..\build\net46\x64\SQLite.Interop.dll" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Remove="C:\Users\Shawn\.nuget\packages\stub.system.data.sqlite.core.netframework\1.0.117\buildTransitive\net46\..\..\build\net46\x86\SQLite.Interop.dll" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="E:\NuGetCached\packages\sqlitepclraw.lib.e_sqlite3\2.1.0\buildTransitive\net461\..\..\runtimes\win-arm\native\e_sqlite3.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="E:\NuGetCached\packages\sqlitepclraw.lib.e_sqlite3\2.1.0\buildTransitive\net461\..\..\runtimes\win-x64\native\e_sqlite3.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="E:\NuGetCached\packages\sqlitepclraw.lib.e_sqlite3\2.1.0\buildTransitive\net461\..\..\runtimes\win-x86\native\e_sqlite3.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
 </Project>

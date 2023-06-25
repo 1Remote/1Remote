@@ -145,7 +145,7 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
+        private string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
         {
             var tab = this.GetOrCreateTabWindow(assignTabToken);
             var host = runner.GetHost(protocol, tab);
@@ -168,14 +168,16 @@ namespace _1RM.Service
                 tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
                 tab.Activate();
             });
+            return tab.Token;
         }
         #endregion
 
-        private async void Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
+        private async Task<string> Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
         {
+            string tabToken = "";
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(protocol))
-                return;
+                return tabToken;
 
             #region prepare
 
@@ -207,7 +209,7 @@ namespace _1RM.Service
                 var c = await GetCredential(p, assignCredentialName);
                 if (c == null)
                 {
-                    return;
+                    return tabToken;
                 }
                 p.SetCredential(c);
             }
@@ -218,7 +220,7 @@ namespace _1RM.Service
                 if (0 != code)
                 {
                     MessageBoxHelper.ErrorAlert($"Script ExitCode = {code}, connection abort!");
-                    return;
+                    return tabToken;
                 }
             }
 
@@ -226,20 +228,20 @@ namespace _1RM.Service
             if (protocolClone is RdpApp rdpApp)
             {
                 ConnectRemoteApp(rdpApp);
-                return;
+                return tabToken;
             }
             else if (protocolClone is RDP rdp)
             {
                 if (rdp.IsNeedRunWithMstsc())
                 {
                     ConnectRdpByMstsc(rdp);
-                    return;
+                    return tabToken;
                 }
                 // rdp full screen
                 if (protocolClone.IsThisTimeConnWithFullScreen())
                 {
                     this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
-                    return;
+                    return tabToken;
                 }
             }
             else if (protocolClone is SSH { OpenSftpOnConnected: true } ssh)
@@ -257,7 +259,7 @@ namespace _1RM.Service
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
-                this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
+                assignTabToken = this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
             else if (protocolClone is LocalApp { RunWithHosting: false } localApp)
             {
@@ -266,7 +268,7 @@ namespace _1RM.Service
                 {
                     Process.Start(tmp.Item2, localApp.Arguments);
                 }
-                return;
+                return tabToken;
             }
 
 
@@ -277,8 +279,10 @@ namespace _1RM.Service
             }
             else
             {
-                ConnectWithTab(protocolClone, runner, assignTabToken);
+                tabToken = ConnectWithTab(protocolClone, runner, assignTabToken);
             }
+
+            return tabToken;
         }
     }
 }

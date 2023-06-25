@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows;
 using Newtonsoft.Json;
-using _1RM.Service;
 using Shawn.Utils;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Model
 {

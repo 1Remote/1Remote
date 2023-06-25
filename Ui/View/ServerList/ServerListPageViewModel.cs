@@ -766,6 +766,25 @@ namespace _1RM.View.ServerList
             }
         }
 
+        private RelayCommand? _cmdCreateDesktopShortcut;
+        public RelayCommand CmdCreateDesktopShortcut
+        {
+            get
+            {
+                return _cmdCreateDesktopShortcut ??= new RelayCommand((o) =>
+                {
+                    var selected = VmServerList.Where(x => x.IsSelected == true).ToArray();
+                    var ids = selected.Select(x => x.Id);
+                    var names = selected.Select(x => x.DisplayName);
+                    var name = string.Join(' ', names);
+                    if(name.Length > 50)
+                        name = name.Substring(0, 50) + "...";
+                    AppStartupHelper.InstallDesktopShortcutByUlid(name, ids);
+                    ClearSelection();
+                });
+            }
+        }
+
         #endregion
 
 

@@ -25,7 +25,7 @@ namespace _1RM.Service.Locality
         private static LocalityTagSettings _settings = new LocalityTagSettings();
 
         private static bool _isLoaded = false;
-        private static void Load()
+        public static void Load()
         {
             lock (_settings)
             {
@@ -59,7 +59,20 @@ namespace _1RM.Service.Locality
             }
         }
 
+        public static Tag? GetTag(string tagName)
+        {
+            Load();
+            _settings.TagDict.TryGetValue(tagName.ToLower(), out var ret);
+            return ret;
+        }
 
+        public static Tag? GetAndRemoveTag(string tagName)
+        {
+            Load();
+            _settings.TagDict.TryRemove(tagName.ToLower(), out var ret);
+            Save();
+            return ret;
+        }
 
         public static void UpdateTag(Tag tag)
         {
@@ -67,6 +80,7 @@ namespace _1RM.Service.Locality
             _settings.TagDict.AddOrUpdate(tag.Name.ToLower(), tag, (_, _) => tag);
             Save();
         }
+
         public static void UpdateTags(IEnumerable<Tag> tags)
         {
             Load();
@@ -90,11 +104,8 @@ namespace _1RM.Service.Locality
 
         public static bool IsPinned(string key)
         {
-            if (TagDict.TryGetValue(key.ToLower(), out var tag))
-            {
-                return tag.IsPinned;
-            } 
-            return false;
+            Load();
+            return _settings.TagDict.TryGetValue(key.ToLower(), out var tag) && tag.IsPinned;
         }
     }
 }

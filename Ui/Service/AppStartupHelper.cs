@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.DAO.Dapper;
+using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Settings.General;
 using Shawn.Utils;
@@ -28,6 +30,10 @@ namespace _1RM.Service
         public const string DESKTOP_SHORTCUT_UNINSTALL = "uninstall-desktop-shortcut";
         public const string RUN_AUTO_AT_OS_START_INSTALL = "install-startup";
         public const string RUN_AUTO_AT_OS_START_UNINSTALL = "uninstall-startup";
+
+        public const string ULID_PREFIX = "ULID:";
+        public const string TAG_PREFIX = "#";
+
         private static HashSet<string> _args = new HashSet<string>();
 
         public static bool IsStartMinimized { get; private set; } = false;
@@ -147,22 +153,21 @@ namespace _1RM.Service
             var servers = new List<ProtocolBase>();
             foreach (var arg in args)
             {
-                if (arg.StartsWith("#"))
+                if (arg.StartsWith(TAG_PREFIX))
                 {
                     // tag connect
                     var tagName = arg.Substring(1);
-                    foreach (var server in IoC.Get<GlobalData>().VmItemList.ToArray())
-                    {
-                        if (server.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase))
-                            && servers.Contains(server.Server) == false)
-                        {
-                            servers.Add(server.Server);
-                        }
-                    }
+
+                    var ss = IoC.Get<GlobalData>().VmItemList
+                        .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase))
+                                                    && servers.Contains(x.Server) == false)
+                        .Select(x => x.Server)
+                        .ToArray();
+                    servers.AddRange(ss);
                 }
-                else if (arg.StartsWith("ULID:", StringComparison.OrdinalIgnoreCase))
+                else if (arg.StartsWith(ULID_PREFIX, StringComparison.OrdinalIgnoreCase))
                 {
-                    var id = arg.Substring("ULID:".Length).Trim();
+                    var id = arg.Substring(ULID_PREFIX.Length).Trim();
                     var server = IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase));
                     if (server != null && servers.Contains(server.Server) == false)
                     {
@@ -182,27 +187,51 @@ namespace _1RM.Service
                 }
             }
 
-            GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
+            if (servers.Count > 0)
+                GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
         }
 
         private static void InstallDesktopShortcut(bool isInstall)
         {
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            var shortcutPath = System.IO.Path.Combine(desktopPath, Assert.APP_DISPLAY_NAME + ".lnk");
-            if (System.IO.File.Exists(shortcutPath))
+            InstallDesktopShortcut(isInstall, Assert.APP_DISPLAY_NAME);
+        }
+
+        public static void InstallDesktopShortcutByTag(string name, string tag, string? iconLocation = null)
+        {
+            InstallDesktopShortcut(true, name, TAG_PREFIX + tag + $" --{APP_START_MINIMIZED}");
+        }
+
+        public static void InstallDesktopShortcutByUlid(string name, IEnumerable<string> ulids, string? iconLocation = null)
+        {
+            if (ulids.Any())
+                InstallDesktopShortcut(true, name, ULID_PREFIX + string.Join($" {ULID_PREFIX}", ulids) + $" --{APP_START_MINIMIZED}");
+        }
+
+        public static void InstallDesktopShortcut(bool isInstall, string name, string parameter = "", string? iconLocation = null)
+        {
+            try
             {
-                System.IO.File.Delete(shortcutPath);
-            }
-            if (isInstall)
-            {
-                using var shortcut = new WindowsShortcut
+                var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                var shortcutPath = System.IO.Path.Combine(desktopPath, name + ".lnk");
+                if (System.IO.File.Exists(shortcutPath))
                 {
-                    Path = Process.GetCurrentProcess().MainModule!.FileName!,
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    IconLocation = Process.GetCurrentProcess().MainModule!.FileName!,
-                    Arguments = "",
-                };
-                shortcut.Save(shortcutPath);
+                    System.IO.File.Delete(shortcutPath);
+                }
+                if (isInstall)
+                {
+                    using var shortcut = new WindowsShortcut
+                    {
+                        Path = Process.GetCurrentProcess().MainModule!.FileName!,
+                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                        IconLocation = iconLocation ?? Process.GetCurrentProcess().MainModule!.FileName!,
+                        Arguments = parameter,
+                    };
+                    shortcut.Save(shortcutPath);
+                }
+            }
+            catch (Exception e)
+            {
+                MsAppCenterHelper.Error(e);
             }
         }
     }

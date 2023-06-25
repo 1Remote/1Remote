@@ -90,9 +90,9 @@ namespace _1RM.Service
             var tabToken = assignTabToken;
             var runnerName = assignRunnerName;
             var credentialName = assignCredentialName;
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async () =>
             {
-                Connect(org, view, tabToken, runnerName, credentialName);
+                await Connect(org, view, tabToken, runnerName, credentialName);
             }).ContinueWith(t =>
             {
                 if (t.Exception != null)
@@ -109,11 +109,11 @@ namespace _1RM.Service
             var tabToken = assignTabToken;
             var runnerName = assignRunnerName;
             var credentialName = assignCredentialName;
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async () =>
             {
                 foreach (var org in protocolBases)
                 {
-                    Connect(org, view, tabToken, runnerName, credentialName);
+                    tabToken = await Connect(org, view, tabToken, runnerName, credentialName);
                 }
             }).ContinueWith(t =>
             {
