@@ -66,19 +66,19 @@ namespace _1RM.Model
         {
             // get distinct tag from servers
             var tags = new List<Tag>();
+            var lts = LocalityTagService.TagDict;
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
             {
-                foreach (var tagName in tagNames)
+                foreach (var tn in tagNames.Select(tagName => tagName.Trim().ToLower()))
                 {
-                    var tn = tagName.Trim().ToLower();
                     if (tags.All(x => !string.Equals(x.Name, tn, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         bool isPinned = false;
                         int customOrder = int.MaxValue;
-                        if (LocalityTagService.TagDict.ContainsKey(tn))
+                        if (lts.ContainsKey(tn))
                         {
-                            isPinned = LocalityTagService.TagDict[tn].IsPinned;
-                            customOrder = LocalityTagService.TagDict[tn].CustomOrder;
+                            isPinned = lts[tn].IsPinned;
+                            customOrder = lts[tn].CustomOrder;
                         }
                         else if(_configurationService.PinnedTags.Contains(tn))
                         {

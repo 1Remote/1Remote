@@ -121,10 +121,13 @@
                                         <MenuItem Header="{DynamicResource Delete}" 
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
                                                   CommandParameter="{Binding}"/>
-                                        <!--<MenuItem Header="{DynamicResource Connect}" 
+                                        <MenuItem Header="{DynamicResource Connect}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
                                                       CommandParameter="{Binding}"/>
-                                        <MenuItem Header="{DynamicResource 'Connect (New window)'}" 
+                                        <MenuItem Header="TXT: create desktop shortcut" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                                       CommandParameter="{Binding}"/>-->
                                     </ContextMenu>
