@@ -281,4 +281,5 @@
     <s:String x:Key="Pin">Pin</s:String>
     <s:String x:Key="Unpin">Unpin</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">This is your list of tags. Right click for a context menu to pin them on header.</s:String>
+    <s:String x:Key="Create desktop shortcut">Create desktop shortcut</s:String>
 </ResourceDictionary>

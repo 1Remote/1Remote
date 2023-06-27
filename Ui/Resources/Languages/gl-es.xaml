@@ -279,6 +279,7 @@
     <s:String x:Key="Next update check">Próxima revisión de actualización</s:String>
     <s:String x:Key="Next auto reconnect">Próxima conexión automática</s:String>
     <s:String x:Key="Pin">Pin</s:String>
-    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="Unpin">praia de nubes</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Esta é a túa lista de etiquetas. Fai clic co botón dereito no menú contextual para fixalos na cabeceira.</s:String>
+    <s:String x:Key="Create desktop shortcut">Crear atallo no escritorio</s:String>
 </ResourceDictionary>

@@ -73,6 +73,7 @@ namespace _1RM.Service
         public string KittyDirPath => Path.Combine(BaseDirPath, "Kitty");
 
         public string LocalityDirPath => Path.Combine(BaseDirPath, ".locality");
+        public string LocalityIconDirPath => Path.Combine(LocalityDirPath, "icons");
         [Obsolete("after 20230523, use LocalityDirPath")]
         public string LocalityJsonPath => Path.Combine(BaseDirPath, "Locality.json");
         [Obsolete("after 20230523, use LocalityDirPath")]
@@ -81,5 +82,7 @@ namespace _1RM.Service
 
 
         public static AppPathHelper Instance { get; set; } = null!;
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        public static bool IsInit => Instance != null;
     }
 }

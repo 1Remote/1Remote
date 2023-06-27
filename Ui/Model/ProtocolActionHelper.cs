@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
+using System.Xml.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
@@ -8,6 +10,7 @@ using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View;
 using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.Model;
 
@@ -127,10 +130,10 @@ public static class ProtocolActionHelper
         }
 
 
-        actions.Add(new ProtocolAction("TXT: create desktop shortcut",
-            () =>
+        actions.Add(new ProtocolAction(IoC.Get<LanguageService>().Translate("Create desktop shortcut"), () =>
             {
-                AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new []{ server.Id });
+                var iconPath= AppStartupHelper.MakeIcon(server.Id, server.IconImg);
+                AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
             }));
 
         #endregion Build Actions
