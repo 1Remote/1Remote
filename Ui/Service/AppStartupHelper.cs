@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO.Dapper;
@@ -12,6 +16,8 @@ using _1RM.View;
 using _1RM.View.Settings.General;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Image;
+using Ubiety.Dns.Core.Records;
 using WindowsShortcutFactory;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
@@ -196,15 +202,104 @@ namespace _1RM.Service
             InstallDesktopShortcut(isInstall, Assert.APP_DISPLAY_NAME);
         }
 
-        public static void InstallDesktopShortcutByTag(string name, string tag, string? iconLocation = null)
+
+
+        /**
+        * 拼接图像
+        */
+        private static Bitmap? MargeBitmap(List<Bitmap?> bitmapsRaw)
         {
-            InstallDesktopShortcut(true, name, TAG_PREFIX + tag + $" --{APP_START_MINIMIZED}");
+            var bitmaps = (bitmapsRaw.Where(x => x != null).ToList() as List<Bitmap>)!;
+            if (bitmaps.Count == 0)
+                return null;
+            if (bitmaps.Count == 1)
+                return bitmaps.First();
+            if (bitmaps.Count == 2)
+            {
+                var first = bitmaps.First();
+                var second = bitmaps.Last();
+                // 水平拼接
+                int width = first.Width + second.Width;
+                int height = Math.Max(first.Height, second.Height);
+                Bitmap result = new Bitmap(width, height, first.PixelFormat);
+                Graphics gr = Graphics.FromImage(result);
+                gr.DrawImage(first, 0, 0);
+                gr.DrawImage(second, first.Width, 0);
+                gr.Dispose();
+                return result;
+            }
+
+            if (bitmaps.Count == 3)
+            {
+                var first = MargeBitmap(new List<Bitmap>() { bitmaps[0], bitmaps[1] });
+                var second = bitmaps.Last();
+                // 竖直拼接
+                int width = Math.Max(first.Width, second.Width);
+                int height = first.Height + second.Height;
+                Bitmap result = new Bitmap(width, height, first.PixelFormat);
+                Graphics gr = Graphics.FromImage(result);
+                gr.DrawImage(first, first.Width < width ? (width - first.Width) / 2 : 0, 0);
+                gr.DrawImage(second, second.Width < width ? (width - second.Width) / 2 : 0, first.Height);
+                gr.Dispose();
+                return result;
+            }
+            else
+            {
+                var first = MargeBitmap(new List<Bitmap>() { bitmaps[0], bitmaps[1] });
+                var second = MargeBitmap(new List<Bitmap>() { bitmaps[2], bitmaps[3] });
+                // 竖直拼接
+                int width = Math.Max(first.Width, second.Width);
+                int height = first.Height + second.Height;
+                Bitmap result = new Bitmap(width, height, first.PixelFormat);
+                Graphics gr = Graphics.FromImage(result);
+                gr.DrawImage(first, first.Width < width ? (width - first.Width) / 2 : 0, 0);
+                gr.DrawImage(second, second.Width < width ? (width - second.Width) / 2 : 0, first.Height);
+                gr.Dispose();
+                return result;
+            }
         }
 
+        public static string? MakeIcon(string name, List<BitmapSource?> bitmapSources)
+        {
+            var list = bitmapSources.Select(x => x?.ToBitmap()).Where(x => x != null).ToList();
+            var bitmap = MargeBitmap(list);
+            return MakeIcon(name, bitmap);
+        }
+
+        public static string? MakeIcon(string name, BitmapSource? bitmapSource)
+        {
+            return MakeIcon(name, bitmapSource?.ToBitmap());
+        }
+
+        public static string? MakeIcon(string name, Bitmap? bitmap)
+        {
+            if (bitmap == null || AppPathHelper.IsInit == false) return null;
+            string? iconPath = null;
+            iconPath = System.IO.Path.Combine(AppPathHelper.Instance.LocalityIconDirPath, $"{name}.ico");
+            Executor.TryCatch(() =>
+            {
+                if (File.Exists(iconPath)) File.Delete(iconPath);
+            });
+            if (IcoHelper.ConvertToIcon(bitmap, iconPath, 64)
+                && File.Exists(iconPath))
+            {
+                //File.SetAttributes(iconPath, FileAttributes.ReadOnly);
+                //File.SetAttributes(iconPath, FileAttributes.Hidden);
+                return iconPath;
+            }
+            return null;
+        }
+
+        public static void InstallDesktopShortcutByTag(string name, string tag, string? iconLocation = null)
+        {
+            if (name.StartsWith("Tag=") == false)
+                name = "Tag=" + name;
+            InstallDesktopShortcut(true, name, TAG_PREFIX + tag + $" --{APP_START_MINIMIZED}", iconLocation);
+        }
         public static void InstallDesktopShortcutByUlid(string name, IEnumerable<string> ulids, string? iconLocation = null)
         {
             if (ulids.Any())
-                InstallDesktopShortcut(true, name, ULID_PREFIX + string.Join($" {ULID_PREFIX}", ulids) + $" --{APP_START_MINIMIZED}");
+                InstallDesktopShortcut(true, name, ULID_PREFIX + string.Join($" & {ULID_PREFIX}", ulids) + $" --{APP_START_MINIMIZED}", iconLocation);
         }
 
         public static void InstallDesktopShortcut(bool isInstall, string name, string parameter = "", string? iconLocation = null)

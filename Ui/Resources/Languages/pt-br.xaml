@@ -265,7 +265,7 @@
     <s:String x:Key="Show credentials info">Mostrar informações de credenciais</s:String>
     <s:String x:Key="Sorting">Ordenação</s:String>
     <s:String x:Key="Sort by drag">Classificar por arrastar</s:String>
-    <s:String x:Key="We can not connect database:">Nós Não podemos conectar o banco de dados:</s:String>
+    <s:String x:Key="We can not connect database:">Não podemos conectar o banco de dados:</s:String>
     <s:String x:Key="We can not create tables on database:">Não podemos criar tabelas no banco de dados:</s:String>
     <s:String x:Key="We can not insert into database:">Não podemos inserir no banco de dados:</s:String>
     <s:String x:Key="We can not update on database:">Não podemos atualizar no banco de dados:</s:String>
@@ -278,7 +278,8 @@
     <s:String x:Key="Reconnecting">Reconectando</s:String>
     <s:String x:Key="Next update check">Verificação da próxima atualização</s:String>
     <s:String x:Key="Next auto reconnect">Próxima reconexão automática</s:String>
-    <s:String x:Key="Pin">Pin</s:String>
-    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="Pin">Alfinete</s:String>
+    <s:String x:Key="Unpin">praia nublada</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Esta é a sua lista de tags. Clique com o botão direito para obter um menu de contexto para fixá-los no cabeçalho.</s:String>
+    <s:String x:Key="Create desktop shortcut">Criar atalho na área de trabalho</s:String>
 </ResourceDictionary>

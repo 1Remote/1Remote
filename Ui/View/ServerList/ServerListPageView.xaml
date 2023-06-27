@@ -215,7 +215,7 @@
                                             <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                                       CommandParameter="{Binding}"/>-->
-                                            <MenuItem Header="TXT: create desktop shortcut" 
+                                            <MenuItem Header="{DynamicResource 'Create desktop shortcut'}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
                                                       CommandParameter="{Binding}"/>
                                             <MenuItem Header="{DynamicResource Delete}" 
@@ -793,7 +793,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"></Button>
-                    <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="TXT: create desktop shortcut" Command="{Binding CmdCreateDesktopShortcut}"></Button>
+                    <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource 'Create desktop shortcut'}" Command="{Binding CmdCreateDesktopShortcut}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"></Button>
                 </StackPanel>
@@ -978,7 +978,7 @@
                                                     <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                                               CommandParameter="{Binding}"/>-->
-                                                    <MenuItem Header="TXT: create desktop shortcut" 
+                                                    <MenuItem Header="{DynamicResource 'Create desktop shortcut'}" 
                                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
                                                               CommandParameter="{Binding}"/>
                                                     <MenuItem Header="{DynamicResource Delete}" 

@@ -188,7 +188,7 @@
     <s:String x:Key="In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.">Dans ce mode, RDP démarrera la session de la manière 'mstsc.exe xxxx.rdp' dans CMD, il peut offrir plus de paramètres personnalisés.</s:String>
     <s:String x:Key="Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.">Remarque : Ce mode sera automatiquement activé s'il y a plus de 2 moniteurs avec une mise à l'échelle d'affichage différente sur votre PC et que vous avez sélectionné le mode plein écran.</s:String>
     <s:String x:Key="Additional settings">Paramètres additionnels</s:String>
-    <s:String x:Key="Preview rdp file">Prévisualiser le fichier rdp</s:String>
+    <s:String x:Key="Preview rdp file">Aperçu du fichier rdp</s:String>
     <s:String x:Key="Check monitor number">Vérifier le numéro du moniteur</s:String>
     <s:String x:Key="server_editor_remote_app_name">Nom de l'application</s:String>
     <s:String x:Key="server_editor_remote_app_name_tag">nom de l'application (par exemple bonjour)</s:String>
@@ -228,7 +228,7 @@
     <s:String x:Key="Add environment variables">Ajouter des variables d'environnement</s:String>
     <s:String x:Key="write permissions alert">Nous n'avons pas les droits d'écriture pour le répertoire `{0}` !\nS'il vous plaît essayez:\n1. exécuter en tant qu'administrateur\n2. modifier les autorisations de répertoire ou de fichier\n3. déplacer 1Remote vers un autre dossier</s:String>
     <s:String x:Key="Follow system">Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur)</s:String>
-    <s:String x:Key="tag_tooltips">Clic gauche : définir ce tag comme filtre{0}Ctrl + clic gauche : ajouter ce tag à la liste d'inclusion {0}Ctrl + clic droit : ajouter ce tag à la liste d'exclusion</s:String>
+    <s:String x:Key="tag_tooltips">clic : définir cette balise comme filtre{0}Ctrl + clic : ajouter cette balise à la liste d'inclusion {0}Alt + clic : ajouter cette balise à la liste d'exclusion</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Voulez-vous vraiment fermer la connexion?</s:String>
     <s:String x:Key="Hi there,">Bonjour à tous,</s:String>
     <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">J'espère que vous trouverez cette application utile. Si vous souhaitez soutenir mon travail, vous pouvez m'offrir un café ou donner une belle critique. Merci!</s:String>
@@ -265,7 +265,7 @@
     <s:String x:Key="Show credentials info">Afficher les informations d'identification</s:String>
     <s:String x:Key="Sorting">Tri</s:String>
     <s:String x:Key="Sort by drag">Trier par glissement</s:String>
-    <s:String x:Key="We can not connect database:">Nous ne pouvons pas nous connecter à la base de données :</s:String>
+    <s:String x:Key="We can not connect database:">Nous ne pouvons pas connecter la base de données :</s:String>
     <s:String x:Key="We can not create tables on database:">Nous ne pouvons pas créer de tables sur la base de données :</s:String>
     <s:String x:Key="We can not insert into database:">Nous ne pouvons pas insérer dans la base de données :</s:String>
     <s:String x:Key="We can not update on database:">Nous ne pouvons pas mettre à jour sur la base de données :</s:String>
@@ -278,7 +278,8 @@
     <s:String x:Key="Reconnecting">Reconnexion</s:String>
     <s:String x:Key="Next update check">Vérification de la prochaine mise à jour</s:String>
     <s:String x:Key="Next auto reconnect">Prochaine reconnexion automatique</s:String>
-    <s:String x:Key="Pin">Pin</s:String>
-    <s:String x:Key="Unpin">Unpin</s:String>
+    <s:String x:Key="Pin">Broche</s:String>
+    <s:String x:Key="Unpin">plage de nuages</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Ceci est votre liste de balises. Faites un clic droit pour un menu contextuel pour les épingler sur l'en-tête.</s:String>
+    <s:String x:Key="Create desktop shortcut">Créer un raccourci sur le bureau</s:String>
 </ResourceDictionary>

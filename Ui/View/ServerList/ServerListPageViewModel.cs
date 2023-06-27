@@ -760,7 +760,7 @@ namespace _1RM.View.ServerList
             {
                 return _cmdConnectSelected ??= new RelayCommand((o) =>
                 {
-                    var selected = VmServerList.Where(x => x.IsSelected == true).Select(x=>x.Server).ToArray();
+                    var selected = VmServerList.Where(x => x.IsSelected == true).Select(x => x.Server).ToArray();
                     GlobalEventHelper.OnRequestServersConnect?.Invoke(selected, fromView: $"{nameof(MainWindowView)}");
                 });
             }
@@ -776,10 +776,14 @@ namespace _1RM.View.ServerList
                     var selected = VmServerList.Where(x => x.IsSelected == true).ToArray();
                     var ids = selected.Select(x => x.Id);
                     var names = selected.Select(x => x.DisplayName);
-                    var name = string.Join(' ', names);
-                    if(name.Length > 50)
-                        name = name.Substring(0, 50) + "...";
-                    AppStartupHelper.InstallDesktopShortcutByUlid(name, ids);
+                    var icons = selected.Select(x => x.Server.IconImg).ToList();
+                    var name = string.Join(" & ", names);
+                    if (name.Length > 50)
+                    {
+                        name = name.Substring(0, 50).Trim().Trim('&') + "...";
+                    }
+                    var path = AppStartupHelper.MakeIcon(name, icons);
+                    AppStartupHelper.InstallDesktopShortcutByUlid(name, ids, path);
                     ClearSelection();
                 });
             }

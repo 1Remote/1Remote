@@ -300,6 +300,7 @@ Updating;Updating;正在更新;;;;;;;
 Reconnecting; Reconnecting; 正在重连;;;;;;;
 Next update check; Next update check; 下次更新检查;;;;;;;
 Next auto reconnect; Next auto reconnect; 下次自动重连;;;;;;;
-Pin;Pin;固定;Pin;Pin;Pin;Pin;Pin;Pin;Pin
-Unpin;Unpin;取消固定;Unpin;Unpin;Unpin;Unpin;Unpin;Unpin;Unpin
+Pin;Pin;固定;;;;;;;
+Unpin;Unpin;取消固定;;;;;;;
 This is your list of tags. Right click for a context menu to pin them on header.;This is your list of tags. Right click for a context menu to pin them on header.;;;;;;;;
+Create desktop shortcut;Create desktop shortcut;创建桌面快捷方式;;;;;;;

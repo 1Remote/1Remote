@@ -124,7 +124,7 @@
                                         <MenuItem Header="{DynamicResource Connect}" 
                                                       Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
                                                       CommandParameter="{Binding}"/>
-                                        <MenuItem Header="TXT: create desktop shortcut" 
+                                        <MenuItem Header="{DynamicResource 'Create desktop shortcut'}" 
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
                                                   CommandParameter="{Binding}"/>
                                         <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 

@@ -280,5 +280,6 @@
     <s:String x:Key="Next auto reconnect"> 下次自动重连</s:String>
     <s:String x:Key="Pin">固定</s:String>
     <s:String x:Key="Unpin">取消固定</s:String>
-    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">这是您的标签列表。右键单击上下文菜单以将它们固定在标题上。</s:String>
+    <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">这是您的标签列表。右键单击上下文菜单将其固定在标题上。</s:String>
+    <s:String x:Key="Create desktop shortcut">创建桌面快捷方式</s:String>
 </ResourceDictionary>
