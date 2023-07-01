@@ -93,7 +93,7 @@
     <s:String x:Key="host_reconecting_info">Reconnexion ...</s:String>
     <s:String x:Key="Toggle Cards/List">Basculer les Tuiles/Liste</s:String>
     <s:String x:Key="system_options_general_title">Général</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
+    <s:String x:Key="Run automatically at OS startup">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
     <s:String x:Key="Confirm before closing">Confirmer avant de fermer</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Fichier journal</s:String>

@@ -93,7 +93,7 @@
     <s:String x:Key="host_reconecting_info">正在重試連線...</s:String>
     <s:String x:Key="Toggle Cards/List">卡片或清單檢視</s:String>
     <s:String x:Key="system_options_general_title">一般</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">跟隨作業系統一併啟動(縮小至系統匣)</s:String>
+    <s:String x:Key="Run automatically at OS startup">跟隨作業系統一併啟動(縮小至系統匣)</s:String>
     <s:String x:Key="Confirm before closing">關閉遠端工作階段前顯示確認視窗</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">遠端桌面開啟後顯示目前工作階段的圖示</s:String>
     <s:String x:Key="system_options_general_log_file_path">日誌檔案</s:String>

@@ -83,6 +83,17 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
+                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                                       Text="{DynamicResource 'Create desktop shortcut'}">
+                    </TextBlock>
+                    <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.CreateDesktopShortcut, Mode=TwoWay}"></ToggleButton>
+                </Grid>
+
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
                     <StackPanel Style="{StaticResource StackPanelTitleColumn}">
                         <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
                                    Margin="0"

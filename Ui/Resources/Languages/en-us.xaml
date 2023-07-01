@@ -93,7 +93,7 @@
     <s:String x:Key="host_reconecting_info">Reconnecting...</s:String>
     <s:String x:Key="Toggle Cards/List">Toggle Cards/List</s:String>
     <s:String x:Key="system_options_general_title">General</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">Run automatically at OS startup(minimized)</s:String>
+    <s:String x:Key="Run automatically at OS startup">Run automatically at OS startup(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirm before closing</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">Log file</s:String>

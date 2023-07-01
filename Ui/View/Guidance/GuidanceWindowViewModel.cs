@@ -85,6 +85,13 @@ namespace _1RM.View.Guidance
             }
         }
 
+        private bool _createDesktopShortcut = false;
+        public bool CreateDesktopShortcut
+        {
+            get => _createDesktopShortcut;
+            set => SetAndNotifyIfChanged(ref _createDesktopShortcut, value);
+        }
+
         public bool ConfirmBeforeClosingSession
         {
             get => _configuration.General.ConfirmBeforeClosingSession;

@@ -9,7 +9,7 @@ namespace _1RM
         public const uint Patch = 0;
         public const uint Build = 0;
         public const string BuildDate = "";
-        public const string PreRelease = "beta.04"; // e.g. "alpha" "beta.2"
+        public const string PreRelease = "beta.05"; // e.g. "alpha" "beta.2"
 
         public static readonly Version VersionData = new Version(Major, Minor, Patch, Build, PreRelease);
 #if DEBUG
