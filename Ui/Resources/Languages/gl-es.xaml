@@ -93,7 +93,7 @@
     <s:String x:Key="host_reconecting_info">Reconectando…</s:String>
     <s:String x:Key="Toggle Cards/List">Cambiar Cartas/Lista</s:String>
     <s:String x:Key="system_options_general_title">Xeral</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">Executar automáticamente ao inicio do SO(minimized)</s:String>
+    <s:String x:Key="Run automatically at OS startup">Executar automáticamente ao inicio do SO(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirmar antes de pechar</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">Mostrar a icona da sesión actual en troques da icona da aplicación cuando se conecte</s:String>
     <s:String x:Key="system_options_general_log_file_path">Arquivo do log</s:String>

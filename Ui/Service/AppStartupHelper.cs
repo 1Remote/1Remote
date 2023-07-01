@@ -197,16 +197,7 @@ namespace _1RM.Service
                 GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
         }
 
-        private static void InstallDesktopShortcut(bool isInstall)
-        {
-            InstallDesktopShortcut(isInstall, Assert.APP_DISPLAY_NAME);
-        }
 
-
-
-        /**
-        * 拼接图像
-        */
         private static Bitmap? MargeBitmap(List<Bitmap?> bitmapsRaw)
         {
             var bitmaps = (bitmapsRaw.Where(x => x != null).ToList() as List<Bitmap>)!;
@@ -302,7 +293,7 @@ namespace _1RM.Service
                 InstallDesktopShortcut(true, name, ULID_PREFIX + string.Join($" & {ULID_PREFIX}", ulids) + $" --{APP_START_MINIMIZED}", iconLocation);
         }
 
-        public static void InstallDesktopShortcut(bool isInstall, string name, string parameter = "", string? iconLocation = null)
+        public static void InstallDesktopShortcut(bool isInstall, string name = Assert.APP_DISPLAY_NAME, string parameter = "", string? iconLocation = null)
         {
             try
             {

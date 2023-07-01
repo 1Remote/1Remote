@@ -143,6 +143,7 @@ namespace _1RM
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
                         isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
+                        AppStartupHelper.InstallDesktopShortcut(guidanceWindowViewModel.CreateDesktopShortcut);
                     }
 
                     // 自动创建标志文件

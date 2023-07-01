@@ -93,7 +93,7 @@
     <s:String x:Key="host_reconecting_info">正尝试重新连接...</s:String>
     <s:String x:Key="Toggle Cards/List">切换卡片/列表</s:String>
     <s:String x:Key="system_options_general_title">常规</s:String>
-    <s:String x:Key="system_options_general_start_when_win_login">开机自启动(最小化)</s:String>
+    <s:String x:Key="Run automatically at OS startup">开机自启动(最小化)</s:String>
     <s:String x:Key="Confirm before closing">关闭远程会话前弹窗确认</s:String>
     <s:String x:Key="Show current session icon instead of the app icon when connected">远程桌面开启后显示当前会话的图标</s:String>
     <s:String x:Key="system_options_general_log_file_path">日志文件</s:String>
