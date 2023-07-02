@@ -11,18 +11,17 @@ namespace _1RM.Utils
 {
     public static class TcpHelper
     {
+        /// <summary>
+        /// return true if connected, false if not connected, null if timeout or cancelled.
+        /// </summary>
         public static async Task<bool?> TestConnectionAsync(string address, int port, CancellationToken? cancellationToken = null, int timeOutMillisecond = 0)
         {
             using var client = new TcpClient();
             try
             {
                 var cts = new CancellationTokenSource();
-                if (cancellationToken == null)
-                {
-                    cancellationToken = cts.Token;
-                }
+                cancellationToken ??= cts.Token;
 #if NETCOREAPP
-                cancellationToken ??= new CancellationToken();
                 var connectTask = client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
 #else
                 var connectTask = client.ConnectAsync(address, port);
@@ -33,9 +32,18 @@ namespace _1RM.Utils
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
                 if (completedTask == timeoutTask && completedTask.IsCanceled != true)
                 {
-                    SimpleLogHelper.Debug("TcpHelper: Connection timed out.");
+                    SimpleLogHelper.Debug("TcpHelper: timeoutTask is completed, cancel connectTask.");
                     cts.Cancel();
-                    return false;
+                    connectTask.Dispose();
+                    return null;
+                }
+
+                if (completedTask.IsCanceled)
+                {
+                    SimpleLogHelper.Debug("TcpHelper: Connection cancelled.");
+                    cts.Cancel();
+                    connectTask.Dispose();
+                    return null;
                 }
 
                 await connectTask;
