@@ -44,12 +44,10 @@ namespace _1RM.Service.DataSource.Model
             get => _status;
             set
             {
-                if (SetAndNotifyIfChanged(ref _status, value))
-                {
-                    ReconnectTime = Status != EnumDatabaseStatus.OK ? 
-                        DateTime.Now.AddSeconds(IoC.TryGet<ConfigurationService>()?.DatabaseReconnectPeriod ?? 60 * 5) 
-                        : DateTime.MinValue;
-                }
+                SetAndNotifyIfChanged(ref _status, value);
+                ReconnectTime = Status != EnumDatabaseStatus.OK ?
+                    DateTime.Now.AddSeconds(IoC.TryGet<ConfigurationService>()?.DatabaseReconnectPeriod ?? 60 * 5)
+                    : DateTime.MinValue;
                 StatusInfo = Status == EnumDatabaseStatus.OK ? $"{CachedProtocols.Count} servers" : Status.GetErrorInfo();
             }
         }
