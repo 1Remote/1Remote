@@ -75,12 +75,15 @@ namespace _1RM.Controls
                 {
                     double wl = ((BitmapSource)Img.Source).PixelWidth * Scaling - CanvasImage.Width;
                     double hl = ((BitmapSource)Img.Source).PixelHeight * Scaling - CanvasImage.Height;
-                    CanvasImage.Width += wl;
-                    CanvasImage.Height += hl;
-                    // 缩放后保持图像中心不变
-                    CanvasImage.SetValue(Canvas.LeftProperty, Canvas.GetLeft(CanvasImage) - wl / 2.0);
-                    CanvasImage.SetValue(Canvas.TopProperty, Canvas.GetTop(CanvasImage) - hl / 2.0);
-                    ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
+                    if ((CanvasImage.Width + wl) > 0 && (CanvasImage.Height + hl) > 0)
+                    {
+                        CanvasImage.Width += wl;
+                        CanvasImage.Height += hl;
+                        // 缩放后保持图像中心不变
+                        CanvasImage.SetValue(Canvas.LeftProperty, Canvas.GetLeft(CanvasImage) - wl / 2.0);
+                        CanvasImage.SetValue(Canvas.TopProperty, Canvas.GetTop(CanvasImage) - hl / 2.0);
+                        ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
+                    }
                 }
                 OnPropertyChanged(nameof(Scaling));
                 OnLogoChanged?.Invoke();
@@ -408,12 +411,13 @@ namespace _1RM.Controls
 
         private void BtnZoomIn_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Scaling += 0.1;
+            Scaling = Scaling + 0.1;
         }
 
         private void BtnZoomOut_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Scaling -= 0.1;
+            if (Scaling > 0.1)
+                Scaling = Scaling - 0.1;
         }
     }
 
