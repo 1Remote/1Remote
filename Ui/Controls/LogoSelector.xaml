@@ -103,7 +103,7 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-                <Slider Name="ScrollBarScale" Grid.Column="1" Minimum="0.5" Maximum="2" Value="{Binding Scaling}" VerticalAlignment="Center"
+                <Slider Name="ScrollBarScale" Grid.Column="1" Minimum="0.1" Maximum="2" Value="{Binding Scaling}" VerticalAlignment="Center"
                         Orientation="Horizontal" IsSelectionRangeEnabled="True"></Slider>
 
                 <Grid Grid.Column="2" MouseLeftButtonUp="BtnZoomIn_OnMouseLeftButtonUp" Background="Transparent">
