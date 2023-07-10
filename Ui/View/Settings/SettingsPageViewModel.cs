@@ -144,9 +144,12 @@ namespace _1RM.View.Settings
                         return;
                     }
 
-                    // check launcher
-                    _configurationService.Save();
-                    IoC.Get<ProtocolConfigurationService>().Save();
+                    Task.Factory.StartNew(() =>
+                    {
+                        _configurationService.Save();
+                        IoC.Get<ProtocolConfigurationService>().Save();
+                    });
+
                     IoC.Get<MainWindowViewModel>().ShowList(false);
                     _selectedViewModel = null;
                 });

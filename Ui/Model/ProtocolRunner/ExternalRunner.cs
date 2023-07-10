@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using Newtonsoft.Json;
-using _1RM.Model.Protocol;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
@@ -92,7 +90,7 @@ namespace _1RM.Model.ProtocolRunner
         public ObservableCollection<ObservableKvp<string, string>> EnvironmentVariables
         {
             get => _environmentVariables ??= new ObservableCollection<ObservableKvp<string, string>>();
-            set => _environmentVariables = value;
+            set => SetAndNotifyIfChanged(ref _environmentVariables, value);
         }
 
         /// <summary>

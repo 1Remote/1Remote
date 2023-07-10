@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
 
 namespace _1RM.View.Settings.ProtocolConfig
 {
@@ -19,7 +21,14 @@ namespace _1RM.View.Settings.ProtocolConfig
         public KittyRunner Runner
         {
             get => (KittyRunner)GetValue(RunnerProperty);
-            set => SetValue(RunnerProperty, value);
+            set
+            {
+                SetValue(RunnerProperty, value);
+                value.PropertyChanged += (sender, args) =>
+                {
+                    IoC.Get<ProtocolConfigurationService>().Save();
+                };
+            }
         }
 
 

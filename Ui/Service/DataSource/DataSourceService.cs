@@ -89,9 +89,8 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// 添加并启用一个新的数据源（如果该数据源已存在，则更新），返回数据源的连接状态
         /// </summary>
-        public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 5, bool doReload = true)
+        public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 2, bool doReload = true)
         {
-            if (connectTimeOutSeconds <= 0) connectTimeOutSeconds = 2;
             try
             {
                 config.MarkAsNeedRead(); // reload database
@@ -117,7 +116,9 @@ namespace _1RM.Service.DataSource
 
 
                 config.Database_CloseConnection();
-                var ret = config.Database_SelfCheck(connectTimeOutSeconds = 2);
+                var ret = EnumDatabaseStatus.NotConnectedYet;
+                if(connectTimeOutSeconds > 0)
+                    ret = config.Database_SelfCheck(connectTimeOutSeconds);
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
                 return ret;
             }

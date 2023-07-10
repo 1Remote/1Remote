@@ -4,6 +4,7 @@ using System.Linq;
 using JsonKnownTypes;
 using Newtonsoft.Json;
 using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Service;
 using Shawn.Utils;
 
 namespace _1RM.Model.ProtocolRunner
@@ -18,7 +19,7 @@ namespace _1RM.Model.ProtocolRunner
         public Runner(string runnerName, string ownerProtocolName)
         {
             OwnerProtocolName = ownerProtocolName;
-            Name = runnerName?.Trim() ?? "";
+            _name = runnerName?.Trim() ?? "";
         }
 
         protected string _name = "";

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol;
+using _1RM.Service;
 using Shawn.Utils;
 
 namespace _1RM.Model.ProtocolRunner

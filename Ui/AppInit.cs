@@ -16,6 +16,7 @@ using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.Locality;
+using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 
@@ -50,8 +51,6 @@ namespace _1RM
         public static ConfigurationService? ConfigurationServiceObj;
         public static ThemeService? ThemeServiceObj;
         public static GlobalData GlobalDataObj = null!;
-
-        public static bool DataIsLoaded = false;
 
         private static bool _isNewUser = false;
         private static EnumDatabaseStatus _localDataConnectionStatus;
@@ -262,7 +261,6 @@ namespace _1RM
             // Init data sources controller
             var dataSourceService = IoC.Get<DataSourceService>();
             GlobalDataObj.SetDataSourceService(dataSourceService);
-            GlobalDataObj.ReloadServerList(true);
 
             // read from configs and find where db is.
             {
@@ -273,6 +271,13 @@ namespace _1RM
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
                 _localDataConnectionStatus = dataSourceService.InitLocalDataSource(local);
+                Task.Factory.StartNew(() =>
+                {
+                    //ConfigurationServiceObj!.LocalDataSource.GetServers(true);
+                    IoC.Get<GlobalData>().ReloadServerList(true);
+                    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
+                        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+                });
             }
 
             // init session controller
@@ -326,31 +331,26 @@ namespace _1RM
                 }
                 mvm.ShowMe();
             }
-            
-            if(_isNewUser == false)
-            {
-                MaskLayerController.ShowProcessingRing("", mvm);
-                Task.Factory.StartNew(() =>
-                {
-                    //// read from primary database
-                    //IoC.Get<GlobalData>().ReloadServerList(true);
-                    // read from AdditionalDataSource async
-                    if (ConfigurationServiceObj!.AdditionalDataSource.Any())
-                        Task.WaitAll(ConfigurationServiceObj!.AdditionalDataSource.Select(config =>
-                            Task.Factory.StartNew(() =>
-                            {
-                                IoC.Get<DataSourceService>().AddOrUpdateDataSource(config, doReload: false);
-                            })).ToArray());
-                    IoC.Get<GlobalData>().ReloadServerList(true);
-                    MaskLayerController.HideMask(mvm);
-                    DataIsLoaded = true;
-                    AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
-                    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
-                        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
-                    IoC.Get<LauncherWindowViewModel>().SetHotKey();
-                });
-            }
 
+            MaskLayerController.ShowProcessingRing("", mvm);
+            {
+                foreach (var ds in ConfigurationServiceObj!.AdditionalDataSource)
+                {
+                    IoC.Get<DataSourceService>().AddOrUpdateDataSource(ds, connectTimeOutSeconds: 0, doReload: false);
+                }
+
+                if (_isNewUser == false)
+                    IoC.Get<ServerListPageViewModel>().VmServerListDummyNode();
+
+                GlobalDataObj.StartTick();
+                IoC.Get<ServerListPageViewModel>().CmdRefreshDataSource.Execute();
+            }
+            MaskLayerController.HideMask(mvm);
+
+            AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
+            if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
+                IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+            IoC.Get<LauncherWindowViewModel>().SetHotKey();
         }
     }
 }

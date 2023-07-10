@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using _1RM.Model.Protocol;
 using Newtonsoft.Json;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils.Wpf;
@@ -18,7 +17,7 @@ namespace _1RM.Model.ProtocolRunner.Default
         [JsonConstructor]
         public KittyRunner(string ownerProtocolName) : base(ownerProtocolName)
         {
-            base.Name = Name;
+            base._name = Name;
             CodePages = new List<string>
             {
                 "UTF-8",
@@ -112,8 +111,6 @@ namespace _1RM.Model.ProtocolRunner.Default
             get => File.Exists(_puttyExePath) ? _puttyExePath : PuttyConnectableExtension.GetInternalKittyExeFullName();
             set => SetAndNotifyIfChanged(ref _puttyExePath, value);
         }
-
-
 
 
         private RelayCommand? _cmdSelectDbPath;
