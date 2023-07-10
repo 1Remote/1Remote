@@ -239,34 +239,37 @@ namespace _1RM.View.ServerList
 
         public void VmServerListDummyNode()
         {
-            if (SourceService.LocalDataSource != null)
+            Execute.OnUIThreadSync(() =>
             {
-                if (VmServerList.All(x => x.DataSource != SourceService.LocalDataSource))
+                if (SourceService.LocalDataSource != null)
                 {
-                    VmServerList.Add(new ProtocolBaseViewModelDummy(SourceService.LocalDataSource!));
-                    SimpleLogHelper.Debug($"Add dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                    if (VmServerList.All(x => x.DataSource != SourceService.LocalDataSource))
+                    {
+                        VmServerList.Add(new ProtocolBaseViewModelDummy(SourceService.LocalDataSource!));
+                        SimpleLogHelper.Debug($"Add dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                    }
+                    else if (VmServerList.Any(x => x.DataSource == SourceService.LocalDataSource && x is not ProtocolBaseViewModelDummy)
+                             && VmServerList.FirstOrDefault(x => x.DataSource == SourceService.LocalDataSource && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                    {
+                        VmServerList.Remove(dummy);
+                        SimpleLogHelper.Debug($"Remove dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                    }
                 }
-                else if (VmServerList.Any(x => x.DataSource == SourceService.LocalDataSource && x is not ProtocolBaseViewModelDummy)
-                         && VmServerList.FirstOrDefault(x => x.DataSource == SourceService.LocalDataSource && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                foreach (var source in SourceService.AdditionalSources)
                 {
-                    VmServerList.Remove(dummy);
-                    SimpleLogHelper.Debug($"Remove dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
+                    if (VmServerList.All(x => x.DataSource != source.Value))
+                    {
+                        VmServerList.Add(new ProtocolBaseViewModelDummy(source.Value));
+                        SimpleLogHelper.Debug($"Add dummy server for `{source.Value.DataSourceName}`");
+                    }
+                    else if (VmServerList.Any(x => x.DataSource == source.Value && x is not ProtocolBaseViewModelDummy)
+                             && VmServerList.FirstOrDefault(x => x.DataSource == source.Value && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                    {
+                        VmServerList.Remove(dummy);
+                        SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
+                    }
                 }
-            }
-            foreach (var source in SourceService.AdditionalSources)
-            {
-                if (VmServerList.All(x => x.DataSource != source.Value))
-                {
-                    VmServerList.Add(new ProtocolBaseViewModelDummy(source.Value));
-                    SimpleLogHelper.Debug($"Add dummy server for `{source.Value.DataSourceName}`");
-                }
-                else if (VmServerList.Any(x => x.DataSource == source.Value && x is not ProtocolBaseViewModelDummy)
-                         && VmServerList.FirstOrDefault(x => x.DataSource == source.Value && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
-                {
-                    VmServerList.Remove(dummy);
-                    SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
-                }
-            }
+            });
             ApplySort();
         }
 

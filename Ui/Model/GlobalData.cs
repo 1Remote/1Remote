@@ -28,13 +28,11 @@ namespace _1RM.Model
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
-            CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
-            _timer = new Timer(1000)
+            _timer = new Timer(500)
             {
                 AutoReset = false,
             };
-            _timer.Elapsed += TimerOnElapsed;
-            _timer.Start();
+            _timer.Elapsed += (sender, args) => TimerOnElapsed();
         }
 
         private DataSourceService? _sourceService;
@@ -415,6 +413,7 @@ namespace _1RM.Model
         }
         public void StartTick()
         {
+            CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
             lock (this)
             {
                 _timerStopFlag = false;
@@ -459,7 +458,7 @@ namespace _1RM.Model
         }
 
         public DateTime CheckUpdateTime;
-        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+        private void TimerOnElapsed()
         {
             try
             {

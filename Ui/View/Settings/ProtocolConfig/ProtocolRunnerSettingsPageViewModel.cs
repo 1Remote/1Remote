@@ -110,6 +110,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                         }
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
+                        _protocolConfigurationService.Save();
                     }
                 });
             }

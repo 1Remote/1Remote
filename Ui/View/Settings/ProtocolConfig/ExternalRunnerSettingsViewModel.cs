@@ -5,6 +5,7 @@ using System.Windows.Media.Animation;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol;
 using _1RM.Model.ProtocolRunner;
+using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -24,6 +25,11 @@ public class ExternalRunnerSettingsViewModel
     {
         ExternalRunner = externalRunner;
         _languageService = languageService;
+
+        ExternalRunner.PropertyChanged += (sender, args) =>
+        {
+            IoC.Get<ProtocolConfigurationService>().Save();
+        };
     }
 
 
@@ -98,6 +104,7 @@ public class ExternalRunnerSettingsViewModel
                         ExternalRunner.RunWithHosting = false;
                     }
                 }
+                IoC.Get<ProtocolConfigurationService>().Save();
             });
         }
     }
@@ -111,6 +118,7 @@ public class ExternalRunnerSettingsViewModel
             return _cmdAddEnvironmentVariable ??= new RelayCommand((o) =>
             {
                 ExternalRunner.EnvironmentVariables.Add(new ExternalRunner.ObservableKvp<string, string>("", ""));
+                IoC.Get<ProtocolConfigurationService>().Save();
             });
         }
     }
@@ -129,6 +137,7 @@ public class ExternalRunnerSettingsViewModel
                    )
                 {
                     ExternalRunner.EnvironmentVariables.Remove(item);
+                    IoC.Get<ProtocolConfigurationService>().Save();
                 }
             });
         }
