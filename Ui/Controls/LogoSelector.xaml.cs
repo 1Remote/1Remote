@@ -118,7 +118,7 @@ namespace _1RM.Controls
                 CanvasImage.SetValue(Canvas.LeftProperty, (CanvasWhiteBoard.Width - CanvasImage.Width) / 2);
                 CanvasImage.SetValue(Canvas.TopProperty, (CanvasWhiteBoard.Height - CanvasImage.Height) / 2);
 
-                Scaling = Math.Min(CanvasWhiteBoard.Width / CanvasImage.Width, CanvasWhiteBoard.Height / CanvasImage.Height);
+                Scaling = Math.Min(CanvasWhiteBoard.Width * 0.9 / CanvasImage.Width, CanvasWhiteBoard.Height / CanvasImage.Height);
             }
             OnLogoChanged?.Invoke();
         }
@@ -390,6 +390,8 @@ namespace _1RM.Controls
                             icon.Handle,
                             new Int32Rect(0, 0, icon.Width, icon.Height),
                             BitmapSizeOptions.FromEmptyOptions());
+                        var scale = Math.Min(CanvasWhiteBoard.Width * 0.9 / icon.Width, CanvasWhiteBoard.Height * 0.9 / icon.Height);
+                        img = img.Resize(scale, scale);
                         SetImg(img);
                     }
                 }
@@ -400,11 +402,19 @@ namespace _1RM.Controls
                         icon.Handle,
                         new Int32Rect(0, 0, icon.Width, icon.Height),
                         BitmapSizeOptions.FromEmptyOptions());
+                    var scale = Math.Min(CanvasWhiteBoard.Width * 0.9 / icon.Width, CanvasWhiteBoard.Height * 0.9 / icon.Height);
+                    img = img.Resize(scale, scale);
                     SetImg(img);
                 }
                 else
                 {
-                    SetImg(NetImageProcessHelper.ReadImgFile(path)?.ToBitmapSource());
+                    var icon = NetImageProcessHelper.ReadImgFile(path)?.ToBitmapSource();
+                    if (icon != null)
+                    {
+                        var scale = Math.Min(CanvasWhiteBoard.Width * 0.9 / icon.Width, CanvasWhiteBoard.Height * 0.9 / icon.Height);
+                        var img = icon.Resize(scale, scale);
+                        SetImg(img);
+                    }
                 }
             }
         }

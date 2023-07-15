@@ -110,7 +110,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var cb = new CheckBox
                 {
-                    Content = IoC.Get<LanguageService>().Translate("Show XXX button", IoC.Get<LanguageService>().Translate("Reconnect")),
+                    Content = IoC.TryGet<LanguageService>()?.Translate("Show XXX button", IoC.TryGet<LanguageService>()?.Translate("Reconnect") ?? ""),
                     IsHitTestVisible = false,
                 };
 
@@ -131,7 +131,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var cb = new CheckBox
                 {
-                    Content = IoC.Get<LanguageService>().Translate("Show XXX button", IoC.Get<LanguageService>().Translate("Close")),
+                    Content = IoC.TryGet<LanguageService>()?.Translate("Show XXX button", IoC.TryGet<LanguageService>()?.Translate("Close") ?? ""),
                     IsHitTestVisible = false,
                 };
 
