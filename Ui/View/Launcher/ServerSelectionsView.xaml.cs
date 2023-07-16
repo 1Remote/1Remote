@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
@@ -102,6 +103,11 @@ namespace _1RM.View.Launcher
                 {
                     IoC.Get<LauncherWindowViewModel>().HideMe();
                     return;
+                }
+
+                if (key != Key.Tab)
+                {
+                    vm.AnyKeyExceptTabPressAfterShow = true;
                 }
 
                 if (GridActionsList.Visibility == Visibility.Visible)

@@ -58,11 +58,28 @@ namespace _1RM.View.Launcher
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
 
             IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewVisibility = Visibility.Collapsed;
-            Filter = "";
             RebuildConnectionHistory();
+
+
+            if (IoC.Get<LauncherWindowViewModel>().ServerSelectionsViewModel is { AnyKeyExceptTabPressAfterShow: true, SelectedItem: { DataSource: {IsWritable: true}, Server: {} p}})
+            {
+                SelectedProtocol = Protocols.FirstOrDefault(x => x.Protocol == p.Protocol) ?? Protocols.First();
+                if (p is ProtocolBaseWithAddressPort pbap)
+                {
+                    Filter = pbap.Address + ":" + pbap.Port;
+                }
+                if (p is ProtocolBaseWithAddressPortUserPwd pup && SelectedProtocol is ProtocolBaseWithAddressPortUserPwd pup2)
+                {
+                    pup2.UserName = pup.UserName;
+                    pup2.Password = pup.Password;
+                }
+            }
+
+
             Execute.OnUIThread(() =>
             {
                 view.TbKeyWord.Focus();
+                view.TbKeyWord.CaretIndex  = view.TbKeyWord.Text.Length;
             });
         }
 
@@ -80,7 +97,6 @@ namespace _1RM.View.Launcher
                     {
                         if (value == _filter)
                         {
-                            SimpleLogHelper.Warning("CalcVisibleByFilter");
                             CalcVisibleByFilter();
                         }
                     });
@@ -226,6 +242,7 @@ namespace _1RM.View.Launcher
                     if (string.IsNullOrEmpty(pwdDlg.UserName))
                     {
                         pwdDlg.UserName = protocolBaseWithAddressPortUserPwd.UserName;
+                        pwdDlg.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolBaseWithAddressPortUserPwd.Password) ?? protocolBaseWithAddressPortUserPwd.Password;
                     }
                     if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                     {
