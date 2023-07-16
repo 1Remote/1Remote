@@ -173,7 +173,7 @@ namespace _1RM.Service
                     cts.Cancel();
                     Task.WaitAll(tasks.ToArray());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // ignored
                 }

@@ -106,6 +106,8 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($@"MoveSessionToTabWindow: Moving host({host.GetHashCode()}) to any tab");
             // get tab
             TabWindowBase? tab;
+
+            lock (_dictLock)
             {
                 // remove from old parent
                 if (host.ParentWindow is FullScreenWindowView full)
@@ -176,35 +178,36 @@ namespace _1RM.Service
                         ret = _token2TabWindows.Last().Value;
                     }
                 }
-            }
 
-            // create new
-            if (ret == null)
-            {
-                var token = DateTime.Now.Ticks.ToString();
-                Execute.OnUIThreadSync(() =>
+                // create new
+                if (ret == null)
                 {
-                    ret = new TabWindowView(token, IoC.Get<LocalityService>());
-                    AddTab(ret);
-                    ret.Show();
-                    _lastTabToken = ret.Token;
-
-                    int loopCount = 0;
-                    while (ret.IsLoaded == false)
+                    var token = DateTime.Now.Ticks.ToString();
+                    Execute.OnUIThreadSync(() =>
                     {
-                        ++loopCount;
-                        Thread.Sleep(100);
-                        if (loopCount > 50)
-                            break;
-                    }
-                });
+                        ret = new TabWindowView(token, IoC.Get<LocalityService>());
+                        AddTab(ret);
+                        ret.Show();
+                        _lastTabToken = ret.Token;
+
+                        int loopCount = 0;
+                        while (ret.IsLoaded == false)
+                        {
+                            ++loopCount;
+                            Thread.Sleep(100);
+                            if (loopCount > 50)
+                                break;
+                        }
+                    });
+                }
+                Debug.Assert(ret != null);
+                return ret!;
             }
-            Debug.Assert(ret != null);
-            return ret!;
         }
 
         public TabWindowBase? GetTabByConnectionId(string connectionId)
         {
+            lock (_dictLock)
             return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
         }
     }

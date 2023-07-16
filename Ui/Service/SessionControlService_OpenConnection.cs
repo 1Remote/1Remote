@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
@@ -147,28 +148,34 @@ namespace _1RM.Service
 
         private string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
         {
-            var tab = this.GetOrCreateTabWindow(assignTabToken);
-            var host = runner.GetHost(protocol, tab);
-
-            string displayName = protocol.DisplayName;
+            TabWindowBase? tab = null;
+            ProtocolBase p = protocol;
+            Runner r = runner;
             Execute.OnUIThreadSync(() =>
             {
-                tab ??= this.GetOrCreateTabWindow(assignTabToken);
-                if (tab == null) return;
-                if (tab.IsClosing) return;
-                tab.Show();
+                lock (_dictLock)
+                {
+                    tab = this.GetOrCreateTabWindow(assignTabToken);
+                    var host = r.GetHost(p, tab);
 
-                // get display area size for host
-                Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-                host.OnClosed += OnRequestCloseConnection;
-                host.OnFullScreen2Window += this.MoveSessionToTabWindow;
-                tab.GetViewModel().AddItem(new TabItemViewModel(host, displayName));
-                _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-                host.Conn();
-                tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
-                tab.Activate();
+                    string displayName = p.DisplayName;
+                    tab ??= this.GetOrCreateTabWindow(assignTabToken);
+                    if (tab == null) return;
+                    if (tab.IsClosing) return;
+                    tab.Show();
+
+                    // get display area size for host
+                    Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
+                    host.OnClosed += OnRequestCloseConnection;
+                    host.OnFullScreen2Window += this.MoveSessionToTabWindow;
+                    tab.GetViewModel().AddItem(new TabItemViewModel(host, displayName));
+                    _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+                    host.Conn();
+                    tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
+                    tab.Activate();
+                }
             });
-            return tab.Token;
+            return tab?.Token ?? "";
         }
         #endregion
 
