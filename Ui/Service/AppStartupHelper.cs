@@ -200,15 +200,15 @@ namespace _1RM.Service
 
         private static Bitmap? MargeBitmap(List<Bitmap?> bitmapsRaw)
         {
-            var bitmaps = (bitmapsRaw.Where(x => x != null).ToList() as List<Bitmap>)!;
+            List<Bitmap?> bitmaps = bitmapsRaw.Where(x => x != null).ToList();
             if (bitmaps.Count == 0)
                 return null;
             if (bitmaps.Count == 1)
                 return bitmaps.First();
             if (bitmaps.Count == 2)
             {
-                var first = bitmaps.First();
-                var second = bitmaps.Last();
+                var first = bitmaps.First()!;
+                var second = bitmaps.Last()!;
                 // 水平拼接
                 int width = first.Width + second.Width;
                 int height = Math.Max(first.Height, second.Height);
@@ -222,10 +222,10 @@ namespace _1RM.Service
 
             if (bitmaps.Count == 3)
             {
-                var first = MargeBitmap(new List<Bitmap>() { bitmaps[0], bitmaps[1] });
+                var first = MargeBitmap(new List<Bitmap?>() { bitmaps[0], bitmaps[1] });
                 var second = bitmaps.Last();
                 // 竖直拼接
-                int width = Math.Max(first.Width, second.Width);
+                int width = Math.Max(first!.Width, second!.Width);
                 int height = first.Height + second.Height;
                 Bitmap result = new Bitmap(width, height, first.PixelFormat);
                 Graphics gr = Graphics.FromImage(result);
@@ -236,8 +236,8 @@ namespace _1RM.Service
             }
             else
             {
-                var first = MargeBitmap(new List<Bitmap>() { bitmaps[0], bitmaps[1] });
-                var second = MargeBitmap(new List<Bitmap>() { bitmaps[2], bitmaps[3] });
+                var first = MargeBitmap(new List<Bitmap?>() { bitmaps[0], bitmaps[1] })!;
+                var second = MargeBitmap(new List<Bitmap?>() { bitmaps[2], bitmaps[3] })!;
                 // 竖直拼接
                 int width = Math.Max(first.Width, second.Width);
                 int height = first.Height + second.Height;

@@ -59,7 +59,16 @@ namespace _1RM.Service
         private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
         private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
 
-        public int TabWindowCount => _token2TabWindows.Count;
+        public int TabWindowCount
+        {
+            get
+            {
+                lock (_dictLock)
+                {
+                    return _token2TabWindows.Count;
+                }
+            }
+        }
 
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
@@ -376,31 +385,13 @@ namespace _1RM.Service
             }
         }
 
-        private bool _isCleaning = false;
         public void CleanupProtocolsAndWindows()
         {
-            if (_isCleaning == false)
+            lock (_dictLock)
             {
-                lock (this)
-                {
-                    if (_isCleaning == false)
-                    {
-                        _isCleaning = true;
-                        try
-                        {
-                            lock (_dictLock)
-                            {
-                                this.CloseEmptyWindows();
-                            }
-                            this.CloseMarkedProtocolHost();
-                        }
-                        finally
-                        {
-                            _isCleaning = false;
-                        }
-                    }
-                }
+                this.CloseEmptyWindows();
             }
+            this.CloseMarkedProtocolHost();
         }
         #endregion
 
