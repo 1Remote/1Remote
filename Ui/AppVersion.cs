@@ -12,11 +12,7 @@ namespace _1RM
         public const string PreRelease = "beta.05"; // e.g. "alpha" "beta.2"
 
         public static readonly Version VersionData = new Version(Major, Minor, Patch, Build, PreRelease);
-#if DEBUG
-        public static string Version => VersionData.ToString() + " " + BuildDate;
-#else
         public static string Version => VersionData.ToString();
-#endif
 
 
         public static string[] UpdateCheckUrls =>

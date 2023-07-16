@@ -39,6 +39,7 @@ namespace _1RM.View.Launcher
             }
         }
 
+        public bool AnyKeyExceptTabPressAfterShow = false;
         public void Show()
         {
             if (this.View is not ServerSelectionsView view) return;

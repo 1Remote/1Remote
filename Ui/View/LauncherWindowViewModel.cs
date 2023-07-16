@@ -162,6 +162,7 @@ namespace _1RM.View
                     window.Topmost = false; // important
                     window.Topmost = true; // important
                     window.Focus(); // important
+                    ServerSelectionsViewModel.AnyKeyExceptTabPressAfterShow = false;
                     ServerSelectionsViewModel.Show();
                     ServerSelectionsViewModel.SelectedIndex = 0;
                 }
@@ -186,6 +187,7 @@ namespace _1RM.View
                             MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
                         }
                         window.Hide();
+                        QuickConnectionViewModel.Filter = "";
                         ServerSelectionsViewModel.Show();
                         // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
                         System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
