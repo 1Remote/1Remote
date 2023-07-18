@@ -33,11 +33,11 @@ Always on top;Always on top;置顶;Vždy na vrchu;;Garder au premier plan;Sempre
 Close all;Close all;全部关闭;Zavřít vše;Alle schließen;Tout fermer;Fechar tudo;;全部關閉;Pechar todo;Zamknij wszystkie
 Rename;Rename;重命名;Přejmenovat;Umbenennen;Renommer;Renomear;;重新命名;Renomear;Zmień nazwę
 Connect;Connect;连接;Připojit;Verbinden;Connexion;Conectar;;連線;Conectar;Połącz
-Connect (New window);Connect (New window);连接 (新窗口);Připojit (nové okno);Verbinden (Neues Fenster);Connexion (Nouvelle fenetre);Conectar (Nova janela);;連線 (開新視窗);Conectar (nova fiestra);Połącz ponownie
+Connect (New window);Connect (New window);连接 (新窗口);Připojit (nové okno);Verbinden (Neues Fenster);Connexion (Nouvelle fenetre);Conectar (Nova janela);;連線 (開新視窗);Conectar (nova fiestra);Połącz (nowe okno)
 Note;Note;Note;Poznámka;Note;Note;Note;;備註;Nota;Nota
 Share;Share;分享;Sdílet;;;;;分享;Compartir;Udostępnij
 Copy;Copy;复制;Zkopírovat;;;;;複製;Copiar;Kopiuj
-Enabled;Enabled;启用;Zapnuto;Aktiv;Activer;Habilitado;;啟用;Habilitado;Aktywuj
+Enabled;Enabled;启用;Zapnuto;Aktiv;Activer;Habilitado;;啟用;Habilitado;Aktywne
 Helper;Helper;助手;Pomocné;;;Ajudante;;協助;Axudante;Pomoc
 Preview;Preview;预览;Náhled;;;Visualizar;;預覽;Vista previa;Podgląd
 Theme;Theme;主题;Vzhled;Thema;Thème;Tema;;佈景主題;Tema;Motyw
@@ -63,10 +63,10 @@ Port;Port;端口;Port;Port;Port;Port;;連接埠;Porto;Port
 User;User;用户名;Uživatel;Benutzer;Utilisateur;Usuário;;使用者名稱;Usuario;Użytkownik
 Password;Password;密码;Heslo;Passwort;Mot de passe;Senha;;密碼;Chave de paso;Hasło
 Selected;Selected;选中;Vybráno;Ausgewählt;;Selecionado;;已選取;Seleccionado;Wybrane
-Custom;Custom;定制;Uživatelsky určené;Benutzerdefiniert;Coutume;Personalizado;;自訂;Personalizado;Spersonalizowany
+Custom;Custom;定制;Uživatelsky určené;Benutzerdefiniert;Coutume;Personalizado;;自訂;Personalizado;Personalizacja
 All;All;全部;Vše;Alle;Tous;Todos;;全部;Todos;Wszystkie
 Protocol;Protocol;协议;Protokol;Protokoll;;Protocolo;;協定;Protocolo;Protokół
-Cameras;Cameras;摄像头;;;;;;;;Kamery
+Cameras;Cameras;摄像头;;;;;;;;Kamera
 Upload;Upload;上传;;;;;;;;Wgraj
 filter_mainwindow;Keywords or '#' + tag name;输入关键词或 '#' + 标签名;Klíčová slova nebo „#“ + název štítku;Schlüsselwörter oder '#' + Tag-Name;Mots-clés ou '#' + nom de tag;Palavras-chave ou '#' + 'nome_da_tag';;輸入關鍵字或 '#' + 標籤名稱;Palabras chave ou '#' + etiqueta;Słowa kluczowe lub '#' + nazwa taga
 Search (Ctrl+F);Search (Ctrl + F);搜索 (Ctrl + F);Hledat (Ctrl + F);Suche (STRG + F);Rechercher (Ctrl + F);Procurar (Ctrl + F);;搜尋 (Ctrl + F);Procurar (Ctrl + F);Szukaj (CTRL + F)
@@ -113,7 +113,7 @@ confirm_to_delete;Are you sure you want to delete?;确认要删除吗？;Opravdu
 confirm_to_delete_selected;Are you sure you want to delete all selected?;确认要删除所选全部项目吗？;Opravdu chcete vše vybrané smazat?;Wirklich alle markierten Einträge löschen?;Valider la suppression de toutes les sélections ?;Tem certeza de que deseja excluir todos os selecionados?;;您確定要刪除選取的全部項目嗎？;Seguro de que queres borrar todo o seleccionado?;Czy napewno usunąć wszystkie zaznaczone pliki?
 import_server_dialog_title;Select a file;选择导入文件;Vyberte soubor;Dateiauswahl;Sélectionner un fichier;Selecione um arquivo;;選取匯入檔案;Escoche un arquivo;Wybierz pliki do wysłania
 import_from_json;import json;导入 json;import json;import json;import json;import json;import json;從 JSON 檔案;dende json;Importuj json
-import_from_mremoteng_csv;import mRemoteNG csv;导入 mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;;;Importuj mRemoteNG csv
+import_from_mremoteng_csv;import mRemoteNG csv;导入 mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;;;Importuj csv z  mRemoteNG
 import_from_rdp_file;import *.rdp;导入 .rdp;import *.rdp;import *.rdp;import *.rdp;import *.rdp;import *.rdp;;;Importuj *.rdp
 import_done_0_items_added;Imported successfully, {0} item(s) added.;已导入{0}条记录.;Úspěšně naimportováno, {0} položek přidáno.;Erfolgreich importiert, {0} Element hinzugefügt.;Importé avec succès, {0} élément(s) ajouté(s).;Importado com sucesso, {0} item(ns) adicionado(s).;;已匯入 {0} 筆項目。;Importación completada, {0} obxectos engadidos.;Import zakończony pomyślnie, {0} wpis/ów dodane.
 import_failure_with_data_format_error;Error data format!;导入0条，输入的数据文件格式有误!;Chyba ve formátu dat!;Falsches Datenformat!;Erreur dans le format des données !;Erro no formato dos dados!;;沒有項目被匯入，可能是檔案格式有問題！;Error no formato do dato!;Błąd formatu pliku!
@@ -221,11 +221,38 @@ Cmd parameter;CMD parameter;命令行参数;parametry pro příkaz;;CMD paramèt
 New runner name;New runner name;新增 runner 名;Název pro nový spouštěč;New runner name;New runner name;Novo nome do agente;;新增執行器名稱;Nome do novo executable;Nazwa nowego programu uruchamiającego
 Can not be empty!;Can not be empty!;不能为空！;Je třeba vyplnit!;;;Não pode estar vazio!;;不能為空值！;Non pode estar baleiro!;Nie może być pusty ciąg!
 Hosting;Hosting;集成;Hostování;Hosting;Hosting;Hospedar;;嵌入;Hospedaxe;Hosting
-Hosting this exe in 1Remote tab view?;Hosting this exe in 1Remote tab windowView?;将该 exe 集成到 1Remote 的 tab 视图中?;Hostovat tento spustitelný soubor v 1Remote panelu windowView?;;;Hospedar este .exe na guia do 1Remote?;;;;Hostować ten plik exe w 1Remote tab?
+Hosting this exe in 1Remote tab view?;Hosting this exe in 1Remote tab windowView?;将该 exe 集成到 1Remote 的 tab 视图中?;Hostovat tento spustitelný soubor v 1Remote panelu windowView?;;;Hospedar este .exe na guia do 1Remote?;;;;Hostować ten plik exe w 1Remote?
 Caution: some exe can not be hosted in 1Remote.;Caution: some exe can not be hosted by 1Remote, please test by your self.;警告: 某些应用程序无法被集成到 1Remote 中，请自行测试。;Upozornění: hostování některých spustitelných souborů pomocí 1Remote nefunguje – je třeba si vyzkoušet.;Vorsicht: some exe can not be hosted by 1Remote, please test by your self.;;Atenção: alguns .exe não podem ser hospedados pelo 1Remote, por favor teste por conta própria.;;;;Uwaga: niektóre pliki exe nie mogą zostać hostowane, proszę przetestuj sam.
 Show environment variables;Show environment variables;显示环境变量;Zobrazit proměnné prostředí;Show umgebungsvariablen;;Mostrar variáveis de ambiente;;顯示環境變數;Mostrar variables do entorno;Pokaż zmienne środowiskowe
 Add environment variables;Add environment variables;添加环境变量;Přidat proměnné prostředí;Fügen Sie Umgebungsvariablen hinzu;;Adicionar variáveis de ambiente;;新增環境變數;Engadir variables de entorno;Dodaj zmienne środowiskowe
-write permissions alert;We don't have write permissions for the `{0}` directory! Please try: 1. run as administrator 2. change directory or file permissions  3. move 1Remote to another folder;我们没有路径 `{0}` 的写入权限！ 请尝试用以下方法修复问题： 1. 使用管理员权限运行程序 2. 修改路径的权限设置  3. 将 1Remote 移动到其他目录; Chybí oprávnění pro zápis do složky „{0}“! Vyzkoušejte: 1. spustit coby správce 2. upravit práva na souboru a/nebo složce 3. přesunout 1Remote do jiné složky;;;Não temos permissões de gravação para o diretório `{0}`! Por favor, tente: 1. `Executar como administrador` 2. Alterar as permissões de diretório/arquivo  3. Mover o 1Remote para outra pasta;;我們沒有對 `{0}` 的存取權限！ 請嘗試使用以下方式來解決此問題： 1. 使用系統管理員身分執行 2. 修改該目錄的權限設定 3. 將 PRemoteM 移動到其他位置;Non temos permisos de escritura para o cartafol '{0}' ! Por favor, intenta: 1.executar coma administrador 2. cambiar os permisos do cartafol ou do arquivo;Nie mamy uprawnień do folderu `{0}`! Spróbuj tych czynności: 1. uruchom jako administrator 2. zmień uprawnienia folderu lub zmień folder 3. przenieś 1Remote do innego folderu
+write permissions alert;"We don't have write permissions for the `{0}` directory!
+Please try:
+1. run as administrator
+2. change directory or file permissions 
+3. move 1Remote to another folder";"我们没有路径 `{0}` 的写入权限！
+请尝试用以下方法修复问题：
+1. 使用管理员权限运行程序
+2. 修改路径的权限设置 
+3. 将 1Remote 移动到其他目录";"
+Chybí oprávnění pro zápis do složky „{0}“!
+Vyzkoušejte:
+1. spustit coby správce
+2. upravit práva na souboru a/nebo složce
+3. přesunout 1Remote do jiné složky";;;"Não temos permissões de gravação para o diretório `{0}`!
+Por favor, tente:
+1. `Executar como administrador`
+2. Alterar as permissões de diretório/arquivo 
+3. Mover o 1Remote para outra pasta";;"我們沒有對 `{0}` 的存取權限！
+請嘗試使用以下方式來解決此問題：
+1. 使用系統管理員身分執行
+2. 修改該目錄的權限設定
+3. 將 PRemoteM 移動到其他位置";"Non temos permisos de escritura para o cartafol '{0}' ! Por favor, intenta:
+1.executar coma administrador
+2. cambiar os permisos do cartafol ou do arquivo";"Brak uprawnień do folderu `{0}`! 
+Spróbuj tych czynności: 
+1. uruchom jako administrator 
+2. zmień uprawnienia folderu lub zmień folder 
+3. przenieś 1Remote do innego folderu"
 Follow system;Follow system(Supported server: Windows Server 2012 R2 and above);跟随系统(服务器要求Windows Server 2012 R2及以上);Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější);Folgen des Systems(Unterstützter Server: Windows Server 2012 R2 und höher);Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur);Seguir o sistema (Servidor Compatível com Windows Server 2012 R2 e superior);;與系統相同 (Windows Server 2012 R2 及以上的伺服器);Seguir sistema (servidor soportado: Windows Server 2012 R2 e superior);Śledź system (Wspierana wersja: Windows Server 2012 R2 i wyżej)
 tag_tooltips;click : set this tag as filter{0}Ctrl + click : add this tag to the include list {0}Alt + click : add this tag to the exclude list;鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Alt + 鼠标左键 : 将该标签添加到排除列表;Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Alt + kliknutí levým tlačítkem: přidat tento štítek do seznamu vynechaných;;;Clique com o botão esquerdo : defina esta tag como filtro{0}Ctrl + clique com o botão esquerdo : adicione esta tag à lista de inclusão {0}Alt + clique com o botão esquerdo : adicione esta tag à lista de exclusão;;滑鼠左鍵：過濾出該標籤{0}Ctrl + 滑鼠左鍵：將該標籤加入至過濾清單 {0}Alt + 滑鼠左鍵：將該標籤加入到排除清單;Clic esquerdo : pon esta etiqueta coma filtro{0}Ctrl + Clic esquerdo : engadir esta etiqueta a lista incluída {0}Alt + Clic esquerdo :  engadir esta etiqueta a lista de excluídos;LPM : ustaw ten tag jako filtr{0}CTRL + LPM : dodaj ten tag do listy filtrów {0} ALT + LPM : usuń ten tag z listy filtrów
 Are you sure you want to close the connection?;Are you sure you want to close the connection?;确定要关闭连接么？;Opravdu chcete spojení zavřít?;Möchten Sie die Verbindung wirklich beenden?;Voulez-vous vraiment fermer la connexion?;Tem certeza de que deseja encerrar a conexão?;;確定要關閉連線嗎？;Estás seguro de que queres pechar a conexión?;Czy na pewno zamknąć połączenie?
@@ -257,8 +284,8 @@ Automatic address switching;Automatic address switching;自动切换地址;;;;;;
 Availability detection;Availability detection;地址可用性检测;;;;;;;;Wykrywanie dostępności
 Check if address is available before connect;Check if address is available before connect;连接前检测地址是否可用;;;;;;;;Sprawdź czy adres jest dostępny przed połączeniem
 When the default host or port is unavailable the alternate addresses will be tried in sequence;When the default host or port is unavailable the alternate addresses will be tried in sequence;当默认的地址不可用时，将自动依次尝试备选地址;;;;;;;;Kiedy domyślny adres lub port jest niedostęny, zostaną użyte alternatywne adresy w podanej kolejności
-support multi-address multi-account;support multi-address multi-account;支持多地址、多账号;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;;;Wspireanie kilku adresów - kilku kont
-We are not able to connect to xxx;We are not able to connect to `{0}`!;无法连接到`{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;;;Połączenie nie powiodło się `{0}`!
+support multi-address multi-account;support multi-address multi-account;支持多地址、多账号;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;;;Wspieranie kilku adresów - kilku kont
+We are not able to connect to xxx;We are not able to connect to `{0}`!;无法连接到`{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;;;Połączenie nie powiodło się z `{0}`!
 XXX is already existed!;`{0}` is already existed!;`{0}`已经存在！;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;;;`{0}` już istnieje!
 XXX is not existed!;`{0}` is not existed!;`{0}` 不存在！;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;;;`{0}` nie istnieje!
 Show credentials info;Show credentials info;显示地址账号信息;;;;;;;;Pokaż uwierzytelnienia
