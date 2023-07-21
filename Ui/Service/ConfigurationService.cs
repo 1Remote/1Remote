@@ -278,16 +278,7 @@ namespace _1RM.Service
 
         public static void SetSelfStart(bool isInstall)
         {
-
-#if FOR_MICROSOFT_STORE_ONLY
-            Task.Factory.StartNew(() =>
-            {
-                SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
-            }).Wait();
-#else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({isInstall}, \"{Assert.APP_NAME}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(isInstall, Assert.APP_NAME);
-#endif
+            SetSelfStartingHelper.SetSelfStart(isInstall, Assert.APP_NAME);
         }
 
 

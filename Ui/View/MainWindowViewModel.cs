@@ -198,11 +198,7 @@ namespace _1RM.View
                     ShowSetting = true;
                     ShowAbout = false;
                     EditorViewModel = null;
-#if FOR_MICROSOFT_STORE_ONLY
-                    IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsStartupTaskStateEnable;
-#else
-                    IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsSelfStartByRegistryKey(Assert.APP_NAME);
-#endif
+                    IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
                 }, o => IsShownList);
