@@ -5,21 +5,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.Settings.General;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
-using Ubiety.Dns.Core.Records;
 using WindowsShortcutFactory;
-using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.Service
 {
