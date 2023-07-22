@@ -259,7 +259,7 @@
     <s:String x:Key="Check if address is available before connect">接続する前にアドレスが利用可能かどうかを確認してください</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">デフォルトのホストまたはポートが使用できない場合は、代替アドレスが順番に試行されます。</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
-    <s:String x:Key="We are not able to connect to xxx"> We are not able to connect to `{0}`!</s:String>
+    <s:String x:Key="We are not able to connect to xxx">We are not able to connect to `{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">認証情報を表示する</s:String>
@@ -282,4 +282,6 @@
     <s:String x:Key="Unpin">雲浜</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">これはタグのリストです。右クリックしてコンテキスト メニューを表示し、ヘッダーに固定します。</s:String>
     <s:String x:Key="Create desktop shortcut">デスクトップショートカットを作成します</s:String>
+    <s:String x:Key="Success">成功</s:String>
+    <s:String x:Key="Failed">失敗した</s:String>
 </ResourceDictionary>
