@@ -68,6 +68,13 @@ namespace _1RM.View.ServerList
         }
         public ObservableCollection<ProtocolBaseViewModel> VmServerList { get; set; } = new ObservableCollection<ProtocolBaseViewModel>();
 
+        private bool _isAddToolTipShow = false;
+        public bool IsAddToolTipShow
+        {
+            get => _isAddToolTipShow;
+            set => SetAndNotifyIfChanged(ref _isAddToolTipShow, value);
+        }
+
         public int SelectedCount => VmServerList.Count(x => x.IsSelected);
 
         public EnumServerOrderBy ServerOrderBy
@@ -269,6 +276,7 @@ namespace _1RM.View.ServerList
                         SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
                     }
                 }
+                IsAddToolTipShow = !VmServerList.Any(x => x is not ProtocolBaseViewModelDummy);
             });
             ApplySort();
         }
@@ -830,6 +838,7 @@ namespace _1RM.View.ServerList
 
 
         private RelayCommand? _cmdRefreshDataSource;
+
         public RelayCommand CmdRefreshDataSource
         {
             get

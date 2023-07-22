@@ -258,7 +258,8 @@ namespace _1RM.Utils
             try
             {
                 SetSelfStartByRegistryKey(isInstall, appName);
-                return;
+                if (isInstall)
+                    return;
             }
             catch (Exception e)
             {
@@ -270,7 +271,8 @@ namespace _1RM.Utils
             try
             {
                 SetSelfStartByShortcut(isInstall, appName);
-                return;
+                if (isInstall)
+                    return;
             }
             catch (Exception e)
             {
@@ -283,17 +285,19 @@ namespace _1RM.Utils
             {
                 SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
             }).Wait();
-            return;
+            if (isInstall)
+                return;
 #endif
             return;
         }
 
         public static bool IsSelfStart(string appName)
         {
+            bool flag = false;
 #if REGISTRY_METHOD
             try
             {
-                return IsSelfStartByRegistryKey(appName);
+                flag |= IsSelfStartByRegistryKey(appName);
             }
             catch (Exception e)
             {
@@ -304,7 +308,7 @@ namespace _1RM.Utils
 #if SHORTCUT_METHOD
             try
             {
-                return IsSelfStartByShortcut(appName);
+                flag |= IsSelfStartByShortcut(appName);
             }
             catch (Exception e)
             {
@@ -313,9 +317,9 @@ namespace _1RM.Utils
 #endif
 
 #if STORE_UWP_METHOD
-            return IsStartupTaskStateEnable;
+            flag |= IsStartupTaskStateEnable;
 #endif
-            return false;
+            return flag;
         }
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Globalization;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using _1RM.Model;
-using _1RM.Service;
-using _1RM.View.Settings;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 

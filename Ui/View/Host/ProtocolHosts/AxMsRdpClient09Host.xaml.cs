@@ -271,7 +271,7 @@ namespace _1RM.View.Host.ProtocolHosts
             // purpose is not clear
             ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
 
-            if (_rdpSettings.EnableDiskDrives == true 
+            if (_rdpSettings.EnableDiskDrives == true
                 || _rdpSettings.EnableRedirectDrivesPlugIn == true)
             {
                 _rdpClient.AdvancedSettings9.RedirectDrives = true;
@@ -487,11 +487,23 @@ namespace _1RM.View.Host.ProtocolHosts
 
             #region Performance
 
+            // if win11 disable BandwidthDetection, make a workaround for #437 to hide info button after OS Win11 22H2 to avoid app crash when click the info button on Win11
+            // detail: https://github.com/1Remote/1Remote/issues/437
+            try
+            {
+                if (Environment.OSVersion.Version.Build >= 22600) // Win11 22H2
+                {
+                    _rdpClient.AdvancedSettings9.BandwidthDetection = false;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;
             if (_rdpSettings.DisplayPerformance != EDisplayPerformance.Auto)
             {
-                _rdpClient.AdvancedSettings9.BandwidthDetection = false;
                 // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings7-networkconnectiontype
                 // CONNECTION_TYPE_MODEM (1 (0x1)) Modem (56 Kbps)
                 // CONNECTION_TYPE_BROADBAND_LOW (2 (0x2)) Low-speed broadband (256 Kbps to 2 Mbps) CONNECTION_TYPE_SATELLITE (3 (0x3)) Satellite (2 Mbps to 16 Mbps, with high latency)
