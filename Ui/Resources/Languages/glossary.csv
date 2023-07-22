@@ -308,3 +308,5 @@ Pin;Pin;固定;;;;;;;;Przypinij
 Unpin;Unpin;取消固定;;;;;;;;Odepnij
 This is your list of tags. Right click for a context menu to pin them on header.;This is your list of tags. Right click for a context menu to pin them on header.;;;;;;;;;To jest Twoja lista tagów. Kliknij prawym dla menu kontektowego aby je przypiąć do nagłówka.
 Create desktop shortcut;Create desktop shortcut;创建桌面快捷方式;;;;;;;;Utwórz skrót na pulpicie
+Success;Success;成功;;;;;;;;
+Failed;Failed;失败;;;;;;;;

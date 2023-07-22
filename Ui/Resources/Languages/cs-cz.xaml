@@ -259,7 +259,7 @@
     <s:String x:Key="Check if address is available before connect">Před připojením zkontrolujte, zda je adresa dostupná</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">Pokud není výchozí hostitel nebo port k dispozici, budou postupně vyzkoušeny alternativní adresy</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
-    <s:String x:Key="We are not able to connect to xxx"> We are not able to connect to `{0}`!</s:String>
+    <s:String x:Key="We are not able to connect to xxx">We are not able to connect to `{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">Zobrazit informace o přihlašovacích údajích</s:String>
@@ -282,4 +282,6 @@
     <s:String x:Key="Unpin">cloudová pláž</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Toto je váš seznam značek. Kliknutím pravým tlačítkem zobrazíte kontextovou nabídku a připnete je do záhlaví.</s:String>
     <s:String x:Key="Create desktop shortcut">Vytvořit zástupce na ploše</s:String>
+    <s:String x:Key="Success">Úspěch</s:String>
+    <s:String x:Key="Failed">Nepodařilo se</s:String>
 </ResourceDictionary>

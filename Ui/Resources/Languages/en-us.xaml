@@ -249,8 +249,8 @@
     <s:String x:Key="Please select a Data Source">Please select a Data Source</s:String>
     <s:String x:Key="Test connection">Test connection</s:String>
     <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
-    <s:String x:Key="Show recently used here"> Show recently used here</s:String>
-    <s:String x:Key="Hide recently used"> Hide recently used</s:String>
+    <s:String x:Key="Show recently used here">Show recently used here</s:String>
+    <s:String x:Key="Hide recently used">Hide recently used</s:String>
     <s:String x:Key="Leave blank to inherit the default value">Leave blank to inherit the default value</s:String>
     <s:String x:Key="Alternative">Alternative</s:String>
     <s:String x:Key="with alternative">with alternative</s:String>
@@ -259,12 +259,12 @@
     <s:String x:Key="Check if address is available before connect">Check if address is available before connect</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">When the default host or port is unavailable the alternate addresses will be tried in sequence</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
-    <s:String x:Key="We are not able to connect to xxx"> We are not able to connect to `{0}`!</s:String>
+    <s:String x:Key="We are not able to connect to xxx">We are not able to connect to `{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">Show credentials info</s:String>
-    <s:String x:Key="Sorting"> Sorting</s:String>
-    <s:String x:Key="Sort by drag"> Sort by drag</s:String>
+    <s:String x:Key="Sorting">Sorting</s:String>
+    <s:String x:Key="Sort by drag">Sort by drag</s:String>
     <s:String x:Key="We can not connect database:">We can not connect database:</s:String>
     <s:String x:Key="We can not create tables on database:">We can not create tables on database:</s:String>
     <s:String x:Key="We can not insert into database:">We can not insert into database:</s:String>
@@ -275,11 +275,13 @@
     <s:String x:Key="because:">because:</s:String>
     <s:String x:Key="Pause">Pause</s:String>
     <s:String x:Key="Updating">Updating</s:String>
-    <s:String x:Key="Reconnecting"> Reconnecting</s:String>
-    <s:String x:Key="Next update check"> Next update check</s:String>
-    <s:String x:Key="Next auto reconnect"> Next auto reconnect</s:String>
+    <s:String x:Key="Reconnecting">Reconnecting</s:String>
+    <s:String x:Key="Next update check">Next update check</s:String>
+    <s:String x:Key="Next auto reconnect">Next auto reconnect</s:String>
     <s:String x:Key="Pin">Pin</s:String>
     <s:String x:Key="Unpin">Unpin</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">This is your list of tags. Right click for a context menu to pin them on header.</s:String>
     <s:String x:Key="Create desktop shortcut">Create desktop shortcut</s:String>
+    <s:String x:Key="Success">Success</s:String>
+    <s:String x:Key="Failed">Failed</s:String>
 </ResourceDictionary>

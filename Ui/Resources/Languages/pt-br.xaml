@@ -259,7 +259,7 @@
     <s:String x:Key="Check if address is available before connect">Verifique se o endereço está disponível antes de conectar</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">Quando o host ou porta padrão não estiver disponível, os endereços alternativos serão tentados em sequência</s:String>
     <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
-    <s:String x:Key="We are not able to connect to xxx"> We are not able to connect to `{0}`!</s:String>
+    <s:String x:Key="We are not able to connect to xxx">We are not able to connect to `{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">Mostrar informações de credenciais</s:String>
@@ -282,4 +282,6 @@
     <s:String x:Key="Unpin">praia nublada</s:String>
     <s:String x:Key="This is your list of tags. Right click for a context menu to pin them on header.">Esta é a sua lista de tags. Clique com o botão direito para obter um menu de contexto para fixá-los no cabeçalho.</s:String>
     <s:String x:Key="Create desktop shortcut">Criar atalho na área de trabalho</s:String>
+    <s:String x:Key="Success">Sucesso</s:String>
+    <s:String x:Key="Failed">Fracassado</s:String>
 </ResourceDictionary>
