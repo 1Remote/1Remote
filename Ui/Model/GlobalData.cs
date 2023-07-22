@@ -78,7 +78,7 @@ namespace _1RM.Model
                             isPinned = lts[tn].IsPinned;
                             customOrder = lts[tn].CustomOrder;
                         }
-                        else if(_configurationService.PinnedTags.Contains(tn))
+                        else if (_configurationService.PinnedTags.Contains(tn))
                         {
                             isPinned = true;
                         }

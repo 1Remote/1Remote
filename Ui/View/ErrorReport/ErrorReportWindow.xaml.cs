@@ -94,7 +94,7 @@ namespace _1RM.View.ErrorReport
                 var osName = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "productName", "")!.ToString();
                 var osType = Environment.Is64BitOperatingSystem ? "64-bits" : "32-bits";
                 var osVersion = Environment.OSVersion.Version.ToString();
-                var platform = $"{osName} {osType} {osVersion} ({osRelease})";
+                var platform = $"{osName} {osType} {osVersion} ({osRelease}) build {Environment.OSVersion.Version.Build}";
                 var attributes = Assembly.GetExecutingAssembly().CustomAttributes;
                 var framework = attributes.FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
                 var from = "";
