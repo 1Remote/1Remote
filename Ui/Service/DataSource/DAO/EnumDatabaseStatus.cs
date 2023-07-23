@@ -13,6 +13,22 @@ namespace _1RM.Service.DataSource.DAO
         EncryptKeyError, // 数据加密密钥不匹配，唯一的原因是软件未使用官方发布版本.
     }
 
+    public struct DatabaseStatus
+    {
+        public static DatabaseStatus New(EnumDatabaseStatus status, string extend = "")
+        {
+            var ret = new DatabaseStatus()
+            {
+                Status = status,
+                ExtendInfo = extend
+            };
+            return ret;
+        }
+        public EnumDatabaseStatus Status;
+        public string ExtendInfo;
+        public string GetErrorMessage => Status.GetErrorInfo() + " (" + ExtendInfo + ")";
+    }
+
 
     public static class EnumConnectResultErrorInfo
     {

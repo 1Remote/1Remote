@@ -186,11 +186,11 @@ namespace _1RM.View.Settings.DataSource
                             };
                             if (MysqlSource.TestConnection(config))
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success!"), ownerViewModel: this);
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success"), ownerViewModel: this);
                             }
                             else
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed!"), ownerViewModel: this);
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed"), ownerViewModel: this);
                             }
                         }
                         catch (Exception e)
