@@ -105,7 +105,14 @@ namespace _1RM.View.Launcher
                     {
                         Execute.OnUIThreadSync(() =>
                         {
-                            view.ListBoxSelections.ScrollIntoView(view.ListBoxSelections.SelectedItem);
+                            try
+                            {
+                                view.ListBoxSelections.ScrollIntoView(view.ListBoxSelections.SelectedItem);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                         });
                     }
                 }

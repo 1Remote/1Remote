@@ -129,11 +129,11 @@ namespace _1RM.View.Settings
                 return _cmdSaveAndGoBack ??= new RelayCommand((o) =>
                 {
                     // check if Db is ok
-                    var res = _dataSourceService.LocalDataSource?.Database_SelfCheck() ?? EnumDatabaseStatus.AccessDenied;
-                    if (res != EnumDatabaseStatus.OK)
+                    var res = _dataSourceService.LocalDataSource?.Database_SelfCheck() ?? DatabaseStatus.New(EnumDatabaseStatus.AccessDenied);
+                    if (res.Status != EnumDatabaseStatus.OK)
                     {
                         ShowPage(EnumMainWindowPage.SettingsData);
-                        MessageBoxHelper.ErrorAlert(res.GetErrorInfo());
+                        MessageBoxHelper.ErrorAlert(res.GetErrorMessage);
                         return;
                     }
 

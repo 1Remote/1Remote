@@ -107,7 +107,11 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 catch (MySqlException mse)
                 {
                     if (_lastException?.Message != mse.Message)
+                    {
                         SimpleLogHelper.Error(mse);
+                        MsAppCenterHelper.Error(mse);
+                    }
+
                     error = mse.Message;
                     _lastException = mse;
                 }

@@ -70,7 +70,7 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
-        public EnumDatabaseStatus InitLocalDataSource(SqliteSource sqliteConfig)
+        public DatabaseStatus InitLocalDataSource(SqliteSource sqliteConfig)
         {
             LocalDataSource?.Database_CloseConnection();
             sqliteConfig.DataSourceName = LOCAL_DATA_SOURCE_NAME;
@@ -78,7 +78,7 @@ namespace _1RM.Service.DataSource
             if (!IoPermissionHelper.HasWritePermissionOnFile(sqliteConfig.Path))
             {
                 LocalDataSource = null;
-                return EnumDatabaseStatus.AccessDenied;
+                return DatabaseStatus.New(EnumDatabaseStatus.AccessDenied, $"write permission denied for `{sqliteConfig.Path}`");
             }
             var ret = sqliteConfig.Database_SelfCheck();
             LocalDataSource = sqliteConfig;
@@ -89,7 +89,7 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// 添加并启用一个新的数据源（如果该数据源已存在，则更新），返回数据源的连接状态
         /// </summary>
-        public EnumDatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 2, bool doReload = true)
+        public DatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 2, bool doReload = true)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace _1RM.Service.DataSource
 
 
                 config.Database_CloseConnection();
-                var ret = EnumDatabaseStatus.NotConnectedYet;
+                var ret = DatabaseStatus.New(EnumDatabaseStatus.NotConnectedYet);
                 if(connectTimeOutSeconds > 0)
                     ret = config.Database_SelfCheck(connectTimeOutSeconds);
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
@@ -125,7 +125,9 @@ namespace _1RM.Service.DataSource
             catch (Exception e)
             {
                 SimpleLogHelper.Warning(e);
-                return EnumDatabaseStatus.AccessDenied;
+                MsAppCenterHelper.Error(e);
+                var ret = DatabaseStatus.New(EnumDatabaseStatus.AccessDenied, e.Message);
+                return ret;
             }
             finally
             {

@@ -548,7 +548,7 @@ namespace _1RM.Model
                 // reconnect 
                 foreach (var dataSource in needReconnect.Where(x => x.ReconnectTime < DateTime.Now))
                 {
-                    if (dataSource.Database_SelfCheck() == EnumDatabaseStatus.OK)
+                    if (dataSource.Database_SelfCheck().Status == EnumDatabaseStatus.OK)
                     {
                         minEtc = 0;
                     }

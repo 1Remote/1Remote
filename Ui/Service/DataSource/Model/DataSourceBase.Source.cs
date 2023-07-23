@@ -150,26 +150,36 @@ namespace _1RM.Service.DataSource.Model
         }
 
 
-        public bool Database_OpenConnection(int connectTimeOutSeconds = 5)
+        public Tuple<bool, string> Database_OpenConnection(int connectTimeOutSeconds = 5)
         {
-            var dataBase = GetDataBase();
-            // open db or create db.
-
-
-            var connectionString = GetConnectionString(connectTimeOutSeconds);
-            if (connectionString != _lastConnectionString)
+            try
             {
-                dataBase.CloseConnection();
-                _lastConnectionString = connectionString;
+                var dataBase = GetDataBase();
+                // open db or create db.
+
+
+                var connectionString = GetConnectionString(connectTimeOutSeconds);
+                if (connectionString != _lastConnectionString)
+                {
+                    dataBase.CloseConnection();
+                    _lastConnectionString = connectionString;
+                }
+
+                var result = dataBase.OpenNewConnection(connectionString);
+                SetStatus(dataBase.IsConnected() == true);
+                if (!result.IsSuccess)
+                {
+                    SimpleLogHelper.DebugError(result.ErrorInfo);
+                    return new Tuple<bool, string>(false, result.ErrorInfo);
+                }
+            }
+            catch (Exception e)
+            {
+                SetStatus(false);
+                return new Tuple<bool, string>(false, e.Message);
             }
 
-            var result = dataBase.OpenNewConnection(connectionString);
-            if (!result.IsSuccess)
-            {
-                SimpleLogHelper.DebugError(result.ErrorInfo);
-            }
-            SetStatus(dataBase.IsConnected() == true);
-            return true;
+            return new Tuple<bool, string>(true, "");
         }
 
         public virtual void Database_CloseConnection()
@@ -181,12 +191,13 @@ namespace _1RM.Service.DataSource.Model
 
 
         private static string _lastConnectionString = "";
-        public virtual EnumDatabaseStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
+        public virtual DatabaseStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
-            if (Database_OpenConnection(connectTimeOutSeconds) == false)
+            var tro = Database_OpenConnection(connectTimeOutSeconds);
+            if (tro.Item1 == false)
             {
                 SetStatus(false);
-                return Status;
+                return DatabaseStatus.New(Status, tro.Item2);
             }
 
             var dataBase = GetDataBase();
@@ -194,12 +205,14 @@ namespace _1RM.Service.DataSource.Model
 
 
             // create table
-            var ret = dataBase.InitTables();
-            if (ret.IsSuccess == false)
             {
-                SetStatus(false);
-                SimpleLogHelper.DebugWarning(ret.ErrorInfo);
-                return Status;
+                var initTablesResult = dataBase.InitTables();
+                if (initTablesResult.IsSuccess == false)
+                {
+                    SetStatus(false);
+                    SimpleLogHelper.DebugWarning(initTablesResult.ErrorInfo);
+                    return DatabaseStatus.New(Status, initTablesResult.ErrorInfo);
+                }
             }
 
             // check writable
@@ -208,15 +221,16 @@ namespace _1RM.Service.DataSource.Model
             // check readable
             if (!dataBase.GetConfig("EncryptionTest").IsSuccess)
             {
+                // can not read, return access denied
                 SetStatus(false);
-                return Status;
+                return DatabaseStatus.New(Status, "read database test failed");
             }
 
             // check if encryption key is matched
             if (dataBase.CheckEncryptionTest() == false)
             {
                 Status = EnumDatabaseStatus.EncryptKeyError;
-                return Status;
+                return DatabaseStatus.New(Status);
             }
 
             if (Status != EnumDatabaseStatus.OK)
@@ -225,7 +239,7 @@ namespace _1RM.Service.DataSource.Model
             }
             SetStatus(true);
             dataBase.CloseConnection();
-            return Status;
+            return DatabaseStatus.New(Status);
         }
 
         public Result Database_InsertServer(ProtocolBase server)

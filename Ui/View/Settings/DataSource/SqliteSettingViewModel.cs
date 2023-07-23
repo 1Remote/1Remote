@@ -54,12 +54,12 @@ namespace _1RM.View.Settings.DataSource
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
             var res = New.Database_SelfCheck();
-            if (res == EnumDatabaseStatus.OK)
+            if (res.Status == EnumDatabaseStatus.OK)
             {
                 return true;
             }
             if (showAlert == false) return false;
-            MessageBoxHelper.ErrorAlert(res.GetErrorInfo(), ownerViewModel: this);
+            MessageBoxHelper.ErrorAlert(res.GetErrorMessage, ownerViewModel: this);
             return false;
         }
 

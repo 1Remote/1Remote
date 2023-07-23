@@ -53,7 +53,7 @@ namespace _1RM
         public static GlobalData GlobalDataObj = null!;
 
         private static bool _isNewUser = false;
-        private static EnumDatabaseStatus _localDataConnectionStatus;
+        private static DatabaseStatus _localDataConnectionStatus;
 
         public static void InitOnStart()
         {
@@ -305,12 +305,12 @@ namespace _1RM
 
             var mvm = IoC.Get<MainWindowViewModel>();
             if (AppStartupHelper.IsStartMinimized == false
-                || _localDataConnectionStatus != EnumDatabaseStatus.OK
+                || _localDataConnectionStatus.Status != EnumDatabaseStatus.OK
                 || _isNewUser)
             {
-                if (_localDataConnectionStatus != EnumDatabaseStatus.OK)
+                if (_localDataConnectionStatus.Status != EnumDatabaseStatus.OK)
                 {
-                    string error = _localDataConnectionStatus.GetErrorInfo();
+                    string error = _localDataConnectionStatus.GetErrorMessage;
                     mvm.OnMainWindowViewLoaded += () =>
                     {
                         mvm.ShowMe(goPage: EnumMainWindowPage.SettingsData);
