@@ -45,6 +45,7 @@
 		<CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
 		<CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
 		<CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<!--<ItemGroup>
