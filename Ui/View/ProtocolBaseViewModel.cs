@@ -20,7 +20,12 @@ namespace _1RM.View
         public DataSourceBase? DataSource => Server.DataSource;
         public string DataSourceName => DataSource?.DataSourceName ?? "";
 
+        /// <summary>
+        /// Order in Main window list view
+        /// </summary>
         public int CustomOrder => LocalityListViewService.ServerCustomOrderGet(Id);
+
+        public double KeywordMark = double.MinValue;
 
         #region Grouped
         public string GroupedOrder

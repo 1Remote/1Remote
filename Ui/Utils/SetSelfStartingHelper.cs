@@ -202,8 +202,8 @@ namespace _1RM.Utils
 
 #if STORE_UWP_METHOD
         private static StartupTask? _startupTask = null;
-        private static bool IsStartupTaskStateEnable = false;
-        private static async void SetSelfStartByStartupTask(string appName, bool? isSetSelfStart = null)
+        private static bool _isStartupTaskStateEnable = false;
+        public static async void SetSelfStartByStartupTask(string appName, bool? isSetSelfStart = null)
         {
             _startupTask ??= await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
             switch (_startupTask.State)
@@ -214,17 +214,17 @@ namespace _1RM.Utils
                         // Task is disabled but can be enabled.
                         var newState = await _startupTask.RequestEnableAsync(); // ensure that you are on a UI thread when you call RequestEnableAsync()
                         Debug.WriteLine("Request to enable startup, result = {0}", newState);
-                        IsStartupTaskStateEnable = true;
+                        _isStartupTaskStateEnable = true;
                     }
                     else
                     {
-                        IsStartupTaskStateEnable = false;
+                        _isStartupTaskStateEnable = false;
                     }
 
                     break;
                 case StartupTaskState.DisabledByUser:
                 case StartupTaskState.DisabledByPolicy:
-                    IsStartupTaskStateEnable = false;
+                    _isStartupTaskStateEnable = false;
                     if (isSetSelfStart == true)
                     {
                         // Task is disabled and user must enable it manually.
@@ -240,15 +240,16 @@ namespace _1RM.Utils
                     if (isSetSelfStart == false)
                     {
                         _startupTask.Disable();
-                        IsStartupTaskStateEnable = false;
+                        _isStartupTaskStateEnable = false;
                     }
                     else
                     {
-                        IsStartupTaskStateEnable = true;
+                        _isStartupTaskStateEnable = true;
                     }
                     break;
             }
         }
+
 
 #endif
 
@@ -317,7 +318,7 @@ namespace _1RM.Utils
 #endif
 
 #if STORE_UWP_METHOD
-            flag |= IsStartupTaskStateEnable;
+            flag |= _isStartupTaskStateEnable;
 #endif
             return flag;
         }

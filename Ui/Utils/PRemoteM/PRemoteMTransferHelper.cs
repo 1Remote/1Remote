@@ -27,6 +27,8 @@ namespace _1RM.Utils.PRemoteM
         private static readonly List<ProtocolBase> _servers = new List<ProtocolBase>();
         public static bool IsReading = false;
 
+        public static bool AnyTransferData => _servers.Any();
+
         public static void RunIsNeedTransferCheckAsync()
         {
             Task.Factory.StartNew(() =>
