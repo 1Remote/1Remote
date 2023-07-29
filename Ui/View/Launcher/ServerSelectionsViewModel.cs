@@ -18,6 +18,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
+using VariableKeywordMatcher.Model;
 
 namespace _1RM.View.Launcher
 {
@@ -65,11 +66,11 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    _debounceDispatcher.Debounce(150, (obj) =>
+                    _debounceDispatcher.Debounce(100, (obj) =>
                     {
                         if (value == _filter)
                         {
-                            SimpleLogHelper.Warning("CalcVisibleByFilter");
+                            SimpleLogHelper.DebugWarning("CalcVisibleByFilter");
                             CalcVisibleByFilter();
                         }
                     });
@@ -182,6 +183,7 @@ namespace _1RM.View.Launcher
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.LastConnectTime));
             foreach (var viewModel in VmServerList)
             {
+                viewModel.KeywordMark = double.MinValue;
                 viewModel.PropertyChanged -= OnLastConnectTimeChanged;
                 viewModel.PropertyChanged += OnLastConnectTimeChanged;
             }
@@ -251,10 +253,34 @@ namespace _1RM.View.Launcher
             var newList = new List<ProtocolBaseViewModel>();
             foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
+                vm.KeywordMark = double.MinValue;
                 var server = vm.Server;
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp, ShowCredentials);
                 if (s.Item1 == true)
                 {
+                    if (s.Item2 is { } results)
+                    {
+                        foreach (var list in results.HitFlags)
+                        {
+                            if (list is { } hitFlags && hitFlags.Count > vm.KeywordMark)
+                            {
+                                // 计算 resultsHitFlag 中最长有多少个连续的 true
+                                var l = 0;
+                                foreach (var f in hitFlags)
+                                {
+                                    if (f == true)
+                                    {
+                                        l++;
+                                    }
+                                    else
+                                    {
+                                        vm.KeywordMark = Math.Max(vm.KeywordMark, l);
+                                        l = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     Execute.OnUIThreadSync(() =>
                     {
                         if (s.Item2 == null)
@@ -331,7 +357,8 @@ namespace _1RM.View.Launcher
                 }
             }
 
-            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.LastConnectTime));
+            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.KeywordMark)
+                .ThenByDescending(x => x.LastConnectTime));
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 

@@ -345,7 +345,8 @@ namespace _1RM
                 GlobalDataObj.StartTick();
                 IoC.Get<ServerListPageViewModel>().CmdRefreshDataSource.Execute();
             }
-            MaskLayerController.HideMask(mvm);
+            if (PRemoteMTransferHelper.IsReading == false && PRemoteMTransferHelper.AnyTransferData == false)
+                MaskLayerController.HideMask(mvm);
 
             AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
             if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
