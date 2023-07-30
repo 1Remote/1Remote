@@ -9,6 +9,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
+using _1RM.View.Launcher;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -71,7 +72,7 @@ namespace _1RM.View
         /// <summary>
         /// like: "#work #asd", display in launcher page.
         /// </summary>
-        public string TagString { get; private set; }
+        public string TagString { get; private set; } = "";
 
         public List<Tag> Tags { get; private set; } = new List<Tag>();
 
@@ -111,11 +112,12 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(DataSource));
                     RaisePropertyChanged(nameof(IsViewable));
                     RaisePropertyChanged(nameof(IsEditable));
-                    if (DisplayNameControl != null)
-                    {
-                        DisplayNameControl = OrgDisplayNameControl;
-                        SubTitleControl = OrgSubTitleControl;
-                    }
+                    //if (LauncherMainTitleViewModel != null)
+                    //{
+                    //    LauncherMainTitleViewModel = OrgDisplayNameControl;
+                    //    LauncherSubTitleViewModel = OrgSubTitleControl;
+                    //}
+                    _launcherMainTitleViewModel = new ServerTitleViewModel(Server.DisplayName);
                 }
                 RaisePropertyChanged();
             }
@@ -133,58 +135,21 @@ namespace _1RM.View
                     HoverNoteDisplayControl = new NoteIcon(this.Server);
                 });
             }
-            LastConnectTime = LocalityConnectRecorder.Get(Server);
-            TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
+        }
+
+        private ServerTitleViewModel? _launcherMainTitleViewModel;
+        public ServerTitleViewModel LauncherMainTitleViewModel
+        {
+            get => _launcherMainTitleViewModel ??= new ServerTitleViewModel(Server.DisplayName);
+            private set => SetAndNotifyIfChanged(ref _launcherMainTitleViewModel, value);
         }
 
 
-        private object? _orgDisplayNameControl = null;
-        public object OrgDisplayNameControl
+        private ServerTitleViewModel? _launcherSubTitleViewModel = null;
+        public ServerTitleViewModel LauncherSubTitleViewModel
         {
-            get
-            {
-                Execute.OnUIThreadSync(() =>
-                {
-                    if (_orgDisplayNameControl is not TextBlock
-                        || (_orgDisplayNameControl is TextBlock tb && tb.Text != Server?.DisplayName))
-                    {
-                        _orgDisplayNameControl = new TextBlock() { Text = Server?.DisplayName, };
-                    }
-                });
-                return _orgDisplayNameControl!;
-            }
-        }
-
-        private object? _orgSubTitleControl = null;
-        public object OrgSubTitleControl
-        {
-            get
-            {
-                Execute.OnUIThreadSync(() =>
-                {
-                    if (_orgSubTitleControl is not TextBlock
-                    || (_orgSubTitleControl is TextBlock tb && tb.Text != Server?.SubTitle))
-                    {
-                        _orgSubTitleControl = new TextBlock() { Text = Server?.SubTitle, };
-                    }
-                });
-                return _orgSubTitleControl!;
-            }
-        }
-
-        private object? _displayNameControl = null;
-        public object? DisplayNameControl
-        {
-            get => _displayNameControl ??= OrgDisplayNameControl;
-            set => SetAndNotifyIfChanged(ref _displayNameControl, value);
-        }
-
-
-        private object? _subTitleControl = null;
-        public object SubTitleControl
-        {
-            get { return _subTitleControl ??= OrgSubTitleControl; }
-            set => SetAndNotifyIfChanged(ref _subTitleControl, value);
+            get => _launcherSubTitleViewModel ??= new ServerTitleViewModel(Server.SubTitle);
+            private set => SetAndNotifyIfChanged(ref _launcherSubTitleViewModel, value);
         }
 
         private NoteIcon? _hoverNoteDisplayControl = null;
