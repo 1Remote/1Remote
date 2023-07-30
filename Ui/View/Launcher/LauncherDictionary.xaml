@@ -19,7 +19,6 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Height" Value="44" />
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="AllowDrop" Value="true" />

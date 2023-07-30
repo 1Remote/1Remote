@@ -168,8 +168,8 @@ namespace _1RM.View.Launcher
             {
                 viewModel.PropertyChanged -= OnLastConnectTimeChanged;
                 viewModel.PropertyChanged += OnLastConnectTimeChanged;
-                viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
-                viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
+                viewModel.LauncherMainTitleViewModel.UnHighLightAll();
+                viewModel.LauncherSubTitleViewModel.UnHighLightAll();
                 VmServerList.Add(viewModel);
             });
         }
@@ -195,14 +195,11 @@ namespace _1RM.View.Launcher
                     SelectedIndex = VmServerList.IndexOf(s);
             }
 
-            Execute.OnUIThread(() =>
+            foreach (var viewModel in VmServerList)
             {
-                foreach (var viewModel in VmServerList)
-                {
-                    viewModel.DisplayNameControl = viewModel.OrgDisplayNameControl;
-                    viewModel.SubTitleControl = viewModel.OrgSubTitleControl;
-                }
-            });
+                viewModel.LauncherMainTitleViewModel.UnHighLightAll();
+                viewModel.LauncherSubTitleViewModel.UnHighLightAll();
+            }
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
 
@@ -281,78 +278,41 @@ namespace _1RM.View.Launcher
                             }
                         }
                     }
-                    Execute.OnUIThreadSync(() =>
+                    if (s.Item2 == null)
                     {
-                        if (s.Item2 == null)
+                        vm.LauncherMainTitleViewModel.UnHighLightAll();
+                        if (ShowCredentials)
+                            vm.LauncherSubTitleViewModel.UnHighLightAll();
+                    }
+                    else
+                    {
+                        var mrs = s.Item2;
+                        if (mrs.IsMatchAllKeywords)
                         {
-                            vm.DisplayNameControl = vm.OrgDisplayNameControl;
-                            if (ShowCredentials)
-                                vm.SubTitleControl = vm.OrgSubTitleControl;
-                        }
-                        else
-                        {
-                            var mrs = s.Item2;
-                            if (mrs.IsMatchAllKeywords)
+                            var m1 = mrs.HitFlags[0];
+                            if (m1.Any(x => x == true))
                             {
-                                var displayName = server.DisplayName;
-                                var m1 = mrs.HitFlags[0];
-                                if (m1.Any(x => x == true))
-                                {
-                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                    for (int i = 0; i < m1.Count; i++)
-                                    {
-                                        if (m1[i])
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = displayName[i].ToString(),
-                                                Background = _highLightBrush,
-                                            });
-                                        else
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = displayName[i].ToString(),
-                                            });
-                                    }
+                                vm.LauncherMainTitleViewModel.HighLight(m1);
+                            }
+                            else
+                            {
+                                vm.LauncherMainTitleViewModel.UnHighLightAll();
+                            }
 
-                                    vm.DisplayNameControl = sp;
+                            if (ShowCredentials)
+                            {
+                                var m2 = mrs.HitFlags[1];
+                                if (m2.Any(x => x == true))
+                                {
+                                    vm.LauncherSubTitleViewModel.HighLight(m2);
                                 }
                                 else
                                 {
-                                    vm.DisplayNameControl = vm.OrgDisplayNameControl;
-                                }
-
-                                if (ShowCredentials)
-                                {
-                                    var subTitle = server.SubTitle;
-                                    var m2 = mrs.HitFlags[1];
-                                    if (m2.Any(x => x == true))
-                                    {
-                                        var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                        for (int i = 0; i < m2.Count; i++)
-                                        {
-                                            if (m2[i])
-                                                sp.Children.Add(new TextBlock()
-                                                {
-                                                    Text = subTitle[i].ToString(),
-                                                    Background = _highLightBrush,
-                                                });
-                                            else
-                                                sp.Children.Add(new TextBlock()
-                                                {
-                                                    Text = subTitle[i].ToString(),
-                                                });
-                                        }
-
-                                        vm.SubTitleControl = sp;
-                                    }
-                                    else
-                                    {
-                                        vm.SubTitleControl = vm.OrgSubTitleControl;
-                                    }
+                                    vm.LauncherSubTitleViewModel.UnHighLightAll();
                                 }
                             }
                         }
-                    });
+                    }
                     newList.Add(vm);
                 }
             }

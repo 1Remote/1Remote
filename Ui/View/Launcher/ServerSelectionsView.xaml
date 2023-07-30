@@ -8,6 +8,7 @@
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:serverList="clr-namespace:_1RM.View.ServerList"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerSelectionsViewModel}"
              d:DesignHeight="450" d:DesignWidth="400">
@@ -65,7 +66,7 @@
                             <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <ContentControl Grid.Row="0" Content="{Binding DisplayNameControl}">
+                        <ContentControl Grid.Row="0" s:View.Model="{Binding LauncherMainTitleViewModel}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="Opacity" Value="0.8"></Setter>
@@ -82,8 +83,7 @@
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
-                        <ContentControl Grid.Row="1" Opacity="0.8" 
-                                        Content="{Binding SubTitleControl}"
+                        <ContentControl Grid.Row="1" Opacity="0.8" s:View.Model="{Binding LauncherSubTitleViewModel}"
                                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ServerSelectionsView}}, Path=DataContext.ShowCredentials, Converter={StaticResource ConverterBool2Visible}}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
