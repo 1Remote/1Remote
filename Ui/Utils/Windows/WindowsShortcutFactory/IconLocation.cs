@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WindowsShortcutFactory
+namespace _1RM.Utils.Windows.WindowsShortcutFactory
 {
     /// <summary>
     /// Contains the path of an icon and optionally an index.
@@ -19,8 +19,8 @@ namespace WindowsShortcutFactory
         /// <param name="index">Index of the icon if a resource file is specified.</param>
         public IconLocation(string path, int index = 0)
         {
-            this.Path = path;
-            this.Index = index;
+            Path = path;
+            Index = index;
         }
 
         public static implicit operator IconLocation(string path) => string.IsNullOrEmpty(path) ? default : new IconLocation(path);
@@ -38,26 +38,26 @@ namespace WindowsShortcutFactory
         /// <summary>
         /// Gets a value indicating whether a path is specified.
         /// </summary>
-        public bool IsValid => !string.IsNullOrEmpty(this.Path);
+        public bool IsValid => !string.IsNullOrEmpty(Path);
 
         public override string ToString()
         {
-            if (!this.IsValid)
+            if (!IsValid)
                 return "None";
 
-            if (this.Index <= 0)
-                return this.Path;
+            if (Index <= 0)
+                return Path;
 
-            return $"{this.Path};{this.Index}";
+            return $"{Path};{Index}";
         }
         public bool Equals(IconLocation other)
         {
-            if (this.IsValid && other.IsValid)
-                return this.Path == other.Path && this.Index == other.Index;
+            if (IsValid && other.IsValid)
+                return Path == other.Path && Index == other.Index;
             else
-                return this.IsValid == other.IsValid;
+                return IsValid == other.IsValid;
         }
-        public override bool Equals(object? obj) => obj is IconLocation i && this.Equals(i);
-        public override int GetHashCode() => this.Path?.GetHashCode() ?? 0;
+        public override bool Equals(object? obj) => obj is IconLocation i && Equals(i);
+        public override int GetHashCode() => Path?.GetHashCode() ?? 0;
     }
 }

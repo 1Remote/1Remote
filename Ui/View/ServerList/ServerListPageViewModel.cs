@@ -22,6 +22,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
+using _1RM.Utils.Windows;
 using _1RM.View.Editor;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
@@ -464,8 +465,22 @@ namespace _1RM.View.ServerList
         {
             get
             {
-                return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
+                return _cmdExportSelectedToJson ??= new RelayCommand(async (o) =>
                 {
+                    if (WindowsHelloHelper.IsOsSupported)
+                    {
+                        if (await WindowsHelloHelper.HelloIsAvailable() != true)
+                        {
+                            MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，所有敏感操作都将被拒绝！请设置 PIN 或启用 Windows Hello。");
+                            return;
+                        }
+
+                        if (await WindowsHelloHelper.HelloVerifyAsync("TXT: 请通过 Windows Hello 解锁你的密码。") != true)
+                        {
+                            return;
+                        }
+                    }
+
                     if (this.View is ServerListPageView view)
                     {
                         view.CbPopForInExport.IsChecked = false;
