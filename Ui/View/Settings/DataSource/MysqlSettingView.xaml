@@ -4,10 +4,9 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                          xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
-                         xmlns:settings="clr-namespace:_1RM.View.Settings"
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                          xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:controls="clr-namespace:_1RM.Controls"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
                          WindowStyle="None"
@@ -100,8 +99,9 @@
 
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Password}"></TextBlock>
-                        <PasswordBox Grid.Row="5" Grid.Column="1" 
-                                     attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                        <controls:PasswordInput Height="24" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"
+                                                Grid.Row="5" Grid.Column="1" />
+
 
                         <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
                             <Button Command="{Binding CmdTestConnection}" Content="{DynamicResource 'Test connection'}" Width="100" Margin="10 0"></Button>

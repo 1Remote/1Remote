@@ -467,39 +467,55 @@ namespace _1RM.View.ServerList
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand(async (o) =>
                 {
-                    if (WindowsHelloHelper.IsOsSupported)
+                    try
                     {
-                        if (await WindowsHelloHelper.HelloIsAvailable() != true)
+                        if (WindowsHelloHelper.IsOsSupported)
                         {
-                            MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，所有敏感操作都将被拒绝！请设置 PIN 或启用 Windows Hello。");
-                            return;
+                            if (await WindowsHelloHelper.HelloIsAvailable() != true)
+                            {
+                                //MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。");
+                                SimpleLogHelper.Info("WindowsHelloIsAvailable == false");
+                            }
+                            else
+                            {
+                                MaskLayerController.ShowProcessingRing("TXT: 请完成 Windows Hello 权限验证。");
+                                if (await WindowsHelloHelper.HelloVerifyAsync() != true)
+                                {
+                                    return;
+                                }
+                                SimpleLogHelper.Info("Hello passed");
+                            }
+                        }
+                        else
+                        {
+                            SimpleLogHelper.Info("IsOsSupported == false");
                         }
 
-                        if (await WindowsHelloHelper.HelloVerifyAsync("TXT: 请通过 Windows Hello 解锁你的密码。") != true)
+                        if (this.View is ServerListPageView view)
                         {
-                            return;
+                            MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"));
+                            view.CbPopForInExport.IsChecked = false;
+                            var path = SelectFileHelper.SaveFile(
+                                title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
+                                filter: "json|*.json",
+                                selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
+                            if (path == null) return;
+                            var list = new List<ProtocolBase>();
+                            foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                            {
+                                var serverBase = (ProtocolBase)vs.Server.Clone();
+                                //serverBase.DecryptToConnectLevel();
+                                list.Add(serverBase);
+                            }
+
+                            ClearSelection();
+                            File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                            MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
                         }
                     }
-
-                    if (this.View is ServerListPageView view)
+                    finally
                     {
-                        view.CbPopForInExport.IsChecked = false;
-                        var path = SelectFileHelper.SaveFile(
-                            title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
-                            filter: "json|*.json",
-                            selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
-                        if (path == null) return;
-                        var list = new List<ProtocolBase>();
-                        foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
-                        {
-                            var serverBase = (ProtocolBase)vs.Server.Clone();
-                            serverBase.DecryptToConnectLevel();
-                            list.Add(serverBase);
-                        }
-
-                        ClearSelection();
-                        File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                        MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                        MaskLayerController.HideMask();
                     }
 
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
@@ -536,6 +552,7 @@ namespace _1RM.View.ServerList
                                 if (server != null)
                                 {
                                     server.Id = string.Empty;
+                                    server.DecryptToConnectLevel();
                                     list.Add(server);
                                 }
                             }

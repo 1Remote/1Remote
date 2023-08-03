@@ -289,7 +289,7 @@ namespace _1RM
 
         public static void InitOnLaunch()
         {
-            WindowsHelloHelper.Init(Assert.AppName).Wait();
+            WindowsHelloHelper.Init(Assert.AppName);
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
                 MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}");

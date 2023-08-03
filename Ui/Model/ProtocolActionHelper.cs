@@ -8,6 +8,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Windows;
 using _1RM.View;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Image;
@@ -115,15 +116,18 @@ public static class ProtocolActionHelper
             if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
             {
                 actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
-                    action: () =>
+                    action: async () =>
                     {
-                        try
+                        if (await WindowsHelloHelper.StrictHelloVerifyAsyncUi() == true)
                         {
-                            Clipboard.SetDataObject(UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password) ?? protocolServerWithAddrPortUserPwdBase.Password);
-                        }
-                        catch (Exception)
-                        {
-                            // ignored
+                            try
+                            {
+                                Clipboard.SetDataObject(UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                         }
                     }));
             }

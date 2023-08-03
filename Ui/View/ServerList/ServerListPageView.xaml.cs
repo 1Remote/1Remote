@@ -16,6 +16,8 @@ using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
+using Windows.Security.Credentials;
+using Windows.Security.Credentials.UI;
 
 namespace _1RM.View.ServerList
 {
