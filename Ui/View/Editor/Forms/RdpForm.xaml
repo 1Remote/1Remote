@@ -62,7 +62,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                        <controls:PasswordInput Height="28" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -620,7 +620,7 @@
                                     </Grid.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
-                                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" />
+                                        <controls:PasswordInput Height="28" Password="{Binding GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

@@ -15,6 +15,7 @@
 		<ApplicationIcon Condition="'$(Configuration)'=='Debug'">LOGO_D.ico</ApplicationIcon>
 		<ApplicationIcon Condition="'$(Configuration)'=='StoreDebug'">LOGO_D.ico</ApplicationIcon>
 		<ApplicationIcon Condition="'$(Configuration)'!='Debug'">LOGO.ico</ApplicationIcon>
+
 		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='ReleaseNet48'">net48</TargetFramework>
@@ -23,7 +24,7 @@
 
 		<!--<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>-->
 		<!--<TargetPlatformMinVersion Condition="'$(Configuration)'!='ReleaseNet48'">10.0.17763.0</TargetPlatformMinVersion>-->
-
+		
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,6 +36,28 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'!='net48'">
+		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<!--<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
+		<_SuppressWpfTrimError>true</_SuppressWpfTrimError>-->
+	</PropertyGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
+		<!-- 
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
+		二选一
+		<Reference Include="System.Runtime.WindowsRuntime">
+			<HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
+		</Reference>
+		<Reference Include="Windows">
+			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
+			<IsWinMDFile>true</IsWinMDFile>
+		</Reference>-->
+	</ItemGroup>
 
 	<PropertyGroup>
 		<!--
@@ -56,34 +79,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>-->
-
-	<ItemGroup Condition="'$(Configuration)|$(TargetFramework)'=='StoreDebug|net48'">
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
-		<!-- 
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
-		二选一
-		<Reference Include="System.Runtime.WindowsRuntime">
-			<HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
-		</Reference>
-		<Reference Include="Windows">
-			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
-			<IsWinMDFile>true</IsWinMDFile>
-		</Reference>-->
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)|$(TargetFramework)'=='StoreRelease|net48'">
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
-		<!-- 
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.17763.0" />
-		二选一
-		<Reference Include="System.Runtime.WindowsRuntime">
-			<HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
-		</Reference>
-		<Reference Include="Windows">
-			<HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
-			<IsWinMDFile>true</IsWinMDFile>
-		</Reference>-->
-	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
@@ -162,6 +157,7 @@
 		<PackageReference Include="FluentFTP" Version="37.0.2" />
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
+		<PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
 		<PackageReference Include="MySql.Data" Version="8.0.30" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />

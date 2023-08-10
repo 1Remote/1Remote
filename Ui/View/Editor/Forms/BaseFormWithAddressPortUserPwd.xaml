@@ -7,6 +7,7 @@
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:base="clr-namespace:_1RM.Model.Protocol.Base"
                         xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
+                        xmlns:controls="clr-namespace:_1RM.Controls"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance base:ProtocolBaseWithAddressPortUserPwd}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -45,7 +46,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <controls:PasswordInput Height="28" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                 </Grid>
             </StackPanel>
         </Grid>

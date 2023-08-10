@@ -22,6 +22,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
+using _1RM.Utils.Windows;
 using _1RM.View.Editor;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
@@ -464,27 +465,39 @@ namespace _1RM.View.ServerList
         {
             get
             {
-                return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
+                return _cmdExportSelectedToJson ??= new RelayCommand(async (o) =>
                 {
-                    if (this.View is ServerListPageView view)
+                    try
                     {
-                        view.CbPopForInExport.IsChecked = false;
-                        var path = SelectFileHelper.SaveFile(
-                            title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
-                            filter: "json|*.json",
-                            selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
-                        if (path == null) return;
-                        var list = new List<ProtocolBase>();
-                        foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                        if (await WindowsHelloHelper.HelloVerifyAsyncUi() != true)
                         {
-                            var serverBase = (ProtocolBase)vs.Server.Clone();
-                            serverBase.DecryptToConnectLevel();
-                            list.Add(serverBase);
+                            return;
                         }
 
-                        ClearSelection();
-                        File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                        MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                        if (this.View is ServerListPageView view)
+                        {
+                            MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"));
+                            view.CbPopForInExport.IsChecked = false;
+                            var path = SelectFileHelper.SaveFile(
+                                title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
+                                filter: "json|*.json",
+                                selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
+                            if (path == null) return;
+                            var list = new List<ProtocolBase>();
+                            foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                            {
+                                var serverBase = (ProtocolBase)vs.Server.Clone();
+                                list.Add(serverBase);
+                            }
+
+                            ClearSelection();
+                            File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                            MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                        }
+                    }
+                    finally
+                    {
+                        MaskLayerController.HideMask();
                     }
 
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
@@ -521,6 +534,7 @@ namespace _1RM.View.ServerList
                                 if (server != null)
                                 {
                                     server.Id = string.Empty;
+                                    server.DecryptToConnectLevel();
                                     list.Add(server);
                                 }
                             }
@@ -838,7 +852,6 @@ namespace _1RM.View.ServerList
 
 
         private RelayCommand? _cmdRefreshDataSource;
-
         public RelayCommand CmdRefreshDataSource
         {
             get

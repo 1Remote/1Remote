@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace WindowsShortcutFactory
+namespace _1RM.Utils.Windows.WindowsShortcutFactory
 {
     /// <summary>
     /// Represents a Windows shortcut.
@@ -36,7 +36,7 @@ namespace WindowsShortcutFactory
             }
         }
         private unsafe WindowsShortcut(ShellLinkInst* inst) => this.inst = inst;
-        ~WindowsShortcut() => this.Dispose(false);
+        ~WindowsShortcut() => Dispose(false);
 
         /// <summary>
         /// Gets or sets the arguments to pass to the target.
@@ -47,14 +47,14 @@ namespace WindowsShortcutFactory
             {
                 unsafe
                 {
-                    return this.GetString(this.inst->Vtbl->GetArguments);
+                    return GetString(inst->Vtbl->GetArguments);
                 }
             }
             set
             {
                 unsafe
                 {
-                    this.SetString(this.inst->Vtbl->SetArguments, value);
+                    SetString(inst->Vtbl->SetArguments, value);
                 }
             }
         }
@@ -67,14 +67,14 @@ namespace WindowsShortcutFactory
             {
                 unsafe
                 {
-                    return this.GetString(this.inst->Vtbl->GetDescription);
+                    return GetString(inst->Vtbl->GetDescription);
                 }
             }
             set
             {
                 unsafe
                 {
-                    this.SetString(this.inst->Vtbl->SetDescription, value);
+                    SetString(inst->Vtbl->SetDescription, value);
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace WindowsShortcutFactory
                 unsafe
                 {
                     var buffer = stackalloc char[260];
-                    uint res = this.inst->Vtbl->GetPath(this.inst, (byte*)buffer, 260, null, SLGP_RAWPATH);
+                    uint res = inst->Vtbl->GetPath(inst, (byte*)buffer, 260, null, SLGP_RAWPATH);
                     if (res == 0)
                         return Marshal.PtrToStringUni(new IntPtr(buffer));
                     else
@@ -99,7 +99,7 @@ namespace WindowsShortcutFactory
             {
                 unsafe
                 {
-                    this.SetString(this.inst->Vtbl->SetPath, value);
+                    SetString(inst->Vtbl->SetPath, value);
                 }
             }
         }
@@ -112,14 +112,14 @@ namespace WindowsShortcutFactory
             {
                 unsafe
                 {
-                    return this.GetString(this.inst->Vtbl->GetWorkingDirectory);
+                    return GetString(inst->Vtbl->GetWorkingDirectory);
                 }
             }
             set
             {
                 unsafe
                 {
-                    this.SetString(this.inst->Vtbl->SetWorkingDirectory, value);
+                    SetString(inst->Vtbl->SetWorkingDirectory, value);
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace WindowsShortcutFactory
                 {
                     int index = 0;
                     var buffer = stackalloc char[260];
-                    uint res = this.inst->Vtbl->GetIconLocation(this.inst, (byte*)buffer, 260, &index);
+                    uint res = inst->Vtbl->GetIconLocation(inst, (byte*)buffer, 260, &index);
                     if (res == 0)
                     {
                         var path = Marshal.PtrToStringUni(new IntPtr(buffer));
@@ -155,7 +155,7 @@ namespace WindowsShortcutFactory
                         var ptr = Marshal.StringToCoTaskMemUni(value.Path);
                         try
                         {
-                            this.inst->Vtbl->SetIconLocation(this.inst, ptr, value.Index);
+                            inst->Vtbl->SetIconLocation(inst, ptr, value.Index);
                         }
                         finally
                         {
@@ -164,7 +164,7 @@ namespace WindowsShortcutFactory
                     }
                     else
                     {
-                        this.inst->Vtbl->SetIconLocation(this.inst, default, 0);
+                        inst->Vtbl->SetIconLocation(inst, default, 0);
                     }
                 }
             }
@@ -179,7 +179,7 @@ namespace WindowsShortcutFactory
                 unsafe
                 {
                     int value = 0;
-                    this.inst->Vtbl->GetShowCmd(this.inst, &value);
+                    inst->Vtbl->GetShowCmd(inst, &value);
                     return value switch
                     {
                         2 => ProcessWindowStyle.Minimized,
@@ -200,7 +200,7 @@ namespace WindowsShortcutFactory
 
                 unsafe
                 {
-                    uint res = this.inst->Vtbl->SetShowCmd(this.inst, n);
+                    uint res = inst->Vtbl->SetShowCmd(inst, n);
                     if (res != 0)
                         throw new COMException("Unable to set window show command.", (int)res);
                 }
@@ -252,7 +252,7 @@ namespace WindowsShortcutFactory
                 var iid = IID_IPersistFile;
                 PersistFileInst* persistInst = null;
 
-                uint res = inst->Vtbl->QueryInterface(this.inst, &iid, (void**)&persistInst);
+                uint res = inst->Vtbl->QueryInterface(inst, &iid, (void**)&persistInst);
                 if (res != 0)
                     throw new COMException("Unable to get IPersistFile interface.", (int)res);
 
@@ -278,20 +278,20 @@ namespace WindowsShortcutFactory
         }
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 unsafe
                 {
-                    this.inst->Vtbl->Release(this.inst);
+                    inst->Vtbl->Release(inst);
                 }
 
-                this.disposed = true;
+                disposed = true;
             }
         }
         private void LoadInternal(string fileName)
@@ -301,7 +301,7 @@ namespace WindowsShortcutFactory
                 var iid = IID_IPersistFile;
                 PersistFileInst* persistInst = null;
 
-                uint res = inst->Vtbl->QueryInterface(this.inst, &iid, (void**)&persistInst);
+                uint res = inst->Vtbl->QueryInterface(inst, &iid, (void**)&persistInst);
                 if (res != 0)
                     throw new COMException("Unable to get IPersistFile interface.", (int)res);
 
@@ -328,7 +328,7 @@ namespace WindowsShortcutFactory
         private unsafe string? GetString(delegate* unmanaged[Stdcall]<ShellLinkInst*, byte*, int, uint> getMethod)
         {
             var buffer = stackalloc char[260];
-            uint res = getMethod(this.inst, (byte*)buffer, 260);
+            uint res = getMethod(inst, (byte*)buffer, 260);
             if (res == 0)
                 return Marshal.PtrToStringUni(new IntPtr(buffer));
             else
@@ -341,7 +341,7 @@ namespace WindowsShortcutFactory
                 var ptr = Marshal.StringToCoTaskMemUni(value);
                 try
                 {
-                    uint res = setMethod(this.inst, ptr);
+                    uint res = setMethod(inst, ptr);
                 }
                 finally
                 {
@@ -350,7 +350,7 @@ namespace WindowsShortcutFactory
             }
             else
             {
-                setMethod(this.inst, 0);
+                setMethod(inst, 0);
             }
         }
     }

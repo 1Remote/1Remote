@@ -284,4 +284,5 @@
     <s:String x:Key="Create desktop shortcut">创建桌面快捷方式</s:String>
     <s:String x:Key="Success">成功</s:String>
     <s:String x:Key="Failed">失败</s:String>
+    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。</s:String>
 </ResourceDictionary>

@@ -7,6 +7,7 @@
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
                         xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
+                        xmlns:controls="clr-namespace:_1RM.Controls"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance protocol:SFTP}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -55,7 +56,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <controls:PasswordInput Height="28" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                 </Grid>
                 <CheckBox Name="CbUsePrivateKey"
                           Margin="5 0 0 0"
