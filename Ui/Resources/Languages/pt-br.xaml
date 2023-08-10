@@ -284,4 +284,5 @@
     <s:String x:Key="Create desktop shortcut">Criar atalho na área de trabalho</s:String>
     <s:String x:Key="Success">Sucesso</s:String>
     <s:String x:Key="Failed">Fracassado</s:String>
+    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">O Windows Hello está indisponível no momento, operações confidenciais serão negadas! Configure um PIN ou habilite o Windows Hello.</s:String>
 </ResourceDictionary>

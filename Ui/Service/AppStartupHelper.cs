@@ -9,12 +9,12 @@ using System.Windows.Media.Imaging;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
+using _1RM.Utils.Windows.WindowsShortcutFactory;
 using _1RM.View;
 using _1RM.View.Settings.General;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
-using WindowsShortcutFactory;
 
 namespace _1RM.Service
 {

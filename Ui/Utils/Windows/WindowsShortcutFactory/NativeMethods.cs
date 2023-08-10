@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace WindowsShortcutFactory
+namespace _1RM.Utils.Windows.WindowsShortcutFactory
 {
     internal static class NativeMethods
     {
