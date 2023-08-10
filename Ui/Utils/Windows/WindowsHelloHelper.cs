@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 using Shawn.Utils;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
-using Windows.Security.Credentials.UI;
+using _1RM.Service;
 using _1RM.View.Utils;
 
 namespace _1RM.Utils.Windows
@@ -56,6 +50,17 @@ namespace _1RM.Utils.Windows
 
             var isAvailable = await KeyCredentialManager.IsSupportedAsync();
             return isAvailable;
+        }
+        public static async Task<bool?> HelloVerifyAsyncIfIsSupport(bool defaultReturn = true)
+        {
+            if (WindowsHelloHelper.IsOsSupported)
+            {
+                if (await WindowsHelloHelper.HelloIsAvailable() == true)
+                {
+                    return await HelloVerifyAsync();
+                }
+            }
+            return defaultReturn;
         }
 
         public static async Task<bool?> HelloVerifyAsync()
@@ -105,33 +110,20 @@ namespace _1RM.Utils.Windows
             return false;
         }
 
-        public static async Task<bool?> StrictHelloVerifyAsyncUi()
+
+        public static async Task<bool?> HelloVerifyAsyncUi(bool defaultReturn = false)
         {
-            if (WindowsHelloHelper.IsOsSupported)
+            if (WindowsHelloHelper.IsOsSupported == false
+                || await WindowsHelloHelper.HelloIsAvailable() != true)
             {
-                if (await WindowsHelloHelper.HelloIsAvailable() != true)
-                {
-                    MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。");
-                    return false;
-                    //SimpleLogHelper.Info("WindowsHelloIsAvailable == false");
-                }
-                else
-                {
-                    MaskLayerController.ShowProcessingRing("TXT: 请完成 Windows Hello 权限验证。");
-                    if (await WindowsHelloHelper.HelloVerifyAsync() != true)
-                    {
-                        return true;
-                    }
-                    SimpleLogHelper.DebugInfo("Hello passed");
-                }
+                if (defaultReturn == false)
+                    MessageBoxHelper.Warning(IoC.Get<LanguageService>().Translate("Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello."));
+                return defaultReturn;
             }
-            else
-            {
-                MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。");
-                SimpleLogHelper.DebugInfo("IsOsSupported == false");
-                return false;
-            }
-            return false;
+            MaskLayerController.ShowProcessingRing();
+            var ret = await WindowsHelloHelper.HelloVerifyAsync();
+            MaskLayerController.HideMask();
+            return ret;
         }
     }
 }

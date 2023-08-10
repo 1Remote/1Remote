@@ -1,24 +1,7 @@
 ﻿using _1RM.Utils.Windows;
-using _1RM.View.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Shawn.Utils;
-using _1RM.View;
-using static System.Net.Mime.MediaTypeNames;
 using System.Reflection;
-using _1RM.Utils;
 
 namespace _1RM.Controls
 {
@@ -74,7 +57,7 @@ namespace _1RM.Controls
 
         private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (await WindowsHelloHelper.StrictHelloVerifyAsyncUi() != true)
+            if (await WindowsHelloHelper.HelloVerifyAsyncUi() != true)
             {
                 if (sender is CheckBox cb)
                     cb.IsChecked = false;

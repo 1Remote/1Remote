@@ -469,26 +469,9 @@ namespace _1RM.View.ServerList
                 {
                     try
                     {
-                        if (WindowsHelloHelper.IsOsSupported)
+                        if (await WindowsHelloHelper.HelloVerifyAsyncUi() != true)
                         {
-                            if (await WindowsHelloHelper.HelloIsAvailable() != true)
-                            {
-                                //MessageBoxHelper.Warning("TXT: 当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。");
-                                SimpleLogHelper.Info("WindowsHelloIsAvailable == false");
-                            }
-                            else
-                            {
-                                MaskLayerController.ShowProcessingRing("TXT: 请完成 Windows Hello 权限验证。");
-                                if (await WindowsHelloHelper.HelloVerifyAsync() != true)
-                                {
-                                    return;
-                                }
-                                SimpleLogHelper.Info("Hello passed");
-                            }
-                        }
-                        else
-                        {
-                            SimpleLogHelper.Info("IsOsSupported == false");
+                            return;
                         }
 
                         if (this.View is ServerListPageView view)
@@ -504,7 +487,6 @@ namespace _1RM.View.ServerList
                             foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                             {
                                 var serverBase = (ProtocolBase)vs.Server.Clone();
-                                //serverBase.DecryptToConnectLevel();
                                 list.Add(serverBase);
                             }
 
@@ -870,7 +852,6 @@ namespace _1RM.View.ServerList
 
 
         private RelayCommand? _cmdRefreshDataSource;
-
         public RelayCommand CmdRefreshDataSource
         {
             get
