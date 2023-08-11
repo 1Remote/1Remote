@@ -151,12 +151,12 @@ namespace _1RM.Utils
                         ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
                         return ih;
                     }
-                case Telnet telnet:
+                case IKittyConnectable kittyConnectable:
                     {
-                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(telnet.ProtocolDisplayName);
-                        var sessionName = $"{Assert.APP_NAME}_{telnet.Protocol}_{telnet.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                        telnet.ConfigKitty(sessionName, kittyRunner, "");
-                        var ih = IntegrateHost.Create(telnet, kittyRunner.PuttyExePath, telnet.GetExeArguments(sessionName));
+                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(protocol.ProtocolDisplayName);
+                        var sessionName = $"{Assert.APP_NAME}_{protocol.Protocol}_{protocol.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                        kittyConnectable.ConfigKitty(sessionName, kittyRunner, "");
+                        var ih = IntegrateHost.Create(protocol, kittyRunner.PuttyExePath, kittyConnectable.GetExeArguments(sessionName));
                         ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
                         return ih;
                     }
