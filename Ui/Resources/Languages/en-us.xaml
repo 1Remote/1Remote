@@ -284,4 +284,5 @@
     <s:String x:Key="Create desktop shortcut">Create desktop shortcut</s:String>
     <s:String x:Key="Success">Success</s:String>
     <s:String x:Key="Failed">Failed</s:String>
+    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.</s:String>
 </ResourceDictionary>

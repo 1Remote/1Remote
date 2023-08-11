@@ -310,3 +310,4 @@ This is your list of tags. Right click for a context menu to pin them on header.
 Create desktop shortcut;Create desktop shortcut;创建桌面快捷方式;;;;;;;;Utwórz skrót na pulpicie
 Success;Success;成功;;;;;;;;
 Failed;Failed;失败;;;;;;;;
+Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.;Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.;当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。;;;;;;;;
