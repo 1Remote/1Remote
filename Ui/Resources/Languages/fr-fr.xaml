@@ -284,4 +284,5 @@
     <s:String x:Key="Create desktop shortcut">Créer un raccourci sur le bureau</s:String>
     <s:String x:Key="Success">Succès</s:String>
     <s:String x:Key="Failed">Échoué</s:String>
+    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">Windows Hello est actuellement indisponible, les opérations sensibles seront refusées ! Veuillez configurer un code PIN ou activer Windows Hello.</s:String>
 </ResourceDictionary>

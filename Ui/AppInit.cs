@@ -19,6 +19,7 @@ using _1RM.Service.Locality;
 using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
+using _1RM.Utils.Windows;
 
 namespace _1RM
 {
@@ -288,6 +289,7 @@ namespace _1RM
 
         public static void InitOnLaunch()
         {
+            WindowsHelloHelper.Init(Assert.AppName);
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
                 MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}");
@@ -332,7 +334,11 @@ namespace _1RM
                 mvm.ShowMe();
             }
 
-            MaskLayerController.ShowProcessingRing("", mvm);
+            if (PRemoteMTransferHelper.IsReading == false && PRemoteMTransferHelper.AnyTransferData == false)
+            {
+                MaskLayerController.ShowProcessingRing("", mvm);
+            }
+
             {
                 foreach (var ds in ConfigurationServiceObj!.AdditionalDataSource)
                 {
@@ -345,8 +351,11 @@ namespace _1RM
                 GlobalDataObj.StartTick();
                 IoC.Get<ServerListPageViewModel>().CmdRefreshDataSource.Execute();
             }
+
             if (PRemoteMTransferHelper.IsReading == false && PRemoteMTransferHelper.AnyTransferData == false)
+            {
                 MaskLayerController.HideMask(mvm);
+            }
 
             AppStartupHelper.ProcessWhenDataLoaded(IoC.Get<GeneralSettingViewModel>());
             if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)

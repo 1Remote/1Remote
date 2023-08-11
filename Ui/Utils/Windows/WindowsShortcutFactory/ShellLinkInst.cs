@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace WindowsShortcutFactory
+namespace _1RM.Utils.Windows.WindowsShortcutFactory
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct ShellLinkInst
