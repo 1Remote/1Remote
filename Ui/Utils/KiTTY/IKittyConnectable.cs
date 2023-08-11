@@ -60,6 +60,27 @@ namespace _1RM.Utils.KiTTY
                 puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
                 puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
             }
+            if (iKittyConnectable is Serial serial)
+            {
+                if (!string.IsNullOrEmpty(sshPrivateKeyPath))
+                {
+                    // set key
+                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                }
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
+                //SerialLine\COM1\
+                //SerialSpeed\9600\
+                //SerialDataBits\8\
+                //SerialStopHalfbits\2\
+                //SerialParity\0\
+                //SerialFlowControl\1\
+                puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, 8);
+                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, 2);
+                puttyOption.Set(EnumKittyConfigKey.SerialParity, 0);
+                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, 1);
+            }
 
             // set theme
             var options = PuttyThemes.Themes[kittyRunner.PuttyThemeName];

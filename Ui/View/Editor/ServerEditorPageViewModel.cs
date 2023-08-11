@@ -579,6 +579,10 @@ namespace _1RM.View.Editor
                     {
                         ProtocolEditControl = new TelnetForm(Server);
                     }
+                    else if (protocolType == typeof(Serial))
+                    {
+                        ProtocolEditControl = new SerialForm(Server);
+                    }
                     else if (protocolType == typeof(FTP))
                     {
                         ProtocolEditControl = new FTPForm(Server);
