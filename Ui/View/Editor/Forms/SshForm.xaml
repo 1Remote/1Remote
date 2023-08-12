@@ -139,7 +139,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding StartupAutoCommand, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="e.g. cd /home/user/Desktop/"></TextBox>
+                                 Tag="e.g. cd /home/user/Desktop/"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -148,9 +148,9 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="KiTTY Session"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding ExternalKittySessionConfigPath, UpdateSourceTrigger=PropertyChanged}"
-                                                                  ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                                 ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
                                  Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
-                                 ></TextBox>
+                        ></TextBox>
                     </Grid>
                     <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
                 </StackPanel>
