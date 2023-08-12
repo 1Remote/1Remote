@@ -16,17 +16,17 @@
 
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT: COM"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Serial port"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}" Width="100">
                         <TextBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. COM1"></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="TXT: Speed"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="70" Text="Speed(bps)"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding BitRate, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
+                                 Width="100" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
-                                 ></TextBox>
+                                 Tag="e.g. 9600"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -34,12 +34,55 @@
 
         <StackPanel>
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <!--<Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding StartupAutoCommand, UpdateSourceTrigger=PropertyChanged}"
                                                                   Tag="e.g. cd /home/user/Desktop/"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>-->
+
+
+
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Data bits"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <ComboBox SelectedItem="{Binding DataBits}" ItemsSource="{Binding DataBitsCollection}">
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Stop bits"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <ComboBox SelectedItem="{Binding StopBits}" ItemsSource="{Binding StopBitsCollection}">
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Parity"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <ComboBox SelectedItem="{Binding Parity}" ItemsSource="{Binding ParityCollection}">
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Flow control"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <ComboBox SelectedItem="{Binding FlowControl}" ItemsSource="{Binding FlowControlCollection}">
+                        </ComboBox>
                     </Grid>
                 </StackPanel>
             </Grid>

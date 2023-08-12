@@ -3,7 +3,6 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                  xmlns:controls="clr-namespace:_1RM.Controls"
                  xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                  xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
@@ -12,7 +11,7 @@
                  xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                  mc:Ignorable="d"
                  d:DataContext="{d:DesignInstance protocol:RDP}"
-                 d:DesignHeight="1450" d:DesignWidth="800">
+                 d:DesignHeight="1850" d:DesignWidth="800">
     <StackPanel>
 
         <StackPanel>
@@ -381,10 +380,8 @@
                 <StackPanel>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" Margin="0 7 0 0"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-
-
                                 <Border>
                                     <Border.Style>
                                         <Style TargetType="Border">
@@ -409,15 +406,14 @@
                                         </Style>
                                     </Border.Style>
                                 </Border>
-                                <controls:BindableAvalonEditor
-                                    Margin="8 0 4 0"
-                                    Padding="0 5 0 5"
-                                    x:Name="TextEditor"
-                                    WordWrap="False"
-                                    ShowLineNumbers="True"
-                                    Text="{Binding RdpFileAdditionalSettings}"
-                                    SyntaxHighlighting="PowerShell"
-                                    FontSize="{DynamicResource TextFontSize}">
+                                <controls:BindableAvalonEditor Margin="8 0 4 0"
+                                                               Padding="0 5 0 5"
+                                                               x:Name="TextEditor"
+                                                               WordWrap="False"
+                                                               ShowLineNumbers="True"
+                                                               Text="{Binding RdpFileAdditionalSettings}"
+                                                               SyntaxHighlighting="PowerShell"
+                                                               FontSize="{DynamicResource TextFontSize}">
                                     <controls:BindableAvalonEditor.Resources>
                                         <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                             <VisualBrush.Visual>

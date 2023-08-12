@@ -75,11 +75,11 @@ namespace _1RM.Utils.KiTTY
                 //SerialParity\0\
                 //SerialFlowControl\1\
                 puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
-                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
-                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, 8);
-                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, 2);
-                puttyOption.Set(EnumKittyConfigKey.SerialParity, 0);
-                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, 1);
+                //puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
+                //puttyOption.Set(EnumKittyConfigKey.SerialDataBits, 8);
+                //puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, 2);
+                //puttyOption.Set(EnumKittyConfigKey.SerialParity, 0);
+                //puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, 1);
             }
 
             // set theme
