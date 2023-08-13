@@ -66,8 +66,6 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _bitRate, value);
         }
 
-        // TODO 数据位、校验位、停止位
-
         private string _startupAutoCommand = "";
         public string StartupAutoCommand
         {
