@@ -55,22 +55,36 @@ namespace _1RM.Service
 
                 try
                 {
+                    //var p = new Process
+                    //{
+                    //    StartInfo =
+                    //    {
+                    //        FileName = "cmd.exe",
+                    //        UseShellExecute = false,
+                    //        RedirectStandardInput = true,
+                    //        RedirectStandardOutput = true,
+                    //        RedirectStandardError = true,
+                    //        CreateNoWindow = true
+                    //    }
+                    //};
+                    //p.Start();
+                    //string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
+                    //p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
+                    //p.StandardInput.WriteLine("exit");
+
+                    string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
                     var p = new Process
                     {
                         StartInfo =
-                    {
-                        FileName = "cmd.exe",
-                        UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true
-                    }
+                        {
+                            FileName = "mstsc.exe",
+                            Arguments = $"{admin} \"" + rdpFile + "\""
+                        },
                     };
+                    var protocol = rdp;
+                    AddUnHostingWatch(p, protocol);
+                    p.EnableRaisingEvents = true;
                     p.Start();
-                    string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
-                    p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
-                    p.StandardInput.WriteLine("exit");
                 }
                 catch (Exception e)
                 {
@@ -83,16 +97,14 @@ namespace _1RM.Service
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{remoteApp.DisplayName}_{remoteApp.Port}_{remoteApp.UserName}";
-            var invalid = new string(Path.GetInvalidFileNameChars()) +
-                          new string(Path.GetInvalidPathChars());
+            var invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exet.Replace(c.ToString(), ""));
             var text = remoteApp.ToRdpConfig().ToString();
             // write a .rdp file for mstsc.exe
-            if (RetryHelper.Try(() =>
-                {
+            if (RetryHelper.Try(() => {
                     File.WriteAllText(rdpFile, text);
                 }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
@@ -108,6 +120,8 @@ namespace _1RM.Service
                         CreateNoWindow = true
                     }
                 };
+                var protocol = remoteApp;
+                AddUnHostingWatch(p, protocol);
                 p.Start();
                 p.StandardInput.WriteLine($"mstsc \"" + rdpFile + "\"");
                 p.StandardInput.WriteLine("exit");
@@ -273,7 +287,8 @@ namespace _1RM.Service
                 var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.ExePath);
                 if (tmp.Item1)
                 {
-                    Process.Start(tmp.Item2, localApp.Arguments);
+                    var process = Process.Start(tmp.Item2, localApp.Arguments);
+                    AddUnHostingWatch(process, localApp);
                 }
                 return tabToken;
             }

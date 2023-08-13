@@ -68,13 +68,9 @@ namespace _1RM.Utils
             startInfo.FileName = exePath;
             startInfo.Arguments = exeArguments;
             var process = new Process() {StartInfo = startInfo};
+            SessionControlService.AddUnHostingWatch(process, protocol);
+            process.EnableRaisingEvents = true;
             process.Start();
-
-            Task.Factory.StartNew(() =>
-            {
-                Thread.Sleep(1 * 1000);
-                protocol.RunScriptAfterDisconnected();
-            });
         }
 
 
