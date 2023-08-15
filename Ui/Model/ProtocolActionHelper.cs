@@ -115,7 +115,7 @@ public static class ProtocolActionHelper
                 actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
                     action: async () =>
                     {
-                        if (await WindowsHelloHelper.HelloVerifyAsyncUi() == true)
+                        if (await WindowsHelloHelper.VerifyAsyncUi() == true)
                         {
                             try
                             {

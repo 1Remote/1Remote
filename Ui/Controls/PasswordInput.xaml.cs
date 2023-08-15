@@ -57,7 +57,7 @@ namespace _1RM.Controls
 
         private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (await WindowsHelloHelper.HelloVerifyAsyncUi() != true)
+            if (await WindowsHelloHelper.VerifyAsyncUi() != true)
             {
                 if (sender is CheckBox cb)
                     cb.IsChecked = false;
