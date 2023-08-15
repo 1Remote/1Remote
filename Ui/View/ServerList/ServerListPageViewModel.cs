@@ -469,7 +469,7 @@ namespace _1RM.View.ServerList
                 {
                     try
                     {
-                        if (await WindowsHelloHelper.HelloVerifyAsyncUi() != true)
+                        if (await WindowsHelloHelper.VerifyAsyncUi() != true)
                         {
                             return;
                         }
