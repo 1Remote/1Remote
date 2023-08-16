@@ -41,7 +41,7 @@ namespace _1RM.Utils.Windows
 
         public static bool IsOsSupported => WindowsVersionHelper.IsLowerThanWindows10() == false;
 
-        private static async Task<bool> HelloIsAvailable()
+        public static async Task<bool> HelloIsAvailable()
         {
             if (IsOsSupported == false)
             {
@@ -111,57 +111,5 @@ namespace _1RM.Utils.Windows
             return false;
         }
 
-
-        public static async Task<bool?> VerifyAsyncUi(bool defaultReturn = false)
-        {
-            if (WindowsHelloHelper.IsOsSupported == false
-                || await WindowsHelloHelper.HelloIsAvailable() != true)
-            {
-                MaskLayerController.ShowProcessingRing();
-                try
-                {
-                    var ret = WindowsCredentialHelper.LogonUserWithWindowsCredential("TXT:验证你的账户", "TXT:请输入当前Windows的凭据",
-                        null, // new WindowInteropHelper(this).Handle
-                        null, null,
-                        0
-                        | (uint)WindowsCredentialHelper.PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC
-                        | (uint)WindowsCredentialHelper.PromptForWindowsCredentialsFlag.CREDUIWIN_ENUMERATE_CURRENT_USER
-                    );
-                    if (ret == WindowsCredentialHelper.LogonUserStatus.Success)
-                    {
-                        return true;
-                    }
-                    else if (ret == WindowsCredentialHelper.LogonUserStatus.Cancel)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        //MessageBox.Show("失败");
-                        MessageBoxHelper.Warning(IoC.Get<LanguageService>().Translate("Failed"));
-                        return defaultReturn;
-                    }
-                }
-                catch (Exception)
-                {
-                    MessageBoxHelper.Warning(IoC.Get<LanguageService>().Translate("Failed"));
-                    return defaultReturn;
-                }
-                finally
-                {
-                    MaskLayerController.HideMask();
-                }
-                //if (defaultReturn == false)
-                //    MessageBoxHelper.Warning(IoC.Get<LanguageService>().Translate("Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello."));
-                //return defaultReturn;
-            }
-            else
-            {
-                MaskLayerController.ShowProcessingRing();
-                var ret = await WindowsHelloHelper.HelloVerifyAsync();
-                MaskLayerController.HideMask();
-                return ret;
-            }
-        }
     }
 }

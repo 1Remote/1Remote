@@ -75,6 +75,19 @@
                 <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource 'Run automatically at OS startup'}" VerticalAlignment="Center"></CheckBox>
             </Grid>
 
+
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="TXT:Security"></TextBlock>
+                <CheckBox Grid.Column="1" IsChecked="{Binding RequireWindowsPasswordBeforeSensitiveOperation, Mode=TwoWay}" 
+                          Content="TXT: Require verification of Windows password before performing sensitive operations." VerticalAlignment="Center"></CheckBox>
+            </Grid>
+
             <Grid Style="{StaticResource GridOneRow}" Margin="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>

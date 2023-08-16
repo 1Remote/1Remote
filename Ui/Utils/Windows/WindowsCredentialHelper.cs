@@ -1,14 +1,10 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace _1RM.Utils.Windows
 {
@@ -716,18 +712,6 @@ namespace _1RM.Utils.Windows
             if (returnValue)
             {
                 tokenHandle?.Dispose();
-
-                //using (tokenHandle)
-                //{
-                //    //// Use the token handle returned by LogonUser. 
-                //    //using (WindowsImpersonationContext impersonatedUser = WindowsIdentity.Impersonate(safeTokenHandle.DangerousGetHandle()))
-                //    //{
-                //    //    var sourceGenerator = new Generator.SolutionAnalayzer(solutionPath);
-                //    //    var workspaceModel = sourceGenerator.BuildWorkspaceModel(repoRootPath);
-                //    //    return workspaceModel;
-                //    //}
-                //    //// Releasing the context object stops the impersonation 
-                //}
                 return LogonUserStatus.Success;
             }
             //else
