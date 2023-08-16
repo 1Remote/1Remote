@@ -469,30 +469,34 @@ namespace _1RM.View.ServerList
                 {
                     try
                     {
-                        if (await WindowsHelloHelper.VerifyAsyncUi() != true)
-                        {
-                            return;
-                        }
-
                         if (this.View is ServerListPageView view)
                         {
-                            MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"));
-                            view.CbPopForInExport.IsChecked = false;
-                            var path = SelectFileHelper.SaveFile(
-                                title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
-                                filter: "json|*.json",
-                                selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
-                            if (path == null) return;
-                            var list = new List<ProtocolBase>();
-                            foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                            SecondaryVerificationHelper.VerifyAsyncUiCallBack(b =>
                             {
-                                var serverBase = (ProtocolBase)vs.Server.Clone();
-                                list.Add(serverBase);
-                            }
+                                Execute.OnUIThreadSync(() =>
+                                {
+                                    if (b == true)
+                                    {
+                                        MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"));
+                                        view.CbPopForInExport.IsChecked = false;
+                                        var path = SelectFileHelper.SaveFile(
+                                            title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
+                                            filter: "json|*.json",
+                                            selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
+                                        if (path == null) return;
+                                        var list = new List<ProtocolBase>();
+                                        foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
+                                        {
+                                            var serverBase = (ProtocolBase)vs.Server.Clone();
+                                            list.Add(serverBase);
+                                        }
 
-                            ClearSelection();
-                            File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                            MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                                        ClearSelection();
+                                        File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                                        MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                                    }
+                                });
+                            });
                         }
                     }
                     finally

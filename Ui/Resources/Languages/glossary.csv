@@ -280,34 +280,34 @@ Hide recently used;Hide recently used;隐藏最近使用的会话;;;;;;隱藏最
 Leave blank to inherit the default value;Leave blank to inherit the default value;留空以继承默认值;;;;;;;;Zostaw puste żeby odziedziczyć wartość domyślną
 Alternative;Alternative;备选;;;;;;;;Alternatywnie
 with alternative;with alternative;使用备选凭证;;;;;;;;Z alternatywą
-Automatic address switching;Automatic address switching;自动切换地址;;;;;;;;Z automatyczną zamianą adresu
-Availability detection;Availability detection;地址可用性检测;;;;;;;;Wykrywanie dostępności
+Automatic address switching;Automatic address switching;自动切换地址;;;;;;自動切換位址;;Z automatyczną zamianą adresu
+Availability detection;Availability detection;地址可用性检测;;;;;;位址可用檢測;;Wykrywanie dostępności
 Check if address is available before connect;Check if address is available before connect;连接前检测地址是否可用;;;;;;;;Sprawdź czy adres jest dostępny przed połączeniem
 When the default host or port is unavailable the alternate addresses will be tried in sequence;When the default host or port is unavailable the alternate addresses will be tried in sequence;当默认的地址不可用时，将自动依次尝试备选地址;;;;;;;;Kiedy domyślny adres lub port jest niedostęny, zostaną użyte alternatywne adresy w podanej kolejności
 support multi-address multi-account;support multi-address multi-account;支持多地址、多账号;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;support multi-address multi-account;;;Wspieranie kilku adresów - kilku kont
 We are not able to connect to xxx;We are not able to connect to `{0}`!;无法连接到`{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;We are not able to connect to `{0}`!;;;Połączenie nie powiodło się z `{0}`!
 XXX is already existed!;`{0}` is already existed!;`{0}`已经存在！;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;`{0}` is already existed!;;;`{0}` już istnieje!
 XXX is not existed!;`{0}` is not existed!;`{0}` 不存在！;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;`{0}` is not existed!;;;`{0}` nie istnieje!
-Show credentials info;Show credentials info;显示地址账号信息;;;;;;;;Pokaż uwierzytelnienia
-Sorting;Sorting;排序;;;;;;;;Sortowanie
-Sort by drag;Sort by drag;自定义拖拽排序;;;;;;;;Sortuj przez przeciągnięcie
-We can not connect database:;We can not connect database:;无法连接到数据库;;;;;;;;Nie można połączyć się z bazą:
-We can not create tables on database:;We can not create tables on database:;无法创建数据表：;;;;;;;;Nie można utworzyć tabel na bazie:
-We can not insert into database:;We can not insert into database:;无法插入数据：;;;;;;;;Nie można dodać wpisów do bazy:
-We can not update on database:;We can not update on database:;无法更新数据：;;;;;;;;Nie można zaktualizować wpisów na bazie:
-We can not read from database:;We can not read from database:;无法读取数据：;;;;;;;;Nie można odczytać z bazy:
-We can not select from database:;We can not select from database:;无法查询数据：;;;;;;;;Nie można pobrać z bazy:
-We can not delete from database:;We can not delete from database:;无法删除数据：;;;;;;;;Nie można usunąć z bazy:
-because:;because:;原因是:;;;;;;;;ponieważ:
-Pause;Pause;暂停;;;;;;;;Pauza
-Updating;Updating;正在更新;;;;;;;;Aktualizowanie
-Reconnecting;Reconnecting;正在重连;;;;;;;;Łączenie ponowne
-Next update check;Next update check;下次更新检查;;;;;;;;Następne sprawdzenie aktualizacji
-Next auto reconnect;Next auto reconnect;下次自动重连;;;;;;;;Następne ponowne łączenie
-Pin;Pin;固定;;;;;;;;Przypinij
-Unpin;Unpin;取消固定;;;;;;;;Odepnij
+Show credentials info;Show credentials info;显示账号信息;;;;;;顯示賬號信息;;Pokaż uwierzytelnienia
+Sorting;Sorting;排序;;;;;;排序;;Sortowanie
+Sort by drag;Sort by drag;自定义拖拽排序;;;;;;自定義拖拽排序;;Sortuj przez przeciągnięcie
+We can not connect database:;We can not connect database:;无法连接到数据库;;;;;;無法連接到數據庫;;Nie można połączyć się z bazą:
+We can not create tables on database:;We can not create tables on database:;无法创建数据表：;;;;;;無法創建數據表;;Nie można utworzyć tabel na bazie:
+We can not insert into database:;We can not insert into database:;无法插入数据：;;;;;;無法插入數據;;Nie można dodać wpisów do bazy:
+We can not update on database:;We can not update on database:;无法更新数据：;;;;;;無法更新數據;;Nie można zaktualizować wpisów na bazie:
+We can not read from database:;We can not read from database:;无法读取数据：;;;;;;無法讀取數據;;Nie można odczytać z bazy:
+We can not select from database:;We can not select from database:;无法查询数据：;;;;;;無法查詢數據;;Nie można pobrać z bazy:
+We can not delete from database:;We can not delete from database:;无法删除数据：;;;;;;無法刪除數據;;Nie można usunąć z bazy:
+because:;because:;原因是:;;;;;;原因是;;ponieważ:
+Pause;Pause;暂停;;;;;;暫停;;Pauza
+Updating;Updating;正在更新;;;;;;正在更新;;Aktualizowanie
+Reconnecting;Reconnecting;正在重连;;;;;;正在重連;;Łączenie ponowne
+Next update check;Next update check;下次更新检查;;;;;;下次更新檢查;;Następne sprawdzenie aktualizacji
+Next auto reconnect;Next auto reconnect;下次自动重连;;;;;;下次自動重連;;Następne ponowne łączenie
+Pin;Pin;固定;;;;;;固定;;Przypinij
+Unpin;Unpin;取消固定;;;;;;撤銷固定;;Odepnij
 This is your list of tags. Right click for a context menu to pin them on header.;This is your list of tags. Right click for a context menu to pin them on header.;;;;;;;;;To jest Twoja lista tagów. Kliknij prawym dla menu kontektowego aby je przypiąć do nagłówka.
 Create desktop shortcut;Create desktop shortcut;创建桌面快捷方式;;;;;;;;Utwórz skrót na pulpicie
-Success;Success;成功;;;;;;;;
-Failed;Failed;失败;;;;;;;;
+Success;Success;成功;;;;;;成功;;
+Failed;Failed;失败;;;;;;失敗;;
 Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.;Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.;当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。;;;;;;;;

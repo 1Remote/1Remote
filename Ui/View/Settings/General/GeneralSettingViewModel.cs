@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Utils;
+using Google.Protobuf.WellKnownTypes;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -49,6 +50,19 @@ namespace _1RM.View.Settings.General
                 ConfigurationService.SetSelfStart(value);
                 _appStartAutomatically = value;
                 RaisePropertyChanged();
+            }
+        }
+
+        private bool? _requireWindowsPasswordBeforeSensitiveOperation = null;
+        public bool RequireWindowsPasswordBeforeSensitiveOperation
+        {
+            get => SecondaryVerificationHelper.GetEnabled();
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _requireWindowsPasswordBeforeSensitiveOperation, value))
+                {
+                    SecondaryVerificationHelper.SetEnabled(value);
+                }
             }
         }
 

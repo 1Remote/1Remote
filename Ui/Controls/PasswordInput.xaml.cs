@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Reflection;
+using _1RM.Service;
+using Stylet;
 
 namespace _1RM.Controls
 {
@@ -57,15 +59,32 @@ namespace _1RM.Controls
 
         private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (await WindowsHelloHelper.VerifyAsyncUi() != true)
-            {
-                if (sender is CheckBox cb)
-                    cb.IsChecked = false;
-                return;
-            }
-            PlainTextBox.Visibility = Visibility.Visible;
-            PlainTextBox.Focus();
-            PlainTextBox.CaretIndex = PlainTextBox.Text.Length;
+            SecondaryVerificationHelper.VerifyAsyncUiCallBack(b =>
+                {
+                    Execute.OnUIThreadSync(() =>
+                    {
+
+                        if (b != true)
+                        {
+                            if (sender is CheckBox cb)
+                                cb.IsChecked = false;
+                            return;
+                        }
+                        PlainTextBox.Visibility = Visibility.Visible;
+                        PlainTextBox.Focus();
+                        PlainTextBox.CaretIndex = PlainTextBox.Text.Length;
+                    });
+                });
+
+            //if (await SecondaryVerificationHelper.VerifyAsyncUi() != true)
+            //{
+            //    if (sender is CheckBox cb)
+            //        cb.IsChecked = false;
+            //    return;
+            //}
+            //PlainTextBox.Visibility = Visibility.Visible;
+            //PlainTextBox.Focus();
+            //PlainTextBox.CaretIndex = PlainTextBox.Text.Length;
         }
         private void SetSelection(PasswordBox passwordBox, int start, int length)
         {
