@@ -1,44 +1,12 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
+using _1RM.Utils.WindowsApi;
 using Windows.Security.Credentials;
-using Shawn.Utils;
-using _1RM.Service;
-using _1RM.View.Utils;
 
-namespace _1RM.Utils.Windows
+namespace _1RM.Utils.WindowsSdk
 {
     public class WindowsHelloHelper
     {
-        private static string _accountId = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-
-
-        /// <summary>
-        /// Checks to see if Passport is ready to be used.
-        /// 
-        /// Passport has dependencies on:
-        ///     1. Having a connected Microsoft Account
-        ///     2. Having a Windows PIN set up for that _account on the local machine
-        /// </summary>
-        public static async void Init(string appName)
-        {
-            _accountId = appName;
-            if (IsOsSupported)
-            {
-                var isAvailable = await KeyCredentialManager.IsSupportedAsync();
-                if (isAvailable == false)
-                {
-                    // Key credential is not enabled yet as user 
-                    // needs to connect to a Microsoft Account and select a PIN in the connecting flow.
-                    SimpleLogHelper.Warning("Microsoft Passport is not setup! Please go to Windows Settings and set up a PIN to use it.");
-                }
-            }
-            else
-            {
-                SimpleLogHelper.Warning("Microsoft Passport is not supported on current os!");
-            }
-        }
-
         public static bool IsOsSupported => WindowsVersionHelper.IsLowerThanWindows10() == false;
 
         public static async Task<bool> HelloIsAvailable()
@@ -51,18 +19,6 @@ namespace _1RM.Utils.Windows
             var isAvailable = await KeyCredentialManager.IsSupportedAsync();
             return isAvailable;
         }
-
-        //public static async Task<bool?> HelloVerifyAsyncIfIsSupport(bool defaultReturn = true)
-        //{
-        //    if (WindowsHelloHelper.IsOsSupported)
-        //    {
-        //        if (await WindowsHelloHelper.HelloIsAvailable() == true)
-        //        {
-        //            return await HelloVerifyAsync();
-        //        }
-        //    }
-        //    return defaultReturn;
-        //}
 
         public static async Task<bool?> HelloVerifyAsync()
         {
@@ -92,7 +48,7 @@ namespace _1RM.Utils.Windows
                 //return false;
 
 
-                var result = await KeyCredentialManager.RequestCreateAsync(_accountId + "-UserConsentVerifier", KeyCredentialCreationOption.ReplaceExisting);
+                var result = await KeyCredentialManager.RequestCreateAsync("UserConsentVerifier", KeyCredentialCreationOption.ReplaceExisting);
                 switch (result.Status)
                 {
                     case KeyCredentialStatus.Success:

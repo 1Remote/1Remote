@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using _1RM.Service;
+using Google.Protobuf.WellKnownTypes;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace _1RM.View.Settings.General
 {
@@ -12,33 +15,18 @@ namespace _1RM.View.Settings.General
             InitializeComponent();
         }
 
-
-
-        //private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    var path = SelectFileHelper.OpenFile(title: "Select a language resource file for translation test.",
-        //        filter: "xaml|*.xaml");
-        //    if (path == null) return;
-        //    var fi = new FileInfo(path);
-        //    var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(fi.FullName);
-        //    if (resourceDictionary?.Contains("language_name") != true)
-        //    {
-        //        MessageBoxHelper.ErrorAlert("language resource must contain field: \"language_name\"!");
-        //        return;
-        //    }
-
-        //    var en = IoC.Get<LanguageService>().Resources["en-us"];
-        //    Debug.Assert(en != null);
-        //    var missingFields = MultiLanguageHelper.FindMissingFields(en, resourceDictionary);
-        //    if (missingFields.Count > 0)
-        //    {
-        //        var mf = string.Join(", ", missingFields);
-        //        MessageBoxHelper.ErrorAlert($"language resource missing:\r\n {mf}");
-        //        return;
-        //    }
-
-        //    var code = fi.Name.ReplaceLast(fi.Extension, "");
-        //    IoC.Get<ILanguageService>().AddXamlLanguageResources(code, fi.FullName);
-        //}
+        private async void CbRequireWindowsPasswordBeforeSensitiveOperation_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            if (DataContext is GeneralSettingViewModel vm && sender is CheckBox cb)
+            {
+                var ret = await SecondaryVerificationHelper.VerifyAsyncUi();
+                if (ret == true)
+                {
+                    cb.IsChecked = cb.IsChecked != true;
+                    vm.RequireWindowsPasswordBeforeSensitiveOperation = cb.IsChecked == true;
+                }
+            }
+        }
     }
 }

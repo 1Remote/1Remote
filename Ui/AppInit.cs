@@ -19,7 +19,6 @@ using _1RM.Service.Locality;
 using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
-using _1RM.Utils.Windows;
 
 namespace _1RM
 {
@@ -289,7 +288,6 @@ namespace _1RM
 
         public static void InitOnLaunch()
         {
-            WindowsHelloHelper.Init(Assert.AppName);
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
                 MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}");

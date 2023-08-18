@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shawn.Utils;
 
-namespace _1RM.Utils.Windows
+namespace _1RM.Utils.WindowsApi
 {
     /// <summary>
     ///  https://stackoverflow.com/questions/2819934/detect-windows-version-in-net

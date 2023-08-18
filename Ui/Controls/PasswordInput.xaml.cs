@@ -1,5 +1,4 @@
-﻿using _1RM.Utils.Windows;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Reflection;
 using _1RM.Service;

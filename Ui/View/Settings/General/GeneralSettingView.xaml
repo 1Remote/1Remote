@@ -84,7 +84,9 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="TXT:Security"></TextBlock>
-                <CheckBox Grid.Column="1" IsChecked="{Binding RequireWindowsPasswordBeforeSensitiveOperation, Mode=TwoWay}" 
+                <CheckBox Grid.Column="1" 
+                          PreviewMouseDown="CbRequireWindowsPasswordBeforeSensitiveOperation_OnPreviewMouseDown"
+                          IsChecked="{Binding RequireWindowsPasswordBeforeSensitiveOperation, Mode=TwoWay}" 
                           Content="TXT: Require verification of Windows password before performing sensitive operations." VerticalAlignment="Center"></CheckBox>
             </Grid>
 

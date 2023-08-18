@@ -11,11 +11,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Linq;
 using _1RM.Service;
-using _1RM.Utils.Windows.WindowsShortcutFactory;
+using _1RM.Utils.WindowsApi.WindowsShortcutFactory;
 using Shawn.Utils;
 #if STORE_UWP_METHOD
 using Windows.ApplicationModel;

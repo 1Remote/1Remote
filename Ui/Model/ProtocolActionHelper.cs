@@ -6,7 +6,6 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Utils;
-using _1RM.Utils.Windows;
 using _1RM.View;
 using Shawn.Utils.Interface;
 

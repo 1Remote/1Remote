@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace _1RM.Utils.Windows.WindowsShortcutFactory
+namespace _1RM.Utils.WindowsApi.WindowsShortcutFactory
 {
     /// <summary>
     /// Represents a Windows shortcut.

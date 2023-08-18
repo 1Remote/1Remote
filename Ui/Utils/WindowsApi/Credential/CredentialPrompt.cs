@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace _1RM.Utils.Windows
+namespace _1RM.Utils.WindowsApi.Credential
 {
-    public static class WindowsCredentialHelper
+    public static class CredentialPrompt
     {
         #region IPromptCredentialsResult
         public interface IPromptCredentialsResult
         {
-            public Boolean IsSaveChecked { get; set; }
+            public bool IsSaveChecked { get; set; }
             public int? ErrorCode { get; set; }
             public string? ErrorMessage { get; set; }
         }
@@ -33,10 +33,10 @@ namespace _1RM.Utils.Windows
                 ErrorMessage = errorMessage;
             }
 
-            public String UserName { get; internal set; }
-            public String DomainName { get; internal set; }
-            public String Password { get; internal set; }
-            public Boolean IsSaveChecked { get; set; }
+            public string UserName { get; internal set; }
+            public string DomainName { get; internal set; }
+            public string Password { get; internal set; }
+            public bool IsSaveChecked { get; set; }
             public int? ErrorCode { get; set; }
             public string? ErrorMessage { get; set; }
 
@@ -60,7 +60,7 @@ namespace _1RM.Utils.Windows
             public SecureString UserName { get; internal set; }
             public SecureString DomainName { get; internal set; }
             public SecureString Password { get; internal set; }
-            public Boolean IsSaveChecked { get; set; }
+            public bool IsSaveChecked { get; set; }
             public int? ErrorCode { get; set; }
             public string? ErrorMessage { get; set; }
         }
@@ -106,14 +106,255 @@ namespace _1RM.Utils.Windows
         }
 
 
+
+        private static T GetPromptForWindowsCredentialsError<T>(int errorCode, string errorMessage) where T : class, IPromptCredentialsResult
+        {
+            if (typeof(T) == typeof(PromptCredentialsSecureStringResult))
+            {
+                return (PromptCredentialsSecureStringResult.Error(errorCode, errorMessage) as T)!;
+            }
+            else
+            {
+                return (PromptCredentialsResult.Error(errorCode, errorMessage) as T)!;
+            }
+        }
+
+        private static T? PromptForWindowsCredentialsInternal<T>(
+            string caption, string message, IntPtr? hwndParent = null,
+            uint credentialsFlag = (uint)PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC,
+            bool isSaveChecked = false,
+            string? userName = null, string? password = null) where T : class, IPromptCredentialsResult
+        {
+            if (caption.Length > NativeMethods.CREDUI_MAX_CAPTION_LENGTH)
+                caption = caption.Substring(0, NativeMethods.CREDUI_MAX_CAPTION_LENGTH);
+            if (message.Length > NativeMethods.CREDUI_MAX_MESSAGE_LENGTH)
+                message = message.Substring(0, NativeMethods.CREDUI_MAX_MESSAGE_LENGTH);
+            var credulityInfo = new NativeMethods.CREDUI_INFO()
+            {
+                pszCaptionText = caption,
+                pszMessageText = message,
+                hwndParent = hwndParent ?? IntPtr.Zero,
+            };
+
+            var userNamePtr = IntPtr.Zero;
+            var passwordPtr = IntPtr.Zero;
+            var authPackage = 0;
+            var outAuthBuffer = IntPtr.Zero;
+            var inAuthBuffer = IntPtr.Zero;
+            var inAuthBufferSize = 0;
+            var save = isSaveChecked;
+            using var userNameS = new SecureString();
+            using var passwordS = new SecureString();
+            try
+            {
+                if (userName != null || password != null)
+                {
+                    if (!string.IsNullOrEmpty(userName))
+                    {
+                        if (userName.Length > NativeMethods.CREDUI_MAX_USERNAME_LENGTH)
+                        {
+                            return GetPromptForWindowsCredentialsError<T>(-1, "UserName is too long!");
+                        }
+                        foreach (var c in userName)
+                            userNameS.AppendChar(c);
+                    }
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        if (password.Length > NativeMethods.CREDUI_MAX_USERNAME_LENGTH)
+                        {
+                            return GetPromptForWindowsCredentialsError<T>(-1, "password is too long!");
+                        }
+                        foreach (var c in password)
+                            passwordS.AppendChar(c);
+                    }
+                    userNamePtr = Marshal.SecureStringToCoTaskMemUnicode(userNameS);
+                    passwordPtr = Marshal.SecureStringToCoTaskMemUnicode(passwordS);
+                }
+
+                // pre-filled with UserName or Password
+                if (userNamePtr != IntPtr.Zero || passwordPtr != IntPtr.Zero)
+                {
+                    inAuthBufferSize = 1024;
+                    inAuthBuffer = Marshal.AllocCoTaskMem(inAuthBufferSize);
+                    if (!NativeMethods.CredPackAuthenticationBuffer(0x00, userNamePtr, passwordPtr, inAuthBuffer, ref inAuthBufferSize))
+                    {
+                        var win32Error = Marshal.GetLastWin32Error();
+                        if (win32Error == 122 /*ERROR_INSUFFICIENT_BUFFER*/)
+                        {
+                            inAuthBuffer = Marshal.ReAllocCoTaskMem(inAuthBuffer, inAuthBufferSize);
+                            if (!NativeMethods.CredPackAuthenticationBuffer(0x00, userNamePtr, passwordPtr, inAuthBuffer, ref inAuthBufferSize))
+                            {
+                                return GetPromptForWindowsCredentialsError<T>(Marshal.GetLastWin32Error(), $"CredPackAuthenticationBuffer error code: {Marshal.GetLastWin32Error()}");
+                            }
+                        }
+                        else
+                        {
+                            return GetPromptForWindowsCredentialsError<T>(win32Error, $"CredPackAuthenticationBuffer error code: {win32Error}");
+                        }
+                    }
+                }
+
+                var retVal = NativeMethods.CredUIPromptForWindowsCredentials(credulityInfo,
+                                                                     0,
+                                                                     ref authPackage,
+                                                                     inAuthBuffer,
+                                                                     inAuthBufferSize,
+                                                                     out outAuthBuffer,
+                                                                     out var outAuthBufferSize,
+                                                                     ref save,
+                                                                     //(int)(PromptForWindowsCredentialsFlag.CREDUIWIN_AUTHPACKAGE_ONLY)
+                                                                     credentialsFlag // Use the PromptForWindowsCredentialsFlags Enum here. You can use multiple flags if you seperate them with | .
+                                                                     );
+
+                switch (retVal)
+                {
+                    case NativeMethods.CredUIPromptReturnCode.Cancelled:
+                        return null;
+                    case NativeMethods.CredUIPromptReturnCode.Success:
+                        break;
+                    default:
+                        return GetPromptForWindowsCredentialsError<T>((int)retVal, $"CredUIPromptReturnCode error code: {(int)retVal}");
+                        //throw new Win32Exception((Int32)retVal);
+                }
+
+
+                if (typeof(T) == typeof(PromptCredentialsSecureStringResult))
+                {
+                    var credResult = NativeMethods.CredUnPackAuthenticationBufferWrapSecureString(true, outAuthBuffer, outAuthBufferSize);
+                    credResult.IsSaveChecked = save;
+                    return credResult as T;
+                }
+                else
+                {
+                    var credResult = NativeMethods.CredUnPackAuthenticationBufferWrap(true, outAuthBuffer, outAuthBufferSize);
+                    credResult.IsSaveChecked = save;
+                    return credResult as T;
+                }
+            }
+            finally
+            {
+                if (inAuthBuffer != IntPtr.Zero)
+                    Marshal.ZeroFreeCoTaskMemUnicode(inAuthBuffer);
+                if (outAuthBuffer != IntPtr.Zero)
+                    Marshal.ZeroFreeCoTaskMemUnicode(outAuthBuffer);
+                if (userNamePtr != IntPtr.Zero)
+                    Marshal.ZeroFreeCoTaskMemUnicode(userNamePtr);
+                if (passwordPtr != IntPtr.Zero)
+                    Marshal.ZeroFreeCoTaskMemUnicode(passwordPtr);
+            }
+        }
+
+        /// <summary>
+        /// Creates and displays a configurable dialog box that allows users to supply credential information by using any credential provider installed on the local computer.
+        /// </summary>
+        /// <example>
+        /// For example:
+        /// <code>
+        /// var result = CredentialPrompt.PromptForWindowsCredentials("Hi", "body", new WindowInteropHelper(this).Handle);
+        /// if (result?.HasNoError == true)
+        /// {
+        ///     MessageBox.Show($"输入的信息：\r\n  {result.UserName} \r\n {result.Password} \r\n {result.DomainName} \r\n {result.IsSaveChecked}");
+        /// }
+        /// else
+        /// {
+        ///     MessageBox.Show("密码未输入完成");
+        /// }
+        /// </code>
+        /// </example>
+        /// <returns>return null for cancel or other error</returns>
+        public static PromptCredentialsResult? PromptForWindowsCredentials(string caption, string message, IntPtr? hwndParent = null, string? userName = null, string? password = null, uint credentialsFlag = (uint)PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC)
+        {
+            return PromptForWindowsCredentialsInternal<PromptCredentialsResult>(caption, message, hwndParent, userName: userName, password: password, credentialsFlag: credentialsFlag);
+        }
+
+
+        /// <summary>
+        /// Creates and displays a configurable dialog box that allows users to supply credential information by using any credential provider installed on the local computer.
+        /// </summary>
+        /// <returns>return null for cancel or other error</returns>
+        public static PromptCredentialsSecureStringResult? PromptForWindowsCredentialsSecureString(string caption, string message, IntPtr? hwndParent = null, string? userName = null, string? password = null, uint credentialsFlag = (uint)PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC)
+        {
+            return PromptForWindowsCredentialsInternal<PromptCredentialsSecureStringResult>(caption, message, hwndParent, userName: userName, password: password, credentialsFlag: credentialsFlag);
+        }
+
+        public enum LogonUserStatus
+        {
+            Success,
+            Cancel,
+            Failed,
+        }
+        public static LogonUserStatus LogonUser(string userName, string userPassword, string domain = "")
+        {
+            // Call LogonUser to obtain a handle to an access token. 
+            bool returnValue = false;
+            NativeMethods.SafeTokenHandle? tokenHandle = null;
+            if (userName.IndexOf("\\") > 0)
+            {
+                userName = userName.Substring(userName.IndexOf("\\") + 1);
+                //var userName2 = userName.Substring(userName.IndexOf("\\") + 1);
+                //returnValue = NativeMethods.LogonUser(userName2, domain, userPassword,
+                //    NativeMethods.LogonTypes.LOGON32_LOGON_INTERACTIVE, NativeMethods.LogonProvider.LOGON32_PROVIDER_DEFAULT,
+                //    out tokenHandle);
+            }
+
+            if (!returnValue)
+            {
+                returnValue = NativeMethods.LogonUser(userName, domain, userPassword,
+                    NativeMethods.LogonTypes.LOGON32_LOGON_INTERACTIVE, NativeMethods.LogonProvider.LOGON32_PROVIDER_DEFAULT,
+                    out tokenHandle);
+            }
+
+            if (returnValue)
+            {
+                tokenHandle?.Dispose();
+                return LogonUserStatus.Success;
+            }
+            //else
+            //{
+            //    int err = Marshal.GetLastWin32Error();
+            //    MessageBox.Show(err.ToString("X"));
+            //}
+            return LogonUserStatus.Failed;
+        }
+
+        public static LogonUserStatus LogonUserWithWindowsCredential(string caption, string message, IntPtr? hwndParent = null, string? userName = null, string? password = null, uint credentialsFlag = (int)PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC)
+        {
+            userName ??= GetUserName();
+            var ret = PromptForWindowsCredentials(caption, message, hwndParent, userName, password, credentialsFlag);
+            if (ret?.HasNoError == true)
+            {
+                return LogonUser(ret.UserName, ret.Password, ret.DomainName);
+            }
+            else if (ret == null)
+            {
+                return LogonUserStatus.Cancel;
+            }
+            else
+            {
+                //MessageBox.Show("Error code = " + ret.ErrorCode);
+            }
+            return LogonUserStatus.Failed;
+        }
+
+
+        public static string GetUserName()
+        {
+            //return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            return Environment.UserName;
+            //return Environment.UserDomainName + "\\" + Environment.UserName;
+        }
+
+
+
+
         private static class NativeMethods
         {
             #region CredUIPromptForWindowsCredentials
-            public const Int32 CREDUI_MAX_MESSAGE_LENGTH = 32767;
-            public const Int32 CREDUI_MAX_CAPTION_LENGTH = 128;
-            public const Int32 CRED_MAX_USERNAME_LENGTH = (256 + 1 + 256);
-            public const Int32 CREDUI_MAX_USERNAME_LENGTH = CRED_MAX_USERNAME_LENGTH;
-            public const Int32 CREDUI_MAX_PASSWORD_LENGTH = (512 / 2);
+            public const int CREDUI_MAX_MESSAGE_LENGTH = 32767;
+            public const int CREDUI_MAX_CAPTION_LENGTH = 128;
+            public const int CRED_MAX_USERNAME_LENGTH = 256 + 1 + 256;
+            public const int CREDUI_MAX_USERNAME_LENGTH = CRED_MAX_USERNAME_LENGTH;
+            public const int CREDUI_MAX_PASSWORD_LENGTH = 512 / 2;
 
             public enum CredUIPromptReturnCode
             {
@@ -126,12 +367,12 @@ namespace _1RM.Utils.Windows
             [StructLayout(LayoutKind.Sequential)]
             public class CREDUI_INFO
             {
-                public Int32 cbSize;
+                public int cbSize;
                 public IntPtr hwndParent;
                 [MarshalAs(UnmanagedType.LPWStr)]
-                public String pszMessageText;
+                public string pszMessageText;
                 [MarshalAs(UnmanagedType.LPWStr)]
-                public String pszCaptionText;
+                public string pszCaptionText;
                 public IntPtr hbmBanner;
 
                 public CREDUI_INFO()
@@ -147,73 +388,73 @@ namespace _1RM.Utils.Windows
             public static extern CredUIPromptReturnCode
             CredUIPromptForWindowsCredentials(
                 CREDUI_INFO pUiInfo,
-                Int32 dwAuthError,
-                ref Int32 pulAuthPackage,
+                int dwAuthError,
+                ref int pulAuthPackage,
                 IntPtr pvInAuthBuffer,
-                Int32 ulInAuthBufferSize,
+                int ulInAuthBufferSize,
                 out IntPtr ppvOutAuthBuffer,
-                out Int32 pulOutAuthBufferSize,
-                ref Boolean pfSave,
+                out int pulOutAuthBufferSize,
+                ref bool pfSave,
                 uint dwFlags
             );
 
             [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern Boolean CredPackAuthenticationBuffer(
-                Int32 dwFlags,
-                String pszUserName,
-                String pszPassword,
+            public static extern bool CredPackAuthenticationBuffer(
+                int dwFlags,
+                string pszUserName,
+                string pszPassword,
                 IntPtr pPackedCredentials,
-                ref Int32 pcbPackedCredentials
+                ref int pcbPackedCredentials
             );
             [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern Boolean CredPackAuthenticationBuffer(
-                Int32 dwFlags,
+            public static extern bool CredPackAuthenticationBuffer(
+                int dwFlags,
                 IntPtr pszUserName,
                 IntPtr pszPassword,
                 IntPtr pPackedCredentials,
-                ref Int32 pcbPackedCredentials
+                ref int pcbPackedCredentials
             );
 
             [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern Boolean CredUnPackAuthenticationBuffer(
-                Int32 dwFlags,
+            public static extern bool CredUnPackAuthenticationBuffer(
+                int dwFlags,
                 IntPtr pAuthBuffer,
-                Int32 cbAuthBuffer,
+                int cbAuthBuffer,
                 StringBuilder pszUserName,
-                ref Int32 pcchMaxUserName,
+                ref int pcchMaxUserName,
                 StringBuilder pszDomainName,
-                ref Int32 pcchMaxDomainame,
+                ref int pcchMaxDomainame,
                 StringBuilder pszPassword,
-                ref Int32 pcchMaxPassword
+                ref int pcchMaxPassword
             );
             [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern Boolean CredUnPackAuthenticationBufferA(
-                Int32 dwFlags,
+            public static extern bool CredUnPackAuthenticationBufferA(
+                int dwFlags,
                 IntPtr pAuthBuffer,
-                Int32 cbAuthBuffer,
+                int cbAuthBuffer,
                 StringBuilder pszUserName,
-                ref Int32 pcchMaxUserName,
+                ref int pcchMaxUserName,
                 StringBuilder pszDomainName,
-                ref Int32 pcchMaxDomainame,
+                ref int pcchMaxDomainame,
                 StringBuilder pszPassword,
-                ref Int32 pcchMaxPassword
+                ref int pcchMaxPassword
             );
             [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern Boolean CredUnPackAuthenticationBuffer(
-                Int32 dwFlags,
+            public static extern bool CredUnPackAuthenticationBuffer(
+                int dwFlags,
                 IntPtr pAuthBuffer,
-                Int32 cbAuthBuffer,
+                int cbAuthBuffer,
                 IntPtr pszUserName,
-                ref Int32 pcchMaxUserName,
+                ref int pcchMaxUserName,
                 IntPtr pszDomainName,
-                ref Int32 pcchMaxDomainame,
+                ref int pcchMaxDomainame,
                 IntPtr pszPassword,
-                ref Int32 pcchMaxPassword
+                ref int pcchMaxPassword
             );
 
 
 
-            public static PromptCredentialsResult CredUnPackAuthenticationBufferWrap(Boolean decryptProtectedCredentials, IntPtr authBufferPtr, Int32 authBufferSize)
+            public static PromptCredentialsResult CredUnPackAuthenticationBufferWrap(bool decryptProtectedCredentials, IntPtr authBufferPtr, int authBufferSize)
             {
                 var sbUserName = new StringBuilder(4096);
                 var sbDomainName = new StringBuilder(4096);
@@ -226,7 +467,7 @@ namespace _1RM.Utils.Windows
                 //#define CRED_PACK_WOW_BUFFER                 0x2
                 //#define CRED_PACK_GENERIC_CREDENTIALS        0x4
 
-                var result = CredUnPackAuthenticationBuffer((decryptProtectedCredentials ? 0x1 : 0x0),
+                var result = CredUnPackAuthenticationBuffer(decryptProtectedCredentials ? 0x1 : 0x0,
                                                                 authBufferPtr,
                                                                 authBufferSize,
                                                                 sbUserName,
@@ -244,7 +485,7 @@ namespace _1RM.Utils.Windows
                         sbUserName.Capacity = userNameSize;
                         sbPassword.Capacity = passwordSize;
                         sbDomainName.Capacity = domainNameSize;
-                        result = CredUnPackAuthenticationBuffer((decryptProtectedCredentials ? 0x1 : 0x0),
+                        result = CredUnPackAuthenticationBuffer(decryptProtectedCredentials ? 0x1 : 0x0,
                                                                 authBufferPtr,
                                                                 authBufferSize,
                                                                 sbUserName,
@@ -268,7 +509,7 @@ namespace _1RM.Utils.Windows
                 return new PromptCredentialsResult(sbUserName.ToString(), sbDomainName.ToString(), sbPassword.ToString(), false);
             }
 
-            public static PromptCredentialsSecureStringResult CredUnPackAuthenticationBufferWrapSecureString(Boolean decryptProtectedCredentials, IntPtr authBufferPtr, Int32 authBufferSize)
+            public static PromptCredentialsSecureStringResult CredUnPackAuthenticationBufferWrapSecureString(bool decryptProtectedCredentials, IntPtr authBufferPtr, int authBufferSize)
             {
                 var userNameSize = 255;
                 var domainNameSize = 255;
@@ -286,7 +527,7 @@ namespace _1RM.Utils.Windows
                     //#define CRED_PACK_WOW_BUFFER                 0x2
                     //#define CRED_PACK_GENERIC_CREDENTIALS        0x4
 
-                    var result = CredUnPackAuthenticationBuffer((decryptProtectedCredentials ? 0x1 : 0x0),
+                    var result = CredUnPackAuthenticationBuffer(decryptProtectedCredentials ? 0x1 : 0x0,
                                                                     authBufferPtr,
                                                                     authBufferSize,
                                                                     userNamePtr,
@@ -304,7 +545,7 @@ namespace _1RM.Utils.Windows
                             userNamePtr = Marshal.ReAllocCoTaskMem(userNamePtr, userNameSize);
                             domainNamePtr = Marshal.ReAllocCoTaskMem(domainNamePtr, domainNameSize);
                             passwordPtr = Marshal.ReAllocCoTaskMem(passwordPtr, passwordSize);
-                            result = CredUnPackAuthenticationBuffer((decryptProtectedCredentials ? 0x1 : 0x0),
+                            result = CredUnPackAuthenticationBuffer(decryptProtectedCredentials ? 0x1 : 0x0,
                                                                     authBufferPtr,
                                                                     authBufferSize,
                                                                     userNamePtr,
@@ -473,10 +714,10 @@ namespace _1RM.Utils.Windows
             }
 
             [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-            public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, LogonTypes dwLogonType, LogonProvider dwLogonProvider, out SafeTokenHandle phToken);
+            public static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, LogonTypes dwLogonType, LogonProvider dwLogonProvider, out SafeTokenHandle phToken);
 
             [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-            public static extern bool LogonUser(String lpszUsername, String lpszDomain, IntPtr phPassword, LogonTypes dwLogonType, LogonProvider dwLogonProvider, out SafeTokenHandle phToken);
+            public static extern bool LogonUser(string lpszUsername, string lpszDomain, IntPtr phPassword, LogonTypes dwLogonType, LogonProvider dwLogonProvider, out SafeTokenHandle phToken);
 
             [DllImport("advapi32.dll", SetLastError = true)]
             public static extern bool DuplicateToken(SafeTokenHandle ExistingTokenHandle, SecurityImpersonationLevel SECURITY_IMPERSONATION_LEVEL, out SafeTokenHandle DuplicateTokenHandle);
@@ -487,10 +728,10 @@ namespace _1RM.Utils.Windows
             public static SecureString PtrToSecureString(IntPtr p)
             {
                 SecureString s = new SecureString();
-                Int32 i = 0;
+                int i = 0;
                 while (true)
                 {
-                    Char c = (Char)Marshal.ReadInt16(p, ((i++) * sizeof(Int16)));
+                    char c = (char)Marshal.ReadInt16(p, i++ * sizeof(short));
                     if (c == '\u0000')
                         break;
                     s.AppendChar(c);
@@ -498,256 +739,17 @@ namespace _1RM.Utils.Windows
                 s.MakeReadOnly();
                 return s;
             }
-            public static SecureString PtrToSecureString(IntPtr p, Int32 length)
+            public static SecureString PtrToSecureString(IntPtr p, int length)
             {
                 SecureString s = new SecureString();
                 for (var i = 0; i < length; i++)
-                    s.AppendChar((Char)Marshal.ReadInt16(p, i * sizeof(Int16)));
+                    s.AppendChar((char)Marshal.ReadInt16(p, i * sizeof(short)));
                 s.MakeReadOnly();
                 return s;
             }
             #endregion
         }
 
-
-
-
-        private static T GetPromptForWindowsCredentialsError<T>(int errorCode, string errorMessage) where T : class, IPromptCredentialsResult
-        {
-            if (typeof(T) == typeof(PromptCredentialsSecureStringResult))
-            {
-                return (PromptCredentialsSecureStringResult.Error(errorCode, errorMessage) as T)!;
-            }
-            else
-            {
-                return (PromptCredentialsResult.Error(errorCode, errorMessage) as T)!;
-            }
-        }
-
-        private static T? PromptForWindowsCredentialsInternal<T>(
-            String caption, String message, IntPtr? hwndParent = null,
-            uint credentialsFlag = (uint)(PromptForWindowsCredentialsFlag.CREDUIWIN_NONE),
-            bool isSaveChecked = false,
-            string? userName = null, string? password = null) where T : class, IPromptCredentialsResult
-        {
-            if (caption.Length > NativeMethods.CREDUI_MAX_CAPTION_LENGTH)
-                caption = caption.Substring(0, NativeMethods.CREDUI_MAX_CAPTION_LENGTH);
-            if (message.Length > NativeMethods.CREDUI_MAX_MESSAGE_LENGTH)
-                message = message.Substring(0, NativeMethods.CREDUI_MAX_MESSAGE_LENGTH);
-            var credulityInfo = new NativeMethods.CREDUI_INFO()
-            {
-                pszCaptionText = caption,
-                pszMessageText = message,
-                hwndParent = hwndParent ?? IntPtr.Zero,
-            };
-
-            var userNamePtr = IntPtr.Zero;
-            var passwordPtr = IntPtr.Zero;
-            var authPackage = 0;
-            var outAuthBuffer = IntPtr.Zero;
-            var inAuthBuffer = IntPtr.Zero;
-            var inAuthBufferSize = 0;
-            var save = isSaveChecked;
-            using var userNameS = new SecureString();
-            using var passwordS = new SecureString();
-            try
-            {
-                if (userName != null || password != null)
-                {
-                    if (!String.IsNullOrEmpty(userName))
-                    {
-                        if (userName.Length > NativeMethods.CREDUI_MAX_USERNAME_LENGTH)
-                        {
-                            return GetPromptForWindowsCredentialsError<T>(-1, "UserName is too long!");
-                        }
-                        foreach (var c in userName)
-                            userNameS.AppendChar(c);
-                    }
-                    if (!String.IsNullOrEmpty(password))
-                    {
-                        if (password.Length > NativeMethods.CREDUI_MAX_USERNAME_LENGTH)
-                        {
-                            return GetPromptForWindowsCredentialsError<T>(-1, "password is too long!");
-                        }
-                        foreach (var c in password)
-                            passwordS.AppendChar(c);
-                    }
-                    userNamePtr = Marshal.SecureStringToCoTaskMemUnicode(userNameS);
-                    passwordPtr = Marshal.SecureStringToCoTaskMemUnicode(passwordS);
-                }
-
-                // pre-filled with UserName or Password
-                if (userNamePtr != IntPtr.Zero || passwordPtr != IntPtr.Zero)
-                {
-                    inAuthBufferSize = 1024;
-                    inAuthBuffer = Marshal.AllocCoTaskMem(inAuthBufferSize);
-                    if (!NativeMethods.CredPackAuthenticationBuffer(0x00, userNamePtr, passwordPtr, inAuthBuffer, ref inAuthBufferSize))
-                    {
-                        var win32Error = Marshal.GetLastWin32Error();
-                        if (win32Error == 122 /*ERROR_INSUFFICIENT_BUFFER*/)
-                        {
-                            inAuthBuffer = Marshal.ReAllocCoTaskMem(inAuthBuffer, inAuthBufferSize);
-                            if (!NativeMethods.CredPackAuthenticationBuffer(0x00, userNamePtr, passwordPtr, inAuthBuffer, ref inAuthBufferSize))
-                            {
-                                return GetPromptForWindowsCredentialsError<T>(Marshal.GetLastWin32Error(), $"CredPackAuthenticationBuffer error code: {Marshal.GetLastWin32Error()}");
-                            }
-                        }
-                        else
-                        {
-                            return GetPromptForWindowsCredentialsError<T>(win32Error, $"CredPackAuthenticationBuffer error code: {win32Error}");
-                        }
-                    }
-                }
-
-                var retVal = NativeMethods.CredUIPromptForWindowsCredentials(credulityInfo,
-                                                                     0,
-                                                                     ref authPackage,
-                                                                     inAuthBuffer,
-                                                                     inAuthBufferSize,
-                                                                     out outAuthBuffer,
-                                                                     out var outAuthBufferSize,
-                                                                     ref save,
-                                                                     //(int)(PromptForWindowsCredentialsFlag.CREDUIWIN_AUTHPACKAGE_ONLY)
-                                                                     credentialsFlag // Use the PromptForWindowsCredentialsFlags Enum here. You can use multiple flags if you seperate them with | .
-                                                                     );
-
-                switch (retVal)
-                {
-                    case NativeMethods.CredUIPromptReturnCode.Cancelled:
-                        return null;
-                    case NativeMethods.CredUIPromptReturnCode.Success:
-                        break;
-                    default:
-                        return GetPromptForWindowsCredentialsError<T>((Int32)retVal, $"CredUIPromptReturnCode error code: {(Int32)retVal}");
-                        //throw new Win32Exception((Int32)retVal);
-                }
-
-
-                if (typeof(T) == typeof(PromptCredentialsSecureStringResult))
-                {
-                    var credResult = NativeMethods.CredUnPackAuthenticationBufferWrapSecureString(true, outAuthBuffer, outAuthBufferSize);
-                    credResult.IsSaveChecked = save;
-                    return credResult as T;
-                }
-                else
-                {
-                    var credResult = NativeMethods.CredUnPackAuthenticationBufferWrap(true, outAuthBuffer, outAuthBufferSize);
-                    credResult.IsSaveChecked = save;
-                    return credResult as T;
-                }
-            }
-            finally
-            {
-                if (inAuthBuffer != IntPtr.Zero)
-                    Marshal.ZeroFreeCoTaskMemUnicode(inAuthBuffer);
-                if (outAuthBuffer != IntPtr.Zero)
-                    Marshal.ZeroFreeCoTaskMemUnicode(outAuthBuffer);
-                if (userNamePtr != IntPtr.Zero)
-                    Marshal.ZeroFreeCoTaskMemUnicode(userNamePtr);
-                if (passwordPtr != IntPtr.Zero)
-                    Marshal.ZeroFreeCoTaskMemUnicode(passwordPtr);
-            }
-        }
-
-        /// <summary>
-        /// Creates and displays a configurable dialog box that allows users to supply credential information by using any credential provider installed on the local computer.
-        /// </summary>
-        /// <example>
-        /// For example:
-        /// <code>
-        /// var result = WindowsCredentialHelper.PromptForWindowsCredentials("Hi", "body", new WindowInteropHelper(this).Handle);
-        /// if (result?.HasNoError == true)
-        /// {
-        ///     MessageBox.Show($"输入的信息：\r\n  {result.UserName} \r\n {result.Password} \r\n {result.DomainName} \r\n {result.IsSaveChecked}");
-        /// }
-        /// else
-        /// {
-        ///     MessageBox.Show("密码未输入完成");
-        /// }
-        /// </code>
-        /// </example>
-        /// <returns>return null for cancel or other error</returns>
-        public static PromptCredentialsResult? PromptForWindowsCredentials(String caption, String message, IntPtr? hwndParent = null, String? userName = null, String? password = null, uint credentialsFlag = (uint)PromptForWindowsCredentialsFlag.CREDUIWIN_NONE)
-        {
-            return PromptForWindowsCredentialsInternal<PromptCredentialsResult>(caption, message, hwndParent, userName: userName, password: password, credentialsFlag: credentialsFlag);
-        }
-
-
-        /// <summary>
-        /// Creates and displays a configurable dialog box that allows users to supply credential information by using any credential provider installed on the local computer.
-        /// </summary>
-        /// <returns>return null for cancel or other error</returns>
-        public static PromptCredentialsSecureStringResult? PromptForWindowsCredentialsSecureString(String caption, String message, IntPtr? hwndParent = null, String? userName = null, String? password = null, uint credentialsFlag = (uint)PromptForWindowsCredentialsFlag.CREDUIWIN_NONE)
-        {
-            return PromptForWindowsCredentialsInternal<PromptCredentialsSecureStringResult>(caption, message, hwndParent, userName: userName, password: password, credentialsFlag: credentialsFlag);
-        }
-
-        public enum LogonUserStatus
-        {
-            Success,
-            Cancel,
-            Failed,
-        }
-        public static LogonUserStatus LogonUser(string userName, string userPassword, string domain = "")
-        {
-            // Call LogonUser to obtain a handle to an access token. 
-            bool returnValue = false;
-            NativeMethods.SafeTokenHandle? tokenHandle = null;
-            if (userName.IndexOf("\\") > 0)
-            {
-                userName = userName.Substring(userName.IndexOf("\\") + 1);
-                //var userName2 = userName.Substring(userName.IndexOf("\\") + 1);
-                //returnValue = NativeMethods.LogonUser(userName2, domain, userPassword,
-                //    NativeMethods.LogonTypes.LOGON32_LOGON_INTERACTIVE, NativeMethods.LogonProvider.LOGON32_PROVIDER_DEFAULT,
-                //    out tokenHandle);
-            }
-
-            if (!returnValue)
-            {
-                returnValue = NativeMethods.LogonUser(userName, domain, userPassword,
-                    NativeMethods.LogonTypes.LOGON32_LOGON_INTERACTIVE, NativeMethods.LogonProvider.LOGON32_PROVIDER_DEFAULT,
-                    out tokenHandle);
-            }
-
-            if (returnValue)
-            {
-                tokenHandle?.Dispose();
-                return LogonUserStatus.Success;
-            }
-            //else
-            //{
-            //    int err = Marshal.GetLastWin32Error();
-            //    MessageBox.Show(err.ToString("X"));
-            //}
-            return LogonUserStatus.Failed;
-        }
-
-        public static LogonUserStatus LogonUserWithWindowsCredential(String caption, String message, IntPtr? hwndParent = null, String? userName = null, String? password = null, uint credentialsFlag = (int)PromptForWindowsCredentialsFlag.CREDUIWIN_NONE)
-        {
-            userName ??= GetUserName();
-            var ret = PromptForWindowsCredentials(caption, message, hwndParent, userName, password, credentialsFlag);
-            if (ret?.HasNoError == true)
-            {
-                return LogonUser(ret.UserName, ret.Password, ret.DomainName);
-            }
-            else if (ret == null)
-            {
-                return LogonUserStatus.Cancel;
-            }
-            else
-            {
-                //MessageBox.Show("Error code = " + ret.ErrorCode);
-            }
-            return LogonUserStatus.Failed;
-        }
-
-
-        public static string GetUserName()
-        {
-            //return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            return Environment.UserName;
-            //return Environment.UserDomainName + "\\" + Environment.UserName;
-        }
     }
 
 }
