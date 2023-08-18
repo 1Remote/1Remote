@@ -491,7 +491,7 @@ namespace _1RM.View.Host.ProtocolHosts
             // detail: https://github.com/1Remote/1Remote/issues/437
             try
             {
-                if (_1RM.Utils.Windows.WindowsVersionHelper.IsWindows1122H2OrHigher()) // Win11 22H2
+                if (_1RM.Utils.WindowsApi.WindowsVersionHelper.IsWindows1122H2OrHigher()) // Win11 22H2
                 {
                     _rdpClient.AdvancedSettings9.BandwidthDetection = false;
                 }

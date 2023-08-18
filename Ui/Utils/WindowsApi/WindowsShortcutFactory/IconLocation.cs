@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace _1RM.Utils.Windows.WindowsShortcutFactory
+namespace _1RM.Utils.WindowsApi.WindowsShortcutFactory
 {
     /// <summary>
     /// Contains the path of an icon and optionally an index.

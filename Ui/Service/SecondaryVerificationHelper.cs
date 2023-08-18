@@ -1,8 +1,8 @@
-﻿using _1RM.Utils.Windows;
-using _1RM.Utils;
-using _1RM.View.Utils;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using _1RM.View.Utils;
+using _1RM.Utils.WindowsSdk;
+using _1RM.Utils.WindowsApi.Credential;
 
 namespace _1RM.Service
 {
@@ -53,18 +53,18 @@ namespace _1RM.Service
                         {
                             title = "TXT: 验证错误，请输入正确的凭据";
                         }
-                        var ret = WindowsCredentialHelper.LogonUserWithWindowsCredential(title, message,
+                        var ret = CredentialPrompt.LogonUserWithWindowsCredential(title, message,
                             null, // new WindowInteropHelper(this).Handle
                             null, null,
                             0
-                            | (uint)WindowsCredentialHelper.PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC
-                            | (uint)WindowsCredentialHelper.PromptForWindowsCredentialsFlag.CREDUIWIN_ENUMERATE_CURRENT_USER
+                            | (uint)CredentialPrompt.PromptForWindowsCredentialsFlag.CREDUIWIN_GENERIC
+                            | (uint)CredentialPrompt.PromptForWindowsCredentialsFlag.CREDUIWIN_ENUMERATE_CURRENT_USER
                         );
-                        if (ret == WindowsCredentialHelper.LogonUserStatus.Success)
+                        if (ret == CredentialPrompt.LogonUserStatus.Success)
                         {
                             result = true;
                         }
-                        else if (ret == WindowsCredentialHelper.LogonUserStatus.Cancel)
+                        else if (ret == CredentialPrompt.LogonUserStatus.Cancel)
                         {
                             result = null;
                         }

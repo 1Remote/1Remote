@@ -118,7 +118,6 @@ namespace _1RM.Model.Protocol
                 return "N";
             return _flowControl[0].ToString().ToUpper();
         }
-        // TODO 数据位、校验位、停止位
 
         private string _startupAutoCommand = "";
         public string StartupAutoCommand

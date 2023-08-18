@@ -426,26 +426,26 @@ namespace _1RM.View.Editor
                                     ret = _globalData.AddServer(Server, AddToDataSource);
                                 }
 
-                                if (ret.IsSuccess && Server is RDP rdp)
-                                {
-                                    try
-                                    {
-                                        // try read user name & password from CredentialManagement.
-                                        using var cred = new CredentialManagement.Credential()
-                                        {
-                                            Target = "TERMSRV/" + rdp.Address,
-                                            Type = CredentialType.Generic,
-                                            Password = rdp.Password,
-                                            Username = rdp.UserName,
-                                            PersistanceType = PersistanceType.LocalComputer,
-                                        };
-                                        cred.Save();
-                                    }
-                                    catch (Exception)
-                                    {
-                                        // ignored
-                                    }
-                                }
+                                //if (ret.IsSuccess && Server is RDP rdp)
+                                //{
+                                //    try
+                                //    {
+                                //        // try read user name & password from CredentialManagement.
+                                //        using var cred = new CredentialManagement.Credential()
+                                //        {
+                                //            Target = "TERMSRV/" + rdp.Address,
+                                //            Type = CredentialType.Generic,
+                                //            Password = rdp.Password,
+                                //            Username = rdp.UserName,
+                                //            PersistanceType = PersistanceType.LocalComputer,
+                                //        };
+                                //        cred.Save();
+                                //    }
+                                //    catch (Exception)
+                                //    {
+                                //        // ignored
+                                //    }
+                                //}
                             }
 
                             if (ret.IsSuccess)
