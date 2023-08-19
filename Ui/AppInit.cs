@@ -64,8 +64,8 @@ namespace _1RM
             LanguageServiceObj.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
             #region Portable or not
             {
-                var portablePaths = new AppPathHelper(Environment.CurrentDirectory);
-                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME));
+                var portablePaths = new AppPathHelper(Environment.CurrentDirectory, Environment.CurrentDirectory);
+                var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assert.APP_NAME));
 
                 bool isPortableMode = false;
                 {
@@ -74,7 +74,7 @@ namespace _1RM
                     bool appDataProfilePathExisted = File.Exists(appDataPaths.ProfileJsonPath);
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
-                    bool permissionForPortable = AppPathHelper.CheckPermissionForPortablePaths();
+                    bool permissionForPortable = portablePaths.CheckAllPathsPermission();
 #if FOR_MICROSOFT_STORE_ONLY
                     forceAppData = true;
                     forcePortable = false;
@@ -137,6 +137,7 @@ namespace _1RM
                     if (_isNewUser)
                     {
                         PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
+                        SecondaryVerificationHelper.Init();
                         // 新用户显示引导窗口
                         var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageServiceObj, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
@@ -180,8 +181,9 @@ namespace _1RM
                     WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
                     WritePermissionCheck(paths.ProfileJsonPath, true);
                     WritePermissionCheck(paths.LogFilePath, true);
-                    //WritePermissionCheck(paths.SqliteDbDefaultPath, true);
+                    WritePermissionCheck(paths.SqliteDbDefaultPath, true);
                     WritePermissionCheck(paths.KittyDirPath, false);
+                    WritePermissionCheck(paths.LogFilePath, true);
                     WritePermissionCheck(paths.LocalityDirPath, false);
                 }
 
@@ -196,16 +198,6 @@ namespace _1RM
                     AppPathHelper.CreateDirIfNotExist(paths.KittyDirPath, false);
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
-                    if (File.Exists(paths.LocalityJsonPath))
-                    {
-                        if (File.Exists(LocalityService.JsonPath) == false)
-                            File.Move(paths.LocalityJsonPath, LocalityService.JsonPath);
-                    }
-                    if (File.Exists(paths.LocalityConnectTimeRecord))
-                    {
-                        if (File.Exists(Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json")) == false)
-                            File.Move(paths.LocalityConnectTimeRecord, Path.Combine(paths.LocalityDirPath, "ConnectionRecords.json"));
-                    }
                 }
             }
             #endregion

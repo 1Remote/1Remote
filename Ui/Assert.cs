@@ -2,16 +2,16 @@ namespace _1RM
 {
     internal static class Assert
     {
-        public const string AppName = "1Remote";
+        private const string APP_NAME_RAW = "1Remote";
 #if DEBUG
-        public const string APP_NAME = $"{AppName}_Debug";
+        public const string APP_NAME = $"{APP_NAME_RAW}_Debug";
 #if FOR_MICROSOFT_STORE_ONLY
         public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)_Debug";
 #else
         public const string APP_DISPLAY_NAME = APP_NAME;
 #endif
 #else
-        public const string APP_NAME = $"{AppName}";
+        public const string APP_NAME = $"{APP_NAME_RAW}";
 #if FOR_MICROSOFT_STORE_ONLY
         public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)";
 #else

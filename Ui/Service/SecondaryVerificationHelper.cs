@@ -1,8 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using _1Remote.Security;
+using _1RM.Utils;
 using _1RM.View.Utils;
 using _1RM.Utils.WindowsSdk;
 using _1RM.Utils.WindowsApi.Credential;
+using _1RM.Utils.WindowsSdk.PasswordVaultManager;
+using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Crypto.Signers;
+using Microsoft.Win32;
 
 namespace _1RM.Service
 {
@@ -11,35 +18,47 @@ namespace _1RM.Service
         private static bool? _isEnabled = null;
         private static DateTime _lastVerifyTime = DateTime.MinValue;
 
-        public static void SetEnabled(bool enable)
+        public static async void Init()
         {
-            if (_isEnabled != enable)
+            var ret = await GetEnabled("SecondaryVerificationDisabled");
+            if (ret == null)
             {
-                // TODO save to security config
+                SetEnabled(false);
             }
-            _isEnabled = enable;
         }
 
-        public static bool GetEnabled()
-        {
-            if (_isEnabled != null)
-            {
-                return (bool)_isEnabled;
-            }
 
-            // TODO load from security config
-            return true;
+        public static async void SetEnabled(bool enable)
+        {
+            var success = await SetEnabled(enable, "SecondaryVerificationDisabled");
+            if (success)
+                _isEnabled = enable;
         }
+
+
+        public static async Task<bool> GetEnabled()
+        {
+            if (_isEnabled == null)
+            {
+                var ret = await GetEnabled("SecondaryVerificationDisabled");
+                _isEnabled = ret != false;
+            }
+            return (bool)_isEnabled;
+        }
+
 
         public static async Task<bool?> VerifyAsyncUi(bool defaultReturn = false, bool returnUntilOkOrCancel = true)
         {
-            if (GetEnabled() == false)
+            if (await GetEnabled() == false)
                 return true;
+
+            //if ((DateTime.Now - _lastVerifyTime).TotalSeconds < 30)
+            //    return true;
 
             bool? result;
             bool widowsHelloIsOk = WindowsHelloHelper.IsOsSupported && await WindowsHelloHelper.HelloIsAvailable() == true;
             int counter = 0;
-            MaskLayerController.ShowProcessingRing();
+            MaskLayerController.ShowProcessingRing(IoC.Get<LanguageService>().Translate("Please complete the windows credentials verification"));
             while (true)
             {
 
@@ -47,11 +66,12 @@ namespace _1RM.Service
                 {
                     try
                     {
-                        string title = "TXT:验证你的账户";
-                        string message = "TXT:请输入当前Windows的凭据";
+
+                        string title = IoC.Get<LanguageService>().Translate("Enter your credentials");
+                        string message = "";
                         if (counter > 0)
                         {
-                            title = "TXT: 验证错误，请输入正确的凭据";
+                            message = IoC.Get<LanguageService>().Translate("Verification failed. Please try again.");
                         }
                         var ret = CredentialPrompt.LogonUserWithWindowsCredential(title, message,
                             null, // new WindowInteropHelper(this).Handle
@@ -77,9 +97,6 @@ namespace _1RM.Service
                     {
                         result = defaultReturn;
                     }
-                    //if (defaultReturn == false)
-                    //    MessageBoxHelper.Warning(IoC.Get<LanguageService>().Translate("Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello."));
-                    //return defaultReturn;
                 }
                 else
                 {
@@ -94,6 +111,8 @@ namespace _1RM.Service
             }
 
             MaskLayerController.HideMask();
+            if (result == true)
+                _lastVerifyTime = DateTime.Now;
             return result;
         }
 
@@ -106,5 +125,132 @@ namespace _1RM.Service
                 callBack.Invoke(result);
             });
         }
+
+
+
+
+
+        private static async Task<bool> SetEnabled(bool enable, string key)
+        {
+            var success = false;
+            var value = await DataProtectionForLocal.Protect("0") ?? "";
+
+            if (enable == false)
+            {
+                string password = "";
+                string username = "";
+                if (value.Length > 1000)
+                {
+                    password = UnSafeStringEncipher.EncryptOnce("0");
+                }
+                else if (value.Length > 500)
+                {
+                    password = value.Substring(0, 500);
+                    username = value.Substring(500);
+                }
+                success = Credential.Set(Path.Join(Assert.APP_NAME, key), username, password);
+            }
+            else
+            {
+                success = Credential.Set(Path.Join(Assert.APP_NAME, key), "", "");
+            }
+
+
+            if (!success || enable == true)
+            {
+                try
+                {
+                    var openSubKey = Registry.CurrentUser.OpenSubKey("Software", true);
+                    var appNameKey = openSubKey?.CreateSubKey(Assert.APP_NAME);
+                    if (appNameKey != null)
+                    {
+                        appNameKey.SetValue(key, enable == false ? value : "");
+                        success = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    success = false;
+                }
+            }
+
+            if (!success || enable == true)
+            {
+                try
+                {
+                    var pvm = new PasswordVaultManagerFileSystem(AppPathHelper.Instance.LocalityDirPath);
+                    if (enable == false)
+                    {
+                        pvm.Add(key, value);
+                        success = true;
+                    }
+                    else
+                    {
+                        pvm.Remove(key);
+                    }
+                }
+                catch (Exception e)
+                {
+                    success = false;
+                }
+            }
+            return success;
+        }
+        private static async Task<bool?> GetEnabled(string key)
+        {
+            try
+            {
+                var c = Credential.Load(Path.Join(Assert.APP_NAME, key));
+                if (c != null)
+                {
+                    if (await DataProtectionForLocal.Unprotect(c.Password + c.Username) == "0")
+                    {
+                        return false;
+                    }
+                    if (UnSafeStringEncipher.SimpleDecrypt(c.Password + c.Username) == "0")
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            try
+            {
+                var openSubKey = Registry.CurrentUser.OpenSubKey("Software", true);
+                var appNameKey = openSubKey?.CreateSubKey(Assert.APP_NAME);
+                if (appNameKey?.GetValue(key) is string txt)
+                {
+                    var value = await DataProtectionForLocal.Unprotect(txt);
+                    return value != "0";
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+
+            try
+            {
+                var pvm = new PasswordVaultManagerFileSystem(AppPathHelper.Instance.LocalityDirPath);
+                if (pvm.Retrieve(key) is { } txt)
+                {
+                    var value = await DataProtectionForLocal.Unprotect(txt);
+                    return value != "0";
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return null;
+        }
+
     }
 }

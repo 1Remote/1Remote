@@ -464,7 +464,7 @@ namespace _1RM.View.ServerList
         {
             get
             {
-                return _cmdExportSelectedToJson ??= new RelayCommand(async (o) =>
+                return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
                     try
                     {
@@ -626,11 +626,8 @@ namespace _1RM.View.ServerList
                             try
                             {
                                 // try read user name & password from CredentialManagement.
-                                using var cred = new CredentialManagement.Credential()
-                                {
-                                    Target = "TERMSRV/" + rdp.Address,
-                                };
-                                if (cred.Load())
+                                using var cred = _1RM.Utils.WindowsApi.Credential.Credential.Load("TERMSRV/" + rdp.Address);
+                                if (cred != null)
                                 {
                                     rdp.UserName = cred.Username;
                                     rdp.Password = cred.Password;

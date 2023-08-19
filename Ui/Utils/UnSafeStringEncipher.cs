@@ -20,7 +20,10 @@ namespace _1RM.Utils
         }
         public static string? SimpleDecrypt(string encryptString)
         {
-            return _1Remote.Security.SimpleStringEncipher.Decrypt(encryptString);
+            var ret = _1Remote.Security.SimpleStringEncipher.Decrypt(encryptString);
+            if(ret.IsSuccess)
+                return ret.PlainText;
+            return null;
         }
 
         public static string EncryptOnce(string str)

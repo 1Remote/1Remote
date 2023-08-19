@@ -16,7 +16,6 @@ using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
-using CredentialManagement;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;

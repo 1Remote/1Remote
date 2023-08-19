@@ -53,19 +53,6 @@ namespace _1RM.View.Settings.General
             }
         }
 
-        private bool? _requireWindowsPasswordBeforeSensitiveOperation = null;
-        public bool RequireWindowsPasswordBeforeSensitiveOperation
-        {
-            get => SecondaryVerificationHelper.GetEnabled();
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _requireWindowsPasswordBeforeSensitiveOperation, value))
-                {
-                    SecondaryVerificationHelper.SetEnabled(value);
-                }
-            }
-        }
-
         public bool ConfirmBeforeClosingSession
         {
             get => _configurationService.General.ConfirmBeforeClosingSession;
