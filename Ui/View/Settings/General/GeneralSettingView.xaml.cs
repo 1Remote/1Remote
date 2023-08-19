@@ -1,7 +1,9 @@
-﻿using _1RM.Service;
+﻿using System.Threading.Tasks;
+using _1RM.Service;
 using Google.Protobuf.WellKnownTypes;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Stylet;
 
 namespace _1RM.View.Settings.General
 {
@@ -13,6 +15,14 @@ namespace _1RM.View.Settings.General
         public GeneralSettingView()
         {
             InitializeComponent();
+            Task.Factory.StartNew(async () =>
+            {
+                var b = await SecondaryVerificationHelper.GetEnabled();
+                Execute.OnUIThread(() =>
+                {
+                    CbRequireWindowsPasswordBeforeSensitiveOperation.IsChecked = b;
+                });
+            });
         }
 
         private async void CbRequireWindowsPasswordBeforeSensitiveOperation_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -24,7 +34,7 @@ namespace _1RM.View.Settings.General
                 if (ret == true)
                 {
                     cb.IsChecked = cb.IsChecked != true;
-                    vm.RequireWindowsPasswordBeforeSensitiveOperation = cb.IsChecked == true;
+                    SecondaryVerificationHelper.SetEnabled(cb.IsChecked == true);
                 }
             }
         }

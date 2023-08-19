@@ -1,6 +1,4 @@
-﻿using CredentialManagement;
-using Shawn.Utils;
-using System.Collections.ObjectModel;
+﻿using Shawn.Utils;
 
 namespace _1RM.Model.Protocol.Base
 {

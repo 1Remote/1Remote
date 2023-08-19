@@ -259,7 +259,7 @@ namespace _1RM.Service
 
         public static string? MakeIcon(string name, Bitmap? bitmap)
         {
-            if (bitmap == null || AppPathHelper.IsInit == false) return null;
+            if (bitmap == null) return null;
             string? iconPath = null;
             iconPath = System.IO.Path.Combine(AppPathHelper.Instance.LocalityIconDirPath, $"{name}.ico");
             Executor.TryCatch(() =>

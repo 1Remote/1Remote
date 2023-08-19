@@ -284,5 +284,9 @@
     <s:String x:Key="Create desktop shortcut">Criar atalho na área de trabalho</s:String>
     <s:String x:Key="Success">Sucesso</s:String>
     <s:String x:Key="Failed">Fracassado</s:String>
-    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">O Windows Hello está indisponível no momento, operações confidenciais serão negadas! Configure um PIN ou habilite o Windows Hello.</s:String>
+    <s:String x:Key="Please complete the windows credentials verification">Conclua a verificação de credenciais do Windows</s:String>
+    <s:String x:Key="Enter your credentials">Insira suas credenciais</s:String>
+    <s:String x:Key="Verification failed. Please try again.">Falha na verificação. Por favor, tente novamente.</s:String>
+    <s:String x:Key="Security">Segurança</s:String>
+    <s:String x:Key="Windows credentials verification is required to view passwords">A verificação de credenciais do Windows é necessária para visualizar as senhas</s:String>
 </ResourceDictionary>

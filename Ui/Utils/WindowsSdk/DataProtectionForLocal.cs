@@ -74,10 +74,17 @@ namespace _1RM.Utils.WindowsSdk
         /// </summary>
         public static async Task<string?> Unprotect(string base64, BinaryStringEncoding encoding = BinaryStringEncoding.Utf8)
         {
-            var buffProtected = CryptographicBuffer.DecodeFromBase64String(base64);
-            if (buffProtected == null)
+            try
+            {
+                var buffProtected = CryptographicBuffer.DecodeFromBase64String(base64);
+                if (buffProtected == null)
+                    return null;
+                return await Unprotect(buffProtected, encoding);
+            }
+            catch (Exception)
+            {
                 return null;
-            return await Unprotect(buffProtected, encoding);
+            }
         }
     }
 }

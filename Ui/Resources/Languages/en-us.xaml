@@ -284,5 +284,9 @@
     <s:String x:Key="Create desktop shortcut">Create desktop shortcut</s:String>
     <s:String x:Key="Success">Success</s:String>
     <s:String x:Key="Failed">Failed</s:String>
-    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.</s:String>
+    <s:String x:Key="Please complete the windows credentials verification"> Please complete the windows credentials verification</s:String>
+    <s:String x:Key="Enter your credentials">Enter your credentials</s:String>
+    <s:String x:Key="Verification failed. Please try again.">Verification failed. Please try again.</s:String>
+    <s:String x:Key="Security">Security</s:String>
+    <s:String x:Key="Windows credentials verification is required to view passwords">Windows credentials verification is required to view passwords</s:String>
 </ResourceDictionary>

@@ -262,7 +262,7 @@
     <s:String x:Key="We are not able to connect to xxx">无法连接到`{0}`!</s:String>
     <s:String x:Key="XXX is already existed!">`{0}`已经存在！</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` 不存在！</s:String>
-    <s:String x:Key="Show credentials info">显示地址账号信息</s:String>
+    <s:String x:Key="Show credentials info">显示账号信息</s:String>
     <s:String x:Key="Sorting">排序</s:String>
     <s:String x:Key="Sort by drag">自定义拖拽排序</s:String>
     <s:String x:Key="We can not connect database:">无法连接到数据库</s:String>
@@ -284,5 +284,9 @@
     <s:String x:Key="Create desktop shortcut">创建桌面快捷方式</s:String>
     <s:String x:Key="Success">成功</s:String>
     <s:String x:Key="Failed">失败</s:String>
-    <s:String x:Key="Windows Hello is currently unavailable, sensitive operations will be denied! Please set up a PIN or enable Windows Hello.">当前 Windows Hello 不可用，敏感操作将被拒绝！请设置 PIN 或启用 Windows Hello。</s:String>
+    <s:String x:Key="Please complete the windows credentials verification">请完成Windows凭据验证</s:String>
+    <s:String x:Key="Enter your credentials">输入凭据</s:String>
+    <s:String x:Key="Verification failed. Please try again.">验证失败，请重试。</s:String>
+    <s:String x:Key="Security">安全设置</s:String>
+    <s:String x:Key="Windows credentials verification is required to view passwords">查看密码前要求验证Windows凭据</s:String>
 </ResourceDictionary>

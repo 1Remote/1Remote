@@ -78,7 +78,7 @@ namespace _1RM.Utils.WindowsApi.Credential
         }
 
 
-        public Credential(string credentialName)
+        protected Credential(string credentialName)
         {
             CredentialName = credentialName;
         }
@@ -98,6 +98,7 @@ namespace _1RM.Utils.WindowsApi.Credential
             Dispose();
         }
 
+        public readonly string CredentialName;
 
         public string Username { get; set; } = "";
 
@@ -122,7 +123,6 @@ namespace _1RM.Utils.WindowsApi.Credential
             }
         }
 
-        public readonly string CredentialName;
 
         public string Description { get; set; } = "";
 
@@ -134,7 +134,7 @@ namespace _1RM.Utils.WindowsApi.Credential
 
         public PersistTypeEnum PersistType { get; set; } = PersistTypeEnum.LocalComputer;
 
-        public bool Save()
+        protected bool Save()
         {
             byte[] passwordBytes = Encoding.Unicode.GetBytes(Password);
             if (Password.Length > 512)
@@ -174,25 +174,67 @@ namespace _1RM.Utils.WindowsApi.Credential
             return result;
         }
 
-        public static Credential? Load(string credentialName, CredentialTypeEnum credentialType)
+        public static Credential? Load(string credentialName, CredentialTypeEnum credentialType = CredentialTypeEnum.Generic)
         {
-            bool result = CredRead(credentialName, credentialType, 0, out var credPointer);
-            if (!result)
+            try
+            {
+                bool result = CredRead(credentialName, credentialType, 0, out var credPointer);
+                if (!result)
+                {
+                    return null;
+                }
+                using var credentialHandle = new CriticalCredentialHandle(credPointer);
+                using var ret = new Credential(credentialName);
+                var credential = credentialHandle.GetCredential();
+                ret.Username = credential.UserName;
+                if (credential.CredentialBlobSize > 0)
+                {
+                    ret.Password = Marshal.PtrToStringUni(credential.CredentialBlob, credential.CredentialBlobSize / 2);
+                }
+                ret.CredentialType = (CredentialTypeEnum)credential.Type;
+                ret.PersistType = (PersistTypeEnum)credential.Persist;
+                ret.Description = credential.Comment;
+                ret.LastWriteTimeUtc = DateTime.FromFileTimeUtc(credential.LastWritten);
+                return ret;
+            }
+            catch (Exception)
             {
                 return null;
             }
-            using var credentialHandle = new CriticalCredentialHandle(credPointer);
-            var ret = new Credential(credentialName);
-            var credential = credentialHandle.GetCredential();
-            if (credential.CredentialBlobSize > 0)
+        }
+
+        public static bool Set(string credentialName, string username, string password, string description = "", PersistTypeEnum persistType = PersistTypeEnum.LocalComputer, CredentialTypeEnum credentialType = CredentialTypeEnum.Generic)
+        {
+            if (username.Length > 512 || password.Length > 512)
+                return false;
+            try
             {
-                ret.Password = Marshal.PtrToStringUni(credential.CredentialBlob, credential.CredentialBlobSize / 2);
+                using var ret = new Credential(credentialName);
+                ret.CredentialType = credentialType;
+                ret.PersistType = persistType;
+                ret.Username = username;
+                ret.Password = password;
+                ret.Description = description;
+                return ret.Save();
             }
-            ret.CredentialType = (CredentialTypeEnum)credential.Type;
-            ret.PersistType = (PersistTypeEnum)credential.Persist;
-            ret.Description = credential.Comment;
-            ret.LastWriteTimeUtc = DateTime.FromFileTimeUtc(credential.LastWritten);
-            return ret;
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public static bool Remove(string credentialName, CredentialTypeEnum credentialType = CredentialTypeEnum.Generic)
+        {
+            try
+            {
+                var target = string.IsNullOrEmpty(credentialName) ? new StringBuilder() : new StringBuilder(credentialName);
+                bool result = CredDelete(target, credentialType, 0);
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
 
@@ -234,7 +276,7 @@ namespace _1RM.Utils.WindowsApi.Credential
                     if (!IsInvalid)
                     {
                         // Get the Credential from the mem location
-                        return (CREDENTIAL)Marshal.PtrToStructure(handle, typeof(CREDENTIAL));
+                        return (CREDENTIAL)Marshal.PtrToStructure(handle, typeof(CREDENTIAL))!;
                     }
                     else
                     {
