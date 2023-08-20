@@ -56,7 +56,7 @@ namespace _1RM.Controls
             Password = CipherTextBox.Password;
         }
 
-        private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             SecondaryVerificationHelper.VerifyAsyncUiCallBack(b =>
                 {
@@ -74,16 +74,6 @@ namespace _1RM.Controls
                         PlainTextBox.CaretIndex = PlainTextBox.Text.Length;
                     });
                 });
-
-            //if (await SecondaryVerificationHelper.VerifyAsyncUi() != true)
-            //{
-            //    if (sender is CheckBox cb)
-            //        cb.IsChecked = false;
-            //    return;
-            //}
-            //PlainTextBox.Visibility = Visibility.Visible;
-            //PlainTextBox.Focus();
-            //PlainTextBox.CaretIndex = PlainTextBox.Text.Length;
         }
         private void SetSelection(PasswordBox passwordBox, int start, int length)
         {

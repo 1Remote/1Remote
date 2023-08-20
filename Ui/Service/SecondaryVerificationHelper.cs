@@ -148,11 +148,11 @@ namespace _1RM.Service
                     password = value.Substring(0, 500);
                     username = value.Substring(500);
                 }
-                success = Credential.Set(Path.Join(Assert.APP_NAME, key), username, password);
+                success = Credential.Set($@"{Assert.APP_NAME}\{key}", username, password);
             }
             else
             {
-                success = Credential.Set(Path.Join(Assert.APP_NAME, key), "", "");
+                success = Credential.Set($@"{Assert.APP_NAME}\{key}", "", "");
             }
 
 
@@ -189,7 +189,7 @@ namespace _1RM.Service
                         pvm.Remove(key);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     success = false;
                 }
@@ -200,7 +200,7 @@ namespace _1RM.Service
         {
             try
             {
-                var c = Credential.Load(Path.Join(Assert.APP_NAME, key));
+                var c = Credential.Load($@"{Assert.APP_NAME}\{key}");
                 if (c != null)
                 {
                     if (await DataProtectionForLocal.Unprotect(c.Password + c.Username) == "0")

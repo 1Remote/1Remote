@@ -491,7 +491,7 @@ namespace _1RM.View.Editor
             if (string.IsNullOrEmpty(newProtocolType?.FullName)) return;
             // change protocol
             var protocolServerBaseAssembly = typeof(ProtocolBase).Assembly;
-            var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
+            var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType!.FullName)!;
             // restore original server base info
             if (_orgServer.GetType() == server.GetType())
             {

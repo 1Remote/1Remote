@@ -46,7 +46,7 @@ public static class TagActionHelper
         if (string.IsNullOrEmpty(tagName))
             return;
 
-        var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(tagName) && x.IsEditable).Select(x => x.Server).ToArray();
+        var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(tagName!) && x.IsEditable).Select(x => x.Server).ToArray();
 
         if (protocolServerBases.Any() != true)
         {
@@ -58,13 +58,13 @@ public static class TagActionHelper
 
         foreach (var server in protocolServerBases)
         {
-            if (server.Tags.Contains(tagName))
+            if (server.Tags.Contains(tagName!))
             {
-                server.Tags.Remove(tagName);
+                server.Tags.Remove(tagName!);
             }
         }
         IoC.Get<GlobalData>().UpdateServer(protocolServerBases, false);
-        IoC.Get<ServerListPageViewModel>().CmdTagRemove?.Execute(tagName);
+        IoC.Get<ServerListPageViewModel>().CmdTagRemove?.Execute(tagName!);
     }
 
     public static void CmdTagRename(object? o)
@@ -73,7 +73,7 @@ public static class TagActionHelper
         if (string.IsNullOrEmpty(tagName))
             return;
 
-        string oldTagName = tagName;
+        string oldTagName = tagName!;
         var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(oldTagName) && x.IsEditable).Select(x => x.Server).ToArray();
         if (protocolServerBases.Any() != true)
         {
@@ -89,7 +89,7 @@ public static class TagActionHelper
             if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
                 return IoC.Get<ILanguageService>().Translate("XXX is already existed!", str);
             return "";
-        }), defaultResponse: tagName, ownerViewModel: IoC.Get<MainWindowViewModel>());
+        }), defaultResponse: tagName!, ownerViewModel: IoC.Get<MainWindowViewModel>());
 
         newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
         if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
@@ -166,7 +166,7 @@ public static class TagActionHelper
         var tagName = GetTagNameFromObject(o);
         if (string.IsNullOrEmpty(tagName))
             return;
-        AppStartupHelper.InstallDesktopShortcutByTag(tagName, tagName);
+        AppStartupHelper.InstallDesktopShortcutByTag(tagName!, tagName!);
     }
 
     public static List<ProtocolAction> GetActions(this Tag tag)
