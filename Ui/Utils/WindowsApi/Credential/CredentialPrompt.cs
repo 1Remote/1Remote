@@ -367,13 +367,13 @@ namespace _1RM.Utils.WindowsApi.Credential
             [StructLayout(LayoutKind.Sequential)]
             public class CREDUI_INFO
             {
-                public int cbSize;
-                public IntPtr hwndParent;
+                public int cbSize = 0;
+                public IntPtr hwndParent = IntPtr.Zero;
                 [MarshalAs(UnmanagedType.LPWStr)]
-                public string pszMessageText;
+                public string pszMessageText = "";
                 [MarshalAs(UnmanagedType.LPWStr)]
-                public string pszCaptionText;
-                public IntPtr hbmBanner;
+                public string pszCaptionText = "";
+                public IntPtr hbmBanner = IntPtr.Zero;
 
                 public CREDUI_INFO()
                 {
@@ -696,7 +696,9 @@ namespace _1RM.Utils.WindowsApi.Credential
                 private SafeTokenHandle() : base(true) { }
 
                 [DllImport("kernel32.dll")]
+#pragma warning disable SYSLIB0004
                 [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+#pragma warning restore SYSLIB0004
                 [SuppressUnmanagedCodeSecurity]
                 [return: MarshalAs(UnmanagedType.Bool)]
                 private static extern bool CloseHandle(IntPtr handle);
@@ -727,7 +729,7 @@ namespace _1RM.Utils.WindowsApi.Credential
             #region Utility Methods
             public static SecureString PtrToSecureString(IntPtr p)
             {
-                SecureString s = new SecureString();
+                var s = new SecureString();
                 int i = 0;
                 while (true)
                 {

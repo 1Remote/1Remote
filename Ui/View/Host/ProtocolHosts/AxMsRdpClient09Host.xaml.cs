@@ -496,8 +496,9 @@ namespace _1RM.View.Host.ProtocolHosts
                     _rdpClient.AdvancedSettings9.BandwidthDetection = false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                // ignored
             }
 
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
