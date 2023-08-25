@@ -5,16 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using _1RM.Model;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 
 namespace _1RM.View.Launcher
 {
-    /// <summary>
-    /// ServerSelections.xaml 的交互逻辑
-    /// </summary>
     public partial class ServerSelectionsView : UserControl
     {
         public ServerSelectionsView()
@@ -273,8 +269,17 @@ namespace _1RM.View.Launcher
             if (IoC.Get<LauncherWindowViewModel>().View is LauncherWindowView { IsClosing: true }) return;
             if (this.DataContext is not ServerSelectionsViewModel vm) return;
 
+            if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(e.OriginalSource as DependencyObject) is { Content: ProtocolBaseViewModel protocol }
+                && protocol != vm.SelectedItem)
+            {
+                vm.SelectedIndex = vm.VmServerList.IndexOf(protocol);
+            }
+
             if (e.ClickCount == 2)
+            {
                 OpenSessionAndHide();
+                return;
+            }
         }
 
 
