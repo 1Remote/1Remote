@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms.VisualStyles;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
@@ -55,23 +54,6 @@ namespace _1RM.Service
 
                 try
                 {
-                    //var p = new Process
-                    //{
-                    //    StartInfo =
-                    //    {
-                    //        FileName = "cmd.exe",
-                    //        UseShellExecute = false,
-                    //        RedirectStandardInput = true,
-                    //        RedirectStandardOutput = true,
-                    //        RedirectStandardError = true,
-                    //        CreateNoWindow = true
-                    //    }
-                    //};
-                    //p.Start();
-                    //string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
-                    //p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
-                    //p.StandardInput.WriteLine("exit");
-
                     string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
                     var p = new Process
                     {

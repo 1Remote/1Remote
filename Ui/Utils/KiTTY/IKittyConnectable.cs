@@ -75,6 +75,8 @@ namespace _1RM.Utils.KiTTY
                 //SerialParity\0\
                 //SerialFlowControl\1\
                 puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 1);
+                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 0);
                 //puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
                 //puttyOption.Set(EnumKittyConfigKey.SerialDataBits, 8);
                 //puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, 2);

@@ -6,6 +6,7 @@
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
                         xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
+                        xmlns:controls="clr-namespace:_1RM.Controls"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance protocol:Serial}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -18,7 +19,10 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Serial port"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}" Width="100">
-                        <TextBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. COM1"></TextBox>
+                        <!--<TextBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. COM1"></TextBox>-->
+                        <controls:AutoCompleteComboBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}"
+                                                       Tag="e.g. COM1"
+                                                       Selections="{Binding SerialPorts, Mode=OneTime}"/>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="70" Text="Speed(bps)"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">

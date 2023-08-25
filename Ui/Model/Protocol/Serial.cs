@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
+using System.Collections.Generic;
 
 namespace _1RM.Model.Protocol
 {
@@ -128,6 +129,9 @@ namespace _1RM.Model.Protocol
 
         [JsonIgnore]
         public ProtocolBase ProtocolBase => this;
+
+        [JsonIgnore]
+        public List<string> SerialPorts => System.IO.Ports.SerialPort.GetPortNames().ToList();
 
         private string _externalKittySessionConfigPath = "";
         public string ExternalKittySessionConfigPath
