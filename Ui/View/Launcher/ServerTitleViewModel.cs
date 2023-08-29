@@ -7,23 +7,18 @@ using Shawn.Utils;
 
 namespace _1RM.View.Launcher
 {
-    public class ServerTitleViewModel : NotifyPropertyChangedBase
+    public class ServerTitleViewModel
     {
         public ServerTitleViewModel(string text)
         {
             var vms = text.Select(c => new CharViewModel(c)).ToList();
-            _charViewModels = vms;
+            CharViewModels = vms;
             Text = text;
         }
 
         public readonly string Text;
 
-        private List<CharViewModel> _charViewModels;
-        public List<CharViewModel> CharViewModels
-        {
-            get => _charViewModels;
-            set => SetAndNotifyIfChanged(ref _charViewModels, value);
-        }
+        public List<CharViewModel> CharViewModels { get; }
 
         public void UnHighLightAll()
         {

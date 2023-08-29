@@ -43,11 +43,8 @@ namespace _1RM.Utils.KiTTY
 
             // create session config
             var puttyOption = new KittyConfig(sessionName);
-
             puttyOption.Set(EnumKittyConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
-
             puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
-
 
             if (iKittyConnectable is SSH server)
             {
@@ -62,26 +59,24 @@ namespace _1RM.Utils.KiTTY
             }
             if (iKittyConnectable is Serial serial)
             {
-                if (!string.IsNullOrEmpty(sshPrivateKeyPath))
-                {
-                    // set key
-                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
-                }
-                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
+
+                puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+
                 //SerialLine\COM1\
                 //SerialSpeed\9600\
                 //SerialDataBits\8\
                 //SerialStopHalfbits\2\
                 //SerialParity\0\
                 //SerialFlowControl\1\
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
                 puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
-                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 1);
-                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 0);
-                //puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
-                //puttyOption.Set(EnumKittyConfigKey.SerialDataBits, 8);
-                //puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, 2);
-                //puttyOption.Set(EnumKittyConfigKey.SerialParity, 0);
-                //puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, 1);
+                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, serial.FlowControl);
             }
 
             // set theme

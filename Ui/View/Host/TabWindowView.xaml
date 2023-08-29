@@ -142,14 +142,20 @@
 
                                     <!--header item content-->
                                     <Border Grid.Column="2" Padding="0" Margin="0 0 5 0">
-                                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
-                                                  ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                                                  ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                  HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                                  VerticalAlignment="Center"
-                                                  SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                                                  Margin="{TemplateBinding Control.Padding }"
-                                                  x:Name="contentPresenter" />
+                                        <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}"
+                                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                                          ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                                          VerticalAlignment="Center"
+                                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                          Margin="{TemplateBinding Control.Padding }"
+                                                          x:Name="contentPresenter" />-->
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   MaxWidth="250"
+                                                   ToolTip="{Binding DisplayName}"
+                                                   Text="{Binding DisplayName}"></TextBlock>
                                     </Border>
 
                                     <!--header item placeholder(do not move or remove this)-->
@@ -180,9 +186,9 @@
                                             Command="{Binding CmdReconnect}">
                                         <Grid Height="12" Width="12">
                                             <Path Data="M684.032 403.456q-17.408-8.192-15.872-22.016t11.776-22.016q3.072-2.048 19.968-15.872t41.472-33.28q-43.008-49.152-102.4-77.312t-129.024-28.16q-64.512 0-120.832 24.064t-98.304 66.048-66.048 98.304-24.064 120.832q0 63.488 24.064 119.808t66.048 98.304 98.304 66.048 120.832 24.064q53.248 0 100.864-16.896t87.04-47.616 67.584-72.192 41.472-90.624q7.168-23.552 26.624-38.912t46.08-15.36q31.744 0 53.76 22.528t22.016 53.248q0 14.336-5.12 27.648-21.504 71.68-63.488 132.096t-99.84 103.936-128.512 68.096-148.48 24.576q-95.232 0-179.2-35.84t-145.92-98.304-98.304-145.92-36.352-178.688 36.352-179.2 98.304-145.92 145.92-98.304 179.2-36.352q105.472 0 195.584 43.52t153.6 118.272q23.552-17.408 39.424-30.208t19.968-15.872q6.144-5.12 13.312-7.68t13.312 0 10.752 10.752 6.656 24.576q1.024 9.216 2.048 31.232t2.048 51.2 1.024 60.416-1.024 58.88q-1.024 34.816-16.384 50.176-8.192 8.192-24.576 9.216t-34.816-3.072q-27.648-6.144-60.928-13.312t-63.488-14.848-53.248-14.336-29.184-9.728z"
-                                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                      StrokeThickness="0" Stretch="Uniform" />
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="0" Stretch="Uniform" />
                                         </Grid>
                                     </Button>
 
@@ -207,9 +213,9 @@
                                 </Grid>
                             </Grid>
                             <ControlTemplate.Triggers>
-                                <Trigger Property="dragablz:TabablzControl.IsWrappingTabItem" Value="True">
-                                    <Setter TargetName="contentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.Header}" />
-                                </Trigger>
+                                <!--<Trigger Property="dragablz:TabablzControl.IsWrappingTabItem" Value="True">
+                                    <Setter TargetName="contentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.DisplayName}" />
+                                </Trigger>-->
                                 <!-- Whe MarkColor is not transparent, give more margin to tab header to display border -->
                                 <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="False">
                                     <Setter TargetName="Trapezoid" Property="Margin" Value="3 0" />
@@ -601,7 +607,7 @@
                                  SelectionChanged="TabablzControl_OnSelectionChanged"
                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                  ItemsSource="{Binding Items}"
-                                 HeaderMemberPath="Header">
+                                 HeaderMemberPath="DisplayName">
             <!-- important for docking -->
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />

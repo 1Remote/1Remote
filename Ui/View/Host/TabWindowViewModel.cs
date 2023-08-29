@@ -118,7 +118,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
         {
             if (SelectedItem != null)
             {
-                this.Title = SelectedItem.Header + " - " + Assert.APP_DISPLAY_NAME;
+                this.Title = SelectedItem.DisplayName + " - " + Assert.APP_DISPLAY_NAME;
             }
         }
 

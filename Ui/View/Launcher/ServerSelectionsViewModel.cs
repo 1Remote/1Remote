@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
-using VariableKeywordMatcher.Model;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace _1RM.View.Launcher
 {
@@ -66,7 +64,10 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    _debounceDispatcher.Debounce(100, (obj) =>
+//#if DEBUG
+//                    CalcVisibleByFilter();
+//#else
+                    _debounceDispatcher.Debounce(200, (obj) =>
                     {
                         if (value == _filter)
                         {
@@ -74,6 +75,7 @@ namespace _1RM.View.Launcher
                             CalcVisibleByFilter();
                         }
                     });
+//#endif
                 }
             }
         }
@@ -102,7 +104,7 @@ namespace _1RM.View.Launcher
                 {
                     RaisePropertyChanged(nameof(SelectedItem));
                     CalcNoteFieldVisibility();
-                    if (this.View is ServerSelectionsView view)
+                    if (SelectedItem != null && this.View is ServerSelectionsView view)
                     {
                         Execute.OnUIThreadSync(() =>
                         {
@@ -194,6 +196,10 @@ namespace _1RM.View.Launcher
                 if (s != null)
                     SelectedIndex = VmServerList.IndexOf(s);
             }
+            else
+            {
+                SelectedIndex = 0;
+            }
 
             foreach (var viewModel in VmServerList)
             {
@@ -232,13 +238,14 @@ namespace _1RM.View.Launcher
         {
             if (this.View is not ServerSelectionsView view) return;
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
-            if (string.IsNullOrEmpty(_filter) == false && _lastKeyword == _filter) return;
+            if (string.IsNullOrEmpty(Filter) == false && _lastKeyword == Filter) return;
 
-            _lastKeyword = _filter;
+            _lastKeyword = Filter;
 
-            var keyword = _filter.Trim();
+            var keyword = Filter.Trim();
             if (string.IsNullOrEmpty(keyword))
             {
+                SelectedIndex = -1;
                 RebuildVmServerList();
                 TagFilters = new List<TagFilter>();
                 return;
@@ -248,6 +255,9 @@ namespace _1RM.View.Launcher
             TagFilters = tmp.TagFilterList;
 
             var newList = new List<ProtocolBaseViewModel>();
+#if DEBUG
+            var sw = new Stopwatch();
+#endif
             foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
                 vm.KeywordMark = double.MinValue;
@@ -255,6 +265,8 @@ namespace _1RM.View.Launcher
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp, ShowCredentials);
                 if (s.Item1 == true)
                 {
+                    newList.Add(vm);
+                    //continue;
                     if (s.Item2 is { } results)
                     {
                         foreach (var list in results.HitFlags)
@@ -313,13 +325,23 @@ namespace _1RM.View.Launcher
                             }
                         }
                     }
-                    newList.Add(vm);
                 }
             }
+#if DEBUG
+            sw.Stop();
+            SimpleLogHelper.DebugInfo($"CalcVisibleByFilter: {sw.ElapsedMilliseconds}ms");
+#endif
 
+#if DEBUG
+            var sw2 = new Stopwatch();
+#endif
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.KeywordMark)
                 .ThenByDescending(x => x.LastConnectTime));
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
+#if DEBUG
+            sw2.Stop();
+            SimpleLogHelper.DebugInfo($"CalcVisibleByFilter-step2: {sw2.ElapsedMilliseconds}ms");
+#endif
         }
 
 

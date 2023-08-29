@@ -59,8 +59,7 @@ namespace _1RM.Model.Protocol
             return 9600;
         }
 
-        public string[] BitRates = new[] { "9600", "14400", "38400", "56000", "57600", "115200", "128000", "256000" };
-
+        public string[] BitRates => new[] { "1200", "2400", "4800", "9600", "14400", "19200", "38400", "56000", "57600", "115200", "128000", "256000" };
         private string _bitRate = "9600";
         public string BitRate
         {
