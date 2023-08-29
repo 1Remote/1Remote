@@ -9,15 +9,15 @@ namespace _1RM.View.Host
 {
     public class TabItemViewModel : NotifyPropertyChangedBase
     {
-        public TabItemViewModel(HostBase hostBase, object header)
+        public TabItemViewModel(HostBase hostBase, string displayName)
         {
             Content = hostBase;
-            Header = header;
+            DisplayName = displayName;
             ColorHex = hostBase.ProtocolServer.ColorHex;
             IconImg = hostBase.ProtocolServer.IconImg;
         }
 
-        public object Header { get; }
+        public string DisplayName { get; }
         public HostBase Content { get; }
         public HostBase Host => Content;
         /// <summary>

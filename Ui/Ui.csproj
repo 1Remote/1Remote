@@ -24,7 +24,7 @@
 
 		<!--<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net6.0-windows10.0.17763.0</TargetFramework>-->
 		<!--<TargetPlatformMinVersion Condition="'$(Configuration)'!='ReleaseNet48'">10.0.17763.0</TargetPlatformMinVersion>-->
-		
+
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86</Platforms>
 		<PlatformTarget>AnyCPU</PlatformTarget>
@@ -92,8 +92,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='ReleaseNet48'">
-	  <DefineConstants>TRACE;</DefineConstants>
-	  <Optimize>True</Optimize>
+		<DefineConstants>TRACE;</DefineConstants>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='StoreDebug'">
@@ -103,7 +103,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)'=='StoreRelease'">
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
-	  <Optimize>True</Optimize>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>

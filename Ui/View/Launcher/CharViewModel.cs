@@ -18,20 +18,7 @@ namespace _1RM.View.Launcher
         }
 
         public char Char { get; }
-
-        private bool _isHighLight = false;
-        public bool IsHighLight
-        {
-            get => _isHighLight;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _isHighLight, value))
-                {
-                    RaisePropertyChanged(nameof(BackgroundBrush));
-                }
-            }
-        }
-
+        public bool IsHighLight { get; set; }
         public SolidColorBrush BackgroundBrush => IsHighLight ? HighLightBrush : Brushes.Transparent;
     }
 }

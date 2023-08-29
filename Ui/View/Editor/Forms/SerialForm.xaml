@@ -19,18 +19,16 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Serial port"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}" Width="100">
-                        <!--<TextBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. COM1"></TextBox>-->
                         <controls:AutoCompleteComboBox Text="{Binding SerialPort, UpdateSourceTrigger=PropertyChanged}"
                                                        Tag="e.g. COM1"
                                                        Selections="{Binding SerialPorts, Mode=OneTime}"/>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="70" Text="Speed(bps)"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding BitRate, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 Width="100" HorizontalAlignment="Left"
-                                 InputMethod.IsInputMethodEnabled="False"
-                                 InputScope="Number"
-                                 Tag="e.g. 9600"/>
+                        <controls:AutoCompleteComboBox Text="{Binding BitRate, UpdateSourceTrigger=PropertyChanged}"
+                                                       Width="100" HorizontalAlignment="Left"
+                                                       Tag="e.g. 9600"
+                                                       Selections="{Binding BitRates, Mode=OneTime}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -88,6 +86,19 @@
                         <ComboBox SelectedItem="{Binding FlowControl}" ItemsSource="{Binding FlowControlCollection}">
                         </ComboBox>
                     </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="KiTTY Session"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding ExternalKittySessionConfigPath, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                                 Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                        ></TextBox>
+                    </Grid>
+                    <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
                 </StackPanel>
             </Grid>
         </StackPanel>
