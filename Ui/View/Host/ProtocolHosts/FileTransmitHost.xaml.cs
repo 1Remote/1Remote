@@ -276,14 +276,18 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
     [ValueConversion(typeof(long), typeof(string))]
-    public class ByteLength2ReadableStringConverter : IValueConverter
+    public class ByteLength2ReadableStringConverter : IMultiValueConverter
     {
         #region IValueConverter
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value == null)
+            if (values?.Length != 2)
                 return "";
-            ulong ss = (ulong)value;
+
+            string type = (string)values[1];
+            if (type == "folder")
+                return "";
+            var ss = (ulong)values[0];
             if (ss < 1024)
                 return ss + " Bytes";
             else if (ss < 1024 * 1024)
@@ -294,9 +298,9 @@ namespace _1RM.View.Host.ProtocolHosts
                 return (ss / 1024.0 / 1024 / 1024).ToString("F2") + " GB";
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            return 0;
+            return new object[] { 0, "" };
         }
         #endregion
     }

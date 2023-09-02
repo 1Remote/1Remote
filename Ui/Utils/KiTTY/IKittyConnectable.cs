@@ -15,6 +15,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils.KiTTY.Model;
 using _1RM.Model.ProtocolRunner.Default;
 using System.Text;
+using System.Threading;
 
 namespace _1RM.Utils.KiTTY
 {
@@ -209,6 +210,7 @@ maxchar=85
 [Launcher]
 reload=yes
 ");
+                Thread.Sleep(50);
             }, actionOnError: exception => MsAppCenterHelper.Error(exception));
         }
 

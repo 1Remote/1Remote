@@ -389,7 +389,7 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="transmitters:RemoteItem">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=ByteSize, Converter={StaticResource ByteLength2ReadableStringConverter}}" TextTrimming="CharacterEllipsis">
+                                            <TextBlock TextTrimming="CharacterEllipsis">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -400,6 +400,12 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </TextBlock.Style>
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource ByteLength2ReadableStringConverter}">
+                                                        <Binding Path="ByteSize" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"></Binding>
+                                                        <Binding Path="FileType" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"></Binding>  
+                                                    </MultiBinding>  
+                                                </TextBlock.Text>
                                             </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
@@ -408,64 +414,6 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-
-
-                <!--<DataGrid BorderBrush="Transparent"
-                          BorderThickness="0"
-                          SelectionMode="Extended"
-                          AutoGenerateColumns="False"
-                          ItemsSource="{Binding RemoteItems}" 
-                          SelectedItem="{Binding SelectedRemoteItem}"
-                >
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="{DynamicResource 'File Name'}" 
-                                                Width="*"
-                                                SortMemberPath="Name">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate DataType="transmitters:RemoteItem">
-                                    <StackPanel Orientation="Horizontal" Margin="5 2">
-                                        <Image Source="{Binding Icon}" Width="16"></Image>
-                                        <TextBlock Name="TbName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <StackPanel.Style>
-                                                <Style TargetType="StackPanel">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=TbRenaming}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </StackPanel.Style>
-                                            <TextBox Name="TbRenaming" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_OnGotFocus"></TextBox>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTextColumn Header="{DynamicResource file_transmit_host_list_header_last_update}" 
-                                            Binding="{Binding LastUpdate}"></DataGridTextColumn>
-
-                        <DataGridTextColumn Header="{DynamicResource file_transmit_host_list_header_type}" 
-                                            Binding="{Binding FileType}"></DataGridTextColumn>
-
-                        <DataGridTextColumn Header="{DynamicResource file_transmit_host_list_header_size}" 
-                                            Binding="{Binding ByteSize, Converter={StaticResource ByteLength2ReadableStringConverter}}"></DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>-->
             </Grid>
 
 
