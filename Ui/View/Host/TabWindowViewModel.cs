@@ -97,6 +97,13 @@ using _1RM.Service.DataSource.DAO.Dapper;
                         SetTitle();
                         _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
                     }
+                    foreach (var item in Items)
+                    {
+                        if (item is TabItemViewModel { Content: IntegrateHost ih })
+                        {
+                            ih.ShowWindow(item == value);
+                        }
+                    }
                     RaisePropertyChanged(nameof(WindowResizeMode));
                 }
             }
