@@ -372,7 +372,9 @@ namespace _1RM.Utils.RdpFile
             {
                 foreach (RdpConfNameAttribute attr in prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false))
                 {
-                    settings.Add(attr.Name, prop.GetValue(this)!.ToString()!);
+                    var value = prop.GetValue(this)?.ToString();
+                    if (string.IsNullOrWhiteSpace(value) == false)
+                        settings.Add(attr.Name, value);
                 }
             }
 
