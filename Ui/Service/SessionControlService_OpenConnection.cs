@@ -37,12 +37,12 @@ namespace _1RM.Service
                     File.WriteAllText(rdpFile, text);
                 }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
-                // delete tmp rdp file, ETA 10s
+                // delete tmp rdp file, ETA 30s
                 Task.Factory.StartNew(() =>
                 {
                     try
                     {
-                        Thread.Sleep(1000 * 10);
+                        Thread.Sleep(1000 * 30);
                         if (File.Exists(rdpFile))
                             File.Delete(rdpFile);
                     }

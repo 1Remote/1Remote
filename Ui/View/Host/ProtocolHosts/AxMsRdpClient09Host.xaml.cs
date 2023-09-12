@@ -63,7 +63,6 @@ namespace _1RM.View.Host.ProtocolHosts
         private uint _lastScaleFactor = 0;
 
         private bool _flagHasConnected = false;
-        private bool _flagHasLogin = false;
 
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
@@ -625,7 +624,6 @@ namespace _1RM.View.Host.ProtocolHosts
                 RdpInitDisplay(width, height, isReconnecting);
                 RdpInitPerformance();
                 RdpInitGateway();
-
                 Status = ProtocolHostStatus.Initialized;
             }
             catch (Exception e)
@@ -639,7 +637,6 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         #region Base Interface
-
         public override void Conn()
         {
             Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
@@ -659,11 +656,11 @@ namespace _1RM.View.Host.ProtocolHosts
                 }
                 catch (Exception e)
                 {
-                    Status = ProtocolHostStatus.Connected;
                     GridMessageBox.Visibility = Visibility.Visible;
                     TbMessageTitle.Visibility = Visibility.Collapsed;
                     TbMessage.Text = e.Message;
                 }
+                Status = ProtocolHostStatus.Connected;
             });
         }
 
@@ -697,7 +694,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override bool CanResizeNow()
         {
-            return Status == ProtocolHostStatus.Connected && _flagHasLogin == true;
+            return Status == ProtocolHostStatus.Connected;
         }
 
         #endregion Base Interface
@@ -769,10 +766,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void ResizeEndTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
-            if (_flagHasLogin)
-            {
-                ReSizeRdpToControlSize();
-            }
+            ReSizeRdpToControlSize();
         }
 
         #endregion WindowOnResizeEnd
