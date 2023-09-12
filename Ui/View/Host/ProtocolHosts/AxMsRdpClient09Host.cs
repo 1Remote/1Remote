@@ -103,7 +103,6 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var flagHasConnected = this._flagHasConnected;
                 _flagHasConnected = false;
-                _flagHasLogin = false;
 
                 Status = ProtocolHostStatus.Disconnected;
                 ParentWindowResize_StopWatch();
@@ -170,7 +169,6 @@ namespace _1RM.View.Host.ProtocolHosts
             _flagHasConnected = true;
             Execute.OnUIThread(() =>
             {
-                Status = ProtocolHostStatus.Connected;
                 RdpHost.Visibility = Visibility.Visible;
                 GridLoading.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Collapsed;
@@ -188,7 +186,6 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnLoginComplete");
 
-            _flagHasLogin = true;
             OnCanResizeNowChanged?.Invoke();
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
