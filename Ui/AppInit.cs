@@ -22,17 +22,43 @@ using _1RM.View.Utils;
 
 namespace _1RM
 {
+    public enum ProfileStorage
+    {
+        AppData,
+        Portable
+    }
+
     internal static class AppInitHelper
     {
         private static void WritePermissionCheck(string path, bool isFile)
         {
             Debug.Assert(LanguageServiceObj != null);
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
-            if (flag == false)
+            if (flag)
+            {
+                // check by write txt
+                var di = new DirectoryInfo(isFile ? new FileInfo(path).DirectoryName! : path);
+                if (di.Exists)
+                {
+                    try
+                    {
+                        var txt = Path.Combine(di.FullName, $"PermissionCheck.txt");
+                        File.WriteAllText(txt, txt);
+                        File.Delete(txt);
+                    }
+                    catch (Exception e)
+                    {
+                        flag = false;
+                    }
+                }
+            }
+
+            if (!flag)
             {
                 MessageBoxHelper.ErrorAlert(LanguageServiceObj?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
                 Environment.Exit(1);
             }
+
         }
 
 
@@ -67,7 +93,7 @@ namespace _1RM
                 var portablePaths = new AppPathHelper(Environment.CurrentDirectory, Environment.CurrentDirectory);
                 var appDataPaths = new AppPathHelper(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assert.APP_NAME), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assert.APP_NAME));
 
-                bool isPortableMode = false;
+                ProfileStorage selectedMode = ProfileStorage.Portable;
                 {
                     _isNewUser = false;
                     bool portableProfilePathExisted = File.Exists(portablePaths.ProfileJsonPath);
@@ -80,56 +106,46 @@ namespace _1RM
                     forcePortable = false;
                     permissionForPortable = false;
 #endif
-                    bool profileModeIsPortable = false;
-                    bool profileModeIsEnabled = true;
-
-                    if (forcePortable == true && forceAppData == false)
-                    {
-                        isPortableMode = true;
-                        if (portableProfilePathExisted == false)
-                        {
-                            profileModeIsPortable = true;
-                            profileModeIsEnabled = false;
-                            _isNewUser = true;
-                        }
-                    }
-                    else if (forcePortable == false && forceAppData == true)    // 标记了强制 AppData 模式
-                    {
-                        isPortableMode = false;
-                        if (appDataProfilePathExisted == false)
-                        {
-                            profileModeIsPortable = false;
-                            profileModeIsEnabled = false;
-                            _isNewUser = true;
-                        }
-                    }
-                    else // 标志文件都存在或都不存在时
-                    {
-                        if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
-                            File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
-                        if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
-                            File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
 
 
-                        if (portableProfilePathExisted)
+                    ProfileStorage? defaultStorage = null; // default mode, if is null, user can select `portable` or `app data` in guidance view.
+                    if (permissionForPortable)
+                    {
+                        // 当前文件夹可写
+                        if (forcePortable == true)
                         {
-                            isPortableMode = true;
-                        }
-                        else if (permissionForPortable == false)
-                        {
-                            isPortableMode = false;
-                            if (appDataProfilePathExisted == false)
+                            defaultStorage = selectedMode = ProfileStorage.Portable;
+                            if (portableProfilePathExisted == false)
                             {
-                                profileModeIsPortable = false;
-                                profileModeIsEnabled = false;
                                 _isNewUser = true;
                             }
                         }
-                        else
+                        else if (forceAppData == true)    // 标记了强制 AppData 模式
                         {
-                            // portable 配置文件不存在，无论 app_data 的配置是否存在都进引导
-                            profileModeIsPortable = !appDataProfilePathExisted;
-                            profileModeIsEnabled = true;
+                            defaultStorage = selectedMode = ProfileStorage.AppData;
+                            if (appDataProfilePathExisted == false)
+                            {
+                                _isNewUser = true;
+                            }
+                        }
+                        else // 标志文件都不存在时
+                        {
+                            if (portableProfilePathExisted == false) // 当前文件夹可写但却没有标志文件，也没配置文件，(不管appDataProfilePath是存在都)认为是新用户
+                            {
+                                _isNewUser = true;
+                            }
+                            else
+                            {
+                                defaultStorage = selectedMode = ProfileStorage.Portable;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 当前文件夹不可写
+                        defaultStorage = selectedMode = ProfileStorage.AppData;
+                        if (appDataProfilePathExisted == false) // 当前文件夹不可写，也没 APP_DATA 配置文件，认为是新用户
+                        {
                             _isNewUser = true;
                         }
                     }
@@ -139,31 +155,34 @@ namespace _1RM
                         PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
                         SecondaryVerificationHelper.Init();
                         // 新用户显示引导窗口
-                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageServiceObj, newConfiguration, profileModeIsPortable, profileModeIsEnabled);
+                        var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageServiceObj, newConfiguration, defaultStorage);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();
-                        isPortableMode = guidanceWindowViewModel.ProfileModeIsPortable;
+                        selectedMode = guidanceWindowViewModel.ProfileModeIsPortable ? ProfileStorage.Portable : ProfileStorage.AppData;
                         AppStartupHelper.InstallDesktopShortcut(guidanceWindowViewModel.CreateDesktopShortcut);
                     }
 
-                    // 自动创建标志文件
+                    // 在当前文件夹自动创建标志文件
                     if (permissionForPortable)
                     {
                         try
                         {
-                            if (isPortableMode)
+                            switch (selectedMode)
                             {
-                                if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
-                                    File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData");
-                                if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
-                                    File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
-                            }
-                            if (isPortableMode == false)
-                            {
-                                if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE) == false)
-                                    File.WriteAllText(AppPathHelper.FORCE_INTO_APPDATA_MODE, $"rename to '{AppPathHelper.FORCE_INTO_PORTABLE_MODE}' can make it portable");
-                                if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
-                                    File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
+                                case ProfileStorage.AppData:
+                                    if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE) == false)
+                                        File.WriteAllText(AppPathHelper.FORCE_INTO_APPDATA_MODE, $"rename to '{AppPathHelper.FORCE_INTO_PORTABLE_MODE}' can make it portable");
+                                    if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
+                                        File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
+                                    break;
+                                case ProfileStorage.Portable:
+                                    if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE) == false)
+                                        File.WriteAllText(AppPathHelper.FORCE_INTO_PORTABLE_MODE, $"rename to '{AppPathHelper.FORCE_INTO_APPDATA_MODE}' can save to AppData");
+                                    if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
+                                        File.Delete(AppPathHelper.FORCE_INTO_APPDATA_MODE);
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
                             }
                         }
                         catch (Exception)
@@ -172,7 +191,7 @@ namespace _1RM
                         }
                     }
                 }
-                AppPathHelper.Instance = isPortableMode ? portablePaths : appDataPaths;
+                AppPathHelper.Instance = selectedMode == ProfileStorage.Portable ? portablePaths : appDataPaths;
 
                 // 最终文件权限检查
                 {
