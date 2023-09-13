@@ -315,7 +315,6 @@ namespace _1RM.View.Editor
 
                     Task.Factory.StartNew(() =>
                     {
-
                         try
                         {
                             var ret = Result.Success();
@@ -371,6 +370,7 @@ namespace _1RM.View.Editor
                                     {
                                         server.Tags.Add(tag);
                                     }
+
                                     server.Tags = server.Tags.Distinct().ToList();
 
 
@@ -455,6 +455,11 @@ namespace _1RM.View.Editor
                             {
                                 MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            MsAppCenterHelper.Error(e);
+                            MessageBoxHelper.ErrorAlert(e.Message);
                         }
                         finally
                         {

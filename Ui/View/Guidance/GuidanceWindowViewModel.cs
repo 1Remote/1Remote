@@ -19,15 +19,15 @@ namespace _1RM.View.Guidance
         private readonly ThemeService _themeService;
         private readonly Configuration _configuration;
 
-        public GuidanceWindowViewModel(LanguageService languageService, Configuration configuration, bool profileModeIsPortable, bool profileModeIsEnabled)
+        public GuidanceWindowViewModel(LanguageService languageService, Configuration configuration, ProfileStorage? assignedProfileStorage)
         {
             _languageService = languageService;
             Debug.Assert(App.ResourceDictionary != null);
             _themeService = new ThemeService(App.ResourceDictionary!, configuration.Theme);
             _configuration = configuration;
 
-            ProfileModeIsPortable = profileModeIsPortable;
-            ProfileModeIsEnabled = profileModeIsEnabled;
+            ProfileModeIsPortable = assignedProfileStorage != ProfileStorage.AppData;
+            ProfileModeIsEnabled = assignedProfileStorage == null;
 
             // set default language
             var ci = CultureInfo.CurrentCulture;
@@ -118,6 +118,9 @@ namespace _1RM.View.Guidance
             set => SetAndNotifyIfChanged(ref _profileModeIsPortable, value);
         }
 
+        /// <summary>
+        /// can user change to `portable` or `app data` mode
+        /// </summary>
         public bool ProfileModeIsEnabled { get; }
 
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using _1RM.Utils;
 using _1RM.View.Guidance;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -47,6 +48,26 @@ namespace _1RM.Service
         private static bool WritePermissionCheck(string path, bool isFile)
         {
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
+
+            if (flag)
+            {
+                // check by write txt
+                var di = new DirectoryInfo(isFile ? new FileInfo(path).DirectoryName! : path);
+                if (di.Exists)
+                {
+                    try
+                    {
+                        var txt = Path.Combine(di.FullName, $"PermissionCheck.txt");
+                        File.WriteAllText(txt, txt);
+                        File.Delete(txt);
+                    }
+                    catch (Exception e)
+                    {
+                        flag = false;
+                    }
+                }
+            }
+
             return flag;
         }
 
