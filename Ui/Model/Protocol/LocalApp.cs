@@ -12,6 +12,11 @@ using _1RM.View;
 
 namespace _1RM.Model.Protocol
 {
+    public class Argument
+    {
+
+    }
+
     public class LocalApp : ProtocolBase
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
@@ -23,7 +28,7 @@ namespace _1RM.Model.Protocol
             return false;
         }
 
-        protected string _exePath = "";
+        private string _exePath = "";
         public string ExePath
         {
             get => _exePath;
@@ -31,7 +36,22 @@ namespace _1RM.Model.Protocol
         }
 
 
-        protected string _arguments = "";
+        private string _appSubTitle = "";
+        public string AppSubTitle
+        {
+            get => _appSubTitle;
+            set => SetAndNotifyIfChanged(ref _appSubTitle, value);
+        }
+
+        private string _appProtocolDisplayName = "";
+        public string AppProtocolDisplayName
+        {
+            get => _appProtocolDisplayName;
+            set => SetAndNotifyIfChanged(ref _appProtocolDisplayName, value);
+        }
+
+
+        private string _arguments = "";
         public string Arguments
         {
             get => _arguments;
@@ -39,11 +59,16 @@ namespace _1RM.Model.Protocol
         }
 
 
-        protected bool _runWithHosting = false;
+        private bool _runWithHosting = false;
         public bool RunWithHosting
         {
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
+        }
+
+        public override string GetProtocolDisplayName()
+        {
+            return _appProtocolDisplayName;
         }
 
         public override ProtocolBase? CreateFromJsonString(string jsonString)
@@ -67,7 +92,7 @@ namespace _1RM.Model.Protocol
 
         public override double GetListOrder()
         {
-            return 7;
+            return 100;
         }
 
         public string GetCmd()
@@ -151,7 +176,15 @@ namespace _1RM.Model.Protocol
                     try
                     {
                         Process.Start(ExePath, Arguments);
-
+                        //    StartInfo =
+                        //{
+                        //    FileName = "cmd.exe",
+                        //    UseShellExecute = false,
+                        //    RedirectStandardInput = true,
+                        //    RedirectStandardOutput = true,
+                        //    RedirectStandardError = true,
+                        //    CreateNoWindow = true
+                        //}
                         //var p = new Process
                         //{
                         //    StartInfo =

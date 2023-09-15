@@ -36,7 +36,7 @@ namespace _1RM.Model.Protocol.Base
         {
             Protocol = protocol;
             ClassVersion = classVersion;
-            ProtocolDisplayName = protocolDisplayName;
+            _protocolDisplayName = protocolDisplayName;
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -77,7 +77,13 @@ namespace _1RM.Model.Protocol.Base
         public string ClassVersion { get; }
 
         [JsonIgnore]
-        public string ProtocolDisplayName { get; }
+        public string ProtocolDisplayName => GetProtocolDisplayName();
+
+        private readonly string _protocolDisplayName;
+        public virtual string GetProtocolDisplayName()
+        {
+            return _protocolDisplayName;
+        }
 
         private string _displayName = "";
         public string DisplayName
