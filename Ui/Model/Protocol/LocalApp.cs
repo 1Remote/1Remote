@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using _1Remote.Security;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
@@ -14,7 +16,49 @@ namespace _1RM.Model.Protocol
 {
     public class Argument
     {
+        public enum ArgumentType
+        {
+            Normal,
+            Int,
+            File,
+            /// <summary>
+            /// e.g. -f X:\makefile
+            /// </summary>
+            Folder,
+            Secret,
+            /// <summary>
+            /// e.g. --hide
+            /// </summary>
+            Flag,
+        }
+        
+        /// <summary>
+        /// TODO reset value when type changed
+        /// </summary>
+        public ArgumentType Type { get; set; }
 
+        public string Key { get; set; } = "";
+        public string Value { get; set; } = "";
+
+        public string GetArgumentString()
+        {
+            if (Type == ArgumentType.Flag)
+                return Key;
+            var value = Type == ArgumentType.Secret ? UnSafeStringEncipher.EncryptOnce(Value) : Value;
+            if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
+                value = $"\"{value}\"";
+            return $"{Key} {value}";
+        }
+
+        public static string GetStringArgument(IEnumerable<Argument> arguments)
+        {
+            string cmd = "";
+            foreach (var argument in arguments)
+            {
+                cmd += argument.GetArgumentString() + " ";
+            }
+            return cmd.Trim();
+        }
     }
 
     public class LocalApp : ProtocolBase
@@ -28,19 +72,19 @@ namespace _1RM.Model.Protocol
             return false;
         }
 
-        private string _exePath = "";
-        public string ExePath
-        {
-            get => _exePath;
-            set => SetAndNotifyIfChanged(ref _exePath, value);
-        }
-
 
         private string _appSubTitle = "";
         public string AppSubTitle
         {
             get => _appSubTitle;
             set => SetAndNotifyIfChanged(ref _appSubTitle, value);
+        }
+
+        private string _exePath = "";
+        public string ExePath
+        {
+            get => _exePath;
+            set => SetAndNotifyIfChanged(ref _exePath, value);
         }
 
         private string _appProtocolDisplayName = "";
@@ -50,9 +94,13 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _appProtocolDisplayName, value);
         }
 
+        public override string GetProtocolDisplayName()
+        {
+            return _appProtocolDisplayName;
+        }
 
-        private string _arguments = "";
-        public string Arguments
+        private List<Argument> _arguments = new List<Argument>();
+        public List<Argument> Arguments
         {
             get => _arguments;
             set => SetAndNotifyIfChanged(ref _arguments, value);
@@ -64,11 +112,6 @@ namespace _1RM.Model.Protocol
         {
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
-        }
-
-        public override string GetProtocolDisplayName()
-        {
-            return _appProtocolDisplayName;
         }
 
         public override ProtocolBase? CreateFromJsonString(string jsonString)
@@ -87,7 +130,7 @@ namespace _1RM.Model.Protocol
 
         protected override string GetSubTitle()
         {
-            return $"{this.ExePath} {this.Arguments}";
+            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath} {this.Arguments}" : AppSubTitle;
         }
 
         public override double GetListOrder()
@@ -95,13 +138,7 @@ namespace _1RM.Model.Protocol
             return 100;
         }
 
-        public string GetCmd()
-        {
-            // 若参数中有空格，则需要使用引号包裹命令参数
-            if (ExePath.Trim().IndexOf(" ", StringComparison.Ordinal) > 0)
-                return $"\"{this.ExePath}\" " + this.Arguments;
-            return $"{this.ExePath} {this.Arguments}";
-        }
+
 
         private RelayCommand? _cmdSelectExePath;
         [JsonIgnore]
@@ -139,7 +176,7 @@ namespace _1RM.Model.Protocol
                     string initPath;
                     try
                     {
-                        initPath = new FileInfo(Arguments).DirectoryName!;
+                        initPath = new FileInfo(o?.ToString() ?? "").DirectoryName!;
                     }
                     catch (Exception)
                     {
@@ -147,7 +184,7 @@ namespace _1RM.Model.Protocol
                     }
                     var path = SelectFileHelper.OpenFile(initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
-                    Arguments = path;
+                    //Arguments = path;
                 });
             }
         }
@@ -160,7 +197,7 @@ namespace _1RM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBoxHelper.Info(GetCmd(), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    MessageBoxHelper.Info(ExePath + " " + Argument.GetStringArgument(Arguments), ownerViewModel: IoC.Get<MainWindowViewModel>());
                 });
             }
         }
@@ -175,7 +212,7 @@ namespace _1RM.Model.Protocol
                 {
                     try
                     {
-                        Process.Start(ExePath, Arguments);
+                        Process.Start(ExePath, Argument.GetStringArgument(Arguments));
                         //    StartInfo =
                         //{
                         //    FileName = "cmd.exe",

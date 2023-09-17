@@ -31,17 +31,17 @@
                 </Grid>
 
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource Select}" 
-                            Command="{Binding CmdSelectArgumentFile}"></Button>
+                        Margin="5 0 0 0"
+                        Content="{DynamicResource Select}" 
+                        Command="{Binding CmdSelectArgumentFile}"></Button>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource 'Preview'}" 
-                            Command="{Binding CmdPreview}"></Button>
+                        Margin="5 0 0 0"
+                        Content="{DynamicResource 'Preview'}" 
+                        Command="{Binding CmdPreview}"></Button>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource 'Test'}" 
-                            Command="{Binding CmdTest}"></Button>
+                        Margin="5 0 0 0"
+                        Content="{DynamicResource 'Test'}" 
+                        Command="{Binding CmdTest}"></Button>
             </StackPanel>
         </Grid>
 
