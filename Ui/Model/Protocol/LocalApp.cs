@@ -65,6 +65,7 @@ namespace _1RM.Model.Protocol
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
         {
+            _appProtocolDisplayName = "APP";
         }
 
         public override bool IsOnlyOneInstance()
@@ -99,11 +100,20 @@ namespace _1RM.Model.Protocol
             return _appProtocolDisplayName;
         }
 
-        private List<Argument> _arguments = new List<Argument>();
-        public List<Argument> Arguments
+        [Obsolete]
+        private string _arguments = "";
+        [Obsolete]
+        public string Arguments
         {
             get => _arguments;
             set => SetAndNotifyIfChanged(ref _arguments, value);
+        }
+
+        private List<Argument> _argumentList = new List<Argument>();
+        public List<Argument> ArgumentList
+        {
+            get => _argumentList;
+            set => SetAndNotifyIfChanged(ref _argumentList, value);
         }
 
 
@@ -130,7 +140,7 @@ namespace _1RM.Model.Protocol
 
         protected override string GetSubTitle()
         {
-            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath} {this.Arguments}" : AppSubTitle;
+            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath} {this.ArgumentList}" : AppSubTitle;
         }
 
         public override double GetListOrder()
@@ -138,6 +148,10 @@ namespace _1RM.Model.Protocol
             return 100;
         }
 
+        public string GetArguments()
+        {
+            return Argument.GetStringArgument(ArgumentList);
+        }
 
 
         private RelayCommand? _cmdSelectExePath;
@@ -197,7 +211,7 @@ namespace _1RM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBoxHelper.Info(ExePath + " " + Argument.GetStringArgument(Arguments), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    MessageBoxHelper.Info(ExePath + " " + GetArguments(), ownerViewModel: IoC.Get<MainWindowViewModel>());
                 });
             }
         }
@@ -212,7 +226,7 @@ namespace _1RM.Model.Protocol
                 {
                     try
                     {
-                        Process.Start(ExePath, Argument.GetStringArgument(Arguments));
+                        Process.Start(ExePath, Argument.GetStringArgument(ArgumentList));
                         //    StartInfo =
                         //{
                         //    FileName = "cmd.exe",

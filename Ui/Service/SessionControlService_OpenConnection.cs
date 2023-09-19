@@ -269,7 +269,7 @@ namespace _1RM.Service
                 var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.ExePath);
                 if (tmp.Item1)
                 {
-                    var process = Process.Start(tmp.Item2, localApp.Arguments);
+                    var process = Process.Start(tmp.Item2, localApp.GetArguments());
                     AddUnHostingWatch(process, localApp);
                 }
                 return tabToken;

@@ -27,7 +27,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    <TextBox Text="{Binding ArgumentList, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
 
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
