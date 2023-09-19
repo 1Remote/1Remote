@@ -176,21 +176,20 @@ namespace _1RM.Model
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
-                var @new = new ProtocolBaseViewModel(protocolServer);
-                if (needReload == false)
-                {
-                    VmItemList.Add(@new);
-                    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
-                    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-
-
-                    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
-                        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
-                    {
-                        // if is additional database and need to set up group by database name!
-                        IoC.Get<ServerListPageViewModel>().ApplySort();
-                    }
-                }
+                needReload |= ret.NeedReload;
+                //var @new = new ProtocolBaseViewModel(protocolServer);
+                //if (needReload == false)
+                //{
+                //    VmItemList.Add(@new);
+                //    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
+                //    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
+                //    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
+                //        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
+                //    {
+                //        // if is additional database and need to set up group by database name!
+                //        IoC.Get<ServerListPageViewModel>().ApplySort();
+                //    }
+                //}
             }
 
             if (needReload)
@@ -265,6 +264,7 @@ namespace _1RM.Model
                     {
                         needReload |= source.NeedRead();
                         var tmp = source.Database_UpdateServer(groupedServer);
+                        needReload |= tmp.NeedReload;
                         if (tmp.IsSuccess)
                         {
                             isAnySuccess = true;

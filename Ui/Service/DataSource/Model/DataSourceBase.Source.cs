@@ -127,10 +127,6 @@ namespace _1RM.Service.DataSource.Model
                     }
                     SetStatus(true);
                 }
-                //else
-                //{
-                //    CachedProtocols.Clear();
-                //}
                 return CachedProtocols;
             }
         }
@@ -252,6 +248,8 @@ namespace _1RM.Service.DataSource.Model
             {
                 server.Id = tmp.Id;
                 server.DataSource = this;
+                result.NeedReload = true;
+                MarkAsNeedRead();
                 SetStatus(true);
             }
             return result;
@@ -272,11 +270,7 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().AddServer(cloneList);
                 if (ret.IsSuccess)
                 {
-                    for (int i = 0; i < servers.Count; i++)
-                    {
-                        servers[i].Id = cloneList[i].Id;
-                        CachedProtocols.Add(new ProtocolBaseViewModel(servers[i]));
-                    }
+                    MarkAsNeedRead();
                     SetStatus(true);
                 }
                 return ret;
@@ -295,8 +289,18 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().UpdateServer(tmp);
                 if (ret.IsSuccess)
                 {
-                    var old = CachedProtocols.First(x => x.Id == org.Id);
-                    old.Server = org;
+                    var old = CachedProtocols.FirstOrDefault(x => x.Id == org.Id);
+                    if (old != null)
+                    {
+                        old.Server = org;
+                        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    }
+                    else
+                    {
+                        // cached data not equal to db data, refresh caches.
+                        ret.NeedReload = true;
+                        MarkAsNeedRead();
+                    }
                     SetStatus(true);
                 }
                 return ret;
@@ -323,9 +327,22 @@ namespace _1RM.Service.DataSource.Model
                     // update viewmodel
                     foreach (var protocolServer in servers)
                     {
-                        var old = CachedProtocols.First(x => x.Id == protocolServer.Id);
-                        // invoke main list ui change & invoke launcher ui change
-                        old.Server = protocolServer;
+                        var old = CachedProtocols.FirstOrDefault(x => x.Id == protocolServer.Id);
+                        if (old != null)
+                        {
+                            old.Server = protocolServer;
+                        }
+                        else
+                        {
+                            ret.NeedReload = true;
+                            MarkAsNeedRead();
+                            break;
+                        }
+                    }
+
+                    if (!ret.NeedReload)
+                    {
+                        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     }
                     SetStatus(true);
                 }
