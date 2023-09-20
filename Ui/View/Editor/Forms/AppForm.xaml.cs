@@ -1,5 +1,8 @@
-﻿using _1RM.Model.Protocol;
+﻿using System;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace _1RM.View.Editor.Forms
 {

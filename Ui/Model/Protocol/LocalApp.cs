@@ -14,43 +14,82 @@ using _1RM.View;
 
 namespace _1RM.Model.Protocol
 {
-    public class Argument
+    public enum ArgumentType
     {
-        public enum ArgumentType
-        {
-            Normal,
-            Int,
-            File,
-            /// <summary>
-            /// e.g. -f X:\makefile
-            /// </summary>
-            Folder,
-            Secret,
-            /// <summary>
-            /// e.g. --hide
-            /// </summary>
-            Flag,
-        }
-        
+        Normal,
         /// <summary>
-        /// TODO reset value when type changed
+        /// e.g. -f X:\makefile
         /// </summary>
-        public ArgumentType Type { get; set; }
+        File,
+        Secret,
+        /// <summary>
+        /// e.g. --hide
+        /// </summary>
+        Flag,
+    }
+    public class Argument : NotifyPropertyChangedBase
+    {
+        private ArgumentType _type;
+        public ArgumentType Type
+        {
+            get => _type;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _type, value))
+                {
+                    // TODO reset value when type is changed
+                }
+            }
+        }
 
-        public string Key { get; set; } = "";
-        public string Value { get; set; } = "";
+        public bool IsRequired { get; set; } = true;
 
-        public string GetArgumentString()
+        private string _key = "";
+        public string Key
+        {
+            get => _key.Trim();
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _key, value.Trim()))
+                    RaisePropertyChanged(nameof(DemoArgumentString));
+            }
+        }
+
+        private string _value = "";
+        public string Value
+        {
+            get => _value.Trim();
+            set
+            {
+                if(SetAndNotifyIfChanged(ref _value, value.Trim()))
+                    RaisePropertyChanged(nameof(DemoArgumentString));
+            }
+        }
+
+        public string DemoArgumentString => GetArgumentString(true);
+
+        public string GetArgumentString(bool forDemo = false)
         {
             if (Type == ArgumentType.Flag)
                 return Key;
-            var value = Type == ArgumentType.Secret ? UnSafeStringEncipher.EncryptOnce(Value) : Value;
+            var value = Value;
+            if (Type == ArgumentType.Secret)
+            {
+                if (forDemo)
+                {
+                    value = "******";
+                }
+                else
+                {
+                    UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
+                }
+            }
             if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
                 value = $"\"{value}\"";
             return $"{Key} {value}";
         }
 
-        public static string GetStringArgument(IEnumerable<Argument> arguments)
+        public static string GetArgumentsString(IEnumerable<Argument> arguments)
         {
             string cmd = "";
             foreach (var argument in arguments)
@@ -58,6 +97,30 @@ namespace _1RM.Model.Protocol
                 cmd += argument.GetArgumentString() + " ";
             }
             return cmd.Trim();
+        }
+
+        private RelayCommand? _cmdSelectArgumentFile;
+        [JsonIgnore]
+        public RelayCommand CmdSelectArgumentFile
+        {
+            get
+            {
+                return _cmdSelectArgumentFile ??= new RelayCommand((o) =>
+                {
+                    string initPath;
+                    try
+                    {
+                        initPath = new FileInfo(o?.ToString() ?? "").DirectoryName!;
+                    }
+                    catch (Exception)
+                    {
+                        initPath = Environment.CurrentDirectory;
+                    }
+                    var path = SelectFileHelper.OpenFile(initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                    if (path == null) return;
+                    Value = path;
+                });
+            }
         }
     }
 
@@ -112,7 +175,33 @@ namespace _1RM.Model.Protocol
         private List<Argument> _argumentList = new List<Argument>();
         public List<Argument> ArgumentList
         {
-            get => _argumentList;
+            get
+            {
+                if (_argumentList.Count == 0)
+                {
+                    _argumentList.Add(new Argument()
+                    {
+                        Key = "--key1",
+                        Type = ArgumentType.Normal,
+                    });
+                    _argumentList.Add(new Argument()
+                    {
+                        Key = "--key2",
+                        Type = ArgumentType.Secret,
+                    });
+                    _argumentList.Add(new Argument()
+                    {
+                        Key = "--key3",
+                        Type = ArgumentType.File,
+                    });
+                    _argumentList.Add(new Argument()
+                    {
+                        Key = "--key5",
+                        Type = ArgumentType.Flag,
+                    });
+                }
+                return _argumentList;
+            }
             set => SetAndNotifyIfChanged(ref _argumentList, value);
         }
 
@@ -150,7 +239,7 @@ namespace _1RM.Model.Protocol
 
         public string GetArguments()
         {
-            return Argument.GetStringArgument(ArgumentList);
+            return Argument.GetArgumentsString(ArgumentList);
         }
 
 
@@ -226,7 +315,7 @@ namespace _1RM.Model.Protocol
                 {
                     try
                     {
-                        Process.Start(ExePath, Argument.GetStringArgument(ArgumentList));
+                        Process.Start(ExePath, Argument.GetArgumentsString(ArgumentList));
                         //    StartInfo =
                         //{
                         //    FileName = "cmd.exe",
