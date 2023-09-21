@@ -6,11 +6,12 @@
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
                         xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
                         xmlns:controls="clr-namespace:_1RM.Controls"
+                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance protocol:LocalApp}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <UserControl.Resources>
-
+        <forms:ConverterStringIs1 x:Key="ConverterStringIs1"></forms:ConverterStringIs1>
 
         <DataTemplate x:Key="ArgumentNormal" DataType="protocol:Argument">
             <Grid>
@@ -21,9 +22,24 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <TextBox Width="300" Margin="5 0" Height="28" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                    <controls:AutoCompleteComboBox Width="300" Margin="5 0" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Selections="{Binding Selections}"/>
                 </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding ArgumentString}"></TextBlock>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ArgumentSelection" DataType="protocol:Argument">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <ComboBox Width="300" Margin="5 0" SelectedItem="{Binding Value}" ItemsSource="{Binding Selections}"></ComboBox>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
@@ -35,9 +51,10 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBox Width="420" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <TextBlock Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <CheckBox Width="300" Margin="5 0" IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" Content="{DynamicResource Enabled}"></CheckBox>
                 </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding ArgumentString}"></TextBlock>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
@@ -49,14 +66,14 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                    <TextBlock Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     <TextBox Width="300" Margin="5 0" Height="28" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
                             Command="{Binding CmdSelectArgumentFile}"></Button>
                 </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding ArgumentString}"></TextBlock>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
@@ -71,7 +88,7 @@
                     <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     <controls:PasswordInput Width="300" Margin="5 0" Height="28" Password="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                 </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding ArgumentString}"></TextBlock>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
@@ -87,6 +104,9 @@
                 <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.Flag}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentFlag}" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.Selection}">
+                    <Setter Property="ContentTemplate" Value="{StaticResource ArgumentSelection}" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
@@ -100,9 +120,9 @@
                              Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource Select}" 
-                            Command="{Binding CmdSelectExePath}"></Button>
+                        Margin="5 0 0 0"
+                        Content="{DynamicResource Select}" 
+                        Command="{Binding CmdSelectExePath}"></Button>
             </StackPanel>
         </Grid>
         <Grid Style="{StaticResource EditorRowGrid}">

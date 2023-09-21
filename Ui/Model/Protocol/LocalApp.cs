@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using _1Remote.Security;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.View;
+using ICSharpCode.AvalonEdit.Editing;
 
 namespace _1RM.Model.Protocol
 {
@@ -26,6 +28,7 @@ namespace _1RM.Model.Protocol
         /// e.g. --hide
         /// </summary>
         Flag,
+        Selection,
     }
     public class Argument : NotifyPropertyChangedBase
     {
@@ -42,7 +45,19 @@ namespace _1RM.Model.Protocol
             }
         }
 
-        public bool IsRequired { get; set; } = true;
+        private bool _isRequired = false;
+        public bool IsRequired
+        {
+            get => _isRequired;
+            set => SetAndNotifyIfChanged(ref _isRequired, value);
+        }
+
+        private string _name = "";
+        public string Name
+        {
+            get => _name.Trim();
+            set => SetAndNotifyIfChanged(ref _name, value.Trim());
+        }
 
         private string _key = "";
         public string Key
@@ -58,11 +73,46 @@ namespace _1RM.Model.Protocol
         private string _value = "";
         public string Value
         {
-            get => _value.Trim();
+            get
+            {
+                if (Type == ArgumentType.Selection 
+                    && !_selections.Contains(_value))
+                {
+                    _value = _selections.FirstOrDefault() ?? "";
+                }
+                return _value.Trim();
+            }
             set
             {
                 if(SetAndNotifyIfChanged(ref _value, value.Trim()))
                     RaisePropertyChanged(nameof(DemoArgumentString));
+            }
+        }
+
+        private List<string> _selections = new List<string>();
+        public List<string> Selections
+        {
+            get => _selections;
+            set
+            {
+                var auto = value.Distinct().Select(x => x.Trim()).Where(x => x != "").ToList();
+                if (Type == ArgumentType.Selection)
+                {
+                    if (auto.Any() == false)
+                    {
+                        throw new ArgumentException("TXT: can not be null");
+                    }
+                    if (!IsRequired)
+                    {
+                        auto.Insert(0, "");
+                    }
+                    if (!_selections.Contains(Value))
+                    {
+                        Value = _selections.First();
+                    }
+                }
+                _selections = auto;
+                RaisePropertyChanged();
             }
         }
 
@@ -71,7 +121,15 @@ namespace _1RM.Model.Protocol
         public string GetArgumentString(bool forDemo = false)
         {
             if (Type == ArgumentType.Flag)
-                return Key;
+            {
+                return Value == "1" ? Key : "";
+            }
+
+            if (string.IsNullOrEmpty(Value) && !IsRequired)
+            {
+                return "";
+            }
+
             var value = Value;
             if (Type == ArgumentType.Secret)
             {
@@ -86,7 +144,11 @@ namespace _1RM.Model.Protocol
             }
             if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
                 value = $"\"{value}\"";
-            return $"{Key} {value}";
+            if (!string.IsNullOrEmpty(Key))
+            {
+                value = $"{Key} {value}";
+            }
+            return value;
         }
 
         public static string GetArgumentsString(IEnumerable<Argument> arguments)
@@ -181,21 +243,39 @@ namespace _1RM.Model.Protocol
                 {
                     _argumentList.Add(new Argument()
                     {
+                        Name = "key1",
                         Key = "--key1",
+                        Type = ArgumentType.Normal,
+                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                    });
+                    _argumentList.Add(new Argument()
+                    {
+                        Name = "key1.1",
+                        Key = "--key1.1",
                         Type = ArgumentType.Normal,
                     });
                     _argumentList.Add(new Argument()
                     {
+                        Name = "key2",
                         Key = "--key2",
                         Type = ArgumentType.Secret,
                     });
                     _argumentList.Add(new Argument()
                     {
+                        Name = "key3",
                         Key = "--key3",
                         Type = ArgumentType.File,
                     });
                     _argumentList.Add(new Argument()
                     {
+                        Name = "key4",
+                        Key = "--key4",
+                        Type = ArgumentType.Selection,
+                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                    });
+                    _argumentList.Add(new Argument()
+                    {
+                        Name = "key5",
                         Key = "--key5",
                         Type = ArgumentType.Flag,
                     });
