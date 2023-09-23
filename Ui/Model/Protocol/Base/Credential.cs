@@ -23,6 +23,9 @@ namespace _1RM.Model.Protocol.Base
             IsEditable = isEditable;
         }
 
+        /// <summary>
+        /// todo 批量编辑时，如果参数列表不同，禁用
+        /// </summary>
         [JsonIgnore] [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsEditable { get; }

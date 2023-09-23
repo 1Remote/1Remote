@@ -15,6 +15,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.AlternativeCredential;
+using _1RM.View.Editor.Forms.Argument;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -740,8 +741,6 @@ namespace _1RM.View.Editor
 
 
 
-
-
         private RelayCommand? _cmdDeleteCredential;
         public RelayCommand CmdDeleteCredential
         {
@@ -752,7 +751,7 @@ namespace _1RM.View.Editor
                     if (o is Credential credential
                         && Server is ProtocolBaseWithAddressPort protocol)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
                             if (protocol.AlternateCredentials.Contains(credential) == true)
                             {
@@ -761,6 +760,60 @@ namespace _1RM.View.Editor
                         }
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
+            }
+        }
+
+
+
+
+
+        private RelayCommand? _cmdEditArgument;
+        public RelayCommand CmdEditArgument
+        {
+            get
+            {
+                return _cmdEditArgument ??= new RelayCommand((o) =>
+                {
+                    if (Server is LocalApp protocol && o is Argument org)
+                    {
+                        var arguments = protocol.ArgumentList.ToList();
+                        if (IsBuckEdit && _serversInBuckEdit?.Count() > 0)
+                        {
+                            foreach (var s in _serversInBuckEdit)
+                            {
+                                if (s is LocalApp p)
+                                    arguments.AddRange(p.ArgumentList);
+                            }
+                        }
+                        arguments = arguments.Distinct().ToList();
+                        var vm = new ArgumentEditViewModel(protocol, arguments, org);
+                        MaskLayerController.ShowDialogWithMask(vm);
+                    }
+                }, o => Server is LocalApp);
+            }
+        }
+
+
+
+
+        private RelayCommand? _cmdDeleteArgument;
+        public RelayCommand CmdDeleteArgument
+        {
+            get
+            {
+                return _cmdDeleteArgument ??= new RelayCommand((o) =>
+                {
+                    if (Server is LocalApp protocol && o is Argument org)
+                    {
+                        if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        {
+                            if (protocol.ArgumentList.Contains(org) == true)
+                            {
+                                protocol.ArgumentList.Remove(org);
+                            }
+                        }
+                    }
+                }, o => Server is LocalApp);
             }
         }
     }

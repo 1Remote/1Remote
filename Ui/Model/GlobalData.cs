@@ -155,11 +155,18 @@ namespace _1RM.Model
 
                     return true;
                 }
+
                 return false;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Error(ex);
+                MsAppCenterHelper.Error(ex);
             }
             finally
             {
             }
+            return false;
         }
 
 

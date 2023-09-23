@@ -1,0 +1,140 @@
+﻿<styles:WindowChromeBase x:Class="_1RM.View.Editor.Forms.Argument.ArgumentEditView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                         xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                         xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:Argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
+                         xmlns:controls="clr-namespace:_1RM.Controls"
+                         mc:Ignorable="d" 
+                         ShowInTaskbar="False"
+                         SizeToContent="WidthAndHeight" 
+                         WindowStyle="None"
+                         Background="Transparent"
+                         MaxWidth="1800"
+                         AllowsTransparency="True"
+                         d:DataContext="{d:DesignInstance Argument:ArgumentEditViewModel}">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            <Setter Property="Margin" Value="15 0 0 0"></Setter>
+            <Setter Property="Width" Value="100"></Setter>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxAccentStyle}">
+            <Setter Property="Height" Value="26"></Setter>
+        </Style>
+        <Style TargetType="PasswordBox" BasedOn="{StaticResource PasswordBoxAccentStyle}">
+            <Setter Property="Height" Value="26"></Setter>
+        </Style>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+            <Setter Property="Margin" Value="10 0 0 0"></Setter>
+        </Style>
+        <Style x:Key="ErrorTip" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+            <Setter Property="Margin" Value="0 3 0 0"></Setter>
+            <Setter Property="Foreground" Value="Red"></Setter>
+            <Setter Property="FontSize" Value="12"></Setter>
+            <!--<Setter Property="MinHeight" Value="0"></Setter>-->
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource PrimaryMidBrush}"
+            BorderBrush="{DynamicResource PrimaryLightBrush}"
+            BorderThickness="1" 
+            CornerRadius="{StaticResource DefaultCornerRadius}" 
+            ClipToBounds="True">
+        <Grid IsSharedSizeScope="True">
+
+            <StackPanel Margin="20 0">
+                <TextBlock Text="{DynamicResource Connection}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+
+                <StackPanel>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="TXT: type"></TextBlock>
+                        <ComboBox Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <TextBox Name="TbName" Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Style="{StaticResource ErrorTip}"
+                                   Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: prefix"></TextBlock>
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <TextBox Name="TbKey" Text="{Binding Key, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="TXT: 可选"/>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Style="{StaticResource ErrorTip}"
+                                   Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbKey}"/>
+                    </Grid>
+
+
+                    <Grid Visibility="{Binding SelectionsVisibility}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="TXT:Selections"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="80"
+                                 InputMethod.IsInputMethodEnabled="False" InputScope="Number"
+                                 Tag="TXT: 一行一个备选项，如：&#x0a;Yes&#x0a;No"></TextBox>
+                    </Grid>
+                </StackPanel>
+
+
+                <StackPanel Margin="0 0 0 20" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" Width="100" Margin="10 0"></Button>
+                    <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" Width="100" Margin="10 0"></Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</styles:WindowChromeBase>

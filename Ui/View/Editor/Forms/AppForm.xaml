@@ -23,6 +23,28 @@
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     <controls:AutoCompleteComboBox Width="300" Margin="5 0" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Selections="{Binding Selections}"/>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Button Content="{DynamicResource Edit}"
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditable}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="{DynamicResource Delete}" 
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
@@ -38,6 +60,19 @@
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     <ComboBox Width="300" Margin="5 0" SelectedItem="{Binding Value}" ItemsSource="{Binding Selections}"></ComboBox>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Button Content="{DynamicResource Edit}"
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                        </Button>
+                        <Button Content="{DynamicResource Delete}" 
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
@@ -53,6 +88,18 @@
                     <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBlock Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     <CheckBox Width="300" Margin="5 0" IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" Content="{DynamicResource Enabled}"></CheckBox>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Button Content="{DynamicResource Edit}"
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                        </Button>
+                        <Button Content="{DynamicResource Delete}" 
+                                Margin="5"
+                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
+                                CommandParameter="{Binding}">
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
@@ -157,5 +204,7 @@
         </Grid>
 
         <ItemsControl ItemsSource="{Binding ArgumentList}" ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
+
+        <TextBlock Text="{Binding DemoArgumentsString}" Opacity="0.5"></TextBlock>
     </StackPanel>
 </editor:FormBase>

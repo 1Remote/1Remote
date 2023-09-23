@@ -13,6 +13,9 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.View;
 using ICSharpCode.AvalonEdit.Editing;
+using Newtonsoft.Json.Converters;
+using Shawn.Utils.Interface;
+using System.ComponentModel;
 
 namespace _1RM.Model.Protocol
 {
@@ -30,9 +33,22 @@ namespace _1RM.Model.Protocol
         Flag,
         Selection,
     }
-    public class Argument : NotifyPropertyChangedBase
+    public class Argument : NotifyPropertyChangedBase, ICloneable
     {
+        public Argument(bool? isEditable = true)
+        {
+            IsEditable = isEditable;
+        }
+
+        /// <summary>
+        /// todo 批量编辑时，如果参数列表不同，禁用
+        /// </summary>
+        [JsonIgnore]
+        public bool? IsEditable { get; }
+
+
         private ArgumentType _type;
+        [JsonConverter(typeof(StringEnumConverter))]
         public ArgumentType Type
         {
             get => _type;
@@ -75,7 +91,7 @@ namespace _1RM.Model.Protocol
         {
             get
             {
-                if (Type == ArgumentType.Selection 
+                if (Type == ArgumentType.Selection
                     && !_selections.Contains(_value))
                 {
                     _value = _selections.FirstOrDefault() ?? "";
@@ -84,9 +100,17 @@ namespace _1RM.Model.Protocol
             }
             set
             {
-                if(SetAndNotifyIfChanged(ref _value, value.Trim()))
+                if (SetAndNotifyIfChanged(ref _value, value.Trim()))
                     RaisePropertyChanged(nameof(DemoArgumentString));
             }
+        }
+
+
+        public string _misc = "";
+        public string Misc
+        {
+            get => _misc;
+            set => SetAndNotifyIfChanged(ref _misc, value);
         }
 
         private List<string> _selections = new List<string>();
@@ -106,14 +130,21 @@ namespace _1RM.Model.Protocol
                     {
                         auto.Insert(0, "");
                     }
-                    if (!_selections.Contains(Value))
+                    if (auto.Any() && !auto.Contains(Value))
                     {
-                        Value = _selections.First();
+                        Value = auto.First();
                     }
                 }
                 _selections = auto;
                 RaisePropertyChanged();
             }
+        }
+
+        public object Clone()
+        {
+            var copy =  (Argument)MemberwiseClone();
+            copy.Selections = new List<string>(this.Selections);
+            return copy;
         }
 
         public string DemoArgumentString => GetArgumentString(true);
@@ -151,12 +182,12 @@ namespace _1RM.Model.Protocol
             return value;
         }
 
-        public static string GetArgumentsString(IEnumerable<Argument> arguments)
+        public static string GetArgumentsString(IEnumerable<Argument> arguments, bool isDemo)
         {
             string cmd = "";
             foreach (var argument in arguments)
             {
-                cmd += argument.GetArgumentString() + " ";
+                cmd += argument.GetArgumentString(isDemo) + " ";
             }
             return cmd.Trim();
         }
@@ -184,13 +215,45 @@ namespace _1RM.Model.Protocol
                 });
             }
         }
+
+
+        public static Tuple<bool, string> CheckName(List<Argument> argumentList, string name)
+        {
+            name = name.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+            }
+
+            if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
+            {
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", name));
+            }
+
+            return new Tuple<bool, string>(true, "");
+        }
+
+        public static Tuple<bool, string> CheckKey(List<Argument> argumentList, string key)
+        {
+            key = key.Trim();
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return new Tuple<bool, string>(true, "");
+            }
+
+            if (argumentList?.Any(x => string.Equals(x.Key, key, StringComparison.CurrentCultureIgnoreCase)) == true)
+            {
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", key));
+            }
+
+            return new Tuple<bool, string>(true, "");
+        }
     }
 
     public class LocalApp : ProtocolBase
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
         {
-            _appProtocolDisplayName = "APP";
         }
 
         public override bool IsOnlyOneInstance()
@@ -222,6 +285,8 @@ namespace _1RM.Model.Protocol
 
         public override string GetProtocolDisplayName()
         {
+            if (string.IsNullOrEmpty(_appProtocolDisplayName))
+                return base.GetProtocolDisplayName();
             return _appProtocolDisplayName;
         }
 
@@ -241,44 +306,62 @@ namespace _1RM.Model.Protocol
             {
                 if (_argumentList.Count == 0)
                 {
-                    _argumentList.Add(new Argument()
+                    lock (_argumentList)
                     {
-                        Name = "key1",
-                        Key = "--key1",
-                        Type = ArgumentType.Normal,
-                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
-                    });
-                    _argumentList.Add(new Argument()
-                    {
-                        Name = "key1.1",
-                        Key = "--key1.1",
-                        Type = ArgumentType.Normal,
-                    });
-                    _argumentList.Add(new Argument()
-                    {
-                        Name = "key2",
-                        Key = "--key2",
-                        Type = ArgumentType.Secret,
-                    });
-                    _argumentList.Add(new Argument()
-                    {
-                        Name = "key3",
-                        Key = "--key3",
-                        Type = ArgumentType.File,
-                    });
-                    _argumentList.Add(new Argument()
-                    {
-                        Name = "key4",
-                        Key = "--key4",
-                        Type = ArgumentType.Selection,
-                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
-                    });
-                    _argumentList.Add(new Argument()
-                    {
-                        Name = "key5",
-                        Key = "--key5",
-                        Type = ArgumentType.Flag,
-                    });
+                        if (_argumentList.Count == 0)
+                        {
+                            var argumentList = new List<Argument>();
+                            if (!string.IsNullOrWhiteSpace(Arguments))
+                            {
+                                argumentList.Add(new Argument()
+                                {
+                                    Name = "org",
+                                    Key = "",
+                                    Type = ArgumentType.Normal,
+                                    Value = Arguments,
+                                });
+                            }
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key1",
+                                Key = "--key1",
+                                Type = ArgumentType.Normal,
+                                Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                            });
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key1.1",
+                                Key = "--key1.1",
+                                Type = ArgumentType.Normal,
+                            });
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key2",
+                                Key = "--key2",
+                                Type = ArgumentType.Secret,
+                            });
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key3",
+                                Key = "--key3",
+                                Type = ArgumentType.File,
+                            });
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key4",
+                                Key = "--key4",
+                                Type = ArgumentType.Selection,
+                                Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                            });
+                            argumentList.Add(new Argument()
+                            {
+                                Name = "key5",
+                                Key = "--key5",
+                                Type = ArgumentType.Flag,
+                            });
+                            return argumentList;
+                        }
+                    }
                 }
                 return _argumentList;
             }
@@ -292,6 +375,7 @@ namespace _1RM.Model.Protocol
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
+        public string DemoArgumentsString => GetDemoArguments();
 
         public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
@@ -307,9 +391,10 @@ namespace _1RM.Model.Protocol
             }
         }
 
+
         protected override string GetSubTitle()
         {
-            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath} {this.ArgumentList}" : AppSubTitle;
+            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath}" : AppSubTitle;
         }
 
         public override double GetListOrder()
@@ -319,7 +404,13 @@ namespace _1RM.Model.Protocol
 
         public string GetArguments()
         {
-            return Argument.GetArgumentsString(ArgumentList);
+            return Argument.GetArgumentsString(ArgumentList, false);
+        }
+
+
+        public string GetDemoArguments()
+        {
+            return Argument.GetArgumentsString(ArgumentList, true);
         }
 
 
@@ -395,7 +486,7 @@ namespace _1RM.Model.Protocol
                 {
                     try
                     {
-                        Process.Start(ExePath, Argument.GetArgumentsString(ArgumentList));
+                        Process.Start(ExePath, Argument.GetArgumentsString(ArgumentList, false));
                         //    StartInfo =
                         //{
                         //    FileName = "cmd.exe",
