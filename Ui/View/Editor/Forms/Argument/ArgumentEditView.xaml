@@ -4,9 +4,7 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
-                         xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:Argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
-                         xmlns:controls="clr-namespace:_1RM.Controls"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
                          SizeToContent="WidthAndHeight" 
@@ -124,6 +122,9 @@
                         <TextBlock Grid.Column="0" Text="TXT:Selections"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged}"
                                  Height="80"
+                                 AcceptsReturn="True"
+                                 VerticalContentAlignment="Top"
+                                 HorizontalScrollBarVisibility="Auto"
                                  InputMethod.IsInputMethodEnabled="False" InputScope="Number"
                                  Tag="TXT: 一行一个备选项，如：&#x0a;Yes&#x0a;No"></TextBox>
                     </Grid>

@@ -16,6 +16,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using Newtonsoft.Json.Converters;
 using Shawn.Utils.Interface;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace _1RM.Model.Protocol
 {
@@ -248,6 +249,21 @@ namespace _1RM.Model.Protocol
 
             return new Tuple<bool, string>(true, "");
         }
+
+        public bool IsValueEqualTo(in Argument newValue)
+        {
+            if (this.Type != newValue.Type) return false;
+            if (this.Name != newValue.Name) return false;
+            if (this.Key != newValue.Key) return false;
+            if (this.Value != newValue.Value) return false;
+            if (this.Misc != newValue.Misc) return false;
+            if (this.Selections.Count != Selections.Count) return false;
+            foreach (var selection in Selections)
+            {
+                if (!newValue.Selections.Contains(selection)) return false;
+            }
+            return true;
+        }
     }
 
     public class LocalApp : ProtocolBase
@@ -299,8 +315,8 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _arguments, value);
         }
 
-        private List<Argument> _argumentList = new List<Argument>();
-        public List<Argument> ArgumentList
+        private ObservableCollection<Argument> _argumentList = new ObservableCollection<Argument>();
+        public ObservableCollection<Argument> ArgumentList
         {
             get
             {
@@ -359,7 +375,7 @@ namespace _1RM.Model.Protocol
                                 Key = "--key5",
                                 Type = ArgumentType.Flag,
                             });
-                            return argumentList;
+                            return new ObservableCollection<Argument>(argumentList);
                         }
                     }
                 }

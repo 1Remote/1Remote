@@ -40,6 +40,8 @@ namespace _1RM.View.Editor.Forms.Argument
             {
                 New = (Model.Protocol.Argument)_org.Clone();
             }
+
+            Selections = string.Join('\n', New.Selections);
         }
 
         public ArgumentType Type
@@ -57,6 +59,7 @@ namespace _1RM.View.Editor.Forms.Argument
                     switch (value)
                     {
                         case ArgumentType.Normal:
+                            SelectionsVisibility = Visibility.Visible;
                             break;
                         case ArgumentType.File:
                             break;

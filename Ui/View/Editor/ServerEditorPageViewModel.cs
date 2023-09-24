@@ -26,7 +26,7 @@ using Credential = _1RM.Model.Protocol.Base.Credential;
 
 namespace _1RM.View.Editor
 {
-    public class ServerEditorPageViewModel : NotifyPropertyChangedBase
+    public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
         public DataSourceBase? AddToDataSource { get; private set; } = null;
@@ -239,6 +239,8 @@ namespace _1RM.View.Editor
                 protocol.AlternateCredentials = new ObservableCollection<Credential>(list);
             }
 
+            AppArgumentsBulkInit(servers);
+
             _orgServer = Server.Clone();
 
             // init ui
@@ -379,9 +381,10 @@ namespace _1RM.View.Editor
                                     if (server is ProtocolBaseWithAddressPort protocol
                                         && Server is ProtocolBaseWithAddressPort newServer)
                                     {
+                                        // TODO need a remake
                                         foreach (var credential in protocol.AlternateCredentials.ToArray())
                                         {
-                                            if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential)))
+                                            if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential))) // 编辑之前共有，编辑后不再共有，删除
                                             {
                                                 if (newServer.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
                                                 {
@@ -406,6 +409,8 @@ namespace _1RM.View.Editor
                                         }
                                     }
                                 }
+
+                                AppArgumentsBulkMerge(_serversInBuckEdit);
 
                                 // save
                                 ret = _globalData.UpdateServer(_serversInBuckEdit);
@@ -760,60 +765,6 @@ namespace _1RM.View.Editor
                         }
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
-            }
-        }
-
-
-
-
-
-        private RelayCommand? _cmdEditArgument;
-        public RelayCommand CmdEditArgument
-        {
-            get
-            {
-                return _cmdEditArgument ??= new RelayCommand((o) =>
-                {
-                    if (Server is LocalApp protocol && o is Argument org)
-                    {
-                        var arguments = protocol.ArgumentList.ToList();
-                        if (IsBuckEdit && _serversInBuckEdit?.Count() > 0)
-                        {
-                            foreach (var s in _serversInBuckEdit)
-                            {
-                                if (s is LocalApp p)
-                                    arguments.AddRange(p.ArgumentList);
-                            }
-                        }
-                        arguments = arguments.Distinct().ToList();
-                        var vm = new ArgumentEditViewModel(protocol, arguments, org);
-                        MaskLayerController.ShowDialogWithMask(vm);
-                    }
-                }, o => Server is LocalApp);
-            }
-        }
-
-
-
-
-        private RelayCommand? _cmdDeleteArgument;
-        public RelayCommand CmdDeleteArgument
-        {
-            get
-            {
-                return _cmdDeleteArgument ??= new RelayCommand((o) =>
-                {
-                    if (Server is LocalApp protocol && o is Argument org)
-                    {
-                        if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
-                        {
-                            if (protocol.ArgumentList.Contains(org) == true)
-                            {
-                                protocol.ArgumentList.Remove(org);
-                            }
-                        }
-                    }
-                }, o => Server is LocalApp);
             }
         }
     }
