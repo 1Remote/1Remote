@@ -14,7 +14,7 @@ namespace _1RM.View.Editor
 {
     public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
-        private readonly List<Argument> _sharedArgumentsInBuckEdit = new List<Argument>();
+        private readonly List<AppArgument> _sharedArgumentsInBuckEdit = new List<AppArgument>();
         private void AppArgumentsBulkInit(IEnumerable<ProtocolBase> servers)
         {
             // TODO need a remake
@@ -42,11 +42,11 @@ namespace _1RM.View.Editor
                     }
                 }
 
-                var list = new List<Argument>();
+                var list = new List<AppArgument>();
                 if (isAllTheSameFlag == false)
-                    list.Add(new Argument(isEditable: false) { Name = Server.ServerEditorDifferentOptions, Value = Server.ServerEditorDifferentOptions });
+                    list.Add(new AppArgument(isEditable: false) { Name = Server.ServerEditorDifferentOptions, Value = Server.ServerEditorDifferentOptions });
                 list.AddRange(_sharedArgumentsInBuckEdit);
-                app.ArgumentList = new ObservableCollection<Argument>(list);
+                app.ArgumentList = new ObservableCollection<AppArgument>(list);
             }
         }
         private void AppArgumentsBulkMerge(IEnumerable<ProtocolBase> servers)
@@ -90,6 +90,28 @@ namespace _1RM.View.Editor
 
 
 
+        private bool _isEditMode = false;
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            set => SetAndNotifyIfChanged(ref _isEditMode, value);
+        }
+
+
+
+        private RelayCommand? _cmdToggleEditMode;
+        public RelayCommand CmdToggleEditMode
+        {
+            get
+            {
+                return _cmdToggleEditMode ??= new RelayCommand((o) =>
+                {
+                    IsEditMode = !IsEditMode;
+                }, o => Server is LocalApp);
+            }
+        }
+
+
         private RelayCommand? _cmdEditArgument;
         public RelayCommand CmdEditArgument
         {
@@ -109,7 +131,7 @@ namespace _1RM.View.Editor
                             }
                         }
                         arguments = arguments.Distinct().ToList();
-                        var vm = new ArgumentEditViewModel(protocol, arguments, o as Argument);
+                        var vm = new ArgumentEditViewModel(protocol, arguments, o as AppArgument);
                         MaskLayerController.ShowDialogWithMask(vm);
                     }
                 }, o => Server is LocalApp);
@@ -126,14 +148,57 @@ namespace _1RM.View.Editor
             {
                 return _cmdDeleteArgument ??= new RelayCommand((o) =>
                 {
-                    if (Server is LocalApp protocol && o is Argument org)
+                    if (Server is LocalApp protocol
+                        && o is AppArgument org
+                        && protocol.ArgumentList.Contains(org))
                     {
                         if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
-                            if (protocol.ArgumentList.Contains(org) == true)
-                            {
-                                protocol.ArgumentList.Remove(org);
-                            }
+                            protocol.ArgumentList.Remove(org);
+                        }
+                    }
+                }, o => Server is LocalApp);
+            }
+        }
+
+
+
+        private RelayCommand? _cmdMoveArgumentUp;
+        public RelayCommand CmdMoveArgumentUp
+        {
+            get
+            {
+                return _cmdMoveArgumentUp ??= new RelayCommand((o) =>
+                {
+                    if (Server is LocalApp protocol
+                        && o is AppArgument org
+                        && protocol.ArgumentList.Contains(org))
+                    {
+                        var index = protocol.ArgumentList.IndexOf(org);
+                        if (index > 0)
+                        {
+                            protocol.ArgumentList.Move(index, index - 1);
+                        }
+                    }
+                }, o => Server is LocalApp);
+            }
+        }
+
+        private RelayCommand? _cmdMoveArgumentDown;
+        public RelayCommand CmdMoveArgumentDown
+        {
+            get
+            {
+                return _cmdMoveArgumentDown ??= new RelayCommand((o) =>
+                {
+                    if (Server is LocalApp protocol
+                        && o is AppArgument org
+                        && protocol.ArgumentList.Contains(org))
+                    {
+                        var index = protocol.ArgumentList.IndexOf(org);
+                        if (index < protocol.ArgumentList.Count - 1)
+                        {
+                            protocol.ArgumentList.Move(index, index + 1);
                         }
                     }
                 }, o => Server is LocalApp);

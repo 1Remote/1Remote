@@ -18,16 +18,16 @@ namespace _1RM.View.Editor.Forms.Argument
     public class ArgumentEditViewModel : NotifyPropertyChangedBaseScreen
     {
         private readonly LocalApp _localApp;
-        private readonly Model.Protocol.Argument? _org = null;
-        private readonly List<Model.Protocol.Argument> _existedArguments;
-        public Model.Protocol.Argument New { get; } = new Model.Protocol.Argument();
-        public List<Model.Protocol.ArgumentType> ArgumentTypes { get; } = new List<ArgumentType>();
-        public ArgumentEditViewModel(LocalApp localApp, List<Model.Protocol.Argument> existedArguments, Model.Protocol.Argument? org = null)
+        private readonly Model.Protocol.AppArgument? _org = null;
+        private readonly List<Model.Protocol.AppArgument> _existedArguments;
+        public Model.Protocol.AppArgument New { get; } = new Model.Protocol.AppArgument();
+        public List<Model.Protocol.AppArgumentType> ArgumentTypes { get; } = new List<AppArgumentType>();
+        public ArgumentEditViewModel(LocalApp localApp, List<Model.Protocol.AppArgument> existedArguments, Model.Protocol.AppArgument? org = null)
         {
             _localApp = localApp;
             _org = org;
-            _existedArguments = new List<Model.Protocol.Argument>(existedArguments);
-            foreach (ArgumentType value in Enum.GetValues(typeof(ArgumentType)))
+            _existedArguments = new List<Model.Protocol.AppArgument>(existedArguments);
+            foreach (AppArgumentType value in Enum.GetValues(typeof(AppArgumentType)))
             {
                 ArgumentTypes.Add(value);
             }
@@ -38,13 +38,13 @@ namespace _1RM.View.Editor.Forms.Argument
             // Edit mode
             if (_org != null)
             {
-                New = (Model.Protocol.Argument)_org.Clone();
+                New = (Model.Protocol.AppArgument)_org.Clone();
             }
 
             Selections = string.Join('\n', New.Selections);
         }
 
-        public ArgumentType Type
+        public AppArgumentType Type
         {
             get => New.Type;
             set
@@ -58,16 +58,16 @@ namespace _1RM.View.Editor.Forms.Argument
                     SelectionsVisibility = Visibility.Collapsed;
                     switch (value)
                     {
-                        case ArgumentType.Normal:
+                        case AppArgumentType.Normal:
                             SelectionsVisibility = Visibility.Visible;
                             break;
-                        case ArgumentType.File:
+                        case AppArgumentType.File:
                             break;
-                        case ArgumentType.Secret:
+                        case AppArgumentType.Secret:
                             break;
-                        case ArgumentType.Flag:
+                        case AppArgumentType.Flag:
                             break;
-                        case ArgumentType.Selection:
+                        case AppArgumentType.Selection:
                             SelectionsVisibility = Visibility.Visible;
                             break;
                         default:
@@ -91,7 +91,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     New.Name = value.Trim();
                     RaisePropertyChanged();
-                    var t = Model.Protocol.Argument.CheckName(_existedArguments, value.Trim());
+                    var t = Model.Protocol.AppArgument.CheckName(_existedArguments, value.Trim());
                     if (t.Item1 == false)
                     {
                         throw new ArgumentException(t.Item2);
@@ -99,7 +99,6 @@ namespace _1RM.View.Editor.Forms.Argument
                 }
             }
         }
-
 
         public string Key
         {
@@ -110,7 +109,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     New.Key = value.Trim();
                     RaisePropertyChanged();
-                    var t = Model.Protocol.Argument.CheckKey(_existedArguments, value.Trim());
+                    var t = Model.Protocol.AppArgument.CheckKey(_existedArguments, value.Trim());
                     if (t.Item1 == false)
                     {
                         throw new ArgumentException(t.Item2);
@@ -139,7 +138,7 @@ namespace _1RM.View.Editor.Forms.Argument
 
         private Tuple<bool, string> CheckSelections(string selections)
         {
-            if (Type == ArgumentType.Selection)
+            if (Type == AppArgumentType.Selection)
             {
                 if (selections.Any(x => x != ' ' && x != '\r' && x != '\n' && x != '\t'))
                 {
@@ -163,7 +162,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 return _cmdSave ??= new RelayCommand((_) =>
                 {
                     {
-                        var t = Model.Protocol.Argument.CheckName(_existedArguments, Name);
+                        var t = Model.Protocol.AppArgument.CheckName(_existedArguments, Name);
                         if (t.Item1 == false)
                         {
                             MessageBoxHelper.Warning(t.Item2);
@@ -172,7 +171,7 @@ namespace _1RM.View.Editor.Forms.Argument
                     }
 
                     {
-                        var t = Model.Protocol.Argument.CheckKey(_existedArguments, Key);
+                        var t = Model.Protocol.AppArgument.CheckKey(_existedArguments, Key);
                         if (t.Item1 == false)
                         {
                             MessageBoxHelper.Warning(t.Item2);
@@ -206,7 +205,7 @@ namespace _1RM.View.Editor.Forms.Argument
                             }
                         }
                         New.Selections = list.Distinct().ToList();
-                        if (Type == ArgumentType.Selection && New.Selections.Count == 0)
+                        if (Type == AppArgumentType.Selection && New.Selections.Count == 0)
                         {
                             return;
                         }
@@ -226,7 +225,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         _localApp.ArgumentList.Add(New);
                     }
                     RequestClose(true);
-                }, o => Model.Protocol.Argument.CheckName(_existedArguments, Name).Item1 && Model.Protocol.Argument.CheckKey(_existedArguments, Key).Item1 && CheckSelections(Selections).Item1);
+                }, o => Model.Protocol.AppArgument.CheckName(_existedArguments, Name).Item1 && Model.Protocol.AppArgument.CheckKey(_existedArguments, Key).Item1 && CheckSelections(Selections).Item1);
             }
         }
 

@@ -7,151 +7,136 @@
              xmlns:controls="clr-namespace:_1RM.Controls"
              xmlns:editor="clr-namespace:_1RM.View.Editor"
              xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance protocol:LocalApp}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <GridLength x:Key="RowHeight1">30</GridLength>
+        <GridLength x:Key="RowHeight2">20</GridLength>
+        <system:Double x:Key="WidthName">100</system:Double>
+        <system:Double x:Key="WidthKey">100</system:Double>
+        <system:Double x:Key="WidthValue">300</system:Double>
+
         <argument:ConverterStringIs1 x:Key="ConverterStringIs1"></argument:ConverterStringIs1>
 
-        <DataTemplate x:Key="ArgumentNormal" DataType="protocol:Argument">
+        <DataTemplate x:Key="ArgumentNormal" DataType="protocol:AppArgument">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <controls:AutoCompleteComboBox Width="300" Margin="5 0" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Selections="{Binding Selections}"/>
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <Button Content="{DynamicResource Edit}"
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsEditable}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Content="{DynamicResource Delete}" 
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                        </Button>
-                    </StackPanel>
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="5 0" 
+                                                   ToolTip="{Binding HintDescription}"
+                                                   Tag="{Binding HintDescription}"
+                                                   Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Selections="{Binding Selections}"/>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ArgumentSelection" DataType="protocol:Argument">
+        <DataTemplate x:Key="ArgumentSelection" DataType="protocol:AppArgument">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <ComboBox Width="300" Margin="5 0" SelectedItem="{Binding Value}" ItemsSource="{Binding Selections}"></ComboBox>
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <Button Content="{DynamicResource Edit}"
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                        </Button>
-                        <Button Content="{DynamicResource Delete}" 
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                        </Button>
-                    </StackPanel>
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <ComboBox Width="{StaticResource WidthValue}" 
+                              ToolTip="{Binding HintDescription}"
+                              Tag="{Binding HintDescription}"
+                              Margin="5 0" SelectedItem="{Binding Value}" 
+                              ItemsSource="{Binding Selections}"></ComboBox>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ArgumentFlag" DataType="protocol:Argument">
+        <DataTemplate x:Key="ArgumentFlag" DataType="protocol:AppArgument">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <CheckBox Width="300" Margin="5 0" IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" Content="{DynamicResource Enabled}"></CheckBox>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <Button Content="{DynamicResource Edit}"
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                        </Button>
-                        <Button Content="{DynamicResource Delete}" 
-                                Margin="5"
-                                Command="{Binding Path=DataContext.CmdDeleteArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
-                                CommandParameter="{Binding}">
-                        </Button>
-                    </StackPanel>
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <CheckBox Width="{StaticResource WidthValue}" Margin="5 0"
+                              IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" 
+                              Content="{Binding HintDescription}"
+                              ToolTip="{Binding HintDescription}"
+                              Tag="{Binding HintDescription}"></CheckBox>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ArgumentFile" DataType="protocol:Argument">
+        <DataTemplate x:Key="ArgumentFile" DataType="protocol:AppArgument">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <TextBox Width="300" Margin="5 0" Height="28" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
-                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource Select}" 
-                            Command="{Binding CmdSelectArgumentFile}"></Button>
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <Grid Width="{StaticResource WidthValue}" Margin="5 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="30"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Height="28" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" 
+                                 ToolTip="{Binding HintDescription}"
+                                 Tag="{Binding HintDescription}"/>
+                        <Button Height="28" Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" 
+                                Content="{DynamicResource Select}" 
+                                Command="{Binding CmdSelectArgumentFile}"></Button>
+                    </Grid>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ArgumentSecret" DataType="protocol:Argument">
+        <DataTemplate x:Key="ArgumentSecret" DataType="protocol:AppArgument">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBox Width="120" Margin="5 0" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
-                    <controls:PasswordInput Width="300" Margin="5 0" Height="28" Password="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <controls:PasswordInput Width="{StaticResource WidthValue}" Margin="5 0" Height="28" Password="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"
+                                            ToolTip="{Binding HintDescription}"
+                                            Tag="{Binding HintDescription}"/>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
             </Grid>
         </DataTemplate>
 
-        <Style TargetType="{x:Type ContentPresenter}" x:Key="ContainerStyle" d:DataContext="{d:DesignInstance protocol:Argument}">
+        <Style TargetType="{x:Type ContentPresenter}" x:Key="ContainerStyle" d:DataContext="{d:DesignInstance protocol:AppArgument}">
             <Setter Property="ContentTemplate" Value="{StaticResource ArgumentNormal}" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.File}">
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.File}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentFile}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.Secret}">
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.Secret}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentSecret}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.Flag}">
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.Flag}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentFlag}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:ArgumentType.Selection}">
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.Selection}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentSelection}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -168,16 +153,30 @@
 
 
 
-        <Button Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
-                Style="{StaticResource ButtonBarTransparentStyle}"
-                Margin="0 0 5 0">
-            <!--ADD BUTTON-->
-            <Grid Height="15" Width="15">
-                <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                      StrokeThickness="2" Stretch="Uniform" />
-            </Grid>
-        </Button>
+        <StackPanel Orientation="Horizontal">
+            <Button Command="{Binding Path=DataContext.CmdToggleEditMode, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                    Style="{StaticResource ButtonBarTransparentStyle}"
+                    Margin="5 0 5 0">
+                <Grid Height="15" Width="15">
+                    <Path Data="{StaticResource GeometryEdit}"
+                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          StrokeThickness="1" Stretch="Uniform" />
+                </Grid>
+            </Button>
+
+
+            <Button Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
+                    Style="{StaticResource ButtonBarTransparentStyle}"
+                    Margin="5 0 5 0">
+                <!--ADD BUTTON-->
+                <Grid Height="15" Width="15">
+                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          StrokeThickness="2" Stretch="Uniform" />
+                </Grid>
+            </Button>
+        </StackPanel>
     </StackPanel>
 </UserControl>

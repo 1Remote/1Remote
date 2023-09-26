@@ -48,7 +48,7 @@
         <Grid IsSharedSizeScope="True">
 
             <StackPanel Margin="20 0">
-                <TextBlock Text="{DynamicResource Connection}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                <TextBlock Text="TXT: add argument" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
                 <StackPanel>
 
@@ -64,7 +64,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="TXT: type"></TextBlock>
-                        <ComboBox Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
                     </Grid>
 
                     <Grid>
@@ -106,6 +106,40 @@
                         <TextBlock Grid.Row="1" Grid.Column="1"
                                    Style="{StaticResource ErrorTip}"
                                    Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbKey}"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: can be empty"></TextBlock>
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <CheckBox IsChecked="{Binding New.IsNullable}" Content="TXT: Nullable"></CheckBox>
+                        </Grid>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition MinHeight="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT:Description"></TextBlock>
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <TextBox Text="{Binding New.Description, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
                     </Grid>
 
 
