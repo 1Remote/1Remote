@@ -190,21 +190,35 @@ namespace _1RM.View.Editor.Forms.Argument
 
 
                     {
-                        var list = new List<string>();
+                        var dictionary = new Dictionary<string,string>();
                         var strReader = new StringReader(Selections);
                         while (true)
                         {
                             var line = strReader.ReadLine();
                             if (line != null)
                             {
-                                list.Add(line.Trim());
+                                if (line.Split('|').Length == 2)
+                                {
+                                    var items = line.Split('|');
+                                    if (!dictionary.ContainsKey(items[0].Trim()))
+                                        dictionary.Add(items[0].Trim(), items[1].Trim());
+                                    else
+                                        dictionary[items[0].Trim()] = items[1].Trim();
+                                }
+                                else
+                                {
+                                    if (!dictionary.ContainsKey(line.Trim()))
+                                        dictionary.Add(line.Trim(), line.Trim());
+                                    else
+                                        dictionary[line.Trim()] = line.Trim();
+                                }
                             }
                             else
                             {
                                 break;
                             }
                         }
-                        New.Selections = list.Distinct().ToList();
+                        New.Selections = dictionary;
                         if (Type == AppArgumentType.Selection && New.Selections.Count == 0)
                         {
                             return;

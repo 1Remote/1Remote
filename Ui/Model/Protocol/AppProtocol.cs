@@ -135,6 +135,11 @@ namespace _1RM.Model.Protocol
                     var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
                     ExePath = path;
+
+                    //if (ArgumentList.Count == 0)
+                    {
+                        ArgumentList = new ObservableCollection<AppArgument>(AppArgumentHelper.GetArgumentList(path));
+                    }
                 });
             }
         }
@@ -158,7 +163,6 @@ namespace _1RM.Model.Protocol
                     }
                     var path = SelectFileHelper.OpenFile(initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
-                    //Arguments = path;
                 });
             }
         }
@@ -171,7 +175,7 @@ namespace _1RM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBoxHelper.Info(ExePath + " " + GetArguments(), ownerViewModel: IoC.Get<MainWindowViewModel>());
+                    MessageBoxHelper.Info(ExePath + " " + GetDemoArguments(), ownerViewModel: IoC.Get<MainWindowViewModel>());
                 });
             }
         }
@@ -186,31 +190,7 @@ namespace _1RM.Model.Protocol
                 {
                     try
                     {
-                        Process.Start(ExePath, AppArgument.GetArgumentsString(ArgumentList, false));
-                        //    StartInfo =
-                        //{
-                        //    FileName = "cmd.exe",
-                        //    UseShellExecute = false,
-                        //    RedirectStandardInput = true,
-                        //    RedirectStandardOutput = true,
-                        //    RedirectStandardError = true,
-                        //    CreateNoWindow = true
-                        //}
-                        //var p = new Process
-                        //{
-                        //    StartInfo =
-                        //{
-                        //    FileName = "cmd.exe",
-                        //    UseShellExecute = false,
-                        //    RedirectStandardInput = true,
-                        //    RedirectStandardOutput = true,
-                        //    RedirectStandardError = true,
-                        //    CreateNoWindow = true
-                        //}
-                        //};
-                        //p.Start();
-                        //p.StandardInput.WriteLine(GetCmd());
-                        //p.StandardInput.WriteLine("exit");
+                        Process.Start(ExePath, GetArguments());
                     }
                     catch (Exception e)
                     {

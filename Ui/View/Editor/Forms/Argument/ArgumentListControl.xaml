@@ -32,7 +32,7 @@
                     <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="5 0" 
                                                    ToolTip="{Binding HintDescription}"
                                                    Tag="{Binding HintDescription}"
-                                                   Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Selections="{Binding Selections}"/>
+                                                   Text="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Selections="{Binding SelectionKeys, Mode=OneWay}"/>
                     <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
@@ -51,7 +51,10 @@
                     <ComboBox Width="{StaticResource WidthValue}" 
                               ToolTip="{Binding HintDescription}"
                               Tag="{Binding HintDescription}"
-                              Margin="5 0" SelectedItem="{Binding Value}" 
+                              Margin="5 0" 
+                              SelectedValue="{Binding Value}" 
+                              SelectedValuePath="Key"
+                              DisplayMemberPath="Value"
                               ItemsSource="{Binding Selections}"></ComboBox>
                     <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>

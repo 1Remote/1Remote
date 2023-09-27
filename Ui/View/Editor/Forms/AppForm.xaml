@@ -31,11 +31,6 @@
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text=""></TextBox>
                 </Grid>
-
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                        Margin="5 0 0 0"
-                        Content="{DynamicResource Select}" 
-                        Command="{Binding CmdSelectArgumentFile}"></Button>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
                         Margin="5 0 0 0"
                         Content="{DynamicResource 'Preview'}" 

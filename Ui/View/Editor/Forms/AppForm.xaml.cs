@@ -36,13 +36,13 @@ namespace _1RM.View.Editor.Forms
                         Name = "key1",
                         Key = "--key1",
                         Type = AppArgumentType.Normal,
-                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                        Selections = new Dictionary<string, string>() { { "ABC", "" }, { "ZZW1", "" }, { "CAWE", "" } },
                     });
                     argumentList.Add(new Model.Protocol.AppArgument()
                     {
                         Name = "key1.1",
                         Key = "--key1.1",
-                        Type = AppArgumentType.Normal,
+                        Type = AppArgumentType.Int,
                     });
                     argumentList.Add(new Model.Protocol.AppArgument()
                     {
@@ -61,7 +61,7 @@ namespace _1RM.View.Editor.Forms
                         Name = "key4",
                         Key = "--key4",
                         Type = AppArgumentType.Selection,
-                        Selections = new List<string>() { "ABC", "ZZW1", "CAWE" },
+                        Selections = new Dictionary<string, string>() { { "ABC", "模式1" }, { "ZZW1", "模式2" }, { "CAWE", "模式3" } },
                     });
                     argumentList.Add(new Model.Protocol.AppArgument()
                     {

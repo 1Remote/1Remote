@@ -15,6 +15,7 @@ namespace _1RM.Model.Protocol;
 public enum AppArgumentType
 {
     Normal,
+    Int,
     /// <summary>
     /// e.g. -f X:\makefile
     /// </summary>
@@ -90,9 +91,9 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         get
         {
             if (Type == AppArgumentType.Selection
-                && !_selections.Contains(_value))
+                && !_selections.Keys.Contains(_value))
             {
-                _value = _selections.FirstOrDefault() ?? "";
+                _value = _selections.Keys.FirstOrDefault() ?? "";
             }
             return _value.Trim();
         }
@@ -100,6 +101,17 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         {
             if (SetAndNotifyIfChanged(ref _value, value.Trim()))
                 RaisePropertyChanged(nameof(DemoArgumentString));
+
+            if (Type == AppArgumentType.Selection
+                && !_selections.Keys.Contains(_value))
+            {
+                _value = _selections.Keys.FirstOrDefault() ?? "";
+            }
+            else if (Type == AppArgumentType.Int
+                && !int.TryParse(_value, out _))
+            {
+                throw new ArgumentException("not a number");
+            }
         }
     }
 
@@ -116,37 +128,54 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
 
     [JsonIgnore] public string HintDescription => IsNullable ? "(optional)" + _description : _description;
 
-    private List<string> _selections = new List<string>();
-    public List<string> Selections
+
+
+    private Dictionary<string, string> _selections = new Dictionary<string, string>();
+    [JsonIgnore]
+    public Dictionary<string, string> Selections
     {
         get => _selections;
         set
         {
-            var auto = value.Distinct().Select(x => x.Trim()).Where(x => x != "").ToList();
+            var n = new Dictionary<string, string>();
+            var auto = value.Where(x => x.Key.Trim() != "").ToList();
             if (Type == AppArgumentType.Selection)
             {
                 if (auto.Any() == false)
                 {
-                    throw new ArgumentException("TXT: can not be null");
-                }
-                if (IsNullable)
-                {
-                    auto.Insert(0, "");
-                }
-                if (auto.Any() && !auto.Contains(Value))
-                {
-                    Value = auto.First();
+                    throw new ArgumentException("TXT: can not be empty");
                 }
             }
-            _selections = auto;
+            if (IsNullable)
+            {
+                n.Add("", "");
+            }
+            if (auto.Any())
+            {
+                foreach (var keyValuePair in auto)
+                {
+                    var v = keyValuePair.Value.Trim();
+                    if (string.IsNullOrEmpty(v))
+                    {
+                        v = keyValuePair.Key.Trim();
+                    }
+                    n.Add(keyValuePair.Key.Trim(), v);
+                }
+                if (n.All(x => x.Key != Value))
+                    Value = n.First().Value;
+            }
+            _selections = n;
             RaisePropertyChanged();
+            RaisePropertyChanged(nameof(SelectionKeys));
         }
     }
 
+    [JsonIgnore] public List<string> SelectionKeys => Selections.Keys.ToList();
+
     public object Clone()
     {
-        var copy =  (AppArgument)MemberwiseClone();
-        copy.Selections = new List<string>(this.Selections);
+        var copy = (AppArgument)MemberwiseClone();
+        copy.Selections = new System.Collections.Generic.Dictionary<string, string>(this.Selections);
         return copy;
     }
 
