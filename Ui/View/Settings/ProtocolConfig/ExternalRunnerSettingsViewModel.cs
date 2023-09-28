@@ -51,7 +51,7 @@ public class ExternalRunnerSettingsViewModel
                     // ignored
                 }
 
-
+                // TODO 命令列表和 private static ProtocolSettings InitProtocol<T, T2> 里的有冲突
                 var path = SelectFileHelper.OpenFile(filter: "exe|*.exe", checkFileExists: true, initialDirectory: initPath);
                 if (path == null) return;
                 ExternalRunner.ExePath = path;

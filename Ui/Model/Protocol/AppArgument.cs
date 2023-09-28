@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using _1RM.Utils;
@@ -75,6 +76,8 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
     }
 
     private string _key = "";
+    [DefaultValue("")]
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
     public string Key
     {
         get => _key.Trim();
@@ -83,6 +86,20 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
             if (SetAndNotifyIfChanged(ref _key, value.Trim()))
                 RaisePropertyChanged(nameof(DemoArgumentString));
         }
+    }
+
+
+
+    private bool _addBlankAfterKey = true;
+    /// <summary>
+    /// argument like "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%" need it to be false
+    /// </summary>
+    [DefaultValue(true)]
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+    public bool AddBlankAfterKey
+    {
+        get => _addBlankAfterKey;
+        set => SetAndNotifyIfChanged(ref _addBlankAfterKey, value);
     }
 
     private string _value = "";
@@ -115,6 +132,18 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         }
     }
 
+    private bool _addBlankAfterValue = true;
+    /// <summary>
+    /// argument like "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%" need it to be false
+    /// </summary>
+    [DefaultValue(true)]
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+    public bool AddBlankAfterValue
+    {
+        get => _addBlankAfterValue;
+        set => SetAndNotifyIfChanged(ref _addBlankAfterValue, value);
+    }
+
     private string _description = "";
     public string Description
     {
@@ -139,16 +168,16 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         {
             var n = new Dictionary<string, string>();
             var auto = value.Where(x => x.Key.Trim() != "").ToList();
+            if (IsNullable)
+            {
+                n.Add("", "");
+            }
             if (Type == AppArgumentType.Selection)
             {
                 if (auto.Any() == false)
                 {
-                    throw new ArgumentException("TXT: can not be empty");
+                    n.Add("", "null");
                 }
-            }
-            if (IsNullable)
-            {
-                n.Add("", "");
             }
             if (auto.Any())
             {
@@ -194,7 +223,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         }
 
         var value = Value;
-        if (Type == AppArgumentType.Secret)
+        if (Type == AppArgumentType.Secret && !string.IsNullOrEmpty(Value))
         {
             if (forDemo)
             {
@@ -202,14 +231,14 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
             }
             else
             {
-                UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
+                value = UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
             }
         }
         if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
             value = $"\"{value}\"";
         if (!string.IsNullOrEmpty(Key))
         {
-            value = $"{Key} {value}";
+            value = $"{Key}{(AddBlankAfterKey ? " " : "")}{value}{(AddBlankAfterValue ? " " : "")}";
         }
         return value;
     }
@@ -219,7 +248,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         string cmd = "";
         foreach (var argument in arguments)
         {
-            cmd += argument.GetArgumentString(isDemo) + " ";
+            cmd += argument.GetArgumentString(isDemo);
         }
         return cmd.Trim();
     }
