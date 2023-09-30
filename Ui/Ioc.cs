@@ -1,4 +1,6 @@
 ﻿using System;
+using _1RM.Service;
+using Shawn.Utils.Interface;
 using StyletIoC;
 
 namespace _1RM;
@@ -22,6 +24,11 @@ public static class IoC
     public static T Get<T>(string? key = null) where T : class
     {
         var obj = TryGet<T>(key);
+        // if T is ILanguageService
+        if (obj == null && typeof(T).IsAssignableFrom(typeof(ILanguageService)))
+        {
+            return (new MockLanguageService() as T)!;
+        }
 #if !DEBUG
         if (obj == null)
             throw new Exception("Ioc can not get an item.");

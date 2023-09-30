@@ -24,8 +24,8 @@ namespace _1RM.Utils
         public static bool Confirm(string content, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             return Confirm(content,
-                IoC.Get<ILanguageService>().Translate("OK"),
-                IoC.Get<ILanguageService>().Translate("Cancel"),
+                IoC.TryGet<ILanguageService>()?.Translate("OK") ?? "OK",
+                IoC.TryGet<ILanguageService>()?.Translate("Cancel") ?? "Cancel",
                 title, useNativeBox, ownerViewModel);
         }
 
@@ -35,7 +35,7 @@ namespace _1RM.Utils
         public static bool Confirm(string content, string yesButtonText, string noButtonText, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("Warning");
+                title = IoC.TryGet<ILanguageService>()?.Translate("Warning") ?? "Warning";
 
             var ownerViewAware = (ownerViewModel as IViewAware);
             var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
@@ -115,14 +115,14 @@ namespace _1RM.Utils
         public static void Info(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("Info");
+                title = IoC.TryGet<ILanguageService>()?.Translate("Info") ?? "Info";
             Alert(title, content, MessageBoxImage.Information, useNativeBox, ownerViewModel);
         }
 
         public static void Warning(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("Warning");
+                title = IoC.TryGet<ILanguageService>()?.Translate("Warning") ?? "Info";
             Alert(title, content, MessageBoxImage.Warning, useNativeBox, ownerViewModel);
         }
 
@@ -130,7 +130,7 @@ namespace _1RM.Utils
         public static void ErrorAlert(string content, string title = "", bool useNativeBox = false, IViewAware? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.Get<ILanguageService>().Translate("Error");
+                title = IoC.TryGet<ILanguageService>()?.Translate("Error") ?? "Info";
             Alert(title, content, MessageBoxImage.Error, useNativeBox, ownerViewModel);
         }
 
@@ -142,7 +142,8 @@ namespace _1RM.Utils
                 var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
                 if (useNativeBox
                     || ownerViewModel != null && ownerViewAware == null     // 设定了 owner 且 owner 不是 IViewAware
-                    || ownerViewModel == null && mainWindowViewModel?.View is Window { ShowInTaskbar: false }) // 未设定 owner 且 MainWindow is hidden
+                    || ownerViewModel == null && mainWindowViewModel?.View is Window { ShowInTaskbar: false } // 未设定 owner 且 MainWindow is hidden
+                    || ownerViewModel == null && mainWindowViewModel == null)
                 {
                     MessageBox.Show(content, title, MessageBoxButton.OK, icon);
                 }
@@ -167,9 +168,9 @@ namespace _1RM.Utils
                         buttons: MessageBoxButton.OK,
                         buttonLabels: new Dictionary<MessageBoxResult, string>()
                         {
-                            {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
-                            {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
-                            {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
+                            {MessageBoxResult.None, IoC.TryGet<ILanguageService>()?.Translate("OK") ?? "OK"},
+                            {MessageBoxResult.Yes, IoC.TryGet<ILanguageService>()?.Translate("OK")?? "OK"},
+                            {MessageBoxResult.OK, IoC.TryGet<ILanguageService>()?.Translate("OK")?? "OK"},
                         });
                     if (vm is Screen screen)
                     {
