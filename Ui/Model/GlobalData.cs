@@ -328,6 +328,8 @@ namespace _1RM.Model
             StopTick();
             try
             {
+                // TODO 批量删除时，只操作一次数据库，只更新一次UI，现在这个方法更新速度缓慢。
+                // TODO 找回右键菜单的删除按钮。
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;
