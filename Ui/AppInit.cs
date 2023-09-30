@@ -19,6 +19,7 @@ using _1RM.Service.Locality;
 using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
+using System.Collections.Generic;
 
 namespace _1RM
 {
@@ -30,7 +31,7 @@ namespace _1RM
 
     internal static class AppInitHelper
     {
-        private static void WritePermissionCheck(string path, bool isFile)
+        private static bool WritePermissionCheck(string path, bool isFile, bool alert, bool exitIfError)
         {
             Debug.Assert(LanguageServiceObj != null);
             var flag = isFile == false ? IoPermissionHelper.HasWritePermissionOnDir(path) : IoPermissionHelper.HasWritePermissionOnFile(path);
@@ -55,10 +56,49 @@ namespace _1RM
 
             if (!flag)
             {
-                MessageBoxHelper.ErrorAlert(LanguageServiceObj?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
-                Environment.Exit(1);
+                if (alert)
+                    MessageBoxHelper.ErrorAlert(LanguageServiceObj?.Translate("write permissions alert", path) ?? "write permissions error:" + path);
+                if (exitIfError)
+                    Environment.Exit(1);
+            }
+            return flag;
+        }
+
+        private static bool CheckAllPathsPermission(AppPathHelper appPathHelper, bool alert = false, bool exitIfError = false)
+        {
+            var dirPaths = new List<string>
+            {
+                appPathHelper.BaseDirPath,
+                appPathHelper.KittyDirPath,
+                appPathHelper.ProtocolRunnerDirPath,
+                appPathHelper.LocalityDirPath,
+                appPathHelper.LocalityIconDirPath,
+            };
+            var filePaths = new List<string>()
+            {
+                appPathHelper.LogFilePath,
+                appPathHelper.ProfileJsonPath,
+                appPathHelper.ProfileAdditionalDataSourceJsonPath,
+                appPathHelper.SqliteDbDefaultPath,
+                appPathHelper.LogFilePath,
+            };
+
+            foreach (var dirPath in dirPaths)
+            {
+                if (!WritePermissionCheck(dirPath, false, alert, exitIfError))
+                {
+                    return false;
+                }
             }
 
+            foreach (var filePath in filePaths)
+            {
+                if (!WritePermissionCheck(filePath, true, alert, exitIfError))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -100,7 +140,7 @@ namespace _1RM
                     bool appDataProfilePathExisted = File.Exists(appDataPaths.ProfileJsonPath);
                     bool forcePortable = File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
                     bool forceAppData = File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE);
-                    bool permissionForPortable = portablePaths.CheckAllPathsPermission();
+                    bool permissionForPortable = CheckAllPathsPermission(portablePaths, portableProfilePathExisted || forcePortable, forcePortable);
 #if FOR_MICROSOFT_STORE_ONLY
                     forceAppData = true;
                     forcePortable = false;
@@ -196,14 +236,7 @@ namespace _1RM
                 // 最终文件权限检查
                 {
                     var paths = AppPathHelper.Instance;
-                    WritePermissionCheck(paths.BaseDirPath, false);
-                    WritePermissionCheck(paths.ProtocolRunnerDirPath, false);
-                    WritePermissionCheck(paths.ProfileJsonPath, true);
-                    WritePermissionCheck(paths.LogFilePath, true);
-                    WritePermissionCheck(paths.SqliteDbDefaultPath, true);
-                    WritePermissionCheck(paths.KittyDirPath, false);
-                    WritePermissionCheck(paths.LogFilePath, true);
-                    WritePermissionCheck(paths.LocalityDirPath, false);
+                    CheckAllPathsPermission(paths, true, true);
                 }
 
                 // 文件夹创建

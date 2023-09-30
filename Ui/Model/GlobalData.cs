@@ -155,11 +155,18 @@ namespace _1RM.Model
 
                     return true;
                 }
+
                 return false;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Error(ex);
+                MsAppCenterHelper.Error(ex);
             }
             finally
             {
             }
+            return false;
         }
 
 
@@ -176,20 +183,21 @@ namespace _1RM.Model
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
-                needReload |= ret.NeedReload;
-                //var @new = new ProtocolBaseViewModel(protocolServer);
-                //if (needReload == false)
-                //{
-                //    VmItemList.Add(@new);
-                //    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
-                //    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-                //    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
-                //        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
-                //    {
-                //        // if is additional database and need to set up group by database name!
-                //        IoC.Get<ServerListPageViewModel>().ApplySort();
-                //    }
-                //}
+                var @new = new ProtocolBaseViewModel(protocolServer);
+                if (needReload == false)
+                {
+                    VmItemList.Add(@new);
+                    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
+                    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
+
+
+                    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
+                        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
+                    {
+                        // if is additional database and need to set up group by database name!
+                        IoC.Get<ServerListPageViewModel>().ApplySort();
+                    }
+                }
             }
 
             if (needReload)
@@ -264,7 +272,6 @@ namespace _1RM.Model
                     {
                         needReload |= source.NeedRead();
                         var tmp = source.Database_UpdateServer(groupedServer);
-                        needReload |= tmp.NeedReload;
                         if (tmp.IsSuccess)
                         {
                             isAnySuccess = true;
@@ -321,6 +328,8 @@ namespace _1RM.Model
             StopTick();
             try
             {
+                // TODO 批量删除时，只操作一次数据库，只更新一次UI，现在这个方法更新速度缓慢。
+                // TODO 找回右键菜单的删除按钮。
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;
