@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 
 namespace _1RM.View.Editor
@@ -25,9 +26,14 @@ namespace _1RM.View.Editor
                 var protocol = (ProtocolBaseWithAddressPort)_vm;
                 if (string.IsNullOrEmpty(protocol.Address?.Trim()))
                     return false;
-                if(protocol.GetPort() <= 0 || protocol.GetPort() >= 65536)
+                if (protocol.GetPort() <= 0 || protocol.GetPort() >= 65536)
                     return false;
             }
+
+
+            if (!_vm.Verify())
+                return false;
+
             //if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             //{
             //    var protocol = (ProtocolBaseWithAddressPortUserPwd)_vm;

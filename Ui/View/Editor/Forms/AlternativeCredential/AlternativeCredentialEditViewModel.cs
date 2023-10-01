@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -134,6 +135,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 var t = CheckPrivateKeyPath(value.Trim());
                 if (t.Item1 == false)
                 {
+                    // TODO 改为 IDataErrorInfo 实现
                     throw new ArgumentException(t.Item2);
                 }
             }
@@ -144,12 +146,12 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             name = name.Trim();
             if (string.IsNullOrWhiteSpace(name))
             {
-                return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+                return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
             }
 
             if (_existedNames?.Any(x => string.Equals(x, name, StringComparison.CurrentCultureIgnoreCase)) == true)
             {
-                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", name));
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
             }
 
             return new Tuple<bool, string>(true, "");
@@ -174,7 +176,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 && string.IsNullOrWhiteSpace(path) == false
                 && File.Exists(New.PrivateKeyPath) == false)
             {
-                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is not existed!", path));
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, path));
             }
             return new Tuple<bool, string>(true, "");
         }

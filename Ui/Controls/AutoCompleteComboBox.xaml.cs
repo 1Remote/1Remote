@@ -144,7 +144,7 @@ namespace _1RM.Controls
 
         public static readonly DependencyProperty SelectionsProperty = DependencyProperty.Register(
             nameof(Selections), typeof(IEnumerable<string>), typeof(AutoCompleteComboBox),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.None, SelectionsPropertyChangedCallback));
+            new PropertyMetadata(null, SelectionsPropertyChangedCallback));
 
         private static void SelectionsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

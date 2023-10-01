@@ -32,7 +32,10 @@
                     <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="5 0" 
                                                    ToolTip="{Binding HintDescription}"
                                                    Tag="{Binding HintDescription}"
-                                                   Text="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Selections="{Binding SelectionKeys, Mode=OneWay}"/>
+                                                   Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                                   Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                                   Selections="{Binding SelectionKeys, Mode=OneWay}"
+                    />
                     <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
@@ -52,7 +55,7 @@
                               ToolTip="{Binding HintDescription}"
                               Tag="{Binding HintDescription}"
                               Margin="5 0" 
-                              SelectedValue="{Binding Value}" 
+                              SelectedValue="{Binding Value, ValidatesOnExceptions=True}" 
                               SelectedValuePath="Key"
                               DisplayMemberPath="Value"
                               ItemsSource="{Binding Selections}"></ComboBox>
@@ -96,7 +99,9 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="30"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBox Height="28" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" 
+                        <TextBox Height="28" 
+                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                                  ToolTip="{Binding HintDescription}"
                                  Tag="{Binding HintDescription}"/>
                         <Button Height="28" Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" 
@@ -118,7 +123,9 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <controls:PasswordInput Width="{StaticResource WidthValue}" Margin="5 0" Height="28" Password="{Binding Value, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"
+                    <controls:PasswordInput Width="{StaticResource WidthValue}" Margin="5 0" Height="28" 
+                                            Password="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                            Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                                             ToolTip="{Binding HintDescription}"
                                             Tag="{Binding HintDescription}"/>
                     <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>

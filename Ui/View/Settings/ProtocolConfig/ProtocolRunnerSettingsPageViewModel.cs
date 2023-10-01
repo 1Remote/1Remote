@@ -47,7 +47,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                 {
                     SelectedRunner = Runners.First();
                 }
-                else if(Runners.Count > 0)
+                else if (Runners.Count > 0)
                 {
                     SelectedRunner = Runners.First(x => x.Name == selectedRunner);
                 }
@@ -95,9 +95,9 @@ namespace _1RM.View.Settings.ProtocolConfig
                     var name = InputBoxViewModel.GetValue(_languageService.Translate("New runner name"), new Func<string, string>((str) =>
                     {
                         if (string.IsNullOrWhiteSpace(str))
-                            return _languageService.Translate("Can not be empty!");
+                            return _languageService.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                         if (c.Runners.Any(x => x.Name == str))
-                            return _languageService.Translate("XXX is already existed!", str);
+                            return _languageService.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
                         return "";
                     }), ownerViewModel: IoC.Get<MainWindowViewModel>());
 

@@ -9,6 +9,7 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.View;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace _1RM.Model.Protocol
 {
@@ -198,6 +199,11 @@ namespace _1RM.Model.Protocol
                     }
                 });
             }
+        }
+
+        public override bool Verify()
+        {
+            return ArgumentList.All(argument => string.IsNullOrEmpty(argument[nameof(AppArgument.Value)]));
         }
     }
 }

@@ -16,7 +16,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Tag="e.g. C:/vnc/viewer.exe"
+                    <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
                              Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 

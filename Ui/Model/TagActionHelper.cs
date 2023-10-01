@@ -83,11 +83,11 @@ public static class TagActionHelper
         var newTagName = InputBoxViewModel.GetValue(IoC.Get<ILanguageService>().Translate("Tags"), new Func<string, string>((str) =>
         {
             if (string.IsNullOrWhiteSpace(str))
-                return IoC.Get<ILanguageService>().Translate("Can not be empty!");
+                return IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY);
             if (str == tagName)
                 return "";
             if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
-                return IoC.Get<ILanguageService>().Translate("XXX is already existed!", str);
+                return IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
             return "";
         }), defaultResponse: tagName!, ownerViewModel: IoC.Get<MainWindowViewModel>());
 

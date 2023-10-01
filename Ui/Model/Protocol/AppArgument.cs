@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using _1RM.Service;
 using _1RM.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -29,7 +30,7 @@ public enum AppArgumentType
     Selection,
 }
 
-public class AppArgument : NotifyPropertyChangedBase, ICloneable
+public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 {
     public AppArgument(bool? isEditable = true)
     {
@@ -117,17 +118,22 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         set
         {
             if (SetAndNotifyIfChanged(ref _value, value.Trim()))
+            {
                 RaisePropertyChanged(nameof(DemoArgumentString));
-
-            if (Type == AppArgumentType.Selection
-                && !_selections.Keys.Contains(_value))
-            {
-                _value = _selections.Keys.FirstOrDefault() ?? "";
-            }
-            else if (Type == AppArgumentType.Int
-                && !int.TryParse(_value, out _))
-            {
-                throw new ArgumentException("not a number");
+                if (Type == AppArgumentType.Selection)
+                {
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        if (IsNullable == false)
+                        {
+                            _value = _selections.Keys.FirstOrDefault() ?? "";
+                        }
+                    }
+                    else if (!_selections.Keys.Contains(_value))
+                    {
+                        _value = _selections.Keys.FirstOrDefault() ?? "";
+                    }
+                }
             }
         }
     }
@@ -160,7 +166,6 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
 
 
     private Dictionary<string, string> _selections = new Dictionary<string, string>();
-    [JsonIgnore]
     public Dictionary<string, string> Selections
     {
         get => _selections;
@@ -222,7 +227,8 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
             return "";
         }
 
-        var value = Value;
+        // REPLACE %xxx% with SystemEnvironment, 替换系统环境变量
+        var value = Environment.ExpandEnvironmentVariables(Value);
         if (Type == AppArgumentType.Secret && !string.IsNullOrEmpty(Value))
         {
             if (forDemo)
@@ -283,12 +289,12 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         name = name.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("Name")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+            return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
         }
 
         if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
         {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", name));
+            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
         }
 
         return new Tuple<bool, string>(true, "");
@@ -304,7 +310,29 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
 
         if (argumentList?.Any(x => string.Equals(x.Key, key, StringComparison.CurrentCultureIgnoreCase)) == true)
         {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate("XXX is already existed!", key));
+            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, key));
+        }
+
+        return new Tuple<bool, string>(true, "");
+    }
+
+    public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
+    {
+        if (!isNullable && string.IsNullOrWhiteSpace(value))
+        {
+            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+        }
+
+        if (type == AppArgumentType.File
+            && !File.Exists(value))
+        {
+            return new Tuple<bool, string>(false, "TXT: not existed");
+        }
+
+        if (type == AppArgumentType.Int
+            && !int.TryParse(value, out _))
+        {
+            return new Tuple<bool, string>(false, "TXT: not a number");
         }
 
         return new Tuple<bool, string>(true, "");
@@ -323,4 +351,29 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable
         }
         return true;
     }
+
+    #region IDataErrorInfo
+    [JsonIgnore] public string Error => "";
+
+    [JsonIgnore]
+    public string this[string columnName]
+    {
+        get
+        {
+            switch (columnName)
+            {
+                case nameof(Value):
+                    {
+                        var t = CheckValue(Value, IsNullable, Type);
+                        if (t.Item1 == false)
+                        {
+                            return string.IsNullOrEmpty(t.Item2) ? "error" : t.Item2;
+                        }
+                        break;
+                    }
+            }
+            return "";
+        }
+    }
+    #endregion
 }

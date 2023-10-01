@@ -410,5 +410,13 @@ namespace _1RM.Model.Protocol.Base
 
         [JsonIgnore]
         public DataSourceBase? DataSource { get; set; }
+
+        /// <summary>
+        /// check if every value is ok
+        /// </summary>
+        public virtual bool Verify()
+        {
+            return true;
+        }
     }
 }

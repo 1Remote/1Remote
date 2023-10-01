@@ -17,6 +17,7 @@ namespace _1RM.View.Editor.Forms
             InitializeComponent();
             if (_vm is LocalApp app)
             {
+#if DEBUG
                 if (app.ArgumentList.Count == 0)
                 {
                     var argumentList = new List<Model.Protocol.AppArgument>();
@@ -28,6 +29,7 @@ namespace _1RM.View.Editor.Forms
                             Key = "",
                             Type = AppArgumentType.Normal,
                             Value = app.Arguments,
+                            IsNullable = false
                         });
                     }
 
@@ -43,6 +45,7 @@ namespace _1RM.View.Editor.Forms
                         Name = "key1.1",
                         Key = "--key1.1",
                         Type = AppArgumentType.Int,
+                        IsNullable = false,
                     });
                     argumentList.Add(new Model.Protocol.AppArgument()
                     {
@@ -71,18 +74,19 @@ namespace _1RM.View.Editor.Forms
                     });
                     app.ArgumentList = new ObservableCollection<Model.Protocol.AppArgument>(argumentList);
                 }
+#endif
             }
         }
         public override bool CanSave()
         {
             if (_vm is LocalApp app)
             {
-                if (string.IsNullOrEmpty(app.ExePath) == false)
-                {
-                    return true;
-                }
+                if (!app.Verify())
+                    return false;
+                if (string.IsNullOrEmpty(app.ExePath))
+                    return false;
             }
-            return false;
+            return true;
         }
     }
 }

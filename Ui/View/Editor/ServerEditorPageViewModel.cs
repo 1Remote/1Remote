@@ -314,6 +314,9 @@ namespace _1RM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+                    if (!Server.Verify())
+                        return;
+
                     MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());
 
                     Task.Factory.StartNew(() =>

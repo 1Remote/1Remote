@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
@@ -73,11 +74,12 @@ namespace _1RM.View.Settings.DataSource
             {
                 if (NameWritable && SetAndNotifyIfChanged(ref _name, value))
                 {
+                    // TODO 改为 IDataErrorInfo 实现
                     New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
                     if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", _name));
+                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
                 }
             }
         }

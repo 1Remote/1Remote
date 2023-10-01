@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Documents;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Utils;
 using Newtonsoft.Json.Converters;
 using Shawn.Utils.Interface;
@@ -94,6 +95,7 @@ namespace _1RM.View.Editor.Forms.Argument
                     var t = Model.Protocol.AppArgument.CheckName(_existedArguments, value.Trim());
                     if (t.Item1 == false)
                     {
+                        // TODO 改为 IDataErrorInfo 实现
                         throw new ArgumentException(t.Item2);
                     }
                 }
@@ -146,7 +148,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 }
                 else
                 {
-                    return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate("Can not be empty!")}");
+                    return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
                 }
             }
 
@@ -190,7 +192,7 @@ namespace _1RM.View.Editor.Forms.Argument
 
 
                     {
-                        var dictionary = new Dictionary<string,string>();
+                        var dictionary = new Dictionary<string, string>();
                         var strReader = new StringReader(Selections);
                         while (true)
                         {
