@@ -70,17 +70,16 @@ public class ExternalRunnerSettingsViewModel
                         }
                         ExternalRunner.RunWithHosting = true;
                     }
-                    else if (name == "filezilla.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
+                    else if (name == "filezilla.exe".ToLower())
                     {
                         if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%";
                         }
-                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
+                        else if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "ftp://%USERNAME%:%PASSWORD%@%HOSTNAME%";
                         }
-                        ExternalRunner.Arguments = @"%HOSTNAME%::%PORT% -password=%PASSWORD% -scale=auto";
                         ExternalRunner.RunWithHosting = false;
                     }
                     else if (name == "VpxClient.exe".ToLower())

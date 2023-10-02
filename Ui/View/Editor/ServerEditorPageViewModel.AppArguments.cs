@@ -28,9 +28,9 @@ namespace _1RM.View.Editor
                 {
                     foreach (var argument in s.ArgumentList)
                     {
-                        if (ss.All(x => x.ArgumentList.Any(y => y.IsValueEqualTo(argument) == true)))
+                        if (ss.All(x => x.ArgumentList.Any(y => y.IsConfigEqualTo(argument) == true)))
                         {
-                            if (_sharedArgumentsInBuckEdit.All(x => x.IsValueEqualTo(argument) == false))
+                            if (_sharedArgumentsInBuckEdit.All(x => x.IsConfigEqualTo(argument) == false))
                             {
                                 _sharedArgumentsInBuckEdit.Add(argument);
                             }
@@ -60,9 +60,9 @@ namespace _1RM.View.Editor
                 {
                     foreach (var argument in protocolBeforeEdit.ArgumentList.ToArray())
                     {
-                        if (_sharedArgumentsInBuckEdit.Any(x => x.IsValueEqualTo(argument))) // 编辑之前共有，编辑后不再共有，删除，TODO 无法处理改名的情况
+                        if (_sharedArgumentsInBuckEdit.Any(x => x.IsConfigEqualTo(argument))) // 编辑之前共有，编辑后不再共有，删除，TODO 无法处理改名的情况
                         {
-                            if (newServer.ArgumentList.All(x => x.IsValueEqualTo(argument) == false))
+                            if (newServer.ArgumentList.All(x => x.IsConfigEqualTo(argument) == false))
                             {
                                 protocolBeforeEdit.ArgumentList.Remove(argument);
                             }
@@ -78,7 +78,7 @@ namespace _1RM.View.Editor
 
                     foreach (var credential in newServer.ArgumentList.Where(x => x.Name != Server.ServerEditorDifferentOptions))
                     {
-                        if (protocolBeforeEdit.ArgumentList.All(x => x.IsValueEqualTo(credential) == false))
+                        if (protocolBeforeEdit.ArgumentList.All(x => x.IsConfigEqualTo(credential) == false))
                         {
                             protocolBeforeEdit.ArgumentList.Add(credential);
                         }

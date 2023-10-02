@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -9,6 +10,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -16,7 +18,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.Argument
 {
-    public class ArgumentEditViewModel : NotifyPropertyChangedBaseScreen
+    public class ArgumentEditViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
     {
         private readonly LocalApp _localApp;
         private readonly Model.Protocol.AppArgument? _org = null;
@@ -42,7 +44,17 @@ namespace _1RM.View.Editor.Forms.Argument
                 New = (Model.Protocol.AppArgument)_org.Clone();
             }
 
-            Selections = string.Join('\n', New.Selections);
+            Type = New.Type;
+            if (Type == AppArgumentType.Selection)
+            {
+                var ss = New.Selections.Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
+                Selections = string.Join('\n', ss);
+            }
+            else
+            {
+                var ss = New.Selections.Select(x => x.Key).Where(x => !string.IsNullOrWhiteSpace(x));
+                Selections = string.Join('\n', ss);
+            }
         }
 
         public AppArgumentType Type
@@ -50,33 +62,28 @@ namespace _1RM.View.Editor.Forms.Argument
             get => New.Type;
             set
             {
-                if (New.Type != value)
+                New.Type = value;
+                RaisePropertyChanged();
+
+                SelectionsVisibility = Visibility.Collapsed;
+                switch (value)
                 {
-                    New.Type = value;
-                    RaisePropertyChanged();
-
-                    // TODO set visibility
-                    SelectionsVisibility = Visibility.Collapsed;
-                    switch (value)
-                    {
-                        case AppArgumentType.Normal:
-                            SelectionsVisibility = Visibility.Visible;
-                            break;
-                        case AppArgumentType.File:
-                            break;
-                        case AppArgumentType.Secret:
-                            break;
-                        case AppArgumentType.Flag:
-                            break;
-                        case AppArgumentType.Selection:
-                            SelectionsVisibility = Visibility.Visible;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(value), value, null);
-                    }
-
-                    RaisePropertyChanged(nameof(SelectionsVisibility));
+                    case AppArgumentType.Normal:
+                        SelectionsVisibility = Visibility.Visible;
+                        break;
+                    case AppArgumentType.Selection:
+                        SelectionsVisibility = Visibility.Visible;
+                        break;
+                    case AppArgumentType.Int:
+                    case AppArgumentType.File:
+                    case AppArgumentType.Secret:
+                    case AppArgumentType.Flag:
+                    default:
+                        break;
                 }
+
+                RaisePropertyChanged(nameof(SelectionsVisibility));
+                RaisePropertyChanged(nameof(SelectionsTag));
             }
         }
 
@@ -92,12 +99,6 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     New.Name = value.Trim();
                     RaisePropertyChanged();
-                    var t = Model.Protocol.AppArgument.CheckName(_existedArguments, value.Trim());
-                    if (t.Item1 == false)
-                    {
-                        // TODO 改为 IDataErrorInfo 实现
-                        throw new ArgumentException(t.Item2);
-                    }
                 }
             }
         }
@@ -111,11 +112,6 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     New.Key = value.Trim();
                     RaisePropertyChanged();
-                    var t = Model.Protocol.AppArgument.CheckKey(_existedArguments, value.Trim());
-                    if (t.Item1 == false)
-                    {
-                        throw new ArgumentException(t.Item2);
-                    }
                 }
             }
         }
@@ -125,35 +121,12 @@ namespace _1RM.View.Editor.Forms.Argument
         public string Selections
         {
             get => _selections;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _selections, value))
-                {
-                    var t = CheckSelections(value.Trim());
-                    if (t.Item1 == false)
-                    {
-                        throw new ArgumentException(t.Item2);
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _selections, value);
         }
 
-        private Tuple<bool, string> CheckSelections(string selections)
-        {
-            if (Type == AppArgumentType.Selection)
-            {
-                if (selections.Any(x => x != ' ' && x != '\r' && x != '\n' && x != '\t'))
-                {
-
-                }
-                else
-                {
-                    return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
-                }
-            }
-
-            return new Tuple<bool, string>(true, "");
-        }
+        public string SelectionsTag => Type == AppArgumentType.Selection
+            ? IoC.Get<ILanguageService>().Translate("TXT: 一行一个备选项(值|描述)，如：\r\n1|Yes\r\n0|No")
+            : IoC.Get<ILanguageService>().Translate("TXT: 一行一个备选项，如：\r\nApple\r\nBanana");
 
 
         private RelayCommand? _cmdSave;
@@ -165,15 +138,6 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     {
                         var t = Model.Protocol.AppArgument.CheckName(_existedArguments, Name);
-                        if (t.Item1 == false)
-                        {
-                            MessageBoxHelper.Warning(t.Item2);
-                            return;
-                        }
-                    }
-
-                    {
-                        var t = Model.Protocol.AppArgument.CheckKey(_existedArguments, Key);
                         if (t.Item1 == false)
                         {
                             MessageBoxHelper.Warning(t.Item2);
@@ -199,21 +163,29 @@ namespace _1RM.View.Editor.Forms.Argument
                             var line = strReader.ReadLine();
                             if (line != null)
                             {
+                                string key = "";
+                                string value = "";
                                 if (line.Split('|').Length == 2)
                                 {
                                     var items = line.Split('|');
-                                    if (!dictionary.ContainsKey(items[0].Trim()))
-                                        dictionary.Add(items[0].Trim(), items[1].Trim());
-                                    else
-                                        dictionary[items[0].Trim()] = items[1].Trim();
+                                    key = items[0];
+                                    value = items[1];
                                 }
                                 else
                                 {
-                                    if (!dictionary.ContainsKey(line.Trim()))
-                                        dictionary.Add(line.Trim(), line.Trim());
-                                    else
-                                        dictionary[line.Trim()] = line.Trim();
+                                    key = line;
+                                    value = line;
                                 }
+
+                                if (string.IsNullOrEmpty(key) && !New.IsNullable)
+                                {
+                                    continue;
+                                }
+
+                                if (!dictionary.ContainsKey(key))
+                                    dictionary.Add(key, value);
+                                else
+                                    dictionary[key] = value;
                             }
                             else
                             {
@@ -241,7 +213,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         _localApp.ArgumentList.Add(New);
                     }
                     RequestClose(true);
-                }, o => Model.Protocol.AppArgument.CheckName(_existedArguments, Name).Item1 && Model.Protocol.AppArgument.CheckKey(_existedArguments, Key).Item1 && CheckSelections(Selections).Item1);
+                }, o => Model.Protocol.AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1);
             }
         }
 
@@ -258,5 +230,63 @@ namespace _1RM.View.Editor.Forms.Argument
                 });
             }
         }
+
+
+
+        #region IDataErrorInfo
+
+        private Tuple<bool, string> CheckSelections(string selections)
+        {
+            if (Type == AppArgumentType.Selection)
+            {
+                if (selections.Any(x => x != ' ' && x != '\r' && x != '\n' && x != '\t'))
+                {
+
+                }
+                else
+                {
+                    return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, "");
+        }
+
+        [JsonIgnore] public string Error => "";
+
+        [JsonIgnore]
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        {
+                            var t = Model.Protocol.AppArgument.CheckName(_existedArguments, Name);
+                            if (t.Item1 == false)
+                            {
+                                return t.Item2;
+                            }
+                            break;
+                        }
+                    case nameof(Selections):
+                        {
+                            var t = CheckSelections(Selections);
+                            if (t.Item1 == false)
+                            {
+                                return t.Item2;
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            return New[columnName];
+                        }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

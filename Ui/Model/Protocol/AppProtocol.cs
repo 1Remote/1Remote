@@ -10,9 +10,11 @@ using Shawn.Utils.Wpf.FileSystem;
 using _1RM.View;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Shapes;
 
 namespace _1RM.Model.Protocol
 {
+    // TODO 改为 ProtocolBaseWithAddressPortUserPwd 并且用 %PASSWORD% 替代默认密码
     public class LocalApp : ProtocolBase
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
@@ -36,7 +38,32 @@ namespace _1RM.Model.Protocol
         public string ExePath
         {
             get => _exePath;
-            set => SetAndNotifyIfChanged(ref _exePath, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _exePath, value))
+                {
+                    var t = AppArgumentHelper.GetPresetArgumentList(value);
+                    if (t != null)
+                    {
+                        bool same = ArgumentList.Count == t.Item2.Count;
+                        if (same)
+                            for (int i = 0; i < ArgumentList.Count; i++)
+                            {
+                                if (!ArgumentList[i].IsConfigEqualTo(t.Item2[i]))
+                                {
+                                    same = false;
+                                    break;
+                                }
+                            }
+                        if (!same && (ArgumentList.All(x => x.IsDefaultValue())
+                                      || MessageBoxHelper.Confirm("TXT: 用适配 path 的参数覆盖当前参数列表？")))
+                        {
+                            RunWithHosting = t.Item1;
+                            ArgumentList = new ObservableCollection<AppArgument>(t.Item2);
+                        }
+                    }
+                }
+            }
         }
 
         private string _appProtocolDisplayName = "";
@@ -136,11 +163,6 @@ namespace _1RM.Model.Protocol
                     var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
                     ExePath = path;
-
-                    //if (ArgumentList.Count == 0)
-                    {
-                        ArgumentList = new ObservableCollection<AppArgument>(AppArgumentHelper.GetArgumentList(path));
-                    }
                 });
             }
         }

@@ -52,11 +52,7 @@
 
                 <StackPanel>
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition MinHeight="20"></RowDefinition>
-                        </Grid.RowDefinitions>
+                    <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
@@ -67,11 +63,7 @@
                         <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
                     </Grid>
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition MinHeight="20"></RowDefinition>
-                        </Grid.RowDefinitions>
+                    <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
@@ -79,34 +71,36 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
-                        <Grid Grid.Row="0" Grid.Column="1">
-                            <TextBox Name="TbName" Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"/>
-                        </Grid>
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                   Style="{StaticResource ErrorTip}"
-                                   Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}"/>
+                        <TextBox Grid.Column="1" Name="TbName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                        />
                     </Grid>
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition MinHeight="20"></RowDefinition>
-                        </Grid.RowDefinitions>
+                    <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: prefix"></TextBlock>
-                        <Grid Grid.Row="0" Grid.Column="1">
-                            <TextBox Name="TbKey" Text="{Binding Key, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
-                                     Tag="TXT: 可选"/>
-                        </Grid>
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                   Style="{StaticResource ErrorTip}"
-                                   Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbKey}"/>
+                        <TextBox Name="TbKey"  Grid.Column="1"
+                                 Text="{Binding New.Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                 Tag="TXT: 可选"/>
                     </Grid>
+
+                    <!--<Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: Default value"></TextBlock>
+                        <TextBox  Grid.Column="1"
+                                 Text="{Binding New.DefaultValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                 Tag="TXT: 可选"/>
+                    </Grid>-->
 
                     <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
@@ -139,11 +133,7 @@
                         </Grid>
                     </Grid>
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition MinHeight="20"></RowDefinition>
-                        </Grid.RowDefinitions>
+                    <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
@@ -151,30 +141,28 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT:Description"></TextBlock>
-                        <Grid Grid.Row="0" Grid.Column="1">
-                            <TextBox Text="{Binding New.Description, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"/>
-                        </Grid>
+                        <TextBox Grid.Column="1" Text="{Binding New.Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                        />
                     </Grid>
 
 
-                    <Grid Visibility="{Binding SelectionsVisibility}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition MinHeight="20"></RowDefinition>
-                        </Grid.RowDefinitions>
+                    <Grid Visibility="{Binding SelectionsVisibility}" Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="TXT:Selections"></TextBlock>
-                        <TextBox Grid.Column="1" Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                                  Height="80"
                                  AcceptsReturn="True"
                                  VerticalContentAlignment="Top"
                                  HorizontalScrollBarVisibility="Auto"
                                  InputMethod.IsInputMethodEnabled="False" InputScope="Number"
-                                 Tag="TXT: 一行一个备选项，如：&#x0a;Yes&#x0a;No"></TextBox>
+                                 Tag="{Binding SelectionsTag}"></TextBox>
                     </Grid>
                 </StackPanel>
 

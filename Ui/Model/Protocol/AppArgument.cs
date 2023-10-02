@@ -37,6 +37,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         IsEditable = isEditable;
     }
 
+
     /// <summary>
     /// todo 批量编辑时，如果参数列表不同，禁用
     /// </summary>
@@ -113,11 +114,11 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             {
                 _value = _selections.Keys.FirstOrDefault() ?? "";
             }
-            return _value.Trim();
+            return _value;
         }
         set
         {
-            if (SetAndNotifyIfChanged(ref _value, value.Trim()))
+            if (SetAndNotifyIfChanged(ref _value, value))
             {
                 RaisePropertyChanged(nameof(DemoArgumentString));
                 if (Type == AppArgumentType.Selection)
@@ -138,6 +139,13 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         }
     }
 
+    //private string _defaultValue = "";
+    //public string DefaultValue
+    //{
+    //    get => _defaultValue;
+    //    set => SetAndNotifyIfChanged(ref _defaultValue, value);
+    //}
+
     private bool _addBlankAfterValue = true;
     /// <summary>
     /// argument like "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%" need it to be false
@@ -153,13 +161,14 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     private string _description = "";
     public string Description
     {
-        get => _description.Trim();
+        get => _description;
         set
         {
-            SetAndNotifyIfChanged(ref _description, value.Trim());
+            SetAndNotifyIfChanged(ref _description, value);
             RaisePropertyChanged(nameof(HintDescription));
         }
     }
+
 
     [JsonIgnore] public string HintDescription => IsNullable ? "(optional)" + _description : _description;
 
@@ -172,7 +181,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         set
         {
             var n = new Dictionary<string, string>();
-            var auto = value.Where(x => x.Key.Trim() != "").ToList();
+            var auto = value.Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToList();
             if (IsNullable)
             {
                 n.Add("", "");
@@ -300,50 +309,15 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         return new Tuple<bool, string>(true, "");
     }
 
-    public static Tuple<bool, string> CheckKey(List<AppArgument> argumentList, string key)
-    {
-        key = key.Trim();
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            return new Tuple<bool, string>(true, "");
-        }
 
-        if (argumentList?.Any(x => string.Equals(x.Key, key, StringComparison.CurrentCultureIgnoreCase)) == true)
-        {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, key));
-        }
-
-        return new Tuple<bool, string>(true, "");
-    }
-
-    public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
-    {
-        if (!isNullable && string.IsNullOrWhiteSpace(value))
-        {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
-        }
-
-        if (type == AppArgumentType.File
-            && !File.Exists(value))
-        {
-            return new Tuple<bool, string>(false, "TXT: not existed");
-        }
-
-        if (type == AppArgumentType.Int
-            && !int.TryParse(value, out _))
-        {
-            return new Tuple<bool, string>(false, "TXT: not a number");
-        }
-
-        return new Tuple<bool, string>(true, "");
-    }
-
-    public bool IsValueEqualTo(in AppArgument newValue)
+    public bool IsConfigEqualTo(in AppArgument newValue)
     {
         if (this.Type != newValue.Type) return false;
         if (this.Name != newValue.Name) return false;
         if (this.Key != newValue.Key) return false;
-        if (this.Value != newValue.Value) return false;
+        if (this.IsNullable != newValue.IsNullable) return false;
+        if (this.AddBlankAfterKey != newValue.AddBlankAfterKey) return false;
+        if (this.AddBlankAfterValue != newValue.AddBlankAfterValue) return false;
         if (this.Selections.Count != Selections.Count) return false;
         foreach (var selection in Selections)
         {
@@ -352,7 +326,42 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         return true;
     }
 
+    public bool IsDefaultValue()
+    {
+        switch (Type)
+        {
+            case AppArgumentType.Selection:
+                return Value == Selections.First().Key;
+                break;
+            default:
+                return string.IsNullOrWhiteSpace(Value);
+        }
+    }
+
     #region IDataErrorInfo
+
+    public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (!isNullable)
+                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+            else
+                return new Tuple<bool, string>(true, "");
+        }
+        else
+        {
+            switch (type)
+            {
+                case AppArgumentType.File when !File.Exists(value):
+                    return new Tuple<bool, string>(false, "TXT: not existed");
+                case AppArgumentType.Int when !int.TryParse(value, out _):
+                    return new Tuple<bool, string>(false, "TXT: not a number");
+            }
+        }
+        return new Tuple<bool, string>(true, "");
+    }
+
     [JsonIgnore] public string Error => "";
 
     [JsonIgnore]
@@ -364,6 +373,10 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             {
                 case nameof(Value):
                     {
+                        if (Value.StartsWith("%") && Value.Trim().EndsWith("%"))
+                        {
+                            return "";
+                        }
                         var t = CheckValue(Value, IsNullable, Type);
                         if (t.Item1 == false)
                         {
@@ -371,6 +384,15 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
                         }
                         break;
                     }
+                    //case nameof(DefaultValue):
+                    //    {
+                    //        var t = CheckValue(DefaultValue, true, Type);
+                    //        if (t.Item1 == false)
+                    //        {
+                    //            return string.IsNullOrEmpty(t.Item2) ? "error" : t.Item2;
+                    //        }
+                    //        break;
+                    //    }
             }
             return "";
         }

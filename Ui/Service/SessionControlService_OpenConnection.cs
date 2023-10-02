@@ -86,9 +86,10 @@ namespace _1RM.Service
             // write a .rdp file for mstsc.exet.Replace(c.ToString(), ""));
             var text = remoteApp.ToRdpConfig().ToString();
             // write a .rdp file for mstsc.exe
-            if (RetryHelper.Try(() => {
-                    File.WriteAllText(rdpFile, text);
-                }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
+            if (RetryHelper.Try(() =>
+            {
+                File.WriteAllText(rdpFile, text);
+            }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
                 var p = new Process
                 {
