@@ -26,7 +26,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 if (value.ToString() == "1")
                     return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
             }
             return false;

@@ -25,22 +25,6 @@
                         Command="{Binding CmdSelectExePath}"></Button>
             </StackPanel>
         </Grid>
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text=""></TextBox>
-                </Grid>
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                        Margin="5 0 0 0"
-                        Content="{DynamicResource 'Preview'}" 
-                        Command="{Binding CmdPreview}"></Button>
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                        Margin="5 0 0 0"
-                        Content="{DynamicResource 'Test'}" 
-                        Command="{Binding CmdTest}"></Button>
-            </StackPanel>
-        </Grid>
 
         <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in 1 tab view?'}">
             <StackPanel Orientation="Horizontal">
@@ -50,8 +34,8 @@
                 </CheckBox>
             </StackPanel>
         </Grid>
-        <TextBlock Text="{Binding DemoArgumentsString}" Opacity="0.5"></TextBlock>
 
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
         <argument:ArgumentListControl></argument:ArgumentListControl>
 
     </StackPanel>

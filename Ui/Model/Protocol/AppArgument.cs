@@ -50,13 +50,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     public AppArgumentType Type
     {
         get => _type;
-        set
-        {
-            if (SetAndNotifyIfChanged(ref _type, value))
-            {
-                // TODO reset value when type is changed
-            }
-        }
+        set => SetAndNotifyIfChanged(ref _type, value);
     }
 
     private bool _isNullable = true;
@@ -231,7 +225,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             return Value == "1" ? Key : "";
         }
 
-        if (string.IsNullOrEmpty(Value) && !IsNullable)
+        if (string.IsNullOrEmpty(Value))
         {
             return "";
         }
@@ -293,22 +287,6 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     }
 
 
-    public static Tuple<bool, string> CheckName(List<AppArgument> argumentList, string name)
-    {
-        name = name.Trim();
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
-        }
-
-        if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
-        {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
-        }
-
-        return new Tuple<bool, string>(true, "");
-    }
-
 
     public bool IsConfigEqualTo(in AppArgument newValue)
     {
@@ -340,9 +318,28 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     #region IDataErrorInfo
 
+    public static Tuple<bool, string> CheckName(List<AppArgument> argumentList, string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
+        }
+
+        if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
+        {
+            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
+        }
+
+        return new Tuple<bool, string>(true, "");
+    }
+
     public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (value.StartsWith("%") && value.EndsWith("%"))
+        {
+            return new Tuple<bool, string>(true, "");
+        }
+        if (string.IsNullOrEmpty(value))
         {
             if (!isNullable)
                 return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
@@ -373,10 +370,6 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             {
                 case nameof(Value):
                     {
-                        if (Value.StartsWith("%") && Value.Trim().EndsWith("%"))
-                        {
-                            return "";
-                        }
                         var t = CheckValue(Value, IsNullable, Type);
                         if (t.Item1 == false)
                         {

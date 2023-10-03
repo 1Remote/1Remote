@@ -9,6 +9,8 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.View;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Shapes;
 
@@ -19,7 +21,31 @@ namespace _1RM.Model.Protocol
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
         {
+            //ArgumentList.CollectionChanged += (_, arg) =>
+            //{
+            //    if (arg.NewItems != null)
+            //        foreach (var argNewItem in arg.NewItems)
+            //        {
+            //            if (argNewItem is AppArgument aa)
+            //            {
+            //                aa.PropertyChanged -= AppArgumentOnPropertyChanged;
+            //                aa.PropertyChanged += AppArgumentOnPropertyChanged;
+            //            }
+            //        }
+            //    RaisePropertyChanged(nameof(DemoArgumentsString));
+            //};
         }
+
+        //private void AppArgumentOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName is nameof(AppArgument.Value) 
+        //        or nameof(AppArgument.Key) 
+        //        or nameof(AppArgument.AddBlankAfterKey) 
+        //        or nameof(AppArgument.AddBlankAfterValue))
+        //    {
+        //        RaisePropertyChanged(nameof(DemoArgumentsString));
+        //    }
+        //}
 
         public override bool IsOnlyOneInstance()
         {
@@ -38,32 +64,7 @@ namespace _1RM.Model.Protocol
         public string ExePath
         {
             get => _exePath;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _exePath, value))
-                {
-                    var t = AppArgumentHelper.GetPresetArgumentList(value);
-                    if (t != null)
-                    {
-                        bool same = ArgumentList.Count == t.Item2.Count;
-                        if (same)
-                            for (int i = 0; i < ArgumentList.Count; i++)
-                            {
-                                if (!ArgumentList[i].IsConfigEqualTo(t.Item2[i]))
-                                {
-                                    same = false;
-                                    break;
-                                }
-                            }
-                        if (!same && (ArgumentList.All(x => x.IsDefaultValue())
-                                      || MessageBoxHelper.Confirm("TXT: 用适配 path 的参数覆盖当前参数列表？")))
-                        {
-                            RunWithHosting = t.Item1;
-                            ArgumentList = new ObservableCollection<AppArgument>(t.Item2);
-                        }
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _exePath, value);
         }
 
         private string _appProtocolDisplayName = "";
@@ -103,7 +104,10 @@ namespace _1RM.Model.Protocol
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
+
+
         public string DemoArgumentsString => GetDemoArguments();
+
 
         public override ProtocolBase? CreateFromJsonString(string jsonString)
         {

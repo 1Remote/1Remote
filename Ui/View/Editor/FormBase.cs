@@ -34,12 +34,6 @@ namespace _1RM.View.Editor
             if (!_vm.Verify())
                 return false;
 
-            //if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-            //{
-            //    var protocol = (ProtocolBaseWithAddressPortUserPwd)_vm;
-            //    if (string.IsNullOrEmpty(protocol.UserName?.Trim()))
-            //        return false;
-            //}
             return true;
         }
     }
