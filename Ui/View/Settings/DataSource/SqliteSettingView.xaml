@@ -23,7 +23,7 @@
             <Setter Property="TextWrapping" Value="Wrap"></Setter>
             <Setter Property="Margin" Value="20 5 10 15"></Setter>
         </Style>
-        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxAccentStyle}">
+        <Style x:Key="TbInput" TargetType="TextBox" BasedOn="{StaticResource TextBoxAccentStyle}">
             <Setter Property="Margin" Value="0 5 0 15"></Setter>
         </Style>
         <Style TargetType="PasswordBox" BasedOn="{StaticResource PasswordBoxAccentStyle}">
@@ -70,15 +70,20 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
-                        <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
-                             IsEnabled="{Binding NameWritable}"
-                             Text="{Binding Name,  
-                                    ValidatesOnExceptions=True, 
-                                    UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 Name="TbName" 
+                                 Style="{DynamicResource TbInput}"
+                                 IsEnabled="{Binding NameWritable}"
+                                 Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
+                                 />
                         <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding Path, Mode=OneWay}"></TextBox>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                 Style="{DynamicResource TbInput}"
+                                 Text="{Binding Path, Mode=OneWay}" 
+                                 FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" 
+                                 Tag="{Binding Path, Mode=OneWay}"/>
                         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
                             <Button Margin="5 5 0 15" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>
                         </StackPanel>
