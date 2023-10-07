@@ -9,9 +9,8 @@ namespace _1RM.Service
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
         {
             // encrypt password
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+            if (server is ProtocolBaseWithAddressPortUserPwd s)
             {
-                var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = UnSafeStringEncipher.EncryptOnce(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
@@ -30,16 +29,24 @@ namespace _1RM.Service
                         rdp.GatewayPassword = UnSafeStringEncipher.EncryptOnce(rdp.GatewayPassword);
                         break;
                     }
+
+                case LocalApp app:
+                    foreach (var arg in app.ArgumentList)
+                    {
+                        if (arg.Type == AppArgumentType.Secret)
+                        {
+                            arg.Value = UnSafeStringEncipher.EncryptOnce(arg.Value);
+                        }
+                    }
+                    break;
             }
         }
 
         public static void DecryptToConnectLevel(this ProtocolBase server)
         {
-            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
+            if (server is ProtocolBaseWithAddressPortUserPwd s)
             {
-                var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(s.Password);
-
                 foreach (var credential in s.AlternateCredentials)
                 {
                     credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
@@ -53,6 +60,16 @@ namespace _1RM.Service
 
                 case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                     rdp.GatewayPassword = UnSafeStringEncipher.DecryptOrReturnOriginalString(rdp.GatewayPassword);
+                    break;
+
+                case LocalApp app:
+                    foreach (var arg in app.ArgumentList)
+                    {
+                        if (arg.Type == AppArgumentType.Secret)
+                        {
+                            arg.Value = UnSafeStringEncipher.DecryptOrReturnOriginalString(arg.Value);
+                        }
+                    }
                     break;
             }
         }

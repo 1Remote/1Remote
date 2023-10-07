@@ -18,6 +18,7 @@ public enum AppArgumentType
 {
     Normal,
     Int,
+    Float,
     /// <summary>
     /// e.g. -f X:\makefile
     /// </summary>
@@ -234,14 +235,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         var value = Environment.ExpandEnvironmentVariables(Value);
         if (Type == AppArgumentType.Secret && !string.IsNullOrEmpty(Value))
         {
-            if (forDemo)
-            {
-                value = "******";
-            }
-            else
-            {
-                value = UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
-            }
+            value = forDemo ? "******" : UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
         }
         if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
             value = $"\"{value}\"";
@@ -297,9 +291,21 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         if (this.AddBlankAfterKey != newValue.AddBlankAfterKey) return false;
         if (this.AddBlankAfterValue != newValue.AddBlankAfterValue) return false;
         if (this.Selections.Count != Selections.Count) return false;
-        foreach (var selection in Selections)
+        if (Type == AppArgumentType.Selection)
         {
-            if (!newValue.Selections.Contains(selection)) return false;
+            foreach (var selection in Selections)
+            {
+                if (!newValue.Selections.Contains(selection)) return false;
+            }
+        }
+        else
+        {
+            foreach (var selection in Selections)
+            {
+                if (IsNullable == true && selection.Key == "")
+                    continue;
+                if (!newValue.Selections.Contains(selection)) return false;
+            }
         }
         return true;
     }
@@ -309,8 +315,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         switch (Type)
         {
             case AppArgumentType.Selection:
-                return Value == Selections.First().Key;
-                break;
+                return Value == Selections.FirstOrDefault().Key;
             default:
                 return string.IsNullOrWhiteSpace(Value);
         }
@@ -352,7 +357,9 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             {
                 case AppArgumentType.File when !File.Exists(value):
                     return new Tuple<bool, string>(false, "TXT: not existed");
-                case AppArgumentType.Int when !int.TryParse(value, out _):
+                case AppArgumentType.Float when !double.TryParse(value, out _):
+                    return new Tuple<bool, string>(false, "TXT: not a number");
+                case AppArgumentType.Int when !long.TryParse(value, out _):
                     return new Tuple<bool, string>(false, "TXT: not a number");
             }
         }

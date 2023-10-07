@@ -273,7 +273,7 @@ namespace _1RM.Model.Protocol.Base
         /// <summary>
         /// cation: it is a shallow
         /// </summary>
-        public ProtocolBase Clone()
+        public virtual ProtocolBase Clone()
         {
             //{
             //    var json = ToJsonString();

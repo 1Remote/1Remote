@@ -161,11 +161,35 @@
                       ItemsSource="{Binding ArgumentList}" 
                       ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
 
-
+        <StackPanel Orientation="Horizontal">
+            <TextBlock FontSize="10" Text="{Binding ExePath}" Margin="0 0 5 0"></TextBlock>
+            <ItemsControl HorizontalAlignment="Stretch" 
+                          HorizontalContentAlignment="Stretch"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ItemsSource="{Binding ArgumentList}" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type ContentPresenter}" d:DataContext="{d:DesignInstance protocol:AppArgument}">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate DataType="protocol:AppArgument">
+                                    <TextBlock FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </StackPanel>
 
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding Path=DataContext.CmdToggleEditMode, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
-                    Style="{StaticResource ButtonBarTransparentStyle}"
+                    Style="{StaticResource ButtonPrimaryStyle}"
+                    ToolTip="{DynamicResource 'Edit'}" 
                     Margin="5 0 5 0">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryEdit}"
@@ -177,26 +201,41 @@
 
 
             <Button Command="{Binding Path=DataContext.CmdEditArgument, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
-                    Style="{StaticResource ButtonBarTransparentStyle}"
+                    Style="{StaticResource ButtonPrimaryStyle}"
+                    ToolTip="{DynamicResource 'Add'}" 
                     Margin="5 0 5 0">
                 <!--ADD BUTTON-->
                 <Grid Height="15" Width="15">
-                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                    <Path Data="{StaticResource GeometryCross}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                           StrokeThickness="2" Stretch="Uniform" />
                 </Grid>
             </Button>
 
+            <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                    Margin="5 0 0 0"
+                    ToolTip="{DynamicResource 'Preview'}" 
+                    Command="{Binding CmdPreview}">
+                <Grid Height="15" Width="15">
+                    <Path Data="{StaticResource GeometryMagnifier}"
+                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          StrokeThickness="2" Stretch="Uniform" />
+                </Grid>
+            </Button>
 
             <Button Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0"
-                    Content="{DynamicResource 'Preview'}" 
-                    Command="{Binding CmdPreview}"></Button>
-            <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                    Margin="5 0 0 0"
-                    Content="{DynamicResource 'Test'}" 
-                    Command="{Binding CmdTest}"></Button>
+                    ToolTip="{DynamicResource 'Test'}" 
+                    Command="{Binding CmdTest}">
+                <Grid Height="15" Width="15">
+                    <Path Data="{StaticResource GeometryPlay}"
+                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          StrokeThickness="2" Stretch="Uniform" />
+                </Grid>
+            </Button>
         </StackPanel>
     </StackPanel>
 </UserControl>

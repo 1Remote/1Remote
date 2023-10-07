@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Shapes;
+using System.Collections.Generic;
 
 namespace _1RM.Model.Protocol
 {
@@ -21,31 +22,7 @@ namespace _1RM.Model.Protocol
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
         {
-            //ArgumentList.CollectionChanged += (_, arg) =>
-            //{
-            //    if (arg.NewItems != null)
-            //        foreach (var argNewItem in arg.NewItems)
-            //        {
-            //            if (argNewItem is AppArgument aa)
-            //            {
-            //                aa.PropertyChanged -= AppArgumentOnPropertyChanged;
-            //                aa.PropertyChanged += AppArgumentOnPropertyChanged;
-            //            }
-            //        }
-            //    RaisePropertyChanged(nameof(DemoArgumentsString));
-            //};
         }
-
-        //private void AppArgumentOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        //{
-        //    if (e.PropertyName is nameof(AppArgument.Value) 
-        //        or nameof(AppArgument.Key) 
-        //        or nameof(AppArgument.AddBlankAfterKey) 
-        //        or nameof(AppArgument.AddBlankAfterValue))
-        //    {
-        //        RaisePropertyChanged(nameof(DemoArgumentsString));
-        //    }
-        //}
 
         public override bool IsOnlyOneInstance()
         {
@@ -104,9 +81,6 @@ namespace _1RM.Model.Protocol
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
-
-
-        public string DemoArgumentsString => GetDemoArguments();
 
 
         public override ProtocolBase? CreateFromJsonString(string jsonString)
@@ -230,6 +204,13 @@ namespace _1RM.Model.Protocol
         public override bool Verify()
         {
             return ArgumentList.All(argument => string.IsNullOrEmpty(argument[nameof(AppArgument.Value)]));
+        }
+
+        public override ProtocolBase Clone()
+        {
+            var clone = base.Clone() as LocalApp;
+            clone!.ArgumentList = new ObservableCollection<AppArgument>(ArgumentList.Select(x => x.Clone() as AppArgument)!);
+            return clone;
         }
     }
 }

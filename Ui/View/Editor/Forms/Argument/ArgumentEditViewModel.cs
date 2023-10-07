@@ -21,15 +21,15 @@ namespace _1RM.View.Editor.Forms.Argument
     public class ArgumentEditViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
     {
         private readonly LocalApp _localApp;
-        private readonly Model.Protocol.AppArgument? _org = null;
-        private readonly List<Model.Protocol.AppArgument> _existedArguments;
-        public Model.Protocol.AppArgument New { get; } = new Model.Protocol.AppArgument();
-        public List<Model.Protocol.AppArgumentType> ArgumentTypes { get; } = new List<AppArgumentType>();
-        public ArgumentEditViewModel(LocalApp localApp, List<Model.Protocol.AppArgument> existedArguments, Model.Protocol.AppArgument? org = null)
+        private readonly AppArgument? _org = null;
+        private readonly List<AppArgument> _existedArguments;
+        public AppArgument New { get; } = new AppArgument();
+        public List<AppArgumentType> ArgumentTypes { get; } = new List<AppArgumentType>();
+        public ArgumentEditViewModel(LocalApp localApp, List<AppArgument> existedArguments, AppArgument? org = null)
         {
             _localApp = localApp;
             _org = org;
-            _existedArguments = new List<Model.Protocol.AppArgument>(existedArguments);
+            _existedArguments = new List<AppArgument>(existedArguments);
             foreach (AppArgumentType value in Enum.GetValues(typeof(AppArgumentType)))
             {
                 ArgumentTypes.Add(value);
@@ -41,7 +41,7 @@ namespace _1RM.View.Editor.Forms.Argument
             // Edit mode
             if (_org != null)
             {
-                New = (Model.Protocol.AppArgument)_org.Clone();
+                New = (AppArgument)_org.Clone();
             }
 
             Type = New.Type;
@@ -137,7 +137,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 return _cmdSave ??= new RelayCommand((_) =>
                 {
                     {
-                        var t = Model.Protocol.AppArgument.CheckName(_existedArguments, Name);
+                        var t = AppArgument.CheckName(_existedArguments, Name);
                         if (t.Item1 == false)
                         {
                             MessageBoxHelper.Warning(t.Item2);
@@ -213,7 +213,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         _localApp.ArgumentList.Add(New);
                     }
                     RequestClose(true);
-                }, o => Model.Protocol.AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1);
+                }, o => AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1);
             }
         }
 
@@ -263,7 +263,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 {
                     case nameof(Name):
                         {
-                            var t = Model.Protocol.AppArgument.CheckName(_existedArguments, Name);
+                            var t = AppArgument.CheckName(_existedArguments, Name);
                             if (t.Item1 == false)
                             {
                                 return t.Item2;
