@@ -10,7 +10,7 @@ namespace _1RM.Model.Protocol.Base
 
         #region Conn
 
-        private string _userName = "Administrator";
+        private string _userName = "";
         [OtherName(Name = "USERNAME")]
         public string UserName
         {

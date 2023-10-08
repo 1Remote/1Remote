@@ -89,19 +89,6 @@
                                  Tag="TXT: 可选"/>
                     </Grid>
 
-                    <!--<Grid Margin="0 0 0 20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
-                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: Default value"></TextBlock>
-                        <TextBox  Grid.Column="1"
-                                 Text="{Binding New.DefaultValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
-                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                 Tag="TXT: 可选"/>
-                    </Grid>-->
-
                     <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
@@ -120,7 +107,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="TXT: append blank after value"></CheckBox>
                     </Grid>
 
-                    <Grid Margin="0 0 0 20">
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsConst, Converter={StaticResource ConverterBool2VisibleInv}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
@@ -144,6 +131,17 @@
                         <TextBox Grid.Column="1" Text="{Binding New.Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                         />
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsConst, Converter={StaticResource ConverterBool2Visible}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT:Const value"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" />
                     </Grid>
 
 

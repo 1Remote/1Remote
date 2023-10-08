@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
+using Enum = System.Enum;
 
 namespace _1RM.View.Editor.Forms.Argument
 {
@@ -66,8 +63,13 @@ namespace _1RM.View.Editor.Forms.Argument
                 RaisePropertyChanged();
 
                 SelectionsVisibility = Visibility.Collapsed;
+                IsConst = false;
                 switch (value)
                 {
+                    case AppArgumentType.Const:
+                        SelectionsVisibility = Visibility.Collapsed;
+                        IsConst = true;
+                        break;
                     case AppArgumentType.Normal:
                         SelectionsVisibility = Visibility.Visible;
                         break;
@@ -75,6 +77,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         SelectionsVisibility = Visibility.Visible;
                         break;
                     case AppArgumentType.Int:
+                    case AppArgumentType.Float:
                     case AppArgumentType.File:
                     case AppArgumentType.Secret:
                     case AppArgumentType.Flag:
@@ -84,10 +87,12 @@ namespace _1RM.View.Editor.Forms.Argument
 
                 RaisePropertyChanged(nameof(SelectionsVisibility));
                 RaisePropertyChanged(nameof(SelectionsTag));
+                RaisePropertyChanged(nameof(IsConst));
             }
         }
 
         public Visibility SelectionsVisibility { get; set; } = Visibility.Collapsed;
+        public bool IsConst { get; set; } = false;
 
 
         public string Name
@@ -111,6 +116,19 @@ namespace _1RM.View.Editor.Forms.Argument
                 if (New.Key != value)
                 {
                     New.Key = value.Trim();
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public string Value
+        {
+            get => New.Value;
+            set
+            {
+                if (New.Value != value)
+                {
+                    New.Value = value;
                     RaisePropertyChanged();
                 }
             }
@@ -146,6 +164,15 @@ namespace _1RM.View.Editor.Forms.Argument
                     }
 
                     {
+                        var t = AppArgument.CheckValue(New.Value, New.IsNullable, New.Type);
+                        if (t.Item1 == false)
+                        {
+                            MessageBoxHelper.Warning(t.Item2);
+                            return;
+                        }
+                    }
+
+                    {
                         var t = CheckSelections(Selections);
                         if (t.Item1 == false)
                         {
@@ -154,7 +181,8 @@ namespace _1RM.View.Editor.Forms.Argument
                         }
                     }
 
-
+                    New.Selections = new Dictionary<string, string>();
+                    if (Type != AppArgumentType.Const)
                     {
                         var dictionary = new Dictionary<string, string>();
                         var strReader = new StringReader(Selections);
@@ -192,6 +220,7 @@ namespace _1RM.View.Editor.Forms.Argument
                                 break;
                             }
                         }
+
                         New.Selections = dictionary;
                         if (Type == AppArgumentType.Selection && New.Selections.Count == 0)
                         {
@@ -212,8 +241,9 @@ namespace _1RM.View.Editor.Forms.Argument
                         // add
                         _localApp.ArgumentList.Add(New);
                     }
+
                     RequestClose(true);
-                }, o => AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1);
+                }, o => AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1 && AppArgument.CheckValue(New.Value, New.IsNullable, New.Type).Item1);
             }
         }
 
@@ -248,7 +278,6 @@ namespace _1RM.View.Editor.Forms.Argument
                     return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
                 }
             }
-
             return new Tuple<bool, string>(true, "");
         }
 
@@ -273,6 +302,15 @@ namespace _1RM.View.Editor.Forms.Argument
                     case nameof(Selections):
                         {
                             var t = CheckSelections(Selections);
+                            if (t.Item1 == false)
+                            {
+                                return t.Item2;
+                            }
+                            break;
+                        }
+                    case nameof(Value):
+                        {
+                            var t = AppArgument.CheckValue(Value, New.IsNullable, New.Type);
                             if (t.Item1 == false)
                             {
                                 return t.Item2;

@@ -62,6 +62,7 @@ public static class AppArgumentHelper
                     Key = "/u:",
                     IsNullable = false,
                     Description = "The user name to log in as on the remote machine.",
+                    Value = "%USERNAME%",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },

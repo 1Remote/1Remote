@@ -18,10 +18,15 @@ using System.Collections.Generic;
 namespace _1RM.Model.Protocol
 {
     // TODO 改为 ProtocolBaseWithAddressPortUserPwd 并且用 %PASSWORD% 替代默认密码
-    public class LocalApp : ProtocolBase
+    public class LocalApp : ProtocolBaseWithAddressPortUserPwd
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
         {
+            base.Address = "";
+            base.Port = "";
+            base.UserName = "";
+            base.Password = "";
+            base.IsPingBeforeConnect = false;
         }
 
         public override bool IsOnlyOneInstance()

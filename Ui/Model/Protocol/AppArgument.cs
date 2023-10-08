@@ -29,6 +29,7 @@ public enum AppArgumentType
     /// </summary>
     Flag,
     Selection,
+    Const,
 }
 
 public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
@@ -346,7 +347,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         }
         if (string.IsNullOrEmpty(value))
         {
-            if (!isNullable)
+            if (!isNullable || type == AppArgumentType.Const)
                 return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
             else
                 return new Tuple<bool, string>(true, "");
