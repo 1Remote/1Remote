@@ -7,7 +7,6 @@ using System.Windows;
 using _1RM.Model.Protocol;
 using _1RM.Service;
 using _1RM.Utils;
-using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -85,6 +84,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         break;
                 }
 
+                RaisePropertyChanged(nameof(Value));
                 RaisePropertyChanged(nameof(SelectionsVisibility));
                 RaisePropertyChanged(nameof(SelectionsTag));
                 RaisePropertyChanged(nameof(IsConst));
@@ -93,7 +93,6 @@ namespace _1RM.View.Editor.Forms.Argument
 
         public Visibility SelectionsVisibility { get; set; } = Visibility.Collapsed;
         public bool IsConst { get; set; } = false;
-
 
         public string Name
         {
@@ -243,7 +242,9 @@ namespace _1RM.View.Editor.Forms.Argument
                     }
 
                     RequestClose(true);
-                }, o => AppArgument.CheckName(_existedArguments, Name).Item1 && CheckSelections(Selections).Item1 && AppArgument.CheckValue(New.Value, New.IsNullable, New.Type).Item1);
+                }, o => AppArgument.CheckName(_existedArguments, Name).Item1
+                        && CheckSelections(Selections).Item1
+                        && (New.Type != AppArgumentType.Const || AppArgument.CheckValue(New.Value, New.IsNullable, New.Type).Item1));
             }
         }
 
@@ -310,10 +311,13 @@ namespace _1RM.View.Editor.Forms.Argument
                         }
                     case nameof(Value):
                         {
-                            var t = AppArgument.CheckValue(Value, New.IsNullable, New.Type);
-                            if (t.Item1 == false)
+                            if (New.Type == AppArgumentType.Const)
                             {
-                                return t.Item2;
+                                var t = AppArgument.CheckValue(Value, New.IsNullable, New.Type);
+                                if (t.Item1 == false)
+                                {
+                                    return t.Item2;
+                                }
                             }
                             break;
                         }

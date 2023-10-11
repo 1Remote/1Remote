@@ -8,8 +8,9 @@
              xmlns:editor="clr-namespace:_1RM.View.Editor"
              xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance protocol:LocalApp}"
+             d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <GridLength x:Key="RowHeight1">30</GridLength>
@@ -19,6 +20,22 @@
         <system:Double x:Key="WidthValue">300</system:Double>
 
         <argument:ConverterStringIs1 x:Key="ConverterStringIs1"></argument:ConverterStringIs1>
+
+        <DataTemplate x:Key="ArgumentConst" DataType="protocol:AppArgument">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
+                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
+                    <TextBlock Text="{Binding Value}" ToolTip="{Binding Value}" Width="{StaticResource WidthValue}" Margin="5 0" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
+            </Grid>
+        </DataTemplate>
 
         <DataTemplate x:Key="ArgumentNormal" DataType="protocol:AppArgument">
             <Grid>
@@ -149,6 +166,9 @@
                 <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.Selection}">
                     <Setter Property="ContentTemplate" Value="{StaticResource ArgumentSelection}" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Type}" Value="{x:Static protocol:AppArgumentType.Const}">
+                    <Setter Property="ContentTemplate" Value="{StaticResource ArgumentConst}" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
@@ -158,15 +178,15 @@
         <ItemsControl HorizontalAlignment="Stretch" 
                       HorizontalContentAlignment="Stretch"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      ItemsSource="{Binding ArgumentList}" 
+                      ItemsSource="{Binding New.ArgumentList}" 
                       ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
 
         <StackPanel Orientation="Horizontal">
-            <TextBlock FontSize="10" Text="{Binding ExePath}" Margin="0 0 5 0"></TextBlock>
+            <TextBlock FontSize="10" Text="{Binding New.ExePath}" Margin="0 0 5 0"></TextBlock>
             <ItemsControl HorizontalAlignment="Stretch" 
                           HorizontalContentAlignment="Stretch"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          ItemsSource="{Binding ArgumentList}" >
+                          ItemsSource="{Binding New.ArgumentList}" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -216,7 +236,7 @@
             <Button Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0"
                     ToolTip="{DynamicResource 'Preview'}" 
-                    Command="{Binding CmdPreview}">
+                    Command="{Binding New.CmdPreview}">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryMagnifier}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -228,7 +248,7 @@
             <Button Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0"
                     ToolTip="{DynamicResource 'Test'}" 
-                    Command="{Binding CmdTest}">
+                    Command="{Binding New.CmdTest}">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryPlay}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"

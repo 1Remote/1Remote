@@ -4,6 +4,7 @@ using System.Linq;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
+using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.Argument;
 using _1RM.View.Utils;
 using Shawn.Utils;
@@ -133,6 +134,10 @@ namespace _1RM.View.Editor
                         arguments = arguments.Distinct().ToList();
                         var vm = new ArgumentEditViewModel(protocol, arguments, o as AppArgument);
                         MaskLayerController.ShowDialogWithMask(vm);
+                        if (ProtocolEditControl is AppForm app)
+                        {
+                            app.ViewModel.CheckHPUP();
+                        }
                     }
                 }, o => Server is LocalApp);
             }
@@ -155,6 +160,10 @@ namespace _1RM.View.Editor
                         if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
                             protocol.ArgumentList.Remove(org);
+                            if (ProtocolEditControl is AppForm app)
+                            {
+                                app.ViewModel.CheckHPUP();
+                            }
                         }
                     }
                 }, o => Server is LocalApp);

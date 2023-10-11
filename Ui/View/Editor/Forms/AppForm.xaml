@@ -4,13 +4,13 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
-                        xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
                         xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
                         xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                         xmlns:controls="clr-namespace:_1RM.Controls"
                         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance protocol:LocalApp}"
+                        d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <UserControl.Resources>
         <GridLength x:Key="RowHeight1">30</GridLength>
@@ -29,19 +29,19 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
-                                 Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding New.ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
-                            Command="{Binding CmdSelectExePath}"></Button>
+                            Command="{Binding New.CmdSelectExePath}"></Button>
                 </StackPanel>
             </Grid>
 
             <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in 1 tab view?'}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
-                    <CheckBox IsChecked="{Binding RunWithHosting}">
+                    <CheckBox IsChecked="{Binding New.RunWithHosting}">
                         <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
                     </CheckBox>
                 </StackPanel>
@@ -53,7 +53,8 @@
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
 
-            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15">
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredHostName, Converter={StaticResource ConverterBool2Visible}}">
                 <Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
@@ -62,30 +63,32 @@
                                Text="%HOSTNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
-                             Tag="(optional) e.g. 192.168.0.101" Height="{StaticResource InputHeight}" 
+                    <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="e.g. 192.168.0.101" Height="{StaticResource InputHeight}" 
                     ></TextBox>
-                </Grid>
-                <Grid>
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
-                               Width="60"
-                               Margin="0 25 30 0"
-                               Opacity="0.5" FontSize="10" 
-                               Text="%PORT%"></TextBlock>
-                </Grid>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
-                             Tag="(optional)"
-                             Height="{StaticResource InputHeight}" 
-                             MinWidth="50" HorizontalAlignment="Left"
-                             InputMethod.IsInputMethodEnabled="False"
-                             InputScope="Number"></TextBox>
                 </Grid>
             </StackPanel>
 
 
-            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15">
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredPort, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Port}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%PORT%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Height="{StaticResource InputHeight}" 
+                    ></TextBox>
+                </Grid>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredUserName, Converter={StaticResource ConverterBool2Visible}}">
                 <Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
@@ -94,15 +97,15 @@
                                Text="%USERNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                              Height="{StaticResource InputHeight}" 
-                             Tag="(optional)"
                     ></TextBox>
                 </Grid>
             </StackPanel>
 
 
-            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15">
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}" Margin="0 0 0 15" 
+                        Visibility="{Binding RequiredPassword, Converter={StaticResource ConverterBool2Visible}}">
                 <Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
@@ -112,8 +115,8 @@
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <controls:PasswordInput Height="{StaticResource InputHeight}" 
-                                            Tag="(optional)"    
-                                            Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                                            Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                            />
                 </Grid>
             </StackPanel>
             <alternativeCredential:AlternativeCredentialListControl>

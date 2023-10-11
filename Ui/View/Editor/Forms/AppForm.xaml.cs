@@ -1,27 +1,26 @@
-﻿using System;
-using System.Globalization;
-using _1RM.Model.Protocol;
+﻿using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Data;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using _1RM.Utils;
-using Google.Protobuf.WellKnownTypes;
 
 namespace _1RM.View.Editor.Forms
 {
     public partial class AppForm : FormBase
     {
+        public readonly AppFormViewModel ViewModel;
         public AppForm(ProtocolBase vm) : base(vm)
         {
-            InitializeComponent();
             if (_vm is LocalApp app)
             {
-                app.PropertyChanged += AppOnPropertyChanged;
+                ViewModel = new AppFormViewModel(app);
+                InitializeComponent();
+                Loaded += (sender, args) =>
+                {
+                    app.PropertyChanged += AppOnPropertyChanged;
+                    DataContext = ViewModel;
+                };
             }
         }
 

@@ -30,7 +30,6 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _port = "3389";
-
         [OtherName(Name = "PORT")]
         public string Port
         {
