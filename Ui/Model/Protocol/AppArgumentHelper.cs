@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Documents;
+using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 
 namespace _1RM.Model.Protocol;
@@ -27,21 +28,23 @@ public static class AppArgumentHelper
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "/v:",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = "/port:",
                     IsNullable = false,
                     Description = "The port number to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
@@ -50,29 +53,30 @@ public static class AppArgumentHelper
                     Type = AppArgumentType.Int,
                     Name = "Domain",
                     Key = "/d:",
-                    IsNullable = false,
+                    IsNullable = true,
                     Description = "Domain",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "User Name",
                     Key = "/u:",
-                    IsNullable = false,
+                    IsNullable = true,
                     Description = "The user name to log in as on the remote machine.",
-                    Value = "%USERNAME%",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_USERNAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
                     Key = "/p:",
-                    IsNullable = false,
+                    IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
@@ -138,6 +142,9 @@ public static class AppArgumentHelper
                     AddBlankAfterValue = true,
                 },
             };
+#if DEBUG
+            // TODO check
+#endif
             // TODO add auto cmd if kitty
             return new Tuple<bool, List<AppArgument>>(true, argumentList);
         }
@@ -153,41 +160,45 @@ public static class AppArgumentHelper
             {
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "-ssh",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = true,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = "-P",
                     IsNullable = false,
                     Description = "The port number to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
                     AddBlankAfterKey = true,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "User Name",
                     Key = "-l",
-                    IsNullable = false,
+                    IsNullable = true,
                     Description = "The user name to log in as on the remote machine.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_USERNAME,
                     AddBlankAfterKey = true,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
                     Key = "-pw",
-                    IsNullable = false,
+                    IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterKey = true,
                     AddBlankAfterValue = true,
                 },
@@ -218,8 +229,8 @@ public static class AppArgumentHelper
         if (path.IndexOf("WinSCP", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             // ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
-            // Arguments = @"sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%",
-            // ArgumentsForPrivateKey = @"sftp://%USERNAME%@%HOSTNAME%:%PORT% /privatekey=%SSH_PRIVATE_KEY_PATH%",
+            // Arguments = @"sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%",
+            // ArgumentsForPrivateKey = @"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%",
             // RunWithHosting = false,
             var argumentList = new List<AppArgument>
             {
@@ -239,51 +250,56 @@ public static class AppArgumentHelper
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "User Name",
                     Key = "://",
                     IsNullable = false,
                     Description = "The user name to log in as on the remote machine.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_USERNAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
                     Key = ":",
                     IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "@",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = ":",
                     IsNullable = false,
                     Description = "The port number to connect to.",
-                    AddBlankAfterKey = true,
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
+                    AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.File,
+                    Type = AppArgumentType.Const,
                     Name = "Private key",
                     Key = "/privatekey=",
                     IsNullable = true,
                     Description = "OpenSSH key(When the password is empty, you can choose the key.)",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PRIVATE_KEY_PATH,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
@@ -297,8 +313,8 @@ public static class AppArgumentHelper
     {
         if (path.IndexOf("filezilla.exe", StringComparison.OrdinalIgnoreCase) >= 0)
         {
-            //ExternalRunner.Arguments = "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%";
-            //ExternalRunner.Arguments = "ftp://%USERNAME%:%PASSWORD%@%HOSTNAME%";
+            //ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
+            //ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
             // https://wiki.filezilla-project.org/Command-line_arguments_(Client)
             var argumentList = new List<AppArgument>
             {
@@ -318,42 +334,46 @@ public static class AppArgumentHelper
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "User Name",
                     Key = "://",
                     IsNullable = false,
                     Description = "The user name to log in as on the remote machine.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_USERNAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
                     Key = ":",
                     IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "@",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = ":",
                     IsNullable = false,
                     Description = "The port number to connect to.",
-                    AddBlankAfterKey = true,
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
+                    AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
             };
@@ -368,37 +388,40 @@ public static class AppArgumentHelper
             || path.IndexOf("uvnc", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             // ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
-            // Arguments = @"%HOSTNAME%:%PORT% -password %PASSWORD%",
+            // Arguments = @"%1RM_HOSTNAME%:%1RM_PORT% -password %1RM_PASSWORD%",
             // RunWithHosting = false,
             var argumentList = new List<AppArgument>
             {
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = ":",
                     IsNullable = false,
                     Description = "The port number to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
                     Key = "-password",
                     IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterValue = true,
                     AddBlankAfterKey = true,
                 },
@@ -414,37 +437,50 @@ public static class AppArgumentHelper
             || path.IndexOf("TightVNC", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             // ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
-            // Arguments = @"%HOSTNAME%::%PORT% -password=%PASSWORD% -scale=auto",
+            // Arguments = @"%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto",
             // RunWithHosting = true,
             var argumentList = new List<AppArgument>
             {
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Normal,
+                    Type = AppArgumentType.Const,
                     Name = "Host",
                     Key = "",
                     IsNullable = false,
                     Description = "The host name or IP address to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_HOST_NAME,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Int,
+                    Type = AppArgumentType.Const,
                     Name = "Port",
                     Key = "::",
                     IsNullable = false,
                     Description = "The port number to connect to.",
+                    Value = ProtocolBaseWithAddressPort.MACRO_PORT,
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
                 new AppArgument()
                 {
-                    Type = AppArgumentType.Secret,
+                    Type = AppArgumentType.Const,
                     Name = "Password",
-                    Key = "-scale=auto -password",
+                    Key = "-password",
                     IsNullable = true,
                     Description = "The password to use for authentication.",
+                    Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
+                    AddBlankAfterValue = true,
+                    AddBlankAfterKey = true,
+                },
+                new AppArgument()
+                {
+                    Type = AppArgumentType.Const,
+                    Name = "others",
+                    Key = "",
+                    IsNullable = true,
+                    Value = "-scale=auto",
                     AddBlankAfterValue = true,
                     AddBlankAfterKey = true,
                 },

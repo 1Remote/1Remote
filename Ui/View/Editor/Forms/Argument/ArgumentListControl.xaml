@@ -174,6 +174,7 @@
     </UserControl.Resources>
     <StackPanel>
 
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
 
         <ItemsControl HorizontalAlignment="Stretch" 
                       HorizontalContentAlignment="Stretch"
@@ -181,30 +182,9 @@
                       ItemsSource="{Binding New.ArgumentList}" 
                       ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBlock FontSize="10" Text="{Binding New.ExePath}" Margin="0 0 5 0"></TextBlock>
-            <ItemsControl HorizontalAlignment="Stretch" 
-                          HorizontalContentAlignment="Stretch"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          ItemsSource="{Binding New.ArgumentList}" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type ContentPresenter}" d:DataContext="{d:DesignInstance protocol:AppArgument}">
-                        <Setter Property="ContentTemplate">
-                            <Setter.Value>
-                                <DataTemplate DataType="protocol:AppArgument">
-                                    <TextBlock FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-                                </DataTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-        </StackPanel>
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Preview'}"></TextBlock>
+
+        <TextBlock Text="{Binding Demo}"></TextBlock>
 
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding Path=DataContext.CmdToggleEditMode, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
@@ -236,7 +216,7 @@
             <Button Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0"
                     ToolTip="{DynamicResource 'Preview'}" 
-                    Command="{Binding New.CmdPreview}">
+                    Command="{Binding CmdPreview}">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryMagnifier}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -248,7 +228,7 @@
             <Button Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0"
                     ToolTip="{DynamicResource 'Test'}" 
-                    Command="{Binding New.CmdTest}">
+                    Command="{Binding CmdTest}">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryPlay}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"

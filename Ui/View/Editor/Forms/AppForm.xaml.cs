@@ -1,9 +1,13 @@
-﻿using _1RM.Model.Protocol;
+﻿using System;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using _1RM.Utils;
+using System.Windows;
+using System.Windows.Controls;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
@@ -12,51 +16,14 @@ namespace _1RM.View.Editor.Forms
         public readonly AppFormViewModel ViewModel;
         public AppForm(ProtocolBase vm) : base(vm)
         {
-            if (_vm is LocalApp app)
+            if (_vm is not LocalApp app)
             {
-                ViewModel = new AppFormViewModel(app);
-                InitializeComponent();
-                Loaded += (sender, args) =>
-                {
-                    app.PropertyChanged += AppOnPropertyChanged;
-                    DataContext = ViewModel;
-                };
+                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(AppForm)}!");
             }
-        }
 
-        ~AppForm()
-        {
-            if (_vm is LocalApp app)
-            {
-                app.PropertyChanged -= AppOnPropertyChanged;
-            }
-        }
-
-        private void AppOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (sender is LocalApp app && e.PropertyName == nameof(LocalApp.ExePath))
-            {
-                var t = AppArgumentHelper.GetPresetArgumentList(app.ExePath);
-                if (t != null)
-                {
-                    bool same = app.ArgumentList.Count == t.Item2.Count;
-                    if (same)
-                        for (int i = 0; i < app.ArgumentList.Count; i++)
-                        {
-                            if (!app.ArgumentList[i].IsConfigEqualTo(t.Item2[i]))
-                            {
-                                same = false;
-                                break;
-                            }
-                        }
-                    if (!same && (app.ArgumentList.All(x => x.IsDefaultValue())
-                                  || MessageBoxHelper.Confirm("TXT: 用适配 path 的参数覆盖当前参数列表？")))
-                    {
-                        app.RunWithHosting = t.Item1;
-                        app.ArgumentList = new ObservableCollection<AppArgument>(t.Item2);
-                    }
-                }
-            }
+            ViewModel = new AppFormViewModel(app);
+            InitializeComponent();
+            DataContext = ViewModel;
         }
 
         public override bool CanSave()
@@ -68,7 +35,22 @@ namespace _1RM.View.Editor.Forms
                 if (string.IsNullOrEmpty(app.ExePath))
                     return false;
             }
+
+            if (!string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Address)])
+               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Port)])
+               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.UserName)])
+               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Password)])
+                   )
+                return false;
+
             return true;
+        }
+
+        private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+            if (path == null) return;
+            ViewModel.PrivateKey = path;
         }
     }
 }

@@ -313,7 +313,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         {
                             if (New.Type == AppArgumentType.Const)
                             {
-                                var t = AppArgument.CheckValue(Value, New.IsNullable, New.Type);
+                                var t = AppArgument.CheckValue(Value, true, New.Type);
                                 if (t.Item1 == false)
                                 {
                                     return t.Item2;

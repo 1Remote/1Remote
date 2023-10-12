@@ -18,15 +18,6 @@ namespace _1RM.Model.Protocol
             base.Port = "22";
         }
 
-        private string _privateKey = "";
-
-        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
-        public string PrivateKey
-        {
-            get => _privateKey;
-            set => SetAndNotifyIfChanged(ref _privateKey, value);
-        }
-
         private string _startupPath = "/";
         [OtherName(Name = "STARTUP_PATH")]
         public string StartupPath
@@ -95,6 +86,21 @@ namespace _1RM.Model.Protocol
         {
             base.SetCredential(credential);
             PrivateKey = credential.PrivateKeyPath;
+        }
+
+        public override bool ShowUserNameInput()
+        {
+            return true;
+        }
+
+        public override bool ShowPasswordInput()
+        {
+            return true;
+        }
+
+        public override bool ShowPrivateKeyInput()
+        {
+            return true;
         }
     }
 }

@@ -16,14 +16,6 @@ namespace _1RM.Model.Protocol
             base.Port = "22";
         }
 
-        private string _privateKey = "";
-        [OtherName(Name = "SSH_PRIVATE_KEY_PATH")]
-        public string PrivateKey
-        {
-            get => _privateKey;
-            set => SetAndNotifyIfChanged(ref _privateKey, value);
-        }
-
         private int? _sshVersion = 2;
 
         [OtherName(Name = "SSH_VERSION")]
@@ -92,7 +84,7 @@ namespace _1RM.Model.Protocol
 
             //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
 
-            //var template = $@" -load ""{this.GetSessionName()}"" %HOSTNAME% -P %PORT% -l %USERNAME% -pw %PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+            //var template = $@" -load ""{this.GetSessionName()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
             //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
 
             var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
@@ -124,6 +116,21 @@ namespace _1RM.Model.Protocol
         {
             base.SetCredential(credential);
             PrivateKey = credential.PrivateKeyPath;
+        }
+
+        public override bool ShowUserNameInput()
+        {
+            return true;
+        }
+
+        public override bool ShowPasswordInput()
+        {
+            return true;
+        }
+
+        public override bool ShowPrivateKeyInput()
+        {
+            return true;
         }
     }
 }

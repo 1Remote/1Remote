@@ -29,12 +29,12 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
-                                 Text="{Binding New.ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
-                            Command="{Binding New.CmdSelectExePath}"></Button>
+                            Command="{Binding CmdSelectExePath}"></Button>
                 </StackPanel>
             </Grid>
 
@@ -60,7 +60,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
                                Opacity="0.5" FontSize="10" Margin="0 25 30 0"
-                               Text="%HOSTNAME%"></TextBlock>
+                               Text="%1RM_HOSTNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
@@ -77,10 +77,11 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
                                Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
-                               Text="%PORT%"></TextBlock>
+                               Text="%1RM_PORT%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="{Binding HintPort}"
                              Height="{StaticResource InputHeight}" 
                     ></TextBox>
                 </Grid>
@@ -94,10 +95,11 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
                                Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
-                               Text="%USERNAME%"></TextBlock>
+                               Text="%1RM_USERNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="{Binding HintHostName}"
                              Height="{StaticResource InputHeight}" 
                     ></TextBox>
                 </Grid>
@@ -111,14 +113,41 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
                                Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
-                               Text="%PASSWORD%"></TextBlock>
+                               Text="%1RM_PASSWORD%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <controls:PasswordInput Height="{StaticResource InputHeight}" 
+                                            Tag="{Binding HintPassword}"
                                             Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                             />
                 </Grid>
             </StackPanel>
+
+
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}" Margin="0 0 0 15" 
+                        Visibility="{Binding RequiredPassword, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%1RM_PRIVATE_KEY_PATH%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}" Height="{StaticResource InputHeight}">
+                    <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" 
+                             Tag="{Binding HintPrivateKey}"
+                             IsEnabled="False"></TextBox>
+                    <Button Content="{DynamicResource Select}" 
+                            Click="ButtonOpenPrivateKey_OnClick" 
+                            Style="{StaticResource ButtonPrimaryStyle}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Stretch">
+                    </Button>
+                </Grid>
+            </StackPanel>
+
             <alternativeCredential:AlternativeCredentialListControl>
                 <alternativeCredential:AlternativeCredentialListControl.Style>
                     <Style TargetType="alternativeCredential:AlternativeCredentialListControl">
@@ -140,7 +169,6 @@
             </alternativeCredential:AlternativeCredentialListControl>
         </StackPanel>
 
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
         <argument:ArgumentListControl></argument:ArgumentListControl>
 
     </StackPanel>

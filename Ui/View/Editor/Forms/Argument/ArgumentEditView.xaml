@@ -107,7 +107,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="TXT: append blank after value"></CheckBox>
                     </Grid>
 
-                    <Grid Margin="0 0 0 20" Visibility="{Binding IsConst, Converter={StaticResource ConverterBool2VisibleInv}}">
+                    <Grid Margin="0 0 0 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>

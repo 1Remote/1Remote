@@ -14,8 +14,9 @@ namespace _1RM.Model.Protocol.Base
 
         #region Conn
 
+        public const string MACRO_HOST_NAME = "%1RM_HOSTNAME%";
         private string _address = "";
-        [OtherName(Name = "HOSTNAME")]
+        [OtherName(Name = "1RM_HOSTNAME")]
         public string Address
         {
             get => _address;
@@ -29,8 +30,9 @@ namespace _1RM.Model.Protocol.Base
             return 1;
         }
 
+        public const string MACRO_PORT = "%1RM_PORT%";
         private string _port = "3389";
-        [OtherName(Name = "PORT")]
+        [OtherName(Name = "1RM_PORT")]
         public string Port
         {
             get => _port;
@@ -94,5 +96,22 @@ namespace _1RM.Model.Protocol.Base
         }
 
         #endregion Conn
+
+
+        /// <summary>
+        /// return true if show address input
+        /// </summary>
+        public virtual bool ShowAddressInput()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// return true if show port input
+        /// </summary>
+        public virtual bool ShowPortInput()
+        {
+            return true;
+        }
     }
 }

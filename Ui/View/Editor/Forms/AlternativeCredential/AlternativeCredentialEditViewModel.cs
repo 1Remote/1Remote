@@ -33,26 +33,17 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             ShowPassword = true;
             ShowPrivateKeyPath = false;
 
-            if (protocol is not ProtocolBaseWithAddressPortUserPwd)
+            if (protocol is not ProtocolBaseWithAddressPortUserPwd pp)
             {
                 ShowUsername = false;
                 ShowPassword = false;
                 ShowPrivateKeyPath = false;
             }
-
-            if (protocol is VNC)
+            else
             {
-                ShowUsername = false;
-                ShowPassword = true;
-                ShowPrivateKeyPath = false;
-            }
-
-            if (protocol is SSH
-                || protocol is SFTP)
-            {
-                ShowUsername = true;
-                ShowPassword = true;
-                ShowPrivateKeyPath = true;
+                ShowUsername = pp.ShowUserNameInput();
+                ShowPassword = pp.ShowPasswordInput();
+                ShowPrivateKeyPath = pp.ShowPrivateKeyInput();
             }
 
             if (_org != null)

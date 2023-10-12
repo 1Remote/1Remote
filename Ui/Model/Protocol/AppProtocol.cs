@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace _1RM.Model.Protocol
 {
-    // TODO 改为 ProtocolBaseWithAddressPortUserPwd 并且用 %PASSWORD% 替代默认密码
+    // TODO 改为 ProtocolBaseWithAddressPortUserPwd 并且用 %1RM_PASSWORD% 替代默认密码
     public class LocalApp : ProtocolBaseWithAddressPortUserPwd
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
@@ -26,6 +26,7 @@ namespace _1RM.Model.Protocol
             base.Port = "";
             base.UserName = "";
             base.Password = "";
+            base.PrivateKey = "";
             base.IsPingBeforeConnect = false;
         }
 
@@ -115,95 +116,13 @@ namespace _1RM.Model.Protocol
 
         public string GetArguments()
         {
-            return AppArgument.GetArgumentsString(ArgumentList, false);
+            return AppArgument.GetArgumentsString(ArgumentList, false, this);
         }
 
 
         public string GetDemoArguments()
         {
-            return AppArgument.GetArgumentsString(ArgumentList, true);
-        }
-
-
-        private RelayCommand? _cmdSelectExePath;
-        [JsonIgnore]
-        public RelayCommand CmdSelectExePath
-        {
-            get
-            {
-                return _cmdSelectExePath ??= new RelayCommand((o) =>
-                {
-                    string initPath;
-                    try
-                    {
-                        initPath = new FileInfo(ExePath).DirectoryName!;
-                    }
-                    catch (Exception)
-                    {
-                        initPath = Environment.CurrentDirectory;
-                    }
-
-                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
-                    if (path == null) return;
-                    ExePath = path;
-                });
-            }
-        }
-
-        private RelayCommand? _cmdSelectArgumentFile;
-        [JsonIgnore]
-        public RelayCommand CmdSelectArgumentFile
-        {
-            get
-            {
-                return _cmdSelectArgumentFile ??= new RelayCommand((o) =>
-                {
-                    string initPath;
-                    try
-                    {
-                        initPath = new FileInfo(o?.ToString() ?? "").DirectoryName!;
-                    }
-                    catch (Exception)
-                    {
-                        initPath = Environment.CurrentDirectory;
-                    }
-                    var path = SelectFileHelper.OpenFile(initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
-                    if (path == null) return;
-                });
-            }
-        }
-
-        private RelayCommand? _cmdPreview;
-        [JsonIgnore]
-        public RelayCommand CmdPreview
-        {
-            get
-            {
-                return _cmdPreview ??= new RelayCommand((o) =>
-                {
-                    MessageBoxHelper.Info(ExePath + " " + GetDemoArguments(), ownerViewModel: IoC.Get<MainWindowViewModel>());
-                });
-            }
-        }
-
-        private RelayCommand? _cmdTest;
-        [JsonIgnore]
-        public RelayCommand CmdTest
-        {
-            get
-            {
-                return _cmdTest ??= new RelayCommand((o) =>
-                {
-                    try
-                    {
-                        Process.Start(ExePath, GetArguments());
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBoxHelper.ErrorAlert(e.Message);
-                    }
-                });
-            }
+            return AppArgument.GetArgumentsString(ArgumentList, true, this);
         }
 
         public override bool Verify()
@@ -216,6 +135,55 @@ namespace _1RM.Model.Protocol
             var clone = base.Clone() as LocalApp;
             clone!.ArgumentList = new ObservableCollection<AppArgument>(ArgumentList.Select(x => x.Clone() as AppArgument)!);
             return clone;
+        }
+
+
+
+        public override bool ShowAddressInput()
+        {
+            foreach (var argument in ArgumentList)
+                if (argument.Value.IndexOf(MACRO_HOST_NAME, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            return false;
+        }
+
+
+        public override bool ShowPortInput()
+        {
+            foreach (var argument in ArgumentList)
+                if (argument.Value.IndexOf(MACRO_PORT, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            return false;
+        }
+
+
+        public override bool ShowUserNameInput()
+        {
+            foreach (var argument in ArgumentList)
+                if (argument.Value.IndexOf(MACRO_USERNAME, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            return false;
+        }
+
+        public override bool ShowPasswordInput()
+        {
+            foreach (var argument in ArgumentList)
+                if (argument.Value.IndexOf(MACRO_PASSWORD, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            return false;
+        }
+
+        public override bool ShowPrivateKeyInput()
+        {
+            return true;
         }
     }
 }

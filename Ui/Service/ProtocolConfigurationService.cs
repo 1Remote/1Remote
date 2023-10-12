@@ -19,7 +19,7 @@ namespace _1RM.Service
 {
     public class ProtocolConfigurationService
     {
-        public Dictionary<string, ProtocolSettings> ProtocolConfigs { get; }
+        public Dictionary<string, ProtocolSettings> ProtocolConfigs { get; } = new Dictionary<string, ProtocolSettings>();
 
 
         private static List<string> _customProtocolBlackList = new List<string>();
@@ -45,24 +45,22 @@ namespace _1RM.Service
         {
             if (Directory.Exists(AppPathHelper.Instance.ProtocolRunnerDirPath) == false)
                 Directory.CreateDirectory(AppPathHelper.Instance.ProtocolRunnerDirPath);
-            ProtocolConfigs = Load(AppPathHelper.Instance.ProtocolRunnerDirPath);
+            Load(AppPathHelper.Instance.ProtocolRunnerDirPath);
         }
         
 
-        private static Dictionary<string, ProtocolSettings> Load(string protocolFolderName)
+        private void Load(string protocolFolderName)
         {
-            var protocolConfigs = new Dictionary<string, ProtocolSettings>();
-
             // build-in protocol
-            //protocolConfigs.Add(RDP.ProtocolName, InitProtocol(protocolFolderName, new RDP(), new InternalDefaultRunner(RDP.ProtocolName), $"Built-in AxMsRdpClient"));
-            //protocolConfigs[RDP.ProtocolName].Runners.Clear();
-            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Built-in AxMsRdpClient", RDP.ProtocolName));
-            //protocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Mstsc.exe", RDP.ProtocolName));
-            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
-            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
-            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
-            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
-            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
+            //ProtocolConfigs.Add(RDP.ProtocolName, InitProtocol(protocolFolderName, new RDP(), new InternalDefaultRunner(RDP.ProtocolName), $"Built-in AxMsRdpClient"));
+            //ProtocolConfigs[RDP.ProtocolName].Runners.Clear();
+            //ProtocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Built-in AxMsRdpClient", RDP.ProtocolName));
+            //ProtocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Mstsc.exe", RDP.ProtocolName));
+            ProtocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
+            ProtocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
+            ProtocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
+            ProtocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
+            ProtocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
 
             //// custom protocol
@@ -73,7 +71,7 @@ namespace _1RM.Service
             //    {
             //        var protocolName = fi.Name.Replace(fi.Extension, "");
             //        // remove existed protocol
-            //        if (protocolConfigs.Any(x => string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
+            //        if (ProtocolConfigs.Any(x => string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
             //            continue;
             //        // remove special protocol
             //        if (CustomProtocolBlackList.Any(x => string.Equals(protocolName, x, StringComparison.CurrentCultureIgnoreCase)))
@@ -86,13 +84,13 @@ namespace _1RM.Service
             //    }
             //    foreach (var custom in customs)
             //    {
-            //        protocolConfigs.Add(custom.Key, custom.Value);
+            //        ProtocolConfigs.Add(custom.Key, custom.Value);
             //    }
             //}
 
 
             // add macros to ExternalRunner
-            foreach (var config in protocolConfigs)
+            foreach (var config in ProtocolConfigs)
             {
                 var protocolName = config.Key;
                 foreach (var runner in config.Value.Runners)
@@ -105,7 +103,58 @@ namespace _1RM.Service
                 }
             }
 
-            return protocolConfigs;
+            // SSH_PRIVATE_KEY_PATH 改名为 1RM_PRIVATE_KEY_PATH 2023年10月12日，TODO 一年后删除此代码
+            var kys = new Dictionary<string, string>()
+            {
+                { "SSH_PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH" },
+                { "HOSTNAME", "1RM_HOSTNAME" },
+                { "PORT", "1RM_PORT" },
+                { "USERNAME", "1RM_USERNAME" },
+                { "PASSWORD", "1RM_PASSWORD" },
+                { "PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH" },
+            };
+
+            bool saveFlag = false;
+            foreach (var config in ProtocolConfigs)
+            {
+                var protocolName = config.Key;
+                foreach (var runner in config.Value.Runners)
+                {
+                    if (runner is ExternalRunner er)
+                    {
+                        foreach (var ky in kys)
+                        {
+                            if (er.Arguments.IndexOf(ky.Key, StringComparison.Ordinal) >= 0)
+                            {
+                                saveFlag = true;
+                                er.Arguments = er.Arguments.Replace(ky.Key, ky.Value);
+                            }
+
+                            foreach (var p in er.Params.Keys)
+                            {
+                                if (er.Params[p].IndexOf(ky.Key, StringComparison.Ordinal) >= 0)
+                                {
+                                    saveFlag = true;
+                                    er.Params[p] = er.Params[p].Replace(ky.Key, ky.Value);
+                                }
+                            }
+
+                            foreach (var t in er.EnvironmentVariables)
+                            {
+                                if (t.Value.IndexOf(ky.Key, StringComparison.Ordinal) >= 0)
+                                {
+                                    saveFlag = true;
+                                    t.Value = t.Value.Replace(ky.Key, ky.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (saveFlag)
+            {
+                Save();
+            }
         }
 
 
@@ -147,16 +196,16 @@ namespace _1RM.Service
                         c.Runners.Add(new ExternalRunner("UltraVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
-                            Arguments = @"%HOSTNAME%:%PORT% -password %PASSWORD%",
+                            Arguments = @"%1RM_HOSTNAME%:%1RM_PORT% -password %1RM_PASSWORD%",
                             RunWithHosting = false,
                         });
                     if (c.Runners.All(x => x.Name != "TightVNC"))
                         c.Runners.Add(new ExternalRunner("TightVNC", protocolName)
                         {
                             ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
-                            Arguments = @"%HOSTNAME%::%PORT% -password=%PASSWORD% -scale=auto",
+                            Arguments = @"%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto",
                             RunWithHosting = true,
-                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PASSWORD%") }),
+                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%1RM_PASSWORD%") }),
                         });
                 }
                 if (SFTP.ProtocolName == protocolName)
@@ -165,8 +214,8 @@ namespace _1RM.Service
                         c.Runners.Add(new ExternalRunnerForSSH("WinSCP", protocolName)
                         {
                             ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
-                            Arguments = @"sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%",
-                            ArgumentsForPrivateKey = @"sftp://%USERNAME%@%HOSTNAME%:%PORT% /privatekey=%SSH_PRIVATE_KEY_PATH%",
+                            Arguments = @"sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%",
+                            ArgumentsForPrivateKey = @"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%",
                         });
                 }
             }

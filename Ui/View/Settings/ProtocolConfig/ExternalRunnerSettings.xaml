@@ -215,8 +215,8 @@
                                     <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
                                                                Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
                                                                Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
-                                                               Tag="Value e.g. %USERNAME%"
-                                                               ToolTip="Value e.g. %USERNAME%"/>
+                                                               Tag="Value e.g. %1RM_USERNAME%"
+                                                               ToolTip="Value e.g. %1RM_USERNAME%"/>
 
                                     <Button Grid.Column="2" Width="10" Height="10"
                                             ToolTip="{DynamicResource 'Delete'}"

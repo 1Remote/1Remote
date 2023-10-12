@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using Newtonsoft.Json;
@@ -91,7 +92,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     private bool _addBlankAfterKey = true;
     /// <summary>
-    /// argument like "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%" need it to be false
+    /// argument like "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%" need it to be false
     /// </summary>
     [DefaultValue(true)]
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
@@ -117,7 +118,6 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         {
             if (SetAndNotifyIfChanged(ref _value, value))
             {
-                RaisePropertyChanged(nameof(DemoArgumentString));
                 if (Type == AppArgumentType.Selection)
                 {
                     if (string.IsNullOrEmpty(value))
@@ -132,6 +132,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
                         _value = _selections.Keys.FirstOrDefault() ?? "";
                     }
                 }
+                RaisePropertyChanged(nameof(DemoArgumentString));
             }
         }
     }
@@ -145,7 +146,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     private bool _addBlankAfterValue = true;
     /// <summary>
-    /// argument like "sftp://%USERNAME%:%PASSWORD%@%HOSTNAME%:%PORT%" need it to be false
+    /// argument like "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%" need it to be false
     /// </summary>
     [DefaultValue(true)]
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
@@ -167,7 +168,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     }
 
 
-    [JsonIgnore] public string HintDescription => IsNullable ? "(optional)" + _description : _description;
+    [JsonIgnore] public string HintDescription => IsNullable ? "(TXT:optional)" + _description : _description;
 
 
 
@@ -221,26 +222,40 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     public string DemoArgumentString => GetArgumentString(true);
 
-    public string GetArgumentString(bool forDemo = false)
+    public string GetArgumentString(bool forDemo = false, LocalApp? app = null)
     {
         if (Type == AppArgumentType.Flag)
         {
             return Value == "1" ? Key : "";
         }
 
-        if (string.IsNullOrEmpty(Value))
+        // REPLACE %xxx% with SystemEnvironment, 替换系统环境变量
+        string value = Value;
+
+        if (forDemo && app != null)
+        {
+            value = value.Replace(ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD, "******");
+        }
+
+        if (app != null)
+        {
+            value = OtherNameAttributeExtensions.Replace(app, value);
+        }
+        value = Environment.ExpandEnvironmentVariables(value);
+
+        if (IsNullable && string.IsNullOrEmpty(value))
         {
             return "";
         }
 
-        // REPLACE %xxx% with SystemEnvironment, 替换系统环境变量
-        var value = Environment.ExpandEnvironmentVariables(Value);
         if (Type == AppArgumentType.Secret && !string.IsNullOrEmpty(Value))
         {
             value = forDemo ? "******" : UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
         }
+
         if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
             value = $"\"{value}\"";
+
         if (!string.IsNullOrEmpty(Key))
         {
             value = $"{Key}{(AddBlankAfterKey ? " " : "")}{value}{(AddBlankAfterValue ? " " : "")}";
@@ -248,12 +263,12 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         return value;
     }
 
-    public static string GetArgumentsString(IEnumerable<AppArgument> arguments, bool isDemo)
+    public static string GetArgumentsString(IEnumerable<AppArgument> arguments, bool isDemo, LocalApp? app)
     {
         string cmd = "";
         foreach (var argument in arguments)
         {
-            cmd += argument.GetArgumentString(isDemo);
+            cmd += argument.GetArgumentString(isDemo, app);
         }
         return cmd.Trim();
     }

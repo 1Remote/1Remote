@@ -49,7 +49,7 @@ namespace _1RM.Model.Protocol.Base
 
 
         private string _address = "";
-        [OtherName(Name = "HOSTNAME")]
+        [OtherName(Name = "1RM_HOSTNAME")]
         public string Address
         {
             get => _address;
@@ -57,7 +57,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _port = "";
-        [OtherName(Name = "PORT")]
+        [OtherName(Name = "1RM_PORT")]
         public string Port
         {
             get => _port;
@@ -65,7 +65,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _userName = "";
-        [OtherName(Name = "USERNAME")]
+        [OtherName(Name = "1RM_USERNAME")]
         public string UserName
         {
             get => _userName;
@@ -73,7 +73,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _password = "";
-        [OtherName(Name = "PASSWORD")]
+        [OtherName(Name = "1RM_PASSWORD")]
         public string Password
         {
             get => _password;
@@ -82,7 +82,7 @@ namespace _1RM.Model.Protocol.Base
 
         private string _privateKeyPath = "";
 
-        [OtherName(Name = "PRIVATE_KEY_PATH")]
+        [OtherName(Name = "1RM_PRIVATE_KEY_PATH")]
         public string PrivateKeyPath
         {
             get => _privateKeyPath;
