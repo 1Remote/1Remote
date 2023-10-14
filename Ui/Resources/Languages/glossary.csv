@@ -74,7 +74,7 @@ hotkey_already_registered;Hot key already been registered;快捷键已被占用;
 hotkey_registered_fail;Failed to register the hot key;快捷键注册失败;Klávesovou zkratku se nepodařilo zaregistrovat;Fehler bei der Hotkey Registrierung;Echec de l'enregistrement du raccourci clavier;Falha ao registrar a tecla de atalho;;快捷鍵綁定失敗;Fallou o rexistro do atallo;Nie udało się przypisać skrótu klawiszowego
 string_permission_denied;Permission denied;无操作权限;Oprávnění odepřeno;Zugriff verweigert;Permission refusée;Permissão negada;;沒有存取權限;Permiso denegado;Odmowa dostępu
 file_transmit_host_list_header_last_update;Last update;修改时间;Naposledy zaktualizováno;Letztes Update;Dernière mise à jour;Última atualização;;修改日期;Última actualización;Ostatnia aktualizacja
-file_transmit_host_list_header_type;Type;类型;Typ;Typ;;Tipo;;類型;Tipo;Typ
+Type;Type;类型;Typ;Typ;;Tipo;;類型;Tipo;Typ
 file_transmit_host_list_header_size;Size;大小;Velikost;Größe;Taille;Tamanho;;大小;Tamaño;Rozmiar
 file_transmit_host_message_preview_over_size;This item is over 1 MB, are you sure you want to open it?;文件超过 1 MB，确定要打开吗?;Tato položka má přes 1 MB – opravdu ji chcete otevírat?;Das Bild ist über 1 MB groß, wirklich öffnen?;Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?;Este item tem mais de 1 MB. Tem certeza de que quer abrir?;;檔案超過 1 MB，您確定要繼續開啟嗎？;Este obxecto sobrepasa 1 MB, está seguro de que quere abrilo?;Plik ma ponad 1MB, czy na pewno chcesz go otworzyć?
 file_transmit_host_message_files_download_to;Please select a folder to save to;将文件下载到所选文件夹;Vyberte složku do které uložit;Bitte wählen Sie den Speicherpfad aus;Veuillez sélectionner un dossier pour enregistrer les fichiers;Selecione uma pasta para salvar;;將檔案下載到選擇的資料夾;Por favor, escolle un cartafol onde gardalo;Wybierz folder do zapisu
@@ -315,3 +315,14 @@ Enter your credentials;Enter your credentials;输入凭据;;;;;;;;
 Verification failed. Please try again.;Verification failed. Please try again.;验证失败，请重试。;;;;;;;;
 Security;Security;安全设置;Security;;;;;;;
 Windows credentials verification is required to view passwords;Windows credentials verification is required to view passwords;查看密码前要求验证Windows凭据;;;;;;;;
+Not existed;Not existed;不存在;Not existed;Not existed;Not existed;Not existed;Not existed;Not existed;Not existed;Not existed
+Not a number;Not a number;不是数值;;;;;;;;
+Optional;Optional;可选的;;;;;;;;
+Nullable;Nullable;可为空;;;;;;;;
+Selections;Selections;备选项;;;;;;;;
+Const value;Const value;固定值;;;;;;;;
+Description;Description;;;;;;;;;
+Prefix;Prefix;前缀;;;;;;;;
+append blank after prefix;append blank after prefix;在前缀后添加空格;;;;;;;;
+append blank after value;append blank after value;在值后添加空格;;;;;;;;
+Do you want to replace the current parameter list with preset value?;Do you want to replace the current parameter list with preset value?;是否将当前参数列表替换为预设值？;;;;;;;;

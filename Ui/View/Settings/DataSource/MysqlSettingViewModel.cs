@@ -47,9 +47,9 @@ namespace _1RM.View.Settings.DataSource
                 {
                     // TODO 改为 IDataErrorInfo 实现
                     if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
                     if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName.Trim(), _name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
+                        throw new ArgumentException(IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace _1RM.View.Settings.DataSource
                 if (SetAndNotifyIfChanged(ref _port, value))
                 {
                     if (string.IsNullOrWhiteSpace(_port))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
                     if (int.TryParse(_port, out var p) == false || p < 0 || p > 65535)
                         throw new ArgumentException("1 - 65535!");
                 }
@@ -188,11 +188,11 @@ namespace _1RM.View.Settings.DataSource
                             };
                             if (MysqlSource.TestConnection(config))
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Success"), ownerViewModel: this);
+                                MessageBoxHelper.Info(IoC.Translate("Success"), ownerViewModel: this);
                             }
                             else
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("Failed"), ownerViewModel: this);
+                                MessageBoxHelper.Info(IoC.Translate("Failed"), ownerViewModel: this);
                             }
                         }
                         catch (Exception e)

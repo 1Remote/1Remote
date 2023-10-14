@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Fallou o rexistro do atallo</s:String>
     <s:String x:Key="string_permission_denied">Permiso denegado</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Última actualización</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Tipo</s:String>
+    <s:String x:Key="Type">Tipo</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Tamaño</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Este obxecto sobrepasa 1 MB, está seguro de que quere abrilo?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Por favor, escolle un cartafol onde gardalo</s:String>
@@ -289,4 +289,15 @@
     <s:String x:Key="Verification failed. Please try again.">Produciuse un erro na verificación. Por favor intentao de novo.</s:String>
     <s:String x:Key="Security">Seguridade</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">É necesaria a verificación das credenciais de Windows para ver os contrasinais</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Non un número</s:String>
+    <s:String x:Key="Optional">Opcional</s:String>
+    <s:String x:Key="Nullable">Anulábel</s:String>
+    <s:String x:Key="Selections">Seleccións</s:String>
+    <s:String x:Key="Const value">Valor constante</s:String>
+    <s:String x:Key="Description">Descrición</s:String>
+    <s:String x:Key="Prefix">Prefixo</s:String>
+    <s:String x:Key="append blank after prefix">engadir un espazo en branco despois do prefixo</s:String>
+    <s:String x:Key="append blank after value">engadir un espazo en branco despois do valor</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Quere substituír a lista de parámetros actual co valor predefinido?</s:String>
 </ResourceDictionary>

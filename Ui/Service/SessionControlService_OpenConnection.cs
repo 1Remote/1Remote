@@ -267,10 +267,10 @@ namespace _1RM.Service
             }
             else if (protocolClone is LocalApp { RunWithHosting: false } localApp)
             {
-                var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.ExePath);
+                var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.GetExePath());
                 if (tmp.Item1)
                 {
-                    var process = Process.Start(tmp.Item2, localApp.GetArguments());
+                    var process = Process.Start(tmp.Item2, localApp.GetArguments(false));
                     AddUnHostingWatch(process, localApp);
                 }
                 return tabToken;

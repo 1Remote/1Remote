@@ -475,10 +475,10 @@ namespace _1RM.View.ServerList
                             {
                                 try
                                 {
-                                    MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"));
+                                    MaskLayerController.ShowProcessingRing(IoC.Translate("Caution: Your data will be saved unencrypted!"));
                                     view.CbPopForInExport.IsChecked = false;
                                     var path = SelectFileHelper.SaveFile(
-                                        title: IoC.Get<ILanguageService>().Translate("Caution: Your data will be saved unencrypted!"),
+                                        title: IoC.Translate("Caution: Your data will be saved unencrypted!"),
                                         filter: "json|*.json",
                                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
                                     if (path == null) return;
@@ -491,7 +491,7 @@ namespace _1RM.View.ServerList
 
                                     ClearSelection();
                                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                                    MessageBoxHelper.Info($"{IoC.Get<ILanguageService>().Translate("Export")}: {IoC.Get<ILanguageService>().Translate("Done")}!");
+                                    MessageBoxHelper.Info($"{IoC.Translate("Export")}: {IoC.Translate("Done")}!");
 
                                 }
                                 finally
@@ -520,10 +520,10 @@ namespace _1RM.View.ServerList
                     if (source?.IsWritable != true) return;
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
-                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
                     if (path == null) return;
 
-                    MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -543,12 +543,12 @@ namespace _1RM.View.ServerList
 
                             source.Database_InsertServer(list);
                             AppData.ReloadServerList(true);
-                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
+                            MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Warning(e);
-                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
+                            MessageBoxHelper.ErrorAlert(IoC.Translate("import_failure_with_data_format_error"));
                         }
                         finally
                         {
@@ -571,9 +571,9 @@ namespace _1RM.View.ServerList
                     // select save to which source
                     var source = DataSourceSelectorViewModel.SelectDataSource();
                     if (source?.IsWritable != true) return;
-                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    MaskLayerController.ShowProcessingRing(IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
+                    MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -583,14 +583,14 @@ namespace _1RM.View.ServerList
                             {
                                 source.Database_InsertServer(list);
                                 AppData.ReloadServerList(true);
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
+                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                                 return;
                             }
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Debug(e);
-                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
+                            MessageBoxHelper.Info(IoC.Translate("import_failure_with_data_format_error"));
                         }
                         finally
                         {
@@ -612,7 +612,7 @@ namespace _1RM.View.ServerList
                     // select save to which source
                     var source = DataSourceSelectorViewModel.SelectDataSource();
                     if (source?.IsWritable != true) return;
-                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
                     if (path == null) return;
 
                     try
@@ -640,7 +640,7 @@ namespace _1RM.View.ServerList
                             var ret = AppData.AddServer(rdp, source);
                             if (ret.IsSuccess)
                             {
-                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", "1"));
+                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", "1"));
                             }
                             else
                             {
@@ -651,7 +651,7 @@ namespace _1RM.View.ServerList
                     catch (Exception e)
                     {
                         SimpleLogHelper.Debug(e);
-                        MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
+                        MessageBoxHelper.Info(IoC.Translate("import_failure_with_data_format_error"));
                     }
                 });
             }
@@ -669,7 +669,7 @@ namespace _1RM.View.ServerList
                 {
                     var ss = VmServerList.Where(x => x.IsSelected == true && x.IsEditable).ToList();
                     if (!(ss?.Count > 0)) return;
-                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                    if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         MaskLayerController.ShowProcessingRing();
                         Task.Factory.StartNew(() =>

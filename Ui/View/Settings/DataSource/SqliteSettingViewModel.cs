@@ -77,9 +77,9 @@ namespace _1RM.View.Settings.DataSource
                     // TODO 改为 IDataErrorInfo 实现
                     New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
                     if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
+                        throw new ArgumentException(IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace _1RM.View.Settings.DataSource
 
                     if (!IoPermissionHelper.HasWritePermissionOnFile(newPath))
                     {
-                        MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"), ownerViewModel: this);
+                        MessageBoxHelper.ErrorAlert(IoC.Translate("string_database_error_permission_denied"), ownerViewModel: this);
                         return;
                     }
 
@@ -132,7 +132,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
+                            MessageBoxHelper.ErrorAlert(IoC.Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
                         }
                     });
                 });

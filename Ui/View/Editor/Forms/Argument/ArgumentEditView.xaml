@@ -48,7 +48,7 @@
         <Grid IsSharedSizeScope="True">
 
             <StackPanel Margin="20 0">
-                <TextBlock Text="TXT: add argument" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                <TextBlock Text="{DynamicResource 'Cmd parameter'}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
                 <StackPanel>
 
@@ -59,7 +59,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="TXT: type"></TextBlock>
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Type}"></TextBlock>
                         <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
                     </Grid>
 
@@ -82,11 +82,11 @@
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: prefix"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Prefix}"></TextBlock>
                         <TextBox Name="TbKey"  Grid.Column="1"
                                  Text="{Binding New.Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                 Tag="TXT: 可选"/>
+                                 Tag="{DynamicResource Optional}"/>
                     </Grid>
 
                     <Grid Margin="0 0 0 20">
@@ -95,7 +95,7 @@
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterKey}" Margin="0" Content="TXT: append blank after prefix"></CheckBox>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterKey}" Margin="0" Content="{DynamicResource 'append blank after prefix'}"></CheckBox>
                     </Grid>
 
                     <Grid Margin="0 0 0 20">
@@ -104,7 +104,7 @@
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="TXT: append blank after value"></CheckBox>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="{DynamicResource 'append blank after value'}"></CheckBox>
                     </Grid>
 
                     <Grid Margin="0 0 0 20">
@@ -114,9 +114,8 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT: can be empty"></TextBlock>
                         <Grid Grid.Row="0" Grid.Column="1">
-                            <CheckBox IsChecked="{Binding New.IsNullable}" Content="TXT: Nullable" Margin="0"></CheckBox>
+                            <CheckBox IsChecked="{Binding New.IsNullable}" Content="{DynamicResource Nullable}" Margin="0"></CheckBox>
                         </Grid>
                     </Grid>
 
@@ -127,7 +126,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT:Description"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Description}"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding New.Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                         />
@@ -140,7 +139,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="TXT:Const value"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Const value'}"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" />
                     </Grid>
 
@@ -151,7 +150,7 @@
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="TXT:Selections"></TextBlock>
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Selections}"></TextBlock>
                         <TextBox Grid.Column="1" 
                                  Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"

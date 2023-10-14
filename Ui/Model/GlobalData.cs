@@ -173,7 +173,7 @@ namespace _1RM.Model
 
         public Result AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not insert into database:");
+            string info = IoC.Translate("We can not insert into database:");
             StopTick();
             if (dataSource.IsWritable == false)
             {
@@ -216,7 +216,7 @@ namespace _1RM.Model
         public Result UpdateServer(ProtocolBase protocolServer)
         {
             StopTick();
-            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
+            string info = IoC.Translate("We can not update on database:");
             try
             {
                 Debug.Assert(protocolServer.IsTmpSession() == false);
@@ -487,7 +487,7 @@ namespace _1RM.Model
                     || listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
-                    var pause = IoC.Get<LanguageService>().Translate("Pause");
+                    var pause = IoC.Translate("Pause");
                     foreach (var s in ds)
                     {
                         s.ReconnectInfo = pause;
@@ -522,13 +522,13 @@ namespace _1RM.Model
                 var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
 
 
-                var msgUpdating = IoC.Get<LanguageService>().Translate("Updating");
-                var msgNextUpdate = IoC.Get<LanguageService>().Translate("Next update check");
+                var msgUpdating = IoC.Translate("Updating");
+                var msgNextUpdate = IoC.Translate("Next update check");
                 var msg = minEtc > 0 ? $"{msgNextUpdate} {GetTime(minEtc)}" : msgUpdating;
 
 
-                var msgNextReconnect = IoC.Get<LanguageService>().Translate("Next auto reconnect");
-                var msgReconnecting = IoC.Get<LanguageService>().Translate("Reconnecting");
+                var msgNextReconnect = IoC.Translate("Next auto reconnect");
+                var msgReconnecting = IoC.Translate("Reconnecting");
                 foreach (var s in ds)
                 {
                     if (s.Status != EnumDatabaseStatus.OK)

@@ -18,7 +18,7 @@ namespace _1RM.View.Editor
         private readonly List<AppArgument> _sharedArgumentsInBuckEdit = new List<AppArgument>();
         private void AppArgumentsBulkInit(IEnumerable<ProtocolBase> servers)
         {
-            // TODO need a remake
+            // TODO need a remake，批量编辑时，参数列表不同，如何批量修改列表、更改参数顺序、删除参数、新增参数？
             _sharedArgumentsInBuckEdit.Clear();
             var protocolBases = servers as ProtocolBase[] ?? servers.ToArray();
             if (Server is LocalApp app && protocolBases.All(x => x is LocalApp))
@@ -33,7 +33,13 @@ namespace _1RM.View.Editor
                         {
                             if (_sharedArgumentsInBuckEdit.All(x => x.IsConfigEqualTo(argument) == false))
                             {
-                                _sharedArgumentsInBuckEdit.Add(argument);
+                                var newArg = (AppArgument)argument.Clone();
+                                var vv = ss.Any(x => x.ArgumentList.Where(y => y.IsConfigEqualTo(argument)).Any(z => z.Value != argument.Value));
+                                if (vv)
+                                {
+                                    newArg.Value = Server.ServerEditorDifferentOptions;
+                                }
+                                _sharedArgumentsInBuckEdit.Add(newArg);
                             }
                         }
                         else
@@ -45,14 +51,15 @@ namespace _1RM.View.Editor
 
                 var list = new List<AppArgument>();
                 if (isAllTheSameFlag == false)
-                    list.Add(new AppArgument(isEditable: false) { Name = Server.ServerEditorDifferentOptions, Value = Server.ServerEditorDifferentOptions });
-                list.AddRange(_sharedArgumentsInBuckEdit);
+                    list.Add(new AppArgument(false) { Name = Server.ServerEditorDifferentOptions, Value = Server.ServerEditorDifferentOptions, Type = AppArgumentType.Const});
+                //else
+                    list.AddRange(_sharedArgumentsInBuckEdit);
+
                 app.ArgumentList = new ObservableCollection<AppArgument>(list);
             }
         }
         private void AppArgumentsBulkMerge(IEnumerable<ProtocolBase> servers)
         {
-            // TODO need a remake, 编辑时直接修改 _serversInBuckEdit 的值，以避免复杂的合并
             var protocolBases = servers as ProtocolBase[] ?? servers.ToArray();
             if (Server is LocalApp newServer && protocolBases.All(x => x is LocalApp))
             {
@@ -153,7 +160,7 @@ namespace _1RM.View.Editor
                         && o is AppArgument org
                         && protocol.ArgumentList.Contains(org))
                     {
-                        if (MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        if (MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
                             protocol.ArgumentList.Remove(org);
                         }

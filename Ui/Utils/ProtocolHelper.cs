@@ -170,8 +170,7 @@ namespace _1RM.Utils
                     }
                 case LocalApp app:
                     {
-                        var tmp = WinCmdRunner.CheckFileExistsAndFullName(app.ExePath);
-                        return IntegrateHost.Create(app, tmp.Item2, app.GetArguments());
+                        return IntegrateHost.Create(app, app.GetExePath(), app.GetArguments(false));
                     }
                 default:
                     throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");

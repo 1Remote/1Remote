@@ -168,7 +168,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     }
 
 
-    [JsonIgnore] public string HintDescription => IsNullable ? "(TXT:optional)" + _description : _description;
+    [JsonIgnore] public string HintDescription => IsNullable ? $"({IoC.Translate("Optional")})" + _description : _description;
 
 
 
@@ -344,19 +344,19 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
+            return new Tuple<bool, string>(false, $"`{IoC.Translate(LanguageService.NAME)}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
         }
 
         if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
         {
-            return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
+            return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
         }
 
         return new Tuple<bool, string>(true, "");
     }
 
     public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
-    {
+    {   
         if (value.StartsWith("%") && value.EndsWith("%"))
         {
             return new Tuple<bool, string>(true, "");
@@ -364,7 +364,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         if (string.IsNullOrEmpty(value) && type != AppArgumentType.Selection)
         {
             if (!isNullable || type == AppArgumentType.Const )
-                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY));
+                return new Tuple<bool, string>(false, IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
             else
                 return new Tuple<bool, string>(true, "");
         }
@@ -373,11 +373,11 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             switch (type)
             {
                 case AppArgumentType.File when !File.Exists(value):
-                    return new Tuple<bool, string>(false, "TXT: not existed");
+                    return new Tuple<bool, string>(false, IoC.Translate("Not existed"));
                 case AppArgumentType.Float when !double.TryParse(value, out _):
-                    return new Tuple<bool, string>(false, "TXT: not a number");
+                    return new Tuple<bool, string>(false, IoC.Translate("Not a number"));
                 case AppArgumentType.Int when !long.TryParse(value, out _):
-                    return new Tuple<bool, string>(false, "TXT: not a number");
+                    return new Tuple<bool, string>(false, IoC.Translate("Not a number"));
             }
         }
         return new Tuple<bool, string>(true, "");

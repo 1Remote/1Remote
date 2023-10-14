@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Klávesovou zkratku se nepodařilo zaregistrovat</s:String>
     <s:String x:Key="string_permission_denied">Oprávnění odepřeno</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Naposledy zaktualizováno</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Typ</s:String>
+    <s:String x:Key="Type">Typ</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Velikost</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Tato položka má přes 1 MB – opravdu ji chcete otevírat?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Vyberte složku do které uložit</s:String>
@@ -289,4 +289,15 @@
     <s:String x:Key="Verification failed. Please try again.">Ověření se nezdařilo. Prosím zkuste to znovu.</s:String>
     <s:String x:Key="Security">Security</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">K zobrazení hesel je vyžadováno ověření přihlašovacích údajů systému Windows</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Ne číslo</s:String>
+    <s:String x:Key="Optional">Volitelný</s:String>
+    <s:String x:Key="Nullable">S možností nulování</s:String>
+    <s:String x:Key="Selections">Výběry</s:String>
+    <s:String x:Key="Const value">Konstantní hodnota</s:String>
+    <s:String x:Key="Description">Popis</s:String>
+    <s:String x:Key="Prefix">Předpona</s:String>
+    <s:String x:Key="append blank after prefix">za předponu připojit prázdné místo</s:String>
+    <s:String x:Key="append blank after value">za hodnotu připojit prázdné místo</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Chcete nahradit aktuální seznam parametrů přednastavenou hodnotou?</s:String>
 </ResourceDictionary>

@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Nie udało się przypisać skrótu klawiszowego</s:String>
     <s:String x:Key="string_permission_denied">Odmowa dostępu</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Ostatnia aktualizacja</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Typ</s:String>
+    <s:String x:Key="Type">Typ</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Rozmiar</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Plik ma ponad 1MB, czy na pewno chcesz go otworzyć?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Wybierz folder do zapisu</s:String>
@@ -289,4 +289,15 @@
     <s:String x:Key="Verification failed. Please try again.">Weryfikacja nie powiodła się. Proszę spróbuj ponownie.</s:String>
     <s:String x:Key="Security">Bezpieczeństwo</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">Aby wyświetlić hasła, wymagana jest weryfikacja poświadczeń systemu Windows</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Nie liczba</s:String>
+    <s:String x:Key="Optional">Opcjonalny</s:String>
+    <s:String x:Key="Nullable">Możliwość wartości null</s:String>
+    <s:String x:Key="Selections">Wybory</s:String>
+    <s:String x:Key="Const value">Wartość stała</s:String>
+    <s:String x:Key="Description">Opis</s:String>
+    <s:String x:Key="Prefix">Prefiks</s:String>
+    <s:String x:Key="append blank after prefix">dodaj puste miejsce po przedrostku</s:String>
+    <s:String x:Key="append blank after value">dodaj puste miejsce po wartości</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Czy chcesz zastąpić aktualną listę parametrów wartością zadaną?</s:String>
 </ResourceDictionary>

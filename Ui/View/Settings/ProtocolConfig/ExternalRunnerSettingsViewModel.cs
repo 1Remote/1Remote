@@ -132,7 +132,7 @@ public class ExternalRunnerSettingsViewModel
                 if (o is ExternalRunner.ObservableKvp<string, string> item
                     && ExternalRunner.EnvironmentVariables.Contains(item)
                     && ((item.Key == "" && item.Value == "")
-                        || true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        || true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                    )
                 {
                     ExternalRunner.EnvironmentVariables.Remove(item);

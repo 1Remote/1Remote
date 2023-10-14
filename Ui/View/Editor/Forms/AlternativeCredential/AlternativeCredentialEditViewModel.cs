@@ -137,12 +137,12 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             name = name.Trim();
             if (string.IsNullOrWhiteSpace(name))
             {
-                return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate(LanguageService.NAME)}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
+                return new Tuple<bool, string>(false, $"`{IoC.Translate(LanguageService.NAME)}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
             }
 
             if (_existedNames?.Any(x => string.Equals(x, name, StringComparison.CurrentCultureIgnoreCase)) == true)
             {
-                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
+                return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
             }
 
             return new Tuple<bool, string>(true, "");
@@ -167,7 +167,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 && string.IsNullOrWhiteSpace(path) == false
                 && File.Exists(New.PrivateKeyPath) == false)
             {
-                return new Tuple<bool, string>(false, IoC.Get<ILanguageService>().Translate(LanguageService.XXX_IS_ALREADY_EXISTED, path));
+                return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, path));
             }
             return new Tuple<bool, string>(true, "");
         }

@@ -204,21 +204,8 @@
                     Style="{StaticResource ButtonPrimaryStyle}"
                     ToolTip="{DynamicResource 'Add'}" 
                     Margin="5 0 5 0">
-                <!--ADD BUTTON-->
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryCross}"
-                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                          StrokeThickness="2" Stretch="Uniform" />
-                </Grid>
-            </Button>
-
-            <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                    Margin="5 0 0 0"
-                    ToolTip="{DynamicResource 'Preview'}" 
-                    Command="{Binding CmdPreview}">
-                <Grid Height="15" Width="15">
-                    <Path Data="{StaticResource GeometryMagnifier}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                           StrokeThickness="2" Stretch="Uniform" />

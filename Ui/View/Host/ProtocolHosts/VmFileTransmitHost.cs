@@ -312,7 +312,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_refresh") };
+                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -320,7 +320,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -343,7 +343,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
@@ -354,7 +354,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_select_files_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -364,7 +364,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_select_folder_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_select_folder_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -376,7 +376,7 @@ namespace _1RM.View.Host.ProtocolHosts
             else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_delete") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -384,7 +384,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_save_to") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();
@@ -413,7 +413,7 @@ namespace _1RM.View.Host.ProtocolHosts
                             return;
 
                         var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: vm == null ? this : vm))
+                        if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete"), ownerViewModel: vm == null ? this : vm))
                         {
                             foreach (var itemInfo in RemoteItems)
                             {
@@ -574,7 +574,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     else if (SelectedRemoteItem?.IsSymlink == false)
                     {
                         const int limit = 1;
-                        var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
+                        var msg = IoC.Translate("file_transmit_host_message_preview_over_size");
                         msg = msg.Replace("1 MB", $"{limit} MB");
                         var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
                         if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
@@ -728,7 +728,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     }
 
                     var path = SelectFileHelper.SaveFile(
-                        title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to"),
+                        title: IoC.Translate("file_transmit_host_message_files_download_to"),
                         selectedFileName: IoC.Get<ILanguageService>()
                             .Translate("file_transmit_host_message_files_download_to_dir"));
                     if (path == null) return;
@@ -738,7 +738,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         if (!IoPermissionHelper.HasWritePermissionOnFile(path)
                             || !IoPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                         {
-                            IoMessage = IoC.Get<ILanguageService>().Translate("string_permission_denied") + $": {path}";
+                            IoMessage = IoC.Translate("string_permission_denied") + $": {path}";
                             IoMessageLevel = 2;
                             return;
                         }

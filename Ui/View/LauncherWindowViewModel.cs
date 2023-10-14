@@ -211,14 +211,14 @@ namespace _1RM.View
                         return true;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                         {
-                            var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_registered_fail")}: {r.Item2}";
+                            var msg = $"{IoC.Translate("hotkey_registered_fail")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
                             MessageBoxHelper.Warning(msg);
                             break;
                         }
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                         {
-                            var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_already_registered")}: {r.Item2}";
+                            var msg = $"{IoC.Translate("hotkey_already_registered")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
                             MessageBoxHelper.Warning(msg);
                             break;

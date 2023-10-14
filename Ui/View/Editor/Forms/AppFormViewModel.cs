@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Windows.Networking;
 
 namespace _1RM.View.Editor.Forms
 {
@@ -75,22 +76,22 @@ namespace _1RM.View.Editor.Forms
                     var t = AppArgumentHelper.GetPresetArgumentList(ExePath);
                     if (t != null)
                     {
-                        bool same = New.ArgumentList.Count == t.Item2.Count;
+                        bool same = New.ArgumentList.Count == t.ArgumentList.Count;
                         if (same)
                             for (int i = 0; i < New.ArgumentList.Count; i++)
                             {
-                                if (!New.ArgumentList[i].IsConfigEqualTo(t.Item2[i]))
+                                if (!New.ArgumentList[i].IsConfigEqualTo(t.ArgumentList[i]))
                                 {
                                     same = false;
                                     break;
                                 }
                             }
                         if (!same && (New.ArgumentList.All(x => x.IsDefaultValue())
-                                      || MessageBoxHelper.Confirm("TXT: 用适配 path 的参数覆盖当前参数列表？")))
+                                      || MessageBoxHelper.Confirm(IoC.Translate("Do you want to replace the current parameter list with preset value?") + " " + t.DisplayName)))
                         {
-                            New.RunWithHosting = t.Item1;
+                            New.RunWithHosting = t.RunWithHosting;
                             _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
-                            New.ArgumentList = new ObservableCollection<AppArgument>(t.Item2);
+                            New.ArgumentList = new ObservableCollection<AppArgument>(t.ArgumentList);
                             _localApp.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
                             CheckMacroRequirement();
                         }
@@ -186,7 +187,7 @@ namespace _1RM.View.Editor.Forms
             }
         }
 
-        public string Demo => ExePath + " " + New.GetDemoArguments();
+        public string Demo => New.GetExePath() + " " + New.GetArguments(true);
 
 
         public bool? IsPingBeforeConnect
@@ -233,11 +234,11 @@ namespace _1RM.View.Editor.Forms
 
 
 
-        public string HintHostName { get; set; }
-        public string HintPort { get; set; }
-        public string HintUserName { get; set; }
-        public string HintPassword { get; set; }
-        public string HintPrivateKey { get; set; }
+        public string HintHostName { get; set; } = "";
+        public string HintPort { get; set; } = "";
+        public string HintUserName { get; set; } = "";
+        public string HintPassword { get; set; } = "";
+        public string HintPrivateKey { get; set; } = "";
 
 
         public bool RequiredHostName { get; set; } = false;
@@ -317,6 +318,11 @@ namespace _1RM.View.Editor.Forms
             RaisePropertyChanged(nameof(HintPassword));
             RaisePropertyChanged(nameof(HintPrivateKey));
             RaisePropertyChanged(nameof(Demo));
+            RaisePropertyChanged(nameof(Address));
+            RaisePropertyChanged(nameof(Port));
+            RaisePropertyChanged(nameof(UserName));
+            RaisePropertyChanged(nameof(Password));
+            RaisePropertyChanged(nameof(PrivateKey));
         }
 
         #region IDataErrorInfo
@@ -331,9 +337,9 @@ namespace _1RM.View.Editor.Forms
                 {
                     case nameof(Address):
                         {
-                            if (!RequiredHostNameIsNullable && string.IsNullOrWhiteSpace(Address))
+                            if (RequiredHostName && !RequiredHostNameIsNullable && string.IsNullOrWhiteSpace(Address))
                             {
-                                return $"`{IoC.Get<ILanguageService>().Translate("Hostname")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return $"`{IoC.Translate("Hostname")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
                             }
                             break;
                         }
@@ -342,32 +348,36 @@ namespace _1RM.View.Editor.Forms
                             if (RequiredPort)
                             {
                                 if (!RequiredPortIsNullable && string.IsNullOrWhiteSpace(Port))
-                                    return $"`{IoC.Get<ILanguageService>().Translate("Port")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
-                                if (!long.TryParse(Port, out _))
-                                    return "TXT: not a number";
+                                    return $"`{IoC.Translate("Port")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                if (!long.TryParse(Port, out _) && Port != New.ServerEditorDifferentOptions)
+                                    return IoC.Translate("Not a number");
                             }
                             break;
                         }
                     case nameof(UserName):
                         {
-                            if (!RequiredUserNameIsNullable && string.IsNullOrWhiteSpace(UserName))
+                            if (RequiredUserName && !RequiredUserNameIsNullable && string.IsNullOrWhiteSpace(UserName))
                             {
-                                return $"`{IoC.Get<ILanguageService>().Translate("User")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return $"`{IoC.Translate("User")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
                             }
                             break;
                         }
                     case nameof(Password):
                         {
-                            if (!RequiredPasswordIsNullable && string.IsNullOrWhiteSpace(Password))
+                            if (RequiredPassword && !RequiredPasswordIsNullable && string.IsNullOrWhiteSpace(Password))
                             {
-                                return $"`{IoC.Get<ILanguageService>().Translate("Password")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return $"`{IoC.Translate("Password")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
                             }
                             break;
                         }
-                        //default:
-                        //    {
-                        //        return New[columnName];
-                        //    }
+                    case nameof(PrivateKey):
+                        {
+                            if (RequiredPrivateKey && !RequiredPrivateKeyIsNullable && string.IsNullOrWhiteSpace(PrivateKey))
+                            {
+                                return $"`{IoC.Translate("Private key")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                            }
+                            break;
+                        }
                 }
                 return "";
             }
@@ -402,20 +412,6 @@ namespace _1RM.View.Editor.Forms
             }
         }
 
-
-        private RelayCommand? _cmdPreview;
-        [JsonIgnore]
-        public RelayCommand CmdPreview
-        {
-            get
-            {
-                return _cmdPreview ??= new RelayCommand((o) =>
-                {
-                    MessageBoxHelper.Info(ExePath + " " + New.GetDemoArguments(), ownerViewModel: IoC.Get<MainWindowViewModel>());
-                });
-            }
-        }
-
         private RelayCommand? _cmdTest;
         [JsonIgnore]
         public RelayCommand CmdTest
@@ -426,7 +422,7 @@ namespace _1RM.View.Editor.Forms
                 {
                     try
                     {
-                        Process.Start(ExePath, New.GetArguments());
+                        Process.Start(New.GetExePath(), New.GetArguments(false));
                     }
                     catch (Exception e)
                     {

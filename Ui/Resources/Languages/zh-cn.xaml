@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">快捷键注册失败</s:String>
     <s:String x:Key="string_permission_denied">无操作权限</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">修改时间</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">类型</s:String>
+    <s:String x:Key="Type">类型</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">大小</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">文件超过 1 MB，确定要打开吗?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">将文件下载到所选文件夹</s:String>
@@ -289,4 +289,15 @@
     <s:String x:Key="Verification failed. Please try again.">验证失败，请重试。</s:String>
     <s:String x:Key="Security">安全设置</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">查看密码前要求验证Windows凭据</s:String>
+    <s:String x:Key="Not existed">不存在</s:String>
+    <s:String x:Key="Not a number">不是数值</s:String>
+    <s:String x:Key="Optional">可选的</s:String>
+    <s:String x:Key="Nullable">可为空</s:String>
+    <s:String x:Key="Selections">备选项</s:String>
+    <s:String x:Key="Const value">固定值</s:String>
+    <s:String x:Key="Description">描述</s:String>
+    <s:String x:Key="Prefix">前缀</s:String>
+    <s:String x:Key="append blank after prefix">在前缀后添加空格</s:String>
+    <s:String x:Key="append blank after value">在值后添加空格</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">是否将当前参数列表替换为预设值？</s:String>
 </ResourceDictionary>

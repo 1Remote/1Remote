@@ -30,7 +30,8 @@ namespace _1RM.Model.Protocol.Base
     //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
     public abstract class ProtocolBase : NotifyPropertyChangedBase
     {
-        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options").Replace(" ", "-");
+        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
+        [JsonIgnore] public static string ServerEditorStaticDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName)
         {
@@ -345,7 +346,7 @@ namespace _1RM.Model.Protocol.Base
             {
                 exitCode = 1;
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script before connect"));
             }
             return exitCode;
         }
@@ -380,7 +381,7 @@ namespace _1RM.Model.Protocol.Base
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script after disconnected"));
             }
         }
 

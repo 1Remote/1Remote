@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils;
 using Shawn.Utils;
-using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
-using _1RM.View;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
-using System.Windows.Shapes;
-using System.Collections.Generic;
 
 namespace _1RM.Model.Protocol
 {
-    // TODO 改为 ProtocolBaseWithAddressPortUserPwd 并且用 %1RM_PASSWORD% 替代默认密码
     public class LocalApp : ProtocolBaseWithAddressPortUserPwd
     {
         public LocalApp() : base("APP", "APP.V1", "APP")
@@ -33,14 +22,6 @@ namespace _1RM.Model.Protocol
         public override bool IsOnlyOneInstance()
         {
             return false;
-        }
-
-
-        private string _appSubTitle = "";
-        public string AppSubTitle
-        {
-            get => _appSubTitle;
-            set => SetAndNotifyIfChanged(ref _appSubTitle, value);
         }
 
         private string _exePath = "";
@@ -106,7 +87,15 @@ namespace _1RM.Model.Protocol
 
         protected override string GetSubTitle()
         {
-            return string.IsNullOrEmpty(AppSubTitle) ? $"{this.ExePath}" : AppSubTitle;
+            if (!string.IsNullOrEmpty(Address))
+            {
+                if (!string.IsNullOrEmpty(Port))
+                {
+                    return string.IsNullOrEmpty(UserName) ? $"{Address}:{Port}" : $"{Address}:{Port}({UserName})";
+                }
+                return Address;
+            }
+            return System.IO.Path.GetFileName(ExePath) + " "+ GetArguments(true);
         }
 
         public override double GetListOrder()
@@ -114,15 +103,16 @@ namespace _1RM.Model.Protocol
             return 100;
         }
 
-        public string GetArguments()
+        public string GetExePath()
         {
-            return AppArgument.GetArgumentsString(ArgumentList, false, this);
+            var path = OtherNameAttributeExtensions.Replace(this, ExePath);
+            path = Environment.ExpandEnvironmentVariables(path);
+            return path;
         }
 
-
-        public string GetDemoArguments()
+        public string GetArguments(bool isDemo)
         {
-            return AppArgument.GetArgumentsString(ArgumentList, true, this);
+            return AppArgument.GetArgumentsString(ArgumentList, isDemo, this);
         }
 
         public override bool Verify()

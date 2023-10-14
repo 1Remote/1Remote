@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Documents;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
@@ -9,7 +10,7 @@ namespace _1RM.Model.Protocol;
 
 public static class AppArgumentHelper
 {
-    private static Tuple<bool, List<AppArgument>>? GetFreeRdp(string path)
+    private static LocalApp? GetFreeRdp(string path)
     {
         if (path.IndexOf("freerdp.exe", StringComparison.OrdinalIgnoreCase) >= 0)
         {
@@ -146,12 +147,18 @@ public static class AppArgumentHelper
             // TODO check
 #endif
             // TODO add auto cmd if kitty
-            return new Tuple<bool, List<AppArgument>>(true, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "FreeRdp",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    private static Tuple<bool, List<AppArgument>>? GetPuttyArgumentList(string path)
+    private static LocalApp? GetPuttyArgumentList(string path)
     {
         if (path.IndexOf("putty.exe", StringComparison.OrdinalIgnoreCase) >= 0
             || path.IndexOf("kitty.exe", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -219,14 +226,20 @@ public static class AppArgumentHelper
                 },
             };
             // TODO add auto cmd if kitty
-            return new Tuple<bool, List<AppArgument>>(true, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "PuTTY",
+                RunWithHosting = true,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    private static Tuple<bool, List<AppArgument>>? GetWinScp(string path)
+    private static LocalApp? GetWinScp(string path)
     {
-        if (path.IndexOf("WinSCP", StringComparison.OrdinalIgnoreCase) >= 0)
+        if (path.IndexOf("winSCP.exe", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             // ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
             // Arguments = @"sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%",
@@ -304,12 +317,18 @@ public static class AppArgumentHelper
                     AddBlankAfterValue = false,
                 },
             };
-            return new Tuple<bool, List<AppArgument>>(false, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "WinSCP",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    private static Tuple<bool, List<AppArgument>>? GetFilezilla(string path)
+    private static LocalApp? GetFilezilla(string path)
     {
         if (path.IndexOf("filezilla.exe", StringComparison.OrdinalIgnoreCase) >= 0)
         {
@@ -377,12 +396,18 @@ public static class AppArgumentHelper
                     AddBlankAfterValue = false,
                 },
             };
-            return new Tuple<bool, List<AppArgument>>(false, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "filezilla",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    private static Tuple<bool, List<AppArgument>>? GetUltraVNC(string path)
+    private static LocalApp? GetUltraVNC(string path)
     {
         if (path.IndexOf("vncviewer.exe", StringComparison.OrdinalIgnoreCase) >= 0
             || path.IndexOf("uvnc", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -426,12 +451,18 @@ public static class AppArgumentHelper
                     AddBlankAfterKey = true,
                 },
             };
-            return new Tuple<bool, List<AppArgument>>(false, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "UltraVNC",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    private static Tuple<bool, List<AppArgument>>? GetTightVNC(string path)
+    private static LocalApp? GetTightVNC(string path)
     {
         if (path.IndexOf("tvnviewer.exe", StringComparison.OrdinalIgnoreCase) >= 0
             || path.IndexOf("TightVNC", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -485,12 +516,18 @@ public static class AppArgumentHelper
                     AddBlankAfterKey = true,
                 },
             };
-            return new Tuple<bool, List<AppArgument>>(true, argumentList);
+            var app = new LocalApp()
+            {
+                DisplayName = "TightVNC",
+                RunWithHosting = true,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
         }
         return null;
     }
 
-    public static Tuple<bool, List<AppArgument>>? GetPresetArgumentList(string exePath)
+    public static LocalApp? GetPresetArgumentList(string exePath)
     {
         exePath = exePath.ToLower();
         return GetPuttyArgumentList(exePath)

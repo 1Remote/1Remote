@@ -48,6 +48,16 @@
             </Grid>
         </StackPanel>
 
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Protocol}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Tag="{DynamicResource Optional}"
+                             Text="{Binding New.AppProtocolDisplayName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
 
         <StackPanel>
 
@@ -64,7 +74,8 @@
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                             Tag="e.g. 192.168.0.101" Height="{StaticResource InputHeight}" 
+                             Tag="{Binding HintHostName}"
+                             Height="{StaticResource InputHeight}" 
                     ></TextBox>
                 </Grid>
             </StackPanel>
@@ -127,7 +138,7 @@
 
 
             <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}" Margin="0 0 0 15" 
-                        Visibility="{Binding RequiredPassword, Converter={StaticResource ConverterBool2Visible}}">
+                        Visibility="{Binding RequiredPrivateKey, Converter={StaticResource ConverterBool2Visible}}">
                 <Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
@@ -137,8 +148,7 @@
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}" Height="{StaticResource InputHeight}">
                     <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" 
-                             Tag="{Binding HintPrivateKey}"
-                             IsEnabled="False"></TextBox>
+                             Tag="{Binding HintPrivateKey}"></TextBox>
                     <Button Content="{DynamicResource Select}" 
                             Click="ButtonOpenPrivateKey_OnClick" 
                             Style="{StaticResource ButtonPrimaryStyle}"

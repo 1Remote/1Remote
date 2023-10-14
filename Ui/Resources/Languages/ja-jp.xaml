@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">ホットキーの登録に失敗しました</s:String>
     <s:String x:Key="string_permission_denied">アクセス拒否</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">最後の更新</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">タイプ</s:String>
+    <s:String x:Key="Type">タイプ</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">サイズ</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">このアイテムは 1 MB を超えています。開いてもよろしいですか?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">保存先のフォルダーを選択してください</s:String>
@@ -289,4 +289,15 @@
     <s:String x:Key="Verification failed. Please try again.">検証に失敗しました。もう一度試してください。</s:String>
     <s:String x:Key="Security">安全</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">パスワードを表示するには Windows 資格情報の検証が必要です</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">数字ではありません</s:String>
+    <s:String x:Key="Optional">オプション</s:String>
+    <s:String x:Key="Nullable">Null可能</s:String>
+    <s:String x:Key="Selections">選択範囲</s:String>
+    <s:String x:Key="Const value">定数値</s:String>
+    <s:String x:Key="Description">説明</s:String>
+    <s:String x:Key="Prefix">プレフィックス</s:String>
+    <s:String x:Key="append blank after prefix">プレフィックスの後に空白を追加する</s:String>
+    <s:String x:Key="append blank after value">値の後に空白を追加する</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">現在のパラメータリストをプリセット値に置き換えますか?</s:String>
 </ResourceDictionary>

@@ -142,8 +142,8 @@ namespace _1RM.View.Editor.Forms.Argument
         }
 
         public string SelectionsTag => Type == AppArgumentType.Selection
-            ? IoC.Get<ILanguageService>().Translate("TXT: 一行一个备选项(值|描述)，如：\r\n1|Yes\r\n0|No")
-            : IoC.Get<ILanguageService>().Translate("TXT: 一行一个备选项，如：\r\nApple\r\nBanana");
+            ? IoC.Translate("TXT: 一行一个备选项(值|描述)，如：\r\n1|Yes\r\n0|No")
+            : IoC.Translate("TXT: 一行一个备选项，如：\r\nApple\r\nBanana");
 
 
         private RelayCommand? _cmdSave;
@@ -276,7 +276,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 }
                 else
                 {
-                    return new Tuple<bool, string>(false, $"`{IoC.Get<ILanguageService>().Translate("TXT: Selections")}` {IoC.Get<ILanguageService>().Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
+                    return new Tuple<bool, string>(false, $"`{IoC.Translate("Selections")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
                 }
             }
             return new Tuple<bool, string>(true, "");
