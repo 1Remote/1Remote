@@ -149,13 +149,14 @@
                 <Grid Style="{StaticResource EditorRowGridInput}" Height="{StaticResource InputHeight}">
                     <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" 
                              Tag="{Binding HintPrivateKey}"></TextBox>
-                    <Button Content="{DynamicResource Select}" 
-                            Click="ButtonOpenPrivateKey_OnClick" 
-                            Style="{StaticResource ButtonPrimaryStyle}"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Stretch">
-                    </Button>
                 </Grid>
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5"
+                        Content="{DynamicResource Select}" 
+                        Click="ButtonOpenPrivateKey_OnClick" 
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch">
+                </Button>
             </StackPanel>
 
             <alternativeCredential:AlternativeCredentialListControl>

@@ -13,142 +13,107 @@
              d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <GridLength x:Key="RowHeight1">30</GridLength>
-        <GridLength x:Key="RowHeight2">20</GridLength>
+        <system:Double x:Key="AppArgumentHeight">30</system:Double>
+        <Thickness x:Key="AppArgumentMargin">0 0 0 10</Thickness>
         <system:Double x:Key="WidthName">100</system:Double>
         <system:Double x:Key="WidthKey">100</system:Double>
         <system:Double x:Key="WidthValue">300</system:Double>
+        <system:Double x:Key="WidthPreview">300</system:Double>
 
         <argument:ConverterStringIs1 x:Key="ConverterStringIs1"></argument:ConverterStringIs1>
 
         <DataTemplate x:Key="ArgumentConst" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <TextBlock Text="{Binding Value}" ToolTip="{Binding Value}" Width="{StaticResource WidthValue}" Margin="5 0" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Value}" ToolTip="{Binding Value}" Width="{StaticResource WidthValue}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ArgumentNormal" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="5 0" 
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="0 0 10 0"
                                                    ToolTip="{Binding HintDescription}"
                                                    Tag="{Binding HintDescription}"
                                                    Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                                    Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                                                    Selections="{Binding SelectionKeys, Mode=OneWay}"
                     />
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+                <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ArgumentSelection" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <ComboBox Width="{StaticResource WidthValue}" 
-                              ToolTip="{Binding HintDescription}"
-                              Tag="{Binding HintDescription}"
-                              Margin="5 0" 
-                              SelectedValue="{Binding Value, ValidatesOnExceptions=True}" 
-                              SelectedValuePath="Key"
-                              DisplayMemberPath="Value"
-                              ItemsSource="{Binding Selections}"></ComboBox>
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <ComboBox Width="{StaticResource WidthValue}" 
+                          ToolTip="{Binding HintDescription}"
+                          Tag="{Binding HintDescription}"
+                          Margin="0 0 10 0"
+                          SelectedValue="{Binding Value, ValidatesOnExceptions=True}" 
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"
+                          ItemsSource="{Binding Selections}"></ComboBox>
+                <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ArgumentFlag" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <CheckBox Width="{StaticResource WidthValue}" Margin="5 0"
-                              IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" 
-                              Content="{Binding HintDescription}"
-                              ToolTip="{Binding HintDescription}"
-                              Tag="{Binding HintDescription}"></CheckBox>
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <CheckBox Width="{StaticResource WidthValue}" Margin="0 0 10 0"
+                          IsChecked="{Binding Value, Converter={StaticResource ConverterStringIs1}}" 
+                          Content="{Binding HintDescription}"
+                          ToolTip="{Binding HintDescription}"
+                          Tag="{Binding HintDescription}"></CheckBox>
+                <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ArgumentFile" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <Grid Width="{StaticResource WidthValue}" Margin="5 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="30"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Height="28" 
-                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
-                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                 ToolTip="{Binding HintDescription}"
-                                 Tag="{Binding HintDescription}"/>
-                        <Button Height="28" Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" 
-                                Content="{DynamicResource Select}" 
-                                Command="{Binding CmdSelectArgumentFile}"></Button>
-                    </Grid>
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <Grid Width="{StaticResource WidthValue}" Margin="0 0 10 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Height="28" 
+                             Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                             Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                             ToolTip="{Binding HintDescription}"
+                             Tag="{Binding HintDescription}"/>
+                    <Button Height="28" Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" 
+                            Content="{DynamicResource Select}" 
+                            Command="{Binding CmdSelectArgumentFile}"></Button>
+                </Grid>
+                <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ArgumentSecret" DataType="protocol:AppArgument">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{StaticResource RowHeight1}"></RowDefinition>
-                    <RowDefinition Height="{StaticResource RowHeight2}"></RowDefinition>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="5 0"/>
-                    <controls:PasswordInput Width="{StaticResource WidthValue}" Margin="5 0" Height="28" 
-                                            Password="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                            Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                            ToolTip="{Binding HintDescription}"
-                                            Tag="{Binding HintDescription}"/>
-                    <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                </StackPanel>
-                <TextBlock Grid.Row="1" Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <controls:PasswordInput Width="{StaticResource WidthValue}" Margin="0 0 10 0" Height="28" 
+                                        Password="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                        Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                        ToolTip="{Binding HintDescription}"
+                                        Tag="{Binding HintDescription}"/>
+                <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
+                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <Style TargetType="{x:Type ContentPresenter}" x:Key="ContainerStyle" d:DataContext="{d:DesignInstance protocol:AppArgument}">
@@ -174,23 +139,16 @@
     </UserControl.Resources>
     <StackPanel>
 
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
 
-        <ItemsControl HorizontalAlignment="Stretch" 
-                      HorizontalContentAlignment="Stretch"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      ItemsSource="{Binding New.ArgumentList}" 
-                      ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
+        <StackPanel Orientation="Horizontal" Margin="0 20 0 10">
 
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Preview'}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Margin="80 0 0 0" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
 
-        <TextBlock Text="{Binding Demo}"></TextBlock>
-
-        <StackPanel Orientation="Horizontal">
             <Button Command="{Binding Path=DataContext.CmdToggleEditMode, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                     Style="{StaticResource ButtonPrimaryStyle}"
+                    Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
                     ToolTip="{DynamicResource 'Edit'}" 
-                    Margin="5 0 5 0">
+                    Margin="10 0 5 0">
                 <Grid Height="15" Width="15">
                     <Path Data="{StaticResource GeometryEdit}"
                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -212,17 +170,72 @@
                 </Grid>
             </Button>
 
-            <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                    Margin="5 0 0 0"
-                    ToolTip="{DynamicResource 'Test'}" 
-                    Command="{Binding CmdTest}">
-                <Grid Height="15" Width="15">
-                    <Path Data="{StaticResource GeometryPlay}"
-                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                          StrokeThickness="2" Stretch="Uniform" />
-                </Grid>
-            </Button>
         </StackPanel>
+
+
+        <Grid Style="{StaticResource EditorRowGrid}" 
+              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}" 
+              Margin="0 0 0 50"
+              ToolTip="{Binding Demo}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center" Width="Auto" Height="Auto">
+                    <TextBlock Text="{Binding Demo}" Opacity="0.5" MaxWidth="500" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5 0 0 0"
+                        ToolTip="{DynamicResource 'Test'}" 
+                        Command="{Binding CmdTest}">
+                    <Grid Height="15" Width="15">
+                        <Path Data="{StaticResource GeometryPlay}"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              StrokeThickness="2" Stretch="Uniform" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+
+        <StackPanel Margin="180 0 0 0">
+
+            <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
+                <TextBlock Text="{DynamicResource Name}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{DynamicResource Prefix}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="Value" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthValue}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 30 0"/>
+                <TextBlock Text="{DynamicResource Preview}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthPreview}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+            </StackPanel>
+
+            <ItemsControl HorizontalAlignment="Stretch" 
+                          HorizontalContentAlignment="Stretch"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ItemsSource="{Binding New.ArgumentList}" 
+                          ItemContainerStyle="{StaticResource ContainerStyle}"></ItemsControl>
+        </StackPanel>
+
+
+        <Grid Style="{StaticResource EditorRowGrid}" 
+              Margin="0 50 0 30"
+              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}" 
+              ToolTip="{Binding Demo}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center" Width="Auto" Height="Auto">
+                    <TextBlock Text="{Binding Demo}" Opacity="0.5" MaxWidth="500" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5 0 0 0"
+                        ToolTip="{DynamicResource 'Test'}" 
+                        Command="{Binding CmdTest}">
+                    <Grid Height="15" Width="15">
+                        <Path Data="{StaticResource GeometryPlay}"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              StrokeThickness="2" Stretch="Uniform" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+
     </StackPanel>
 </UserControl>

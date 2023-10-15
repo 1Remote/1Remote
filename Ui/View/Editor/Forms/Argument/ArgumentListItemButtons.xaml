@@ -11,7 +11,10 @@
              d:DataContext="{d:DesignInstance protocol:AppArgument}"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsEditable, Converter={StaticResource ConverterBool2Visible}}">
+    <StackPanel Orientation="Horizontal" 
+                VerticalAlignment="Center" 
+                Margin="0 0 10 0"
+                Visibility="{Binding IsEditable, Converter={StaticResource ConverterBool2Visible}}">
 
         <Button Margin="2 0"
                 Command="{Binding Path=DataContext.CmdMoveArgumentUp, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}" 
