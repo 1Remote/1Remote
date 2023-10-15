@@ -131,6 +131,7 @@
                                            Padding="0 5 0 5"
                                            x:Name="TextEditor"
                                            WordWrap="True"
+                                           MinWidth="200"
                                            Background="Transparent"
                                            Text="{Binding ExternalRunner.Arguments}"
                                            SyntaxHighlighting="PowerShell"

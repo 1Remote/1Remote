@@ -60,25 +60,27 @@ public class ExternalRunnerSettingsViewModel
                     var name = new FileInfo(path).Name.ToLower();
                     if (name == "winscp.exe".ToLower())
                     {
-                        if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
-                        {
-                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
-                        }
                         if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
+                        }
+                        else
+                        {
+                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
+                            if (ExternalRunner is ExternalRunnerForSSH ers)
+                                ers.ArgumentsForPrivateKey = @"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%";
                         }
                         ExternalRunner.RunWithHosting = true;
                     }
                     else if (name == "filezilla.exe".ToLower())
                     {
-                        if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
-                        {
-                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
-                        }
-                        else if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
+                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
                         {
                             ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
+                        }
+                        else
+                        {
+                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
                         }
                         ExternalRunner.RunWithHosting = false;
                     }

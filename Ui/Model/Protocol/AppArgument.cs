@@ -38,7 +38,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 {
     public AppArgument(bool? isEditable = true)
     {
-        IsEditable = isEditable;
+        IsEditable = isEditable ?? true;
     }
 
 

@@ -106,12 +106,12 @@ namespace _1RM.Service
             // SSH_PRIVATE_KEY_PATH 改名为 1RM_PRIVATE_KEY_PATH 2023年10月12日，TODO 一年后删除此代码
             var kys = new Dictionary<string, string>()
             {
-                { "SSH_PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH" },
-                { "HOSTNAME", "1RM_HOSTNAME" },
-                { "PORT", "1RM_PORT" },
-                { "USERNAME", "1RM_USERNAME" },
-                { "PASSWORD", "1RM_PASSWORD" },
-                { "PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH" },
+                { "%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%" },
+                { "%HOSTNAME%", "%1RM_HOSTNAME%" },
+                { "%PORT%", "%1RM_PORT%" },
+                { "%USERNAME%", "%1RM_USERNAME%" },
+                { "%PASSWORD%", "%1RM_PASSWORD%" },
+                { "%PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%" },
             };
 
             bool saveFlag = false;

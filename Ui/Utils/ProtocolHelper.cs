@@ -101,14 +101,14 @@ namespace _1RM.Utils
                         break;
                 }
             }
-            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("SSH_PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH"));
+            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%"));
 
             // make environment variables
             var environmentVariables = new Dictionary<string, string>();
             {
                 foreach (var kv in er.EnvironmentVariables)
                 {
-                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("SSH_PRIVATE_KEY_PATH", "1RM_PRIVATE_KEY_PATH")));
+                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
                 }
             }
 
