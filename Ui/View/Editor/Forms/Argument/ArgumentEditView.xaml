@@ -85,8 +85,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Prefix}"></TextBlock>
                         <TextBox Name="TbKey"  Grid.Column="1"
                                  Text="{Binding New.Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
-                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                 Tag="{DynamicResource Optional}"/>
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"/>
                     </Grid>
 
                     <Grid Margin="0 0 0 20">
@@ -98,7 +97,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterKey}" Margin="0" Content="{DynamicResource 'append blank after prefix'}"></CheckBox>
                     </Grid>
 
-                    <Grid Margin="0 0 0 20">
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsNullableVisibility}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
@@ -107,7 +106,7 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="{DynamicResource 'append blank after value'}"></CheckBox>
                     </Grid>
 
-                    <Grid Margin="0 0 0 20">
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsNullableVisibility}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
                             <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>

@@ -300,4 +300,6 @@
     <s:String x:Key="append blank after prefix">za předponu připojit prázdné místo</s:String>
     <s:String x:Key="append blank after value">za hodnotu připojit prázdné místo</s:String>
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">Chcete nahradit aktuální seznam parametrů přednastavenou hodnotou?</s:String>
+    <s:String x:Key="One option per line">Jedna možnost na řádek</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">K oddělení popisů použijte svislé čáry (hodnota|popis)</s:String>
 </ResourceDictionary>

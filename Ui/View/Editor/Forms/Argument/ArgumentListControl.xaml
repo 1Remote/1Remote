@@ -20,6 +20,13 @@
         <system:Double x:Key="WidthValue">300</system:Double>
         <system:Double x:Key="WidthPreview">300</system:Double>
 
+        <Style TargetType="TextBlock" x:Key="TextDemo" BasedOn="{StaticResource TextBlockBase}">
+            <Setter Property="Opacity" Value="0.5"></Setter>
+            <Setter Property="FontSize" Value="10"></Setter>
+            <Setter Property="Width" Value="{StaticResource WidthPreview}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        </Style>
+
         <argument:ConverterStringIs1 x:Key="ConverterStringIs1"></argument:ConverterStringIs1>
 
         <DataTemplate x:Key="ArgumentConst" DataType="protocol:AppArgument">
@@ -28,7 +35,7 @@
                 <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
                 <TextBlock Text="{Binding Value}" ToolTip="{Binding Value}" Width="{StaticResource WidthValue}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -44,7 +51,7 @@
                                                    Selections="{Binding SelectionKeys, Mode=OneWay}"
                     />
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -61,7 +68,7 @@
                           DisplayMemberPath="Value"
                           ItemsSource="{Binding Selections}"></ComboBox>
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -75,7 +82,7 @@
                           ToolTip="{Binding HintDescription}"
                           Tag="{Binding HintDescription}"></CheckBox>
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -98,7 +105,7 @@
                             Command="{Binding CmdSelectArgumentFile}"></Button>
                 </Grid>
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -112,7 +119,7 @@
                                         ToolTip="{Binding HintDescription}"
                                         Tag="{Binding HintDescription}"/>
                 <argument:ArgumentListItemButtons></argument:ArgumentListItemButtons>
-                <TextBlock Opacity="0.5" FontSize="10" Text="{Binding DemoArgumentString}" Width="{StaticResource WidthPreview}"></TextBlock>
+                <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>
         </DataTemplate>
 

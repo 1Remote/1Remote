@@ -300,4 +300,6 @@
     <s:String x:Key="append blank after prefix">プレフィックスの後に空白を追加する</s:String>
     <s:String x:Key="append blank after value">値の後に空白を追加する</s:String>
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">現在のパラメータリストをプリセット値に置き換えますか?</s:String>
+    <s:String x:Key="One option per line">1 行に 1 つのオプション</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">垂直線を使用して説明(値|説明)を区切ります。</s:String>
 </ResourceDictionary>

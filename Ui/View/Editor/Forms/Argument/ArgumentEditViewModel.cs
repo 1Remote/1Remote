@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using _1RM.Model.Protocol;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils.Interface;
@@ -18,21 +20,21 @@ namespace _1RM.View.Editor.Forms.Argument
     {
         private readonly LocalApp _localApp;
         private readonly AppArgument? _org = null;
-        private readonly List<AppArgument> _existedArguments;
+        private readonly List<string> _existedArguments;
         public AppArgument New { get; } = new AppArgument();
         public List<AppArgumentType> ArgumentTypes { get; } = new List<AppArgumentType>();
-        public ArgumentEditViewModel(LocalApp localApp, List<AppArgument> existedArguments, AppArgument? org = null)
+        public ArgumentEditViewModel(LocalApp localApp, List<string> existedArguments, AppArgument? org = null)
         {
             _localApp = localApp;
             _org = org;
-            _existedArguments = new List<AppArgument>(existedArguments);
+            _existedArguments = new List<string>(existedArguments);
             foreach (AppArgumentType value in Enum.GetValues(typeof(AppArgumentType)))
             {
                 ArgumentTypes.Add(value);
             }
 
-            if (_org != null && _existedArguments.Contains(_org))
-                _existedArguments.Remove(_org);
+            if (_org != null && _existedArguments.Contains(_org.Name))
+                _existedArguments.Remove(_org.Name);
 
             // Edit mode
             if (_org != null)
@@ -41,14 +43,15 @@ namespace _1RM.View.Editor.Forms.Argument
             }
 
             Type = New.Type;
+            var diff = ProtocolBase.ServerEditorStaticDifferentOptions;
             if (Type == AppArgumentType.Selection)
             {
-                var ss = New.Selections.Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
+                var ss = New.Selections.Where(x=>x.Key != diff).Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
                 Selections = string.Join('\n', ss);
             }
             else
             {
-                var ss = New.Selections.Select(x => x.Key).Where(x => !string.IsNullOrWhiteSpace(x));
+                var ss = New.Selections.Where(x => x.Key != diff).Select(x => x.Key).Where(x => !string.IsNullOrWhiteSpace(x));
                 Selections = string.Join('\n', ss);
             }
         }
@@ -62,6 +65,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 RaisePropertyChanged();
 
                 SelectionsVisibility = Visibility.Collapsed;
+                IsNullableVisibility = Visibility.Visible;
                 IsConst = false;
                 switch (value)
                 {
@@ -75,23 +79,29 @@ namespace _1RM.View.Editor.Forms.Argument
                     case AppArgumentType.Selection:
                         SelectionsVisibility = Visibility.Visible;
                         break;
+                    case AppArgumentType.Flag:
+                        New.IsNullable = false;
+                        IsNullableVisibility = Visibility.Collapsed;
+                        break;
                     case AppArgumentType.Int:
                     case AppArgumentType.Float:
                     case AppArgumentType.File:
                     case AppArgumentType.Secret:
-                    case AppArgumentType.Flag:
                     default:
                         break;
                 }
 
                 RaisePropertyChanged(nameof(Value));
                 RaisePropertyChanged(nameof(SelectionsVisibility));
+                RaisePropertyChanged(nameof(IsNullableVisibility));
                 RaisePropertyChanged(nameof(SelectionsTag));
+                RaisePropertyChanged(nameof(Key));
                 RaisePropertyChanged(nameof(IsConst));
             }
         }
 
         public Visibility SelectionsVisibility { get; set; } = Visibility.Collapsed;
+        public Visibility IsNullableVisibility { get; set; } = Visibility.Visible;
         public bool IsConst { get; set; } = false;
 
         public string Name
@@ -142,8 +152,8 @@ namespace _1RM.View.Editor.Forms.Argument
         }
 
         public string SelectionsTag => Type == AppArgumentType.Selection
-            ? IoC.Translate("TXT: 一行一个备选项(值|描述)，如：\r\n1|Yes\r\n0|No")
-            : IoC.Translate("TXT: 一行一个备选项，如：\r\nApple\r\nBanana");
+            ? IoC.Translate("One option per line") + ". " + IoC.Translate("Use vertical lines to separate descriptions") + "\r\ne.g. \r\n1|Yes\r\n0|No"
+            : IoC.Translate("One option per line") + ". " + "\r\ne.g. \r\nApple\r\nBanana";
 
 
         private RelayCommand? _cmdSave;
@@ -204,6 +214,11 @@ namespace _1RM.View.Editor.Forms.Argument
                                     value = line;
                                 }
 
+                                if (key == ProtocolBase.ServerEditorStaticDifferentOptions)
+                                {
+                                    continue;
+                                }
+
                                 if (string.IsNullOrEmpty(key) && !New.IsNullable)
                                 {
                                     continue;
@@ -232,8 +247,9 @@ namespace _1RM.View.Editor.Forms.Argument
                     {
                         // edit
                         var i = _localApp.ArgumentList.IndexOf(_org);
-                        _localApp.ArgumentList.Remove(_org);
-                        _localApp.ArgumentList.Insert(i, New);
+                        //_localApp.ArgumentList.Remove(_org);
+                        //_localApp.ArgumentList.Insert(i, New);
+                        _localApp.ArgumentList[i] = New;
                     }
                     else
                     {
@@ -306,6 +322,14 @@ namespace _1RM.View.Editor.Forms.Argument
                             if (t.Item1 == false)
                             {
                                 return t.Item2;
+                            }
+                            break;
+                        }
+                    case nameof(Key):
+                        {
+                            if (Type == AppArgumentType.Flag && string.IsNullOrEmpty(Key))
+                            {
+                                return $"`{IoC.Translate("Prefix")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
                             }
                             break;
                         }

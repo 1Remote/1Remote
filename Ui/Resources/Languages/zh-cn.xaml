@@ -300,4 +300,6 @@
     <s:String x:Key="append blank after prefix">在前缀后添加空格</s:String>
     <s:String x:Key="append blank after value">在值后添加空格</s:String>
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">是否将当前参数列表替换为预设值？</s:String>
+    <s:String x:Key="One option per line">一行一个备选项</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">用竖线隔开值和描述(值|描述)</s:String>
 </ResourceDictionary>

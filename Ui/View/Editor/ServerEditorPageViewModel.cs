@@ -241,7 +241,7 @@ namespace _1RM.View.Editor
                 protocol.AlternateCredentials = new ObservableCollection<Credential>(list);
             }
 
-            AppArgumentsBulkInit(servers);
+            AppArgumentsBulkInit(_serversInBuckEdit);
 
             _orgServer = Server.Clone();
 
@@ -339,8 +339,15 @@ namespace _1RM.View.Editor
                                         && property.SetMethod.IsAbstract == false
                                         && property.Name != nameof(ProtocolBase.Id)
                                         && property.Name != nameof(ProtocolBase.Tags)
-                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials))
+                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
+                                        && property.Name != nameof(LocalApp.ArgumentList))
                                     {
+                                        if (property.PropertyType.IsGenericType
+                                            && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                                                || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
+                                        {
+                                            SimpleLogHelper.Warning(property.Name + " IsGenericType!");
+                                        }
                                         var obj = property.GetValue(Server);
                                         if (obj == null)
                                             continue;

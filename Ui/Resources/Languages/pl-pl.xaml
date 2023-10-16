@@ -300,4 +300,6 @@
     <s:String x:Key="append blank after prefix">dodaj puste miejsce po przedrostku</s:String>
     <s:String x:Key="append blank after value">dodaj puste miejsce po wartości</s:String>
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">Czy chcesz zastąpić aktualną listę parametrów wartością zadaną?</s:String>
+    <s:String x:Key="One option per line">Jedna opcja w każdym wierszu</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Użyj linii pionowych, aby oddzielić opisy (wartość|opis)</s:String>
 </ResourceDictionary>

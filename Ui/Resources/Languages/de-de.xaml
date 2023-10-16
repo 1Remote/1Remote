@@ -300,4 +300,6 @@
     <s:String x:Key="append blank after prefix">Fügen Sie nach dem Präfix ein Leerzeichen hinzu</s:String>
     <s:String x:Key="append blank after value">Fügen Sie nach dem Wert ein Leerzeichen hinzu</s:String>
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">Möchten Sie die aktuelle Parameterliste durch einen voreingestellten Wert ersetzen?</s:String>
+    <s:String x:Key="One option per line">Eine Option pro Zeile</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Verwenden Sie vertikale Linien, um Beschreibungen zu trennen (Wert|Beschreibung).</s:String>
 </ResourceDictionary>

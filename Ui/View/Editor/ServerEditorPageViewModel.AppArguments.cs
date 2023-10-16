@@ -15,36 +15,40 @@ namespace _1RM.View.Editor
 {
     public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
-        private readonly List<AppArgument> _sharedArgumentsInBuckEdit = new List<AppArgument>();
         private void AppArgumentsBulkInit(IEnumerable<ProtocolBase> servers)
         {
-            // TODO need a remake，批量编辑时，参数列表不同，如何批量修改列表、更改参数顺序、删除参数、新增参数？
-            _sharedArgumentsInBuckEdit.Clear();
+            var sharedArgumentsInBuckEdit = new List<AppArgument>();
             var protocolBases = servers as ProtocolBase[] ?? servers.ToArray();
             if (Server is LocalApp app && protocolBases.All(x => x is LocalApp))
             {
                 bool isAllTheSameFlag = true;
                 var ss = protocolBases.Select(x => (LocalApp)x).ToArray();
-                foreach (var s in ss)
+                if (ss.Any(x => x.ArgumentList.Count != ss.First().ArgumentList.Count))
                 {
-                    foreach (var argument in s.ArgumentList)
+                    isAllTheSameFlag = false;
+                }
+
+                if (isAllTheSameFlag)
+                {
+                    for (int i = 0; i < ss.First().ArgumentList.Count; i++)
                     {
-                        if (ss.All(x => x.ArgumentList.Any(y => y.IsConfigEqualTo(argument) == true)))
+                        if (ss.All(x => x.ArgumentList[i].IsConfigEqualTo(ss.First().ArgumentList[i])))
                         {
-                            if (_sharedArgumentsInBuckEdit.All(x => x.IsConfigEqualTo(argument) == false))
+                            var newArg = (AppArgument)ss.First().ArgumentList[i].Clone();
+                            if (ss.Any(x=> x.ArgumentList[i].Value != newArg.Value))
                             {
-                                var newArg = (AppArgument)argument.Clone();
-                                var vv = ss.Any(x => x.ArgumentList.Where(y => y.IsConfigEqualTo(argument)).Any(z => z.Value != argument.Value));
-                                if (vv)
+                                if (newArg.Type == AppArgumentType.Selection && !newArg.Selections.ContainsKey(Server.ServerEditorDifferentOptions))
                                 {
-                                    newArg.Value = Server.ServerEditorDifferentOptions;
+                                    newArg.Selections.Add(Server.ServerEditorDifferentOptions, Server.ServerEditorDifferentOptions);
                                 }
-                                _sharedArgumentsInBuckEdit.Add(newArg);
+                                newArg.Value = Server.ServerEditorDifferentOptions;
                             }
+                            sharedArgumentsInBuckEdit.Add(newArg);
                         }
                         else
                         {
                             isAllTheSameFlag = false;
+                            break;
                         }
                     }
                 }
@@ -52,9 +56,8 @@ namespace _1RM.View.Editor
                 var list = new List<AppArgument>();
                 if (isAllTheSameFlag == false)
                     list.Add(new AppArgument(false) { Name = Server.ServerEditorDifferentOptions, Value = Server.ServerEditorDifferentOptions, Type = AppArgumentType.Const});
-                //else
-                    list.AddRange(_sharedArgumentsInBuckEdit);
-
+                else
+                    list.AddRange(sharedArgumentsInBuckEdit);
                 app.ArgumentList = new ObservableCollection<AppArgument>(list);
             }
         }
@@ -66,31 +69,30 @@ namespace _1RM.View.Editor
                 var ss = protocolBases.Select(x => (LocalApp)x).ToArray();
                 foreach (var protocolBeforeEdit in ss)
                 {
-                    foreach (var argument in protocolBeforeEdit.ArgumentList.ToArray())
+                    var argumentList = new List<AppArgument>();
+                    foreach (var appArgument in newServer.ArgumentList)
                     {
-                        if (_sharedArgumentsInBuckEdit.Any(x => x.IsConfigEqualTo(argument))) // 编辑之前共有，编辑后不再共有，删除，TODO 无法处理改名的情况
+                        if (appArgument.Name == Server.ServerEditorDifferentOptions)
                         {
-                            if (newServer.ArgumentList.All(x => x.IsConfigEqualTo(argument) == false))
-                            {
-                                protocolBeforeEdit.ArgumentList.Remove(argument);
-                            }
+                            argumentList.AddRange(protocolBeforeEdit.ArgumentList.Select(x => (AppArgument)x.Clone()));
                         }
                         else
                         {
-                            if (newServer.ArgumentList.All(x => x.Name != Server.ServerEditorDifferentOptions && x.IsEditable != false))
+                            var arg = (AppArgument)appArgument.Clone();
+                            arg.Value = appArgument.Value;
+                            if (arg.Value == Server.ServerEditorDifferentOptions 
+                                && protocolBeforeEdit.ArgumentList.FirstOrDefault(x=>x.Name == arg.Name) is { } argOld)
                             {
-                                protocolBeforeEdit.ArgumentList.Remove(argument);
+                                arg.Value = argOld.Value;
                             }
+                            if (arg.Type == AppArgumentType.Selection && arg.Selections.ContainsKey(Server.ServerEditorDifferentOptions))
+                            {
+                                arg.Selections.Remove(Server.ServerEditorDifferentOptions);
+                            }
+                            argumentList.Add(arg);
                         }
                     }
-
-                    foreach (var credential in newServer.ArgumentList.Where(x => x.Name != Server.ServerEditorDifferentOptions))
-                    {
-                        if (protocolBeforeEdit.ArgumentList.All(x => x.IsConfigEqualTo(credential) == false))
-                        {
-                            protocolBeforeEdit.ArgumentList.Add(credential);
-                        }
-                    }
+                    protocolBeforeEdit.ArgumentList = new ObservableCollection<AppArgument>(argumentList);
                 }
             }
         }
@@ -129,13 +131,13 @@ namespace _1RM.View.Editor
                 {
                     if (Server is LocalApp protocol)
                     {
-                        var arguments = protocol.ArgumentList.ToList();
+                        var arguments = protocol.ArgumentList.Select(x => x.Name).ToList();
                         if (IsBuckEdit && _serversInBuckEdit?.Count() > 0)
                         {
                             foreach (var s in _serversInBuckEdit)
                             {
                                 if (s is LocalApp p)
-                                    arguments.AddRange(p.ArgumentList);
+                                    arguments.AddRange(p.ArgumentList.Select(x => x.Name));
                             }
                         }
                         arguments = arguments.Distinct().ToList();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Data;
+using _1RM.Model.Protocol.Base;
 
 namespace _1RM.View.Editor.Forms.Argument
 {
@@ -25,6 +26,8 @@ namespace _1RM.View.Editor.Forms.Argument
             {
                 if (value.ToString() == "1")
                     return true;
+                if (value.ToString() == ProtocolBase.ServerEditorStaticDifferentOptions)
+                    return null;
             }
             catch (Exception e)
             {

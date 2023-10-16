@@ -43,7 +43,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
 
     /// <summary>
-    /// todo 批量编辑时，如果参数列表不同，禁用
+    /// 批量编辑时，如果参数列表不同，禁用参数的编辑
     /// </summary>
     [JsonIgnore]
     public bool? IsEditable { get; }
@@ -105,33 +105,11 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     private string _value = "";
     public string Value
     {
-        get
-        {
-            if (Type == AppArgumentType.Selection
-                && !_selections.Keys.Contains(_value))
-            {
-                _value = _selections.Keys.FirstOrDefault() ?? "";
-            }
-            return _value;
-        }
+        get => _value;
         set
         {
             if (SetAndNotifyIfChanged(ref _value, value))
             {
-                if (Type == AppArgumentType.Selection)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        if (IsNullable == false)
-                        {
-                            _value = _selections.Keys.FirstOrDefault() ?? "";
-                        }
-                    }
-                    else if (!_selections.Keys.Contains(_value))
-                    {
-                        _value = _selections.Keys.FirstOrDefault() ?? "";
-                    }
-                }
                 RaisePropertyChanged(nameof(DemoArgumentString));
             }
         }
@@ -202,8 +180,8 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
                     }
                     n.Add(keyValuePair.Key.Trim(), v);
                 }
-                if (n.All(x => x.Key != Value))
-                    Value = n.First().Value;
+                //if (n.All(x => x.Key != Value))
+                //    Value = n.First().Value;
             }
             _selections = n;
             RaisePropertyChanged();
@@ -340,14 +318,14 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     #region IDataErrorInfo
 
-    public static Tuple<bool, string> CheckName(List<AppArgument> argumentList, string name)
+    public static Tuple<bool, string> CheckName(List<string> existedNames, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             return new Tuple<bool, string>(false, $"`{IoC.Translate(LanguageService.NAME)}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
         }
 
-        if (argumentList?.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)) == true)
+        if (existedNames.Any(x => string.Equals(x, name, StringComparison.CurrentCultureIgnoreCase)) == true)
         {
             return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
         }
