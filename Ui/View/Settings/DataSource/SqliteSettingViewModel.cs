@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
@@ -73,11 +74,12 @@ namespace _1RM.View.Settings.DataSource
             {
                 if (NameWritable && SetAndNotifyIfChanged(ref _name, value))
                 {
+                    // TODO 改为 IDataErrorInfo 实现
                     New.DataSourceName = value;
                     if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("Can not be empty!"));
+                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
                     if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Get<ILanguageService>().Translate("XXX is already existed!", _name));
+                        throw new ArgumentException(IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
                 }
             }
         }
@@ -115,7 +117,7 @@ namespace _1RM.View.Settings.DataSource
 
                     if (!IoPermissionHelper.HasWritePermissionOnFile(newPath))
                     {
-                        MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("string_database_error_permission_denied"), ownerViewModel: this);
+                        MessageBoxHelper.ErrorAlert(IoC.Translate("string_database_error_permission_denied"), ownerViewModel: this);
                         return;
                     }
 
@@ -130,7 +132,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
+                            MessageBoxHelper.ErrorAlert(IoC.Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
                         }
                     });
                 });

@@ -58,7 +58,7 @@ namespace _1RM.Service
             bool? result;
             bool widowsHelloIsOk = WindowsHelloHelper.IsOsSupported && await WindowsHelloHelper.HelloIsAvailable() == true;
             int counter = 0;
-            MaskLayerController.ShowProcessingRing(IoC.Get<LanguageService>().Translate("Please complete the windows credentials verification"));
+            MaskLayerController.ShowProcessingRing(IoC.Translate("Please complete the windows credentials verification"));
             while (true)
             {
 
@@ -67,11 +67,11 @@ namespace _1RM.Service
                     try
                     {
 
-                        string title = IoC.Get<LanguageService>().Translate("Enter your credentials");
+                        string title = IoC.Translate("Enter your credentials");
                         string message = "";
                         if (counter > 0)
                         {
-                            message = IoC.Get<LanguageService>().Translate("Verification failed. Please try again.");
+                            message = IoC.Translate("Verification failed. Please try again.");
                         }
                         var ret = CredentialPrompt.LogonUserWithWindowsCredential(title, message,
                             null, // new WindowInteropHelper(this).Handle

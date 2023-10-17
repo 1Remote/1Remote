@@ -101,14 +101,14 @@ namespace _1RM.Utils
                         break;
                 }
             }
-            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments);
+            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%"));
 
             // make environment variables
             var environmentVariables = new Dictionary<string, string>();
             {
                 foreach (var kv in er.EnvironmentVariables)
                 {
-                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value));
+                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
                 }
             }
 
@@ -170,8 +170,7 @@ namespace _1RM.Utils
                     }
                 case LocalApp app:
                     {
-                        var tmp = WinCmdRunner.CheckFileExistsAndFullName(app.ExePath);
-                        return IntegrateHost.Create(app, tmp.Item2, app.Arguments);
+                        return IntegrateHost.Create(app, app.GetExePath(), app.GetArguments(false));
                     }
                 default:
                     throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");

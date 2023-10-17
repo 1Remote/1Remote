@@ -37,6 +37,7 @@
     </Style>
 
     <Style TargetType="controls:BindableAvalonEditor">
+        <Setter Property="MinWidth" Value="100"></Setter>
         <Setter Property="MaxWidth" Value="290"></Setter>
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
     </Style>

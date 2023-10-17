@@ -27,7 +27,7 @@ namespace _1RM.View.Editor
                     // add mode
                     if (vm.IsAddMode)
                     {
-                        ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
+                        ButtonSave.Content = IoC.Translate("Add");
                         if (vm.Server.IconImg == null
                             && ServerIcons.Instance.IconsBase64.Count > 0)
                         {

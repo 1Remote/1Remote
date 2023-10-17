@@ -19,8 +19,9 @@ namespace _1RM.Controls
             PlainTextBox.Visibility = Visibility.Collapsed;
         }
 
-        public static readonly DependencyProperty PasswordProperty = DependencyProperty.Register("Password", typeof(string), typeof(PasswordInput),
-        new PropertyMetadata(null, new PropertyChangedCallback(OnServerDataChanged)));
+        public static readonly DependencyProperty PasswordProperty =
+            DependencyProperty.Register("Password", typeof(string), typeof(PasswordInput),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnServerDataChanged)));
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

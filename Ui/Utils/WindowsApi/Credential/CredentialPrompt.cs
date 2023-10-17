@@ -669,7 +669,7 @@ namespace _1RM.Utils.WindowsApi.Credential
                 /// The server process can obtain information about the client, such as security identifiers and privileges, 
                 /// but it cannot impersonate the client. This is useful for servers that export their own objects, 
                 /// for example, database products that export tables and views. 
-                /// Using the retrieved client-security information, the server can make access-validation decisions without 
+                /// Using the retrieved client-security information, the server can make access- decisions without 
                 /// being able to use other services that are using the client's security context. 
                 /// </summary>
                 SecurityIdentification = 1,

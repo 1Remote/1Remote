@@ -22,7 +22,7 @@
                 </Grid>
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox MinWidth="50" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                    <TextBox MinWidth="50" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
                              HorizontalAlignment="Left"
                              InputMethod.IsInputMethodEnabled="False"
                              InputScope="Number"/>

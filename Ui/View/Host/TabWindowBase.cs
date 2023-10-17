@@ -124,7 +124,7 @@ namespace _1RM.View.Host
                     if (this.GetViewModel().Items.Count > 0
                         && App.ExitingFlag == false
                         && IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: Vm))
+                        && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: Vm))
                     {
                         args.Cancel = true;
                     }

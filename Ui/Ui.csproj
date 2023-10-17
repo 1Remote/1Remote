@@ -35,6 +35,7 @@
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
+		<XamlDebuggingInformation>True</XamlDebuggingInformation>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'!='net48'">

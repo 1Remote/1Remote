@@ -148,9 +148,9 @@ namespace _1RM.View
             //    buttons: MessageBoxButton.OK,
             //    buttonLabels: new Dictionary<MessageBoxResult, string>()
             //    {
-            //        {MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK")},
-            //        {MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK")},
-            //        {MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK")},
+            //        {MessageBoxResult.None, IoC.Translate("OK")},
+            //        {MessageBoxResult.Yes, IoC.Translate("OK")},
+            //        {MessageBoxResult.OK, IoC.Translate("OK")},
             //    }, onButtonClicked: () =>
             //    {
             //        TopLevelViewModel = null;

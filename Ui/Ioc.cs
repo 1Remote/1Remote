@@ -39,7 +39,28 @@ public static class IoC
 
     public static T? TryGet<T>(string? key = null) where T : class
     {
-        var obj = GetByType(typeof(T), key);
-        return obj as T;
+        try
+        {
+            var obj = GetByType(typeof(T), key);
+            return obj as T;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public static string Translate(string key)
+    {
+        return Get<ILanguageService>().Translate(key);
+    }
+    public static string Translate(string key, params object[] parameters)
+    {
+        return Get<ILanguageService>().Translate(key, parameters);
+    }
+
+    public static string Translate(Enum key)
+    {
+        return Get<ILanguageService>().Translate(key);
     }
 }

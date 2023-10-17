@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Failed to register the hot key</s:String>
     <s:String x:Key="string_permission_denied">Permission denied</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Last update</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Type</s:String>
+    <s:String x:Key="Type">Type</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Size</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">This item is over 1 MB, are you sure you want to open it?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Please select a folder to save to</s:String>
@@ -289,4 +289,17 @@
     <s:String x:Key="Verification failed. Please try again.">Verification failed. Please try again.</s:String>
     <s:String x:Key="Security">Security</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">Windows credentials verification is required to view passwords</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Not a number</s:String>
+    <s:String x:Key="Optional">Optional</s:String>
+    <s:String x:Key="Nullable">Nullable</s:String>
+    <s:String x:Key="Selections">Selections</s:String>
+    <s:String x:Key="Const value">Const value</s:String>
+    <s:String x:Key="Description">Description</s:String>
+    <s:String x:Key="Prefix">Prefix</s:String>
+    <s:String x:Key="append blank after prefix">append blank after prefix</s:String>
+    <s:String x:Key="append blank after value">append blank after value</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Do you want to replace the current parameter list with preset value?</s:String>
+    <s:String x:Key="One option per line">One option per line</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Use vertical lines to separate descriptions(value|description)</s:String>
 </ResourceDictionary>

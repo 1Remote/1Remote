@@ -168,7 +168,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (o is DataSourceBase configBase && configBase != LocalSource)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
+                        if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected")))
                         {
                             if (_configurationService.AdditionalDataSource.Contains(configBase))
                             {

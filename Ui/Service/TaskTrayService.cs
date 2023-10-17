@@ -85,24 +85,24 @@ namespace _1RM.Service
                 // rebuild TaskTrayContextMenu while language changed
                 if (_taskTrayIcon == null) return;
 
-                var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
+                var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
                 about.Click += (sender, args) =>
                 {
                     //HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");
                     IoC.Get<MainWindowViewModel>().ShowMe(true);
                     IoC.Get<MainWindowViewModel>().CmdGoAboutPage.Execute();
                 };
-                var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
+                var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("about_page_how_to_use"));
                 linkHowToUse.Click += (sender, args) =>
                 {
                     HyperlinkHelper.OpenUriBySystem("https://1remote.github.io/usage/quick-start/");
                 };
-                var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
+                var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("about_page_feedback"));
                 linkFeedback.Click += (sender, args) =>
                 {
                     HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote/issues");
                 };
-                var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
+                var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("Exit"));
                 exit.Click += (sender, args) =>
                 {
                     lock (this)
@@ -145,7 +145,7 @@ namespace _1RM.Service
 
                 if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray == false)
                 {
-                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Show recently used here"));
+                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("Show recently used here"));
                     item.Click += (sender, args) =>
                     {
                         IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = true;
@@ -160,7 +160,7 @@ namespace _1RM.Service
                     if (_taskTrayIcon.ContextMenuStrip.Items.Count > 0)
                         _taskTrayIcon.ContextMenuStrip.Items.Add("-");
 
-                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<LanguageService>().Translate("Hide recently used"));
+                    var item = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("Hide recently used"));
                     item.Click += (sender, args) =>
                     {
                         IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = false;

@@ -30,13 +30,14 @@ namespace _1RM.Model.Protocol.Base
     //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
     public abstract class ProtocolBase : NotifyPropertyChangedBase
     {
-        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options").Replace(" ", "-");
+        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
+        [JsonIgnore] public static string ServerEditorStaticDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName)
         {
             Protocol = protocol;
             ClassVersion = classVersion;
-            ProtocolDisplayName = protocolDisplayName;
+            _protocolDisplayName = protocolDisplayName;
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -77,7 +78,13 @@ namespace _1RM.Model.Protocol.Base
         public string ClassVersion { get; }
 
         [JsonIgnore]
-        public string ProtocolDisplayName { get; }
+        public string ProtocolDisplayName => GetProtocolDisplayName();
+
+        private readonly string _protocolDisplayName;
+        public virtual string GetProtocolDisplayName()
+        {
+            return _protocolDisplayName;
+        }
 
         private string _displayName = "";
         public string DisplayName
@@ -267,7 +274,7 @@ namespace _1RM.Model.Protocol.Base
         /// <summary>
         /// cation: it is a shallow
         /// </summary>
-        public ProtocolBase Clone()
+        public virtual ProtocolBase Clone()
         {
             //{
             //    var json = ToJsonString();
@@ -339,7 +346,7 @@ namespace _1RM.Model.Protocol.Base
             {
                 exitCode = 1;
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script before connect"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script before connect"));
             }
             return exitCode;
         }
@@ -374,7 +381,7 @@ namespace _1RM.Model.Protocol.Base
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Get<ILanguageService>().Translate("Script after disconnected"));
+                MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script after disconnected"));
             }
         }
 
@@ -404,5 +411,13 @@ namespace _1RM.Model.Protocol.Base
 
         [JsonIgnore]
         public DataSourceBase? DataSource { get; set; }
+
+        /// <summary>
+        /// check if every value is ok
+        /// </summary>
+        public virtual bool Verify()
+        {
+            return true;
+        }
     }
 }

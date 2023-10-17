@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Fehler bei der Hotkey Registrierung</s:String>
     <s:String x:Key="string_permission_denied">Zugriff verweigert</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Letztes Update</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Typ</s:String>
+    <s:String x:Key="Type">Typ</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Größe</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Das Bild ist über 1 MB groß, wirklich öffnen?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Bitte wählen Sie den Speicherpfad aus</s:String>
@@ -289,4 +289,17 @@
     <s:String x:Key="Verification failed. Please try again.">Verifizierung fehlgeschlagen. Bitte versuche es erneut.</s:String>
     <s:String x:Key="Security">Sicherheit</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">Zum Anzeigen von Passwörtern ist eine Überprüfung der Windows-Anmeldeinformationen erforderlich</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Keine Zahl</s:String>
+    <s:String x:Key="Optional">Optional</s:String>
+    <s:String x:Key="Nullable">Nullbar</s:String>
+    <s:String x:Key="Selections">Auswahl</s:String>
+    <s:String x:Key="Const value">Konstanter Wert</s:String>
+    <s:String x:Key="Description">Beschreibung</s:String>
+    <s:String x:Key="Prefix">Präfix</s:String>
+    <s:String x:Key="append blank after prefix">Fügen Sie nach dem Präfix ein Leerzeichen hinzu</s:String>
+    <s:String x:Key="append blank after value">Fügen Sie nach dem Wert ein Leerzeichen hinzu</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Möchten Sie die aktuelle Parameterliste durch einen voreingestellten Wert ersetzen?</s:String>
+    <s:String x:Key="One option per line">Eine Option pro Zeile</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Verwenden Sie vertikale Linien, um Beschreibungen zu trennen (Wert|Beschreibung).</s:String>
 </ResourceDictionary>

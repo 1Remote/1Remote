@@ -278,7 +278,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
                             && App.ExitingFlag == false
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
+                            && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else
@@ -306,7 +306,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && App.ExitingFlag == false
-                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
+                            && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
                         }
                         else

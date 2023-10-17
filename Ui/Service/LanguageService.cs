@@ -38,6 +38,10 @@ namespace _1RM.Service
 
     public class LanguageService : ILanguageService
     {
+        public const string NAME = "Name";
+        public const string XXX_IS_ALREADY_EXISTED = "XXX is already existed!";
+        public const string CAN_NOT_BE_EMPTY = "Can not be empty!";
+
         private string _languageCode = "en-us";
         private readonly ResourceDictionary _applicationResourceDictionary;
 

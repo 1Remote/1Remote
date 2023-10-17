@@ -51,5 +51,20 @@ namespace _1RM.Model.Protocol
         {
             return 2;
         }
+
+        public override bool ShowUserNameInput()
+        {
+            return false;
+        }
+
+        public override bool ShowPasswordInput()
+        {
+            return true;
+        }
+
+        public override bool ShowPrivateKeyInput()
+        {
+            return false;
+        }
     }
 }

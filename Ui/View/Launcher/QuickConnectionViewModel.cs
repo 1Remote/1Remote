@@ -39,7 +39,7 @@ namespace _1RM.View.Launcher
 
             OpenConnectActionItem = new QuickConnectionItem()
             {
-                Host = IoC.Get<ILanguageService>().Translate("Connect"),
+                Host = IoC.Translate("Connect"),
             };
         }
 

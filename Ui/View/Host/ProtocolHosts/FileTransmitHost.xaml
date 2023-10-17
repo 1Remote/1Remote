@@ -351,7 +351,7 @@
 
 
 
-                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_type}" Width="Auto">
+                            <GridViewColumn Header="{DynamicResource Type}" Width="Auto">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="CommandParameter" Value="6"/>

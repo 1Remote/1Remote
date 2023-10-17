@@ -93,7 +93,7 @@ namespace _1RM.Service
 
             var dlg = new AlternateAddressSwitchingViewModel(cts)
             {
-                Title = protocolDisplayName + ": " + IoC.Get<LanguageService>().Translate("Availability detection"),
+                Title = protocolDisplayName + ": " + IoC.Translate("Availability detection"),
                 PingTestItems = uiPingItems
             };
 
@@ -198,7 +198,7 @@ namespace _1RM.Service
                 // show error message
                 await Execute.OnUIThreadAsync(() =>
                 {
-                    dlg.Message = IoC.Get<LanguageService>().Translate("We are not able to connect to xxx", protocolDisplayName);
+                    dlg.Message = IoC.Translate("We are not able to connect to xxx", protocolDisplayName);
                 });
             }
             return null;

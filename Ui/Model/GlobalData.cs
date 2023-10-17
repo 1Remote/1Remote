@@ -173,7 +173,7 @@ namespace _1RM.Model
 
         public Result AddServer(ProtocolBase protocolServer, DataSourceBase dataSource)
         {
-            string info = IoC.Get<LanguageService>().Translate("We can not insert into database:");
+            string info = IoC.Translate("We can not insert into database:");
             StopTick();
             if (dataSource.IsWritable == false)
             {
@@ -216,7 +216,7 @@ namespace _1RM.Model
         public Result UpdateServer(ProtocolBase protocolServer)
         {
             StopTick();
-            string info = IoC.Get<LanguageService>().Translate("We can not update on database:");
+            string info = IoC.Translate("We can not update on database:");
             try
             {
                 Debug.Assert(protocolServer.IsTmpSession() == false);
@@ -328,7 +328,6 @@ namespace _1RM.Model
             StopTick();
             try
             {
-                // TODO 批量删除时，只操作一次数据库，只更新一次UI，现在这个方法更新速度缓慢。
                 // TODO 找回右键菜单的删除按钮。
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
@@ -348,24 +347,31 @@ namespace _1RM.Model
                             if (needReload == false)
                             {
                                 // update viewmodel
-                                foreach (var protocolServer in groupedServer)
+                                if (protocolServers.Count() == 1)
                                 {
-                                    var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                                    if (old != null)
+                                    foreach (var protocolServer in groupedServer)
                                     {
-                                        SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
-                                        VmItemList.Remove(old);
-                                        IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
-                                        Execute.OnUIThread(() =>
+                                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
+                                        if (old != null)
                                         {
-                                            if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
-                                                IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
-                                        });
+                                            SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
+                                            VmItemList.Remove(old);
+                                            IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
+                                            Execute.OnUIThread(() =>
+                                            {
+                                                if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
+                                                    IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
+                                            });
+                                        }
+                                        else
+                                        {
+                                            SimpleLogHelper.Warning($"Remote server {protocolServer.DisplayName} of `{source.DataSourceName}` removed from GlobalData but not found in VmItemList");
+                                        }
                                     }
-                                    else
-                                    {
-                                        SimpleLogHelper.Warning($"Remote server {protocolServer.DisplayName} of `{source.DataSourceName}` removed from GlobalData but not found in VmItemList");
-                                    }
+                                }
+                                else
+                                {
+                                    needReload = true;
                                 }
                             }
                         }
@@ -374,7 +380,6 @@ namespace _1RM.Model
                             failMsgs.Add(tmp.ErrorInfo);
                         }
                     }
-
                 }
 
                 if (isAnySuccess)
@@ -487,7 +492,7 @@ namespace _1RM.Model
                     || listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
-                    var pause = IoC.Get<LanguageService>().Translate("Pause");
+                    var pause = IoC.Translate("Pause");
                     foreach (var s in ds)
                     {
                         s.ReconnectInfo = pause;
@@ -522,13 +527,13 @@ namespace _1RM.Model
                 var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
 
 
-                var msgUpdating = IoC.Get<LanguageService>().Translate("Updating");
-                var msgNextUpdate = IoC.Get<LanguageService>().Translate("Next update check");
+                var msgUpdating = IoC.Translate("Updating");
+                var msgNextUpdate = IoC.Translate("Next update check");
                 var msg = minEtc > 0 ? $"{msgNextUpdate} {GetTime(minEtc)}" : msgUpdating;
 
 
-                var msgNextReconnect = IoC.Get<LanguageService>().Translate("Next auto reconnect");
-                var msgReconnecting = IoC.Get<LanguageService>().Translate("Reconnecting");
+                var msgNextReconnect = IoC.Translate("Next auto reconnect");
+                var msgReconnecting = IoC.Translate("Reconnecting");
                 foreach (var s in ds)
                 {
                     if (s.Status != EnumDatabaseStatus.OK)

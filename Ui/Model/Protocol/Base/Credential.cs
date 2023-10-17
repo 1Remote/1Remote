@@ -23,6 +23,9 @@ namespace _1RM.Model.Protocol.Base
             IsEditable = isEditable;
         }
 
+        /// <summary>
+        /// todo 批量编辑时，如果参数列表不同，禁用
+        /// </summary>
         [JsonIgnore] [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsEditable { get; }
@@ -46,7 +49,7 @@ namespace _1RM.Model.Protocol.Base
 
 
         private string _address = "";
-        [OtherName(Name = "HOSTNAME")]
+        [OtherName(Name = "1RM_HOSTNAME")]
         public string Address
         {
             get => _address;
@@ -54,7 +57,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _port = "";
-        [OtherName(Name = "PORT")]
+        [OtherName(Name = "1RM_PORT")]
         public string Port
         {
             get => _port;
@@ -62,7 +65,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _userName = "";
-        [OtherName(Name = "USERNAME")]
+        [OtherName(Name = "1RM_USERNAME")]
         public string UserName
         {
             get => _userName;
@@ -70,7 +73,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _password = "";
-        [OtherName(Name = "PASSWORD")]
+        [OtherName(Name = "1RM_PASSWORD")]
         public string Password
         {
             get => _password;
@@ -79,7 +82,7 @@ namespace _1RM.Model.Protocol.Base
 
         private string _privateKeyPath = "";
 
-        [OtherName(Name = "PRIVATE_KEY_PATH")]
+        [OtherName(Name = "1RM_PRIVATE_KEY_PATH")]
         public string PrivateKeyPath
         {
             get => _privateKeyPath;

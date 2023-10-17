@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">快捷鍵綁定失敗</s:String>
     <s:String x:Key="string_permission_denied">沒有存取權限</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">修改日期</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">類型</s:String>
+    <s:String x:Key="Type">類型</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">大小</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">檔案超過 1 MB，您確定要繼續開啟嗎？</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">將檔案下載到選擇的資料夾</s:String>
@@ -289,4 +289,17 @@
     <s:String x:Key="Verification failed. Please try again.">驗證失敗。請再試一次。</s:String>
     <s:String x:Key="Security">安全</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">查看密碼需要 Windows 憑據驗證</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">不是一個數字</s:String>
+    <s:String x:Key="Optional">選修的</s:String>
+    <s:String x:Key="Nullable">可空</s:String>
+    <s:String x:Key="Selections">選集</s:String>
+    <s:String x:Key="Const value">常數值</s:String>
+    <s:String x:Key="Description">描述</s:String>
+    <s:String x:Key="Prefix">字首</s:String>
+    <s:String x:Key="append blank after prefix">在前綴後面加上空格</s:String>
+    <s:String x:Key="append blank after value">在值後面加入空白</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">是否要將目前參數清單替換為預設值？</s:String>
+    <s:String x:Key="One option per line">每行一個選項</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">使用垂直線分隔描述（值|描述）</s:String>
 </ResourceDictionary>

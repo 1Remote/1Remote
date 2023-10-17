@@ -86,9 +86,10 @@ namespace _1RM.Service
             // write a .rdp file for mstsc.exet.Replace(c.ToString(), ""));
             var text = remoteApp.ToRdpConfig().ToString();
             // write a .rdp file for mstsc.exe
-            if (RetryHelper.Try(() => {
-                    File.WriteAllText(rdpFile, text);
-                }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
+            if (RetryHelper.Try(() =>
+            {
+                File.WriteAllText(rdpFile, text);
+            }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
                 var p = new Process
                 {
@@ -266,10 +267,10 @@ namespace _1RM.Service
             }
             else if (protocolClone is LocalApp { RunWithHosting: false } localApp)
             {
-                var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.ExePath);
+                var tmp = WinCmdRunner.CheckFileExistsAndFullName(localApp.GetExePath());
                 if (tmp.Item1)
                 {
-                    var process = Process.Start(tmp.Item2, localApp.Arguments);
+                    var process = Process.Start(tmp.Item2, localApp.GetArguments(false));
                     AddUnHostingWatch(process, localApp);
                 }
                 return tabToken;
