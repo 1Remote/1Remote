@@ -1,0 +1,173 @@
+﻿<styles:WindowChromeBase x:Class="_1RM.View.Editor.Forms.Argument.ArgumentEditView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                         xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                         xmlns:Argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
+                         mc:Ignorable="d" 
+                         ShowInTaskbar="False"
+                         SizeToContent="WidthAndHeight" 
+                         WindowStyle="None"
+                         Background="Transparent"
+                         MaxWidth="1800"
+                         AllowsTransparency="True"
+                         d:DataContext="{d:DesignInstance Argument:ArgumentEditViewModel}">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            <Setter Property="Margin" Value="15 0 0 0"></Setter>
+            <Setter Property="Width" Value="100"></Setter>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxAccentStyle}">
+            <Setter Property="Height" Value="26"></Setter>
+        </Style>
+        <Style TargetType="PasswordBox" BasedOn="{StaticResource PasswordBoxAccentStyle}">
+            <Setter Property="Height" Value="26"></Setter>
+        </Style>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+            <Setter Property="Margin" Value="10 0 0 0"></Setter>
+        </Style>
+        <Style x:Key="ErrorTip" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+            <Setter Property="Margin" Value="0 3 0 0"></Setter>
+            <Setter Property="Foreground" Value="Red"></Setter>
+            <Setter Property="FontSize" Value="12"></Setter>
+            <!--<Setter Property="MinHeight" Value="0"></Setter>-->
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource PrimaryMidBrush}"
+            BorderBrush="{DynamicResource PrimaryLightBrush}"
+            BorderThickness="1" 
+            CornerRadius="{StaticResource DefaultCornerRadius}" 
+            ClipToBounds="True">
+        <Grid IsSharedSizeScope="True">
+
+            <StackPanel Margin="20 0">
+                <TextBlock Text="{DynamicResource 'Cmd parameter'}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+
+                <StackPanel>
+
+                    <Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Type}"></TextBlock>
+                        <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding Type}" ItemsSource="{Binding ArgumentTypes}"/>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
+                        <TextBox Grid.Column="1" Name="TbName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                        />
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Prefix}"></TextBlock>
+                        <TextBox Name="TbKey"  Grid.Column="1"
+                                 Text="{Binding New.Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"/>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterKey}" Margin="0" Content="{DynamicResource 'append blank after prefix'}"></CheckBox>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsNullableVisibility}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding New.AddBlankAfterValue}" Margin="0" Content="{DynamicResource 'append blank after value'}"></CheckBox>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsNullableVisibility}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.Column="1">
+                            <CheckBox IsChecked="{Binding New.IsNullable}" Content="{DynamicResource Nullable}" Margin="0"></CheckBox>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Description}"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding New.Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                        />
+                    </Grid>
+
+                    <Grid Margin="0 0 0 20" Visibility="{Binding IsConst, Converter={StaticResource ConverterBool2Visible}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Const value'}"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" />
+                    </Grid>
+
+
+                    <Grid Visibility="{Binding SelectionsVisibility}" Margin="0 0 0 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" ></ColumnDefinition>
+                            <ColumnDefinition Width="280" SharedSizeGroup="B"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="C"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Selections}"></TextBlock>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding Selections, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                 Height="80"
+                                 AcceptsReturn="True"
+                                 VerticalContentAlignment="Top"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 InputMethod.IsInputMethodEnabled="False" InputScope="Number"
+                                 Tag="{Binding SelectionsTag}"></TextBox>
+                    </Grid>
+                </StackPanel>
+
+
+                <StackPanel Margin="0 0 0 20" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" Width="100" Margin="10 0"></Button>
+                    <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" Width="100" Margin="10 0"></Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</styles:WindowChromeBase>

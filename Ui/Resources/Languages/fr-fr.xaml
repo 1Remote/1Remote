@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Echec de l'enregistrement du raccourci clavier</s:String>
     <s:String x:Key="string_permission_denied">Permission refusée</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Dernière mise à jour</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Taper</s:String>
+    <s:String x:Key="Type">Taper</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Taille</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Cet élément fait plus de 1 Mo, est-il sûr de l'ouvrir ?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Veuillez sélectionner un dossier pour enregistrer les fichiers</s:String>
@@ -289,4 +289,17 @@
     <s:String x:Key="Verification failed. Please try again.">Échec de la vérification. Veuillez réessayer.</s:String>
     <s:String x:Key="Security">Sécurité</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">La vérification des informations d'identification Windows est requise pour afficher les mots de passe</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Pas un numéro</s:String>
+    <s:String x:Key="Optional">Facultatif</s:String>
+    <s:String x:Key="Nullable">Nullable</s:String>
+    <s:String x:Key="Selections">Sélections</s:String>
+    <s:String x:Key="Const value">Valeur constante</s:String>
+    <s:String x:Key="Description">Description</s:String>
+    <s:String x:Key="Prefix">Préfixe</s:String>
+    <s:String x:Key="append blank after prefix">ajouter un espace vide après le préfixe</s:String>
+    <s:String x:Key="append blank after value">ajouter un espace vide après la valeur</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Voulez-vous remplacer la liste de paramètres actuelle par une valeur prédéfinie ?</s:String>
+    <s:String x:Key="One option per line">Une option par ligne</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Utilisez des lignes verticales pour séparer les descriptions (valeur | description)</s:String>
 </ResourceDictionary>

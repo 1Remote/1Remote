@@ -76,7 +76,7 @@
                                  IsEnabled="{Binding NameWritable}"
                                  Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
                                  />
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                         <TextBox Grid.Row="1" Grid.Column="1" 

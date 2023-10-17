@@ -140,7 +140,7 @@ namespace _1RM.View.Settings
                     if (_configurationService.Launcher.LauncherEnabled != IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(_configurationService.Launcher.LauncherEnabled, _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey))
                     {
                         ShowPage(EnumMainWindowPage.SettingsLauncher);
-                        MessageBoxHelper.ErrorAlert(IoC.Get<LanguageService>().Translate("hotkey_registered_fail"));
+                        MessageBoxHelper.ErrorAlert(IoC.Translate("hotkey_registered_fail"));
                         return;
                     }
 

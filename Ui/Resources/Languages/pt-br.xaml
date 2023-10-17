@@ -75,7 +75,7 @@
     <s:String x:Key="hotkey_registered_fail">Falha ao registrar a tecla de atalho</s:String>
     <s:String x:Key="string_permission_denied">Permissão negada</s:String>
     <s:String x:Key="file_transmit_host_list_header_last_update">Última atualização</s:String>
-    <s:String x:Key="file_transmit_host_list_header_type">Tipo</s:String>
+    <s:String x:Key="Type">Tipo</s:String>
     <s:String x:Key="file_transmit_host_list_header_size">Tamanho</s:String>
     <s:String x:Key="file_transmit_host_message_preview_over_size">Este item tem mais de 1 MB. Tem certeza de que quer abrir?</s:String>
     <s:String x:Key="file_transmit_host_message_files_download_to">Selecione uma pasta para salvar</s:String>
@@ -289,4 +289,17 @@
     <s:String x:Key="Verification failed. Please try again.">Falha na verificação. Por favor, tente novamente.</s:String>
     <s:String x:Key="Security">Segurança</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">A verificação de credenciais do Windows é necessária para visualizar as senhas</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
+    <s:String x:Key="Not a number">Não é um número</s:String>
+    <s:String x:Key="Optional">Opcional</s:String>
+    <s:String x:Key="Nullable">Anulável</s:String>
+    <s:String x:Key="Selections">Seleções</s:String>
+    <s:String x:Key="Const value">Valor constante</s:String>
+    <s:String x:Key="Description">Descrição</s:String>
+    <s:String x:Key="Prefix">Prefixo</s:String>
+    <s:String x:Key="append blank after prefix">acrescentar espaço em branco após o prefixo</s:String>
+    <s:String x:Key="append blank after value">acrescentar espaço em branco após o valor</s:String>
+    <s:String x:Key="Do you want to replace the current parameter list with preset value?">Você deseja substituir a lista de parâmetros atual pelo valor predefinido?</s:String>
+    <s:String x:Key="One option per line">Uma opção por linha</s:String>
+    <s:String x:Key="Use vertical lines to separate descriptions">Use linhas verticais para separar as descrições (valor|descrição)</s:String>
 </ResourceDictionary>

@@ -4,54 +4,183 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
-                        xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
+                        xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
+                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
+                        xmlns:controls="clr-namespace:_1RM.Controls"
+                        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance protocol:LocalApp}"
+                        d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
                         d:DesignHeight="1450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <GridLength x:Key="RowHeight1">30</GridLength>
+        <GridLength x:Key="RowHeight2">20</GridLength>
+        <system:Double x:Key="InputHeight">30</system:Double>
+        <system:Double x:Key="WidthName">100</system:Double>
+        <system:Double x:Key="WidthKey">100</system:Double>
+        <system:Double x:Key="WidthValue">300</system:Double>
+    </UserControl.Resources>
     <StackPanel>
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Tag="e.g. C:/vnc/viewer.exe"
-                             Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                </Grid>
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
+                                 Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
                             Command="{Binding CmdSelectExePath}"></Button>
-            </StackPanel>
-        </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in 1 tab view?'}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+                    <CheckBox IsChecked="{Binding New.RunWithHosting}">
+                        <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
+                    </CheckBox>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Protocol}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    <TextBox Tag="{DynamicResource Optional}"
+                             Text="{Binding New.AppProtocolDisplayName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 </Grid>
-
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource Select}" 
-                            Command="{Binding CmdSelectArgumentFile}"></Button>
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource 'Preview'}" 
-                            Command="{Binding CmdPreview}"></Button>
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0"
-                            Content="{DynamicResource 'Test'}" 
-                            Command="{Binding CmdTest}"></Button>
             </StackPanel>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in 1 tab view?'}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
-                <CheckBox IsChecked="{Binding RunWithHosting}">
-                    <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
-                </CheckBox>
+
+        <StackPanel>
+
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredHostName, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0"
+                               Text="%1RM_HOSTNAME%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="{Binding HintHostName}"
+                             Height="{StaticResource InputHeight}" 
+                    ></TextBox>
+                </Grid>
             </StackPanel>
-        </Grid>
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredPort, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Port}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%1RM_PORT%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="{Binding HintPort}"
+                             Height="{StaticResource InputHeight}" 
+                    ></TextBox>
+                </Grid>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
+                        Visibility="{Binding RequiredUserName, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%1RM_USERNAME%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="{Binding HintHostName}"
+                             Height="{StaticResource InputHeight}" 
+                    ></TextBox>
+                </Grid>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}" Margin="0 0 0 15" 
+                        Visibility="{Binding RequiredPassword, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%1RM_PASSWORD%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <controls:PasswordInput Height="{StaticResource InputHeight}" 
+                                            Tag="{Binding HintPassword}"
+                                            Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                            />
+                </Grid>
+            </StackPanel>
+
+
+
+
+            <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}" Margin="0 0 0 15" 
+                        Visibility="{Binding RequiredPrivateKey, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               VerticalAlignment="Top"
+                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Text="%1RM_PRIVATE_KEY_PATH%"></TextBlock>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGridInput}" Height="{StaticResource InputHeight}">
+                    <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" 
+                             Tag="{Binding HintPrivateKey}"></TextBox>
+                </Grid>
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5"
+                        Content="{DynamicResource Select}" 
+                        Click="ButtonOpenPrivateKey_OnClick" 
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch">
+                </Button>
+            </StackPanel>
+
+            <alternativeCredential:AlternativeCredentialListControl>
+                <alternativeCredential:AlternativeCredentialListControl.Style>
+                    <Style TargetType="alternativeCredential:AlternativeCredentialListControl">
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Address}" Value=""></Condition>
+                                    <Condition Binding="{Binding UserName}" Value=""></Condition>
+                                    <Condition Binding="{Binding Port}" Value=""></Condition>
+                                    <Condition Binding="{Binding Password}" Value=""></Condition>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </alternativeCredential:AlternativeCredentialListControl.Style>
+            </alternativeCredential:AlternativeCredentialListControl>
+        </StackPanel>
+
+        <argument:ArgumentListControl></argument:ArgumentListControl>
+
     </StackPanel>
 </editor:FormBase>

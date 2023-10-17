@@ -15,6 +15,7 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.AlternativeCredential;
+using _1RM.View.Editor.Forms.Argument;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -25,7 +26,7 @@ using Credential = _1RM.Model.Protocol.Base.Credential;
 
 namespace _1RM.View.Editor
 {
-    public class ServerEditorPageViewModel : NotifyPropertyChangedBase
+    public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
         public DataSourceBase? AddToDataSource { get; private set; } = null;
@@ -95,8 +96,10 @@ namespace _1RM.View.Editor
             {
                 SelectedProtocol = ProtocolList.First(x => x.GetType() == Server.GetType());
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                SimpleLogHelper.Error(e);
+                MsAppCenterHelper.Error(e);
                 SelectedProtocol = ProtocolList.First();
             }
 
@@ -132,7 +135,7 @@ namespace _1RM.View.Editor
             // must be bulk edit
             Debug.Assert(serverBases.Length > 1);
             // init title
-            Title = IoC.Get<ILanguageService>().Translate("server_editor_bulk_editing_title") + " ";
+            Title = IoC.Translate("server_editor_bulk_editing_title") + " ";
             foreach (var serverBase in serverBases)
             {
                 Title += serverBase.DisplayName;
@@ -207,7 +210,7 @@ namespace _1RM.View.Editor
             }
 
 
-            // alternate credentials
+            // AlternateCredentials
             if (Server is ProtocolBaseWithAddressPort protocol
                 && (_sharedTypeInBuckEdit.IsSubclassOf(typeof(ProtocolBaseWithAddressPort)) || _sharedTypeInBuckEdit == typeof(ProtocolBaseWithAddressPort)))
             {
@@ -237,6 +240,8 @@ namespace _1RM.View.Editor
                 list.AddRange(_sharedCredentialsInBuckEdit);
                 protocol.AlternateCredentials = new ObservableCollection<Credential>(list);
             }
+
+            AppArgumentsBulkInit(_serversInBuckEdit);
 
             _orgServer = Server.Clone();
 
@@ -311,6 +316,9 @@ namespace _1RM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+                    if (!Server.Verify())
+                        return;
+
                     MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());
 
                     Task.Factory.StartNew(() =>
@@ -319,7 +327,7 @@ namespace _1RM.View.Editor
                         {
                             var ret = Result.Success();
                             // bulk edit
-                            if (IsBuckEdit == true)
+                            if (IsBuckEdit)
                             {
                                 if (_sharedTypeInBuckEdit == null) throw new NullReferenceException($"{nameof(_sharedTypeInBuckEdit)} should not be null!");
                                 if (_serversInBuckEdit == null) throw new NullReferenceException($"{nameof(_serversInBuckEdit)} should not be null!");
@@ -331,8 +339,15 @@ namespace _1RM.View.Editor
                                         && property.SetMethod.IsAbstract == false
                                         && property.Name != nameof(ProtocolBase.Id)
                                         && property.Name != nameof(ProtocolBase.Tags)
-                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials))
+                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
+                                        && property.Name != nameof(LocalApp.ArgumentList))
                                     {
+                                        if (property.PropertyType.IsGenericType
+                                            && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                                                || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
+                                        {
+                                            SimpleLogHelper.Warning(property.Name + " IsGenericType!");
+                                        }
                                         var obj = property.GetValue(Server);
                                         if (obj == null)
                                             continue;
@@ -370,17 +385,20 @@ namespace _1RM.View.Editor
                                     {
                                         server.Tags.Add(tag);
                                     }
-
                                     server.Tags = server.Tags.Distinct().ToList();
+                                }
 
 
-                                    // merge credentials
-                                    if (server is ProtocolBaseWithAddressPort protocol
-                                        && Server is ProtocolBaseWithAddressPort newServer)
+
+                                // merge AlternateCredentials
+                                if (Server is ProtocolBaseWithAddressPort newServer)
+                                    foreach (var server in _serversInBuckEdit)
                                     {
+                                        if (server is not ProtocolBaseWithAddressPort protocol) continue;
+
                                         foreach (var credential in protocol.AlternateCredentials.ToArray())
                                         {
-                                            if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential)))
+                                            if (_sharedCredentialsInBuckEdit.Any(x => x.IsValueEqualTo(credential))) // 编辑之前共有，编辑后不再共有，删除
                                             {
                                                 if (newServer.AlternateCredentials.All(x => x.IsValueEqualTo(credential) == false))
                                                 {
@@ -404,7 +422,8 @@ namespace _1RM.View.Editor
                                             }
                                         }
                                     }
-                                }
+
+                                AppArgumentsBulkMerge(_serversInBuckEdit);
 
                                 // save
                                 ret = _globalData.UpdateServer(_serversInBuckEdit);
@@ -740,8 +759,6 @@ namespace _1RM.View.Editor
 
 
 
-
-
         private RelayCommand? _cmdDeleteCredential;
         public RelayCommand CmdDeleteCredential
         {
@@ -752,7 +769,7 @@ namespace _1RM.View.Editor
                     if (o is Credential credential
                         && Server is ProtocolBaseWithAddressPort protocol)
                     {
-                        if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        if (MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                         {
                             if (protocol.AlternateCredentials.Contains(credential) == true)
                             {

@@ -140,7 +140,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     {
                         ++_retryCount;
                         TbMessageTitle.Visibility = Visibility.Visible;
-                        TbMessageTitle.Text = IoC.Get<ILanguageService>().Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
+                        TbMessageTitle.Text = IoC.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
                         TbMessage.Text = reason;
                         this.ReConn();
                     }

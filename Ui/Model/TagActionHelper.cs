@@ -53,7 +53,7 @@ public static class TagActionHelper
             return;
         }
 
-        if (false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+        if (false == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
             return;
 
         foreach (var server in protocolServerBases)
@@ -80,14 +80,14 @@ public static class TagActionHelper
             return;
         }
 
-        var newTagName = InputBoxViewModel.GetValue(IoC.Get<ILanguageService>().Translate("Tags"), new Func<string, string>((str) =>
+        var newTagName = InputBoxViewModel.GetValue(IoC.Translate("Tags"), new Func<string, string>((str) =>
         {
             if (string.IsNullOrWhiteSpace(str))
-                return IoC.Get<ILanguageService>().Translate("Can not be empty!");
+                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
             if (str == tagName)
                 return "";
             if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
-                return IoC.Get<ILanguageService>().Translate("XXX is already existed!", str);
+                return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
             return "";
         }), defaultResponse: tagName!, ownerViewModel: IoC.Get<MainWindowViewModel>());
 
@@ -182,29 +182,29 @@ public static class TagActionHelper
         {
             actions.Add(new ProtocolAction(
                 actionName: isPinned == false
-                    ? IoC.Get<ILanguageService>().Translate("Pin")
-                    : IoC.Get<ILanguageService>().Translate("Unpin"),
+                    ? IoC.Translate("Pin")
+                    : IoC.Translate("Unpin"),
                 action: () => { CmdTagPin(tagName); }
             ));
         }
 
         {
             actions.Add(new ProtocolAction(
-                actionName: IoC.Get<ILanguageService>().Translate("Rename"),
+                actionName: IoC.Translate("Rename"),
                 action: () => { CmdTagRename(tagName); }
             ));
         }
 
         {
             actions.Add(new ProtocolAction(
-                actionName: IoC.Get<ILanguageService>().Translate("Connect"),
+                actionName: IoC.Translate("Connect"),
                 action: () => { CmdTagConnect(tagName); }
             ));
         }
 
         {
             actions.Add(new ProtocolAction(
-                actionName: IoC.Get<ILanguageService>().Translate("Delete"),
+                actionName: IoC.Translate("Delete"),
                 action: () => { CmdTagDelete(tagName); }
             ));
         }
