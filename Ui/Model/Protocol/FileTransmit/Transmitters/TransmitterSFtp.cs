@@ -87,7 +87,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             lock (this)
             {
                 var ret = new List<RemoteItem>();
-                IEnumerable<SftpFile> items = new List<SftpFile>();
+                IEnumerable<ISftpFile> items = new List<SftpFile>();
                 items = _sftp.ListDirectory(path);
                 if (items == null || !items.Any())
                     return ret;
@@ -111,7 +111,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             }
         }
 
-        private RemoteItem SftpFile2RemoteItem(SftpFile item)
+        private RemoteItem SftpFile2RemoteItem(ISftpFile item)
         {
             lock (this)
             {

@@ -16,6 +16,9 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Color = System.Drawing.Color;
+using System.Runtime.InteropServices;
+using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -870,6 +873,29 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 this.GoFullScreen();
             }
+        }
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
+
+        public override void FocusOnMe()
+        {
+            Execute.OnUIThread(() =>
+            {
+                // Kill logical focus
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RdpHost), null);
+                Keyboard.ClearFocus();
+                RdpHost.Focus();
+                if (_rdpClient is { } rdp)
+                {
+                    // try to fix https://github.com/1Remote/1Remote/issues/530, but failed
+                    rdp.Focus();
+                    //rdp.Show();
+                    //rdp.Update();
+                    //rdp.Refresh();
+                    //rdp.BringToFront();
+                }
+            });
         }
     }
 }

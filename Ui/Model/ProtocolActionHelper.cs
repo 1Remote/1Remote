@@ -64,6 +64,16 @@ public static class ProtocolActionHelper
                         IoC.Get<MainWindowViewModel>()?.ShowMe();
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                 }));
+                if (writable)
+                {
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
+                    {
+                        if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                        {
+                            IoC.Get<GlobalData>().DeleteServer(new[] { server });
+                        }
+                    }));
+                }
                 actions.Add(new ProtocolAction(IoC.Translate("server_card_operate_duplicate"), () =>
                 {
                     if (GlobalEventHelper.OnRequestGoToServerEditPage == null)

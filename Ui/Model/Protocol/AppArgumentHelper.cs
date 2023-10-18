@@ -10,6 +10,36 @@ namespace _1RM.Model.Protocol;
 
 public static class AppArgumentHelper
 {
+    private static LocalApp? GetChrome(string path)
+    {
+        if (path.Trim().EndsWith("chrome.exe", StringComparison.OrdinalIgnoreCase)
+            || path.IndexOf("msedge", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            var argumentList = new List<AppArgument>
+            {
+                new AppArgument()
+                {
+                    Type = AppArgumentType.Normal,
+                    Name = "Url",
+                    Key = "/t:",
+                    IsNullable = false,
+                    Value = "",
+                    Description = "The url you want to access",
+                    AddBlankAfterKey = false,
+                    AddBlankAfterValue = true,
+                },
+            };
+            var app = new LocalApp()
+            {
+                DisplayName = "Chrome",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
+        }
+        return null;
+    }
+
     private static LocalApp? GetFreeRdp(string path)
     {
         if (path.IndexOf("freerdp.exe", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -22,7 +52,7 @@ public static class AppArgumentHelper
                     Name = "Window title",
                     Key = "/t:",
                     IsNullable = false,
-                    Value = "%TITLE%",
+                    Value = "",
                     Description = "Window title",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
