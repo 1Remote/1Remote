@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -153,6 +154,28 @@ namespace _1RM.Model
                     ReadTagsFromServers();
                     OnDataReloaded?.Invoke();
 
+                    // old app turning to new app protocol, todo: remove after 2024
+                    foreach (var viewModel in VmItemList)
+                    {
+                        if (viewModel.Server is LocalApp app)
+                        {
+                            if (app.ArgumentList.Count == 0 && !string.IsNullOrEmpty(app.Arguments))
+                            {
+                                app.ArgumentList.Add(new AppArgument()
+                                {
+                                    Name = "Arg",
+                                    Key = "",
+                                    Type = AppArgumentType.Normal,
+                                    AddBlankAfterValue = false,
+                                    AddBlankAfterKey = false,
+                                    IsNullable = true,
+                                    Value = app.Arguments,
+                                });
+                                app.Arguments = "";
+                                UpdateServer(app);
+                            }
+                        }
+                    }
                     return true;
                 }
 
@@ -328,7 +351,6 @@ namespace _1RM.Model
             StopTick();
             try
             {
-                // TODO 找回右键菜单的删除按钮。
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;

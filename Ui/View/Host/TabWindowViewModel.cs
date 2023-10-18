@@ -96,6 +96,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
                     {
                         SetTitle();
                         _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
+                        _selectedItem.Content.FocusOnMe();
                     }
                     foreach (var item in Items)
                     {
