@@ -173,9 +173,6 @@ public static class AppArgumentHelper
                     AddBlankAfterValue = true,
                 },
             };
-#if DEBUG
-            // TODO check
-#endif
             // TODO add auto cmd if kitty
             var app = new LocalApp()
             {

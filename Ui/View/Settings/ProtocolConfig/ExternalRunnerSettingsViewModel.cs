@@ -51,7 +51,6 @@ public class ExternalRunnerSettingsViewModel
                     // ignored
                 }
 
-                // TODO 命令列表和 private static ProtocolSettings InitProtocol<T, T2> 里的有冲突
                 var path = SelectFileHelper.OpenFile(filter: "exe|*.exe", checkFileExists: true, initialDirectory: initPath);
                 if (path == null) return;
                 ExternalRunner.ExePath = path;
@@ -101,7 +100,7 @@ public class ExternalRunnerSettingsViewModel
                     }
                     else if (name == "vncviewer.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
                     {
-                        ExternalRunner.Arguments = @"%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto";
+                        ExternalRunner.Arguments = @"%1RM_HOSTNAME%:%1RM_PORT% -password=%1RM_PASSWORD%";
                         ExternalRunner.RunWithHosting = false;
                     }
                 }

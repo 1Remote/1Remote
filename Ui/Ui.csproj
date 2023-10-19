@@ -384,7 +384,7 @@
 		<Page Update="View\AboutPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\AppForm.xaml">
+		<Page Update="View\Editor\Forms\AppFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Editor\Forms\BaseFormWithAddressPort.xaml">

@@ -76,38 +76,39 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                 />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Hostname}"></TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Hostname}" />
                         <TextBox Grid.Row="1" Grid.Column="1" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding Host, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                 />
 
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Port}"></TextBlock>
                         <TextBox Grid.Row="2" Grid.Column="1" Name="TbPort" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding Port,  
-                                    ValidatesOnExceptions=True, 
-                                    UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (Validation.Errors)/ErrorContent, ElementName=TbPort}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                 Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                 />
 
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Database"></TextBlock>
                         <TextBox Grid.Row="3" Grid.Column="1" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding DatabaseName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding DatabaseName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                 />
 
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource User}"></TextBlock>
                         <TextBox Grid.Row="4" Grid.Column="1" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-
+                                 Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                        />
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Password}"></TextBlock>
-                        <controls:PasswordInput Height="24" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"
+                        <controls:PasswordInput Height="24" 
+                                                Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                                 Grid.Row="5" Grid.Column="1" />
 
 
