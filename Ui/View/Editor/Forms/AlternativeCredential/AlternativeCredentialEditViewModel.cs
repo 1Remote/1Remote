@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Xml.Linq;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
-    public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen
+    public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
     {
         private readonly Model.Protocol.Base.Credential? _org = null;
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
@@ -107,11 +110,6 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 {
                     New.Name = value;
                     RaisePropertyChanged();
-                    var t = CheckName(value.Trim());
-                    if (t.Item1 == false)
-                    {
-                        throw new ArgumentException(t.Item2);
-                    }
                 }
             }
         }
@@ -123,53 +121,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             {
                 New.PrivateKeyPath = value;
                 RaisePropertyChanged();
-                var t = CheckPrivateKeyPath(value.Trim());
-                if (t.Item1 == false)
-                {
-                    // TODO 改为 IDataErrorInfo 实现
-                    throw new ArgumentException(t.Item2);
-                }
             }
-        }
-
-        private Tuple<bool, string> CheckName(string name)
-        {
-            name = name.Trim();
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return new Tuple<bool, string>(false, $"`{IoC.Translate(LanguageService.NAME)}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
-            }
-
-            if (_existedNames?.Any(x => string.Equals(x, name, StringComparison.CurrentCultureIgnoreCase)) == true)
-            {
-                return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, name));
-            }
-
-            return new Tuple<bool, string>(true, "");
-        }
-
-        private bool CheckPort(string port)
-        {
-            if (string.IsNullOrWhiteSpace(port))
-                return true;
-
-            if (int.TryParse(port, out var i)
-                && i is > 0 and < 65536)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private Tuple<bool, string> CheckPrivateKeyPath(string path)
-        {
-            if (ShowPrivateKeyPath
-                && string.IsNullOrWhiteSpace(path) == false
-                && File.Exists(New.PrivateKeyPath) == false)
-            {
-                return new Tuple<bool, string>(false, IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, path));
-            }
-            return new Tuple<bool, string>(true, "");
         }
 
         public string Port
@@ -182,10 +134,6 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 {
                     New.Port = v;
                     RaisePropertyChanged();
-                    if (!CheckPort(v))
-                    {
-                        throw new ArgumentException();
-                    }
                 }
             }
         }
@@ -199,13 +147,6 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 return _cmdSave ??= new RelayCommand((_) =>
                 {
                     _protocol.AlternateCredentials ??= new ObservableCollection<Model.Protocol.Base.Credential>();
-
-                    var t = CheckName(Name);
-                    if (t.Item1 == false)
-                    {
-                        MessageBoxHelper.Warning(t.Item2);
-                        return;
-                    }
 
                     if (!ShowUsername)
                         New.UserName = "";
@@ -229,10 +170,19 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                         _protocol.AlternateCredentials.Add(New);
                     }
                     RequestClose(true);
-                }, o => CheckName(Name).Item1 && CheckPort(Port) && CheckPrivateKeyPath(PrivateKeyPath).Item1);
+                }, o => CanSave());
             }
         }
 
+        public bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(this[nameof(Port)])
+                || !string.IsNullOrEmpty(this[nameof(Name)]
+                )
+               )
+                return false;
+            return true;
+        }
 
 
         private RelayCommand? _cmdCancel;
@@ -255,5 +205,36 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             if (path == null) return;
             PrivateKeyPath = path;
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore] public string Error => "";
+
+        [JsonIgnore]
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Name):
+                    {
+                        if (string.IsNullOrWhiteSpace(Name))
+                            return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                        if (_existedNames?.Any(x => string.Equals(x, Name, StringComparison.CurrentCultureIgnoreCase)) == true)
+                            return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, Name);
+                        break;
+                        }
+                    case nameof(Port):
+                    {
+                        if (!string.IsNullOrWhiteSpace(Port) && (int.TryParse(Port, out var p) == false || p < 0 || p > 65535))
+                            return "1 - 65535";
+                        break;
+                    }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

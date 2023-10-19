@@ -11,10 +11,8 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using Newtonsoft.Json;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
-using Windows.Networking;
 
 namespace _1RM.View.Editor.Forms
 {

@@ -1,4 +1,4 @@
-﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.AppForm"
+﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.AppFormView"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

@@ -15,10 +15,8 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.AlternativeCredential;
-using _1RM.View.Editor.Forms.Argument;
 using _1RM.View.Utils;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
@@ -620,7 +618,7 @@ namespace _1RM.View.Editor
                     }
                     else if (protocolType == typeof(LocalApp))
                     {
-                        ProtocolEditControl = new AppForm(Server);
+                        ProtocolEditControl = new AppFormView(Server);
                     }
                     else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
                     {

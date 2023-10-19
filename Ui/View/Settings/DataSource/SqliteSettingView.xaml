@@ -4,7 +4,6 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                          xmlns:local="clr-namespace:_1RM.View.Settings.DataSource"
-                         xmlns:settings="clr-namespace:_1RM.View.Settings"
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                          xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d" 
@@ -74,14 +73,13 @@
                                  Name="TbName" 
                                  Style="{DynamicResource TbInput}"
                                  IsEnabled="{Binding NameWritable}"
-                                 Text="{Binding Name, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
-                                 />
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="12" Margin="0" Foreground="Red" Text="{Binding (.Errors)/ErrorContent, ElementName=TbName}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                        />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                         <TextBox Grid.Row="1" Grid.Column="1" 
                                  Style="{DynamicResource TbInput}"
-                                 Text="{Binding Path, Mode=OneWay}" 
+                                 Text="{Binding Path, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" 
                                  Tag="{Binding Path, Mode=OneWay}"/>
                         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">

@@ -55,7 +55,6 @@ namespace _1RM.View.Settings.Launcher
                     _configurationService.Save();
                     if (false == IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(LauncherEnabled, LauncherHotKeyModifiers, LauncherHotKeyKey))
                     {
-                        // TODO 改为 IDataErrorInfo 实现
                         throw new ArgumentException();
                     }
                 }

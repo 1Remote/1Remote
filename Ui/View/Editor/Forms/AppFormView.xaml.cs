@@ -1,24 +1,19 @@
 ﻿using System;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using _1RM.Utils;
 using System.Windows;
-using System.Windows.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class AppForm : FormBase
+    public partial class AppFormView : FormBase
     {
         public readonly AppFormViewModel ViewModel;
-        public AppForm(ProtocolBase vm) : base(vm)
+        public AppFormView(ProtocolBase vm) : base(vm)
         {
             if (_vm is not LocalApp app)
             {
-                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(AppForm)}!");
+                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(AppFormView)}!");
             }
 
             ViewModel = new AppFormViewModel(app);
@@ -42,7 +37,6 @@ namespace _1RM.View.Editor.Forms
                || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Password)])
                    )
                 return false;
-
             return true;
         }
 

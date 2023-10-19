@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,14 +8,14 @@ using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
+using Newtonsoft.Json;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class SqliteSettingViewModel : MaskLayerContainerScreenBase
+    public class SqliteSettingViewModel : MaskLayerContainerScreenBase, IDataErrorInfo
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
 
@@ -72,15 +73,7 @@ namespace _1RM.View.Settings.DataSource
             get => _name;
             set
             {
-                if (NameWritable && SetAndNotifyIfChanged(ref _name, value))
-                {
-                    // TODO 改为 IDataErrorInfo 实现
-                    New.DataSourceName = value;
-                    if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name, StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
-                }
+                if (NameWritable) SetAndNotifyIfChanged(ref _name, value);
             }
         }
 
@@ -167,11 +160,17 @@ namespace _1RM.View.Settings.DataSource
 
                     this.RequestClose(ret);
 
-                }, o => (
-                    string.IsNullOrWhiteSpace(Name) == false
-                    && string.IsNullOrWhiteSpace(Path) == false
-                    && File.Exists(Path)));
+                }, o => CanSave());
             }
+        }
+
+        public bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(this[nameof(Path)])
+                || !string.IsNullOrEmpty(this[nameof(Name)])
+               )
+                return false;
+            return true;
         }
 
 
@@ -187,5 +186,37 @@ namespace _1RM.View.Settings.DataSource
                 }, o => OrgSqliteConfig == null);
             }
         }
+
+
+
+        #region IDataErrorInfo
+        [JsonIgnore] public string Error => "";
+
+        [JsonIgnore]
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        {
+                            if (string.IsNullOrWhiteSpace(_name))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (_dataSourceViewModel.SourceConfigs.Any(x => x != OrgSqliteConfig && string.Equals(x.DataSourceName.Trim(), _name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+                                return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name);
+                            break;
+                        }
+                    case nameof(Path):
+                        {
+                            if (string.IsNullOrWhiteSpace(Path))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

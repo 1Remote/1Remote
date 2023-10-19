@@ -1,16 +1,19 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
+using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Windows.Networking;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class MysqlSettingViewModel : MaskLayerContainerScreenBase
+    public class MysqlSettingViewModel : MaskLayerContainerScreenBase, IDataErrorInfo
     {
         private readonly MysqlSource? _orgMysqlConfig = null;
         public MysqlSource New = new MysqlSource();
@@ -41,17 +44,8 @@ namespace _1RM.View.Settings.DataSource
         public string Name
         {
             get => _name;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _name, value))
-                {
-                    // TODO 改为 IDataErrorInfo 实现
-                    if (string.IsNullOrWhiteSpace(_name))
-                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
-                    if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName.Trim(), _name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
-                        throw new ArgumentException(IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name));
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _name, value);
+
         }
 
         private string _host = "127.0.0.1";
@@ -65,16 +59,7 @@ namespace _1RM.View.Settings.DataSource
         public string Port
         {
             get => _port;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _port, value))
-                {
-                    if (string.IsNullOrWhiteSpace(_port))
-                        throw new ArgumentException(IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
-                    if (int.TryParse(_port, out var p) == false || p < 0 || p > 65535)
-                        throw new ArgumentException("1 - 65535!");
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _port, value);
         }
 
         private string _databaseName = "1Remote";
@@ -107,13 +92,6 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
-                    //bool anyDifferent = (Name != _orgMysqlConfig?.DataSourceName
-                    //                    || Host != _orgMysqlConfig?.Host
-                    //                    || Port != _orgMysqlConfig?.Port.ToString()
-                    //                    || DatabaseName != _orgMysqlConfig?.DatabaseName
-                    //                    || UserName != _orgMysqlConfig?.UserName
-                    //                    || Password != _orgMysqlConfig?.Password
-                    //    );
                     if (_orgMysqlConfig != null)
                     {
                         _orgMysqlConfig.DataSourceName = Name.Trim();
@@ -138,18 +116,22 @@ namespace _1RM.View.Settings.DataSource
 
                     this.RequestClose(true);
 
-                }, o => (
-                        (int.TryParse(_port, out var p) == false || p < 0 || p > 65535) == false
-                         && string.IsNullOrWhiteSpace(Name) == false
-                         && string.IsNullOrWhiteSpace(Host) == false
-                         && string.IsNullOrWhiteSpace(DatabaseName) == false
-                         && string.IsNullOrWhiteSpace(UserName) == false
-                         && string.IsNullOrWhiteSpace(Password) == false
-                        ));
+                }, o => CanSave());
             }
         }
 
-
+        public bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(this[nameof(Host)])
+                || !string.IsNullOrEmpty(this[nameof(Port)])
+                || !string.IsNullOrEmpty(this[nameof(Name)])
+                || !string.IsNullOrEmpty(this[nameof(DatabaseName)])
+                || !string.IsNullOrEmpty(this[nameof(UserName)])
+                || !string.IsNullOrEmpty(this[nameof(Password)])
+               )
+                return false;
+            return true;
+        }
 
         private RelayCommand? _cmdCancel;
         public RelayCommand CmdCancel
@@ -207,5 +189,62 @@ namespace _1RM.View.Settings.DataSource
                 });
             }
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore] public string Error => "";
+
+        [JsonIgnore]
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        {
+                            if (string.IsNullOrWhiteSpace(_name))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (_dataSourceViewModel.SourceConfigs.Any(x => x != _orgMysqlConfig && string.Equals(x.DataSourceName.Trim(), _name.Trim(), StringComparison.CurrentCultureIgnoreCase)))
+                                return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, _name);
+                            break;
+                        }
+                    case nameof(Host):
+                        {
+                            if (string.IsNullOrWhiteSpace(Host))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(Port):
+                        {
+                            if (string.IsNullOrWhiteSpace(Port))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (int.TryParse(_port, out var p) == false || p < 0 || p > 65535)
+                                return "1 - 65535";
+                            break;
+                        }
+                    case nameof(DatabaseName):
+                        {
+                            if (string.IsNullOrWhiteSpace(DatabaseName))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(UserName):
+                        {
+                            if (string.IsNullOrWhiteSpace(UserName))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(Password):
+                        {
+                            if (string.IsNullOrWhiteSpace(Password))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }
