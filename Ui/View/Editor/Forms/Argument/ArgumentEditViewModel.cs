@@ -47,12 +47,12 @@ namespace _1RM.View.Editor.Forms.Argument
             if (Type == AppArgumentType.Selection)
             {
                 var ss = New.Selections.Where(x=>x.Key != diff).Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
-                Selections = string.Join('\n', ss);
+                Selections = string.Join("\n", ss);
             }
             else
             {
                 var ss = New.Selections.Where(x => x.Key != diff).Select(x => x.Key).Where(x => !string.IsNullOrWhiteSpace(x));
-                Selections = string.Join('\n', ss);
+                Selections = string.Join("\n", ss);
             }
         }
 
