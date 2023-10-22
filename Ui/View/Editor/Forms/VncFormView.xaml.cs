@@ -7,9 +7,9 @@ using _1RM.Model.Protocol.Base;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class VncForm : FormBase
+    public partial class VncFormView : FormBase
     {
-        public VncForm(ProtocolBase vm) : base(vm)
+        public VncFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
         }

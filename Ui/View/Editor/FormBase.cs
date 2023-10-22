@@ -21,6 +21,7 @@ namespace _1RM.View.Editor
         /// <returns></returns>
         public virtual bool CanSave()
         {
+            // TODO 重构
             if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
                 var protocol = (ProtocolBaseWithAddressPort)_vm;

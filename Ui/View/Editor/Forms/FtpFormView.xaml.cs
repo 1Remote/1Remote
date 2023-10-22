@@ -5,9 +5,9 @@ using _1RM.Model.Protocol.FileTransmit;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class FTPForm : FormBase
+    public partial class FtpFormView : FormBase
     {
-        public FTPForm(ProtocolBase vm) : base(vm)
+        public FtpFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
 

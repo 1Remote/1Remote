@@ -1,4 +1,4 @@
-﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.RdpForm"
+﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.RdpFormView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,7 +10,7 @@
                  xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
                  xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
                  mc:Ignorable="d"
-                 d:DataContext="{d:DesignInstance protocol:RDP}"
+                 d:DataContext="{d:DesignInstance forms:RdpFormViewModel}"
                  d:DesignHeight="1850" d:DesignWidth="800">
     <StackPanel>
 
@@ -22,13 +22,13 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="e.g. 192.168.0.101"
                                  ></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged}"
                                  MinWidth="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"></TextBox>
@@ -41,7 +41,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Domain"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Domain, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding New.Domain, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -51,7 +51,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding New.UserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -61,7 +61,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <controls:PasswordInput Height="28" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                        <controls:PasswordInput Height="28" Password="{Binding New.Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -71,7 +71,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="LoadBalanceInfo"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding LoadBalanceInfo, UpdateSourceTrigger=PropertyChanged}" Tag="tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses"></TextBox>
+                        <TextBox Text="{Binding New.LoadBalanceInfo, UpdateSourceTrigger=PropertyChanged}" Tag="tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -86,10 +86,10 @@
                 <Grid.Style>
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullScreen}">
+                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullScreen}">
                                 <Setter Property="Margin" Value="0"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
+                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
                                 <Setter Property="Margin" Value="0"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -101,11 +101,11 @@
                         <Grid.Resources>
                             <forms:ConverterERdpFullScreenFlag x:Key="ConverterERdpFullScreenFlag" />
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
+                        <ComboBox SelectedIndex="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
-                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
 
@@ -113,7 +113,7 @@
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
+                                    <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -131,7 +131,7 @@
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
+                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -144,12 +144,12 @@
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                 <StackPanel>
                                     <CheckBox Content="{DynamicResource 'New session always use full screen'}" 
-                                              IsChecked="{Binding IsConnWithFullScreen}">
+                                              IsChecked="{Binding New.IsConnWithFullScreen}">
                                         <CheckBox.Style>
                                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
                                                 <Setter Property="Margin" Value="0 5 0 5"></Setter>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                    <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
                                                         <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
                                                     </DataTrigger>
@@ -158,12 +158,12 @@
                                         </CheckBox.Style>
                                     </CheckBox>
                                     <CheckBox Content="{DynamicResource 'New session use full screen if the last session is full screen'}" 
-                                              IsChecked="{Binding IsConnWithFullScreen, Converter={StaticResource ConverterBoolInverse}}">
+                                              IsChecked="{Binding New.IsConnWithFullScreen, Converter={StaticResource ConverterBoolInverse}}">
                                         <CheckBox.Style>
                                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
                                                 <Setter Property="Margin" Value="0 0 0 5"></Setter>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                    <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="False"></Setter>
                                                         <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
                                                     </DataTrigger>
@@ -173,10 +173,10 @@
                                     </CheckBox>
                                     <CheckBox Content="{DynamicResource 'Display the connection bar when use the full screen'}" 
                                               Margin="0 0 0 5"
-                                              IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                                              IsChecked="{Binding New.IsFullScreenWithConnectionBar}"></CheckBox>
                                     <CheckBox Content="{DynamicResource 'Pin the connection bar by default'}" 
-                                              IsChecked="{Binding IsPinTheConnectionBarByDefault}" 
-                                              IsEnabled="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                                              IsChecked="{Binding New.IsPinTheConnectionBarByDefault}" 
+                                              IsEnabled="{Binding New.IsFullScreenWithConnectionBar}"></CheckBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -191,13 +191,13 @@
                         <Grid.Resources>
                             <forms:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode" />
                         </Grid.Resources>
-                        <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
+                        <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding New.RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource 'Fit to window'}"></ComboBoxItem>
                             <ComboBoxItem Content="{DynamicResource 'Custom resolution (stretch)'}">
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -208,7 +208,7 @@
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -219,7 +219,7 @@
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
+                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -230,14 +230,14 @@
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
+                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </ComboBoxItem.Style>
                             </ComboBoxItem>
-                            <ComboBoxItem Visibility="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
 
@@ -246,10 +246,10 @@
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static protocol:ERdpWindowResizeMode.Stretch}">
+                                    <DataTrigger Binding="{Binding New.RdpWindowResizeMode}" Value="{x:Static protocol:ERdpWindowResizeMode.Stretch}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static protocol:ERdpWindowResizeMode.Fixed}">
+                                    <DataTrigger Binding="{Binding New.RdpWindowResizeMode}" Value="{x:Static protocol:ERdpWindowResizeMode.Fixed}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -257,11 +257,11 @@
                         </StackPanel.Style>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="80" Text="W = " Margin="20 0 0 0"></TextBlock>
                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                            <TextBox Text="{Binding RdpWidth, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
+                            <TextBox Text="{Binding New.RdpWidth, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                         </Grid>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="40" Text="H = " Margin="5 0 0 0"></TextBlock>
                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                            <TextBox Text="{Binding RdpHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
+                            <TextBox Text="{Binding New.RdpHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
@@ -272,7 +272,7 @@
                 <Grid.Style>
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
+                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -283,7 +283,7 @@
                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                         <CheckBox HorizontalAlignment="Left" Margin="0 0 10 0" 
                                   Content="{DynamicResource 'Follow system'}" 
-                                  IsChecked="{Binding IsScaleFactorFollowSystem}"></CheckBox>
+                                  IsChecked="{Binding New.IsScaleFactorFollowSystem}"></CheckBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -292,10 +292,10 @@
                 <Grid.Style>
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
+                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding IsScaleFactorFollowSystem}" Value="True">
+                            <DataTrigger Binding="{Binding New.IsScaleFactorFollowSystem}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -310,8 +310,8 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0 0 5 0" Text="{DynamicResource Custom}"></TextBlock>
-                        <Slider Grid.Column="1" Value="{Binding ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Minimum="100" Maximum="200"></Slider>
-                        <TextBox Grid.Column="2" Width="50" TextAlignment="Center" Text="{Binding ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <Slider Grid.Column="1" Value="{Binding New.ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Minimum="100" Maximum="200"></Slider>
+                        <TextBox Grid.Column="2" Width="50" TextAlignment="Center" Text="{Binding New.ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -324,12 +324,12 @@
                         <Grid.Resources>
                             <forms:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance" />
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
+                        <ComboBox SelectedIndex="{Binding New.DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_auto}" ToolTip="{DynamicResource server_editor_display_rdp_performance_auto}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_low}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_middle}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_high}" ToolTip="{DynamicResource server_editor_display_rdp_performance_high}" />
-                            <ComboBoxItem Visibility="{Binding DisplayPerformance, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.DisplayPerformance, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -346,7 +346,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" VerticalAlignment="Top" Text=""></TextBlock>
                     <StackPanel>
                         <CheckBox Margin="0 2"
-                                  IsChecked="{Binding MstscModeEnabled}">
+                                  IsChecked="{Binding New.MstscModeEnabled}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap" Margin="0 0 5 0">
                                     <Run Text="{DynamicResource Enabled}"></Run>
@@ -371,7 +371,7 @@
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="False">
+                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -411,7 +411,7 @@
                                                                x:Name="TextEditor"
                                                                WordWrap="False"
                                                                ShowLineNumbers="True"
-                                                               Text="{Binding RdpFileAdditionalSettings}"
+                                                               Text="{Binding New.RdpFileAdditionalSettings}"
                                                                SyntaxHighlighting="PowerShell"
                                                                FontSize="{DynamicResource TextFontSize}">
                                     <controls:BindableAvalonEditor.Resources>
@@ -444,7 +444,7 @@
                                     VerticalContentAlignment="Top"
                                     TextWrapping="Wrap"
                                     AcceptsReturn="True"
-                                    Text="{Binding RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding New.RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
                                     Tag="e.g. selectedmonitors:s:0,2"></TextBox>-->
                             </Grid>
 
@@ -481,7 +481,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="/admin"></TextBlock>
                     <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" 
                               Content="{DynamicResource server_editor_advantage_admin}"
-                              IsChecked="{Binding IsAdministrativePurposes}"></CheckBox>
+                              IsChecked="{Binding New.IsAdministrativePurposes}"></CheckBox>
                 </StackPanel>
             </Grid>
 
@@ -492,11 +492,11 @@
                         <Grid.Resources>
                             <forms:ConverterEAudioRedirectionMode x:Key="ConverterEAudioRedirectionMode" />
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEAudioRedirectionMode}}">
+                        <ComboBox SelectedIndex="{Binding New.AudioRedirectionMode, Converter={StaticResource ConverterEAudioRedirectionMode}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_local}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_local}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_remote}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_remote}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_disabled}" ToolTip="{DynamicResource server_editor_advantage_sounds_disabled}" />
-                            <ComboBoxItem Visibility="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -511,15 +511,15 @@
                                 <Setter Property="Margin" Value="0 5"></Setter>
                             </Style>
                         </UniformGrid.Resources>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_audio_capture}" IsChecked="{Binding EnableAudioCapture}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_ports}" IsChecked="{Binding EnablePorts}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
-                        <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
-                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding EnableRedirectDrivesPlugIn}"></CheckBox>
-                        <CheckBox Content="{DynamicResource Cameras}" IsChecked="{Binding EnableRedirectCameras}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding New.EnableClipboard}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding New.EnableKeyCombinations}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_audio_capture}" IsChecked="{Binding New.EnableAudioCapture}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_ports}" IsChecked="{Binding New.EnablePorts}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding New.EnablePrinters}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding New.EnableSmartCardsAndWinHello}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding New.EnableDiskDrives}"></CheckBox>
+                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding New.EnableRedirectDrivesPlugIn}"></CheckBox>
+                        <CheckBox Content="{DynamicResource Cameras}" IsChecked="{Binding New.EnableRedirectCameras}"></CheckBox>
                     </UniformGrid>
                 </StackPanel>
             </Grid>
@@ -540,11 +540,11 @@
                         <Grid.Resources>
                             <forms:ConverterEGatewayMode x:Key="ConverterEGatewayMode" />
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding GatewayMode, Converter={StaticResource ConverterEGatewayMode}}">
+                        <ComboBox SelectedIndex="{Binding New.GatewayMode, Converter={StaticResource ConverterEGatewayMode}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_automatically_detect}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_use_these}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_do_not_use}" ToolTip="{DynamicResource server_editor_gateway_mode_do_not_use}" />
-                            <ComboBoxItem Visibility="{Binding GatewayMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.GatewayMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -558,10 +558,10 @@
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GatewayMode}" Value="{x:Static protocol:EGatewayMode.DoNotUseGateway}">
+                                            <DataTrigger Binding="{Binding New.GatewayMode}" Value="{x:Static protocol:EGatewayMode.DoNotUseGateway}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
+                                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -570,16 +570,16 @@
                                 <Grid Style="{StaticResource EditorRowGrid}" Margin="0 3 0 0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_server_host_name}"></TextBlock>
-                                        <TextBox Text="{Binding GatewayHostName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
+                                        <TextBox Text="{Binding New.GatewayHostName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
                                     </StackPanel>
                                 </Grid>
                                 <Grid Style="{StaticResource EditorRowGrid}" Margin="0 6 0 0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_logon_method}"></TextBlock>
-                                        <ComboBox SelectedIndex="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
+                                        <ComboBox SelectedIndex="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}" />
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}" />
-                                            <ComboBoxItem Visibility="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                                            <ComboBoxItem Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
@@ -590,7 +590,7 @@
                                             <Setter Property="Margin" Value="0 6 0 0"></Setter>
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
+                                                <DataTrigger Binding="{Binding New.GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -598,7 +598,7 @@
                                     </Grid.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
-                                        <TextBox Text="{Binding GatewayUserName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
+                                        <TextBox Text="{Binding New.GatewayUserName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
                                     </StackPanel>
                                 </Grid>
 
@@ -608,7 +608,7 @@
                                             <Setter Property="Margin" Value="0 6 0 0"></Setter>
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
+                                                <DataTrigger Binding="{Binding New.GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -616,7 +616,7 @@
                                     </Grid.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
-                                        <controls:PasswordInput Height="28" Password="{Binding GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                                        <controls:PasswordInput Height="28" Password="{Binding New.GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

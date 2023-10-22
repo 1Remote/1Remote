@@ -11,9 +11,9 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SshForm : FormBase
+    public partial class SshFormView : FormBase
     {
-        public SshForm(ProtocolBase vm) : base(vm)
+        public SshFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
 

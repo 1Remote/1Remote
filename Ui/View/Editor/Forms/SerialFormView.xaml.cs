@@ -8,9 +8,9 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SerialForm : FormBase
+    public partial class SerialFormView : FormBase
     {
-        public SerialForm(ProtocolBase vm) : base(vm)
+        public SerialFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
         }

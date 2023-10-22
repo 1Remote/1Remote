@@ -6,17 +6,18 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class AppFormView : FormBase
+    public partial class LocalAppFormView : FormBase
     {
-        public readonly AppFormViewModel ViewModel;
-        public AppFormView(ProtocolBase vm) : base(vm)
+        public readonly LocalAppFormViewModel ViewModel;
+        public LocalAppFormView(ProtocolBase vm) : base(vm)
         {
             if (_vm is not LocalApp app)
             {
-                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(AppFormView)}!");
+                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(LocalAppFormView)}!");
             }
 
-            ViewModel = new AppFormViewModel(app);
+            // TODO 改为 MVVM 模式
+            ViewModel = new LocalAppFormViewModel(app);
             InitializeComponent();
             DataContext = ViewModel;
         }

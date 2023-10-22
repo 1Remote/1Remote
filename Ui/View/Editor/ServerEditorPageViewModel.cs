@@ -586,47 +586,47 @@ namespace _1RM.View.Editor
                 {
                     if (protocolType == typeof(RDP))
                     {
-                        ProtocolEditControl = new RdpForm(Server);
+                        ProtocolEditControl = new RdpFormView(Server);
                     }
                     else if (protocolType == typeof(RdpApp))
                     {
-                        ProtocolEditControl = new RdpAppForm(Server);
+                        ProtocolEditControl = new RdpAppFormView(Server);
                     }
                     else if (protocolType == typeof(SSH))
                     {
-                        ProtocolEditControl = new SshForm(Server);
+                        ProtocolEditControl = new SshFormView(Server);
                     }
                     else if (protocolType == typeof(Telnet))
                     {
-                        ProtocolEditControl = new TelnetForm(Server);
+                        ProtocolEditControl = new TelnetFormView(Server);
                     }
                     else if (protocolType == typeof(Serial))
                     {
-                        ProtocolEditControl = new SerialForm(Server);
+                        ProtocolEditControl = new SerialFormView(Server);
                     }
                     else if (protocolType == typeof(FTP))
                     {
-                        ProtocolEditControl = new FTPForm(Server);
+                        ProtocolEditControl = new FtpFormView(Server);
                     }
                     else if (protocolType == typeof(SFTP))
                     {
-                        ProtocolEditControl = new SftpForm(Server);
+                        ProtocolEditControl = new SftpFormView(Server);
                     }
                     else if (protocolType == typeof(VNC))
                     {
-                        ProtocolEditControl = new VncForm(Server);
+                        ProtocolEditControl = new VncFormView(Server);
                     }
                     else if (protocolType == typeof(LocalApp))
                     {
-                        ProtocolEditControl = new AppFormView(Server);
+                        ProtocolEditControl = new LocalAppFormView(Server);
                     }
                     else if (protocolType == typeof(ProtocolBaseWithAddressPortUserPwd))
                     {
-                        ProtocolEditControl = new BaseFormWithAddressPortUserPwd(Server);
+                        ProtocolEditControl = new ProtocolBaseWithAddressPortUserPwdFormView(Server);
                     }
                     else if (protocolType == typeof(ProtocolBaseWithAddressPort))
                     {
-                        ProtocolEditControl = new BaseFormWithAddressPort(Server);
+                        ProtocolEditControl = new ProtocolBaseWithAddressPortFormView(Server);
                     }
                     else if (protocolType == typeof(ProtocolBase))
                     {

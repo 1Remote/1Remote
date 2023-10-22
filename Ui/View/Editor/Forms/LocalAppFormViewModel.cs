@@ -17,21 +17,20 @@ using Shawn.Utils.Wpf.FileSystem;
 namespace _1RM.View.Editor.Forms
 {
     // TODO 所有的 from 都改为 viewmodel, 并继承自同一基类
-    public class AppFormViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
+    public class LocalAppFormViewModel : ProtocolBaseFormViewModel
     {
-        private readonly LocalApp _localApp;
-        public LocalApp New => _localApp;
-        public AppFormViewModel(LocalApp localApp)
+        public new LocalApp New { get; }
+        public LocalAppFormViewModel(LocalApp localApp) : base(localApp)
         {
-            _localApp = localApp;
-            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
-            _localApp.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
+            New = localApp;
+            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+            New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
             CheckMacroRequirement();
         }
 
-        ~AppFormViewModel()
+        ~LocalAppFormViewModel()
         {
-            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
         }
 
         private void ArgumentListOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -88,9 +87,9 @@ namespace _1RM.View.Editor.Forms
                                       || MessageBoxHelper.Confirm(IoC.Translate("Do you want to replace the current parameter list with preset value?") + " " + t.DisplayName)))
                         {
                             New.RunWithHosting = t.RunWithHosting;
-                            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+                            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
                             New.ArgumentList = new ObservableCollection<AppArgument>(t.ArgumentList);
-                            _localApp.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
+                            New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
                             CheckMacroRequirement();
                         }
                     }
@@ -324,10 +323,8 @@ namespace _1RM.View.Editor.Forms
         }
 
         #region IDataErrorInfo
-        [JsonIgnore] public string Error => "";
-
         [JsonIgnore]
-        public string this[string columnName]
+        public override string this[string columnName]
         {
             get
             {
@@ -376,6 +373,8 @@ namespace _1RM.View.Editor.Forms
                             }
                             break;
                         }
+                    default:
+                        return this[columnName];
                 }
                 return "";
             }

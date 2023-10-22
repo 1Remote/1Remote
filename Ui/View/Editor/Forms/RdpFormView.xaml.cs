@@ -12,15 +12,13 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service;
 using Shawn.Utils;
-using _1RM.Service.DataSource;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class RdpForm : FormBase
+    public partial class RdpFormView : FormBase
     {
-        public RdpForm(ProtocolBase vm) : base(vm)
+        public RdpFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;

@@ -3,9 +3,9 @@ using _1RM.Model.Protocol.Base;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class TelnetForm : FormBase
+    public partial class TelnetFormView : FormBase
     {
-        public TelnetForm(ProtocolBase vm) : base(vm)
+        public TelnetFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
         }

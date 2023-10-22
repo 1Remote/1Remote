@@ -8,9 +8,9 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SftpForm : FormBase
+    public partial class SftpFormView : FormBase
     {
-        public SftpForm(ProtocolBase vm) : base(vm)
+        public SftpFormView(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
 

@@ -1,14 +1,13 @@
-﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.BaseFormWithAddressPort"
+﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.ProtocolBaseWithAddressPortFormView"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:editor="clr-namespace:_1RM.View.Editor"
-                        xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
-                        xmlns:base="clr-namespace:_1RM.Model.Protocol.Base"
                         xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
+                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance base:ProtocolBaseWithAddressPort}"
+                        d:DataContext="{d:DesignInstance forms:ProtocolBaseWithAddressPortFormViewModel}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
@@ -17,12 +16,13 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="e.g. 192.168.0.101"></TextBox>
+                    <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             Tag="e.g. 192.168.0.101"></TextBox>
                 </Grid>
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox MinWidth="50" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox MinWidth="50" 
+                             Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                              HorizontalAlignment="Left"
                              InputMethod.IsInputMethodEnabled="False"
                              InputScope="Number"/>
