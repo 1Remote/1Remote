@@ -12,57 +12,40 @@
         <noteDisplay:ConverterNoteToSingleLineNote x:Key="ConverterNoteToSingleLineNote" />
     </UserControl.Resources>
     <Grid Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}">
-        <!--text button show note-->
-        <Button Name="ButtonBriefNote"
-                Visibility="Collapsed"
-                HorizontalContentAlignment="Left"
-                Style="{StaticResource ButtonBarPrimaryStyle}"
-                MouseEnter="ButtonShowNote_OnMouseEnter"
-                attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
-                Background="{DynamicResource BackgroundBrush}"
-                Click="ButtonBriefNote_OnClick"
-                Foreground="{DynamicResource BackgroundTextBrush}">
-            <Grid>
+        <!--icon button show note-->
+        <StackPanel Orientation="Horizontal">
+            <Grid Margin="5" Name="GridParent">
+                <Grid Name="ButtonShowNote"
+                      Width="20" Height="20"
+                      Margin="0"
+                      Background="Transparent"
+                      MouseEnter="ButtonShowNote_OnMouseEnter"
+                >
+                    <Path Data="{StaticResource NoteGeometry}"
+                          Width="16" Height="16"
+                          Stroke="{DynamicResource BackgroundTextBrush}"
+                          Fill="{DynamicResource BackgroundTextBrush}"
+                          StrokeThickness="0" Stretch="Uniform" />
+                </Grid>
+            </Grid>
+            <Grid Name="GridBriefNote">
                 <TextBlock Margin="5" 
                            HorizontalAlignment="Left" 
                            MaxWidth="400"
                            Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
                            TextWrapping="NoWrap"
-                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" 
+                           Foreground="{DynamicResource BackgroundTextBrush}" 
                            TextTrimming="CharacterEllipsis"></TextBlock>
             </Grid>
-        </Button>
-
-        <!--icon button show note-->
-        <Button Name="ButtonShowNote"
-                Click="ButtonBriefNote_OnClick"
-                Width="20" Height="20"
-                Background="Transparent"
-                Style="{StaticResource ButtonBarPrimaryStyle}"
-                attachProperty:VisionElement.BackgroundAccent="Transparent"
-                attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                Foreground="{DynamicResource BackgroundTextBrush}"
-                attachProperty:VisionElement.ForegroundAccent="{DynamicResource BackgroundTextBrush}"
-                attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
-                HorizontalAlignment="Left" VerticalAlignment="Center"
-                Opacity="0.7"
-                attachProperty:VisionElement.Opacity="0.8"
-                attachProperty:VisionElement.OpacityAccent="0.9"
-                MouseEnter="ButtonShowNote_OnMouseEnter"
-        >
-            <Grid Width="16">
-                <Path Data="{StaticResource NoteGeometry}"
-                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                      StrokeThickness="0" Stretch="Uniform" />
-            </Grid>
-        </Button>
+        </StackPanel>
 
 
 
         <Popup Name="PopupNote" 
                AllowsTransparency="True"
-               PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" StaysOpen="False">
+               PlacementTarget="{Binding ElementName=ButtonShowNote}" 
+               Placement="Right"
+               StaysOpen="False">
             <ContentControl Name="PopupNoteContent"></ContentControl>
         </Popup>
     </Grid>
