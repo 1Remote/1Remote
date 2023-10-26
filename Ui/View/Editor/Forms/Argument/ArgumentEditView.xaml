@@ -84,7 +84,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Prefix}"></TextBlock>
                         <TextBox Name="TbKey"  Grid.Column="1"
-                                 Text="{Binding New.Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                 Text="{Binding Key, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
                                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"/>
                     </Grid>
 

@@ -14,11 +14,8 @@
         <CornerRadius x:Key="LauncherOutlineCornerRadiusObj" TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}" BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
     </UserControl.Resources>
 
-    <Border Padding="0 0 20 20" Background="Transparent">
+    <Border Padding="0 " Margin="0" Background="Transparent">
         <Border CornerRadius="{StaticResource LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" />
-            </Border.Effect>
             <Grid Name="Main">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -29,7 +26,7 @@
                 <Grid RowSpan="2" PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent"></Grid>
 
                 <Border Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource LauncherGridKeywordHeight}"
-                            BorderThickness="0 0 0 1">
+                        BorderThickness="0 0 0 1">
                     <Border.BorderBrush>
                         <SolidColorBrush Color="{DynamicResource PrimaryTextColor}" Opacity="0.5"></SolidColorBrush>
                     </Border.BorderBrush>
@@ -47,7 +44,6 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Name="ButtonEdit" Width="20" Height="20"
                                     Style="{StaticResource ButtonBarPrimaryStyle}"
-                                    IsEnabled="False"
                                     Background="Transparent"
                                     attachProperty:VisionElement.BackgroundAccent="Transparent"
                                     attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
@@ -100,8 +96,9 @@
                         <Grid PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent"></Grid>
                         <Grid Margin="10">
                             <wpf:MarkdownViewer Name="MarkdownViewer"
-                                            PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove"
-                                            Foreground="{DynamicResource PrimaryTextBrush}">
+                                                PreviewMouseDown="Ignore_OnPreviewMouseDown" 
+                                                PreviewMouseMove="Ignore_OnPreviewMouseMove"
+                                                Foreground="{DynamicResource PrimaryTextBrush}">
                             </wpf:MarkdownViewer>
 
                             <Grid Name="GridEditor">
@@ -115,7 +112,7 @@
 
 
                                 <TextBox Grid.Row="0" Name="TbMarkdown" TextWrapping="Wrap" Width="Auto"
-                                     MouseWheel="TbMarkdown_OnMouseWheel"
+                                         MouseWheel="TbMarkdown_OnMouseWheel"
                                          TextAlignment="Left" Margin="0 5"
                                          VerticalContentAlignment="Top"
                                          AcceptsReturn="True"

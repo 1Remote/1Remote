@@ -7,6 +7,7 @@ using System.Windows.Input;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using Stylet;
 
 namespace _1RM.Controls.NoteDisplay
@@ -28,13 +29,11 @@ namespace _1RM.Controls.NoteDisplay
                 _isBriefNoteShown = value;
                 if (value)
                 {
-                    ButtonBriefNote.Visibility = Visibility.Visible;
-                    ButtonShowNote.Visibility = Visibility.Collapsed;
+                    GridBriefNote.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    ButtonBriefNote.Visibility = Visibility.Collapsed;
-                    ButtonShowNote.Visibility = Visibility.Visible;
+                    GridBriefNote.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -65,7 +64,7 @@ namespace _1RM.Controls.NoteDisplay
             });
         }
 
-        private bool NoteTest(Button button, MouseEventArgs args)
+        private bool NoteTest(FrameworkElement button, MouseEventArgs args)
         {
             if (PopupNoteContent.Content is not NoteDisplayAndEditor editor)
             {
@@ -75,33 +74,34 @@ namespace _1RM.Controls.NoteDisplay
             {
                 var p1 = args.MouseDevice.GetPosition(button);
                 SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
-                if (p1.Y < button.ActualHeight)
-                {
-                    if (p1.X < 0 || p1.Y < 0 || p1.X > button.ActualWidth)
-                        PopupNote.IsOpen = false;
-                }
-                else
+                bool ret = p1.X > 0
+                           && p1.X < button.ActualWidth
+                           && p1.Y > 0
+                           && p1.Y < button.ActualHeight;
+                if (!ret)
                 {
                     var p3 = args.MouseDevice.GetPosition(editor);
                     SimpleLogHelper.Debug($"PopupNoteContent: {p3.X}, {p3.Y}, {editor.Main.ActualWidth} X {editor.Main.ActualHeight}");
-                    if (p3.X < 0)
-                        PopupNote.IsOpen = false;
-                    if (p3.X > editor.Main.ActualWidth)
-                        PopupNote.IsOpen = false;
-                    if (p3.Y > editor.Main.ActualHeight)
+
+                    if (p3.X > 0
+                        && p3.X < editor.ActualWidth
+                        && p3.Y > 0
+                        && p3.Y < editor.ActualHeight)
+                    {
+                        ret = true;
+                    }
+                    if (!ret)
                         PopupNote.IsOpen = false;
                 }
                 return true;
             }
-
             return false;
         }
 
         private void OnMouseMove(object sender, MouseEventArgs args)
         {
             if (PopupNote.IsOpen == false) return;
-            NoteTest(ButtonShowNote, args);
-            NoteTest(ButtonBriefNote, args);
+            NoteTest(GridParent, args);
         }
 
 
@@ -116,21 +116,7 @@ namespace _1RM.Controls.NoteDisplay
             PopupNote.IsOpen = false;
             await Task.Yield();
             PopupNote.IsOpen = true;
-            this.MouseMove -= OnMouseMove;
-            this.MouseMove += OnMouseMove;
-        }
-
-        private async void ButtonBriefNote_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (PopupNoteContent.Content is not NoteDisplayAndEditor
-                && _noteDisplayAndEditor != null)
-            {
-                PopupNoteContent.Content = _noteDisplayAndEditor;
-            }
-            await Task.Yield();
-            PopupNote.IsOpen = false;
-            await Task.Yield();
-            PopupNote.IsOpen = true;
+            SimpleLogHelper.Warning($"{PopupNote.Placement} {PopupNote.ActualWidth}");
             this.MouseMove -= OnMouseMove;
             this.MouseMove += OnMouseMove;
         }
