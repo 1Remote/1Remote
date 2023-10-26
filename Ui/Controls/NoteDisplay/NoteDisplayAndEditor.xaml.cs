@@ -59,7 +59,7 @@ namespace _1RM.Controls.NoteDisplay
             get => (RelayCommand)GetValue(CommandOnCloseRequestProperty);
             set => SetValue(CommandOnCloseRequestProperty, value);
         }
-        
+
         public bool CloseEnable { get; set; }
 
         private bool _editEnable;
@@ -73,8 +73,8 @@ namespace _1RM.Controls.NoteDisplay
                 {
                     Execute.OnUIThreadSync(() =>
                     {
-                        ButtonEdit.IsEnabled = EditEnable;
-                        ButtonEdit.Visibility = EditEnable ? Visibility.Visible : Visibility.Collapsed;
+                        ButtonSave.IsEnabled = EditEnable;
+                        TbMarkdown.IsReadOnly = !EditEnable;
                     });
                 }
             }
@@ -88,8 +88,8 @@ namespace _1RM.Controls.NoteDisplay
 
         private void NoteDisplayAndEditor_Loaded(object sender, RoutedEventArgs e)
         {
-            ButtonEdit.IsEnabled = EditEnable;
-            ButtonEdit.Visibility = EditEnable ? Visibility.Visible : Visibility.Collapsed;
+            ButtonSave.IsEnabled = EditEnable;
+            TbMarkdown.IsReadOnly = !EditEnable;
             ButtonClose.IsEnabled = CloseEnable;
             ButtonClose.Visibility = CloseEnable ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -141,7 +141,7 @@ namespace _1RM.Controls.NoteDisplay
 
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
+            if (EditEnable && Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();
                 IoC.Get<GlobalData>().UpdateServer(Server);
@@ -157,7 +157,10 @@ namespace _1RM.Controls.NoteDisplay
         private void ButtonNoteStartEdit_OnClick(object sender, RoutedEventArgs e)
         {
             TbMarkdown.Text = Server?.Note ?? "";
-            StartEdit();
+            if (MarkdownViewer.Visibility != Visibility.Collapsed)
+                StartEdit();
+            else
+                EndEdit();
         }
 
         private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
