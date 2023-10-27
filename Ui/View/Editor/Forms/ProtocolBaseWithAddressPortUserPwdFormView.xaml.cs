@@ -5,7 +5,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class ProtocolBaseWithAddressPortUserPwdFormView : FormBase
     {
-        public ProtocolBaseWithAddressPortUserPwdFormView(ProtocolBase vm) : base(vm)
+        public ProtocolBaseWithAddressPortUserPwdFormView()
         {
             InitializeComponent();
         }

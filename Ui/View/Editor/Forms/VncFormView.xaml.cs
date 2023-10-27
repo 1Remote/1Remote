@@ -9,7 +9,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class VncFormView : FormBase
     {
-        public VncFormView(ProtocolBase vm) : base(vm)
+        public VncFormView()
         {
             InitializeComponent();
         }

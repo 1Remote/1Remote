@@ -7,19 +7,9 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class FtpFormView : FormBase
     {
-        public FtpFormView(ProtocolBase vm) : base(vm)
+        public FtpFormView()
         {
             InitializeComponent();
-
-            GridUserName.Visibility = Visibility.Collapsed;
-            GridPwd.Visibility = Visibility.Collapsed;
-
-
-            if (vm.GetType() == typeof(FTP)
-                || vm.GetType().BaseType == typeof(ProtocolBaseWithAddressPortUserPwd))
-            {
-                GridUserName.Visibility = GridPwd.Visibility = Visibility.Visible;
-            }
         }
     }
 }

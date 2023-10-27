@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using _1RM.Utils.KiTTY.Model;
 using Shawn.Utils.Wpf.FileSystem;
@@ -13,27 +12,30 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class SshFormView : FormBase
     {
-        public SshFormView(ProtocolBase vm) : base(vm)
+        public SshFormView() : base()
         {
             InitializeComponent();
-
-            if (vm.GetType() == typeof(SSH))
+            Loaded += (sender, args) =>
             {
-                CbUsePrivateKey.IsChecked = false;
-                if (((SSH)vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (DataContext is SSH ssh)
                 {
-                    CbUsePrivateKey.IsChecked = null;
+                    CbUsePrivateKey.IsChecked = false;
+                    if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
+                    {
+                        CbUsePrivateKey.IsChecked = null;
+                    }
+
+                    if (!string.IsNullOrEmpty(ssh.PrivateKey))
+                    {
+                        CbUsePrivateKey.IsChecked = true;
+                    }
                 }
-                if (!string.IsNullOrEmpty(((SSH)vm).PrivateKey))
-                {
-                    CbUsePrivateKey.IsChecked = true;
-                }
-            }
+            };
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is SSH ssh)
+            if (DataContext is SSH ssh)
             {
                     var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
@@ -43,7 +45,7 @@ namespace _1RM.View.Editor.Forms
 
         private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox cb && _vm is SSH ssh)
+            if (sender is CheckBox cb && DataContext is SSH ssh)
                 if (cb.IsChecked == false)
                 {
                     ssh.PrivateKey = "";
@@ -56,7 +58,7 @@ namespace _1RM.View.Editor.Forms
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is IKittyConnectable pc)
+            if (DataContext is IKittyConnectable pc)
             {
                 var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
                 if (path == null) return;

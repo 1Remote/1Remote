@@ -6,14 +6,8 @@ namespace _1RM.View.Editor
 {
     public abstract class FormBase : UserControl
     {
-        // ReSharper disable once InconsistentNaming
-        protected readonly ProtocolBase _vm;
-
-
-        protected FormBase(ProtocolBase protocol)
+        protected FormBase()
         {
-            _vm = protocol;
-            DataContext = protocol;
         }
         /// <summary>
         /// validate whether all fields are correct to save
@@ -21,21 +15,22 @@ namespace _1RM.View.Editor
         /// <returns></returns>
         public virtual bool CanSave()
         {
-            // TODO 重构
-            if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-            {
-                var protocol = (ProtocolBaseWithAddressPort)_vm;
-                if (string.IsNullOrEmpty(protocol.Address?.Trim()))
-                    return false;
-                if (protocol.GetPort() <= 0 || protocol.GetPort() >= 65536)
-                    return false;
-            }
-
-
-            if (!_vm.Verify())
-                return false;
-
             return true;
+            //// TODO 重构
+            //if (_vm.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
+            //{
+            //    var protocol = (ProtocolBaseWithAddressPort)_vm;
+            //    if (string.IsNullOrEmpty(protocol.Address?.Trim()))
+            //        return false;
+            //    if (protocol.GetPort() <= 0 || protocol.GetPort() >= 65536)
+            //        return false;
+            //}
+
+
+            //if (!_vm.Verify())
+            //    return false;
+
+            //return true;
         }
     }
 }

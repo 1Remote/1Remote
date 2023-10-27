@@ -10,14 +10,14 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class SerialFormView : FormBase
     {
-        public SerialFormView(ProtocolBase vm) : base(vm)
+        public SerialFormView()
         {
             InitializeComponent();
         }
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is IKittyConnectable pc)
+            if (DataContext is IKittyConnectable pc)
             {
                 var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
                 if (path == null) return;

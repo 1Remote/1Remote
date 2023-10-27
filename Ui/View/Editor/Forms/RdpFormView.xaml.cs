@@ -18,7 +18,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class RdpFormView : FormBase
     {
-        public RdpFormView(ProtocolBase vm) : base(vm)
+        public RdpFormView()
         {
             InitializeComponent();
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
@@ -100,7 +100,7 @@ namespace _1RM.View.Editor.Forms
         }
         private void ButtonPreviewRdpFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is RDP rdp)
+            if (DataContext is RDP rdp)
             {
                 var tmp = Path.GetTempPath();
                 var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";

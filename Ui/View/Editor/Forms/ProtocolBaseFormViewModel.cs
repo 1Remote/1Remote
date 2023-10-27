@@ -28,6 +28,12 @@ namespace _1RM.View.Editor.Forms
         {
         }
 
+        public virtual bool CanSave()
+        {
+            // TODO 
+            return true;
+        }
+
         #region IDataErrorInfo
         [JsonIgnore] public string Error => "";
 

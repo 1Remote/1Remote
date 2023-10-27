@@ -5,7 +5,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class TelnetFormView : FormBase
     {
-        public TelnetFormView(ProtocolBase vm) : base(vm)
+        public TelnetFormView()
         {
             InitializeComponent();
         }

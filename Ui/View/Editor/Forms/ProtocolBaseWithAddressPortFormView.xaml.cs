@@ -5,7 +5,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class ProtocolBaseWithAddressPortFormView : FormBase
     {
-        public ProtocolBaseWithAddressPortFormView(ProtocolBase vm) : base(vm)
+        public ProtocolBaseWithAddressPortFormView()
         {
             InitializeComponent();
         }

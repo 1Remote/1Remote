@@ -2,35 +2,36 @@
 using System.Windows;
 using System.Windows.Controls;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
-using _1RM.Model.Protocol.FileTransmit;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
     public partial class SftpFormView : FormBase
     {
-        public SftpFormView(ProtocolBase vm) : base(vm)
+        public SftpFormView()
         {
             InitializeComponent();
 
-            if (vm.GetType() == typeof(SFTP))
+            Loaded += (sender, args) =>
             {
-                CbUsePrivateKey.IsChecked = false;
-                if (((SFTP)vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (DataContext is SFTP vm)
                 {
-                    CbUsePrivateKey.IsChecked = null;
+                    CbUsePrivateKey.IsChecked = false;
+                    if (vm.PrivateKey == vm.ServerEditorDifferentOptions)
+                    {
+                        CbUsePrivateKey.IsChecked = null;
+                    }
+                    if (!string.IsNullOrEmpty(vm.PrivateKey))
+                    {
+                        CbUsePrivateKey.IsChecked = true;
+                    }
                 }
-                if (!string.IsNullOrEmpty(((SFTP)vm).PrivateKey))
-                {
-                    CbUsePrivateKey.IsChecked = true;
-                }
-            }
+            };
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is SFTP sftp)
+            if (DataContext is SFTP sftp)
             {
                 var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
@@ -40,7 +41,7 @@ namespace _1RM.View.Editor.Forms
 
         private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox cb && _vm is SFTP sftp)
+            if (sender is CheckBox cb && DataContext is SFTP sftp)
             {
                 if (cb.IsChecked == false)
                 {

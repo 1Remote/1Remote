@@ -5,7 +5,7 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class RdpAppFormView : FormBase
     {
-        public RdpAppFormView(ProtocolBase vm) : base(vm)
+        public RdpAppFormView()
         {
             InitializeComponent();
         }

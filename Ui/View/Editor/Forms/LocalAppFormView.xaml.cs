@@ -8,44 +8,37 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class LocalAppFormView : FormBase
     {
-        public readonly LocalAppFormViewModel ViewModel;
-        public LocalAppFormView(ProtocolBase vm) : base(vm)
+        public LocalAppFormView(ProtocolBase vm)
         {
-            if (_vm is not LocalApp app)
-            {
-                throw new Exception($"passing none {nameof(LocalApp)} to {nameof(LocalAppFormView)}!");
-            }
-
             // TODO 改为 MVVM 模式
-            ViewModel = new LocalAppFormViewModel(app);
             InitializeComponent();
-            DataContext = ViewModel;
         }
 
         public override bool CanSave()
         {
-            if (_vm is LocalApp app)
+            if (DataContext is LocalApp app)
             {
                 if (!app.Verify())
                     return false;
                 if (string.IsNullOrEmpty(app.ExePath))
                     return false;
-            }
-
-            if (!string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Address)])
-               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Port)])
-               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.UserName)])
-               || !string.IsNullOrEmpty(ViewModel[nameof(ViewModel.Password)])
+                if (!string.IsNullOrEmpty(app[nameof(app.Address)])
+                    || !string.IsNullOrEmpty(app[nameof(app.Port)])
+                    || !string.IsNullOrEmpty(app[nameof(app.UserName)])
+                    || !string.IsNullOrEmpty(app[nameof(app.Password)])
                    )
-                return false;
-            return true;
+                    return false;
+                return true;
+            }
+            return false;
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
             var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
             if (path == null) return;
-            ViewModel.PrivateKey = path;
+            if (DataContext is LocalApp app)
+                app.PrivateKey = path;
         }
     }
 }
