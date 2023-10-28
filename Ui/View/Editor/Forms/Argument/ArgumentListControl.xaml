@@ -10,7 +10,7 @@
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
+             d:DataContext="{d:DesignInstance forms:LocalAppFormViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <system:Double x:Key="AppArgumentHeight">30</system:Double>
@@ -182,12 +182,19 @@
 
         <Grid Style="{StaticResource EditorRowGrid}" 
               Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}" 
-              Margin="0 0 0 50"
-              ToolTip="{Binding Demo}">
+              Margin="0 0 0 50">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center" Width="Auto" Height="Auto">
-                    <TextBlock Text="{Binding Demo}" Opacity="0.5" MaxWidth="500" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+                    <TextBox IsReadOnly="True" 
+                             Opacity="0.5"
+                             Text="{Binding Demo, Mode=OneWay}"
+                             MaxWidth="500" AcceptsReturn="True"
+                             VerticalAlignment="Center" 
+                             BorderBrush="Transparent"
+                             BorderThickness="0"
+                             TextWrapping="Wrap">
+                    </TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
                         Margin="5 0 0 0"
@@ -223,12 +230,20 @@
 
         <Grid Style="{StaticResource EditorRowGrid}" 
               Margin="0 50 0 30"
-              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}" 
-              ToolTip="{Binding Demo}">
+              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
+              >
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center" Width="Auto" Height="Auto">
-                    <TextBlock Text="{Binding Demo}" Opacity="0.5" MaxWidth="500" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+                    <TextBox IsReadOnly="True" 
+                             Opacity="0.5"
+                             Text="{Binding Demo, Mode=OneWay}"
+                             MaxWidth="500" AcceptsReturn="True"
+                             VerticalAlignment="Center" 
+                             BorderBrush="Transparent"
+                             BorderThickness="0"
+                             TextWrapping="Wrap">
+                    </TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
                         Margin="5 0 0 0"

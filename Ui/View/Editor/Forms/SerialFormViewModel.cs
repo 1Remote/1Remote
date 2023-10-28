@@ -9,4 +9,13 @@ public class SerialFormViewModel : ProtocolBaseFormViewModel
     {
         New = protocolBase;
     }
+
+    public override bool CanSave()
+    {
+        if (!string.IsNullOrEmpty(New[nameof(New.SerialPort)]))
+            return false;
+        if (!string.IsNullOrEmpty(New[nameof(New.BitRate)]))
+            return false;
+        return base.CanSave();
+    }
 }

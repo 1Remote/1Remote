@@ -128,7 +128,7 @@ namespace _1RM.Model.Protocol.Base
                         {
                             if (this.ShowAddressInput() && string.IsNullOrWhiteSpace(Address))
                             {
-                                return $"`{IoC.Translate("Hostname")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -137,7 +137,7 @@ namespace _1RM.Model.Protocol.Base
                             if (this.ShowPortInput())
                             {
                                 if (string.IsNullOrWhiteSpace(Port))
-                                    return $"`{IoC.Translate("Port")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                    return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                                 if (!long.TryParse(Port, out _) && Port != ServerEditorDifferentOptions)
                                     return IoC.Translate("Not a number");
                             }

@@ -16,8 +16,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    // TODO 所有的 from 都改为 viewmodel, 并继承自同一基类
-    public class LocalAppFormViewModel : ProtocolBaseFormViewModel
+    public class LocalAppFormViewModel : ProtocolBaseWithAddressPortUserPwdFormViewModel
     {
         public new LocalApp New { get; }
         public LocalAppFormViewModel(LocalApp localApp) : base(localApp)
@@ -334,7 +333,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredHostName && !RequiredHostNameIsNullable && string.IsNullOrWhiteSpace(Address))
                             {
-                                return $"`{IoC.Translate("Hostname")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -343,7 +342,7 @@ namespace _1RM.View.Editor.Forms
                             if (RequiredPort)
                             {
                                 if (!RequiredPortIsNullable && string.IsNullOrWhiteSpace(Port))
-                                    return $"`{IoC.Translate("Port")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                    return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                                 if (!long.TryParse(Port, out _) && Port != New.ServerEditorDifferentOptions)
                                     return IoC.Translate("Not a number");
                             }
@@ -353,7 +352,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredUserName && !RequiredUserNameIsNullable && string.IsNullOrWhiteSpace(UserName))
                             {
-                                return $"`{IoC.Translate("User")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -361,7 +360,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredPassword && !RequiredPasswordIsNullable && string.IsNullOrWhiteSpace(Password))
                             {
-                                return $"`{IoC.Translate("Password")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -369,12 +368,12 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredPrivateKey && !RequiredPrivateKeyIsNullable && string.IsNullOrWhiteSpace(PrivateKey))
                             {
-                                return $"`{IoC.Translate("Private key")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
                     default:
-                        return this[columnName];
+                        return base[columnName];
                 }
                 return "";
             }
@@ -427,6 +426,23 @@ namespace _1RM.View.Editor.Forms
                     }
                 });
             }
+        }
+
+        public override bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(New[nameof(New.ExePath)]))
+                return false;
+
+            if (New.ArgumentList.Any(argument => !string.IsNullOrEmpty(argument[nameof(AppArgument.Value)])))
+                return false;
+
+            if (!string.IsNullOrEmpty(this[nameof(Address)])
+                || !string.IsNullOrEmpty(this[nameof(Port)])
+                || !string.IsNullOrEmpty(this[nameof(UserName)])
+                || !string.IsNullOrEmpty(this[nameof(Password)])
+               )
+                return false;
+            return base.CanSave();
         }
     }
 }

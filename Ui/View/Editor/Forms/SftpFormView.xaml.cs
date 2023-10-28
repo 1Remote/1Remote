@@ -6,7 +6,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SftpFormView : FormBase
+    public partial class SftpFormView : UserControl
     {
         public SftpFormView()
         {

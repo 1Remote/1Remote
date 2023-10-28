@@ -9,5 +9,14 @@ namespace _1RM.View.Editor.Forms
         {
             New = protocolBase;
         }
+
+        public override bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(New[nameof(New.RemoteApplicationName)]))
+                return false;
+            if (!string.IsNullOrEmpty(New[nameof(New.RemoteApplicationProgram)]))
+                return false;
+            return base.CanSave();
+        }
     }
 }

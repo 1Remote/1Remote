@@ -289,13 +289,6 @@ namespace _1RM.View.Editor
         public List<ProtocolBase> ProtocolList { get; set; } = new List<ProtocolBase>();
 
 
-        //private FormBase? _protocolEditControl;
-        //public FormBase? ProtocolEditControl
-        //{
-        //    get => _protocolEditControl;
-        //    set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
-        //}
-
         private ProtocolBaseFormViewModel? _editorViewModel;
         public ProtocolBaseFormViewModel? EditorViewModel
         {
@@ -321,7 +314,7 @@ namespace _1RM.View.Editor
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    if (!Server.Verify())
+                    if (string.IsNullOrEmpty(Server.DisplayName) || EditorViewModel?.CanSave() != true)
                         return;
 
                     MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());

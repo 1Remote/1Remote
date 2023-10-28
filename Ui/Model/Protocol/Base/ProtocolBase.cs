@@ -430,7 +430,7 @@ namespace _1RM.Model.Protocol.Base
                         {
                             if (string.IsNullOrWhiteSpace(DisplayName))
                             {
-                                return $"`{IoC.Translate("Hostname")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }

@@ -1,16 +1,15 @@
-﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.SshFormView"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:system="clr-namespace:System;assembly=mscorlib"
-                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
-                        xmlns:editor="clr-namespace:_1RM.View.Editor"
-                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
-                        xmlns:controls="clr-namespace:_1RM.Controls"
-                        mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance forms:SshFormViewModel}"
-                        d:DesignHeight="1450" d:DesignWidth="800">
+﻿<UserControl x:Class="_1RM.View.Editor.Forms.SshFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
+             xmlns:controls="clr-namespace:_1RM.Controls"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance forms:SshFormViewModel}"
+             d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel>
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
@@ -19,12 +18,12 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  Tag="e.g. 192.168.0.101"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  MinWidth="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
@@ -37,7 +36,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding New.UserName, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding New.UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -56,7 +55,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <controls:PasswordInput Height="28" Password="{Binding New.Password, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
+                        <controls:PasswordInput Height="28" Password="{Binding New.Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"/>
                     </Grid>
                     <CheckBox Name="CbUsePrivateKey"
                               Margin="5 0 0 0"
@@ -102,7 +101,7 @@
                 </StackPanel>
             </Grid>
 
-            <alternativeCredential:AlternativeCredentialListControl></alternativeCredential:AlternativeCredentialListControl>
+            <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
         </StackPanel>
 
@@ -192,4 +191,4 @@
             </Grid>
         </StackPanel>
     </StackPanel>
-</editor:FormBase>
+</UserControl>

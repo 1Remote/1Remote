@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -11,27 +12,26 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class RdpFormView : FormBase
+    public partial class RdpFormView : UserControl
     {
         public RdpFormView()
         {
             InitializeComponent();
-            TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
-            TextEditor.GotFocus += (sender, args) =>
+            TextBoxRdpFileAdditionalSettings.TextArea.TextEntered += TextAreaOnTextEntered;
+            TextBoxRdpFileAdditionalSettings.GotFocus += (sender, args) =>
             {
-                if (TextEditor.Text == "")
+                if (TextBoxRdpFileAdditionalSettings.Text == "")
                 {
                     ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
                 }
             };
-            TextEditor.TextChanged += (sender, args) =>
+            TextBoxRdpFileAdditionalSettings.TextChanged += (sender, args) =>
             {
-                if (TextEditor.Text == "")
+                if (TextBoxRdpFileAdditionalSettings.Text == "")
                 {
                     ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
                 }
@@ -42,10 +42,10 @@ namespace _1RM.View.Editor.Forms
         private CompletionWindow? _completionWindow;
         private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
         {
-            int offset = TextEditor.CaretOffset - 1;
-            char newChar = TextEditor.Document.GetCharAt(offset); // current key down.
-            var currentLine = TextEditor.Document.GetLineByOffset(TextEditor.CaretOffset);
-            var currentLine0ToCaret = TextEditor.Document.GetText(currentLine.Offset, offset - currentLine.Offset + 1); // currentLine[0: offset]
+            int offset = TextBoxRdpFileAdditionalSettings.CaretOffset - 1;
+            //char newChar = TextBoxRdpFileAdditionalSettings.Document.GetCharAt(offset); // current key down.
+            var currentLine = TextBoxRdpFileAdditionalSettings.Document.GetLineByOffset(TextBoxRdpFileAdditionalSettings.CaretOffset);
+            var currentLine0ToCaret = TextBoxRdpFileAdditionalSettings.Document.GetText(currentLine.Offset, offset - currentLine.Offset + 1); // currentLine[0: offset]
             var completions = new List<string>();
             foreach (var str in RdpFileSettingCompletionData.Settings)
             {
@@ -62,7 +62,7 @@ namespace _1RM.View.Editor.Forms
             if (enumerable?.Any() == true)
             {
                 // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
-                _completionWindow = new CompletionWindow(TextEditor.TextArea);
+                _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea);
                 var completionData = _completionWindow.CompletionList.CompletionData;
                 foreach (var str in enumerable)
                 {

@@ -1,14 +1,13 @@
 ﻿using System.IO;
 using System.Windows;
-using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
+using System.Windows.Controls;
 using _1RM.Utils.KiTTY;
 using _1RM.Utils.KiTTY.Model;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SerialFormView : FormBase
+    public partial class SerialFormView : UserControl
     {
         public SerialFormView()
         {

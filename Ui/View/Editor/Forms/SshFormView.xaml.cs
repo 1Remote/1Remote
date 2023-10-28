@@ -10,7 +10,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SshFormView : FormBase
+    public partial class SshFormView : UserControl
     {
         public SshFormView() : base()
         {

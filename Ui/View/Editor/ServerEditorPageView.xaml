@@ -67,8 +67,8 @@
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Name}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:AutoCompleteComboBox Grid.Column="1"
-                                                           Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
-                                                           Selections="{Binding NameSelections, Mode=OneTime}"/>
+                                                                   Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                                                   Selections="{Binding NameSelections, Mode=OneTime}"/>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>

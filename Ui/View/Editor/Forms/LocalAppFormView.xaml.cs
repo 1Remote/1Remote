@@ -1,36 +1,16 @@
 ﻿using System;
 using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
 using System.Windows;
+using System.Windows.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class LocalAppFormView : FormBase
+    public partial class LocalAppFormView : UserControl
     {
-        public LocalAppFormView(ProtocolBase vm)
+        public LocalAppFormView()
         {
-            // TODO 改为 MVVM 模式
             InitializeComponent();
-        }
-
-        public override bool CanSave()
-        {
-            if (DataContext is LocalApp app)
-            {
-                if (!app.Verify())
-                    return false;
-                if (string.IsNullOrEmpty(app.ExePath))
-                    return false;
-                if (!string.IsNullOrEmpty(app[nameof(app.Address)])
-                    || !string.IsNullOrEmpty(app[nameof(app.Port)])
-                    || !string.IsNullOrEmpty(app[nameof(app.UserName)])
-                    || !string.IsNullOrEmpty(app[nameof(app.Password)])
-                   )
-                    return false;
-                return true;
-            }
-            return false;
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
