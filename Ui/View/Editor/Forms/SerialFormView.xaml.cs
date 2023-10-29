@@ -1,23 +1,22 @@
 ﻿using System.IO;
 using System.Windows;
-using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
+using System.Windows.Controls;
 using _1RM.Utils.KiTTY;
 using _1RM.Utils.KiTTY.Model;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    public partial class SerialForm : FormBase
+    public partial class SerialFormView : UserControl
     {
-        public SerialForm(ProtocolBase vm) : base(vm)
+        public SerialFormView()
         {
             InitializeComponent();
         }
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vm is IKittyConnectable pc)
+            if (DataContext is IKittyConnectable pc)
             {
                 var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
                 if (path == null) return;

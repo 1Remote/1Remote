@@ -87,6 +87,9 @@
                                     <TextBlock Grid.Column="0" Text="Version"></TextBlock>
                                     <TextBlock Grid.Column="1" Name="TbVersion" Text="{Binding CurrentVersion}" Margin="0" ToolTip="{x:Static Rm:AppVersion.BuildDate}"></TextBlock>
                                 </Grid>
+
+                                <TextBlock Text="{Binding CurrentVersionDate}" Margin="0" ToolTip="{x:Static Rm:AppVersion.BuildDate}"></TextBlock>
+
                                 <Grid>
                                     <Grid.Style>
                                         <Style TargetType="Grid" BasedOn="{StaticResource RowGrid}">

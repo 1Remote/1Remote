@@ -4,6 +4,7 @@ using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using System.Collections.ObjectModel;
 using System.Linq;
+using _1RM.Service;
 
 namespace _1RM.Model.Protocol
 {
@@ -95,7 +96,7 @@ namespace _1RM.Model.Protocol
                 }
                 return Address;
             }
-            return System.IO.Path.GetFileName(ExePath) + " "+ GetArguments(true);
+            return System.IO.Path.GetFileName(ExePath) + " " + GetArguments(true);
         }
 
         public override double GetListOrder()
@@ -113,11 +114,6 @@ namespace _1RM.Model.Protocol
         public string GetArguments(bool isDemo)
         {
             return AppArgument.GetArgumentsString(ArgumentList, isDemo, this);
-        }
-
-        public override bool Verify()
-        {
-            return ArgumentList.All(argument => string.IsNullOrEmpty(argument[nameof(AppArgument.Value)]));
         }
 
         public override ProtocolBase Clone()
@@ -175,5 +171,30 @@ namespace _1RM.Model.Protocol
         {
             return true;
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore]
+        public override string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(ExePath):
+                        {
+                            if (string.IsNullOrWhiteSpace(ExePath))
+                            {
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            }
+                            break;
+                        }
+                    default:
+                        return base[columnName];
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

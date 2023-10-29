@@ -1,17 +1,16 @@
-﻿<editor:FormBase x:Class="_1RM.View.Editor.Forms.AppFormView"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:editor="clr-namespace:_1RM.View.Editor"
-                        xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
-                        xmlns:alternativeCredential="clr-namespace:_1RM.View.Editor.Forms.AlternativeCredential"
-                        xmlns:controls="clr-namespace:_1RM.Controls"
-                        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                        xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
-                        mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance forms:AppFormViewModel}"
-                        d:DesignHeight="1450" d:DesignWidth="800">
+﻿<UserControl x:Class="_1RM.View.Editor.Forms.LocalAppFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:argument="clr-namespace:_1RM.View.Editor.Forms.Argument"
+             xmlns:controls="clr-namespace:_1RM.Controls"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance forms:LocalAppFormViewModel}"
+             d:DesignHeight="1450" d:DesignWidth="800">
     <UserControl.Resources>
         <GridLength x:Key="RowHeight1">30</GridLength>
         <GridLength x:Key="RowHeight2">20</GridLength>
@@ -29,7 +28,8 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
-                                 Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                 Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                 ></TextBox>
                     </Grid>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
@@ -159,9 +159,9 @@
                 </Button>
             </StackPanel>
 
-            <alternativeCredential:AlternativeCredentialListControl>
-                <alternativeCredential:AlternativeCredentialListControl.Style>
-                    <Style TargetType="alternativeCredential:AlternativeCredentialListControl">
+            <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
                         <Style.Triggers>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
@@ -176,11 +176,11 @@
                             </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
-                </alternativeCredential:AlternativeCredentialListControl.Style>
-            </alternativeCredential:AlternativeCredentialListControl>
+                </ContentControl.Style>
+            </ContentControl>
         </StackPanel>
 
         <argument:ArgumentListControl></argument:ArgumentListControl>
 
     </StackPanel>
-</editor:FormBase>
+</UserControl>

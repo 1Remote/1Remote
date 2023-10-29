@@ -12,6 +12,7 @@
              xmlns:editor="clr-namespace:_1RM.View.Editor"
              xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
              Background="White"
@@ -66,8 +67,8 @@
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Name}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:AutoCompleteComboBox Grid.Column="1"
-                                                           Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
-                                                           Selections="{Binding NameSelections, Mode=OneTime}"/>
+                                                                   Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                                                   Selections="{Binding NameSelections, Mode=OneTime}"/>
                                 </controls:GridWith4Columns>
 
                                 <controls:GridWith4Columns>
@@ -268,7 +269,8 @@
                                     </ComboBox>
                                 </controls:GridWith4Columns>
 
-                                <ContentControl Content="{Binding ProtocolEditControl}"></ContentControl>
+                                <!--<ContentControl Content="{Binding ProtocolEditControl}"></ContentControl>-->
+                                <ContentControl s:View.Model="{Binding EditorViewModel}"></ContentControl>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
