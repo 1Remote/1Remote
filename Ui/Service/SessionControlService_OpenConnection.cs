@@ -179,9 +179,15 @@ namespace _1RM.Service
         private async Task<string> Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
         {
             string tabToken = "";
+
             // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (this.ActivateOrReConnIfServerSessionIsOpened(protocol))
-                return tabToken;
+            {
+                Credential? assignCredential = null;
+                if (!string.IsNullOrEmpty(assignCredentialName) && protocol is ProtocolBaseWithAddressPort p)
+                    assignCredential = p.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
+                if (this.ActivateOrReConnIfServerSessionIsOpened(protocol, assignCredential))
+                    return tabToken;
+            }
 
             #region prepare
 
@@ -208,14 +214,17 @@ namespace _1RM.Service
             protocolClone.ConnectPreprocess();
 
             // apply alternate credential
-            if (protocolClone is ProtocolBaseWithAddressPort p)
             {
-                var c = await GetCredential(p, assignCredentialName);
-                if (c == null)
+                if (protocolClone is ProtocolBaseWithAddressPort p)
                 {
-                    return tabToken;
+                    var c = await GetCredential(p, assignCredentialName);
+                    if (c == null)
+                    {
+                        return tabToken;
+                    }
+
+                    p.SetCredential(c);
                 }
-                p.SetCredential(c);
             }
 
             // run script before connected

@@ -19,7 +19,6 @@ namespace _1RM.View.Host
 
         public string DisplayName { get; }
         public HostBase Content { get; }
-        public HostBase Host => Content;
         /// <summary>
         /// tab title mark color
         /// </summary>
