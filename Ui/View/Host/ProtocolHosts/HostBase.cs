@@ -150,16 +150,8 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-        public string ConnectionId
-        {
-            get
-            {
-                if (ProtocolServer.IsOnlyOneInstance())
-                    return ProtocolServer.Id.ToString();
-                else
-                    return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
-            }
-        }
+        public string ConnectionId => ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
+
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
         public bool CanFullScreen { get; protected set; }

@@ -286,8 +286,8 @@ using _1RM.Service.DataSource.DAO.Dapper;
                         {
                             IoC.Get<SessionControlService>().CloseProtocolHostAsync(
                                 Items
-                                .Where(x => x.Host.ProtocolServer.IsTmpSession() == false)
-                                .Select(x => x.Host.ConnectionId).ToArray());
+                                .Where(x => x.Content.ProtocolServer.IsTmpSession() == false)
+                                .Select(x => x.Content.ConnectionId).ToArray());
                         }
                         _canCmdClose = true;
                     }
@@ -315,7 +315,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
                             HostBase? host = null;
                             if (o is string connectionId)
                             {
-                                host = Items.FirstOrDefault(x => x.Host.ConnectionId == connectionId)?.Host;
+                                host = Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId)?.Content;
                             }
                             else
                             {

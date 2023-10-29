@@ -104,7 +104,7 @@ namespace _1RM.View.Host
                     }
                     try
                     {
-                        var ids = Vm.Items.Select(x => x.Host.ConnectionId).ToArray();
+                        var ids = Vm.Items.Select(x => x.Content.ConnectionId).ToArray();
                         if (ids.Length > 0)
                         {
                             IoC.Get<SessionControlService>().CloseProtocolHostAsync(ids);

@@ -90,10 +90,6 @@ namespace _1RM.Service
             }
             #endregion
 
-            // if is OnlyOneInstance server and it is connected now, activate it and return.
-            if (this.ActivateOrReConnIfServerSessionIsOpened(serverOrg))
-                return;
-
             var org = serverOrg;
             var view = fromView;
             var tabToken = assignTabToken;
@@ -140,60 +136,67 @@ namespace _1RM.Service
         }
 
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server)
+        private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server, Credential? assignCredential)
         {
             var serverId = server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (server.IsOnlyOneInstance() && _connectionId2Hosts.ContainsKey(serverId))
+            if (!server.IsOnlyOneInstance() || !_connectionId2Hosts.ContainsKey(serverId)) return false;
+            if (assignCredential != null)
             {
-                SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
-                if (_connectionId2Hosts[serverId].ParentWindow is { } win)
-                {
-                    if (win is TabWindowBase tab)
-                    {
-                        var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
-                        if (s != null)
-                            tab.GetViewModel().SelectedItem = s;
-                    }
-
-                    if (win.IsClosed)
-                    {
-                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
-                        CleanupProtocolsAndWindows();
-                        return false;
-                    }
-
-                    try
-                    {
-                        Execute.OnUIThreadSync(() =>
-                        {
-                            if (win.IsClosing == false)
-                            {
-                                win.WindowState = win.WindowState == WindowState.Minimized ? WindowState.Normal : win.WindowState;
-                                win.Show();
-                                win.Activate();
-                            }
-                        });
-
-                        var vmServer = _appData.GetItemById(server.DataSource?.DataSourceName ?? "", server.Id);
-                        vmServer?.UpdateConnectTime();
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Error(e);
-                        MarkProtocolHostToClose(new string[] { serverId.ToString() });
-                        CleanupProtocolsAndWindows();
-                    }
-                }
-
-                if (_connectionId2Hosts[serverId].ParentWindow != null)
-                {
-                    if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
-                        _connectionId2Hosts[serverId].ReConn();
-                }
-                return true;
+                if (_connectionId2Hosts[serverId].ProtocolServer is ProtocolBaseWithAddressPort p
+                    && assignCredential.Address != p.Address)
+                    return false;
+                if (_connectionId2Hosts[serverId].ProtocolServer is ProtocolBaseWithAddressPortUserPwd p2
+                    && assignCredential.UserName != p2.UserName)
+                    return false;
             }
-            return false;
+
+            SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
+            // Activate
+            if (_connectionId2Hosts[serverId].ParentWindow is { } win)
+            {
+                if (win is TabWindowBase tab)
+                {
+                    var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                    if (s != null)
+                        tab.GetViewModel().SelectedItem = s;
+                }
+
+                if (win.IsClosed)
+                {
+                    MarkProtocolHostToClose(new string[] { serverId.ToString() });
+                    CleanupProtocolsAndWindows();
+                    return false;
+                }
+
+                try
+                {
+                    Execute.OnUIThreadSync(() =>
+                    {
+                        if (win.IsClosing != false) return;
+                        win.WindowState = win.WindowState == WindowState.Minimized ? WindowState.Normal : win.WindowState;
+                        win.Show();
+                        win.Activate();
+                    });
+
+                    var vmServer = _appData.GetItemById(server.DataSource?.DataSourceName ?? "", server.Id);
+                    vmServer?.UpdateConnectTime();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    MarkProtocolHostToClose(new string[] { serverId.ToString() });
+                    CleanupProtocolsAndWindows();
+                }
+            }
+
+            // Reconnect
+            if (_connectionId2Hosts[serverId].ParentWindow != null)
+            {
+                if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
+                    _connectionId2Hosts[serverId].ReConn();
+            }
+            return true;
         }
 
 
@@ -280,7 +283,7 @@ namespace _1RM.Service
                     {
                         var tab = kv.Value;
                         var items = tab.GetViewModel().Items.ToList();
-                        if (items.Any(x => x.Host.ConnectionId == id))
+                        if (items.Any(x => x.Content.ConnectionId == id))
                         {
                             unhandledFlag = false;
                             break;
