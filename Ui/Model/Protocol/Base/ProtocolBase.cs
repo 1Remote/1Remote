@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,19 +17,11 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace _1RM.Model.Protocol.Base
 {
-    //[JsonConverter(typeof(JsonKnownTypesConverter<ProtocolBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
-    //[JsonKnownType(typeof(ProtocolBaseWithAddressPort), nameof(ProtocolBaseWithAddressPort))]
-    //[JsonKnownType(typeof(ProtocolBaseWithAddressPortUserPwd), nameof(ProtocolBaseWithAddressPortUserPwd))]
-    //[JsonKnownType(typeof(RDP), nameof(RDP))]
-    //[JsonKnownType(typeof(SSH), nameof(SSH))]
-    //[JsonKnownType(typeof(Telnet), nameof(Telnet))]
-    //[JsonKnownType(typeof(VNC), nameof(VNC))]
-    //[JsonKnownType(typeof(FTP), nameof(FTP))]
-    //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
-    public abstract class ProtocolBase : NotifyPropertyChangedBase
+    public abstract class ProtocolBase : NotifyPropertyChangedBase, IDataErrorInfo
     {
         [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
         [JsonIgnore] public static string ServerEditorStaticDifferentOptions => IoC.Translate("server_editor_different_options").Replace(" ", "-");
@@ -417,7 +410,34 @@ namespace _1RM.Model.Protocol.Base
         /// </summary>
         public virtual bool Verify()
         {
+            if (string.IsNullOrEmpty(DisplayName))
+                return false;
             return true;
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore] public string Error => "";
+
+        [JsonIgnore]
+        public virtual string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(DisplayName):
+                        {
+                            if (string.IsNullOrWhiteSpace(DisplayName))
+                            {
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            }
+                            break;
+                        }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

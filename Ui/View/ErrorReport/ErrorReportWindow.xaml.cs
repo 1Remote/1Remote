@@ -111,7 +111,7 @@ namespace _1RM.View.ErrorReport
                 sb.AppendLine("");
                 sb.AppendLine("|     Component   |                       Version                      |");
                 sb.AppendLine("|:------------------|:--------------------------------------|");
-                sb.AppendLine($"|{Assert.APP_DISPLAY_NAME} | `{AppVersion.Version}`({from})|");
+                sb.AppendLine($"|{Assert.APP_DISPLAY_NAME} | `{AppVersion.Version}({AppVersion.BuildDate})`({from})|");
                 sb.AppendLine($"|.NET Framework | `{framework?.NamedArguments?[0].TypedValue.Value?.ToString()}`    |");
                 sb.AppendLine($"|CLR            | `{Environment.Version}`       |");
                 sb.AppendLine($"|OS             | `{platform}`                  |");

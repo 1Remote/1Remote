@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Utils;
 using _1RM.Utils.RdpFile;
 using Shawn.Utils;
@@ -17,7 +18,6 @@ namespace _1RM.Model.Protocol
         }
 
         private string _remoteApplicationName = "";
-
         public string RemoteApplicationName
         {
             get => _remoteApplicationName;
@@ -102,5 +102,35 @@ namespace _1RM.Model.Protocol
 
             return rdpConfig;
         }
+        #region IDataErrorInfo
+
+        [JsonIgnore]
+        public override string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(DisplayName):
+                        {
+                            if (string.IsNullOrWhiteSpace(RemoteApplicationName))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(RemoteApplicationProgram):
+                        {
+                            if (string.IsNullOrWhiteSpace(RemoteApplicationProgram))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    default:
+                        {
+                            return base[columnName];
+                        }
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

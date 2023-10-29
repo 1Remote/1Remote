@@ -16,22 +16,20 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {
-    // TODO 所有的 from 都改为 viewmodel, 并继承自同一基类
-    public class AppFormViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
+    public class LocalAppFormViewModel : ProtocolBaseWithAddressPortUserPwdFormViewModel
     {
-        private readonly LocalApp _localApp;
-        public LocalApp New => _localApp;
-        public AppFormViewModel(LocalApp localApp)
+        public new LocalApp New { get; }
+        public LocalAppFormViewModel(LocalApp localApp) : base(localApp)
         {
-            _localApp = localApp;
-            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
-            _localApp.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
+            New = localApp;
+            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+            New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
             CheckMacroRequirement();
         }
 
-        ~AppFormViewModel()
+        ~LocalAppFormViewModel()
         {
-            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
         }
 
         private void ArgumentListOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -88,9 +86,9 @@ namespace _1RM.View.Editor.Forms
                                       || MessageBoxHelper.Confirm(IoC.Translate("Do you want to replace the current parameter list with preset value?") + " " + t.DisplayName)))
                         {
                             New.RunWithHosting = t.RunWithHosting;
-                            _localApp.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+                            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
                             New.ArgumentList = new ObservableCollection<AppArgument>(t.ArgumentList);
-                            _localApp.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
+                            New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
                             CheckMacroRequirement();
                         }
                     }
@@ -324,10 +322,8 @@ namespace _1RM.View.Editor.Forms
         }
 
         #region IDataErrorInfo
-        [JsonIgnore] public string Error => "";
-
         [JsonIgnore]
-        public string this[string columnName]
+        public override string this[string columnName]
         {
             get
             {
@@ -337,7 +333,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredHostName && !RequiredHostNameIsNullable && string.IsNullOrWhiteSpace(Address))
                             {
-                                return $"`{IoC.Translate("Hostname")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -346,7 +342,7 @@ namespace _1RM.View.Editor.Forms
                             if (RequiredPort)
                             {
                                 if (!RequiredPortIsNullable && string.IsNullOrWhiteSpace(Port))
-                                    return $"`{IoC.Translate("Port")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                    return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                                 if (!long.TryParse(Port, out _) && Port != New.ServerEditorDifferentOptions)
                                     return IoC.Translate("Not a number");
                             }
@@ -356,7 +352,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredUserName && !RequiredUserNameIsNullable && string.IsNullOrWhiteSpace(UserName))
                             {
-                                return $"`{IoC.Translate("User")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -364,7 +360,7 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredPassword && !RequiredPasswordIsNullable && string.IsNullOrWhiteSpace(Password))
                             {
-                                return $"`{IoC.Translate("Password")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
@@ -372,10 +368,12 @@ namespace _1RM.View.Editor.Forms
                         {
                             if (RequiredPrivateKey && !RequiredPrivateKeyIsNullable && string.IsNullOrWhiteSpace(PrivateKey))
                             {
-                                return $"`{IoC.Translate("Private key")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }
+                    default:
+                        return base[columnName];
                 }
                 return "";
             }
@@ -428,6 +426,23 @@ namespace _1RM.View.Editor.Forms
                     }
                 });
             }
+        }
+
+        public override bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(New[nameof(New.ExePath)]))
+                return false;
+
+            if (New.ArgumentList.Any(argument => !string.IsNullOrEmpty(argument[nameof(AppArgument.Value)])))
+                return false;
+
+            if (!string.IsNullOrEmpty(this[nameof(Address)])
+                || !string.IsNullOrEmpty(this[nameof(Port)])
+                || !string.IsNullOrEmpty(this[nameof(UserName)])
+                || !string.IsNullOrEmpty(this[nameof(Password)])
+               )
+                return false;
+            return base.CanSave();
         }
     }
 }

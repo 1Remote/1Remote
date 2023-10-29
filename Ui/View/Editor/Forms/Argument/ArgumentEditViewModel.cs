@@ -46,7 +46,7 @@ namespace _1RM.View.Editor.Forms.Argument
             var diff = ProtocolBase.ServerEditorStaticDifferentOptions;
             if (Type == AppArgumentType.Selection)
             {
-                var ss = New.Selections.Where(x=>x.Key != diff).Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
+                var ss = New.Selections.Where(x => x.Key != diff).Select(x => string.IsNullOrEmpty(x.Value) ? x.Key : x.Key + "|" + x.Value).Where(x => !string.IsNullOrWhiteSpace(x));
                 Selections = string.Join("\n", ss);
             }
             else
@@ -329,7 +329,7 @@ namespace _1RM.View.Editor.Forms.Argument
                         {
                             if (Type == AppArgumentType.Flag && string.IsNullOrEmpty(Key))
                             {
-                                return $"`{IoC.Translate("Prefix")}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}";
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             }
                             break;
                         }

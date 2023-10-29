@@ -5,6 +5,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using System.Collections.Generic;
+using _1RM.Service;
 
 namespace _1RM.Model.Protocol
 {
@@ -13,6 +14,7 @@ namespace _1RM.Model.Protocol
         public static string ProtocolName = "Serial";
         public Serial() : base(Serial.ProtocolName, "Putty.Serial.V1", "Serial")
         {
+            SerialPort = SerialPorts.FirstOrDefault() ?? "COM1";
         }
 
         public override bool IsOnlyOneInstance()
@@ -153,5 +155,36 @@ namespace _1RM.Model.Protocol
             serial.ConnectPreprocess();
             return $@" -load ""{sessionName}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{DataBits},{GetParityFlag()},{StopBits},{GetFlowControlFlag()}";
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore]
+        public override string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(SerialPort):
+                        {
+                            if (string.IsNullOrWhiteSpace(SerialPort))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(BitRate):
+                        {
+                            if (string.IsNullOrWhiteSpace(BitRate))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (!long.TryParse(BitRate, out _) && BitRate != ServerEditorDifferentOptions)
+                                return IoC.Translate("Not a number");
+                            break;
+                        }
+                    default:
+                        return base[columnName];
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }

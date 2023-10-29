@@ -68,6 +68,7 @@ namespace _1RM.View
         }
 
         public string CurrentVersion => AppVersion.Version;
+        public string CurrentVersionDate => AppVersion.BuildDate;
 
 
         private string _newVersion = "";

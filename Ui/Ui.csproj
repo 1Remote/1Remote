@@ -384,34 +384,34 @@
 		<Page Update="View\AboutPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\AppFormView.xaml">
+		<Page Update="View\Editor\Forms\LocalAppFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\BaseFormWithAddressPort.xaml">
+		<Page Update="View\Editor\Forms\ProtocolBaseWithAddressPortFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\BaseFormWithAddressPortUserPwd.xaml">
+		<Page Update="View\Editor\Forms\ProtocolBaseWithAddressPortUserPwdFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\FTPForm.xaml">
+		<Page Update="View\Editor\Forms\FtpFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\RdpAppForm.xaml">
+		<Page Update="View\Editor\Forms\RdpAppFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\RdpForm.xaml">
+		<Page Update="View\Editor\Forms\RdpFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\SftpForm.xaml">
+		<Page Update="View\Editor\Forms\SftpFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\SshForm.xaml">
+		<Page Update="View\Editor\Forms\SshFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\TelnetForm.xaml">
+		<Page Update="View\Editor\Forms\TelnetFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Editor\Forms\VncForm.xaml">
+		<Page Update="View\Editor\Forms\VncFormView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Editor\DataSourceSelectorView.xaml">

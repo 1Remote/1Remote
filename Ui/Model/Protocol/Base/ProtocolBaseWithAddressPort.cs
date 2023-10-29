@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using _1RM.Service;
 using Shawn.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
@@ -113,5 +114,41 @@ namespace _1RM.Model.Protocol.Base
         {
             return true;
         }
+
+
+        #region IDataErrorInfo
+        [JsonIgnore]
+        public override string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Address):
+                        {
+                            if (this.ShowAddressInput() && string.IsNullOrWhiteSpace(Address))
+                            {
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            }
+                            break;
+                        }
+                    case nameof(Port):
+                        {
+                            if (this.ShowPortInput())
+                            {
+                                if (string.IsNullOrWhiteSpace(Port))
+                                    return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                                if (!long.TryParse(Port, out _) && Port != ServerEditorDifferentOptions)
+                                    return IoC.Translate("Not a number");
+                            }
+                            break;
+                        }
+                    default:
+                        return base[columnName];
+                }
+                return "";
+            }
+        }
+        #endregion
     }
 }
