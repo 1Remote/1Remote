@@ -7,7 +7,6 @@
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerSelectionsViewModel}"
@@ -38,6 +37,39 @@
                 </Style.Triggers>
             </Style>
 
+
+            <Style x:Key="TextBlockTagStringStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                <Setter Property="Opacity" Value="0.5"></Setter>
+                <Setter Property="FontSize" Value="10"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                        <Setter Property="Opacity" Value="0.8"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="TextBlocProtocolNameStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                <Setter Property="Opacity" Value="0.3"></Setter>
+                <Setter Property="FontSize" Value="16"></Setter>
+                <Setter Property="FontWeight" Value="Bold"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                        <Setter Property="Opacity" Value="0.7"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
             <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
                 <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}"
@@ -112,24 +144,8 @@
                     <TextBlock Grid.Column="3" Grid.ColumnSpan="2"
                                VerticalAlignment="Bottom"
                                Text="{Binding TagString}"
+                               Style="{StaticResource TextBlockTagStringStyle}"
                                ToolTip="{Binding TagString}">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                <Setter Property="Opacity" Value="0.5"></Setter>
-                                <Setter Property="FontSize" Value="10"></Setter>
-                                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                <Setter Property="Margin" Value="5 0 10 0"></Setter>
-                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                        <Setter Property="Opacity" Value="0.8"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
                     </TextBlock>
 
 
@@ -149,45 +165,20 @@
                                         Tag="{Binding Server.Id}"
                                         PreviewMouseDown="ButtonShowNote_OnClick"
                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.CmdShowNoteField}"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        Margin="5 0 0 0"
+                                        IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}"
                                 >
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                            <Setter Property="Margin" Value="5 0 0 0"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}" Value="False">
-                                                    <Setter Property="IsEnabled" Value="False"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                    <Grid Width="16">
-                                        <Path Data="{StaticResource NoteGeometry}"
-                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  StrokeThickness="0" Stretch="Uniform" />
-                                    </Grid>
+                                    <Path Data="{StaticResource NoteGeometry}"
+                                          Width="16" Height="16"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="0" Stretch="Uniform" />
                                 </Button>
                             </Grid>
                             <!--ProtocolDisplayName-->
-                            <TextBlock Text="{Binding Server.ProtocolDisplayName}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                        <Setter Property="Opacity" Value="0.3"></Setter>
-                                        <Setter Property="FontSize" Value="16"></Setter>
-                                        <Setter Property="FontWeight" Value="Bold"></Setter>
-                                        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
-                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                        <Setter Property="Margin" Value="5 0 10 0"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                                <Setter Property="Opacity" Value="0.7"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
+                            <TextBlock Text="{Binding Server.ProtocolDisplayName}"
+                                       Style="{StaticResource TextBlocProtocolNameStyle}">
                             </TextBlock>
                         </StackPanel>
                     </Grid>
@@ -198,7 +189,7 @@
     </UserControl.Resources>
     <Grid Background="{DynamicResource PrimaryMidBrush}">
 
-        <!--servers list-->
+        <!--servers list title-->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
@@ -216,22 +207,7 @@
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                 <!-- show tags -->
-                <Grid Height="40" HorizontalAlignment="Right">
-                    <Grid.Resources>
-                        <serverList:ConverterTagName x:Key="ConverterTagName" />
-                    </Grid.Resources>
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Style.Triggers>
-                                <DataTrigger Value="0" Binding="{Binding TagFilters.Count}">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                                <DataTrigger Value="{x:Null}" Binding="{Binding TagFilters.Count}">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
+                <Grid Height="40" HorizontalAlignment="Right" Visibility="{Binding TagFilters.Count, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter='0'}">
                     <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -241,10 +217,11 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="model:TagFilter">
                                 <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
-                                    <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
-                                        <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
+                                    <Grid ToolTip="{Binding TagName}">
+                                        <TextBlock Text="{Binding TagName}" 
+                                                   Foreground="{DynamicResource AccentTextBrush}" 
                                                    VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
-                                            <TextBlock.Resources>
+                                            <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsExcluded}" Value="True">
@@ -262,7 +239,7 @@
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </TextBlock.Resources>
+                                            </TextBlock.Style>
                                         </TextBlock>
                                     </Grid>
                                 </Border>
@@ -273,6 +250,7 @@
             </Grid>
 
 
+            <!--servers list body-->
             <ListBox x:Name="ListBoxSelections"
                      Grid.Row="1"
                      Grid.IsSharedSizeScope="True"

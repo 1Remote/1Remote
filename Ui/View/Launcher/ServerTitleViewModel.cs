@@ -1,42 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using Shawn.Utils;
+using System.Windows.Media;
 
 namespace _1RM.View.Launcher
 {
-    public class ServerTitleViewModel
+    public class ServerTitleViewModel : NotifyPropertyChangedBase
     {
+        public static readonly SolidColorBrush HighLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
+
         public ServerTitleViewModel(string text)
         {
-            var vms = text.Select(c => new CharViewModel(c)).ToList();
-            CharViewModels = vms;
             Text = text;
         }
 
-        public readonly string Text;
+        public string Text { get; }
 
-        public List<CharViewModel> CharViewModels { get; }
+        private Visibility _textVisibility;
+        public Visibility TextVisibility
+        {
+            get => _textVisibility;
+            set => SetAndNotifyIfChanged(ref _textVisibility, value);
+        }
+
+        private Visibility _highlightVisibility;
+        public Visibility HighlightVisibility
+        {
+            get => _highlightVisibility;
+            set => SetAndNotifyIfChanged(ref _highlightVisibility, value);
+        }
+
+        private object? _displayNameControl = null;
+        public object? DisplayNameControl
+        {
+            get => _displayNameControl;
+            set => SetAndNotifyIfChanged(ref _displayNameControl, value);
+        }
+
 
         public void UnHighLightAll()
         {
-            var vms = CharViewModels.ToArray();
-            foreach (var charViewModel in vms)
-            {
-                charViewModel.IsHighLight = false;
-            }
+            TextVisibility = Visibility.Visible;
+            HighlightVisibility = Visibility.Collapsed;
         }
         public void HighLight(List<bool> flags)
         {
-            if (flags.Count == CharViewModels.Count)
+            if (flags.Count == Text.Length && flags.Any(x => x))
             {
-                var vms = CharViewModels.ToArray();
-                for (var i = 0; i < vms.Length; i++)
+                var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
+                for (int i = 0; i < flags.Count; i++)
                 {
-                    vms[i].IsHighLight = flags[i];
+                    if (flags[i])
+                        sp.Children.Add(new TextBlock()
+                        {
+                            Text = Text[i].ToString(),
+                            Background = HighLightBrush,
+                        });
+                    else
+                        sp.Children.Add(new TextBlock()
+                        {
+                            Text = Text[i].ToString(),
+                        });
                 }
+                DisplayNameControl = sp;
+                TextVisibility = Visibility.Collapsed;
+                HighlightVisibility = Visibility.Visible;
             }
             else
             {

@@ -4,22 +4,23 @@ using System.Windows.Input;
 using _1RM.Model;
 using _1RM.View;
 using _1RM.View.ServerList;
+using Shawn.Utils;
 
 namespace _1RM.Controls
 {
     /// <summary>
-    /// Interaction logic for ServerListItem.xaml
+    /// Interaction logic for ServerLineItem.xaml
     /// </summary>
-    public partial class ServerListItem : UserControl
+    public partial class ServerLineItem : UserControl
     {
         public static readonly DependencyProperty ProtocolServerViewModelProperty =
-            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerListItem),
+            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerLineItem),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var value = (ProtocolBaseViewModel)e.NewValue;
-            ((ServerListItem)d).DataContext = value;
+            ((ServerLineItem)d).DataContext = value;
         }
 
         public ProtocolBaseViewModel? ProtocolBaseViewModel
@@ -29,13 +30,15 @@ namespace _1RM.Controls
         }
 
 
-        public ServerListItem()
+        public ServerLineItem()
         {
             InitializeComponent();
             PopupCardSettingMenu.Closed += (sender, args) =>
             {
                 ProtocolBaseViewModel?.ClearActions();
             };
+            CbSelected.Visibility = Visibility.Collapsed;
+            BtnSettingMenu.Visibility = Visibility.Collapsed;
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
@@ -65,6 +68,20 @@ namespace _1RM.Controls
             {
                 e.Handled = true;
             }
+        }
+
+        private void Grid_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            //SimpleLogHelper.Debug("Grid_OnMouseEnter");
+            CbSelected.Visibility = Visibility.Visible;
+            BtnSettingMenu.Visibility = Visibility.Visible;
+        }
+
+        private void Grid_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            //SimpleLogHelper.Debug("Grid_OnMouseLeave");
+            CbSelected.Visibility = Visibility.Collapsed;
+            BtnSettingMenu.Visibility = Visibility.Collapsed;
         }
     }
 }

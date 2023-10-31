@@ -153,7 +153,7 @@
 
             <Button Command="{Binding Path=DataContext.CmdToggleEditMode, RelativeSource={RelativeSource AncestorType={x:Type editor:ServerEditorPageView}}}"
                     Style="{StaticResource ButtonPrimaryStyle}"
-                    Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
+                    Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=0}"
                     ToolTip="{DynamicResource 'Edit'}" 
                     Margin="10 0 5 0">
                 <Grid Height="15" Width="15">
@@ -181,7 +181,7 @@
 
 
         <Grid Style="{StaticResource EditorRowGrid}" 
-              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}" 
+              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=0}" 
               Margin="0 0 0 50">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>
@@ -230,7 +230,7 @@
 
         <Grid Style="{StaticResource EditorRowGrid}" 
               Margin="0 50 0 30"
-              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
+              Visibility="{Binding New.ArgumentList.Count, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=0}"
               >
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Preview}"></TextBlock>

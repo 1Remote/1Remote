@@ -49,7 +49,7 @@
                                Text="{Binding Title}" />
                     <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="5 0" 
                                Foreground="{DynamicResource PrimaryTextBrush}" 
-                               Visibility="{Binding Eta, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=0}"
+                               Visibility="{Binding Eta, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=0}"
                                Text="{Binding Eta, StringFormat={}0s}" />
 
                     <Button Grid.Column="3" Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -78,7 +78,7 @@
                 </Grid>
 
                 <Grid Grid.Row="1"
-                      Visibility="{Binding Message, Converter={StaticResource ConverterNotEqual2Visible}, ConverterParameter=''}">
+                      Visibility="{Binding Message, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=''}">
                     <TextBlock VerticalAlignment="Center" 
                                FontSize="14"
                                FontWeight="Bold" HorizontalAlignment="Center" Margin="10 5"

@@ -14,8 +14,6 @@
                               Source="{Binding GlobalData.TagList}"
                               Filter="TagItemSource_OnFilter">
         </CollectionViewSource>
-
-        <local:ConverterTagName x:Key="ConverterTagName" />
         <local:ConverterTagNameCount x:Key="ConverterTagNameCount" />
     </UserControl.Resources>
 
