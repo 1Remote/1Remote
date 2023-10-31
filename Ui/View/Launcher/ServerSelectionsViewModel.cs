@@ -64,18 +64,20 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-//#if DEBUG
-//                    CalcVisibleByFilter();
-//#else
+                    //#if DEBUG
+                    //                    CalcVisibleByFilter();
+                    //#else
                     _debounceDispatcher.Debounce(200, (obj) =>
                     {
                         if (value == _filter)
                         {
+#if DEBUG
                             SimpleLogHelper.DebugWarning("CalcVisibleByFilter");
+#endif
                             CalcVisibleByFilter();
                         }
                     });
-//#endif
+                    //#endif
                 }
             }
         }

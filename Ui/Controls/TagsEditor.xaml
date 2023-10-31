@@ -12,7 +12,6 @@
              d:DataContext="{d:DesignInstance self:TagsEditor}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <serverList:ConverterTagName x:Key="ConverterTagName" />
     </UserControl.Resources>
     <Grid>
         <StackPanel>
@@ -42,7 +41,7 @@
                                 <DataTemplate DataType="system:String">
                                     <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 5">
                                         <Grid>
-                                            <Label Content="{Binding Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" Margin="0 0 15 0"></Label>
+                                            <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}" Margin="0 0 15 0"></Label>
                                             <Button Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
                                                     Style="{StaticResource ButtonBarAccentStyle}"
                                                     HorizontalAlignment="Right"

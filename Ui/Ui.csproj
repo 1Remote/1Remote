@@ -70,6 +70,7 @@
 		<CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
 		<CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
 
 	<!--<ItemGroup>
@@ -362,7 +363,7 @@
 		<Page Update="Controls\ServerCardItem.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="Controls\ServerListItem.xaml">
+		<Page Update="Controls\ServerLineItem.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="Controls\TagsEditor.xaml">
@@ -456,9 +457,6 @@
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\RequestRatingView.xaml">
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="View\ServerList\ServerListPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Settings\DataSource\SqliteSettingView.xaml">

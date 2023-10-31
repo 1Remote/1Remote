@@ -16,7 +16,6 @@
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              xmlns:locality="clr-namespace:_1RM.Service.Locality"
              mc:Ignorable="d"
-             Background="White"
              d:DataContext="{d:DesignInstance serverList:ServerListPageViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -40,16 +39,9 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
-                            <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Server.Id}" Value="0">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
+                            <Grid Name="Grid" FocusVisualStyle="{x:Null}" 
+                                  Background="{DynamicResource BackgroundBrush}"
+                                  Visibility="{Binding Server.Id, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter='0'}">
 
                                 <Border x:Name="GridContainer"></Border>
                                 <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
@@ -75,13 +67,8 @@
             </Style>
 
             <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
-                <Grid Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Height" Value="164"></Setter>
-                            <Setter Property="Width" Value="165"></Setter>
-                        </Style>
-                    </Grid.Style>
+                <Grid Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}"
+                      Height="164" Width="165">
                     <controls:ServerCardItem ProtocolBaseViewModel="{Binding}">
                     </controls:ServerCardItem>
                 </Grid>
@@ -95,10 +82,10 @@
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" 
+                    <controls:ServerLineItem ProtocolBaseViewModel="{Binding}" 
                                              MinHeight="{StaticResource ServerItemHeight}"
                                              Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}"
-                                             ></controls:ServerListItem>
+                                             ></controls:ServerLineItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -151,10 +138,6 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-
-
-            <serverList:ConverterTagName x:Key="ConverterTagName" />
-            <serverList:ConverterGroupIsSelected x:Key="ConverterGroupIsSelected" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -195,7 +178,7 @@
                         <DataTemplate DataType="model:TagFilter">
                             <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
                                 <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
-                                      ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                      ToolTip="{Binding TagName}">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="{DynamicResource Unpin}" 
@@ -223,7 +206,7 @@
                                                       CommandParameter="{Binding}"/>
                                         </ContextMenu>
                                     </Grid.ContextMenu>
-                                    <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
+                                    <TextBlock Text="{Binding TagName}" Foreground="{DynamicResource AccentTextBrush}" 
                                                VerticalAlignment="Center" HorizontalAlignment="Center"
                                                Margin="5 5 15 5">
                                         <TextBlock.Resources>
@@ -337,27 +320,17 @@
                                                          Foreground="{DynamicResource BackgroundTextBrush}"
                                                          Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                             <Grid>
-                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static locality:EnumServerOrderBy.ProtocolAsc}}"
+                                      >
                                 </Path>
-                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.ProtocolDesc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static locality:EnumServerOrderBy.ProtocolDesc}}"
+                                      >
                                 </Path>
                                 <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Protocol}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </Grid>
@@ -371,27 +344,18 @@
                                 Foreground="{DynamicResource BackgroundTextBrush}"
                                 Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.NameAsc}">
                             <Grid>
-                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameAsc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, 
+                                                    Converter={StaticResource ConverterEqual2Visible}, 
+                                                    ConverterParameter={x:Static locality:EnumServerOrderBy.NameAsc}}"
+                                      >
                                 </Path>
-                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.NameDesc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static locality:EnumServerOrderBy.NameDesc}}">
                                 </Path>
                                 <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Name}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </Grid>
@@ -436,17 +400,12 @@
                                         attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource BackgroundTextBrush}"
                                         attachProperty:VisionElement.Opacity="0.5"
                                         attachProperty:VisionElement.OpacityAccent="0.9"
-                                        Command="{Binding CmdShowNoteField}" >
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding BriefNoteVisibility}" Value="Visible">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
+                                        Command="{Binding CmdShowNoteField}"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        Visibility="{Binding BriefNoteVisibility, 
+                                                    Converter={StaticResource ConverterEqual2Collapsed}, 
+                                                    ConverterParameter={x:Static Visibility.Visible}}"
+                                        >
                                     <Grid Width="18">
                                         <Path Data="M8.533333 192c0-25.6 17.066667-42.666667 34.133334-42.666667h490.666666c21.333333 0 34.133333 17.066667 34.133334 42.666667 0 21.333333-17.066667 42.666667-34.133334 42.666667h-490.666666c-21.333333 0-34.133333-21.333333-34.133334-42.666667z m550.4 213.333333c0 25.6-21.333333 42.666667-46.933333 42.666667h-465.066667c-25.6 0-46.933333-17.066667-46.933333-42.666667 0-21.333333 21.333333-42.666667 46.933333-42.666666h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666666z m-507.733333 256c-25.6 0-46.933333-17.066667-46.933333-42.666666s21.333333-42.666667 46.933333-42.666667h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666667 0 21.333333-21.333333 42.666667-46.933333 42.666666h-465.066667z m507.733333 170.666667c0 25.6-21.333333 42.666667-51.2 42.666667h-452.266666c-29.866667 0-51.2-17.066667-51.2-42.666667s21.333333-42.666667 51.2-42.666667h452.266666c29.866667 0 51.2 17.066667 51.2 42.666667z m140.8-85.333333l221.866667-238.933334-221.866667-238.933333c-17.066667-17.066667-17.066667-51.2 0-68.266667 17.066667-17.066667 46.933333-17.066667 64 0l251.733334 273.066667c17.066667 17.066667 17.066667 51.2 0 68.266667l-251.733334 273.066666c-17.066667 17.066667-46.933333 17.066667-64 0-17.066667-17.066667-17.066667-46.933333 0-68.266666z"
                                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -465,27 +424,21 @@
                                 Foreground="{DynamicResource BackgroundTextBrush}"
                                 Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.AddressAsc}">
                             <Grid>
-                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressAsc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, 
+                                                    Converter={StaticResource ConverterEqual2Visible}, 
+                                                    ConverterParameter={x:Static locality:EnumServerOrderBy.AddressAsc}}"
+                                >
                                 </Path>
-                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                    <Path.Style>
-                                        <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static locality:EnumServerOrderBy.AddressDesc}">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
+                                <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                      Style="{StaticResource HeaderPathStyle}"
+                                      Visibility="{Binding ServerOrderBy, 
+                                                    Converter={StaticResource ConverterEqual2Visible}, 
+                                                    ConverterParameter={x:Static locality:EnumServerOrderBy.AddressDesc}}"
+                                >
                                 </Path>
                                 <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Target}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </Grid>
@@ -642,9 +595,9 @@
                                                                             Style="{StaticResource ButtonBarAccentStyle}">
                                                                         <Grid Height="12" Width="12" >
                                                                             <Path Data="{StaticResource GeometryCross}" 
-                                                                                Stretch="Uniform" Name="Path"
-                                                                              Height="12" Width="12" 
-                                                                              Fill="{DynamicResource PrimaryTextBrush}">
+                                                                                  Stretch="Uniform" Name="Path"
+                                                                                  Height="12" Width="12" 
+                                                                                  Fill="{DynamicResource PrimaryTextBrush}">
                                                                                 <Path.Style>
                                                                                     <Style TargetType="Path">
                                                                                         <Setter Property="Opacity" Value="0.5"></Setter>
@@ -729,17 +682,7 @@
 
 
             <!-- tooltip for how to add -->
-            <Border Grid.Row="1" HorizontalAlignment="Right">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsAddToolTipShow}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
+            <Border Grid.Row="1" HorizontalAlignment="Right" Visibility="{Binding IsAddToolTipShow, Converter={StaticResource ConverterBool2Visible}}">
                 <StackPanel>
                     <Path Fill="{DynamicResource BackgroundTextBrush}" 
                           Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
@@ -806,17 +749,11 @@
 
 
         <!-- tag list: the page to config which tag should be display. -->
-        <ContentControl s:View.Model="{Binding TagListViewModel}">
-            <ContentControl.Style>
-                <Style TargetType="ContentControl">
-                    <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding TagListViewModel}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ContentControl.Style>
+        <ContentControl s:View.Model="{Binding TagListViewModel}"
+                        Visibility="{Binding TagListViewModel, 
+                                                    Converter={StaticResource ConverterEqual2Collapsed}, 
+                                                    ConverterParameter={x:Null}}"
+        >
         </ContentControl>
 
 

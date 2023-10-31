@@ -108,34 +108,18 @@
                         </ComboBox>
                     </Grid>
 
-                    <TextBlock VerticalAlignment="Center" Margin="2 0" ToolTip="{DynamicResource 'How to select the specified monitors'}">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                        <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
-                                   controls1:HyperlinkHelper.IsOpenExternal="True">
+                    <TextBlock VerticalAlignment="Center" Margin="2 0" 
+                               Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}"
+                               ToolTip="{DynamicResource 'How to select the specified monitors'}">
+                               <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
+                                          controls1:HyperlinkHelper.IsOpenExternal="True">
                             (?)
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </Grid>
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Setter Property="Visibility" Value="Visible"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Style="{StaticResource EditorRowGrid}" 
+                  Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                     <Grid>
@@ -192,51 +176,20 @@
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding New.RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource 'Fit to window'}"></ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (stretch)'}">
-                                <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBoxItem.Style>
+                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (stretch)'}"
+                                          Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}}">
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (fixed)'}">
-                                <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBoxItem.Style>
+                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (fixed)'}" 
+                                          Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.EnableFullAllScreens}}">
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (stretch)'}">
-                                <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBoxItem.Style>
+                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (stretch)'}"
+                                          Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}">
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (fixed)'}">
-                                <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding New.RdpFullScreenFlag}" Value="{x:Static protocol:ERdpFullScreenFlag.Disable}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBoxItem.Style>
+                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (fixed)'}"
+                                          Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}">
                             </ComboBoxItem>
-                            <ComboBoxItem Visibility="{Binding New.RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
+                            <ComboBoxItem Visibility="{Binding New.RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" 
+                                          Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
 
@@ -267,16 +220,8 @@
             </Grid>
 
 
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Style="{StaticResource EditorRowGrid}" 
+                  Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2VisibleInv}}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Scale}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
@@ -366,16 +311,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2Visible}}">
                 <StackPanel>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
@@ -583,36 +519,18 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style BasedOn="{StaticResource EditorRowGrid}" TargetType="Grid">
-                                            <Setter Property="Margin" Value="0 6 0 0"></Setter>
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding New.GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
+                                <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
+                                      Style="{StaticResource EditorRowGrid}"
+                                      Margin="0 6 0 0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                                         <TextBox Text="{Binding New.GatewayUserName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
                                     </StackPanel>
                                 </Grid>
 
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style BasedOn="{StaticResource EditorRowGrid}" TargetType="Grid">
-                                            <Setter Property="Margin" Value="0 6 0 0"></Setter>
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding New.GatewayLogonMethod}" Value="{x:Static protocol:EGatewayLogonMethod.SmartCard}">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
+                                <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
+                                      Style="{StaticResource EditorRowGrid}"
+                                      Margin="0 6 0 0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                                         <controls:PasswordInput Height="28" Password="{Binding New.GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>

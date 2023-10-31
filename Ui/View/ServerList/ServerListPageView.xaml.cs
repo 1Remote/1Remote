@@ -479,23 +479,6 @@ namespace _1RM.View.ServerList
     }
 
 
-    public class ConverterTagName : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is string tagName)
-            {
-                return $"{tagName}";
-            }
-            return value;
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-
     public class ConverterTagNameCount : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -519,34 +502,34 @@ namespace _1RM.View.ServerList
 
 
 
-    public class ConverterGroupIsSelected : IMultiValueConverter
-    {
-        /*****
-            <DataTrigger.Binding>
-                <MultiBinding Converter="{StaticResource ConverterIsEqual}" >
-                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
-                    <Binding Path="Name" Mode="OneWay"></Binding>
-                </MultiBinding>
-            </DataTrigger.Binding>
-         */
-        public object? Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value.Length == 2
-                && value[0] is IEnumerable<ProtocolBaseViewModel> protocolBaseViewModels
-                && value[1] is DataSourceBase dataSource)
-            {
-                if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).Any(x => x.IsSelected))
-                {
-                    if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).All(x => x.IsSelected))
-                        return true;
-                    return null;
-                }
-            }
-            return false;
-        }
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
+    //public class ConverterGroupIsSelected : IMultiValueConverter
+    //{
+    //    /*****
+    //        <DataTrigger.Binding>
+    //            <MultiBinding Converter="{StaticResource ConverterIsEqual}" >
+    //                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
+    //                <Binding Path="Name" Mode="OneWay"></Binding>
+    //            </MultiBinding>
+    //        </DataTrigger.Binding>
+    //     */
+    //    public object? Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    //    {
+    //        if (value.Length == 2
+    //            && value[0] is IEnumerable<ProtocolBaseViewModel> protocolBaseViewModels
+    //            && value[1] is DataSourceBase dataSource)
+    //        {
+    //            if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).Any(x => x.IsSelected))
+    //            {
+    //                if (protocolBaseViewModels.Where(x => x.Server.DataSource == dataSource).All(x => x.IsSelected))
+    //                    return true;
+    //                return null;
+    //            }
+    //        }
+    //        return false;
+    //    }
+    //    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    //    {
+    //        throw new NotSupportedException();
+    //    }
+    //}
 }

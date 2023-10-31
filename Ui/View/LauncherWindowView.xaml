@@ -52,16 +52,8 @@
 
                         <ContentControl s:View.Model="{Binding QuickConnectionViewModel}"
                                         IsTabStop="False"
-                                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
-                            <ContentControl.Style>
-                                <Style TargetType="ContentControl">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=ServerSelectionsView, Path=Visibility}" Value="Visible">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Style>
+                                        PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+                                        Visibility="{Binding ElementName=ServerSelectionsView, Path=Visibility, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static Visibility.Visible}}">
                         </ContentControl>
 
                         <!--<Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
@@ -73,7 +65,8 @@
         </Border>
 
         <!--Note 显示备注-->
-        <Border Name="NoteField" Grid.Column="1" Padding="10 40" Visibility="{Binding  ServerSelectionsViewModel.GridNoteVisibility}">
+        <Border Name="NoteField" Grid.Column="1" Padding="10 40" 
+                Visibility="{Binding  ServerSelectionsViewModel.GridNoteVisibility}">
             <Border.Style>
                 <Style TargetType="Border">
                     <Style.Triggers>

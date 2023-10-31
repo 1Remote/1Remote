@@ -106,6 +106,20 @@
 
 
 
+    <Style x:Key="TextBlockDataTemplateForProtocolActionStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+        <Setter Property="Opacity" Value="0.8"></Setter>
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+        <Setter Property="Margin" Value="5 0 10 0"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                <Setter Property="Opacity" Value="1"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
 
     <DataTemplate x:Key="DataTemplateForProtocolAction" DataType="model:ProtocolAction">
@@ -117,23 +131,10 @@
                     <ColumnDefinition Width="5"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                            <Setter Property="Opacity" Value="0.8"></Setter>
-                            <Setter Property="FontSize" Value="14"></Setter>
-                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                            <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                            <Setter Property="Margin" Value="5 0 10 0"></Setter>
-                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                    <Setter Property="Opacity" Value="1"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="3" 
+                           Text="{Binding ActionName}"
+                           Style="{StaticResource TextBlockDataTemplateForProtocolActionStyle}">
                 </TextBlock>
             </Grid>
         </Grid>
