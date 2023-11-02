@@ -93,7 +93,7 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    _debounceDispatcher.Debounce(150, (obj) =>
+                    _debounceDispatcher.Debounce(100, (obj) =>
                     {
                         if (value == _filter)
                         {

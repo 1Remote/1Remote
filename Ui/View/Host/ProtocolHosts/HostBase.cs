@@ -150,7 +150,25 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-        public string ConnectionId => ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
+        public string ConnectionId
+        {
+            get
+            {
+                if (ProtocolServer.IsOnlyOneInstance())
+                {
+                    return ProtocolServer switch
+                    {
+                        ProtocolBaseWithAddressPortUserPwd p1 => ProtocolServer.Id + "_" + p1.Address + "_" + p1.UserName,
+                        ProtocolBaseWithAddressPort p2 => ProtocolServer.Id + "_" + p2.Address,
+                        _ => ProtocolServer.Id
+                    };
+                }
+                else
+                {
+                    return ProtocolServer.Id + "_" + this.GetHashCode();
+                }
+            }
+        }
 
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 

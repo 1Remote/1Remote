@@ -69,7 +69,7 @@
     <s:String x:Key="Protocol">协议</s:String>
     <s:String x:Key="Cameras">摄像头</s:String>
     <s:String x:Key="Upload">上传</s:String>
-    <s:String x:Key="filter_mainwindow">输入关键词或 '#' + 标签名</s:String>
+    <s:String x:Key="filter_mainwindow">输入关键词或 '#' + 标签名或Tab键</s:String>
     <s:String x:Key="Search (Ctrl+F)">搜索 (Ctrl + F)</s:String>
     <s:String x:Key="hotkey_already_registered">快捷键已被占用</s:String>
     <s:String x:Key="hotkey_registered_fail">快捷键注册失败</s:String>

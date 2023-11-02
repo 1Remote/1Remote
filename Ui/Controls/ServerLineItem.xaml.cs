@@ -37,8 +37,6 @@ namespace _1RM.Controls
             {
                 ProtocolBaseViewModel?.ClearActions();
             };
-            CbSelected.Visibility = Visibility.Collapsed;
-            BtnSettingMenu.Visibility = Visibility.Collapsed;
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
@@ -68,20 +66,6 @@ namespace _1RM.Controls
             {
                 e.Handled = true;
             }
-        }
-
-        private void Grid_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            //SimpleLogHelper.Debug("Grid_OnMouseEnter");
-            CbSelected.Visibility = Visibility.Visible;
-            BtnSettingMenu.Visibility = Visibility.Visible;
-        }
-
-        private void Grid_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            //SimpleLogHelper.Debug("Grid_OnMouseLeave");
-            CbSelected.Visibility = Visibility.Collapsed;
-            BtnSettingMenu.Visibility = Visibility.Collapsed;
         }
     }
 }

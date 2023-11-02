@@ -169,7 +169,7 @@
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
 		<PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
 		<PackageReference Include="System.IO.Ports" Version="7.0.0" />
-		<PackageReference Include="VariableKeywordMatcherIn1" Version="1.0.11" />
+		<PackageReference Include="VariableKeywordMatcherIn1" Version="1.0.12" />
 		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
 	</ItemGroup>
 

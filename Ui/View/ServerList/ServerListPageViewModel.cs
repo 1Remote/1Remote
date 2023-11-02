@@ -22,6 +22,7 @@ using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
+using _1RM.View.Settings.Launcher;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -36,6 +37,7 @@ namespace _1RM.View.ServerList
         public DataSourceService SourceService { get; }
         public GlobalData AppData { get; }
         public TagsPanelViewModel TagsPanelViewModel { get; }
+        public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
 
 
         #region properties
@@ -48,6 +50,7 @@ namespace _1RM.View.ServerList
                 if (IoC.Get<ConfigurationService>().General.ListPageIsCardView != value)
                 {
                     IoC.Get<ConfigurationService>().General.ListPageIsCardView = value;
+                    IoC.Get<ConfigurationService>().Save();
                     RaisePropertyChanged();
                 }
                 if (value == true)
@@ -194,6 +197,7 @@ namespace _1RM.View.ServerList
 
         protected override void OnViewLoaded()
         {
+            ApplySort();
             AppData.OnDataReloaded += RebuildVmServerList;
             if (AppData.VmItemList.Count > 0)
             {
@@ -201,7 +205,6 @@ namespace _1RM.View.ServerList
                 // so we need to rebuild the list here
                 RebuildVmServerList();
             }
-            ApplySort();
         }
 
 
@@ -335,60 +338,74 @@ namespace _1RM.View.ServerList
                 Execute.OnUIThreadSync(() =>
                 {
                     var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
-                    if (cvs != null)
+                    if (cvs == null) return;
+
+                    string propertyName = "";
+                    var direction = ListSortDirection.Ascending;
+                    switch (orderBy)
+                    {
+                        case EnumServerOrderBy.IdAsc:
+                            propertyName = nameof(ProtocolBaseViewModel.Id);
+                            direction = ListSortDirection.Ascending;
+                            break;
+                        case EnumServerOrderBy.Custom:
+                            propertyName = nameof(ProtocolBaseViewModel.CustomOrder);
+                            direction = ListSortDirection.Ascending;
+                            break;
+                        case EnumServerOrderBy.ProtocolAsc:
+                            propertyName = nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort);
+                            direction = ListSortDirection.Ascending;
+                            break;
+                        case EnumServerOrderBy.ProtocolDesc:
+                            propertyName = nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort);
+                            direction = ListSortDirection.Descending;
+                            break;
+                        case EnumServerOrderBy.NameAsc:
+                            propertyName = nameof(ProtocolBaseViewModel.DisplayName);
+                            direction = ListSortDirection.Ascending;
+                            break;
+                        case EnumServerOrderBy.NameDesc:
+                            propertyName = nameof(ProtocolBaseViewModel.DisplayName);
+                            direction = ListSortDirection.Descending;
+                            break;
+                        case EnumServerOrderBy.AddressAsc:
+                            propertyName = nameof(ProtocolBaseViewModel.SubTitle);
+                            direction = ListSortDirection.Ascending;
+                            break;
+                        case EnumServerOrderBy.AddressDesc:
+                            propertyName = nameof(ProtocolBaseViewModel.SubTitle);
+                            direction = ListSortDirection.Descending;
+                            break;
+                        default:
+                            SimpleLogHelper.Error($"ApplySort: type {orderBy} is not supported");
+                            MsAppCenterHelper.Error(new NotImplementedException($"ApplySort: type {orderBy} is not supported"));
+                            break;
+                    }
+
+                    bool needRefresh = true;
+                    if (cvs.SortDescriptions.Count == 2 && cvs.SortDescriptions[1] is var sd)
+                    {
+                        needRefresh = sd.PropertyName != propertyName || sd.Direction != direction;
+                    }
+
+                    if (needRefresh)
                     {
                         cvs.SortDescriptions.Clear();
                         cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.GroupedOrder), ListSortDirection.Ascending));
-                        switch (orderBy)
-                        {
-                            case EnumServerOrderBy.IdAsc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Id), ListSortDirection.Ascending));
-                                break;
-                            case EnumServerOrderBy.Custom:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.CustomOrder), ListSortDirection.Ascending));
-                                break;
-                            case EnumServerOrderBy.ProtocolAsc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Ascending));
-                                break;
-                            case EnumServerOrderBy.ProtocolDesc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ProtocolDisplayNameInShort), ListSortDirection.Descending));
-                                break;
-                            case EnumServerOrderBy.NameAsc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.DisplayName), ListSortDirection.Ascending));
-                                break;
-                            case EnumServerOrderBy.NameDesc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.DisplayName), ListSortDirection.Descending));
-                                break;
-                            case EnumServerOrderBy.AddressAsc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.SubTitle), ListSortDirection.Ascending));
-                                break;
-                            case EnumServerOrderBy.AddressDesc:
-                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.SubTitle), ListSortDirection.Descending));
-                                break;
-                            default:
-                                SimpleLogHelper.Error($"ApplySort: type {orderBy} is not supported");
-                                MsAppCenterHelper.Error(new NotImplementedException($"ApplySort: type {orderBy} is not supported"));
-                                break;
-                        }
-                        //cvs.Refresh();
+                        cvs.SortDescriptions.Add(new SortDescription(propertyName, direction));
                     }
+                    //cvs.Refresh();
 
 
-                    if (cvs != null)
+                    if (cvs.GroupDescriptions.Count == 0 && SourceService.AdditionalSources.Count > 0)
                     {
-                        if (SourceService.AdditionalSources.Count > 0)
-                        {
-                            if (cvs.GroupDescriptions.Count == 0)
-                            {
-                                cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSource)));
-                                SimpleLogHelper.Debug("GroupDescriptions = ProtocolBase.DataSource");
-                            }
-                        }
-                        else
-                        {
-                            cvs.GroupDescriptions.Clear();
-                            SimpleLogHelper.Debug("GroupDescriptions = null");
-                        }
+                        cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSource)));
+                        SimpleLogHelper.Debug("GroupDescriptions = ProtocolBase.DataSource");
+                    }
+                    if (cvs.GroupDescriptions.Count > 0 && SourceService.AdditionalSources.Count == 0)
+                    {
+                        cvs.GroupDescriptions.Clear();
+                        SimpleLogHelper.Debug("GroupDescriptions = null");
                     }
                 });
             }

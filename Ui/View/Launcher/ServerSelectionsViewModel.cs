@@ -64,10 +64,7 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    //#if DEBUG
-                    //                    CalcVisibleByFilter();
-                    //#else
-                    _debounceDispatcher.Debounce(200, (obj) =>
+                    _debounceDispatcher.Debounce(100, (obj) =>
                     {
                         if (value == _filter)
                         {
@@ -77,7 +74,6 @@ namespace _1RM.View.Launcher
                             CalcVisibleByFilter();
                         }
                     });
-                    //#endif
                 }
             }
         }
@@ -265,67 +261,51 @@ namespace _1RM.View.Launcher
                 vm.KeywordMark = double.MinValue;
                 var server = vm.Server;
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp, ShowCredentials);
-                if (s.Item1 == true)
+                if (s.Item1 != true) continue;
+
+                newList.Add(vm);
+                if (s.Item2 == null)
                 {
-                    newList.Add(vm);
-                    //continue;
-                    if (s.Item2 is { } results)
+                    // no highlight
+                    vm.LauncherMainTitleViewModel.UnHighLightAll();
+                    if (ShowCredentials)
+                        vm.LauncherSubTitleViewModel.UnHighLightAll();
+                    vm.KeywordMark = 0;
+                    return;
+                }
+                var mrs = s.Item2;
+                var m1 = mrs.HitFlags[0];
+
+                // highlight and order by keyword match count
+                vm.KeywordMark = 0;
+                foreach (var kw in mrs.Keywords)
+                {
+                    if(vm.DisplayName.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        vm.KeywordMark += 10;
+                    if (ShowCredentials && vm.SubTitle.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        vm.KeywordMark += 1;
+                }
+
+
+                if (m1.Any(x => x == true))
+                {
+                    vm.LauncherMainTitleViewModel.HighLight(m1);
+                }
+                else
+                {
+                    vm.LauncherMainTitleViewModel.UnHighLightAll();
+                }
+
+                if (ShowCredentials)
+                {
+                    var m2 = mrs.HitFlags[1];
+                    if (m2.Any(x => x == true))
                     {
-                        foreach (var list in results.HitFlags)
-                        {
-                            if (list is { } hitFlags && hitFlags.Count > vm.KeywordMark)
-                            {
-                                // 计算 resultsHitFlag 中最长有多少个连续的 true
-                                var l = 0;
-                                foreach (var f in hitFlags)
-                                {
-                                    if (f == true)
-                                    {
-                                        l++;
-                                    }
-                                    else
-                                    {
-                                        vm.KeywordMark = Math.Max(vm.KeywordMark, l);
-                                        l = 0;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (s.Item2 == null)
-                    {
-                        vm.LauncherMainTitleViewModel.UnHighLightAll();
-                        if (ShowCredentials)
-                            vm.LauncherSubTitleViewModel.UnHighLightAll();
+                        vm.LauncherSubTitleViewModel.HighLight(m2);
                     }
                     else
                     {
-                        var mrs = s.Item2;
-                        if (mrs.IsMatchAllKeywords)
-                        {
-                            var m1 = mrs.HitFlags[0];
-                            if (m1.Any(x => x == true))
-                            {
-                                vm.LauncherMainTitleViewModel.HighLight(m1);
-                            }
-                            else
-                            {
-                                vm.LauncherMainTitleViewModel.UnHighLightAll();
-                            }
-
-                            if (ShowCredentials)
-                            {
-                                var m2 = mrs.HitFlags[1];
-                                if (m2.Any(x => x == true))
-                                {
-                                    vm.LauncherSubTitleViewModel.HighLight(m2);
-                                }
-                                else
-                                {
-                                    vm.LauncherSubTitleViewModel.UnHighLightAll();
-                                }
-                            }
-                        }
+                        vm.LauncherSubTitleViewModel.UnHighLightAll();
                     }
                 }
             }

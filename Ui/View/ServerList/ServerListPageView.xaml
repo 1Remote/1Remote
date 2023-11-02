@@ -7,7 +7,6 @@
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:controls="clr-namespace:_1RM.Controls"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-             xmlns:service="clr-namespace:_1RM.Service"
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:s="https://github.com/canton7/Stylet"
@@ -154,7 +153,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <!-- Tag indicator: popup when any tag which not in shown tag list is selected-->
+            <!-- Tag indicator: popup when any selected tag which is not in the `shown tag list` -->
             <Grid Grid.Row="0" Height="40">
                 <Grid.Style>
                     <Style TargetType="Grid">
@@ -176,39 +175,44 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="model:TagFilter">
-                            <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
-                                <Grid Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
-                                      ToolTip="{Binding TagName}">
-                                    <Grid.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="{DynamicResource Unpin}" 
-                                                      Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
-                                                      CommandParameter="{Binding}"/>
-                                            <MenuItem Header="{DynamicResource Pin}" 
-                                                      Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
-                                                      CommandParameter="{Binding}"/>
-                                            <MenuItem Header="{DynamicResource Rename}" 
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
-                                                      CommandParameter="{Binding}"/>
-                                            <MenuItem Header="{DynamicResource Connect}" 
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
-                                                      CommandParameter="{Binding}"/>
-                                            <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
-                                                      CommandParameter="{Binding}"/>-->
-                                            <MenuItem Header="{DynamicResource 'Create desktop shortcut'}" 
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
-                                                      CommandParameter="{Binding}"/>
-                                            <MenuItem Header="{DynamicResource Delete}" 
-                                                      Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
-                                                      CommandParameter="{Binding}"/>
-                                        </ContextMenu>
-                                    </Grid.ContextMenu>
-                                    <TextBlock Text="{Binding TagName}" Foreground="{DynamicResource AccentTextBrush}" 
-                                               VerticalAlignment="Center" HorizontalAlignment="Center"
-                                               Margin="5 5 15 5">
+                            <Border Margin="3" Padding="5"
+                                    Background="{DynamicResource AccentMidBrush}" 
+                                    CornerRadius="5" 
+                                    VerticalAlignment="Center"
+                                    ToolTip="{Binding TagName}"
+                                    Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
+                                    >
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{DynamicResource Unpin}" 
+                                                  Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Pin}" 
+                                                  Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagPin}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Rename}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Connect}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <!--<MenuItem Header="{DynamicResource 'Connect (New window)'}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
+                                                  CommandParameter="{Binding}"/>-->
+                                        <MenuItem Header="{DynamicResource 'Create desktop shortcut'}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateDesktopShortcut}" 
+                                                  CommandParameter="{Binding}"/>
+                                        <MenuItem Header="{DynamicResource Delete}" 
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" 
+                                                  CommandParameter="{Binding}"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding TagName}" 
+                                               Foreground="{DynamicResource AccentTextBrush}" 
+                                               Margin="0 0 3 0">
                                         <TextBlock.Resources>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
@@ -235,10 +239,8 @@
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagRemove}"
                                             CommandParameter="{Binding TagName}"
                                             Style="{StaticResource ButtonBarAccentStyle}"
-                                            HorizontalAlignment="Right"
                                             attachProperty:VisionElement.Opacity="0.5"
-                                            attachProperty:VisionElement.OpacityAccent="0.9"
-                                            Margin="0 0 5 0">
+                                            attachProperty:VisionElement.OpacityAccent="0.9">
                                         <Grid Height="10" Width="8">
                                             <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -246,7 +248,7 @@
                                                   StrokeThickness="2" Stretch="Uniform" />
                                         </Grid>
                                     </Button>
-                                </Grid>
+                                </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -687,7 +689,20 @@
                     <Path Fill="{DynamicResource BackgroundTextBrush}" 
                           Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
                           Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                    <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">Add new session</TextBlock>
+                    <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="0 0 10 0" 
+                                Visibility="{Binding LauncherSettingViewModel.LauncherEnabled, Converter={StaticResource ConverterBool2Visible}}"
+                                HorizontalAlignment="Right">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="Margin" Value="5 0 0 0"></Setter>
+                                <Setter Property="FontSize" Value="16"></Setter>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="{Binding LauncherSettingViewModel.LauncherHotKeyStr}"></TextBlock>
+                        <TextBlock Text=" to open the launcher"></TextBlock>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

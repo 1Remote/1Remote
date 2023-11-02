@@ -13,31 +13,30 @@
     </UserControl.Resources>
     <Grid Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}">
         <!--icon button show note-->
-        <StackPanel Orientation="Horizontal">
-            <Grid Margin="5" Name="GridParent">
-                <Grid Name="ButtonShowNote"
-                      Width="20" Height="20"
-                      Margin="0"
-                      Background="Transparent"
-                      MouseEnter="ButtonShowNote_OnMouseEnter"
-                >
-                    <Path Data="{StaticResource NoteGeometry}"
+        <Border Height="30" Width="30" Name="GridParent">
+            <Grid Name="ButtonShowNote"
+                  HorizontalAlignment="Left" 
+                  Width="20" Height="20"
+                  Margin="5"
+                  Background="Transparent"
+                  MouseEnter="ButtonShowNote_OnMouseEnter"
+            >
+                <Path Data="{StaticResource NoteGeometry}"
                           Width="16" Height="16"
                           Stroke="{DynamicResource BackgroundTextBrush}"
                           Fill="{DynamicResource BackgroundTextBrush}"
                           StrokeThickness="0" Stretch="Uniform" />
-                </Grid>
             </Grid>
-            <Grid Name="GridBriefNote">
-                <TextBlock Margin="5" 
-                           HorizontalAlignment="Left" 
-                           MaxWidth="400"
-                           Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
-                           TextWrapping="NoWrap"
-                           Foreground="{DynamicResource BackgroundTextBrush}" 
-                           TextTrimming="CharacterEllipsis"></TextBlock>
-            </Grid>
-        </StackPanel>
+        </Border>
+        <Grid Name="GridBriefNote" Visibility="Collapsed">
+            <TextBlock Margin="25 5 5 5" 
+                       HorizontalAlignment="Left" 
+                       MaxWidth="400"
+                       Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 
+                       TextWrapping="NoWrap"
+                       Foreground="{DynamicResource BackgroundTextBrush}" 
+                       TextTrimming="CharacterEllipsis"></TextBlock>
+        </Grid>
 
 
 

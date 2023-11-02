@@ -117,26 +117,26 @@ namespace _1RM.Service
             }
         }
 
-        public MatchResult Match(string originalString, List<string> keywords)
-        {
-            CleanUp();
-            var cache = GetCache(originalString);
-            return _matcher.Match(cache, keywords);
-        }
+        //public MatchResult Match(string originalString, List<string> keywords)
+        //{
+        //    CleanUp();
+        //    var cache = GetCache(originalString);
+        //    return _matcher.Match(cache, keywords);
+        //}
 
-        public MatchResult Match(string originalString, string keyword)
-        {
-            CleanUp();
-            var cache = GetCache(originalString);
-            return _matcher.Match(cache, new[] { keyword });
-        }
+        //public MatchResult Match(string originalString, string keyword)
+        //{
+        //    CleanUp();
+        //    var cache = GetCache(originalString);
+        //    return _matcher.Match(cache, new[] { keyword });
+        //}
 
         public MatchResults Match(List<string> originalStrings, IEnumerable<string> keywords)
         {
             var kws = keywords.ToArray();
             CleanUp();
             var caches = originalStrings.Select(x => GetCache(x)).ToList();
-            return _matcher.Matchs(caches, kws);
+            return _matcher.Matchs(caches, kws, 2);
         }
 
         private ref MatchCache GetCache(string originalString)
@@ -191,7 +191,7 @@ namespace _1RM.Service
 
             setEnabled(DirectMatchProvider.GetName(), true, false);
             setEnabled(InitialsMatchProvider.GetName(), true, true);
-            setEnabled(DiscreteMatchProvider.GetName(), true, true);
+            setEnabled(DiscreteMatchProvider.GetName(), false, true);
 
             if (code.StartsWith("zh"))
             {
