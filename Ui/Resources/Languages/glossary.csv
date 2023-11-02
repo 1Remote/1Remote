@@ -68,7 +68,7 @@ All;All;全部;Vše;Alle;Tous;Todos;;全部;Todos;Wszystkie
 Protocol;Protocol;协议;Protokol;Protokoll;;Protocolo;;協定;Protocolo;Protokół
 Cameras;Cameras;摄像头;;;;;;;;Kamera
 Upload;Upload;上传;;;;;;;;Wgraj
-filter_mainwindow;Keywords or '#' + tag name;输入关键词或 '#' + 标签名;Klíčová slova nebo „#“ + název štítku;Schlüsselwörter oder '#' + Tag-Name;Mots-clés ou '#' + nom de tag;Palavras-chave ou '#' + 'nome_da_tag';;輸入關鍵字或 '#' + 標籤名稱;Palabras chave ou '#' + etiqueta;Słowa kluczowe lub '#' + nazwa taga
+filter_mainwindow;Keywords or '#' + tag name or 'Tab' key;输入关键词或 '#' + 标签名或Tab键;Klíčová slova nebo „#“ + název štítku;Schlüsselwörter oder '#' + Tag-Name;Mots-clés ou '#' + nom de tag;Palavras-chave ou '#' + 'nome_da_tag';;輸入關鍵字或 '#' + 標籤名稱;Palabras chave ou '#' + etiqueta;Słowa kluczowe lub '#' + nazwa taga
 Search (Ctrl+F);Search (Ctrl + F);搜索 (Ctrl + F);Hledat (Ctrl + F);Suche (STRG + F);Rechercher (Ctrl + F);Procurar (Ctrl + F);;搜尋 (Ctrl + F);Procurar (Ctrl + F);Szukaj (CTRL + F)
 hotkey_already_registered;Hot key already been registered;快捷键已被占用;Klávesová zkratka už je zaregistrována (pro něco jiného?);Hotkey bereits registriert;Raccourci clavier déjà enregistré;Tecla de atalho já registrada;;快捷鍵已被其他應用程式占用;Atallo xa rexistrado;Skrót klawiszowy został już przypisany
 hotkey_registered_fail;Failed to register the hot key;快捷键注册失败;Klávesovou zkratku se nepodařilo zaregistrovat;Fehler bei der Hotkey Registrierung;Echec de l'enregistrement du raccourci clavier;Falha ao registrar a tecla de atalho;;快捷鍵綁定失敗;Fallou o rexistro do atallo;Nie udało się przypisać skrótu klawiszowego

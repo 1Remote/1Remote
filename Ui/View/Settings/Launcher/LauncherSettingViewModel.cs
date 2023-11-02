@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,11 +53,12 @@ namespace _1RM.View.Settings.Launcher
                     && _launcherService.CheckIfHotkeyAvailable(value, LauncherHotKeyKey))
                 {
                     _configurationService.Launcher.HotKeyModifiers = value;
-                    _configurationService.Save();
                     if (false == IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(LauncherEnabled, LauncherHotKeyModifiers, LauncherHotKeyKey))
                     {
                         throw new ArgumentException();
                     }
+                    _configurationService.Save();
+                    RaisePropertyChanged(nameof(LauncherHotKeyStr));
                 }
                 RaisePropertyChanged();
             }
@@ -71,12 +73,25 @@ namespace _1RM.View.Settings.Launcher
                     && _launcherService.CheckIfHotkeyAvailable(LauncherHotKeyModifiers, value)
                     && SetAndNotifyIfChanged(ref _configurationService.Launcher.HotKeyKey, value))
                 {
-                    _configurationService.Save();
                     if (false == IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(LauncherEnabled, LauncherHotKeyModifiers, LauncherHotKeyKey))
                     {
                         throw new ArgumentException();
                     }
+                    _configurationService.Save();
+                    RaisePropertyChanged(nameof(LauncherHotKeyStr));
                 }
+            }
+        }
+
+        public string LauncherHotKeyStr
+        {
+            get
+            {
+                if (HotkeyModifierKeys.ContainsKey(LauncherHotKeyModifiers))
+                {
+                    return HotkeyModifierKeys[LauncherHotKeyModifiers] + " + " + LauncherHotKeyKey;
+                }
+                return "Alt + M";
             }
         }
 

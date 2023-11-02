@@ -368,7 +368,7 @@ namespace _1RM.View
                 // can only be called by the Ui
                 if (SetAndNotifyIfChanged(ref _mainFilterString, value))
                 {
-                    _debounceDispatcher.Debounce(150, (obj) =>
+                    _debounceDispatcher.Debounce(100, (obj) =>
                     {
                         if (_mainFilterString == MainFilterString)
                         {

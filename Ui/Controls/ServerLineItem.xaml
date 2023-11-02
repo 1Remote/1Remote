@@ -14,18 +14,6 @@
 
     <UserControl.Resources>
 
-        <Style x:Key="LineItemSettingMenuStyle" TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
-                    <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
-                    <Setter Property="Padding" Value="4"></Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-
         <Style x:Key="LineItemSettingMenuListBoxStyle" TargetType="{x:Type ListBox}">
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Cursor" Value="Hand" />
@@ -65,13 +53,27 @@
             <WrapPanel />
         </ItemsPanelTemplate>
 
+        <Style x:Key="TagBorderStyle" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentTextBrush}"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <DataTemplate x:Key="LineItemDataTemplateTag" DataType="model:Tag">
-            <Grid Margin="3"
-                  PreviewMouseDown="UIElement_OnPreviewMouseDown"
-                  Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}">
+            <Border Margin="3" Padding="5"
+                    Background="{DynamicResource AccentMidBrush}" 
+                    CornerRadius="5" 
+                    VerticalAlignment="Center"
+                    Tag="{Binding DataContext.TagsPanelViewModel, RelativeSource={RelativeSource AncestorType=serverList:ServerListPageView}}"
+                    PreviewMouseDown="UIElement_OnPreviewMouseDown"
+                    Cursor="Hand"
+                    Style="{StaticResource TagBorderStyle}"
+                    >
                 <!--right click context menu-->
-                <Grid.ContextMenu>
+                <Border.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="{DynamicResource Unpin}" 
                                   Visibility="{Binding IsPinned, Converter={StaticResource ConverterBool2Visible}}"
@@ -97,137 +99,153 @@
                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" 
                                   CommandParameter="{Binding}"/>
                     </ContextMenu>
-                </Grid.ContextMenu>
-                <Button Content="{Binding Name}" HorizontalAlignment="Left" MinWidth="10" MinHeight="10">
-                    <Button.ToolTip>
-                        <Label Content="{x:Static system:Environment.NewLine}" 
-                               ContentStringFormat="{DynamicResource tag_tooltips}"/>
-                    </Button.ToolTip>
-                    <Button.InputBindings>
-                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
-                        <MouseBinding Gesture="Alt+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
-                    </Button.InputBindings>
-                </Button>
-            </Grid>
+                </Border.ContextMenu>
+                <Border.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                    <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                    <MouseBinding Gesture="Alt+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
+                </Border.InputBindings>
+                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}"></TextBlock>
+            </Border>
         </DataTemplate>
+
+
+        <Style x:Key="SelectedCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Visibility" Value="Collapsed"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                </DataTrigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LineItemSettingMenuStyle" TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+            <Setter Property="Visibility" Value="Hidden"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Padding" Value="4"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
-    <Grid Name="Grid" 
-          FocusVisualStyle="{x:Null}" 
-          Background="Transparent"
-          MouseEnter="Grid_OnMouseEnter"
-          MouseLeave="Grid_OnMouseLeave"
-    >
-        <Grid.InputBindings>
-            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
-            <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
-        </Grid.InputBindings>
+    <Grid Name="Grid" Background="Transparent">
         <Grid Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+
         <Grid>
             <Grid.Margin>
                 <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
             </Grid.Margin>
-            <Grid VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Span"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Span"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
 
 
+            <Path Height="14" Width="14" UseLayoutRounding="True" Stretch="Uniform">
+                <Path.Style>
+                    <Style TargetType="Path">
+                        <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
+                        <Setter Property="Fill" Value="Red"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DataSource.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Path.Style>
+            </Path>
 
-                <Path Height="14" Width="14" UseLayoutRounding="True" Stretch="Uniform">
-                    <Path.Style>
-                        <Style TargetType="Path">
-                            <Setter Property="Data" Value="{StaticResource GeometryCloudDisconnected}"></Setter>
-                            <Setter Property="Fill" Value="Red"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding DataSource.Status}" Value="{x:Static dao:EnumDatabaseStatus.OK}">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Path.Style>
-                </Path>
+            <CheckBox Name="CbSelected" 
+                      Grid.Column="0" Margin="10 0" 
+                      Width="20" Height="20" 
+                      HorizontalAlignment="Left" 
+                      Style="{StaticResource SelectedCheckBoxStyle}"
+                      Click="ItemsCheckBox_OnClick"
+                      IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
+            </CheckBox>
 
-                <CheckBox Name="CbSelected" 
-                          Grid.Column="0" Margin="10 0" 
-                          Width="20" Height="20" 
-                          HorizontalAlignment="Left" 
-                          Visibility="Collapsed"
-                          Click="ItemsCheckBox_OnClick"
-                          IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
-                </CheckBox>
-
-                <!--protocol name-->
-                <TextBlock Grid.Column="1" Margin="5 0 10 0" 
-                                                   Text="{Binding Server.ProtocolDisplayName}"
-                                                   FontSize="14" FontWeight="Bold"
-                                                   Opacity="0.6"
-                                                   HorizontalAlignment="Left"
-                                                   VerticalAlignment="Center">
-                </TextBlock>
+            <!--protocol name-->
+            <TextBlock Grid.Column="1" Margin="5 0 10 0" 
+                       Text="{Binding Server.ProtocolDisplayName}"
+                       FontSize="14" FontWeight="Bold"
+                       Opacity="0.6"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center">
+            </TextBlock>
 
 
-                <!-- setting menu button -->
-                <Button Grid.Column="1" 
-                        x:Name="BtnSettingMenu"
-                        Margin="0 0 10 0"
-                        Width="20" Height="20" HorizontalAlignment="Right"
-                        Visibility="Collapsed"
-                        Style="{StaticResource LineItemSettingMenuStyle}"
-                        Click="BtnSettingMenu_OnClick">
-                    <Path Name="Symbol" Margin="2"
-                          Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
-                          Fill="{DynamicResource AccentTextBrush}"
-                          Stretch="Uniform" />
-                </Button>
+            <!-- setting menu button -->
+            <Button Grid.Column="1" 
+                    x:Name="BtnSettingMenu"
+                    Margin="0 0 10 0"
+                    Width="20" Height="20" HorizontalAlignment="Right"
+                    Style="{StaticResource LineItemSettingMenuStyle}"
+                    Click="BtnSettingMenu_OnClick">
+                <Path Name="Symbol" Margin="2"
+                      Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
+                      Fill="{DynamicResource AccentTextBrush}"
+                      Stretch="Uniform" />
+            </Button>
 
-                <!--icon-->
-                <Image Grid.Column="2" 
-                       Width="30" HorizontalAlignment="Center" Margin="5 0"
-                       Source="{Binding Server.IconImg}" 
-                       RenderOptions.BitmapScalingMode="LowQuality"
-                       ></Image>
+            <!--icon-->
+            <Image Grid.Column="2" 
+                   Width="30" HorizontalAlignment="Center" Margin="5 0"
+                   Source="{Binding Server.IconImg}" 
+                   RenderOptions.BitmapScalingMode="LowQuality"
+                   ></Image>
 
-                <!--display name-->
-                <Grid Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent">
-                    <TextBlock Margin="5 0 10 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}"></TextBlock>
-                </Grid>
+            <!--display name-->
+            <TextBlock Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent" 
+                       Margin="5 0 10 0" FontSize="14" 
+                       VerticalAlignment="Center" 
+                       TextTrimming="CharacterEllipsis" 
+                       Text="{Binding Server.DisplayName}"></TextBlock>
 
-                <!--tags-->
-                <ItemsControl Grid.Column="4" 
-                              Margin="5 0 10 0" 
-                              MaxWidth="200" 
-                              VerticalAlignment="Center" HorizontalAlignment="Right" 
-                              ItemsSource="{Binding Tags}"
-                              ItemsPanel="{StaticResource LineItemItemsTemplateWrapPanel}"
-                              ItemTemplate="{StaticResource LineItemDataTemplateTag}"
-                              >
-                </ItemsControl>
+            <!--tags-->
+            <ItemsControl Grid.Column="4" 
+                          Margin="5 0 10 0" 
+                          MaxWidth="200" 
+                          VerticalAlignment="Center" HorizontalAlignment="Right" 
+                          ItemsSource="{Binding Tags}"
+                          ItemsPanel="{StaticResource LineItemItemsTemplateWrapPanel}"
+                          ItemTemplate="{StaticResource LineItemDataTemplateTag}"
+                          >
+                <ItemsControl.ToolTip>
+                    <Label Content="{x:Static system:Environment.NewLine}" 
+                           ContentStringFormat="{DynamicResource tag_tooltips}"/>
+                </ItemsControl.ToolTip>
+            </ItemsControl>
 
-                <!--brief note -->
-                <ContentControl Grid.Column="5" 
-                                Margin="0 0 10 0"
-                                VerticalAlignment="Center"
-                                Content="{Binding HoverNoteDisplayControl}"></ContentControl>
+            <!--brief note -->
+            <ContentControl Grid.Column="5" 
+                            Margin="0 0 10 0"
+                            VerticalAlignment="Center"
+                            Content="{Binding HoverNoteDisplayControl}"></ContentControl>
 
-                <!--address-->
-                <TextBlock Margin="5 0" MaxWidth="500"
-                           Grid.Column="6"
-                           Background="Transparent"
-                           ToolTip="{Binding Server.SubTitle}"
-                           FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                           Text="{Binding Server.SubTitle}">
-                </TextBlock>
-
-            </Grid>
+            <!--address-->
+            <TextBlock Margin="5 0" MaxWidth="500"
+                       Grid.Column="6"
+                       Background="Transparent"
+                       ToolTip="{Binding Server.SubTitle}"
+                       FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       Text="{Binding Server.SubTitle}">
+            </TextBlock>
         </Grid>
 
 

@@ -100,6 +100,14 @@ namespace _1RM.Utils
                 return "";
             return filterString + (keyWords?.Count > 0 ? "" : " ");
         }
+
+        /// <summary>
+        /// return item1 true if matched, item2 null if no highlight, item2 not null if highlight
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="keywordDecoded"></param>
+        /// <param name="matchSubTitle"></param>
+        /// <returns></returns>
         public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, KeywordDecoded keywordDecoded, bool matchSubTitle)
         {
             if (keywordDecoded.IsKeywordEmpty())
@@ -110,17 +118,7 @@ namespace _1RM.Utils
             // check include and excluded tags
             if (keywordDecoded.TagFilterList.Any() == true)
             {
-                // check with and logic，必须全部匹配才通过（任意不匹配就不通过）
-                bool bTagMatched = true;
-                foreach (var tagFilter in keywordDecoded.TagFilterList)
-                {
-                    if (tagFilter.IsIncluded != server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        bTagMatched = false;
-                        break;
-                    }
-                }
-
+                bool bTagMatched = keywordDecoded.TagFilterList.All(tagFilter => tagFilter.IsIncluded == server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)));
                 if (bTagMatched == false)
                 {
                     return new Tuple<bool, MatchResults?>(false, null);
@@ -130,17 +128,7 @@ namespace _1RM.Utils
             // check tag name start with incomplete word from user type
             if (keywordDecoded.IncludeTagsStartWithKeyWord.Any() == true)
             {
-                // check with or logic，只要任意匹配就通过
-                bool bTagMatched = false;
-                foreach (var tagName in keywordDecoded.IncludeTagsStartWithKeyWord)
-                {
-                    if (server.Tags.Any(x => String.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        bTagMatched = true;
-                        break;
-                    }
-                }
-
+                bool bTagMatched = keywordDecoded.IncludeTagsStartWithKeyWord.Any(tagName => server.Tags.Any(x => String.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)));
                 if (bTagMatched == false)
                 {
                     return new Tuple<bool, MatchResults?>(false, null);

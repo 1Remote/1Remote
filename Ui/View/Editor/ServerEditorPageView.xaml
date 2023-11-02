@@ -13,6 +13,7 @@
              xmlns:noteDisplay="clr-namespace:_1RM.Controls.NoteDisplay"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance editor:ServerEditorPageViewModel}"
              Background="White"
@@ -145,13 +146,13 @@
                                                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                                             </Grid.ColumnDefinitions>
                                                             <Button Style="{StaticResource ButtonBarAccentStyle}" 
-                                                                Content="{DynamicResource Done}" 
-                                                                Click="ButtonLogoSave_OnClick">
+                                                                    Content="{DynamicResource Done}" 
+                                                                    Click="ButtonLogoSave_OnClick">
                                                             </Button>
 
                                                             <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
-                                                                Content="{DynamicResource Reset}" 
-                                                                Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                                    Content="{DynamicResource Reset}" 
+                                                                    Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                             </Button>
                                                         </Grid>
                                                     </StackPanel>
@@ -178,15 +179,21 @@
                                                                   Background="Transparent">
                                                             <ListView.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <WrapPanel Orientation="Horizontal" 
-                                                                           Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
+                                                                    <controls2:VirtualizingWrapPanel Orientation="Vertical" 
+                                                                        IsVirtualizing="True"
+                                                                        ScrollUnit="Item"
+                                                                        SpacingMode="None"
+                                                                        VirtualizationMode="Recycling"
+                                                                        CanHorizontallyScroll="False"
+                                                                        MouseWheelDelta="1"
+                                                                        MouseWheelDeltaItem="1"
+                                                                        CacheLengthUnit="Item"
+                                                                        Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
                                                                 </ItemsPanelTemplate>
                                                             </ListView.ItemsPanel>
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    <Grid Margin="2">
-                                                                        <Image Source="{Binding}" Height="30"></Image>
-                                                                    </Grid>
+                                                                    <Image Source="{Binding}" Height="30" Margin="2"></Image>
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
                                                         </ListView>

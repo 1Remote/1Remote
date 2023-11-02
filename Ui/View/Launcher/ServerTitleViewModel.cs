@@ -52,17 +52,25 @@ namespace _1RM.View.Launcher
                 var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
                 for (int i = 0; i < flags.Count; i++)
                 {
+                    int j = i + 1;
+                    for (; j < flags.Count; j++)
+                    {
+                        if (flags[j] != flags[i])
+                            break;
+                    }
+                    var text = Text.Substring(i, j - i);
                     if (flags[i])
                         sp.Children.Add(new TextBlock()
                         {
-                            Text = Text[i].ToString(),
+                            Text = text,
                             Background = HighLightBrush,
                         });
                     else
                         sp.Children.Add(new TextBlock()
                         {
-                            Text = Text[i].ToString(),
+                            Text = text,
                         });
+                    i = j - 1;
                 }
                 DisplayNameControl = sp;
                 TextVisibility = Visibility.Collapsed;

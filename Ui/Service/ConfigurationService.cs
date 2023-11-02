@@ -72,6 +72,7 @@ namespace _1RM.Service
 
         public bool ShowNoteFieldInLauncher = true;
         public bool ShowCredentials = true;
+        public bool IsMatchingCredentials = true;
     }
 
     public class KeywordMatchConfig
