@@ -9,13 +9,15 @@
 
 using System;
 using System.Diagnostics;
+#if STORE_UWP_METHOD
+using System.Threading.Tasks;
+using Windows.ApplicationModel;
+#else
 using System.IO;
 using System.Linq;
 using _1RM.Service;
 using _1RM.Utils.WindowsApi.WindowsShortcutFactory;
 using Shawn.Utils;
-#if STORE_UWP_METHOD
-using Windows.ApplicationModel;
 #endif
 
 
@@ -225,14 +227,12 @@ namespace _1RM.Utils
                     if (isSetSelfStart == true)
                     {
                         // Task is disabled and user must enable it manually.
-                        MessageBox.Show("You have disabled this app's ability to run " +
+                        MessageBoxHelper.Warning("You have disabled this app's ability to run " +
                                         "as soon as you sign in, but if you change your mind, " +
                                         "you can enable this in the Startup tab in Task Manager.",
                             "Warning");
                     }
                     break;
-                //Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
-                //break;
                 case StartupTaskState.Enabled:
                     if (isSetSelfStart == false)
                     {
@@ -281,7 +281,7 @@ namespace _1RM.Utils
 #if STORE_UWP_METHOD
             Task.Factory.StartNew(() =>
             {
-                SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, isInstall);
+                SetSelfStartingHelper.SetSelfStartByStartupTask(appName, isInstall);
             }).Wait();
             if (isInstall)
                 return;

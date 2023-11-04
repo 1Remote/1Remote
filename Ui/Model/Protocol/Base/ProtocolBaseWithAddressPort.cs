@@ -21,7 +21,11 @@ namespace _1RM.Model.Protocol.Base
         public string Address
         {
             get => _address;
-            set => SetAndNotifyIfChanged(ref _address, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _address, value))
+                    RaisePropertyChanged(nameof(SubTitle));
+            }
         }
 
         public int GetPort()
@@ -37,7 +41,11 @@ namespace _1RM.Model.Protocol.Base
         public string Port
         {
             get => _port;
-            set => SetAndNotifyIfChanged(ref _port, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _port, value))
+                    RaisePropertyChanged(nameof(SubTitle));
+            }
         }
 
         protected override string GetSubTitle()
