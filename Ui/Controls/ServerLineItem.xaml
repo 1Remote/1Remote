@@ -7,9 +7,8 @@
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
              xmlns:serverList="clr-namespace:_1RM.View.ServerList"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -227,7 +226,7 @@
                           ItemTemplate="{StaticResource LineItemDataTemplateTag}"
                           >
                 <ItemsControl.ToolTip>
-                    <Label Content="{x:Static system:Environment.NewLine}" 
+                    <Label Content="&#10;" 
                            ContentStringFormat="{DynamicResource tag_tooltips}"/>
                 </ItemsControl.ToolTip>
             </ItemsControl>

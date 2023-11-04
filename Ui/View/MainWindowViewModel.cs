@@ -137,7 +137,7 @@ namespace _1RM.View
                 ShowMe();
             };
 #if FOR_MICROSOFT_STORE_ONLY
-            SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.AppName, null);
+            SetSelfStartingHelper.SetSelfStartByStartupTask(Assert.APP_NAME, null);
 #endif
             OnMainWindowViewLoaded?.Invoke();
 

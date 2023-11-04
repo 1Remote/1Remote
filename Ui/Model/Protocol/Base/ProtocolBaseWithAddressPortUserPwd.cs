@@ -16,7 +16,11 @@ namespace _1RM.Model.Protocol.Base
         public string UserName
         {
             get => _userName;
-            set => SetAndNotifyIfChanged(ref _userName, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _userName, value))
+                    RaisePropertyChanged(nameof(SubTitle));
+            }
         }
 
         public const string MACRO_PASSWORD = "%1RM_PASSWORD%";

@@ -29,7 +29,11 @@ namespace _1RM.Model.Protocol
         public string ExePath
         {
             get => _exePath;
-            set => SetAndNotifyIfChanged(ref _exePath, value);
+            set
+            {
+                if(SetAndNotifyIfChanged(ref _exePath, value))
+                    RaisePropertyChanged(nameof(SubTitle));
+            }
         }
 
         private string _appProtocolDisplayName = "";

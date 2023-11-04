@@ -51,7 +51,13 @@ namespace _1RM.Model.Protocol
         public string SerialPort
         {
             get => _serialPort;
-            set => SetAndNotifyIfChanged(ref _serialPort, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _serialPort, value))
+                {
+                    RaisePropertyChanged(nameof(SubTitle));
+                }
+            }
         }
 
         public int GetBitRate()
@@ -66,7 +72,11 @@ namespace _1RM.Model.Protocol
         public string BitRate
         {
             get => _bitRate;
-            set => SetAndNotifyIfChanged(ref _bitRate, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _bitRate, value))
+                    RaisePropertyChanged(nameof(SubTitle));
+            }
         }
 
 
