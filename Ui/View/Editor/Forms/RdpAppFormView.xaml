@@ -7,6 +7,7 @@
              xmlns:forms="clr-namespace:_1RM.View.Editor.Forms"
              xmlns:controls1="clr-namespace:_1RM.Controls"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:protocol="clr-namespace:_1RM.Model.Protocol"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance forms:RdpAppFormViewModel}"
              d:DesignHeight="1450" d:DesignWidth="800">
@@ -92,7 +93,7 @@
         </Grid>
 
 
-        <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+        <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sounds}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -104,6 +105,24 @@
                         <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_remote}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_remote}" />
                         <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_disabled}" ToolTip="{DynamicResource server_editor_advantage_sounds_disabled}" />
                         <ComboBoxItem Visibility="{Binding New.AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static protocol:EAudioRedirectionMode.RedirectToLocal}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sound_quality}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <Grid.Resources>
+                        <forms:ConverterEAudioQualityMode x:Key="ConverterEAudioQualityMode" />
+                    </Grid.Resources>
+                    <ComboBox SelectedIndex="{Binding New.AudioQualityMode, Converter={StaticResource ConverterEAudioQualityMode}}">
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_dynamic}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_dynamic}" />
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_medium}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_medium}" />
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_high}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_high}" />
+                        <ComboBoxItem Visibility="{Binding New.AudioQualityMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                     </ComboBox>
                 </Grid>
             </StackPanel>

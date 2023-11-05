@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">禁用</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">在本地播放</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">在远程播放</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">音频质量</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">动态</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">中</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">高</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">录音</s:String>
     <s:String x:Key="server_editor_advantage_ports">端口</s:String>
     <s:String x:Key="server_editor_advantage_printers">打印机</s:String>

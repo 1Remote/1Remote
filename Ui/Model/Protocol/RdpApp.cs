@@ -39,6 +39,13 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _audioRedirectionMode, value);
         }
 
+        private EAudioQualityMode? _audioQualityMode = EAudioQualityMode.Dynamic;
+        public EAudioQualityMode? AudioQualityMode
+        {
+            get => _audioQualityMode;
+            set => SetAndNotifyIfChanged(ref _audioQualityMode, value);
+        }
+
         public override bool IsOnlyOneInstance()
         {
             return false;
@@ -99,6 +106,13 @@ namespace _1RM.Model.Protocol
                 rdpConfig.AudioMode = 1;
             else if (this.AudioRedirectionMode == EAudioRedirectionMode.Disabled)
                 rdpConfig.AudioMode = 2;
+
+            if (this.AudioQualityMode == EAudioQualityMode.Dynamic)
+                rdpConfig.AudioQualityMode = 0;
+            else if (this.AudioQualityMode == EAudioQualityMode.Medium)
+                rdpConfig.AudioQualityMode = 1;
+            else if (this.AudioQualityMode == EAudioQualityMode.High)
+                rdpConfig.AudioQualityMode = 2;
 
             return rdpConfig;
         }

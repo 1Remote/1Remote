@@ -323,10 +323,25 @@ namespace _1RM.View.Host.ProtocolHosts
                 // - 2 (Audio redirection is enabled and the mode is "Do not play".)
                 _rdpClient.SecuredSettings3.AudioRedirectionMode = 0;
 
-                // - 0 Dynamic audio quality. This is the default audio quality setting. The server dynamically adjusts audio output quality in response to network conditions and the client and server capabilities.
-                // - 1 Medium audio quality. The server uses a fixed but compressed format for audio output.
-                // - 2 High audio quality. The server provides audio output in uncompressed PCM format with lower processing overhead for latency.
-                _rdpClient.AdvancedSettings8.AudioQualityMode = 0;
+                // Only set AudioQuality Moode when AudioRedirectionMode == RedirectToLocal
+                if (_rdpSettings.AudioQualityMode == EAudioQualityMode.Dynamic)
+                {
+                    // - 0 Dynamic audio quality. This is the default audio quality setting. The server dynamically adjusts audio output quality in response to network conditions and the client and server capabilities.
+                    // - 1 Medium audio quality. The server uses a fixed but compressed format for audio output.
+                    // - 2 High audio quality. The server provides audio output in uncompressed PCM format with lower processing overhead for latency.
+                    _rdpClient.AdvancedSettings8.AudioQualityMode = 0;
+                }
+                else if (_rdpSettings.AudioQualityMode == EAudioQualityMode.Medium)
+                {
+                    // - 1 Medium audio quality. The server uses a fixed but compressed format for audio output.
+                    _rdpClient.AdvancedSettings8.AudioQualityMode = 1;
+                }
+                else if (_rdpSettings.AudioQualityMode == EAudioQualityMode.High)
+                {
+                    // - 2 High audio quality. The server provides audio output in uncompressed PCM format with lower processing overhead for latency.
+                    _rdpClient.AdvancedSettings8.AudioQualityMode = 2;
+                }
+
             }
             else if (_rdpSettings.AudioRedirectionMode == EAudioRedirectionMode.LeaveOnRemote)
             {
@@ -338,7 +353,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 // - 2 Disable sound redirection; do not play sounds at the server.
                 _rdpClient.SecuredSettings3.AudioRedirectionMode = 2;
             }
-
+            
             if (_rdpSettings.EnableAudioCapture == true)
             {
                 // indicates whether the default audio input device is redirected from the client to the remote session

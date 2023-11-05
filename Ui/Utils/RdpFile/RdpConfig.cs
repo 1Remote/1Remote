@@ -163,6 +163,14 @@ namespace _1RM.Utils.RdpFile
         public int AudioMode { get; set; } = 1;
 
         /// <summary>
+        /// - 0: Dynamic audio quality
+        /// - 1: Medium audio quality
+        /// - 2: High audio quality
+        /// </summary>
+        [RdpConfName("audioqualitymode:i:")]
+        public int AudioQualityMode { get; set; } = 0;
+
+        /// <summary>
         /// Determines whether the clipboard on the client computer will be redirected and available in the remote session and vice versa.
         /// 0 - Do not redirect the clipboard.
         /// 1 - Redirect the clipboard.
