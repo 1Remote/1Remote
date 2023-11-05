@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service.DataSource;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -20,18 +19,17 @@ namespace _1RM.Controls.NoteDisplay
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnServerChanged));
         private static void OnServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is NoteDisplayAndEditor control)
+            if (d is not NoteDisplayAndEditor control) return;
+
+            control.SwitchToView(View.Normal);
+            if (e.OldValue is ProtocolBase server0)
             {
-                control.EndEdit();
-                if (e.OldValue is ProtocolBase server0)
-                {
-                    server0.PropertyChanged -= control.ServerOnPropertyChanged;
-                }
-                if (e.NewValue is ProtocolBase server1)
-                {
-                    server1.PropertyChanged += control.ServerOnPropertyChanged;
-                    control.EditEnable = control.EditEnable && server1.DataSource?.IsWritable == true;
-                }
+                server0.PropertyChanged -= control.ServerOnPropertyChanged;
+            }
+            if (e.NewValue is ProtocolBase server1)
+            {
+                server1.PropertyChanged += control.ServerOnPropertyChanged;
+                control.EditEnable = control.EditEnable && server1.DataSource?.IsWritable == true;
             }
         }
 
@@ -49,36 +47,18 @@ namespace _1RM.Controls.NoteDisplay
             set => SetValue(ServerProperty, value);
         }
 
-
+        // a callback for save launcher settings
         public static readonly DependencyProperty CommandOnCloseRequestProperty = DependencyProperty.Register(
             "CommandOnCloseRequest", typeof(RelayCommand), typeof(NoteDisplayAndEditor), new FrameworkPropertyMetadata(default(RelayCommand), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-
         public RelayCommand CommandOnCloseRequest
         {
             get => (RelayCommand)GetValue(CommandOnCloseRequestProperty);
             set => SetValue(CommandOnCloseRequestProperty, value);
         }
 
-        public bool CloseEnable { get; set; }
-
-        private bool _editEnable;
-        public bool EditEnable
-        {
-            get => _editEnable;
-            set
-            {
-                _editEnable = value;
-                if (IsLoaded)
-                {
-                    Execute.OnUIThreadSync(() =>
-                    {
-                        ButtonSave.IsEnabled = EditEnable;
-                        TbMarkdown.IsReadOnly = !EditEnable;
-                    });
-                }
-            }
-        }
+        public Visibility CloseButtonVisibility { get; set; } = Visibility.Collapsed;
+        public Visibility EditButtonVisibility { get; set; } = Visibility.Visible;
+        public bool EditEnable { get; set; }
 
         public NoteDisplayAndEditor()
         {
@@ -88,10 +68,7 @@ namespace _1RM.Controls.NoteDisplay
 
         private void NoteDisplayAndEditor_Loaded(object sender, RoutedEventArgs e)
         {
-            ButtonSave.IsEnabled = EditEnable;
-            TbMarkdown.IsReadOnly = !EditEnable;
-            ButtonClose.IsEnabled = CloseEnable;
-            ButtonClose.Visibility = CloseEnable ? Visibility.Visible : Visibility.Collapsed;
+            SwitchToView(View.Normal);
         }
 
         private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
@@ -112,7 +89,6 @@ namespace _1RM.Controls.NoteDisplay
 
         private void ClickOnImage(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
-            //MessageBox.Show($"URL: {e.Parameter}");
             try
             {
                 var url = e?.Parameter?.ToString();
@@ -127,40 +103,102 @@ namespace _1RM.Controls.NoteDisplay
             }
         }
 
-        private void EndEdit()
+        public enum View
         {
-            MarkdownViewer.Markdown = Server?.Note ?? "";
-            MarkdownViewer.Visibility = Visibility.Visible;
-            GridEditor.Visibility = Visibility.Collapsed;
+            Normal,
+            Editor,
+            Copy
         }
-        private void StartEdit()
+        private View? _currentView = null;
+        public void SwitchToView(NoteDisplayAndEditor.View v)
         {
-            MarkdownViewer.Visibility = Visibility.Collapsed;
-            GridEditor.Visibility = Visibility.Visible;
+            if (v == _currentView) return;
+            ButtonClose.Visibility = CloseButtonVisibility;
+            ButtonEdit.Visibility = EditButtonVisibility;
+            Execute.OnUIThreadSync(() =>
+            {
+                switch (v)
+                {
+                    case View.Normal:
+                        MarkdownViewer.Markdown = Server?.Note ?? "";
+                        MarkdownViewer.Visibility = Visibility.Visible;
+                        GridEditor.Visibility = Visibility.Collapsed;
+                        break;
+                    case View.Editor:
+                        TbMarkdown.Text = Server?.Note ?? "";
+                        GridButtons.Visibility = Visibility.Visible;
+                        ButtonSave.IsEnabled = true;
+                        TbMarkdown.IsReadOnly = false;
+                        MarkdownViewer.Visibility = Visibility.Collapsed;
+                        GridEditor.Visibility = Visibility.Visible;
+                        break;
+                    case View.Copy:
+                        if (_currentView == View.Normal)
+                        {
+                            TbMarkdown.Text = Server?.Note ?? "";
+                            // 只能拷贝，不能编辑
+                            GridButtons.Visibility = Visibility.Hidden;
+                            ButtonSave.IsEnabled = false;
+                            TbMarkdown.IsReadOnly = true;
+                            MarkdownViewer.Visibility = Visibility.Collapsed;
+                            GridEditor.Visibility = Visibility.Visible;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(v), v, null);
+                }
+                _currentView = v;
+            });
         }
 
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (EditEnable && Server != null && Server.Note.Trim() != TbMarkdown.Text.Trim())
+            if (Server?.DataSource?.IsWritable == true
+                && Server.Note.Trim() != TbMarkdown.Text.Trim())
             {
                 Server.Note = TbMarkdown.Text.Trim();
                 IoC.Get<GlobalData>().UpdateServer(Server);
             }
-            EndEdit();
+            SwitchToView(View.Normal);
         }
 
         private void ButtonCancelEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            EndEdit();
+            SwitchToView(View.Normal);
         }
 
         private void ButtonNoteStartEdit_OnClick(object sender, RoutedEventArgs e)
         {
             TbMarkdown.Text = Server?.Note ?? "";
-            if (MarkdownViewer.Visibility != Visibility.Collapsed)
-                StartEdit();
+            if (Server?.DataSource?.IsWritable == true)
+            {
+                SwitchToView(View.Editor);
+            }
             else
-                EndEdit();
+            {
+                SwitchToView(View.Copy);
+            }
+        }
+
+        private void GridEditor_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (_currentView == View.Normal)
+                SwitchToView(View.Copy);
+        }
+
+        private void GridEditor_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (_currentView == View.Copy)
+                SwitchToView(View.Normal);
+        }
+
+        private void TbMarkdown_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_currentView == View.Copy
+                && Server?.DataSource?.IsWritable == true)
+            {
+                SwitchToView(View.Editor);
+            }
         }
 
         private void ButtonClose_OnClick(object sender, RoutedEventArgs e)

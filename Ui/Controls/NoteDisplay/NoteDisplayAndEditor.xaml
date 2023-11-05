@@ -22,7 +22,6 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <!--you must ignore the click or it will be conflicted with the group drag and drop-->
                 <Grid RowSpan="2" PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent"></Grid>
 
                 <Border Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource LauncherGridKeywordHeight}"
@@ -34,12 +33,9 @@
                         <CornerRadius TopLeft="{StaticResource LauncherOutlineCornerRadius}" TopRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
                     </Border.CornerRadius>
                     <Grid>
-                        <!--you must ignore the click or it will be conflicted with the group drag and drop-->
-                        <Grid PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent">
-                            <TextBlock Text="{DynamicResource Note}" 
-                                       FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
-                        </Grid>
+                        <TextBlock Text="{DynamicResource Note}" 
+                                   FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Name="ButtonEdit" Width="20" Height="20"
@@ -52,12 +48,11 @@
                                     attachProperty:VisionElement.OpacityAccent="0.9"
                                     Click="ButtonNoteStartEdit_OnClick"
                                     Margin="5 0">
-                                <Grid Width="18">
-                                    <Path Data="M804.6 689.8l64-64c10-10 27.4-3 27.4 11.4V928c0 53-43 96-96 96H96c-53 0-96-43-96-96V224c0-53 43-96 96-96h547c14.2 0 21.4 17.2 11.4 27.4l-64 64c-3 3-7 4.6-11.4 4.6H96v704h704V701c0-4.2 1.6-8.2 4.6-11.2z m313.2-403.6L592.6 811.4l-180.8 20c-52.4 5.8-97-38.4-91.2-91.2l20-180.8L865.8 34.2c45.8-45.8 119.8-45.8 165.4 0l86.4 86.4c45.8 45.8 45.8 120 0.2 165.6zM920.2 348L804 231.8 432.4 603.6l-14.6 130.6 130.6-14.6L920.2 348z m129.6-159.4l-86.4-86.4c-8.2-8.2-21.6-8.2-29.6 0L872 164l116.2 116.2 61.8-61.8c8-8.4 8-21.6-0.2-29.8z"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="0" Stretch="Uniform" />
-                                </Grid>
+                                <Path Data="M804.6 689.8l64-64c10-10 27.4-3 27.4 11.4V928c0 53-43 96-96 96H96c-53 0-96-43-96-96V224c0-53 43-96 96-96h547c14.2 0 21.4 17.2 11.4 27.4l-64 64c-3 3-7 4.6-11.4 4.6H96v704h704V701c0-4.2 1.6-8.2 4.6-11.2z m313.2-403.6L592.6 811.4l-180.8 20c-52.4 5.8-97-38.4-91.2-91.2l20-180.8L865.8 34.2c45.8-45.8 119.8-45.8 165.4 0l86.4 86.4c45.8 45.8 45.8 120 0.2 165.6zM920.2 348L804 231.8 432.4 603.6l-14.6 130.6 130.6-14.6L920.2 348z m129.6-159.4l-86.4-86.4c-8.2-8.2-21.6-8.2-29.6 0L872 164l116.2 116.2 61.8-61.8c8-8.4 8-21.6-0.2-29.8z"
+                                      Width="18"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="0" Stretch="Uniform" />
                             </Button>
 
 
@@ -71,12 +66,11 @@
                                     attachProperty:VisionElement.OpacityAccent="0.9"
                                     Click="ButtonClose_OnClick"
                                     Margin="5 0">
-                                <Grid Width="12">
-                                    <Path Data="{StaticResource GeometryCloseCross}"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="2" Stretch="Uniform" />
-                                </Grid>
+                                <Path Data="{StaticResource GeometryCloseCross}"
+                                      Width="12"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                      StrokeThickness="2" Stretch="Uniform" />
                             </Button>
                         </StackPanel>
                     </Grid>
@@ -91,57 +85,54 @@
                         <CommandBinding Command="{x:Static wpf:Commands.Hyperlink}" Executed="OpenHyperlink" />
                         <CommandBinding Command="{x:Static wpf:Commands.Image}" Executed="ClickOnImage" />
                     </FrameworkElement.CommandBindings>
-                    <Grid>
-                        <!--you must ignore the click or it will be conflicted with the group drag and drop-->
-                        <Grid PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent"></Grid>
-                        <Grid Margin="10">
-                            <wpf:MarkdownViewer Name="MarkdownViewer"
-                                                PreviewMouseDown="Ignore_OnPreviewMouseDown" 
-                                                PreviewMouseMove="Ignore_OnPreviewMouseMove"
-                                                Foreground="{DynamicResource PrimaryTextBrush}">
-                            </wpf:MarkdownViewer>
+                    <Grid Margin="10"
+                          MouseEnter="GridEditor_OnMouseEnter"
+                          MouseLeave="GridEditor_OnMouseLeave"
+                          >
+                        <wpf:MarkdownViewer Name="MarkdownViewer"
+                                            PreviewMouseDown="Ignore_OnPreviewMouseDown" 
+                                            PreviewMouseMove="Ignore_OnPreviewMouseMove"
+                                            Foreground="{DynamicResource PrimaryTextBrush}">
+                        </wpf:MarkdownViewer>
 
-                            <Grid Name="GridEditor">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"></RowDefinition>
-                                    <RowDefinition Height="Auto"></RowDefinition>
-                                </Grid.RowDefinitions>
-
-                                <!--you must ignore the click or it will be conflicted with the group drag and drop-->
-                                <Grid RowSpan="2" PreviewMouseDown="Ignore_OnPreviewMouseDown" PreviewMouseMove="Ignore_OnPreviewMouseMove" Background="Transparent"></Grid>
+                        <Grid Name="GridEditor">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
 
 
-                                <TextBox Grid.Row="0" Name="TbMarkdown" TextWrapping="Wrap" Width="Auto"
-                                         MouseWheel="TbMarkdown_OnMouseWheel"
-                                         TextAlignment="Left" Margin="0 5"
-                                         VerticalContentAlignment="Top"
-                                         AcceptsReturn="True"
-                                         AcceptsTab="True"
-                                         Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve">
-                                </TextBox>
+                            <TextBox Grid.Row="0" Name="TbMarkdown" TextWrapping="Wrap" Width="Auto"
+                                     MouseWheel="TbMarkdown_OnMouseWheel"
+                                     PreviewMouseDown="TbMarkdown_OnPreviewMouseDown"
+                                     TextAlignment="Left" Margin="0 5"
+                                     VerticalContentAlignment="Top"
+                                     AcceptsReturn="True"
+                                     AcceptsTab="True"
+                                     Tag="&#13;# Markdown support&#13;&#13;- write your note here&#13;- foo&#13;&#13;![pic](http://x/structure.png)&#13;&#13;[link](http://x/readme.md)" xml:space="preserve">
+                            </TextBox>
 
 
-                                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
-                                    <Button Name="ButtonSave"
+                            <StackPanel Name="GridButtons"  Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
+                                <Button Name="ButtonSave"
                                         Margin="0 0 15 0"
                                         Padding="0 1 0 0" Width="80" Height="25"
                                         HorizontalAlignment="Left"
                                         Click="ButtonSave_OnClick"
                                         Style="{StaticResource ButtonAccentStyle}"
                                         Content="{DynamicResource Save}">
-                                    </Button>
+                                </Button>
 
-                                    <Button Padding="0 1 0 0" Width="80" Height="25"
+                                <Button Padding="0 1 0 0" Width="80" Height="25"
                                         Margin="15 0 0 0"
                                         HorizontalAlignment="Right"
                                         Click="ButtonCancelEdit_OnClick"
                                         Style="{StaticResource ButtonPrimaryStyle}"
                                         Content="{DynamicResource Cancel}">
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-
+                                </Button>
+                            </StackPanel>
                         </Grid>
+
                     </Grid>
                 </Border>
             </Grid>
