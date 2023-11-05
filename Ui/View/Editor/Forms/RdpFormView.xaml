@@ -437,19 +437,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding New.AudioRedirectionMode}" Value="{x:Static protocol:EAudioRedirectionMode.Disabled}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding New.AudioRedirectionMode}" Value="{x:Static protocol:EAudioRedirectionMode.LeaveOnRemote}">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static protocol:EAudioRedirectionMode.RedirectToLocal}}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sound_quality}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
