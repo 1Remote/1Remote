@@ -165,6 +165,10 @@ server_editor_advantage_sounds;Sounds;声音;Zvuky;Ton;Sons;Sons;;音效;Sons;D�
 server_editor_advantage_sounds_disabled;Disabled;禁用;Vypnuto;;Désactivée;Desabilitado;;停用;Deshabilitado;Dezaktywowane
 server_editor_advantage_sounds_on_local;Play on local;在本地播放;Přehrávat lokálně;;Jouez en local;Rode localmente;;在本機播放;Soar en local;Słuchaj na lokalym
 server_editor_advantage_sounds_on_remote;Play on remote;在远程播放;Přehrávat na protějšku;;Jouer à distance;Rode remotamente;;在遠端播放;Soar en remoto;Słuchaj na zdalnym
+server_editor_advantage_sound_quality;Sound Quality;音频质量;;;;;;;;
+server_editor_advantage_sound_quality_dynamic;Dynamic;动态;;;;;;;;
+server_editor_advantage_sound_quality_medium;Medium;中;;;;;;;;
+server_editor_advantage_sound_quality_high;High;高;;;;;;;;
 server_editor_advantage_audio_capture;Audio Capture;录音;Zachytávání zvuku;Audio Aufnahme;Capture audio;Captura de áudio;;音效擷取;Captura de audio;Przechwytywanie dzwięku
 server_editor_advantage_ports;Ports;端口;Porty;;;Portas;;連接埠;Portos;Porty
 server_editor_advantage_printers;Printers;打印机;Tiskárny;Drucker;Imprimantes;Impressoras;;印表機;Impresoras;Drukarki

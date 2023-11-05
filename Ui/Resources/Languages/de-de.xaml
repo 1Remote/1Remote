@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">Behinderte</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Spielen Sie lokal</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">Spielen Sie auf der Fernbedienung</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">Tonqualität</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">Dynamisch</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">Mittel</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">Hoch</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">Audio Aufnahme</s:String>
     <s:String x:Key="server_editor_advantage_ports">Häfen</s:String>
     <s:String x:Key="server_editor_advantage_printers">Drucker</s:String>

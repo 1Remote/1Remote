@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">Desabilitado</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Rode localmente</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">Rode remotamente</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">Qualidade de som</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">Dinâmico</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">Médio</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">Alto</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">Captura de áudio</s:String>
     <s:String x:Key="server_editor_advantage_ports">Portas</s:String>
     <s:String x:Key="server_editor_advantage_printers">Impressoras</s:String>

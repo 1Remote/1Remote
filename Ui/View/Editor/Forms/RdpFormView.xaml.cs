@@ -330,4 +330,21 @@ namespace _1RM.View.Editor.Forms
             return (EAudioRedirectionMode)(int.Parse(value.ToString() ?? "0"));
         }
     }
+
+    public class ConverterEAudioQualityMode: IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+                return Enum.GetValues(typeof(EAudioRedirectionMode)).Cast<int>().Max() + 1;
+            return ((int)((EAudioQualityMode)value)).ToString();
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+                return null;
+            return (EAudioQualityMode)(int.Parse(value.ToString() ?? "0"));
+        }
+    }
 }

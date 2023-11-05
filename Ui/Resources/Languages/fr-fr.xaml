@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">Désactivée</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Jouez en local</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">Jouer à distance</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">Qualité sonore</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">Dynamique</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">Moyen</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">Haut</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">Capture audio</s:String>
     <s:String x:Key="server_editor_advantage_ports">Ports</s:String>
     <s:String x:Key="server_editor_advantage_printers">Imprimantes</s:String>
