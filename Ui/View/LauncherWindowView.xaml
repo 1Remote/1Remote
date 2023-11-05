@@ -55,10 +55,6 @@
                                         PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
                                         Visibility="{Binding ElementName=ServerSelectionsView, Path=Visibility, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static Visibility.Visible}}">
                         </ContentControl>
-
-                        <!--<Grid VerticalAlignment="Top" Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
-                            <Button Click="{s:Action ToggleQuickConnection}" HorizontalAlignment="Right">x</Button>
-                        </Grid>-->
                     </Grid>
                 </Border>
             </StackPanel>
@@ -80,7 +76,7 @@
                                               Height="{Binding GridNoteHeight}" 
                                               Server="{Binding ServerSelectionsViewModel.SelectedItem.Server, Mode=OneWay}"
                                               EditEnable="True"
-                                              CloseEnable="True"
+                                              CloseButtonVisibility="Visible"
                                               CommandOnCloseRequest="{Binding ServerSelectionsViewModel.CmdHideNoteField, Mode=OneWay}"
             ></noteDisplay:NoteDisplayAndEditor>
         </Border>

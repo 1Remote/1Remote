@@ -109,15 +109,15 @@ namespace _1RM.View.Editor
             PopupLogoSelectorClose();
         }
 
-        private void ButtonShowNote_OnClick(object sender, RoutedEventArgs e)
-        {
-            PopupNote.IsOpen = false;
-            PopupNote.IsOpen = true;
-        }
-
         private void TextBoxMarkdown_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void ButtonShowNote_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            PopupNote.IsOpen = false;
+            PopupNote.IsOpen = true;
         }
     }
 }

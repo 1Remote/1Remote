@@ -58,44 +58,43 @@ namespace _1RM.Controls.NoteDisplay
                     Server = Server,
                     Width = 400,
                     Height = 300,
-                    EditEnable = Server.DataSource?.IsWritable == true,
-                    CloseEnable = false,
+                    CloseButtonVisibility = Visibility.Collapsed,
                 };
             });
         }
 
-        private bool NoteTest(FrameworkElement button, MouseEventArgs args)
+        private void NoteTest(FrameworkElement button, MouseEventArgs args)
         {
-            if (PopupNoteContent.Content is not NoteDisplayAndEditor editor)
-            {
-                return false;
-            }
-            if (button.ActualWidth > 0)
-            {
-                var p1 = args.MouseDevice.GetPosition(button);
-                SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
-                bool ret = p1.X > 0
-                           && p1.X < button.ActualWidth
-                           && p1.Y > 0
-                           && p1.Y < button.ActualHeight;
-                if (!ret)
-                {
-                    var p3 = args.MouseDevice.GetPosition(editor);
-                    SimpleLogHelper.Debug($"PopupNoteContent: {p3.X}, {p3.Y}, {editor.Main.ActualWidth} X {editor.Main.ActualHeight}");
+            if (PopupNoteContent.Content is not NoteDisplayAndEditor editor) return;
+            if (!(button.ActualWidth > 0)) return;
 
-                    if (p3.X > 0
-                        && p3.X < editor.ActualWidth
-                        && p3.Y > 0
-                        && p3.Y < editor.ActualHeight)
-                    {
-                        ret = true;
-                    }
-                    if (!ret)
-                        PopupNote.IsOpen = false;
+            var p1 = args.MouseDevice.GetPosition(button);
+            SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
+            bool ret = p1.X > 0
+                       && p1.X < button.ActualWidth
+                       && p1.Y > 0
+                       && p1.Y < button.ActualHeight;
+            if (!ret)
+            {
+                var p3 = args.MouseDevice.GetPosition(editor);
+                SimpleLogHelper.Debug($"PopupNoteContent: {p3.X}, {p3.Y}, {editor.Main.ActualWidth} X {editor.Main.ActualHeight}");
+
+                if (p3.X > 0
+                    && p3.X < editor.ActualWidth
+                    && p3.Y > 0
+                    && p3.Y < editor.ActualHeight)
+                {
+                    ret = true;
                 }
-                return true;
             }
-            return false;
+            if (ret) return;
+
+
+            PopupNote.IsOpen = false;
+            if (PopupNoteContent.Content is NoteDisplayAndEditor note)
+            {
+                note.SwitchToView(NoteDisplayAndEditor.View.Normal);
+            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs args)

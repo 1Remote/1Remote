@@ -13,9 +13,8 @@
     </UserControl.Resources>
     <Grid Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}">
         <!--icon button show note-->
-        <Border Height="30" Width="30" Name="GridParent">
+        <Border Height="30" Width="30" Name="GridParent" HorizontalAlignment="Left" >
             <Grid Name="ButtonShowNote"
-                  HorizontalAlignment="Left" 
                   Width="20" Height="20"
                   Margin="5"
                   Background="Transparent"
@@ -28,7 +27,7 @@
                           StrokeThickness="0" Stretch="Uniform" />
             </Grid>
         </Border>
-        <Grid Name="GridBriefNote" Visibility="Collapsed">
+        <Grid Name="GridBriefNote" Visibility="Collapsed" MouseEnter="ButtonShowNote_OnMouseEnter">
             <TextBlock Margin="25 5 5 5" 
                        HorizontalAlignment="Left" 
                        MaxWidth="400"
