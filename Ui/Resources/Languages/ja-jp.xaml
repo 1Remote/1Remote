@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">無効</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">ローカルでプレイする</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">リモートでプレイする</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">音の質</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">動的</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">中くらい</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">高い</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">オーディオキャプチャ</s:String>
     <s:String x:Key="server_editor_advantage_ports">ポート</s:String>
     <s:String x:Key="server_editor_advantage_printers">プリンター</s:String>

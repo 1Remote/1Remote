@@ -166,6 +166,10 @@
     <s:String x:Key="server_editor_advantage_sounds_disabled">Vypnuto</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Přehrávat lokálně</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_remote">Přehrávat na protějšku</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality">Kvalita zvuku</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_dynamic">Dynamický</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_medium">Střední</s:String>
+    <s:String x:Key="server_editor_advantage_sound_quality_high">Vysoký</s:String>
     <s:String x:Key="server_editor_advantage_audio_capture">Zachytávání zvuku</s:String>
     <s:String x:Key="server_editor_advantage_ports">Porty</s:String>
     <s:String x:Key="server_editor_advantage_printers">Tiskárny</s:String>

@@ -439,6 +439,23 @@
 
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sound_quality}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid.Resources>
+                            <forms:ConverterEAudioQualityMode x:Key="ConverterEAudioQualityMode" />
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding New.AudioQualityMode, Converter={StaticResource ConverterEAudioQualityMode}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_dynamic}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_dynamic}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_medium}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_medium}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sound_quality_high}" ToolTip="{DynamicResource server_editor_advantage_sound_quality_high}" />
+                            <ComboBoxItem Visibility="{Binding New.AudioQualityMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
                     <UniformGrid Columns="3" Rows="3" Width="500" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <UniformGrid.Resources>

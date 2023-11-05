@@ -73,6 +73,13 @@ namespace _1RM.Model.Protocol
         Disabled = 2,
     }
 
+    public enum EAudioQualityMode
+    {
+        Dynamic = 0,
+        Medium = 1,
+        High = 2,
+    }
+
     public class RdpLocalSetting
     {
         public DateTime LastUpdateTime { get; set; } = DateTime.MinValue;
@@ -303,6 +310,15 @@ namespace _1RM.Model.Protocol
         {
             get => _audioRedirectionMode;
             set => SetAndNotifyIfChanged(ref _audioRedirectionMode, value);
+        }
+
+        private EAudioQualityMode? _audioQualityMode = EAudioQualityMode.Dynamic;
+        [DefaultValue(EAudioQualityMode.Dynamic)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public EAudioQualityMode? AudioQualityMode
+        {
+            get => _audioQualityMode;
+            set => SetAndNotifyIfChanged(ref _audioQualityMode, value);
         }
 
 
@@ -589,6 +605,14 @@ namespace _1RM.Model.Protocol
                 rdpConfig.AudioMode = 1;
             else if (this.AudioRedirectionMode == EAudioRedirectionMode.Disabled)
                 rdpConfig.AudioMode = 2;
+
+            if (this.AudioQualityMode == EAudioQualityMode.Dynamic)
+                rdpConfig.AudioQualityMode = 0;
+            else if (this.AudioQualityMode == EAudioQualityMode.Medium)
+                rdpConfig.AudioQualityMode = 1;
+            else if (this.AudioQualityMode == EAudioQualityMode.High)
+                rdpConfig.AudioQualityMode = 2;
+
             if (this.EnableAudioCapture == true)
                 rdpConfig.AudioCaptureMode = 1;
 
@@ -685,6 +709,12 @@ namespace _1RM.Model.Protocol
                 case 0: rdp.AudioRedirectionMode = EAudioRedirectionMode.RedirectToLocal; break;
                 case 1: rdp.AudioRedirectionMode = EAudioRedirectionMode.LeaveOnRemote; break;
                 case 2: rdp.AudioRedirectionMode = EAudioRedirectionMode.Disabled; break;
+            }
+            switch (rdpConfig.AudioQualityMode)
+            {
+                case 0: rdp.AudioQualityMode = EAudioQualityMode.Dynamic; break;
+                case 1: rdp.AudioQualityMode = EAudioQualityMode.Medium; break;
+                case 2: rdp.AudioQualityMode = EAudioQualityMode.High; break;
             }
             rdp.EnableAudioCapture = rdpConfig.AudioCaptureMode > 0;
 
