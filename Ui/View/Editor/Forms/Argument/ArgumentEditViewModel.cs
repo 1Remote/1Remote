@@ -7,10 +7,8 @@ using System.Windows;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Utils;
 using Newtonsoft.Json;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Enum = System.Enum;
 
@@ -106,12 +104,12 @@ namespace _1RM.View.Editor.Forms.Argument
 
         public string Name
         {
-            get => New.Name.Trim();
+            get => New.Name;
             set
             {
                 if (New.Name != value)
                 {
-                    New.Name = value.Trim();
+                    New.Name = value;
                     RaisePropertyChanged();
                 }
             }
@@ -119,12 +117,12 @@ namespace _1RM.View.Editor.Forms.Argument
 
         public string Key
         {
-            get => New.Key.Trim();
+            get => New.Key;
             set
             {
                 if (New.Key != value)
                 {
-                    New.Key = value.Trim();
+                    New.Key = value;
                     RaisePropertyChanged();
                 }
             }
@@ -164,6 +162,7 @@ namespace _1RM.View.Editor.Forms.Argument
                 return _cmdSave ??= new RelayCommand((_) =>
                 {
                     {
+                        Name = Name.Trim();
                         var t = AppArgument.CheckName(_existedArguments, Name);
                         if (t.Item1 == false)
                         {
@@ -172,14 +171,14 @@ namespace _1RM.View.Editor.Forms.Argument
                         }
                     }
 
-                    {
-                        var t = AppArgument.CheckValue(New.Value, New.IsNullable, New.Type);
-                        if (t.Item1 == false)
-                        {
-                            MessageBoxHelper.Warning(t.Item2);
-                            return;
-                        }
-                    }
+                    //{
+                    //    var t = AppArgument.CheckValue(New.Value, New.IsNullable, New.Type);
+                    //    if (t.Item1 == false)
+                    //    {
+                    //        MessageBoxHelper.Warning(t.Item2);
+                    //        return;
+                    //    }
+                    //}
 
                     {
                         var t = CheckSelections(Selections);
@@ -247,8 +246,6 @@ namespace _1RM.View.Editor.Forms.Argument
                     {
                         // edit
                         var i = _localApp.ArgumentList.IndexOf(_org);
-                        //_localApp.ArgumentList.Remove(_org);
-                        //_localApp.ArgumentList.Insert(i, New);
                         _localApp.ArgumentList[i] = New;
                     }
                     else

@@ -303,7 +303,7 @@
                             <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
                             <ColumnDefinition Width="300" SharedSizeGroup="Name"></ColumnDefinition>
                             <ColumnDefinition Width="200" SharedSizeGroup="Tags"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote" MinWidth="50"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
@@ -370,7 +370,7 @@
                                                Visibility="{Binding BriefNoteVisibility}" 
                                                Foreground="{DynamicResource BackgroundTextBrush}"
                                                VerticalAlignment="Center"></TextBlock>
-                            <Grid HorizontalAlignment="Left" Margin="1 0">
+                            <Grid HorizontalAlignment="Left" Margin="5 0 0 0">
                                 <Button Width="20" Height="20"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         Background="Transparent"
@@ -391,7 +391,7 @@
                                                   StrokeThickness="0" Stretch="Uniform" />
                                     </Grid>
                                 </Button>
-                                <Button Width="20" Height="20"
+                                <Button Width="20" Height="20" Margin="5 0 0 0"
                                         ToolTip="{DynamicResource Note}"
                                         Background="Transparent"
                                         attachProperty:VisionElement.BackgroundAccent="Transparent"

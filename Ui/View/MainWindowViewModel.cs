@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Model;
 using _1RM.Service.DataSource.DAO;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using System.Threading;
 using _1RM.View.Settings.General;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
@@ -368,7 +364,7 @@ namespace _1RM.View
                 // can only be called by the Ui
                 if (SetAndNotifyIfChanged(ref _mainFilterString, value))
                 {
-                    _debounceDispatcher.Debounce(100, (obj) =>
+                    _debounceDispatcher.Debounce(IoC.Get<GlobalData>().VmItemList.Count > 100 ? 200 : 100, (obj) =>
                     {
                         if (_mainFilterString == MainFilterString)
                         {

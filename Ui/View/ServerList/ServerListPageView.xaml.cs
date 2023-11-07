@@ -43,20 +43,20 @@ namespace _1RM.View.ServerList
         private void ServerListItemSource_OnFilter(object sender, FilterEventArgs e)
         {
             // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-            if (e.Item is ProtocolBaseViewModel t
+            if (e.Item is ProtocolBaseViewModel server
                 && DataContext is ServerListPageViewModel vm)
-            // If filter is turned on, filter completed items.
             {
-                if (vm.TestMatchKeywords(t.Server))
+                if (vm.IsServerVisible.TryGetValue(server, out var flag) == false
+                    || flag)
                 {
                     e.Accepted = true;
                 }
                 else
                 {
                     e.Accepted = false;
-                    t.IsSelected = false;
+                    server.IsSelected = false;
                 }
-                t.SetIsVisible(e.Accepted);
+                server.SetIsVisible(e.Accepted);
 
 
                 if (IoC.Get<DataSourceService>().AdditionalSources.Any())

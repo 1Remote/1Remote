@@ -78,7 +78,10 @@ namespace _1RM.Service
             public DateTime GetAccessTime() => _accessTime;
         }
 
-        private readonly Dictionary<string, Cache> _caches = new Dictionary<string, Cache>(500);
+        /// <summary>
+        /// this is the cache for the raw string to speed up match, for example, a english srint "Abc Def" will be cached as {"abc def", "ad"} a Chinese name will be cache as PinYin.
+        /// </summary>
+        private readonly Dictionary<string, Cache> _matchCaches = new Dictionary<string, Cache>(500);
 
         private VariableKeywordMatcher.Matcher _matcher;
 
@@ -96,21 +99,22 @@ namespace _1RM.Service
         {
             Debug.Assert(providerNames.Length > 0);
             _matcher = VariableKeywordMatcherIn1.Builder.Build(providerNames, false);
+            _matchCaches.Clear();
         }
 
         private void CleanUp()
         {
             lock (this)
             {
-                if (_caches.Any(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-24)))
+                if (_matchCaches.Any(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-24)))
                 {
-                    var kvs = _caches.Where(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-12))?
+                    var kvs = _matchCaches.Where(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-12))?
                         .OrderBy(x => x.Value.GetAccessTime())?.ToArray();
                     if (kvs!= null)
                     {
                         foreach (var kv in kvs)
                         {
-                            _caches.Remove(kv.Key);
+                            _matchCaches.Remove(kv.Key);
                         }
                     }
                 } 
@@ -135,20 +139,20 @@ namespace _1RM.Service
         {
             var kws = keywords.ToArray();
             CleanUp();
-            var caches = originalStrings.Select(x => GetCache(x)).ToList();
-            return _matcher.Matchs(caches, kws, 2);
+            var matchCaches = originalStrings.Select(x => GetCache(x)).ToList();
+            return _matcher.Matchs(matchCaches, kws, 2);
         }
 
         private ref MatchCache GetCache(string originalString)
         {
             lock (this)
             {
-                if (!_caches.ContainsKey(originalString))
+                if (!_matchCaches.ContainsKey(originalString))
                 {
                     var cache = new MatchCache(originalString);
-                    _caches.Add(originalString, new Cache(cache));
+                    _matchCaches.Add(originalString, new Cache(cache));
                 } 
-                return ref _caches[originalString].GetMatchCache();
+                return ref _matchCaches[originalString].GetMatchCache();
             }
         }
 

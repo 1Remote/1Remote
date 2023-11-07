@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
@@ -64,7 +66,7 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    _debounceDispatcher.Debounce(100, (obj) =>
+                    _debounceDispatcher.Debounce(VmServerList.Count > 50 ? 200 : 100, (obj) =>
                     {
                         if (value == _filter)
                         {
@@ -238,6 +240,17 @@ namespace _1RM.View.Launcher
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             if (string.IsNullOrEmpty(Filter) == false && _lastKeyword == Filter) return;
 
+            List<ProtocolBaseViewModel> servers;
+            if (Filter.StartsWith(_lastKeyword))
+            {
+                // calc only visible servers when filter is appended
+                servers = VmServerList.ToList();
+            }
+            else
+            {
+                servers = IoC.Get<GlobalData>().VmItemList;
+            }
+
             _lastKeyword = Filter;
 
             var keyword = Filter.Trim();
@@ -256,15 +269,16 @@ namespace _1RM.View.Launcher
 #if DEBUG
             var sw = new Stopwatch();
 #endif
-            foreach (var vm in IoC.Get<GlobalData>().VmItemList)
-            {
-                vm.KeywordMark = double.MinValue;
-                var server = vm.Server;
-                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tmp, ShowCredentials);
-                if (s.Item1 != true) continue;
 
+            var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, ShowCredentials);
+            for(int i =0; i < servers.Count; i++)
+            {
+                var vm = servers[i];
+                vm.KeywordMark = double.MinValue;
+                var matchResult = matchResults[i];
+                if (matchResult.Item1 != true) continue;
                 newList.Add(vm);
-                if (s.Item2 == null)
+                if (matchResult.Item2 == null)
                 {
                     // no highlight
                     vm.LauncherMainTitleViewModel.UnHighLightAll();
@@ -273,7 +287,7 @@ namespace _1RM.View.Launcher
                     vm.KeywordMark = 0;
                     return;
                 }
-                var mrs = s.Item2;
+                var mrs = matchResult.Item2;
                 var m1 = mrs.HitFlags[0];
 
                 // highlight and order by keyword match count
