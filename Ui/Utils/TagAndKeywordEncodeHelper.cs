@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using _1RM.Model;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using VariableKeywordMatcher.Model;
@@ -151,8 +152,41 @@ namespace _1RM.Utils
             var mrs = IoC.Get<KeywordMatchService>().Match(new List<string>() { dispName, subTitle }, keywordDecoded.KeyWords);
             if (mrs.IsMatchAllKeywords)
                 return new Tuple<bool, MatchResults?>(true, mrs);
-
             return new Tuple<bool, MatchResults?>(false, null);
+        }
+
+
+        public static List<Tuple<bool, MatchResults?>> MatchKeywords(List<ProtocolBase> servers, string keyword, bool matchSubTitle)
+        {
+            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
+            return MatchKeywords(servers, tmp, matchSubTitle);
+        }
+        public static List<Tuple<bool, MatchResults?>> MatchKeywords(List<ProtocolBase> servers, KeywordDecoded keywordDecoded, bool matchSubTitle)
+        {
+            if (keywordDecoded.IsKeywordEmpty() || servers.Count == 0)
+            {
+                return servers.Select(_ => new Tuple<bool, MatchResults?>(true, null)).ToList();
+            }
+            var taskCount = Math.Max(servers.Count / 10, 2);
+            var results = new ConcurrentDictionary<int, Tuple<bool, MatchResults?>>();
+            var caches = new ConcurrentQueue<ProtocolBase>(servers);
+            var tasks = new List<Task>();
+            for (var i = 0; i < taskCount; i++)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    while (caches.TryDequeue(out var cache))
+                    {
+                        var r = MatchKeywords(cache, keywordDecoded, matchSubTitle);
+                        results.TryAdd(servers.IndexOf(cache), r);
+                    }
+                }));
+            }
+            // wait for all tasks to finish
+            Task.WaitAll(tasks.ToArray());
+
+            // get the results in order
+            return results.OrderBy(x => x.Key).Select(r => r.Value).ToList();
         }
     }
 }

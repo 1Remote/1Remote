@@ -108,8 +108,8 @@ namespace _1RM.Model.ProtocolRunner.Default
         private string _puttyExePath = "";
         public string PuttyExePath
         {
-            get => File.Exists(_puttyExePath) ? _puttyExePath : PuttyConnectableExtension.GetInternalKittyExeFullName();
-            set => SetAndNotifyIfChanged(ref _puttyExePath, value);
+            get => (File.Exists(_puttyExePath) ? _puttyExePath : PuttyConnectableExtension.GetInternalKittyExeFullName()).Replace(Environment.CurrentDirectory, ".");
+            set => SetAndNotifyIfChanged(ref _puttyExePath, value.Replace(Environment.CurrentDirectory, "."));
         }
 
 

@@ -21,10 +21,10 @@ public static class AppArgumentHelper
                 {
                     Type = AppArgumentType.Normal,
                     Name = "Url",
-                    Key = "/t:",
+                    Key = "",
                     IsNullable = false,
                     Value = "",
-                    Description = "The url you want to access",
+                    Description = "The url you want to access e.g. google.com",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = true,
                 },
@@ -173,7 +173,6 @@ public static class AppArgumentHelper
                     AddBlankAfterValue = true,
                 },
             };
-            // TODO add auto cmd if kitty
             var app = new LocalApp()
             {
                 DisplayName = "FreeRdp",
@@ -187,8 +186,9 @@ public static class AppArgumentHelper
 
     private static LocalApp? GetPuttyArgumentList(string path)
     {
-        if (path.IndexOf("putty.exe", StringComparison.OrdinalIgnoreCase) >= 0
-            || path.IndexOf("kitty.exe", StringComparison.OrdinalIgnoreCase) >= 0)
+        if (path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == false) return null;
+        if (path.IndexOf("putty", StringComparison.OrdinalIgnoreCase) >= 0
+            || path.IndexOf("kitty", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             var argumentList = new List<AppArgument>
             {
@@ -247,12 +247,26 @@ public static class AppArgumentHelper
                         {"-1", "V1"},
                         {"-2", "V2"},
                     },
+                    Value = "-2",
                     Description = "The SSH protocol version to use.",
                     AddBlankAfterKey = true,
                     AddBlankAfterValue = true,
                 },
             };
-            // TODO add auto cmd if kitty
+            // add auto cmd if kitty
+            if (path.IndexOf("kitty", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                argumentList.Add(new AppArgument()
+                {
+                    Type = AppArgumentType.Normal,
+                    Name = "Auto Command",
+                    Key = "-cmd",
+                    IsNullable = true,
+                    Description = "Run command after connected.",
+                    AddBlankAfterKey = true,
+                    AddBlankAfterValue = true,
+                });
+            }
             var app = new LocalApp()
             {
                 DisplayName = "PuTTY",
@@ -285,6 +299,7 @@ public static class AppArgumentHelper
                         {"sftp", "sftp"},
                         {"ftp", "ftp"},
                     },
+                    Value = "sftp",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
@@ -375,6 +390,7 @@ public static class AppArgumentHelper
                         {"sftp", "sftp"},
                         {"ftp", "ftp"},
                     },
+                    Value = "ftp",
                     AddBlankAfterKey = false,
                     AddBlankAfterValue = false,
                 },
@@ -558,6 +574,7 @@ public static class AppArgumentHelper
     {
         exePath = exePath.ToLower();
         return GetPuttyArgumentList(exePath)
+               ?? GetChrome(exePath)
                ?? GetFreeRdp(exePath)
                ?? GetWinScp(exePath)
                ?? GetFilezilla(exePath)

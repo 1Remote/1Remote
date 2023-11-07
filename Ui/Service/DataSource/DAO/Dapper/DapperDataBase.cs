@@ -409,7 +409,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                         bool existed = !string.IsNullOrEmpty(get.Result);
                         ret = _dbConnection?.Execute(existed ? SqlUpdateConfig : SqlInsertConfig, new { Key = key, Value = value, }) > 0;
                     }
-                    return Result.Success();
+                    return ret ? Result.Success() : Result.Fail("Failed");
                 }
                 catch (Exception e)
                 {

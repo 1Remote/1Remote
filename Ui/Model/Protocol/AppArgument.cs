@@ -184,6 +184,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
                 //    Value = n.First().Value;
             }
             _selections = n;
+            Value = n.LastOrDefault().Key ?? "";
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(SelectionKeys));
         }
@@ -320,6 +321,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
 
     public static Tuple<bool, string> CheckName(List<string> existedNames, string name)
     {
+        name = name.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
             return new Tuple<bool, string>(false, $"`{IoC.Translate(LanguageService.NAME)}` {IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY)}");
@@ -334,14 +336,14 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
     }
 
     public static Tuple<bool, string> CheckValue(string value, bool isNullable, AppArgumentType type)
-    {   
+    {
         if (value.StartsWith("%") && value.EndsWith("%"))
         {
             return new Tuple<bool, string>(true, "");
         }
         if (string.IsNullOrEmpty(value) && type != AppArgumentType.Selection)
         {
-            if (!isNullable || type == AppArgumentType.Const )
+            if (!isNullable || type == AppArgumentType.Const)
                 return new Tuple<bool, string>(false, IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
             else
                 return new Tuple<bool, string>(true, "");

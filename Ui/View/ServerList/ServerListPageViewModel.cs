@@ -411,16 +411,57 @@ namespace _1RM.View.ServerList
             }
         }
 
+        public Dictionary<ProtocolBaseViewModel, bool> IsServerVisible = new Dictionary<ProtocolBaseViewModel, bool>();
+        private string _lastKeyword = string.Empty;
         public void RefreshCollectionViewSource()
         {
-            if (this.View is ServerListPageView v)
+            var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
+            if (this.View is not ServerListPageView v
+                || _lastKeyword == filter)
             {
-                Execute.OnUIThread(() =>
-                {
-                    // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                    CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh();
-                });
+                IsServerVisible.Clear();
+                return;
             }
+
+            lock (this)
+            {
+                List<ProtocolBaseViewModel> servers;
+                if (filter.StartsWith(_lastKeyword))
+                {
+                    // calc only visible servers when filter is appended
+                    servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
+                    foreach (var protocolBaseViewModel in IoC.Get<GlobalData>().VmItemList)
+                    {
+                        if (!servers.Contains(protocolBaseViewModel))
+                            servers.Add(protocolBaseViewModel);
+                    }
+                }
+                else
+                {
+                    servers = IoC.Get<GlobalData>().VmItemList;
+                    IsServerVisible.Clear();
+                }
+                _lastKeyword = filter;
+
+                var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
+                TagFilters = tmp.TagFilterList;
+                var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, false);
+                for (int i = 0; i < servers.Count; i++)
+                {
+                    var vm = servers[i];
+                    if (IsServerVisible.ContainsKey(vm))
+                        IsServerVisible[vm] = matchResults[i].Item1;
+                    else
+                        IsServerVisible.Add(vm, matchResults[i].Item1);
+                } 
+            }
+
+            Execute.OnUIThread(() =>
+            {
+                // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
+                CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh();
+                // invoke ServerListPageView.cs => ServerListItemSource_OnFilter
+            });
         }
 
         public void ClearSelection()
@@ -435,26 +476,6 @@ namespace _1RM.View.ServerList
                 view.RefreshHeaderCheckBox();
             }
         }
-
-
-        private string _lastFilterString = "";
-        private TagAndKeywordEncodeHelper.KeywordDecoded? _keywordDecoded = null;
-        public bool TestMatchKeywords(ProtocolBase server)
-        {
-            if (_lastFilterString != IoC.Get<MainWindowViewModel>().MainFilterString)
-            {
-                _lastFilterString = IoC.Get<MainWindowViewModel>().MainFilterString;
-                _keywordDecoded = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString);
-                TagFilters = _keywordDecoded.TagFilterList;
-            }
-
-            if (_keywordDecoded == null)
-                return true;
-
-            var s = TagAndKeywordEncodeHelper.MatchKeywords(server, _keywordDecoded, false);
-            return s.Item1;
-        }
-
 
         #region Commands
 
