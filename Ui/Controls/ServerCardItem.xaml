@@ -185,6 +185,10 @@
     </UserControl.Resources>
     <Grid Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}" Clip="{StaticResource CardClip}">
         <!-- Card Content Middle Layer - with icon -->
+        <Grid.InputBindings>
+            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
+            <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
+        </Grid.InputBindings>
         <Grid Name="CardContent" Background="{DynamicResource PrimaryMidBrush}" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"></RowDefinition>
@@ -299,3 +303,4 @@
         </Grid>
     </Grid>
 </UserControl>
+    
