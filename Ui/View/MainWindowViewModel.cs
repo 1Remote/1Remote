@@ -101,14 +101,24 @@ namespace _1RM.View
                     EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
                     ShowMe();
                 }
+                else
+                {
+                    MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                }
             };
 
             GlobalEventHelper.OnRequestGoToServerEditPage += (serverToEdit, isInAnimationShow) =>
             {
                 var server = _appData.VmItemList.FirstOrDefault(x => x.Id == serverToEdit.Id && x.DataSource == serverToEdit.DataSource)?.Server;
-                if (server is not { DataSource: { IsWritable: true } }) return;
-                EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
-                ShowMe();
+                if (server is not { DataSource: { IsWritable: true } })
+                {
+                    MessageBoxHelper.ErrorAlert("Can not edit server since it is not writable.");
+                }
+                else
+                {
+                    EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
+                    ShowMe();
+                }
             };
 
             GlobalEventHelper.OnGoToServerAddPage += (tagNames, assignDataSource) =>
@@ -119,17 +129,27 @@ namespace _1RM.View
                     EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
                     ShowMe();
                 }
+                else
+                {
+                    MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                }
             };
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
                 var serverBases = servers.Where(x => x.DataSource is { IsWritable: true, Status: EnumDatabaseStatus.OK }).ToArray();
+                EditorViewModel = null;
                 EditorViewModel = serverBases.Length switch
                 {
                     > 1 => ServerEditorPageViewModel.BuckEdit(_appData, serverBases),
                     1 => ServerEditorPageViewModel.Edit(_appData, serverBases.First()),
                     _ => EditorViewModel
                 };
+                if (EditorViewModel == null)
+                {
+                    MessageBoxHelper.ErrorAlert("Can not edit multiple servers since they are all not writable.");
+                    return;
+                }
                 ShowMe();
             };
 #if FOR_MICROSOFT_STORE_ONLY

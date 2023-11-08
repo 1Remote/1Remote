@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -10,7 +9,6 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
@@ -287,33 +285,33 @@ namespace _1RM.Model
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
                 bool needReload = false;
                 bool isAnySuccess = false;
-                var failMsgs = new List<string>();
+                var failMessages = new List<string>();
                 foreach (var groupedServer in groupedServers)
                 {
                     var source = groupedServer.First().DataSource;
-                    if (source?.IsWritable == true)
+                    if (source?.IsWritable != true)
                     {
-                        needReload |= source.NeedRead();
-                        var tmp = source.Database_UpdateServer(groupedServer);
-                        if (tmp.IsSuccess)
-                        {
-                            isAnySuccess = true;
-                            if (needReload == false)
-                            {
-                                // update viewmodel
-                                foreach (var protocolServer in groupedServer)
-                                {
-                                    var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                                    // invoke main list ui change & invoke launcher ui change
-                                    if (old != null)
-                                        old.Server = protocolServer;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            failMsgs.Add(tmp.ErrorInfo);
-                        }
+                        failMessages.Add($"Can not update on DataSource({ source?.DataSourceName ?? "null"}) since it is not writable.");
+                        continue;
+                    }
+                    needReload |= source.NeedRead();
+                    var tmp = source.Database_UpdateServer(groupedServer);
+                    isAnySuccess = tmp.IsSuccess;
+                    if (!tmp.IsSuccess)
+                    {
+                        failMessages.Add(tmp.ErrorInfo);
+                        continue;
+                    }
+
+                    if (needReload) continue;
+
+                    // update viewmodel
+                    foreach (var protocolServer in groupedServer)
+                    {
+                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
+                        // invoke main list ui change & invoke launcher ui change
+                        if (old != null)
+                            old.Server = protocolServer;
                     }
                 }
 
@@ -331,14 +329,7 @@ namespace _1RM.Model
                     }
                 }
 
-                if (failMsgs.Any())
-                {
-                    return Result.Fail(string.Join("\r\n", failMsgs));
-                }
-                else
-                {
-                    return Result.Success();
-                }
+                return failMessages.Any() ? Result.Fail(string.Join("\r\n", failMessages)) : Result.Success();
             }
             finally
             {
@@ -346,85 +337,64 @@ namespace _1RM.Model
             }
         }
 
+
+        private void RemoveOneServerFromUI(ProtocolBase server)
+        {
+            var old = GetItemById(server.DataSource!.DataSourceName, server.Id);
+            if (old != null)
+            {
+                SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
+                VmItemList.Remove(old);
+                IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
+                Execute.OnUIThread(() =>
+                {
+                    if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
+                        IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
+                });
+            }
+        }
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
             StopTick();
             try
             {
                 var groupedServers = protocolServers.GroupBy(x => x.DataSource);
-                bool needReload = false;
                 bool isAnySuccess = false;
-                var failMsgs = new List<string>();
+                var failMessages = new List<string>();
                 foreach (var groupedServer in groupedServers)
                 {
                     var source = groupedServer.First().DataSource;
-                    if (source?.IsWritable == true)
+                    if (source?.IsWritable != true)
                     {
-                        needReload |= source.NeedRead();
-                        var tmp = source.Database_DeleteServer(groupedServer.Select(x => x.Id));
-                        SimpleLogHelper.Debug($"DeleteServer: {string.Join(", ", groupedServer.Select(x => x.Id))}, needReload = {needReload}, tmp.IsSuccess = {tmp.IsSuccess}");
-                        if (tmp.IsSuccess)
-                        {
-                            isAnySuccess = true;
-                            if (needReload == false)
-                            {
-                                // update viewmodel
-                                if (protocolServers.Count() == 1)
-                                {
-                                    foreach (var protocolServer in groupedServer)
-                                    {
-                                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                                        if (old != null)
-                                        {
-                                            SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
-                                            VmItemList.Remove(old);
-                                            IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
-                                            Execute.OnUIThread(() =>
-                                            {
-                                                if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
-                                                    IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
-                                            });
-                                        }
-                                        else
-                                        {
-                                            SimpleLogHelper.Warning($"Remote server {protocolServer.DisplayName} of `{source.DataSourceName}` removed from GlobalData but not found in VmItemList");
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    needReload = true;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            failMsgs.Add(tmp.ErrorInfo);
-                        }
+                        failMessages.Add($"Can not update on DataSource({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        continue;
+                    }
+
+                    var tmp = source.Database_DeleteServer(groupedServer.Select(x => x.Id));
+                    SimpleLogHelper.DebugInfo($"DeleteServer: {string.Join(", ", groupedServer.Select(x => x.Id))}, tmp.IsSuccess = {tmp.IsSuccess}");
+                    isAnySuccess = tmp.IsSuccess;
+                    if (!tmp.IsSuccess)
+                    {
+                        failMessages.Add(tmp.ErrorInfo);
                     }
                 }
 
+                // update viewmodel
                 if (isAnySuccess)
                 {
-                    if (needReload)
+                    if (protocolServers.Count() == 1)
                     {
-                        ReloadServerList(needReload);
-                    }
-                    else
-                    {
+                        RemoveOneServerFromUI(protocolServers.First());
                         ReadTagsFromServers();
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
+                    else
+                    {
+                        ReloadServerList(true);
+                    }
                 }
 
-                if (failMsgs.Any())
-                {
-                    return Result.Fail(string.Join("\r\n", failMsgs));
-                }
-                else
-                {
-                    return Result.Success();
-                }
+                return failMessages.Any() ? Result.Fail(string.Join("\r\n", failMessages)) : Result.Success();
             }
             catch (Exception e)
             {

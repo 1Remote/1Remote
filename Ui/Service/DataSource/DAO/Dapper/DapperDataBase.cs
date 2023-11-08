@@ -402,7 +402,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                     bool ret = true;
                     if (value == null)
                     {
-                        ret = _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, }) > 0;
+                        _dbConnection?.Execute(SqlDeleteConfig, new { Key = key, });
                     }
                     else
                     {

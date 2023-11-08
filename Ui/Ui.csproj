@@ -89,7 +89,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE;</DefineConstants>
-		<Optimize>True</Optimize>
+		<Optimize>False</Optimize>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
