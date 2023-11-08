@@ -553,7 +553,11 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true) return;
+                    if (source?.IsWritable != true)
+                    {
+                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        return;
+                    }
                     if (this.View is ServerListPageView view)
                         view.CbPopForInExport.IsChecked = false;
                     var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
@@ -565,16 +569,12 @@ namespace _1RM.View.ServerList
                         try
                         {
                             var list = new List<ProtocolBase>();
-                            var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8)) ?? new List<object>();
-                            foreach (var json in jobj)
+                            var deserializeObject = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8)) ?? new List<object>();
+                            foreach (var server in deserializeObject.Select(json => ItemCreateHelper.CreateFromJsonString(json.ToString() ?? "")).Where(server => server != null))
                             {
-                                var server = ItemCreateHelper.CreateFromJsonString(json.ToString()!);
-                                if (server != null)
-                                {
-                                    server.Id = string.Empty;
-                                    server.DecryptToConnectLevel();
-                                    list.Add(server);
-                                }
+                                server.Id = string.Empty;
+                                server.DecryptToConnectLevel();
+                                list.Add(server);
                             }
 
                             source.Database_InsertServer(list);
@@ -606,7 +606,11 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true) return;
+                    if (source?.IsWritable != true)
+                    {
+                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        return;
+                    }
                     var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
                     MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
@@ -647,41 +651,43 @@ namespace _1RM.View.ServerList
                 {
                     // select save to which source
                     var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true) return;
+                    if (source?.IsWritable != true)
+                    {
+                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        return;
+                    }
                     var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
                     if (path == null) return;
 
                     try
                     {
                         var config = RdpConfig.FromRdpFile(path);
-                        if (config != null)
+                        if (config == null) return;
+                        var rdp = RDP.FromRdpConfig(config, ServerIcons.Instance.IconsBase64);
+
+                        try
                         {
-                            var rdp = RDP.FromRdpConfig(config, ServerIcons.Instance.IconsBase64);
+                            // try read user name & password from CredentialManagement.
+                            using var cred = _1RM.Utils.WindowsApi.Credential.Credential.Load("TERMSRV/" + rdp.Address);
+                            if (cred != null)
+                            {
+                                rdp.UserName = cred.Username;
+                                rdp.Password = cred.Password;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
 
-                            try
-                            {
-                                // try read user name & password from CredentialManagement.
-                                using var cred = _1RM.Utils.WindowsApi.Credential.Credential.Load("TERMSRV/" + rdp.Address);
-                                if (cred != null)
-                                {
-                                    rdp.UserName = cred.Username;
-                                    rdp.Password = cred.Password;
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-
-                            var ret = AppData.AddServer(rdp, source);
-                            if (ret.IsSuccess)
-                            {
-                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", "1"));
-                            }
-                            else
-                            {
-                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
-                            }
+                        var ret = AppData.AddServer(rdp, source);
+                        if (ret.IsSuccess)
+                        {
+                            MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", "1"));
+                        }
+                        else
+                        {
+                            MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
                         }
                     }
                     catch (Exception e)
@@ -704,7 +710,11 @@ namespace _1RM.View.ServerList
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
                     var ss = VmServerList.Where(x => x.IsSelected == true && x.IsEditable).ToList();
-                    if (!(ss?.Count > 0)) return;
+                    if (ss.Count == 0)
+                    {
+                        MessageBoxHelper.ErrorAlert("Can not delete since they are all not writable.");
+                        return;
+                    }
                     if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
                     {
                         MaskLayerController.ShowProcessingRing();
@@ -733,10 +743,10 @@ namespace _1RM.View.ServerList
             {
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                 {
-                    var vms = VmServerList.Where(x => x.IsSelected && x.IsEditable);
+                    var vms = VmServerList.Where(x => x.IsSelected).Select(x => x.Server).ToArray();
                     if (vms.Any() == true)
                     {
-                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms.Select(x => x.Server), true);
+                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(vms, true);
                     }
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }

@@ -1,5 +1,6 @@
 ﻿using _1RM.Model.Protocol.Base;
 using _1RM.View.Editor.Forms.AlternativeCredential;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace _1RM.View.Editor.Forms
 {
@@ -11,6 +12,15 @@ namespace _1RM.View.Editor.Forms
         {
             New = protocolBase;
             AlternativeCredentialListViewModel = new AlternativeCredentialListViewModel(protocolBase);
+        }
+
+
+
+        public override bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(New[nameof(New.Address)]))
+                return false;
+            return base.CanSave();
         }
     }
 }
