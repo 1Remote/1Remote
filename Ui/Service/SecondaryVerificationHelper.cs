@@ -17,10 +17,11 @@ namespace _1RM.Service
     {
         private static bool? _isEnabled = null;
         private static DateTime _lastVerifyTime = DateTime.MinValue;
+        private const string _key = "SecondaryVerificationEnabled";
 
         public static async void Init()
         {
-            var ret = await GetEnabled("SecondaryVerificationDisabled");
+            var ret = await GetEnabled(_key);
             if (ret == null)
             {
                 SetEnabled(false);
@@ -30,7 +31,7 @@ namespace _1RM.Service
 
         public static async void SetEnabled(bool enable)
         {
-            var success = await SetEnabled(enable, "SecondaryVerificationDisabled");
+            var success = await SetEnabled(enable, _key);
             if (success)
                 _isEnabled = enable;
         }
@@ -38,11 +39,18 @@ namespace _1RM.Service
 
         public static async Task<bool> GetEnabled()
         {
-            if (_isEnabled == null)
+            if (_isEnabled != null) return (bool)_isEnabled;
+
+            var ret = await GetEnabled(_key);
+            if (ret == null)
             {
-                var ret = await GetEnabled("SecondaryVerificationDisabled");
-                _isEnabled = ret != false;
+                // TODO 修正拼写错误 20231109 
+                const string keyOld = "SecondaryVerificationDisabled";
+                ret = await GetEnabled(keyOld);
+                if (ret != null)
+                    await SetEnabled((bool)ret, _key);
             }
+            _isEnabled = ret != false;
             return (bool)_isEnabled;
         }
 
@@ -56,23 +64,17 @@ namespace _1RM.Service
             //    return true;
 
             bool? result;
-            bool widowsHelloIsOk = WindowsHelloHelper.IsOsSupported && await WindowsHelloHelper.HelloIsAvailable() == true;
+            bool widowsHelloIsOk = await WindowsHelloHelper.HelloIsAvailable() == true;
             int counter = 0;
             MaskLayerController.ShowProcessingRing(IoC.Translate("Please complete the windows credentials verification"));
+            string title = Assert.APP_DISPLAY_NAME + ": " + IoC.Translate("Enter your credentials");
+            string message = IoC.Translate("Before proceeding with sensitive operations, we need to make sure it is you.");
             while (true)
             {
-
                 if (!widowsHelloIsOk)
                 {
                     try
                     {
-
-                        string title = IoC.Translate("Enter your credentials");
-                        string message = "";
-                        if (counter > 0)
-                        {
-                            message = IoC.Translate("Verification failed. Please try again.");
-                        }
                         var ret = CredentialPrompt.LogonUserWithWindowsCredential(title, message,
                             null, // new WindowInteropHelper(this).Handle
                             null, null,
@@ -100,14 +102,16 @@ namespace _1RM.Service
                 }
                 else
                 {
-                    result = await WindowsHelloHelper.HelloVerifyAsync();
+                    result = await WindowsHelloHelper.HelloVerifyAsync($"{title}\r\n{message}");
                 }
 
                 if (result != false)
                     break;
                 if (returnUntilOkOrCancel == false)
                     break;
+
                 counter++;
+                message = IoC.Translate("Verification failed. Please try again.");
             }
 
             MaskLayerController.HideMask();

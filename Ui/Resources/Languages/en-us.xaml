@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">Failed</s:String>
     <s:String x:Key="Please complete the windows credentials verification"> Please complete the windows credentials verification</s:String>
     <s:String x:Key="Enter your credentials">Enter your credentials</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">Before proceeding with sensitive operations, we need to make sure it is you.</s:String>
     <s:String x:Key="Verification failed. Please try again.">Verification failed. Please try again.</s:String>
     <s:String x:Key="Security">Security</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">Windows credentials verification is required to view passwords</s:String>

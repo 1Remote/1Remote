@@ -59,20 +59,18 @@ namespace _1RM.View.Editor.Forms
         {
             _completionWindow?.Close();
             var enumerable = completions as string[] ?? completions.ToArray();
-            if (enumerable?.Any() == true)
+            if (enumerable?.Any() != true) return;
+            // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
+            _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea);
+            var completionData = _completionWindow.CompletionList.CompletionData;
+            foreach (var str in enumerable)
             {
-                // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
-                _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea);
-                var completionData = _completionWindow.CompletionList.CompletionData;
-                foreach (var str in enumerable)
-                {
-                    completionData.Add(new RdpFileSettingCompletionData(str));
-                }
-                _completionWindow.Show();
-                if (enumerable.Count() == 1)
-                    _completionWindow.CompletionList.SelectItem(enumerable.First());
-                _completionWindow.Closed += (o, args) => _completionWindow = null;
+                completionData.Add(new RdpFileSettingCompletionData(str));
             }
+            _completionWindow.Show();
+            if (enumerable.Count() == 1)
+                _completionWindow.CompletionList.SelectItem(enumerable.First());
+            _completionWindow.Closed += (o, args) => _completionWindow = null;
         }
 
 
@@ -100,33 +98,32 @@ namespace _1RM.View.Editor.Forms
         }
         private void ButtonPreviewRdpFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (DataContext is RDP rdp)
-            {
-                var tmp = Path.GetTempPath();
-                var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
-                var invalid = new string(Path.GetInvalidFileNameChars()) +
-                              new string(Path.GetInvalidPathChars());
-                rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
-                var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+            if (DataContext is not RdpFormViewModel viewModel) return;
+            var rdp = viewModel.New;
+            var tmp = Path.GetTempPath();
+            var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
+            var invalid = new string(Path.GetInvalidFileNameChars()) +
+                          new string(Path.GetInvalidPathChars());
+            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
-                // write a .rdp file for mstsc.exe
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
-                var p = new Process
+            // write a .rdp file for mstsc.exe
+            File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+            var p = new Process
+            {
+                StartInfo =
                 {
-                    StartInfo =
-                        {
-                            FileName = "cmd.exe",
-                            UseShellExecute = false,
-                            RedirectStandardInput = true,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            CreateNoWindow = true
-                        }
-                };
-                p.Start();
-                p.StandardInput.WriteLine($"notepad " + rdpFile);
-                p.StandardInput.WriteLine("exit");
-            }
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+            p.Start();
+            p.StandardInput.WriteLine($"notepad " + rdpFile);
+            p.StandardInput.WriteLine("exit");
         }
     }
 

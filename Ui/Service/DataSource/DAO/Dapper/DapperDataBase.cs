@@ -334,7 +334,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public override Result DeleteServer(IEnumerable<string> ids)
         {
-            string info = Translate("We can not delete from database:");
+            var info = Translate("We can not delete from database:");
             lock (this)
             {
                 var result = OpenConnection(info);

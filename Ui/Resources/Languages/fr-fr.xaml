@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">Échoué</s:String>
     <s:String x:Key="Please complete the windows credentials verification">Veuillez terminer la vérification des informations d'identification Windows</s:String>
     <s:String x:Key="Enter your credentials">Entrez vos identifiants</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">Avant de procéder à des opérations sensibles, nous devons nous assurer qu’il s’agit bien de vous.</s:String>
     <s:String x:Key="Verification failed. Please try again.">Échec de la vérification. Veuillez réessayer.</s:String>
     <s:String x:Key="Security">Sécurité</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">La vérification des informations d'identification Windows est requise pour afficher les mots de passe</s:String>

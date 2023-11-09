@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">Nepodařilo se</s:String>
     <s:String x:Key="Please complete the windows credentials verification">Dokončete prosím ověření přihlašovacích údajů systému Windows</s:String>
     <s:String x:Key="Enter your credentials">Zadejte své přihlašovací údaje</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">Než přistoupíme k citlivým operacím, musíme se ujistit, že jste to vy.</s:String>
     <s:String x:Key="Verification failed. Please try again.">Ověření se nezdařilo. Prosím zkuste to znovu.</s:String>
     <s:String x:Key="Security">Security</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">K zobrazení hesel je vyžadováno ověření přihlašovacích údajů systému Windows</s:String>

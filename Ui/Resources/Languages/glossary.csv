@@ -316,6 +316,7 @@ Success;Success;成功;;;;;;成功;;
 Failed;Failed;失败;;;;;;失敗;;
 Please complete the windows credentials verification; Please complete the windows credentials verification;请完成Windows凭据验证;;;;;;;;
 Enter your credentials;Enter your credentials;输入凭据;;;;;;;;
+Before proceeding with sensitive operations, we need to make sure it is you.;Before proceeding with sensitive operations, we need to make sure it is you.;在进行敏感操作之前，我们需要确认是您本人。;;;;;;;;
 Verification failed. Please try again.;Verification failed. Please try again.;验证失败，请重试。;;;;;;;;
 Security;Security;安全设置;Security;;;;;;;
 Windows credentials verification is required to view passwords;Windows credentials verification is required to view passwords;查看密码前要求验证Windows凭据;;;;;;;;

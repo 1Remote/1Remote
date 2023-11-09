@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">Fallou</s:String>
     <s:String x:Key="Please complete the windows credentials verification">Completa a verificación das credenciais de Windows</s:String>
     <s:String x:Key="Enter your credentials">Introduza as súas credenciais</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">Antes de continuar coas operacións sensibles, debemos asegurarnos de que es ti.</s:String>
     <s:String x:Key="Verification failed. Please try again.">Produciuse un erro na verificación. Por favor intentao de novo.</s:String>
     <s:String x:Key="Security">Seguridade</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">É necesaria a verificación das credenciais de Windows para ver os contrasinais</s:String>
