@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">失敗</s:String>
     <s:String x:Key="Please complete the windows credentials verification">請完成 Windows 憑據驗證</s:String>
     <s:String x:Key="Enter your credentials">輸入您的憑據</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">在進行敏感操作之前，我們需要確保是您本人。</s:String>
     <s:String x:Key="Verification failed. Please try again.">驗證失敗。請再試一次。</s:String>
     <s:String x:Key="Security">安全</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">查看密碼需要 Windows 憑據驗證</s:String>

@@ -290,6 +290,7 @@
     <s:String x:Key="Failed">失敗した</s:String>
     <s:String x:Key="Please complete the windows credentials verification">Windows 資格情報の検証を完了してください</s:String>
     <s:String x:Key="Enter your credentials">資格情報を入力してください</s:String>
+    <s:String x:Key="Before proceeding with sensitive operations, we need to make sure it is you.">機密性の高い操作を続行する前に、それがあなたであることを確認する必要があります。</s:String>
     <s:String x:Key="Verification failed. Please try again.">検証に失敗しました。もう一度試してください。</s:String>
     <s:String x:Key="Security">安全</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">パスワードを表示するには Windows 資格情報の検証が必要です</s:String>
