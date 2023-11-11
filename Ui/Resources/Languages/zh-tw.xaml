@@ -116,6 +116,7 @@
     <s:String x:Key="import_from_json">從 JSON 檔案</s:String>
     <s:String x:Key="import_from_mremoteng_csv">導入 mRemoteNG csv</s:String>
     <s:String x:Key="import_from_rdp_file">導入*.rdp</s:String>
+    <s:String x:Key="import_from_sqlite_db">導入 PRemoteM 資料庫</s:String>
     <s:String x:Key="import_done_0_items_added">已匯入 {0} 筆項目。</s:String>
     <s:String x:Key="import_failure_with_data_format_error">沒有項目被匯入，可能是檔案格式有問題！</s:String>
     <s:String x:Key="server_editor_different_options">&lt;不同的值&gt;</s:String>

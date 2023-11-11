@@ -221,9 +221,8 @@ namespace _1RM.Service
         public string Translate(string key, params object[] parameters)
         {
             var format = Translate(key);
-            if (format == null)
+            if (string.IsNullOrEmpty(format))
                 return "!" + key + (parameters.Length > 0 ? ":" + string.Join(",", parameters) : "") + "!";
-
             return string.Format(format, parameters);
         }
     }

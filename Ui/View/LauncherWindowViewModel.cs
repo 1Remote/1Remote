@@ -78,7 +78,7 @@ namespace _1RM.View
 
         public LauncherWindowViewModel()
         {
-            GridNoteHeight = MAX_WINDOW_HEIGHT + 20;
+            GridNoteHeight = MAX_WINDOW_HEIGHT;
         }
 
         protected override void OnViewLoaded()

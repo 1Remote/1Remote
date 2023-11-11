@@ -115,6 +115,7 @@ import_server_dialog_title;Select a file;选择导入文件;Vyberte soubor;Datei
 import_from_json;import json;导入 json;import json;import json;import json;import json;import json;從 JSON 檔案;dende json;Importuj json
 import_from_mremoteng_csv;import mRemoteNG csv;导入 mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;import mRemoteNG csv;;;Importuj csv z  mRemoteNG
 import_from_rdp_file;import *.rdp;导入 .rdp;import *.rdp;import *.rdp;import *.rdp;import *.rdp;import *.rdp;;;Importuj *.rdp
+import_from_sqlite_db;import PRemoteM db;导入 PRemoteM 数据库;;;;;;;;
 import_done_0_items_added;Imported successfully, {0} item(s) added.;已导入{0}条记录.;Úspěšně naimportováno, {0} položek přidáno.;Erfolgreich importiert, {0} Element hinzugefügt.;Importé avec succès, {0} élément(s) ajouté(s).;Importado com sucesso, {0} item(ns) adicionado(s).;;已匯入 {0} 筆項目。;Importación completada, {0} obxectos engadidos.;Import zakończony pomyślnie, {0} wpis/ów dodane.
 import_failure_with_data_format_error;Error data format!;导入0条，输入的数据文件格式有误!;Chyba ve formátu dat!;Falsches Datenformat!;Erreur dans le format des données !;Erro no formato dos dados!;;沒有項目被匯入，可能是檔案格式有問題！;Error no formato do dato!;Błąd formatu pliku!
 server_editor_different_options;<different options>;<不同的值>;<různé předvolby>;;<Options différentes>;<opções diferentes>;;<不同的值>;<differentes opcións>;<inne opcje>

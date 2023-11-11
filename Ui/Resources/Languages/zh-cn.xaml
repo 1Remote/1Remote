@@ -116,6 +116,7 @@
     <s:String x:Key="import_from_json">导入 json</s:String>
     <s:String x:Key="import_from_mremoteng_csv">导入 mRemoteNG csv</s:String>
     <s:String x:Key="import_from_rdp_file">导入 .rdp</s:String>
+    <s:String x:Key="import_from_sqlite_db">导入 PRemoteM 数据库</s:String>
     <s:String x:Key="import_done_0_items_added">已导入{0}条记录.</s:String>
     <s:String x:Key="import_failure_with_data_format_error">导入0条，输入的数据文件格式有误!</s:String>
     <s:String x:Key="server_editor_different_options">&lt;不同的值&gt;</s:String>

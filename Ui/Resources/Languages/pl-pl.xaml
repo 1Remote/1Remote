@@ -116,6 +116,7 @@
     <s:String x:Key="import_from_json">Importuj json</s:String>
     <s:String x:Key="import_from_mremoteng_csv">Importuj csv z  mRemoteNG</s:String>
     <s:String x:Key="import_from_rdp_file">Importuj *.rdp</s:String>
+    <s:String x:Key="import_from_sqlite_db">importuj bazę danych PRemoteM</s:String>
     <s:String x:Key="import_done_0_items_added">Import zakończony pomyślnie, {0} wpis/ów dodane.</s:String>
     <s:String x:Key="import_failure_with_data_format_error">Błąd formatu pliku!</s:String>
     <s:String x:Key="server_editor_different_options">&lt;inne opcje&gt;</s:String>
