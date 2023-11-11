@@ -55,17 +55,13 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 return OpenConnection();
             }
         }
-
-        private static string Translate(string key)
-        {
-            return IoC.TryGet<LanguageService>()?.Translate(key) ?? key;
-        }
+        
 
         private Exception? _lastException = null;
         protected virtual Result OpenConnection(string actionInfo = "")
         {
             if (string.IsNullOrWhiteSpace(actionInfo))
-                actionInfo = Translate("We can not connect database:");
+                actionInfo = IoC.Translate("We can not connect database:");
 
             if (string.IsNullOrWhiteSpace(_connectionString))
             {
@@ -147,7 +143,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
         public override Result InitTables()
         {
-            string info = Translate("We can not create tables on database:");
+            string info = IoC.Translate("We can not create tables on database:");
             var result = OpenConnection(info);
             if (!result.IsSuccess) return result;
 
@@ -186,9 +182,27 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             return Result.Success();
         }
 
+        public override Result TableExists(string tableName)
+        {
+            string info = IoC.Translate("We can not check table exists on database:");
+            var result = OpenConnection(info);
+            if (!result.IsSuccess) return result;
+            try
+            {
+                var ret = _dbConnection.QueryFirstOrDefault<int>($"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=@tableName", new { tableName, });
+                if (ret > 0)
+                    return Result.Success();
+                return Result.Fail(info, DatabaseName, $"Table {tableName} not exists!");
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(info, DatabaseName, e.Message);
+            }
+        }
+
         public override ResultSelects GetServers()
         {
-            string info = Translate("We can not select from database:");
+            string info = IoC.Translate("We can not select from database:");
 
             lock (this)
             {
@@ -212,13 +226,12 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 (`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
 VALUES
 (@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
-
         /// <summary>
         /// 插入成功后会更新 protocolBase.Id
         /// </summary>
         public override Result AddServer(ref ProtocolBase protocolBase)
         {
-            string info = Translate("We can not insert into database:");
+            string info = IoC.Translate("We can not insert into database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -246,7 +259,7 @@ VALUES
         /// </summary>
         public override Result AddServer(IEnumerable<ProtocolBase> protocolBases)
         {
-            string info = Translate("We can not insert into database:");
+            string info = IoC.Translate("We can not insert into database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -279,7 +292,7 @@ VALUES
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public override Result UpdateServer(ProtocolBase server)
         {
-            string info = Translate("We can not update on database:");
+            string info = IoC.Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -306,7 +319,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public override Result UpdateServer(IEnumerable<ProtocolBase> servers)
         {
-            string info = Translate("We can not update on database:");
+            string info = IoC.Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -334,7 +347,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public override Result DeleteServer(IEnumerable<string> ids)
         {
-            var info = Translate("We can not delete from database:");
+            var info = IoC.Translate("We can not delete from database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -360,7 +373,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         protected ResultString GetConfigPrivate(string key)
         {
-            string info = Translate("We can not read from database:");
+            string info = IoC.Translate("We can not read from database:");
             lock (this)
             {
                 var result = OpenConnection(info);
@@ -389,7 +402,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         protected Result SetConfigPrivate(string key, string? value)
         {
-            string info = Translate("We can not update on database:");
+            string info = IoC.Translate("We can not update on database:");
             lock (this)
             {
                 var result = OpenConnection(info);

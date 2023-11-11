@@ -68,7 +68,7 @@ namespace _1RM.View
         }
 
         public string CurrentVersion => AppVersion.Version;
-        public string CurrentVersionDate => AppVersion.BuildDate;
+        public string CurrentVersionDate => AppVersion.BuildDate.IndexOf("+", StringComparison.Ordinal) > 0 ? AppVersion.BuildDate.Substring(0, AppVersion.BuildDate.LastIndexOf("+", StringComparison.Ordinal)) : AppVersion.BuildDate;
 
 
         private string _newVersion = "";

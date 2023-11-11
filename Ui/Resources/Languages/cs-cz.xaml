@@ -116,6 +116,7 @@
     <s:String x:Key="import_from_json">import json</s:String>
     <s:String x:Key="import_from_mremoteng_csv">import mRemoteNG csv</s:String>
     <s:String x:Key="import_from_rdp_file">import *.rdp</s:String>
+    <s:String x:Key="import_from_sqlite_db">import PRemoteM db</s:String>
     <s:String x:Key="import_done_0_items_added">Úspěšně naimportováno, {0} položek přidáno.</s:String>
     <s:String x:Key="import_failure_with_data_format_error">Chyba ve formátu dat!</s:String>
     <s:String x:Key="server_editor_different_options">&lt;různé předvolby&gt;</s:String>

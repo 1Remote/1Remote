@@ -16,10 +16,12 @@ using _1RM.Resources.Icons;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
+using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
 using _1RM.View.Settings.Launcher;
@@ -522,6 +524,7 @@ namespace _1RM.View.ServerList
                                     foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                                     {
                                         var serverBase = (ProtocolBase)vs.Server.Clone();
+                                        serverBase.DecryptToConnectLevel();
                                         list.Add(serverBase);
                                     }
 
@@ -543,6 +546,22 @@ namespace _1RM.View.ServerList
         }
 
 
+        private Tuple<DataSourceBase?, string?> GetImportParams(string filter)
+        {
+            // select save to which source
+            var source = DataSourceSelectorViewModel.SelectDataSource();
+            if (source?.IsWritable != true)
+            {
+                MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                return new Tuple<DataSourceBase?, string?>(null, null);
+            }
+            if (this.View is ServerListPageView view)
+                view.CbPopForInExport.IsChecked = false;
+            var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: filter);
+            return path == null ? new Tuple<DataSourceBase?, string?>(null, null) : new Tuple<DataSourceBase?, string?>(source, path);
+        }
+
+
 
         private RelayCommand? _cmdImportFromJson;
         public RelayCommand CmdImportFromJson
@@ -551,17 +570,8 @@ namespace _1RM.View.ServerList
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
-                    // select save to which source
-                    var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true)
-                    {
-                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
-                        return;
-                    }
-                    if (this.View is ServerListPageView view)
-                        view.CbPopForInExport.IsChecked = false;
-                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "json|*.json|*.*|*.*");
-                    if (path == null) return;
+                    var (source, path) = GetImportParams("json|*.json|*.*|*.*");
+                    if (source == null || path == null) return;
 
                     MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
@@ -597,6 +607,94 @@ namespace _1RM.View.ServerList
 
 
 
+        private RelayCommand? _cmdImportFromDatabase;
+        public RelayCommand CmdImportFromDatabase
+        {
+            get
+            {
+                return _cmdImportFromDatabase ??= new RelayCommand((o) =>
+                {
+                    var (source, dbPath) = GetImportParams("db|*.db");
+                    if (source == null || dbPath == null) return;
+
+                    var dataBase = new DapperDatabaseFree("PRemoteM", DatabaseType.Sqlite);
+                    var result = dataBase.OpenNewConnection(DbExtensions.GetSqliteConnectionString(dbPath));
+                    if (result.IsSuccess == false)
+                    {
+                        MessageBoxHelper.ErrorAlert(result.ErrorInfo);
+                        return;
+                    }
+
+
+
+                    MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            var list = new List<ProtocolBase>();
+                            // PRemoteM db
+                            if (dataBase.TableExists("Config").IsSuccess && dataBase.TableExists("Server").IsSuccess)
+                            {
+                                var ss = PRemoteMTransferHelper.GetServers(dataBase);
+                                if (ss != null)
+                                {
+                                    list.AddRange(ss);
+                                }
+                            }
+
+                            // 1Remote db
+                            if (dataBase.TableExists("Configs").IsSuccess && dataBase.TableExists("Servers").IsSuccess)
+                            {
+                                var ds = new SqliteSource("1Remote");
+                                var ss = ds.GetServers(true).Select(x => x.Server).ToList();
+                                if (ss.Count > 0)
+                                {
+                                    foreach (var s in ss)
+                                    {
+                                        s.DecryptToConnectLevel();
+                                        list.Add(s);
+                                    }
+                                }
+                            }
+
+                            if(list.Count == 0)
+                                return;
+
+                            foreach (var server in list)
+                            {
+                                server.Id = string.Empty;
+                            }
+
+                            var ret = source.Database_InsertServer(list);
+                            if (ret.IsSuccess)
+                            {
+                                AppData.ReloadServerList(true);
+                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
+                            }
+                            else
+                            {
+                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Warning(e);
+                            MessageBoxHelper.ErrorAlert(IoC.Translate("import_failure_with_data_format_error"));
+                        }
+                        finally
+                        {
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                        }
+                    });
+                });
+            }
+        }
+
+
+
+
+
         private RelayCommand? _cmdImportFromCsv;
         public RelayCommand CmdImportFromCsv
         {
@@ -604,15 +702,9 @@ namespace _1RM.View.ServerList
             {
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
-                    // select save to which source
-                    var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true)
-                    {
-                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
-                        return;
-                    }
-                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "csv|*.csv");
-                    if (path == null) return;
+                    var (source, path) = GetImportParams("csv|*.csv");
+                    if (source == null || path == null) return;
+
                     MaskLayerController.ShowProcessingRing(IoC.Translate("system_options_data_security_info_data_processing"), IoC.Get<MainWindowViewModel>());
                     Task.Factory.StartNew(() =>
                     {
@@ -649,15 +741,8 @@ namespace _1RM.View.ServerList
             {
                 return _cmdImportFromRdp ??= new RelayCommand((o) =>
                 {
-                    // select save to which source
-                    var source = DataSourceSelectorViewModel.SelectDataSource();
-                    if (source?.IsWritable != true)
-                    {
-                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
-                        return;
-                    }
-                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: "rdp|*.rdp");
-                    if (path == null) return;
+                    var (source, path) = GetImportParams("rdp|*.rdp");
+                    if (source == null || path == null) return;
 
                     try
                     {

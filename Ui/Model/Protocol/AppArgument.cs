@@ -156,18 +156,11 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         get => _selections;
         set
         {
-            var n = new Dictionary<string, string>();
+            var selections = new Dictionary<string, string>();
             var auto = value.Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToList();
-            if (IsNullable)
+            if (Type == AppArgumentType.Selection && IsNullable)
             {
-                n.Add("", "");
-            }
-            if (Type == AppArgumentType.Selection)
-            {
-                if (auto.Any() == false)
-                {
-                    n.Add("", "null");
-                }
+                selections.Add("", "");
             }
             if (auto.Any())
             {
@@ -178,13 +171,14 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
                     {
                         v = keyValuePair.Key.Trim();
                     }
-                    n.Add(keyValuePair.Key.Trim(), v);
+                    selections.Add(keyValuePair.Key.Trim(), v);
                 }
-                //if (n.All(x => x.Key != Value))
-                //    Value = n.First().Value;
             }
-            _selections = n;
-            Value = n.LastOrDefault().Key ?? "";
+            _selections = selections;
+            if (Type == AppArgumentType.Selection)
+            {
+                Value = selections.LastOrDefault().Key ?? "";
+            }
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(SelectionKeys));
         }

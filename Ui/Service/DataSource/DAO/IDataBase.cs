@@ -144,6 +144,8 @@ namespace _1RM.Service.DataSource.DAO
         /// </summary>
         public abstract Result InitTables();
 
+        public abstract Result TableExists(string tableName);
+
         //public abstract ResultSelect GetServer(int id);
 
         public abstract ResultSelects GetServers();
