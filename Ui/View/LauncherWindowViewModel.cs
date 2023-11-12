@@ -35,9 +35,9 @@ namespace _1RM.View
             set => SetAndNotifyIfChanged(ref _serverSelectionsViewVisibility, value);
         }
 
-        public ServerSelectionsViewModel ServerSelectionsViewModel { get; } = IoC.Get<ServerSelectionsViewModel>();
-        public QuickConnectionViewModel QuickConnectionViewModel { get; } = IoC.Get<QuickConnectionViewModel>();
-        private ConfigurationService _configurationService => IoC.Get<ConfigurationService>();
+        public ServerSelectionsViewModel ServerSelectionsViewModel { get; }
+        public QuickConnectionViewModel QuickConnectionViewModel { get; }
+        private readonly ConfigurationService _configurationService;
 
         #region properties
 
@@ -76,19 +76,20 @@ namespace _1RM.View
 
         #endregion
 
-        public LauncherWindowViewModel()
+        public LauncherWindowViewModel(ServerSelectionsViewModel serverSelectionsViewModel, QuickConnectionViewModel quickConnectionViewModel, ConfigurationService configurationService)
         {
+            ServerSelectionsViewModel = serverSelectionsViewModel;
+            QuickConnectionViewModel = quickConnectionViewModel;
+            _configurationService = configurationService;
             GridNoteHeight = MAX_WINDOW_HEIGHT;
         }
 
         protected override void OnViewLoaded()
         {
             HideMe();
-            if (this.View is LauncherWindowView { IsClosing: false } window)
-            {
-                ServerSelectionsViewVisibility = Visibility.Visible;
-                ReSetWindowHeight();
-            }
+            if (this.View is not LauncherWindowView {IsClosing: false} window) return;
+            ServerSelectionsViewVisibility = Visibility.Visible;
+            ReSetWindowHeight();
         }
 
         public void SetHotKey()
@@ -112,15 +113,7 @@ namespace _1RM.View
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             Execute.OnUIThread(() =>
             {
-                double height;
-                if (ServerSelectionsViewVisibility == Visibility.Visible)
-                {
-                    height = ServerSelectionsViewModel.ReCalcGridMainHeight();
-                }
-                else
-                {
-                    height = QuickConnectionViewModel.ReCalcGridMainHeight();
-                }
+                var height = ServerSelectionsViewVisibility == Visibility.Visible ? ServerSelectionsViewModel.ReCalcGridMainHeight() : QuickConnectionViewModel.ReCalcGridMainHeight();
                 GridMainHeight = height;
             });
         }
@@ -176,56 +169,52 @@ namespace _1RM.View
 
         public void HideMe()
         {
-            if (this.View is LauncherWindowView { IsClosing: false } window)
+            if (this.View is not LauncherWindowView {IsClosing: false} window) return;
+            lock (this)
             {
-                lock (this)
+                Execute.OnUIThread(() =>
                 {
-                    Execute.OnUIThread(() =>
+                    if (window.Visibility == Visibility.Visible)
                     {
-                        if (window.Visibility == Visibility.Visible)
-                        {
-                            MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
-                        }
-                        window.Hide();
-                        QuickConnectionViewModel.Filter = "";
-                        ServerSelectionsViewModel.Show();
-                        // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
-                        System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-                    });
-                }
+                        MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
+                    }
+                    window.Hide(); 
+                    IoC.Get<QuickConnectionViewModel>().Filter = "";
+                    IoC.Get<ServerSelectionsViewModel>().Show();
+                    // After startup and initalizing our application and when closing our window and minimize the application to tray we free memory with the following line:
+                    System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+                });
             }
         }
 
 
         public bool SetHotKey(bool launcherEnabled, HotkeyModifierKeys hotKeyModifierKeys, Key hotKeyKey)
         {
-            if (this.View is LauncherWindowView window)
+            if (this.View is not LauncherWindowView window) return false;
+            GlobalHotkeyHooker.Instance.Unregist(window);
+            if (launcherEnabled == false)
+                return false;
+            var r = GlobalHotkeyHooker.Instance.Register(window, (uint)hotKeyModifierKeys, hotKeyKey, this.ShowMe);
+            switch (r.Item1)
             {
-                GlobalHotkeyHooker.Instance.Unregist(window);
-                if (launcherEnabled == false)
-                    return false;
-                var r = GlobalHotkeyHooker.Instance.Register(window, (uint)hotKeyModifierKeys, hotKeyKey, this.ShowMe);
-                switch (r.Item1)
+                case GlobalHotkeyHooker.RetCode.Success:
+                    return true;
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                 {
-                    case GlobalHotkeyHooker.RetCode.Success:
-                        return true;
-                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                        {
-                            var msg = $"{IoC.Translate("hotkey_registered_fail")}: {r.Item2}";
-                            SimpleLogHelper.Warning(msg);
-                            MessageBoxHelper.Warning(msg);
-                            break;
-                        }
-                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                        {
-                            var msg = $"{IoC.Translate("hotkey_already_registered")}: {r.Item2}";
-                            SimpleLogHelper.Warning(msg);
-                            MessageBoxHelper.Warning(msg);
-                            break;
-                        }
-                    default:
-                        throw new ArgumentOutOfRangeException(r.Item1.ToString());
+                    var msg = $"{IoC.Translate("hotkey_registered_fail")}: {r.Item2}";
+                    SimpleLogHelper.Warning(msg);
+                    MessageBoxHelper.Warning(msg);
+                    break;
                 }
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
+                {
+                    var msg = $"{IoC.Translate("hotkey_already_registered")}: {r.Item2}";
+                    SimpleLogHelper.Warning(msg);
+                    MessageBoxHelper.Warning(msg);
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(r.Item1.ToString());
             }
             return false;
         }

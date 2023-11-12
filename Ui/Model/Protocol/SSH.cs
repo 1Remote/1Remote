@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
+using System.Text.RegularExpressions;
 
 namespace _1RM.Model.Protocol
 {
@@ -77,6 +78,15 @@ namespace _1RM.Model.Protocol
         [JsonIgnore]
         public ProtocolBase ProtocolBase => this;
 
+        private static bool ValidateIPv6(string ipAddress)
+        {
+            string pattern = @"^([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}$";
+            Regex regex = new Regex(pattern);
+
+            return regex.IsMatch(ipAddress);
+        }
+
+
         public string GetExeArguments(string sessionName)
         {
             var ssh = (this.Clone() as SSH)!;
@@ -87,7 +97,8 @@ namespace _1RM.Model.Protocol
             //var template = $@" -load ""{this.GetSessionName()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
             //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
 
-            var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+            var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
+            var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
             return " " + arg;
         }
 
