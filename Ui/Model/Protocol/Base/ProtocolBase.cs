@@ -392,7 +392,10 @@ namespace _1RM.Model.Protocol.Base
             var assembly = typeof(ProtocolBase).Assembly;
             var types = assembly.GetTypes();
             // reflect remote protocols
-            var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolBase)) && !item.IsAbstract).Select(type => (ProtocolBase)Activator.CreateInstance(type)!).OrderBy(x => x.GetListOrder()).ToList();
+            var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolBase)) && !item.IsAbstract)
+                .Select(type => (ProtocolBase)Activator.CreateInstance(type)!)
+                .Where(x => string.IsNullOrEmpty(x.Protocol) == false)
+                .OrderBy(x => x.GetListOrder()).ToList();
             return protocolList;
         }
 

@@ -438,16 +438,16 @@
                         </ScrollViewer.Style>
                         <StackPanel Orientation="Horizontal">
                             <ListBox Name="ListBoxProtocols"
-                                    IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ProtocolList}"
-                                    SelectedValue="{Binding SelectedProtocol}"
-                                    Background="{StaticResource PrimaryMidBrush}"
-                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                    BorderThickness="0"
-                                    Margin="0"
-                                    Padding="0">
+                                     IsSynchronizedWithCurrentItem="True"
+                                     ItemsSource="{Binding ProtocolList}"
+                                     SelectedValue="{Binding SelectedProtocol}"
+                                     Background="{StaticResource PrimaryMidBrush}"
+                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
+                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                     BorderThickness="0"
+                                     Margin="0"
+                                     Padding="0">
                                 <ListBox.Style>
                                     <Style TargetType="ListBox">
                                         <Setter Property="Template">
@@ -462,26 +462,27 @@
                                 <ListBox.Resources>
                                     <Style TargetType="ListBoxItem">
                                         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListBoxItem">
                                                     <Border BorderThickness="0" Margin="{TemplateBinding Margin}"
-                                                        Padding="{TemplateBinding Control.Padding}"
-                                                        Background="{TemplateBinding Panel.Background}"
-                                                        Name="Bd"
-                                                        SnapsToDevicePixels="True">
-                                                        <ContentPresenter
-                                                                Content="{TemplateBinding ContentControl.Content}"
-                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                                HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"
-                                                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                                            Padding="{TemplateBinding Control.Padding}"
+                                                            Background="{TemplateBinding Panel.Background}"
+                                                            Name="Bd"
+                                                            SnapsToDevicePixels="True">
+                                                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
+                                                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                                                          ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                                                          HorizontalAlignment="Center"
+                                                                          VerticalAlignment="Center"
+                                                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
                                                             <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
@@ -490,19 +491,13 @@
                                                             </MultiTrigger.Conditions>
                                                             <MultiTrigger.Setters>
                                                                 <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentLightBrush}"></Setter>
+                                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
                                                             </MultiTrigger.Setters>
                                                         </MultiTrigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
-
-                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
                                     </Style>
                                 </ListBox.Resources>
                                 <ListBox.ItemsPanel>
@@ -513,12 +508,10 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid>
-                                            <TextBlock Margin="15 0"
-                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           Text="{Binding ProtocolDisplayName}"></TextBlock>
-                                        </Grid>
+                                        <TextBlock Margin="15 0"
+                                                   Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                   FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                   Text="{Binding ProtocolDisplayName}"></TextBlock>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ListBox>
