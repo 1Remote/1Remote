@@ -212,9 +212,10 @@ namespace _1RM.Utils.PRemoteM
 
             foreach (var server in dbServers.Where(server => server is { }))
             {
-                // DecryptToRamLevel
+                if (server == null) continue;
                 if (rsa != null)
                 {
+                    // DecryptToRamLevel
                     server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
                     if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
                     {
@@ -228,16 +229,13 @@ namespace _1RM.Utils.PRemoteM
                         var p = (ProtocolBaseWithAddressPortUserPwd)server;
                         p.UserName = DecryptOrReturnOriginalString(rsa, p.UserName);
                     }
-                }
 
-                // DecryptToConnectLevel
-                {
+                    // DecryptToConnectLevel
                     if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
                     {
                         var s = (ProtocolBaseWithAddressPortUserPwd)server;
                         s.Password = DecryptOrReturnOriginalString(rsa, s.Password);
                     }
-
                     switch (server)
                     {
                         case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):

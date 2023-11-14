@@ -23,7 +23,6 @@ namespace _1RM
 #if FOR_MICROSOFT_STORE_ONLY
             // see: https://stackoverflow.com/questions/57755792/how-can-i-handle-file-activation-from-a-wpf-app-which-is-running-as-uwp
             var aea = Windows.ApplicationModel.AppInstance.GetActivatedEventArgs();
-            argss.Add(aea?.Kind.ToString() ?? "");
             if (aea?.Kind == ActivationKind.StartupTask)
             {
                 // ref: https://blogs.windows.com/windowsdeveloper/2017/08/01/configure-app-start-log/

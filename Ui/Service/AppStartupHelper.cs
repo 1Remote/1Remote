@@ -20,8 +20,8 @@ namespace _1RM.Service
 {
     internal static class AppStartupHelper
     {
-        private const string Separator = "+++!+!+++";
-        public const string ACTIVATE = "activate";
+        private const string SEPARATOR = "+++!+!+++";
+        private const string ACTIVATE = "activate";
         public const string APP_START_MINIMIZED = "start-minimized";
 
 
@@ -49,7 +49,7 @@ namespace _1RM.Service
                 if (_args.Count == 0) _args.Add(ACTIVATE);
                 try
                 {
-                    NamedPipeHelper.NamedPipeSendMessage(string.Join(Separator, _args));
+                    NamedPipeHelper.NamedPipeSendMessage(string.Join(SEPARATOR, _args));
                     Environment.Exit(0);
                 }
                 catch
@@ -92,8 +92,8 @@ namespace _1RM.Service
             {
                 NamedPipeHelper.OnMessageReceived += message =>
                 {
-                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
-                    var strings = new HashSet<string>(message.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Distinct());
+                    SimpleLogHelper.Info("NamedPipeServerStream get: " + message);
+                    var strings = new HashSet<string>(message.Split(new[] { SEPARATOR }, StringSplitOptions.RemoveEmptyEntries).Distinct());
                     ProcessArg(strings);
                 };
             }
