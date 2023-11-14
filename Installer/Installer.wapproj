@@ -51,16 +51,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\BadgeLogo.scale-100.png" />
-    <Content Include="Images\BadgeLogo.scale-125.png" />
-    <Content Include="Images\BadgeLogo.scale-150.png" />
-    <Content Include="Images\BadgeLogo.scale-200.png" />
-    <Content Include="Images\BadgeLogo.scale-400.png" />
-    <Content Include="Images\LargeTile.scale-100.png" />
-    <Content Include="Images\LargeTile.scale-125.png" />
-    <Content Include="Images\LargeTile.scale-150.png" />
-    <Content Include="Images\LargeTile.scale-200.png" />
-    <Content Include="Images\LargeTile.scale-400.png" />
     <Content Include="Images\PackageLogo.scale-100.png" />
     <Content Include="Images\PackageLogo.scale-125.png" />
     <Content Include="Images\PackageLogo.scale-150.png" />
@@ -71,11 +61,6 @@
     <Content Include="Images\SmallTile.scale-150.png" />
     <Content Include="Images\SmallTile.scale-200.png" />
     <Content Include="Images\SmallTile.scale-400.png" />
-    <Content Include="Images\SplashScreen.scale-100.png" />
-    <Content Include="Images\SplashScreen.scale-125.png" />
-    <Content Include="Images\SplashScreen.scale-150.png" />
-    <Content Include="Images\SplashScreen.scale-200.png" />
-    <Content Include="Images\SplashScreen.scale-400.png" />
     <Content Include="Images\Square150x150Logo.scale-100.png" />
     <Content Include="Images\Square150x150Logo.scale-125.png" />
     <Content Include="Images\Square150x150Logo.scale-150.png" />
@@ -101,11 +86,6 @@
     <Content Include="Images\Square44x44Logo.targetsize-256.png" />
     <Content Include="Images\Square44x44Logo.targetsize-32.png" />
     <Content Include="Images\Square44x44Logo.targetsize-48.png" />
-    <Content Include="Images\WideTile.scale-100.png" />
-    <Content Include="Images\WideTile.scale-125.png" />
-    <Content Include="Images\WideTile.scale-150.png" />
-    <Content Include="Images\WideTile.scale-200.png" />
-    <Content Include="Images\WideTile.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
