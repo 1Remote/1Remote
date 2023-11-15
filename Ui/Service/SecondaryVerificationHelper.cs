@@ -44,7 +44,7 @@ namespace _1RM.Service
             var ret = await GetEnabled(_key);
             if (ret == null)
             {
-                // TODO 修正拼写错误 20231109 
+                // TODO 修正拼写错误 20231109 2024 年后移除
                 const string keyOld = "SecondaryVerificationDisabled";
                 ret = await GetEnabled(keyOld);
                 if (ret != null)

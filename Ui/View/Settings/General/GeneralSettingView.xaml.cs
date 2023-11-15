@@ -3,6 +3,8 @@ using _1RM.Service;
 using Google.Protobuf.WellKnownTypes;
 using System.Windows.Controls;
 using System.Windows.Input;
+using _1RM.Utils;
+using _1RM.Utils.WindowsSdk;
 using Stylet;
 
 namespace _1RM.View.Settings.General
@@ -20,6 +22,7 @@ namespace _1RM.View.Settings.General
                 var b = await SecondaryVerificationHelper.GetEnabled();
                 Execute.OnUIThread(() =>
                 {
+                    MsAppCenterHelper.TraceSpecial($"App start with - Windows Hello", b.ToString());
                     CbRequireWindowsPasswordBeforeSensitiveOperation.IsChecked = b;
                 });
             });

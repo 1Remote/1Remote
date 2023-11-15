@@ -476,9 +476,15 @@ namespace _1RM.Model
                     ds.Add(_sourceService.LocalDataSource);
                 ds.AddRange(_sourceService.AdditionalSources.Values);
 
-                var mainWindowViewModel = IoC.Get<MainWindowViewModel>();
-                var listPageViewModel = IoC.Get<ServerListPageViewModel>();
-                var launcherWindowViewModel = IoC.Get<LauncherWindowViewModel>();
+                var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
+                var listPageViewModel = IoC.TryGet<ServerListPageViewModel>();
+                var launcherWindowViewModel = IoC.TryGet<LauncherWindowViewModel>();
+
+                if(mainWindowViewModel == null
+                   || listPageViewModel == null
+                   || launcherWindowViewModel == null)
+                    return;
+
                 // do not reload when any selected / launcher is shown / editor view is show
                 if (mainWindowViewModel.EditorViewModel != null
                     || listPageViewModel.VmServerList.Any(x => x.IsSelected)

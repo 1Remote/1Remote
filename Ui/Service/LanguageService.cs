@@ -207,7 +207,7 @@ namespace _1RM.Service
                 }
                 else
                 {
-                    MsAppCenterHelper.Error(new Exception($"int {_languageCode}, key not found: {key}"));
+                    MsAppCenterHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"));
 #if DEBUG
                     var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);
                     tw.WriteLine(key);
