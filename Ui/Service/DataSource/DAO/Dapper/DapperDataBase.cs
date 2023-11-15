@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
 
         public override Result TableExists(string tableName)
         {
-            string info = IoC.Translate("We can not check table exists on database:");
+            string info = "We can not check table exists on database: ";
             var result = OpenConnection(info);
             if (!result.IsSuccess) return result;
             try

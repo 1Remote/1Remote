@@ -322,30 +322,30 @@ namespace _1RM.Service.DataSource.Model
                 }
 
                 var ret = GetDataBase().UpdateServer(cloneList);
-                if (ret.IsSuccess)
-                {
-                    // update viewmodel
-                    foreach (var protocolServer in servers)
-                    {
-                        var old = CachedProtocols.FirstOrDefault(x => x.Id == protocolServer.Id);
-                        if (old != null)
-                        {
-                            old.Server = protocolServer;
-                        }
-                        else
-                        {
-                            ret.NeedReload = true;
-                            MarkAsNeedRead();
-                            break;
-                        }
-                    }
+                if (!ret.IsSuccess) return ret;
 
-                    if (!ret.NeedReload)
+
+                // update viewmodel
+                foreach (var protocolServer in servers)
+                {
+                    var old = CachedProtocols.FirstOrDefault(x => x.Id == protocolServer.Id);
+                    if (old != null)
                     {
-                        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                        old.Server = protocolServer;
                     }
-                    SetStatus(true);
+                    else
+                    {
+                        ret.NeedReload = true;
+                        MarkAsNeedRead();
+                        break;
+                    }
                 }
+
+                if (!ret.NeedReload)
+                {
+                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                }
+                SetStatus(true);
                 return ret;
             }
             return Result.Success();

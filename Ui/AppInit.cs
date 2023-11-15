@@ -20,6 +20,8 @@ using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 using System.Collections.Generic;
+using _1RM.Utils.WindowsSdk;
+using Stylet;
 
 namespace _1RM
 {
