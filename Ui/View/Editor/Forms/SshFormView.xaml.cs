@@ -17,7 +17,7 @@ namespace _1RM.View.Editor.Forms
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                if (DataContext is SSH ssh)
+                if (DataContext is SshFormViewModel { New: var ssh })
                 {
                     CbUsePrivateKey.IsChecked = false;
                     if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
@@ -35,9 +35,9 @@ namespace _1RM.View.Editor.Forms
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (DataContext is SSH ssh)
+            if (DataContext is SshFormViewModel { New: var ssh })
             {
-                    var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
                 ssh.PrivateKey = path;
             }
@@ -45,7 +45,7 @@ namespace _1RM.View.Editor.Forms
 
         private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox cb && DataContext is SSH ssh)
+            if (sender is CheckBox cb && DataContext is SshFormViewModel { New: var ssh })
                 if (cb.IsChecked == false)
                 {
                     ssh.PrivateKey = "";
