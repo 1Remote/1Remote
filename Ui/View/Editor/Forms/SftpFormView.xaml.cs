@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using _1RM.Model.Protocol;
+using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
@@ -31,7 +32,7 @@ namespace _1RM.View.Editor.Forms
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (DataContext is SFTP sftp)
+            if (DataContext is SftpFormViewModel { New: var sftp })
             {
                 var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
@@ -41,7 +42,7 @@ namespace _1RM.View.Editor.Forms
 
         private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (sender is CheckBox cb && DataContext is SFTP sftp)
+            if (sender is CheckBox cb && DataContext is SftpFormViewModel { New: var sftp })
             {
                 if (cb.IsChecked == false)
                 {
