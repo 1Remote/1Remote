@@ -69,8 +69,17 @@
 		<CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
 		<CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
 		<CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<SignAssembly>False</SignAssembly>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyVersion>1.0.0.7</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<Authors>Shawn</Authors>
+		<Product>Shawn Veck</Product>
+		<Description>1Remote is a modern personal remote session manager and launcher.</Description>
+		<Copyright>1remote.github.io</Copyright>
 	</PropertyGroup>
 
 	<!--<ItemGroup>
