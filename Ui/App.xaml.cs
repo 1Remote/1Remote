@@ -1,13 +1,15 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Service;
-using Shawn.Utils;
 #if FOR_MICROSOFT_STORE_ONLY
+#if DEV
+using System.IO;
+#endif
 using Windows.ApplicationModel.Activation;
+using _1RM.Utils;
 #endif
 
 
@@ -22,15 +24,22 @@ namespace _1RM
             AppInitHelper.Init();
 #if FOR_MICROSOFT_STORE_ONLY
             // see: https://stackoverflow.com/questions/57755792/how-can-i-handle-file-activation-from-a-wpf-app-which-is-running-as-uwp
-            var aea = Windows.ApplicationModel.AppInstance.GetActivatedEventArgs();
-            if (aea?.Kind == ActivationKind.StartupTask)
+            try
             {
-                // ref: https://blogs.windows.com/windowsdeveloper/2017/08/01/configure-app-start-log/
-                // If your app is enabled for startup activation, you should handle this case in your
-                // App class by overriding the OnActivated method.Check the IActivatedEventArgs.Kind
-                // to see if it is ActivationKind.StartupTask, and if so, case the IActivatedEventArgs
-                // to a StartupTaskActivatedEventArgs.
-                argss.Add(AppStartupHelper.APP_START_MINIMIZED);
+                var aea = Windows.ApplicationModel.AppInstance.GetActivatedEventArgs();
+                if (aea?.Kind == ActivationKind.StartupTask)
+                {
+                    // ref: https://blogs.windows.com/windowsdeveloper/2017/08/01/configure-app-start-log/
+                    // If your app is enabled for startup activation, you should handle this case in your
+                    // App class by overriding the OnActivated method.Check the IActivatedEventArgs.Kind
+                    // to see if it is ActivationKind.StartupTask, and if so, case the IActivatedEventArgs
+                    // to a StartupTaskActivatedEventArgs.
+                    argss.Add(AppStartupHelper.APP_START_MINIMIZED);
+                }
+            }
+            catch (Exception e)
+            {
+                MsAppCenterHelper.Error(e);
             }
 #if DEV
             string kind = aea?.Kind.ToString() ?? "null";
