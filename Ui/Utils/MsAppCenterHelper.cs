@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using _1RM.Utils.WindowsApi;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -22,7 +23,7 @@ namespace _1RM.Utils
     /// </summary>
     public static class MsAppCenterHelper
     {
-        private static bool _isStarted = false;
+        private static bool _isInited = false;
         public static void Init(string secret)
         {
             // disabled for OS under Win10
@@ -38,7 +39,7 @@ namespace _1RM.Utils
             {
                 SimpleLogHelper.Debug(nameof(MsAppCenterHelper) + " init...");
                 AppCenter.Start(secret, typeof(Analytics), typeof(Crashes));
-                _isStarted = true;
+                _isInited = true;
             }
 #endif
         }
@@ -48,10 +49,12 @@ namespace _1RM.Utils
 #if DEBUG
             return;
 #else
-            if (_isStarted == false) { return; }
+            if (_isInited == false) { return; }
             properties ??= new Dictionary<string, string>();
             if (!properties.ContainsKey("Version"))
                 properties.Add("Version", AppVersion.Version);
+            if (!properties.ContainsKey("BuildDate"))
+                properties.Add("BuildDate", AppVersion.BuildDate);
             if (attachments != null)
                 Crashes.TrackError(e, properties, attachments.ToArray());
             else
@@ -63,7 +66,7 @@ namespace _1RM.Utils
 
         private static void Trace(EventName eventName, Dictionary<string, string> properties)
         {
-            if (_isStarted == false) { return; }
+            if (_isInited == false) { return; }
 #if DEBUG
             Analytics.TrackEvent(eventName.ToString() + "_Debug", properties);
 #else
@@ -111,7 +114,7 @@ namespace _1RM.Utils
 
         public static void TraceSessionEdit(string protocol)
         {
-            if (_isStarted == false) { return; }
+            if (_isInited == false) { return; }
             var properties = new Dictionary<string, string>
             {
                 { "Protocol", protocol },
@@ -120,14 +123,18 @@ namespace _1RM.Utils
         }
 
 
+        public static void TraceSpecial(Dictionary<string, string> kys)
+        {
+            if (_isInited == false) { return; }
+            Trace(EventName.Special, kys);
+        }
         public static void TraceSpecial(string key, string value)
         {
-            if (_isStarted == false) { return; }
             var properties = new Dictionary<string, string>
             {
                 { key, value},
             };
-            Trace(EventName.Special, properties);
+            TraceSpecial(properties);
         }
     }
 

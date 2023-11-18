@@ -29,10 +29,8 @@ public static class IoC
         {
             return (new MockLanguageService() as T)!;
         }
-#if !DEBUG
         if (obj == null)
             throw new Exception("Ioc can not get an item.");
-#endif
         return (T)obj!;
     }
 

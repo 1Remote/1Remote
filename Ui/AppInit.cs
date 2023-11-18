@@ -112,6 +112,27 @@ namespace _1RM
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
             MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
+
+            try
+            {
+                var kys = new Dictionary<string, string>();
+#if FOR_MICROSOFT_STORE_ONLY
+                kys.Add("Distributor", $"{Assert.APP_NAME} MS Store");
+#else
+                kys.Add("Distributor", $"{Assert.APP_NAME} Exe");
+#endif
+
+#if NETFRAMEWORK
+                kys.Add($"App start with - Net", $"4.8");
+#else
+                kys.Add($"App start with - Net", $"6.x");
+#endif
+                MsAppCenterHelper.TraceSpecial(kys);
+            }
+            catch (Exception ex)
+            {
+                MsAppCenterHelper.Error(ex);
+            }
         }
 
         public static LanguageService? LanguageServiceObj;
@@ -336,15 +357,14 @@ namespace _1RM
         {
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
-                MsAppCenterHelper.TraceSpecial($"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}");
-                MsAppCenterHelper.TraceSpecial($"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}");
-                MsAppCenterHelper.TraceSpecial($"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}");
-                MsAppCenterHelper.TraceSpecial($"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}");
-#if NETFRAMEWORK
-                MsAppCenterHelper.TraceSpecial($"App start with - Net", $"4.8");
-#else
-                MsAppCenterHelper.TraceSpecial($"App start with - Net", $"6.x");
-#endif
+                var kys = new Dictionary<string, string>
+                {
+                    { $"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}" },
+                    { $"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}" },
+                    { $"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}" },
+                    { $"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}" }
+                };
+                MsAppCenterHelper.TraceSpecial(kys);
             }
 
             KittyConfig.CleanUpOldConfig();

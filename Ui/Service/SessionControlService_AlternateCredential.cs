@@ -199,6 +199,7 @@ namespace _1RM.Service
                 await Execute.OnUIThreadAsync(() =>
                 {
                     dlg.Message = IoC.Translate("We are not able to connect to xxx", protocolDisplayName);
+                    dlg.StartAutoCloseCounter();
                 });
             }
             return null;

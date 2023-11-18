@@ -60,6 +60,11 @@ namespace _1RM.View.Utils
             _cts = cts;
         }
 
+        ~AlternateAddressSwitchingViewModel()
+        {
+            __autoCloseTimer?.Dispose();
+        }
+
         public bool IsCanceled { get; private set; } =false;
 
         public string Title
@@ -103,7 +108,6 @@ namespace _1RM.View.Utils
         }
 
         private RelayCommand? _cmdCloseEnd;
-
         public RelayCommand CmdCloseEnd
         {
             get
@@ -115,6 +119,32 @@ namespace _1RM.View.Utils
                     this.RequestClose();
                 });
             }
+        }
+
+        private System.Timers.Timer? __autoCloseTimer;
+        private int _autoCloseEta = 0;
+        public void StartAutoCloseCounter(int autoCloseEta = 5)
+        {
+            _autoCloseEta = autoCloseEta + 3;
+            __autoCloseTimer = new System.Timers.Timer(1000);
+            __autoCloseTimer.Interval = 1000;
+            __autoCloseTimer.Elapsed += (sender, args) =>
+            {
+                _autoCloseEta--;
+                if (_autoCloseEta >= 0 &&
+                    (_autoCloseEta < 5 || _autoCloseEta <= autoCloseEta))
+                {
+                    Eta = _autoCloseEta;
+                }
+
+                if (_autoCloseEta <= 0)
+                {
+                    __autoCloseTimer.AutoReset = false;
+                    Execute.OnUIThread(() => this.RequestClose());
+                }
+            };
+            __autoCloseTimer.AutoReset = true;
+            __autoCloseTimer.Start();
         }
     }
 }
