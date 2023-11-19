@@ -580,8 +580,9 @@ namespace _1RM.View.ServerList
                         {
                             var list = new List<ProtocolBase>();
                             var deserializeObject = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8)) ?? new List<object>();
-                            foreach (var server in deserializeObject.Select(json => ItemCreateHelper.CreateFromJsonString(json.ToString() ?? "")).Where(server => server != null))
+                            foreach (var server in deserializeObject.Select(json => ItemCreateHelper.CreateFromJsonString(json.ToString() ?? "")))
                             {
+                                if (server == null) continue;
                                 server.Id = string.Empty;
                                 server.DecryptToConnectLevel();
                                 list.Add(server);
