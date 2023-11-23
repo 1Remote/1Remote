@@ -264,7 +264,9 @@ namespace _1RM.Model
                         // invoke main list ui change & invoke launcher ui change
                         var old = GetItemById(source.DataSourceName, protocolServer.Id);
                         if (old != null)
+                        {
                             old.Server = protocolServer;
+                        }
                         ReadTagsFromServers();
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
