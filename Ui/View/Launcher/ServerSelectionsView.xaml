@@ -41,10 +41,9 @@
             <Style x:Key="TextBlockTagStringStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                 <Setter Property="Opacity" Value="0.5"></Setter>
                 <Setter Property="FontSize" Value="10"></Setter>
-                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                <Setter Property="Margin" Value="5 0 0 0"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
@@ -61,7 +60,7 @@
                 <Setter Property="HorizontalAlignment" Value="Right"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                <Setter Property="Margin" Value="5 0 10 0"></Setter>
+                <Setter Property="TextAlignment" Value="Right"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
@@ -82,40 +81,54 @@
                                       ></MouseBinding>
                     </Grid.InputBindings>-->
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5"></ColumnDefinition>
-                        <ColumnDefinition Width="30"></ColumnDefinition>
-                        <ColumnDefinition Width="5"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition> <!-- Main title -->
+                        <ColumnDefinition Width="Auto"></ColumnDefinition> <!-- Tag auto size -->
+                        <ColumnDefinition Width="Auto"></ColumnDefinition> <!--Note button-->
+                        <ColumnDefinition Width="50"></ColumnDefinition> <!--Protocol-->
+                        <ColumnDefinition Width="10"></ColumnDefinition> <!--placeholder-->
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="1">
-                        <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                    </Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
 
+                    <Image Width="30" Height="30" Margin="5 0"
+                           Grid.Column="0" Grid.RowSpan="2"
+                           Source="{Binding Server.IconImg}"></Image>
 
-                    <Grid Grid.Column="3">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <ContentControl Grid.Row="0" s:View.Model="{Binding LauncherMainTitleViewModel}">
-                            <ContentControl.Resources>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="Opacity" Value="0.8"></Setter>
-                                    <Setter Property="FontSize" Value="18"></Setter>
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                            <Setter Property="Opacity" Value="1"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Resources>
-                        </ContentControl>
-                        <ContentControl Grid.Row="1" Opacity="0.8" s:View.Model="{Binding LauncherSubTitleViewModel}"
+                    <!--main title-->
+                    <ContentControl Grid.Row="0" 
+                                    Grid.Column="1" Grid.ColumnSpan="2"
+                                    ToolTip="{Binding DisplayName}"
+                                    s:View.Model="{Binding LauncherMainTitleViewModel}">
+                        <ContentControl.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                <Setter Property="Opacity" Value="0.8"></Setter>
+                                <Setter Property="FontSize" Value="18"></Setter>
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                        <Setter Property="Opacity" Value="1"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Resources>
+                    </ContentControl>
+
+                    <Grid Grid.Row="1"  Grid.Column="1" Grid.ColumnSpan="4">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <!--subtitle-->
+                        <ContentControl Grid.Column="0"
+                                        ToolTip="{Binding SubTitle}"
+                                        Opacity="0.8" s:View.Model="{Binding LauncherSubTitleViewModel}"
                                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ServerSelectionsView}}, Path=DataContext.ShowCredentials, Converter={StaticResource ConverterBool2Visible}}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
@@ -133,6 +146,15 @@
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
+                        <!--tags-->
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Bottom"
+                                   Margin="10 0 0 0"
+                                   MaxWidth="120"
+                                   Text="{Binding TagString}"
+                                   Style="{StaticResource TextBlockTagStringStyle}"
+                                   ToolTip="{Binding TagString}">
+                        </TextBlock>
                     </Grid>
 
 
@@ -141,47 +163,38 @@
 
 
 
-                    <TextBlock Grid.Column="3" Grid.ColumnSpan="2"
-                               VerticalAlignment="Bottom"
-                               Text="{Binding TagString}"
-                               Style="{StaticResource TextBlockTagStringStyle}"
-                               ToolTip="{Binding TagString}">
-                    </TextBlock>
 
+                    <!--Note button-->
+                    <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Background="Transparent" ToolTip="press '←' key to show/hide Note"
+                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            attachProperty:VisionElement.Opacity="0.8"
+                            attachProperty:VisionElement.OpacityAccent="0.9"
+                            Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
+                            Tag="{Binding Server.Id}"
+                            PreviewMouseDown="ButtonShowNote_OnClick"
+                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.CmdShowNoteField}"
+                            Style="{StaticResource ButtonBarPrimaryStyle}"
+                            IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}"
+                    >
+                        <Path Data="{StaticResource NoteGeometry}"
+                              Width="16" Height="16"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              StrokeThickness="0" Stretch="Uniform" />
+                    </Button>
 
-
-                    <Grid Grid.Row="0" Grid.Column="4">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <!--Note button-->
-                            <Grid Background="Transparent" ToolTip="press '←' key to show/hide Note">
-                                <Button Background="Transparent"
-                                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        attachProperty:VisionElement.Opacity="0.8"
-                                        attachProperty:VisionElement.OpacityAccent="0.9"
-                                        Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
-                                        Tag="{Binding Server.Id}"
-                                        PreviewMouseDown="ButtonShowNote_OnClick"
-                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.CmdShowNoteField}"
-                                        Style="{StaticResource ButtonBarPrimaryStyle}"
-                                        Margin="5 0 0 0"
-                                        IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.ServerSelectionsViewModel.IsShowNoteFieldEnabled}"
-                                >
-                                    <Path Data="{StaticResource NoteGeometry}"
-                                          Width="16" Height="16"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="0" Stretch="Uniform" />
-                                </Button>
-                            </Grid>
-                            <!--ProtocolDisplayName-->
-                            <TextBlock Text="{Binding Server.ProtocolDisplayName}"
-                                       Style="{StaticResource TextBlocProtocolNameStyle}">
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>
+                    <!--ProtocolDisplayName-->
+                    <Viewbox Grid.Row="0" Grid.RowSpan="2" Grid.Column="4"
+                             Width="50"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Right"
+                             StretchDirection="DownOnly" Stretch="Uniform">
+                        <TextBlock Text="{Binding Server.ProtocolDisplayName}" 
+                                   Style="{StaticResource TextBlocProtocolNameStyle}"/>
+                    </Viewbox>
                 </Grid>
             </DataTemplate>
 

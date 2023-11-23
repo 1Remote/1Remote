@@ -112,12 +112,8 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(DataSource));
                     RaisePropertyChanged(nameof(IsViewable));
                     RaisePropertyChanged(nameof(IsEditable));
-                    //if (LauncherMainTitleViewModel != null)
-                    //{
-                    //    LauncherMainTitleViewModel = OrgDisplayNameControl;
-                    //    LauncherSubTitleViewModel = OrgSubTitleControl;
-                    //}
-                    _launcherMainTitleViewModel = new ServerTitleViewModel(Server.DisplayName);
+                    LauncherMainTitleViewModel = null;
+                    LauncherSubTitleViewModel = null;
                 }
                 RaisePropertyChanged();
             }
@@ -138,7 +134,7 @@ namespace _1RM.View
         }
 
         private ServerTitleViewModel? _launcherMainTitleViewModel;
-        public ServerTitleViewModel LauncherMainTitleViewModel
+        public ServerTitleViewModel? LauncherMainTitleViewModel
         {
             get => _launcherMainTitleViewModel ??= new ServerTitleViewModel(Server.DisplayName);
             private set => SetAndNotifyIfChanged(ref _launcherMainTitleViewModel, value);
@@ -146,7 +142,7 @@ namespace _1RM.View
 
 
         private ServerTitleViewModel? _launcherSubTitleViewModel = null;
-        public ServerTitleViewModel LauncherSubTitleViewModel
+        public ServerTitleViewModel? LauncherSubTitleViewModel
         {
             get => _launcherSubTitleViewModel ??= new ServerTitleViewModel(Server.SubTitle);
             private set => SetAndNotifyIfChanged(ref _launcherSubTitleViewModel, value);

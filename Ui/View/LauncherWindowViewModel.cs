@@ -6,7 +6,6 @@ using System.Windows.Media;
 using _1RM.Service;
 using _1RM.Utils;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 using _1RM.View.Launcher;

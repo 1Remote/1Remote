@@ -125,7 +125,7 @@ namespace _1RM.Model.Protocol
             {
                 switch (columnName)
                 {
-                    case nameof(DisplayName):
+                    case nameof(RemoteApplicationName):
                         {
                             if (string.IsNullOrWhiteSpace(RemoteApplicationName))
                                 return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
