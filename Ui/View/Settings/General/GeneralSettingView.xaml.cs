@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using _1RM.Service;
-using Google.Protobuf.WellKnownTypes;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using _1RM.Utils;
-using _1RM.Utils.WindowsSdk;
 using Stylet;
+using Shawn.Utils;
 
 namespace _1RM.View.Settings.General
 {
@@ -40,6 +41,27 @@ namespace _1RM.View.Settings.General
                     SecondaryVerificationHelper.SetEnabled(cb.IsChecked == true);
                 }
             }
+        }
+    }
+
+
+
+
+
+    public class ConverterEnumLogLevel : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+                return 0;
+            return (int)((SimpleLogHelper.EnumLogLevel)value);
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+                return null;
+            return (SimpleLogHelper.EnumLogLevel)(int.Parse(value.ToString() ?? "0"));
         }
     }
 }

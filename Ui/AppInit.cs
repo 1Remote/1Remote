@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using _1RM.Model;
 using _1RM.Service;
@@ -15,13 +14,10 @@ using _1RM.Utils;
 using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
-using _1RM.Service.Locality;
 using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 using System.Collections.Generic;
-using _1RM.Utils.WindowsSdk;
-using Stylet;
 
 namespace _1RM
 {
@@ -310,6 +306,8 @@ namespace _1RM
                 newConfiguration.SqliteDatabasePath = AppPathHelper.Instance.SqliteDbDefaultPath;
                 ConfigurationServiceObj = new ConfigurationService(KeywordMatchServiceObj, newConfiguration);
             }
+
+            SimpleLogHelper.WriteLogLevel = (SimpleLogHelper.EnumLogLevel)ConfigurationServiceObj.General.LogLevel;
 
             // make sure path is not empty
             if (string.IsNullOrWhiteSpace(ConfigurationServiceObj.LocalDataSource.Path))

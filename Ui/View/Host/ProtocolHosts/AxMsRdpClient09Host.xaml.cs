@@ -353,7 +353,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 // - 2 Disable sound redirection; do not play sounds at the server.
                 _rdpClient.SecuredSettings3.AudioRedirectionMode = 2;
             }
-            
+
             if (_rdpSettings.EnableAudioCapture == true)
             {
                 // indicates whether the default audio input device is redirected from the client to the remote session
@@ -401,7 +401,7 @@ namespace _1RM.View.Host.ProtocolHosts
             #region Display
 
             _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
-            SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}");
+            SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}, isReconnecting = {isReconnecting}");
 
             if (this._rdpSettings.IsScaleFactorFollowSystem == false && this._rdpSettings.ScaleFactorCustomValue != null)
             {
@@ -458,11 +458,13 @@ namespace _1RM.View.Host.ProtocolHosts
                                 var size = GetScreenSizeIfRdpIsFullScreen();
                                 _rdpClient.DesktopWidth = size.Width;
                                 _rdpClient.DesktopHeight = size.Height;
+                                SimpleLogHelper.Debug($"RDP Host: init Display set FullScreen DesktopWidth = {size.Width},  DesktopHeight = {size.Height}");
                             }
                             else
                             {
                                 _rdpClient.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
                                 _rdpClient.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
+                                SimpleLogHelper.Debug($"RDP Host: init Display set DesktopWidth = {width} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopWidth},  DesktopHeight = {height} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopHeight}");
                             }
                         }
 
