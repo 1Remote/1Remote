@@ -80,6 +80,21 @@ namespace _1RM.View.Settings.General
 
         public string LogPath => SimpleLogHelper.GetFileFullName();
 
+        public SimpleLogHelper.EnumLogLevel LogLevel
+        {
+            get => SimpleLogHelper.WriteLogLevel;
+            set
+            {
+                if (SimpleLogHelper.WriteLogLevel != value)
+                {
+                    SimpleLogHelper.WriteLogLevel = value;
+                    SimpleLogHelper.PrintLogLevel = value;
+                    _configurationService.General.LogLevel = (int)value;
+                    RaisePropertyChanged();
+                    _configurationService.Save();
+                }
+            }
+        }
 
         private RelayCommand? _cmdExploreTo = null;
         public RelayCommand CmdExploreTo

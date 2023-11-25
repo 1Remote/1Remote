@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:_1RM.View.Settings.General"
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=Shawn.Utils"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:GeneralSettingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -22,13 +23,11 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Language}"></TextBlock>
 
-                <Grid Grid.Column="1">
-                    <ComboBox MinWidth="200" HorizontalAlignment="Left"
-                              ItemsSource="{Binding Languages}"
-                              SelectedValue="{Binding Language}"
-                              SelectedValuePath="Key"
-                              DisplayMemberPath="Value" />
-                </Grid>
+                <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left"
+                          ItemsSource="{Binding Languages}"
+                          SelectedValue="{Binding Language}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value" />
             </Grid>
             <Grid Style="{StaticResource GridOneRow}" Margin="0">
                 <Grid.ColumnDefinitions>
@@ -137,6 +136,26 @@
                               Stretch="Uniform" Data="F1 M 20 19.316406 C 20 19.498697 19.94466 19.658203 19.833984 19.794922 C 19.723307 19.931641 19.570312 20 19.375 20 C 19.205729 20 19.059244 19.93815 18.935547 19.814453 L 11.269531 12.158203 C 10.644531 12.672526 9.95931 13.066406 9.213867 13.339844 C 8.468424 13.613281 7.688802 13.75 6.875 13.75 C 6.243489 13.75 5.634766 13.66862 5.048828 13.505859 C 4.462891 13.3431 3.916016 13.111979 3.408203 12.8125 C 2.900391 12.513021 2.436523 12.15332 2.016602 11.733398 C 1.59668 11.313477 1.236979 10.849609 0.9375 10.341797 C 0.638021 9.833984 0.406901 9.287109 0.244141 8.701172 C 0.08138 8.115234 0 7.506511 0 6.875 C 0 6.24349 0.08138 5.634766 0.244141 5.048828 C 0.406901 4.462891 0.638021 3.916016 0.9375 3.408203 C 1.236979 2.900391 1.59668 2.436523 2.016602 2.016602 C 2.436523 1.59668 2.900391 1.23698 3.408203 0.9375 C 3.916016 0.638021 4.462891 0.406902 5.048828 0.244141 C 5.634766 0.081381 6.243489 0 6.875 0 C 7.50651 0 8.115234 0.081381 8.701172 0.244141 C 9.287109 0.406902 9.833984 0.638021 10.341797 0.9375 C 10.849609 1.23698 11.313477 1.59668 11.733398 2.016602 C 12.153319 2.436523 12.51302 2.900391 12.8125 3.408203 C 13.111979 3.916016 13.343099 4.462891 13.505859 5.048828 C 13.668619 5.634766 13.75 6.24349 13.75 6.875 C 13.75 7.688803 13.613281 8.468425 13.339844 9.213867 C 13.066406 9.959311 12.672525 10.644531 12.158203 11.269531 C 12.255858 11.367188 12.443033 11.552734 12.719727 11.826172 C 12.996419 12.099609 13.32845 12.425131 13.71582 12.802734 C 14.103189 13.180339 14.526366 13.595378 14.985352 14.047852 C 15.444335 14.500326 15.906574 14.959311 16.37207 15.424805 C 16.837564 15.8903 17.28841 16.3444 17.724609 16.787109 C 18.160807 17.229818 18.548176 17.630209 18.886719 17.988281 C 19.22526 18.346354 19.495441 18.644205 19.697266 18.881836 C 19.899088 19.119467 20 19.264322 20 19.316406 Z M 6.875 12.5 C 7.649739 12.5 8.378906 12.351889 9.0625 12.055664 C 9.746094 11.75944 10.341797 11.357422 10.849609 10.849609 C 11.357422 10.341797 11.759439 9.746094 12.055664 9.0625 C 12.351888 8.378906 12.5 7.64974 12.5 6.875 C 12.5 6.100261 12.351888 5.371094 12.055664 4.6875 C 11.759439 4.003906 11.357422 3.408203 10.849609 2.900391 C 10.341797 2.392578 9.746094 1.990561 9.0625 1.694336 C 8.378906 1.398113 7.649739 1.25 6.875 1.25 C 6.10026 1.25 5.371094 1.398113 4.6875 1.694336 C 4.003906 1.990561 3.408203 2.392578 2.900391 2.900391 C 2.392578 3.408203 1.99056 4.003906 1.694336 4.6875 C 1.398112 5.371094 1.25 6.100261 1.25 6.875 C 1.25 7.64974 1.398112 8.378906 1.694336 9.0625 C 1.99056 9.746094 2.392578 10.341797 2.900391 10.849609 C 3.408203 11.357422 4.003906 11.75944 4.6875 12.055664 C 5.371094 12.351889 6.10026 12.5 6.875 12.5 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
+            </Grid>
+
+
+            <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                <Grid.Resources>
+                    <local:ConverterEnumLogLevel x:Key="ConverterEnumLogLevel" />
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log level"></TextBlock>
+
+                <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" 
+                          SelectedIndex="{Binding LogLevel, Converter={StaticResource ConverterEnumLogLevel}}">
+                    <ComboBoxItem>Debug</ComboBoxItem>
+                    <ComboBoxItem>Info</ComboBoxItem>
+                    <ComboBoxItem>Warning</ComboBoxItem>
+                </ComboBox>
             </Grid>
         </StackPanel>
     </Grid>
