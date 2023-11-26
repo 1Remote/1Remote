@@ -67,7 +67,7 @@ namespace _1RM.View.Host
                         _localityService.TabWindowHeight = this.Height;
                         _localityService.TabWindowWidth = this.Width;
                     }
-                    SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+                    SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}");
                 };
 
                 this.OnDragEnd += () =>
@@ -89,7 +89,7 @@ namespace _1RM.View.Host
                         _localityService.TabWindowState = this.WindowState;
                         _localityService.TabWindowStyle = this.WindowStyle;
                     }
-                    SimpleLogHelper.Debug($"(Window state changed)Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+                    SimpleLogHelper.Debug($"(Window state changed)Tab size change to:W = {this.Width}, H = {this.Height}");
                 };
 
 

@@ -17,6 +17,8 @@ using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Color = System.Drawing.Color;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Interop;
 
@@ -464,7 +466,19 @@ namespace _1RM.View.Host.ProtocolHosts
                             {
                                 _rdpClient.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
                                 _rdpClient.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
-                                SimpleLogHelper.Debug($"RDP Host: init Display set DesktopWidth = {width} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopWidth},  DesktopHeight = {height} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopHeight}");
+                                if (_primaryScaleFactor > 100)
+                                {
+                                    // size compensation since https://github.com/1Remote/1Remote/issues/537
+                                    int c = (int)_primaryScaleFactor / 100;
+                                    if (c > 0 && c < 10 && c < _rdpClient.DesktopWidth && c < _rdpClient.DesktopHeight)
+                                    {
+                                        _rdpClient.DesktopWidth -= c;
+                                        _rdpClient.DesktopHeight -= c;
+                                    }
+                                }
+                                SimpleLogHelper.Debug(@$"RDP Host: init Display set DesktopWidth = {width} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopWidth},  DesktopHeight = {height} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopHeight}
+RdpControl.Width = {_rdpClient.Width}, RdpControl.Height = {_rdpClient.Height}
+");
                             }
                         }
 
@@ -824,9 +838,29 @@ namespace _1RM.View.Host.ProtocolHosts
                 && _rdpClient?.FullScreen == false
                 && _rdpSettings.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
-                var nw = (uint)(_rdpClient?.Width ?? 0);
-                var nh = (uint)(_rdpClient?.Height ?? 0);
-                SetRdpResolution(nw, nh, focus);
+                Task.Factory.StartNew(() =>
+                {
+                    while (true)
+                    {
+                        // Window drag an drop resize only after mouse button release, 当拖动最大化的窗口时，需检测鼠标按键释放后再调整分辨率，详见：https://github.com/1Remote/1Remote/issues/553
+                        bool isPressed = false;
+                        Execute.OnUIThreadSync(() =>
+                        {
+                            isPressed = Mouse.LeftButton == MouseButtonState.Pressed;
+                        });
+                        if(!isPressed)
+                            break;
+                        Thread.Sleep(300);
+#if DEBUG
+                        SimpleLogHelper.Debug($@"RDP ReSizeRdpToControlSize  delay since mouse is pressed");
+#endif
+                    }
+                    var nw = (uint)(_rdpClient?.Width ?? 0);
+                    var nh = (uint)(_rdpClient?.Height ?? 0);
+                    // tip: the control default width is 288
+                    if (nw > 300 && nh > 300)
+                        SetRdpResolution(nw, nh, focus);
+                });
             }
         }
 
@@ -846,7 +880,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         if (focus || _rdpClient?.DesktopWidth != w || _rdpClient?.DesktopHeight != h ||
                             newScaleFactor != _lastScaleFactor)
                         {
-                            SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
+                            SimpleLogHelper.Debug($@"RDP UpdateSessionDisplaySettings with: W = {w}, H = {h}, ScaleFactor = {newScaleFactor}");
                             _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                             _lastScaleFactor = newScaleFactor;
                         }
