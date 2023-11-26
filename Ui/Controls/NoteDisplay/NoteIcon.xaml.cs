@@ -69,7 +69,9 @@ namespace _1RM.Controls.NoteDisplay
             if (!(button.ActualWidth > 0)) return;
 
             var p1 = args.MouseDevice.GetPosition(button);
+#if DEBUG
             SimpleLogHelper.Debug($"ButtonShowNote: {p1.X}, {p1.Y}");
+#endif
             bool ret = p1.X > 0
                        && p1.X < button.ActualWidth
                        && p1.Y > 0
@@ -77,8 +79,9 @@ namespace _1RM.Controls.NoteDisplay
             if (!ret)
             {
                 var p3 = args.MouseDevice.GetPosition(editor);
+#if DEBUG
                 SimpleLogHelper.Debug($"PopupNoteContent: {p3.X}, {p3.Y}, {editor.Main.ActualWidth} X {editor.Main.ActualHeight}");
-
+#endif
                 if (p3.X > 0
                     && p3.X < editor.ActualWidth
                     && p3.Y > 0
