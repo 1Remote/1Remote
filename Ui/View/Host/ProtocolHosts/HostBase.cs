@@ -156,16 +156,11 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 if (ProtocolServer.IsOnlyOneInstance())
                 {
-                    return ProtocolServer switch
-                    {
-                        ProtocolBaseWithAddressPortUserPwd p1 => ProtocolServer.Id + "_" + p1.Address + "_" + p1.UserName,
-                        ProtocolBaseWithAddressPort p2 => ProtocolServer.Id + "_" + p2.Address,
-                        _ => ProtocolServer.Id
-                    };
+                    return ProtocolServer.BuildConnectionId();
                 }
                 else
                 {
-                    return ProtocolServer.Id + "_" + this.GetHashCode();
+                    return ProtocolServer.BuildConnectionId() + "_" + this.GetHashCode();
                 }
             }
         }

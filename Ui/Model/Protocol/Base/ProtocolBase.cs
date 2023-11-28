@@ -418,6 +418,14 @@ namespace _1RM.Model.Protocol.Base
             return true;
         }
 
+        /// <summary>
+        /// build the id for host
+        /// </summary>
+        /// <returns></returns>
+        public virtual string BuildConnectionId()
+        {
+            return Id;
+        }
 
         #region IDataErrorInfo
         [JsonIgnore] public string Error => "";

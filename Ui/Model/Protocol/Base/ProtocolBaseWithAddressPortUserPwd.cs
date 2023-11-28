@@ -100,5 +100,14 @@ namespace _1RM.Model.Protocol.Base
         {
             return false;
         }
+
+        /// <summary>
+        /// build the id for host
+        /// </summary>
+        /// <returns></returns>
+        public override string BuildConnectionId()
+        {
+            return $"{Id}_{Address}:{Port}({UserName})";
+        }
     }
 }

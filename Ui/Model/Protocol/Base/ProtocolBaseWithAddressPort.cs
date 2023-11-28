@@ -123,6 +123,14 @@ namespace _1RM.Model.Protocol.Base
             return true;
         }
 
+        /// <summary>
+        /// build the id for host
+        /// </summary>
+        /// <returns></returns>
+        public override string BuildConnectionId()
+        {
+            return $"{Id}_{Address}:{Port}";
+        }
 
         #region IDataErrorInfo
         [JsonIgnore]

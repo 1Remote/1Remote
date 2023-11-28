@@ -138,25 +138,19 @@ namespace _1RM.Service
 
         private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server, Credential? assignCredential)
         {
-            var serverId = server.Id;
+            if (!server.IsOnlyOneInstance()) return false;
+            var connectionId = server.BuildConnectionId();
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (!server.IsOnlyOneInstance() || !_connectionId2Hosts.ContainsKey(serverId)) return false;
-            if (assignCredential != null)
-            {
-                if (_connectionId2Hosts[serverId].ProtocolServer is ProtocolBaseWithAddressPort p
-                    && assignCredential.Address != p.Address)
-                    return false;
-                if (_connectionId2Hosts[serverId].ProtocolServer is ProtocolBaseWithAddressPortUserPwd p2
-                    && assignCredential.UserName != p2.UserName)
-                    return false;
-            }
+            if (!_connectionId2Hosts.ContainsKey(connectionId))
+                return false;
 
-            SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {serverId}");
+            SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {connectionId}");
             // Activate
-            if (_connectionId2Hosts[serverId].ParentWindow is { } win)
+            if (_connectionId2Hosts[connectionId].ParentWindow is { } win)
             {
                 if (win is TabWindowBase tab)
                 {
+                    var serverId = server.Id;
                     var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
                         tab.GetViewModel().SelectedItem = s;
@@ -164,7 +158,7 @@ namespace _1RM.Service
 
                 if (win.IsClosed)
                 {
-                    MarkProtocolHostToClose(new string[] { serverId.ToString() });
+                    MarkProtocolHostToClose(new string[] { connectionId });
                     CleanupProtocolsAndWindows();
                     return false;
                 }
@@ -185,16 +179,16 @@ namespace _1RM.Service
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    MarkProtocolHostToClose(new string[] { serverId.ToString() });
+                    MarkProtocolHostToClose(new string[] { connectionId });
                     CleanupProtocolsAndWindows();
                 }
             }
 
             // Reconnect
-            if (_connectionId2Hosts[serverId].ParentWindow != null)
+            if (_connectionId2Hosts[connectionId].ParentWindow != null)
             {
-                if (_connectionId2Hosts[serverId].Status != ProtocolHostStatus.Connected)
-                    _connectionId2Hosts[serverId].ReConn();
+                if (_connectionId2Hosts[connectionId].Status != ProtocolHostStatus.Connected)
+                    _connectionId2Hosts[connectionId].ReConn();
             }
             return true;
         }
