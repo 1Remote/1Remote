@@ -170,8 +170,8 @@ namespace _1RM.View.Launcher
             {
                 viewModel.PropertyChanged -= OnLastConnectTimeChanged;
                 viewModel.PropertyChanged += OnLastConnectTimeChanged;
-                viewModel.LauncherMainTitleViewModel.UnHighLightAll();
-                viewModel.LauncherSubTitleViewModel.UnHighLightAll();
+                viewModel.LauncherMainTitleViewModel?.UnHighLightAll();
+                viewModel.LauncherSubTitleViewModel?.UnHighLightAll();
                 VmServerList.Add(viewModel);
             });
         }
@@ -203,8 +203,8 @@ namespace _1RM.View.Launcher
 
             foreach (var viewModel in VmServerList)
             {
-                viewModel.LauncherMainTitleViewModel.UnHighLightAll();
-                viewModel.LauncherSubTitleViewModel.UnHighLightAll();
+                viewModel.LauncherMainTitleViewModel?.UnHighLightAll();
+                viewModel.LauncherSubTitleViewModel?.UnHighLightAll();
             }
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
         }
@@ -281,9 +281,9 @@ namespace _1RM.View.Launcher
                 if (matchResult.Item2 == null)
                 {
                     // no highlight
-                    vm.LauncherMainTitleViewModel.UnHighLightAll();
+                    vm.LauncherMainTitleViewModel?.UnHighLightAll();
                     if (ShowCredentials)
-                        vm.LauncherSubTitleViewModel.UnHighLightAll();
+                        vm.LauncherSubTitleViewModel?.UnHighLightAll();
                     vm.KeywordMark = 0;
                     return;
                 }
@@ -303,11 +303,11 @@ namespace _1RM.View.Launcher
 
                 if (m1.Any(x => x == true))
                 {
-                    vm.LauncherMainTitleViewModel.HighLight(m1);
+                    vm.LauncherMainTitleViewModel?.HighLight(m1);
                 }
                 else
                 {
-                    vm.LauncherMainTitleViewModel.UnHighLightAll();
+                    vm.LauncherMainTitleViewModel?.UnHighLightAll();
                 }
 
                 if (ShowCredentials)
@@ -315,11 +315,11 @@ namespace _1RM.View.Launcher
                     var m2 = mrs.HitFlags[1];
                     if (m2.Any(x => x == true))
                     {
-                        vm.LauncherSubTitleViewModel.HighLight(m2);
+                        vm.LauncherSubTitleViewModel?.HighLight(m2);
                     }
                     else
                     {
-                        vm.LauncherSubTitleViewModel.UnHighLightAll();
+                        vm.LauncherSubTitleViewModel?.UnHighLightAll();
                     }
                 }
             }

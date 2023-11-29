@@ -53,7 +53,7 @@ namespace _1RM.Service
         private string _lastTabToken = "";
 
         private readonly object _dictLock = new object();
-        private readonly ConcurrentDictionary<string, TabWindowBase> _token2TabWindows = new ConcurrentDictionary<string, TabWindowBase>();
+        private readonly ConcurrentDictionary<string, TabWindowView> _token2TabWindows = new ConcurrentDictionary<string, TabWindowView>();
         private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
         private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
         private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
@@ -148,7 +148,7 @@ namespace _1RM.Service
             // Activate
             if (_connectionId2Hosts[connectionId].ParentWindow is { } win)
             {
-                if (win is TabWindowBase tab)
+                if (win is TabWindowView tab)
                 {
                     var serverId = server.Id;
                     var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);

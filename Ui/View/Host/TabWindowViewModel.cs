@@ -1,31 +1,27 @@
-﻿ using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
- using _1RM.View.Utils;
- using Shawn.Utils.Interface;
+using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using _1RM.Service.DataSource.DAO.Dapper;
- using _1RM.Service.Locality;
 
- namespace _1RM.View.Host
+namespace _1RM.View.Host
 {
     public class TabWindowViewModel : MaskLayerContainerScreenBase, IDisposable
     {
         public readonly string Token;
-        private readonly TabWindowBase _windowView;
+        public new TabWindowView View { get; private set; }
 
-        public TabWindowViewModel(string token, TabWindowBase windowView)
+        public TabWindowViewModel(TabWindowView windowView)
         {
-            _windowView = windowView;
-            Token = token;
+            View = windowView;
+            Token = DateTime.Now.Ticks.ToString();
             Items.CollectionChanged += ItemsOnCollectionChanged;
         }
 
@@ -34,7 +30,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
             if (Items.Count == 0)
             {
-                _windowView.Hide();
+                View.Hide();
             }
         }
 
@@ -152,7 +148,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
                 return;
             }
             Items.Add(newItem);
-            newItem.Content.SetParentWindow(_windowView);
+            newItem.Content.SetParentWindow(View);
             SelectedItem = newItem;
         }
 
@@ -228,15 +224,15 @@ using _1RM.Service.DataSource.DAO.Dapper;
             {
                 return _cmdGoMaximize ??= new RelayCommand((o) =>
                 {
-                    if (_windowView.WindowState != WindowState.Maximized)
+                    if (View.WindowState != WindowState.Maximized)
                     {
-                        _windowView.WindowState = WindowState.Maximized;
+                        View.WindowState = WindowState.Maximized;
                     }
 
                     else
                     {
-                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
-                        _windowView.WindowState = WindowState.Normal;
+                        View.WindowStyle = WindowStyle.SingleBorderWindow;
+                        View.WindowState = WindowState.Normal;
                     }
                 });
             }
@@ -250,15 +246,15 @@ using _1RM.Service.DataSource.DAO.Dapper;
             {
                 return _cmdGoMaximizeF11 ??= new RelayCommand((o) =>
                 {
-                    if (_windowView.WindowState != WindowState.Maximized)
+                    if (View.WindowState != WindowState.Maximized)
                     {
-                        _windowView.WindowStyle = WindowStyle.None;
-                        _windowView.WindowState = WindowState.Maximized;
+                        View.WindowStyle = WindowStyle.None;
+                        View.WindowState = WindowState.Maximized;
                     }
                     else
                     {
-                        _windowView.WindowStyle = WindowStyle.SingleBorderWindow;
-                        _windowView.WindowState = WindowState.Normal;
+                        View.WindowStyle = WindowStyle.SingleBorderWindow;
+                        View.WindowState = WindowState.Normal;
                     }
                 });
             }
@@ -348,8 +344,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
         /// <returns></returns>
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
-            string token = DateTime.Now.Ticks.ToString();
-            var v = new TabWindowView(token, IoC.Get<LocalityService>());
+            var v = new TabWindowView();
             IoC.Get<SessionControlService>().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
@@ -362,7 +357,7 @@ using _1RM.Service.DataSource.DAO.Dapper;
         /// <returns></returns>
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
-            if (window is TabWindowBase tab)
+            if (window is TabWindowView tab)
             {
                 tab.GetViewModel().Items.Clear();
                 IoC.Get<SessionControlService>().CleanupProtocolsAndWindows();
