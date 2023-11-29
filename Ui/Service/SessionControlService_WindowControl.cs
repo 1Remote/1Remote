@@ -29,7 +29,7 @@ namespace _1RM.Service
 {
     public partial class SessionControlService
     {
-        public void AddTab(TabWindowBase tab)
+        public void AddTab(TabWindowView tab)
         {
             lock (_dictLock)
             {
@@ -42,7 +42,7 @@ namespace _1RM.Service
             }
         }
 
-        private FullScreenWindowView MoveToExistedFullScreenWindow(HostBase host, TabWindowBase? fromTab)
+        private FullScreenWindowView MoveToExistedFullScreenWindow(HostBase host, TabWindowView? fromTab)
         {
             // restore from tab to full
             var full = _connectionId2FullScreenWindows[host.ConnectionId];
@@ -59,7 +59,7 @@ namespace _1RM.Service
             return full;
         }
 
-        private FullScreenWindowView MoveToNewFullScreenWindow(HostBase host, TabWindowBase? fromTab)
+        private FullScreenWindowView MoveToNewFullScreenWindow(HostBase host, TabWindowView? fromTab)
         {
             // first time to full
             var full = FullScreenWindowView.Create(fromTab?.Token ?? "", host, fromTab);
@@ -105,7 +105,7 @@ namespace _1RM.Service
             var host = _connectionId2Hosts[connectionId];
             SimpleLogHelper.Debug($@"MoveSessionToTabWindow: Moving host({host.GetHashCode()}) to any tab");
             // get tab
-            TabWindowBase? tab;
+            TabWindowView? tab;
 
             lock (_dictLock)
             {
@@ -157,9 +157,9 @@ namespace _1RM.Service
         /// </summary>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowBase GetOrCreateTabWindow(string assignTabToken = "")
+        private TabWindowView GetOrCreateTabWindow(string assignTabToken = "")
         {
-            TabWindowBase? ret = null;
+            TabWindowView? ret = null;
             lock (_dictLock)
             {
                 // find existed
@@ -182,10 +182,9 @@ namespace _1RM.Service
                 // create new
                 if (ret == null)
                 {
-                    var token = DateTime.Now.Ticks.ToString();
                     Execute.OnUIThreadSync(() =>
                     {
-                        ret = new TabWindowView(token, IoC.Get<LocalityService>());
+                        ret = new TabWindowView();
                         AddTab(ret);
                         ret.Show();
                         _lastTabToken = ret.Token;
@@ -205,7 +204,7 @@ namespace _1RM.Service
             }
         }
 
-        public TabWindowBase? GetTabByConnectionId(string connectionId)
+        public TabWindowView? GetTabByConnectionId(string connectionId)
         {
             lock (_dictLock)
             return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));

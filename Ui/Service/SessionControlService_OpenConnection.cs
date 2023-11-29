@@ -145,7 +145,7 @@ namespace _1RM.Service
 
         private string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
         {
-            TabWindowBase? tab = null;
+            TabWindowView? tab = null;
             ProtocolBase p = protocol;
             Runner r = runner;
             Execute.OnUIThreadSync(() =>

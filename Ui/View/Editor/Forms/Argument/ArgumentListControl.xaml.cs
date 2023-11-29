@@ -20,7 +20,7 @@ namespace _1RM.View.Editor.Forms.Argument
 
     public class ConverterStringIs1 : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             try
             {
@@ -29,13 +29,15 @@ namespace _1RM.View.Editor.Forms.Argument
                 if (value.ToString() == ProtocolBase.ServerEditorStaticDifferentOptions)
                     return null;
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                // ignored
             }
+
             return false;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             return value is bool and true ? "1" : "0";
         }

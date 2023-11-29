@@ -56,7 +56,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             int w = 0;
             int h = 0;
-            if (ParentWindow is TabWindowBase tab)
+            if (ParentWindow is TabWindowView tab)
             {
                 var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(this._rdpSettings.ColorHex) == true);
                 w = (int)size.Width;
@@ -210,7 +210,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 case null:
                     return;
-                case TabWindowBase:
+                case TabWindowView:
                 {
                     // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
                     _rdpClient!.FullScreen = false;
