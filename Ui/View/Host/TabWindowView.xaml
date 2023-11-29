@@ -1,18 +1,19 @@
-﻿<host:TabWindowBase x:Class="_1RM.View.Host.TabWindowView"
-                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-                     xmlns:system="clr-namespace:System;assembly=mscorlib"
-                     xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-                     xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-                     xmlns:host="clr-namespace:_1RM.View.Host"
-                     xmlns:s="https://github.com/canton7/Stylet"
-                     mc:Ignorable="d"
-                     d:DataContext="{d:DesignInstance host:TabWindowViewModel}"
-                     ResizeMode="{Binding WindowResizeMode}"
-                     Title="{Binding Title}" Height="600" Width="800">
+﻿<styles:WindowChromeBase x:Class="_1RM.View.Host.TabWindowView"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+                       xmlns:system="clr-namespace:System;assembly=mscorlib"
+                       xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+                       xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+                       xmlns:host="clr-namespace:_1RM.View.Host"
+                       xmlns:s="https://github.com/canton7/Stylet"
+                       xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
+                       mc:Ignorable="d"
+                       d:DataContext="{d:DesignInstance host:TabWindowViewModel}"
+                       ResizeMode="{Binding WindowResizeMode}"
+                       Title="{Binding Title}" Height="600" Width="800">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
@@ -29,7 +30,7 @@
         <KeyBinding Gesture="F11" Command="{Binding CmdGoMaximizeF11}"></KeyBinding>
     </Window.InputBindings>
     <Window.Template>
-        <ControlTemplate TargetType="host:TabWindowBase">
+        <ControlTemplate TargetType="host:TabWindowView">
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
                 <Border.Style>
                     <Style TargetType="Border">
@@ -91,7 +92,7 @@
                 <Setter Property="Margin" Value="0" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                <Setter Property="Height" Value="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
+                <Setter Property="Height" Value="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -99,7 +100,7 @@
                             <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True" 
                                       Background="{DynamicResource PrimaryMidBrush}"
                                       SnapsToDevicePixels="true"
-                                      Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
+                                      Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}"
                                       controls:MouseMiddleClick.MouseMiddleDown="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
                                       controls:MouseMiddleClick.MouseMiddleDownParameter="{Binding Content.ConnectionId}"
                                       VerticalAlignment="Bottom">
@@ -123,7 +124,7 @@
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Border Name="DragablzHeaderItemBorder"></Border>
-                                <Grid Name="Trapezoid" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
+                                <Grid Name="Trapezoid" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
@@ -226,7 +227,7 @@
                                     <Setter Property="Background" TargetName="DragablzHeaderItemContent" Value="{DynamicResource PrimaryMidBrush}" />
                                     <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="0 0 0 5"/>
                                     <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" 
-                                            Value="{Binding  RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowBase}, Path=DataContext.SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
+                                            Value="{Binding  RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" TargetName="DragablzHeaderItemContent" />
@@ -250,7 +251,7 @@
             <Style x:Key="DragablzTabHeaderItemHolderStryle" TargetType="{x:Type dragablz:DragablzItemsControl}">
                 <Setter Property="HorizontalAlignment" Value="Left" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
-                <Setter Property="Height" Value="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
+                <Setter Property="Height" Value="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -263,11 +264,11 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItemsControl}">
                             <Grid Background="{DynamicResource PrimaryMidBrush}"
-                                  Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}">
-                                <Grid Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Bottom">
+                                  Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}">
+                                <Grid Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Bottom">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                                   Width="{TemplateBinding ActualWidth}"
-                                                  Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
+                                                  Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}"
                                                   VerticalAlignment="Bottom"
                                                   VerticalContentAlignment="Bottom"
                                                   controls:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
@@ -279,7 +280,7 @@
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Bottom"
                                                         Width="{TemplateBinding ItemsPresenterWidth}"
-                                                        Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" />
+                                                        Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" />
                                     </ScrollViewer>
                                 </Grid>
                             </Grid>
@@ -293,7 +294,7 @@
                 <!--Add button to left of header items-->
                 <Setter Property="HeaderPrefixContent">
                     <Setter.Value>
-                        <Grid Margin="5 0" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
+                        <Grid Margin="5 0" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
                             <Grid Width="20" Height="20" VerticalAlignment="Center">
                                 <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                             </Grid>
@@ -312,7 +313,7 @@
 
                             <Grid Background="{DynamicResource PrimaryMidBrush}">
                                 <Button Width="25" 
-                                        Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}"
+                                        Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}"
                                         HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" >
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -340,7 +341,7 @@
                                       PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" 
                                       Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
-                                <Button Grid.Column="0" Width="25" Height="{x:Static host:TabWindowBase.TITLE_BAR_HEIGHT}" VerticalAlignment="Center"
+                                <Button Grid.Column="0" Width="25" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Center"
                                         Visibility="{Binding LauncherEnabled, Converter={StaticResource ConverterBool2Visible}}"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         attachProperty:VisionElement.Opacity="0.5"
@@ -617,4 +618,4 @@
 
         <ContentControl s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
     </Grid>
-</host:TabWindowBase>
+</styles:WindowChromeBase>

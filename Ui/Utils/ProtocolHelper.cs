@@ -115,7 +115,7 @@ namespace _1RM.Utils
             return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }
 
-        public static HostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowBase? tab = null)
+        public static HostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowView? tab = null)
         {
             Debug.Assert(runner.IsRunWithoutHosting() == false);
 
