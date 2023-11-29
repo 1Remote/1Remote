@@ -31,7 +31,7 @@ namespace _1RM.View.Host
             }
         }
 
-        public static FullScreenWindowView Create(string token, HostBase host, TabWindowBase? fromTab)
+        public static FullScreenWindowView Create(string token, HostBase host, TabWindowView? fromTab)
         {
             FullScreenWindowView? view = null;
             Execute.OnUIThreadSync(() =>
