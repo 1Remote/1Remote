@@ -136,11 +136,11 @@ namespace _1RM.View.Host.ProtocolHosts
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo  // conn to a power-off PC will get exDiscReasonNoInfo
-                        && _retryCount < MaxRetryCount)
+                        && _retryCount < MAX_RETRY_COUNT)
                     {
                         ++_retryCount;
                         TbMessageTitle.Visibility = Visibility.Visible;
-                        TbMessageTitle.Text = IoC.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
+                        TbMessageTitle.Text = IoC.Translate("host_reconecting_info") + $"({_retryCount}/{MAX_RETRY_COUNT})";
                         TbMessage.Text = reason;
                         this.ReConn();
                     }
@@ -165,6 +165,9 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnConnected");
             this.ParentWindow?.FlashIfNotActive();
+
+            _lastLoginTime = DateTime.Now;
+            _loginResizeTimer?.Start();
 
             _flagHasConnected = true;
             Execute.OnUIThread(() =>
