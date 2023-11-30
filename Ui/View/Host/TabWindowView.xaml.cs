@@ -197,6 +197,10 @@ namespace _1RM.View.Host
                 double border2 = withoutBorderColor ? tabContentBorderWithOutColor.Top + tabContentBorderWithOutColor.Bottom : tabContentBorderWithColor.Top + tabContentBorderWithColor.Bottom;
                 size.Width = actualWidth - border1;
                 size.Height = actualHeight - TITLE_BAR_HEIGHT - border2;
+                //if (this.WindowState == WindowState.Maximized)
+                //{
+                //    size.Height -= 3;
+                //}
             });
             return size;
         }
