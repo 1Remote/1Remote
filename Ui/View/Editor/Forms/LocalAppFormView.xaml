@@ -110,7 +110,7 @@
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                             Tag="{Binding HintHostName}"
+                             Tag="{Binding HintUserName}"
                              Height="{StaticResource InputHeight}" 
                     ></TextBox>
                 </Grid>

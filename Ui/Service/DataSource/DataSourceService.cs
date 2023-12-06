@@ -32,18 +32,18 @@ namespace _1RM.Service.DataSource
 
         public readonly ConcurrentDictionary<string, DataSourceBase> AdditionalSources = new ConcurrentDictionary<string, DataSourceBase>();
 
-        public List<ProtocolBaseViewModel> GetServers(bool focus)
+        public List<ProtocolBaseViewModel> GetServers(bool force)
         {
             lock (this)
             {
                 var ret = new List<ProtocolBaseViewModel>(100);
                 if (LocalDataSource != null)
-                    ret.AddRange(LocalDataSource.GetServers(focus));
+                    ret.AddRange(LocalDataSource.GetServers(force));
                 foreach (var dataSource in AdditionalSources)
                 {
                     try
                     {
-                        var pbs = dataSource.Value.GetServers(focus);
+                        var pbs = dataSource.Value.GetServers(force);
                         ret.AddRange(pbs);
                     }
                     catch (Exception e)

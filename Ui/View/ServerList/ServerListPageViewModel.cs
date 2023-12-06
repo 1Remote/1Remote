@@ -318,6 +318,7 @@ namespace _1RM.View.ServerList
                     VmServerListDummyNode();
                     RaisePropertyChanged(nameof(VmServerList));
                     ApplySort();
+                    RefreshCollectionViewSource(true);
                 });
             }
         }
@@ -415,14 +416,14 @@ namespace _1RM.View.ServerList
 
         public Dictionary<ProtocolBaseViewModel, bool> IsServerVisible = new Dictionary<ProtocolBaseViewModel, bool>();
         private string _lastKeyword = string.Empty;
-        public void RefreshCollectionViewSource()
+        public void RefreshCollectionViewSource(bool force = false)
         {
             var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
-            if (this.View is not ServerListPageView v
+            if (this.View is not ServerListPageView
                 || _lastKeyword == filter)
             {
-                IsServerVisible.Clear();
-                return;
+                if (force == false)
+                    return;
             }
 
             lock (this)
@@ -461,7 +462,7 @@ namespace _1RM.View.ServerList
             Execute.OnUIThread(() =>
             {
                 // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource).Refresh();
+                CollectionViewSource.GetDefaultView((this.View as ServerListPageView)!.LvServerCards.ItemsSource).Refresh();
                 // invoke ServerListPageView.cs => ServerListItemSource_OnFilter
             });
         }

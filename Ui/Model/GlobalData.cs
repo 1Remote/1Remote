@@ -113,8 +113,7 @@ namespace _1RM.Model
         /// reload data based on `LastReadFromDataSourceMillisecondsTimestamp` and `DataSourceDataUpdateTimestamp`
         /// return true if read data
         /// </summary>
-        /// <param name="focus"></param>
-        public bool ReloadServerList(bool focus = false)
+        public bool ReloadServerList(bool force = false)
         {
             try
             {
@@ -125,7 +124,7 @@ namespace _1RM.Model
 
 
                 var needRead = false;
-                if (focus == false)
+                if (force == false)
                 {
                     needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
                     foreach (var additionalSource in _sourceService.AdditionalSources)
@@ -133,7 +132,7 @@ namespace _1RM.Model
                         // 断线的数据源，除非强制读取，否则都忽略，断线的数据源在 timer 里会自动重连
                         if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
                         {
-                            if (!focus) continue;
+                            if (!force) continue;
                             additionalSource.Value.Database_SelfCheck();
                         }
 
@@ -144,10 +143,10 @@ namespace _1RM.Model
                     }
                 }
 
-                if (focus || needRead)
+                if (force || needRead)
                 {
                     // read from db
-                    VmItemList = _sourceService.GetServers(focus);
+                    VmItemList = _sourceService.GetServers(force);
                     LocalityConnectRecorder.Cleanup();
                     ReadTagsFromServers();
                     OnDataReloaded?.Invoke();
@@ -210,20 +209,19 @@ namespace _1RM.Model
                     VmItemList.Add(@new);
                     IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
                     IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-
-
                     if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
                         && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
                     {
                         // if is additional database and need to set up group by database name!
                         IoC.Get<ServerListPageViewModel>().ApplySort();
                     }
+                    IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource(true);
                 }
             }
 
             if (needReload)
             {
-                ReloadServerList(focus: true);
+                ReloadServerList(force: true);
             }
             else
             {
