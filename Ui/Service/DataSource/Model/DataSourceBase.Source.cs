@@ -95,10 +95,10 @@ namespace _1RM.Service.DataSource.Model
         /// 返回服务器信息(服务器信息已指向数据源)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ProtocolBaseViewModel> GetServers(bool focus = false)
+        public IEnumerable<ProtocolBaseViewModel> GetServers(bool force = false)
         {
             if (Status != EnumDatabaseStatus.OK
-                || focus == false && !NeedRead())
+                || force == false && !NeedRead())
             {
                 return CachedProtocols;
             }
