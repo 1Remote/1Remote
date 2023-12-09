@@ -11,12 +11,6 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro%E2%80%90ZhCn)
 
 1Remote is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions supporting number of different protocols.
 
-```[SHELL]
-Since word `pre-mortem` has a awful meaning and `PRemoteM` is not easy to remember or spell.
-
-This App Will Rename to 1Remote in the feature..
-```
-
 ## Features
 
 - Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://1remote.org/usage/protocol/especial/remoteapp/), [NoMachine and other app](https://1remote.org/usage/protocol/especial/app/)
