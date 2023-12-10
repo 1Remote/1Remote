@@ -210,8 +210,6 @@ namespace _1RM.View.Host
                     if (o is Window window)
                     {
                         window.WindowState = WindowState.Minimized;
-                        if (SelectedItem?.Content != null)
-                            SelectedItem.Content.ToggleAutoResize(false);
                     }
                 });
             }

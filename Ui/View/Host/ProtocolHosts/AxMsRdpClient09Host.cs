@@ -167,7 +167,7 @@ namespace _1RM.View.Host.ProtocolHosts
             this.ParentWindow?.FlashIfNotActive();
 
             _lastLoginTime = DateTime.Now;
-            _loginResizeTimer?.Start();
+            _loginResizeTimer.Start();
 
             _flagHasConnected = true;
             Execute.OnUIThread(() =>
@@ -187,7 +187,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnRdpClientLoginComplete(object? sender, EventArgs e)
         {
-            SimpleLogHelper.Debug("RDP Host:  RdpOnOnLoginComplete");
+            SimpleLogHelper.Debug("RDP Host:  OnRdpClientLoginComplete");
 
             OnCanResizeNowChanged?.Invoke();
             RdpHost.Visibility = Visibility.Visible;

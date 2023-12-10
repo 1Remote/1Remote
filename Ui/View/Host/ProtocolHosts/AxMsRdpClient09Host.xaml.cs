@@ -93,19 +93,35 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _rdpSettings = rdp;
 
-            _loginResizeTimer = new Timer(300) {Enabled = false, AutoReset = false};
+            _loginResizeTimer = new Timer(300) { Enabled = false, AutoReset = false };
             _loginResizeTimer.Elapsed += (sender, args) =>
             {
                 _loginResizeTimer.Stop();
                 try
                 {
-                    ReSizeRdpToControlSize();
+                    var nw = (uint)(_rdpClient?.Width ?? 0);
+                    var nh = (uint)(_rdpClient?.Height ?? 0);
+                    // tip: the control default width is 288
+                    if (_rdpClient?.DesktopWidth > nw
+                        || _rdpClient?.DesktopHeight > nh)
+                    {
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer start run... {_rdpClient?.DesktopWidth}, {nw}, {_rdpClient?.DesktopHeight}, {nh}");
+                        ReSizeRdpToControlSize();
+                    }
+                    else
+                    {
+                        _lastLoginTime = DateTime.MinValue;
+                    }
                 }
                 finally
                 {
                     if (DateTime.Now < _lastLoginTime.AddMinutes(1))
                     {
                         _loginResizeTimer.Start();
+                    }
+                    else
+                    {
+                        SimpleLogHelper.DebugWarning($@"_loginResizeTimer stop");
                     }
                 }
             };
@@ -467,13 +483,13 @@ namespace _1RM.View.Host.ProtocolHosts
                             height = 600;
 
 
-                        if (isReconnecting == true)
-                        {
-                            // if isReconnecting == true, then width is DesktopWidth, ScaleFactor should be 100
-                            _rdpClient.DesktopWidth = (int)(width);
-                            _rdpClient.DesktopHeight = (int)(height);
-                        }
-                        else
+                        //if (isReconnecting == true)
+                        //{
+                        //    // if isReconnecting == true, then width is DesktopWidth, ScaleFactor should be 100
+                        //    _rdpClient.DesktopWidth = (int)(width);
+                        //    _rdpClient.DesktopHeight = (int)(height);
+                        //}
+                        //else
                         {
                             // if isReconnecting == false, then width is Tab width, true width = Tab width * ScaleFactor
                             if (_rdpSettings.IsThisTimeConnWithFullScreen())
@@ -481,12 +497,13 @@ namespace _1RM.View.Host.ProtocolHosts
                                 var size = GetScreenSizeIfRdpIsFullScreen();
                                 _rdpClient.DesktopWidth = size.Width;
                                 _rdpClient.DesktopHeight = size.Height;
-                                SimpleLogHelper.Debug($"RDP Host: init Display set FullScreen DesktopWidth = {size.Width},  DesktopHeight = {size.Height}");
+                                SimpleLogHelper.DebugInfo($"RDP Host: init Display set FullScreen DesktopWidth = {_rdpClient.DesktopWidth},  DesktopHeight = {_rdpClient.DesktopHeight}");
                             }
                             else
                             {
                                 _rdpClient.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
                                 _rdpClient.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
+                                SimpleLogHelper.DebugInfo(@$"RDP Host: init Display set DesktopWidth = {width} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopWidth},  DesktopHeight = {height} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopHeight},     RdpControl.Width = {_rdpClient.Width}, RdpControl.Height = {_rdpClient.Height}");
                                 if (_primaryScaleFactor > 100)
                                 {
                                     // size compensation since https://github.com/1Remote/1Remote/issues/537
@@ -502,13 +519,11 @@ namespace _1RM.View.Host.ProtocolHosts
                                     }
                                     if (c < _rdpClient.DesktopWidth && c < _rdpClient.DesktopHeight)
                                     {
-                                        _rdpClient.DesktopWidth -= c;
+                                        //_rdpClient.DesktopWidth -= c;
                                         _rdpClient.DesktopHeight -= c;
                                     }
+                                    SimpleLogHelper.DebugInfo($"RDP Host: init Display set DesktopWidth = {_rdpClient.DesktopWidth},  DesktopHeight = {_rdpClient.DesktopHeight}");
                                 }
-                                SimpleLogHelper.Debug(@$"RDP Host: init Display set DesktopWidth = {width} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopWidth},  DesktopHeight = {height} * {(_primaryScaleFactor / 100.0):F3} = {_rdpClient.DesktopHeight}
-RdpControl.Width = {_rdpClient.Width}, RdpControl.Height = {_rdpClient.Height}
-");
                             }
                         }
 
@@ -886,7 +901,6 @@ RdpControl.Width = {_rdpClient.Width}, RdpControl.Height = {_rdpClient.Height}
 
             Task.Factory.StartNew(() =>
             {
-                SimpleLogHelper.Debug($@"ReSizeRdpToControlSize start run...");
                 while (true)
                 {
                     // Window drag an drop resize only after mouse button release, 当拖动最大化的窗口时，需检测鼠标按键释放后再调整分辨率，详见：https://github.com/1Remote/1Remote/issues/553
@@ -925,21 +939,27 @@ RdpControl.Width = {_rdpClient.Width}, RdpControl.Height = {_rdpClient.Height}
         {
             if (w <= 0 || h <= 0) return;
 
+            lock (_resizeEndLocker)
+            {
+                if (_canAutoResizeByWindowSizeChanged == false) return;
+            }
+
+            _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
+            var newScaleFactor = _primaryScaleFactor;
+            if (this._rdpSettings is { IsScaleFactorFollowSystem: false, ScaleFactorCustomValue: { } })
+                newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
+            bool check = focus
+                         || _rdpClient?.DesktopWidth != w
+                         || _rdpClient?.DesktopHeight != h
+                         || newScaleFactor != _lastScaleFactor;
+            SimpleLogHelper.DebugInfo($@"{check}, SetRdpResolution: RDP UpdateSessionDisplaySettings with: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
             Execute.OnUIThreadSync(() =>
             {
                 try
                 {
-                    _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
-                    var newScaleFactor = _primaryScaleFactor;
-                    if (this._rdpSettings is {IsScaleFactorFollowSystem: false, ScaleFactorCustomValue: { }})
-                        newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                    if (focus
-                        || _rdpClient?.DesktopWidth != w
-                        || _rdpClient?.DesktopHeight != h
-                        || newScaleFactor != _lastScaleFactor)
+                    if (check)
                     {
-                        SimpleLogHelper.Debug(
-                            $@"SetRdpResolution: RDP UpdateSessionDisplaySettings with: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
+                        SimpleLogHelper.Debug($@"SetRdpResolution: RDP UpdateSessionDisplaySettings with: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
                         _lastScaleFactor = newScaleFactor;
                         _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                     }

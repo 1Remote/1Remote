@@ -207,7 +207,7 @@ namespace _1RM.Service
         public TabWindowView? GetTabByConnectionId(string connectionId)
         {
             lock (_dictLock)
-            return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
+                return _token2TabWindows.Values.FirstOrDefault(x => x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId));
         }
     }
 }
