@@ -34,6 +34,11 @@ namespace _1RM.View.Host
 
             this.MinWidth = this.MinHeight = 300;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;
+            if (IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
+            {
+                this.WindowState = IoC.Get<LocalityService>().TabWindowState;
+            }
 
             this.Loaded += (_, _) =>
             {
@@ -63,7 +68,11 @@ namespace _1RM.View.Host
 
                 StateChanged += delegate
                 {
-                    if (this.WindowState == WindowState.Minimized) return;
+                    if (this.WindowState == WindowState.Minimized)
+                    {
+                        Vm?.SelectedItem?.Content?.ToggleAutoResize(false);
+                        return;
+                    }
 
                     if (Vm.SelectedItem?.Content.CanResizeNow() != true)
                     {
@@ -71,7 +80,6 @@ namespace _1RM.View.Host
                     }
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
                     IoC.Get<LocalityService>().TabWindowState = this.WindowState;
-                    IoC.Get<LocalityService>().TabWindowStyle = this.WindowStyle;
                     SimpleLogHelper.Debug($"(Window state changed)Tab size change to:W = {this.Width}, H = {this.Height}");
                 };
 
@@ -117,14 +125,6 @@ namespace _1RM.View.Host
 
         private void InitWindowSizeOnLoaded()
         {
-            var ws = IoC.Get<LocalityService>().TabWindowState;
-            if (ws != System.Windows.WindowState.Minimized)
-            {
-                this.WindowState = ws;
-                this.WindowStyle = IoC.Get<LocalityService>().TabWindowStyle;
-            }
-
-
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             var leftTopOfCurrentScreen = new Point(screenEx.VirtualWorkingArea.X, screenEx.VirtualWorkingArea.Y);
             var rightBottomOfCurrentScreen = new Point(screenEx.VirtualWorkingArea.X + screenEx.VirtualWorkingArea.Width, screenEx.VirtualWorkingArea.Y + screenEx.VirtualWorkingArea.Height);
