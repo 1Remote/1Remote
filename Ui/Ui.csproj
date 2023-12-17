@@ -73,7 +73,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<AssemblyVersion>1.0.0.31210</AssemblyVersion>
+		<AssemblyVersion>1.0.0.31217</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<Authors>Shawn</Authors>

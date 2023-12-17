@@ -334,3 +334,5 @@ append blank after value;append blank after value;在值后添加空格;;;;;;;;
 Do you want to replace the current parameter list with preset value?;Do you want to replace the current parameter list with preset value?;是否将当前参数列表替换为预设值？;;;;;;;;
 One option per line;One option per line;一行一个备选项;;;;;;;;
 Use vertical lines to separate descriptions;Use vertical lines to separate descriptions(value|description);用竖线隔开值和描述(值|描述);;;;;;;;
+Automatically focus on the content when selecting a tab;Automatically focus on the content when selecting a tab;选择 tab 后自动聚焦内容;;;;;;;;
+Copy the port along with the address when copying;Copy the port along with the address when copying;复制地址时同时复制端口;;;;;;;;

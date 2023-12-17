@@ -308,4 +308,6 @@
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">Chcete nahradit aktuální seznam parametrů přednastavenou hodnotou?</s:String>
     <s:String x:Key="One option per line">Jedna možnost na řádek</s:String>
     <s:String x:Key="Use vertical lines to separate descriptions">K oddělení popisů použijte svislé čáry (hodnota|popis)</s:String>
+    <s:String x:Key="Automatically focus on the content when selecting a tab">Při výběru karty se automaticky zaměří na obsah</s:String>
+    <s:String x:Key="Copy the port along with the address when copying">Při kopírování zkopírujte port spolu s adresou</s:String>
 </ResourceDictionary>

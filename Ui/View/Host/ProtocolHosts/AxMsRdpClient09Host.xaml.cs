@@ -948,31 +948,32 @@ namespace _1RM.View.Host.ProtocolHosts
             var newScaleFactor = _primaryScaleFactor;
             if (this._rdpSettings is { IsScaleFactorFollowSystem: false, ScaleFactorCustomValue: { } })
                 newScaleFactor = this._rdpSettings.ScaleFactorCustomValue ?? _primaryScaleFactor;
-            bool check = focus
+            bool needUpdate = focus
                          || _rdpClient?.DesktopWidth != w
                          || _rdpClient?.DesktopHeight != h
                          || newScaleFactor != _lastScaleFactor;
-            SimpleLogHelper.DebugInfo($@"{check}, SetRdpResolution: RDP UpdateSessionDisplaySettings with: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
-            Execute.OnUIThreadSync(() =>
+            if (newScaleFactor != 100)
             {
-                try
+                // in this case we allow 1pix error
+                needUpdate = focus
+                        || Math.Abs((int)(_rdpClient?.DesktopWidth ?? 0) - (int)w) > 1
+                        || Math.Abs((int)(_rdpClient?.DesktopHeight ?? 0) - (int)h) > 1
+                        || newScaleFactor != _lastScaleFactor;
+            }
+            SimpleLogHelper.Debug($@"SetRdpResolution needUpdate = {needUpdate}, UpdateSessionDisplaySettings, by: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
+            if (needUpdate)
+                Execute.OnUIThreadSync(() =>
                 {
-                    if (check)
+                    try
                     {
-                        SimpleLogHelper.Debug($@"SetRdpResolution: RDP UpdateSessionDisplaySettings with: W = {_rdpClient?.DesktopWidth} -> {w}, H = {_rdpClient?.DesktopHeight} -> {h}, ScaleFactor = {_lastScaleFactor} -> {newScaleFactor}, focus = {focus}");
                         _lastScaleFactor = newScaleFactor;
                         _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        SimpleLogHelper.Debug($@"SetRdpResolution: no need to run");
+                        SimpleLogHelper.Error(e);
                     }
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
-            });
+                });
         }
 
         private System.Drawing.Rectangle GetScreenSizeIfRdpIsFullScreen()

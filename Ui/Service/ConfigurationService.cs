@@ -58,6 +58,15 @@ namespace _1RM.Service
 
         public int LogLevel = (int)SimpleLogHelper.EnumLogLevel.Warning;
         #endregion
+
+        // Misc
+        //[DefaultValue(true)]
+        //[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        //public bool TabAutoFocusContent= true;
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool CopyPortWhenCopyAddress = true;
     }
 
     public class LauncherConfig

@@ -96,6 +96,30 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        //public bool TabAutoFocusContent
+        //{
+        //    get => _configurationService.General.TabAutoFocusContent;
+        //    set
+        //    {
+        //        if (SetAndNotifyIfChanged(ref _configurationService.General.TabAutoFocusContent, value))
+        //        {
+        //            _configurationService.Save();
+        //        }
+        //    }
+        //}
+
+        public bool CopyPortWhenCopyAddress
+        {
+            get => _configurationService.General.CopyPortWhenCopyAddress;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.CopyPortWhenCopyAddress, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         private RelayCommand? _cmdExploreTo = null;
         public RelayCommand CmdExploreTo
         {

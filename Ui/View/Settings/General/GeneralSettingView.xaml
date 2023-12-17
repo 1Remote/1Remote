@@ -9,7 +9,7 @@
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=Shawn.Utils"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:GeneralSettingViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="850" d:DesignWidth="800">
     <Grid Background="{DynamicResource BackgroundBrush}">
         <StackPanel>
 
@@ -156,6 +156,29 @@
                     <ComboBoxItem>Info</ComboBoxItem>
                     <ComboBoxItem>Warning</ComboBoxItem>
                 </ComboBox>
+            </Grid>
+
+
+
+
+            <TextBlock Text="Misc" Style="{StaticResource BlockTitleColumn}" />
+            <!--<Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="1" IsChecked="{Binding TabAutoFocusContent, Mode=TwoWay}" Content="{DynamicResource 'Automatically focus on the content when selecting a tab'}" VerticalAlignment="Center"></CheckBox>
+            </Grid>-->
+
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="1" IsChecked="{Binding CopyPortWhenCopyAddress, Mode=TwoWay}" Content="{DynamicResource 'Copy the port along with the address when copying'}" VerticalAlignment="Center"></CheckBox>
             </Grid>
         </StackPanel>
     </Grid>

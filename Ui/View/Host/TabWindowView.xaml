@@ -4,7 +4,6 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-                       xmlns:system="clr-namespace:System;assembly=mscorlib"
                        xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                        xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                        xmlns:host="clr-namespace:_1RM.View.Host"
@@ -143,14 +142,6 @@
 
                                     <!--header item content-->
                                     <Border Grid.Column="2" Padding="0" Margin="0 0 5 0">
-                                        <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}"
-                                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                                                          ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                                          VerticalAlignment="Center"
-                                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                                                          Margin="{TemplateBinding Control.Padding }"
-                                                          x:Name="contentPresenter" />-->
                                         <TextBlock HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"
