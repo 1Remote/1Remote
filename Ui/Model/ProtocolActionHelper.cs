@@ -13,46 +13,48 @@ namespace _1RM.Model;
 
 public static class ProtocolActionHelper
 {
-    public static List<ProtocolAction> GetActions(this ProtocolBaseViewModel vm)
+    public static List<ProtocolAction> GetActions(this ProtocolBase server, bool forTabHeader = false)
     {
-        var server = vm.Server;
         bool writable = server.DataSource?.IsWritable != false;
         #region Build Actions
         var actions = new List<ProtocolAction>();
         {
-            if (IoC.Get<SessionControlService>().TabWindowCount > 0)
+            if (!forTabHeader)
             {
-                actions.Add(new ProtocolAction(
-                    actionName: IoC.Translate("Connect (New window)"),
-                    action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - New window", assignTabToken: DateTime.Now.Ticks.ToString()); }
-                ));
-            }
-
-            if (server is ProtocolBaseWithAddressPortUserPwd { AlternateCredentials.Count: > 0 } protocol)
-            {
-                foreach (var credential in protocol.AlternateCredentials)
+                if (IoC.Get<SessionControlService>().TabWindowCount > 0)
                 {
                     actions.Add(new ProtocolAction(
-                        actionName: IoC.Translate("Connect") + $" ({IoC.Translate("with alternative")} `{credential.Name}`)",
-                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - AlternateCredentials", assignCredentialName: credential.Name); }
+                        actionName: IoC.Translate("Connect (New window)"),
+                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - New window", assignTabToken: DateTime.Now.Ticks.ToString()); }
                     ));
                 }
-            }
 
-            // external runners
-            var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
-            if (protocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
-                && protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
-            {
-                //actions.Add(new ProtocolAction(IoC.Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name, fromView: nameof(LauncherWindowView)); }));
-                foreach (var runner in protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
+                if (server is ProtocolBaseWithAddressPortUserPwd { AlternateCredentials.Count: > 0 } protocol)
                 {
-                    if (runner is InternalDefaultRunner) continue;
-                    if (runner is ExternalRunner { IsExeExisted: false }) continue;
-                    actions.Add(new ProtocolAction(IoC.Translate("Connect") + $" (via {runner.Name})", () =>
+                    foreach (var credential in protocol.AlternateCredentials)
                     {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - {runner.Name}", assignRunnerName: runner.Name);
-                    }));
+                        actions.Add(new ProtocolAction(
+                            actionName: IoC.Translate("Connect") + $" ({IoC.Translate("with alternative")} `{credential.Name}`)",
+                            action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - AlternateCredentials", assignCredentialName: credential.Name); }
+                        ));
+                    }
+                }
+
+                // external runners
+                var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
+                if (protocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
+                    && protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
+                {
+                    //actions.Add(new ProtocolAction(IoC.Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name, fromView: nameof(LauncherWindowView)); }));
+                    foreach (var runner in protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
+                    {
+                        if (runner is InternalDefaultRunner) continue;
+                        if (runner is ExternalRunner { IsExeExisted: false }) continue;
+                        actions.Add(new ProtocolAction(IoC.Translate("Connect") + $" (via {runner.Name})", () =>
+                        {
+                            GlobalEventHelper.OnRequestServerConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - Action - {runner.Name}", assignRunnerName: runner.Name);
+                        }));
+                    }
                 }
             }
 
@@ -64,7 +66,13 @@ public static class ProtocolActionHelper
                         IoC.Get<MainWindowViewModel>()?.ShowMe();
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                 }));
-                if (writable)
+                actions.Add(new ProtocolAction(IoC.Translate("server_card_operate_duplicate"), () =>
+                {
+                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
+                        IoC.Get<MainWindowViewModel>()?.ShowMe();
+                    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
+                }));
+                if (!forTabHeader)
                 {
                     actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
                     {
@@ -74,12 +82,6 @@ public static class ProtocolActionHelper
                         }
                     }));
                 }
-                actions.Add(new ProtocolAction(IoC.Translate("server_card_operate_duplicate"), () =>
-                {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
-                    GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
-                }));
             }
         };
 
@@ -91,7 +93,10 @@ public static class ProtocolActionHelper
                 {
                     try
                     {
-                        Clipboard.SetDataObject($"{protocolServerWithAddrPortBase.Address}:{protocolServerWithAddrPortBase.GetPort()}");
+                        Clipboard.SetDataObject(
+                            IoC.TryGet<ConfigurationService>()?.General.CopyPortWhenCopyAddress == false
+                                ? $"{protocolServerWithAddrPortBase.Address}"
+                                : $"{protocolServerWithAddrPortBase.Address}:{protocolServerWithAddrPortBase.GetPort()}");
                     }
                     catch (Exception)
                     {
@@ -124,16 +129,15 @@ public static class ProtocolActionHelper
                 actions.Add(new ProtocolAction(IoC.Translate("server_card_operate_copy_password"),
                     action: async () =>
                     {
-                        if (await SecondaryVerificationHelper.VerifyAsyncUi() == true)
+                        if (await SecondaryVerificationHelper.VerifyAsyncUi() != true) return;
+
+                        try
                         {
-                            try
-                            {
-                                Clipboard.SetDataObject(UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
+                            Clipboard.SetDataObject(UnSafeStringEncipher.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
                         }
                     }));
             }
@@ -141,13 +145,19 @@ public static class ProtocolActionHelper
 
 
         actions.Add(new ProtocolAction(IoC.Translate("Create desktop shortcut"), () =>
-            {
-                var iconPath= AppStartupHelper.MakeIcon(server.Id, server.IconImg);
-                AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
-            }));
+        {
+            var iconPath = AppStartupHelper.MakeIcon(server.Id, server.IconImg);
+            AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
+        }));
 
         #endregion Build Actions
 
         return actions;
+    }
+
+    public static List<ProtocolAction> GetActions(this ProtocolBaseViewModel vm)
+    {
+        var server = vm.Server;
+        return server.GetActions();
     }
 }

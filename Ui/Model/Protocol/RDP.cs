@@ -174,7 +174,7 @@ namespace _1RM.Model.Protocol
         }
 
 
-        private bool? _isPinTheConnectionBarByDefault = true;
+        private bool? _isPinTheConnectionBarByDefault = false;
         public bool? IsPinTheConnectionBarByDefault
         {
             get => _isPinTheConnectionBarByDefault;

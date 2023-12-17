@@ -308,4 +308,6 @@
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">Voulez-vous remplacer la liste de paramètres actuelle par une valeur prédéfinie ?</s:String>
     <s:String x:Key="One option per line">Une option par ligne</s:String>
     <s:String x:Key="Use vertical lines to separate descriptions">Utilisez des lignes verticales pour séparer les descriptions (valeur | description)</s:String>
+    <s:String x:Key="Automatically focus on the content when selecting a tab">Se concentrer automatiquement sur le contenu lors de la sélection d'un onglet</s:String>
+    <s:String x:Key="Copy the port along with the address when copying">Copiez le port avec l'adresse lors de la copie</s:String>
 </ResourceDictionary>

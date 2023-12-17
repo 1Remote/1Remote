@@ -308,4 +308,6 @@
     <s:String x:Key="Do you want to replace the current parameter list with preset value?">是否将当前参数列表替换为预设值？</s:String>
     <s:String x:Key="One option per line">一行一个备选项</s:String>
     <s:String x:Key="Use vertical lines to separate descriptions">用竖线隔开值和描述(值|描述)</s:String>
+    <s:String x:Key="Automatically focus on the content when selecting a tab">选择 tab 后自动聚焦内容</s:String>
+    <s:String x:Key="Copy the port along with the address when copying">复制地址时同时复制端口</s:String>
 </ResourceDictionary>

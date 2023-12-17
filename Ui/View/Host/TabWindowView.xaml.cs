@@ -40,12 +40,13 @@ namespace _1RM.View.Host
                 this.WindowState = IoC.Get<LocalityService>().TabWindowState;
             }
 
+            Focusable = true;
             this.Loaded += (_, _) =>
             {
                 InitWindowSizeOnLoaded();
                 TimerInitOnLoaded();
                 _myHandle = new WindowInteropHelper(this).Handle;
-
+                Keyboard.Focus(this);
 
                 // remember window size when size changed
                 SizeChanged += (_, _) =>

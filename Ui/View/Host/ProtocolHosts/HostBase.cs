@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Ribbon;
 using System.Windows.Data;
 using System.Windows.Interop;
 using _1RM.Model;
@@ -110,7 +111,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var cb = new CheckBox
                 {
-                    Content = IoC.TryGet<LanguageService>()?.Translate("Show XXX button", IoC.TryGet<LanguageService>()?.Translate("Reconnect") ?? ""),
+                    Content = IoC.Translate("Show XXX button", IoC.Translate("Reconnect") ?? ""),
                     IsHitTestVisible = false,
                 };
 
@@ -131,7 +132,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var cb = new CheckBox
                 {
-                    Content = IoC.TryGet<LanguageService>()?.Translate("Show XXX button", IoC.TryGet<LanguageService>()?.Translate("Close") ?? ""),
+                    Content = IoC.Translate("Show XXX button", IoC.Translate("Close") ?? ""),
                     IsHitTestVisible = false,
                 };
 
@@ -146,6 +147,22 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     Header = cb,
                     Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowCloseButton = !SettingsPage.TabHeaderShowCloseButton; }),
+                });
+            }
+
+            //MenuItems.Add(new RibbonApplicationSplitMenuItem());
+
+            var actions = protocolServer.GetActions(true);
+            foreach (var action in actions)
+            {
+                var tb = new TextBlock()
+                {
+                    Text = IoC.Translate(action.ActionName),
+                };
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
+                {
+                    Header = tb,
+                    Command = new RelayCommand((o) => { action.Run(); }),
                 });
             }
         }
