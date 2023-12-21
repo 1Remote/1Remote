@@ -157,7 +157,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 var tb = new TextBlock()
                 {
-                    Text = IoC.Translate(action.ActionName),
+                    Text = action.ActionName,
                 };
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {

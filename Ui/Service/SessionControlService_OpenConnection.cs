@@ -71,6 +71,7 @@ namespace _1RM.Service
                 catch (Exception e)
                 {
                     MsAppCenterHelper.Error(e);
+                    MessageBoxHelper.ErrorAlert(e.Message + "\r\n while Run mstsc.exe");
                 }
             }
         }
