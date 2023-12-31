@@ -419,45 +419,44 @@ namespace _1RM.View.ServerList
         public void RefreshCollectionViewSource(bool force = false)
         {
             var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
-            if (this.View is not ServerListPageView
-                || _lastKeyword == filter)
+            if (this.View is not ServerListPageView)
             {
-                if (force == false)
-                    return;
+                return;
             }
 
-            lock (this)
-            {
-                List<ProtocolBaseViewModel> servers;
-                if (filter.StartsWith(_lastKeyword))
+            if(_lastKeyword != filter || force)
+                lock (this)
                 {
-                    // calc only visible servers when filter is appended
-                    servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
-                    foreach (var protocolBaseViewModel in IoC.Get<GlobalData>().VmItemList)
+                    List<ProtocolBaseViewModel> servers;
+                    if (filter.StartsWith(_lastKeyword))
                     {
-                        if (!servers.Contains(protocolBaseViewModel))
-                            servers.Add(protocolBaseViewModel);
+                        // calc only visible servers when filter is appended
+                        servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
+                        foreach (var protocolBaseViewModel in IoC.Get<GlobalData>().VmItemList)
+                        {
+                            if (!servers.Contains(protocolBaseViewModel))
+                                servers.Add(protocolBaseViewModel);
+                        }
+                    }
+                    else
+                    {
+                        servers = IoC.Get<GlobalData>().VmItemList;
+                        IsServerVisible.Clear();
+                    }
+                    _lastKeyword = filter;
+
+                    var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
+                    TagFilters = tmp.TagFilterList;
+                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, false);
+                    for (int i = 0; i < servers.Count; i++)
+                    {
+                        var vm = servers[i];
+                        if (IsServerVisible.ContainsKey(vm))
+                            IsServerVisible[vm] = matchResults[i].Item1;
+                        else
+                            IsServerVisible.Add(vm, matchResults[i].Item1);
                     }
                 }
-                else
-                {
-                    servers = IoC.Get<GlobalData>().VmItemList;
-                    IsServerVisible.Clear();
-                }
-                _lastKeyword = filter;
-
-                var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
-                TagFilters = tmp.TagFilterList;
-                var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, false);
-                for (int i = 0; i < servers.Count; i++)
-                {
-                    var vm = servers[i];
-                    if (IsServerVisible.ContainsKey(vm))
-                        IsServerVisible[vm] = matchResults[i].Item1;
-                    else
-                        IsServerVisible.Add(vm, matchResults[i].Item1);
-                } 
-            }
 
             Execute.OnUIThread(() =>
             {
