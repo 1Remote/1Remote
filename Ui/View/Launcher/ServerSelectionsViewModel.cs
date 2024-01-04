@@ -102,7 +102,6 @@ namespace _1RM.View.Launcher
             {
                 if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
-                    RaisePropertyChanged(nameof(SelectedItem));
                     CalcNoteFieldVisibility();
                     if (SelectedItem != null && this.View is ServerSelectionsView view)
                     {
@@ -118,6 +117,7 @@ namespace _1RM.View.Launcher
                             }
                         });
                     }
+                    RaisePropertyChanged(nameof(SelectedItem));
                 }
             }
         }

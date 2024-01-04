@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using _1RM.Service;
@@ -23,8 +24,15 @@ namespace _1RM.Model.Protocol.Base
             get => _address;
             set
             {
+                var old = _address;
                 if (SetAndNotifyIfChanged(ref _address, value))
+                {
+                    if (string.IsNullOrEmpty(DisplayName) || DisplayName == old)
+                    {
+                        DisplayName = value;
+                    }
                     RaisePropertyChanged(nameof(SubTitle));
+                }
             }
         }
 
