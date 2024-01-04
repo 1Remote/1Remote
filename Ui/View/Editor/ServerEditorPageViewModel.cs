@@ -312,7 +312,7 @@ namespace _1RM.View.Editor
             get
             {
                 if (_cmdSave != null) return _cmdSave;
-                _cmdSave = new RelayCommand((o) =>
+                _cmdSave = new((o) =>
                 {
                     if (string.IsNullOrEmpty(Server.DisplayName) || EditorViewModel?.CanSave() != true)
                         return;

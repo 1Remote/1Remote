@@ -112,7 +112,6 @@ namespace _1RM.Controls.NoteDisplay
         private View? _currentView = null;
         public void SwitchToView(NoteDisplayAndEditor.View v)
         {
-            if (v == _currentView) return;
             ButtonClose.Visibility = CloseButtonVisibility;
             ButtonEdit.Visibility = EditButtonVisibility;
             Execute.OnUIThreadSync(() =>
