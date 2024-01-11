@@ -137,6 +137,7 @@ namespace _1RM.Model.Protocol.Base
 
         public virtual bool SetCredential(in Credential credential)
         {
+            Name = credential.Name;
             var a = SetAddress(credential);
             var b = SetPort(credential);
             var c = SetUserName(credential);
