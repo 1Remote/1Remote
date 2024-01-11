@@ -222,6 +222,8 @@ namespace _1RM.Service
                     }
 
                     p.SetCredential(c);
+                    if (string.IsNullOrEmpty(assignCredentialName) == false)
+                        p.DisplayName += $" ({c.Name})";
                 }
             }
 

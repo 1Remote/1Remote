@@ -15,6 +15,7 @@ using Stylet;
 using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using _1RM.Service.DataSource;
 using _1RM.Service.Locality;
+using _1RM.Service.DataSource.DAO.Dapper;
 
 namespace _1RM.Service
 {
@@ -143,6 +144,17 @@ namespace _1RM.Service
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (!_connectionId2Hosts.ContainsKey(connectionId))
                 return false;
+
+            // FOR RDP with alternative account
+            if (assignCredential != null)
+            {
+                if (_connectionId2Hosts[connectionId].ProtocolServer is ProtocolBaseWithAddressPort p
+                    && assignCredential.Address != p.Address)
+                    return false;
+                if (_connectionId2Hosts[connectionId].ProtocolServer is ProtocolBaseWithAddressPortUserPwd p2
+                    && assignCredential.UserName != p2.UserName)
+                    return false;
+            }
 
             SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {connectionId}");
             // Activate

@@ -249,6 +249,7 @@ namespace _1RM.Service
             var connectableAddress = await FindFirstConnectableAddressAsync(credentials, protocol.DisplayName);
             if (connectableAddress != null)
             {
+                newCredential.Name = connectableAddress.Name;
                 newCredential.SetAddress(connectableAddress);
                 newCredential.SetPort(connectableAddress);
                 return newCredential;
