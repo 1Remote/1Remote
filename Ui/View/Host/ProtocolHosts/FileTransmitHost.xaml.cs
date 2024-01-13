@@ -69,9 +69,25 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             try
             {
-                var fileName = (e.Data.GetData(DataFormats.FileDrop) as System.Array)?.GetValue(0)?.ToString();
-                if (fileName != null)
-                    this._vmRemote.DoUpload(new List<string>() { fileName });
+                var array = e.Data.GetData(DataFormats.FileDrop) as System.Array;
+                if (array == null)
+                    return;
+                var list = new List<string>();
+                foreach (var o in array)
+                {
+                    var fileName = o.ToString();
+                    if (System.IO.File.Exists(fileName))
+                        list.Add(fileName);
+                    else if (System.IO.Directory.Exists(fileName))
+                    {
+                        var files = System.IO.Directory.GetFiles(fileName, "*", System.IO.SearchOption.AllDirectories);
+                        list.AddRange(files);
+                    }
+                }
+
+                if (list.Count == 0)
+                    return;
+                this._vmRemote.DoUpload(list);
             }
             catch (Exception ex)
             {
