@@ -137,7 +137,7 @@
     <s:String x:Key="Use private key">Użyj klucza prywatnego</s:String>
     <s:String x:Key="Private key">Klucz prywatny</s:String>
     <s:String x:Key="Open SFTP when connected">Otwórz SFTP podczas połączenia</s:String>
-    <s:String x:Key="server_editor_display_full_screen_flag">Tryb pełnoekranowy </s:String>
+    <s:String x:Key="server_editor_display_full_screen_flag">Tryb pełnoekranowy</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Dezaktywuj</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Aktywuj (jeden monitor)</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">Aktywuj (kilka monitorów)</s:String>
@@ -206,7 +206,7 @@
     <s:String x:Key="guidance_feature_launcher_select">Wybierz wpisy przez</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">Połącz przez</s:String>
     <s:String x:Key="guidance_feature_launcher_menu">Menu przez</s:String>
-    <s:String x:Key="guidance_feature_tab_demo">Przesuwalna, rozsuwalna, przypinalna sesja zdalna dla RDP, SSH, VNC, sFTP... </s:String>
+    <s:String x:Key="guidance_feature_tab_demo">Przesuwalna, rozsuwalna, przypinalna sesja zdalna dla RDP, SSH, VNC, sFTP...</s:String>
     <s:String x:Key="guidance_feature_start_setting1">Zatwierdź ustawienia przed pierwszym użyciem.</s:String>
     <s:String x:Key="guidance_feature_start_setting2">To ustawienie można zmienić później w Ustawieniach.</s:String>
     <s:String x:Key="Portable mode">Edycja przenośna</s:String>
