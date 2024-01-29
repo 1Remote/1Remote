@@ -158,7 +158,13 @@ namespace _1RM.View.Editor
                 var type = types.First();
                 for (int i = 1; i < types.Count; i++)
                 {
-                    type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
+                    var type_new = AssemblyHelper.FindCommonBaseClass(type, types[i]);
+                    if (type != type_new && type_new != null)
+                    {
+                        type = type_new;
+                        // 将 Server 转换成这个公共的类型，以便批量编辑时 AlternativeCredentialEditViewModel 能够正确用户名、密码等字段的显示
+                        Server = (ProtocolBase)serverBases[i].Clone();
+                    }
                 }
 
                 Debug.Assert(type == typeof(ProtocolBase) || type.IsSubclassOf(typeof(ProtocolBase)));

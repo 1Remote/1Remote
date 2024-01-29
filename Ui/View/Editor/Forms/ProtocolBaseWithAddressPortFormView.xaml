@@ -27,10 +27,10 @@
                              InputMethod.IsInputMethodEnabled="False"
                              InputScope="Number"/>
                 </Grid>
-
-                <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
-
             </StackPanel>
         </Grid>
+
+        <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
+
     </StackPanel>
 </UserControl>
