@@ -541,12 +541,12 @@ public static class AppArgumentHelper
                 {
                     Type = AppArgumentType.Const,
                     Name = "Password",
-                    Key = "-password",
+                    Key = "-password=",
                     IsNullable = true,
                     Description = "The password to use for authentication.",
                     Value = ProtocolBaseWithAddressPortUserPwd.MACRO_PASSWORD,
                     AddBlankAfterValue = true,
-                    AddBlankAfterKey = true,
+                    AddBlankAfterKey = false,
                 },
                 new AppArgument()
                 {
@@ -556,7 +556,7 @@ public static class AppArgumentHelper
                     IsNullable = true,
                     Value = "-scale=auto",
                     AddBlankAfterValue = true,
-                    AddBlankAfterKey = true,
+                    AddBlankAfterKey = false,
                 },
             };
             var app = new LocalApp()
