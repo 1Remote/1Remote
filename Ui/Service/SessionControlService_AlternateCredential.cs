@@ -236,6 +236,8 @@ namespace _1RM.Service
             if (isPingBeforeConnect == false && isAutoAlternateAddressSwitching == false)
                 return newCredential;
 
+            if (protocol is LocalApp app && app.ShowAddressInput() == false)
+                return newCredential;
 
             // a quick test for the first credential, if pass return directly to avoid window pop
             var ret = await TcpHelper.TestConnectionAsync(newCredential.Address, newCredential.Port, null, 100);

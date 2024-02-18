@@ -293,7 +293,12 @@ namespace _1RM.View.Editor.Forms
                 }
             }
 
-            if (RequiredHostName && !tmpRequiredHostName) Address = "";
+            if (RequiredHostName && !tmpRequiredHostName)
+            {
+                Address = "";
+                IsPingBeforeConnect = false;
+                IsAutoAlternateAddressSwitching = false;
+            }
             if (RequiredPort && !tmpRequiredPort) Port = "";
             if (RequiredUserName && !tmpRequiredUserName) UserName = "";
             if (RequiredPassword && !tmpRequiredPassword) Password = "";
