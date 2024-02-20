@@ -13,6 +13,7 @@ using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
+using System.Windows.Shapes;
 
 namespace _1RM.View.Settings.ProtocolConfig;
 
@@ -28,8 +29,115 @@ public class ExternalRunnerSettingsViewModel
 
         ExternalRunner.PropertyChanged += (sender, args) =>
         {
+            if (args.PropertyName == nameof(Model.ProtocolRunner.ExternalRunner.ExePath))
+            {
+                AutoArguments();
+            }
             IoC.Get<ProtocolConfigurationService>().Save();
         };
+    }
+
+    private void AutoArguments()
+    {
+        if (string.IsNullOrEmpty(ExternalRunner.Arguments))
+        {
+            var path = ExternalRunner.ExePath;
+            var name = new FileInfo(path).Name.ToLower();
+            if (name.IndexOf("winscp", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
+                {
+                    ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
+                }
+                else if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
+                {
+                    ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
+                    if (ExternalRunner is ExternalRunnerForSSH ers)
+                        ers.ArgumentsForPrivateKey = @"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%";
+                }
+                ExternalRunner.RunWithHosting = true;
+            }
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && name.IndexOf("filezilla", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
+                {
+                    ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
+                }
+                else if (ExternalRunner.OwnerProtocolName == SFTP.ProtocolName)
+                {
+                    ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
+                }
+                ExternalRunner.RunWithHosting = false;
+            }
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && ExternalRunner.OwnerProtocolName == SSH.ProtocolName
+                && (name.IndexOf("kitty", StringComparison.OrdinalIgnoreCase) >= 0
+                    || name.IndexOf("putty", StringComparison.OrdinalIgnoreCase) >= 0
+                ))
+            {
+                ExternalRunner.Arguments = @"-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+                if (ExternalRunner is ExternalRunnerForSSH ers)
+                {
+                    // NOT SUPPORTED
+                    ers.ArgumentsForPrivateKey = @"";
+                }
+                ExternalRunner.RunWithHosting = true;
+            }
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && (name.IndexOf("wt.exe", StringComparison.OrdinalIgnoreCase) >= 0
+                    || name == "wt"
+                ))
+            {
+                if (ExternalRunner.OwnerProtocolName == SSH.ProtocolName)
+                {
+                    ExternalRunner.Arguments = @"-w 1 new-tab --title ""%1RM_HOSTNAME%"" --suppressApplicationTitle plink -ssh %1RM_HOSTNAME% -P %1RM_PORT% -%SSH_VERSION% -C -X -no-antispoof -l %1RM_USERNAME% -pw %1RM_PASSWORD%";
+                    if (ExternalRunner is ExternalRunnerForSSH ers && string.IsNullOrEmpty(ers.ArgumentsForPrivateKey))
+                    {
+                        ers.ArgumentsForPrivateKey = @"-w 1 new-tab --title ""%1RM_HOSTNAME%"" --suppressApplicationTitle plink -ssh %1RM_HOSTNAME% -P %1RM_PORT% -%SSH_VERSION% -C -X -no-antispoof -l %1RM_USERNAME% -i %1RM_PRIVATE_KEY_PATH%";
+                    }
+                }
+                ExternalRunner.RunWithHosting = false;
+            }
+
+
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && ExternalRunner.OwnerProtocolName == VNC.ProtocolName
+                && name.IndexOf("VpxClient", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                ExternalRunner.Arguments = @"-s %1RM_HOSTNAME% -u %1RM_USERNAME% -p %1RM_PASSWORD%";
+                ExternalRunner.RunWithHosting = true;
+            }
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && ExternalRunner.OwnerProtocolName == VNC.ProtocolName
+                && name.IndexOf("tvnviewer", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                ExternalRunner.Arguments = @"%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto";
+                ExternalRunner.RunWithHosting = true;
+            }
+
+
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && ExternalRunner.OwnerProtocolName == VNC.ProtocolName
+                && (name.IndexOf("vncviewer", StringComparison.OrdinalIgnoreCase) >= 0
+                    || name.IndexOf("uvnc", StringComparison.OrdinalIgnoreCase) >= 0
+                ))
+            {
+                ExternalRunner.Arguments = @"%1RM_HOSTNAME%:%1RM_PORT% -password=%1RM_PASSWORD%";
+                ExternalRunner.RunWithHosting = false;
+            }
+        }
     }
 
 
@@ -54,57 +162,6 @@ public class ExternalRunnerSettingsViewModel
                 var path = SelectFileHelper.OpenFile(filter: "exe|*.exe", checkFileExists: true, initialDirectory: initPath);
                 if (path == null) return;
                 ExternalRunner.ExePath = path;
-                if (string.IsNullOrEmpty(ExternalRunner.Arguments))
-                {
-                    var name = new FileInfo(path).Name.ToLower();
-                    if (name == "winscp.exe".ToLower())
-                    {
-                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
-                        {
-                            ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
-                        }
-                        else
-                        {
-                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%";
-                            if (ExternalRunner is ExternalRunnerForSSH ers)
-                                ers.ArgumentsForPrivateKey = @"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%";
-                        }
-                        ExternalRunner.RunWithHosting = true;
-                    }
-                    else if (name == "filezilla.exe".ToLower())
-                    {
-                        if (ExternalRunner.OwnerProtocolName == FTP.ProtocolName)
-                        {
-                            ExternalRunner.Arguments = "ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
-                        }
-                        else
-                        {
-                            ExternalRunner.Arguments = "sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%";
-                        }
-                        ExternalRunner.RunWithHosting = false;
-                    }
-                    else if (name == "VpxClient.exe".ToLower())
-                    {
-                        ExternalRunner.Arguments = @"-s %1RM_HOSTNAME% -u %1RM_USERNAME% -p %1RM_PASSWORD%";
-                        ExternalRunner.RunWithHosting = true;
-                    }
-                    else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
-                    {
-                        ExternalRunner.Arguments = @"-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
-                        ExternalRunner.RunWithHosting = true;
-                    }
-                    else if (name == "tvnviewer.exe".ToLower())
-                    {
-                        ExternalRunner.Arguments = @"%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto";
-                        ExternalRunner.RunWithHosting = true;
-                    }
-                    else if (name == "vncviewer.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
-                    {
-                        ExternalRunner.Arguments = @"%1RM_HOSTNAME%:%1RM_PORT% -password=%1RM_PASSWORD%";
-                        ExternalRunner.RunWithHosting = false;
-                    }
-                }
-                IoC.Get<ProtocolConfigurationService>().Save();
             });
         }
     }
@@ -118,7 +175,6 @@ public class ExternalRunnerSettingsViewModel
             return _cmdAddEnvironmentVariable ??= new RelayCommand((o) =>
             {
                 ExternalRunner.EnvironmentVariables.Add(new ExternalRunner.ObservableKvp<string, string>("", ""));
-                IoC.Get<ProtocolConfigurationService>().Save();
             });
         }
     }

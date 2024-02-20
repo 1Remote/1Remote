@@ -235,14 +235,6 @@ namespace _1RM.Service
             {
                 var protocolName = kv.Key;
                 var config = kv.Value;
-                foreach (var runner in config.Runners.Where(x => x is ExternalRunner))
-                {
-                    var externalRunner = (ExternalRunner)runner;
-                    foreach (var ev in externalRunner.EnvironmentVariables.ToArray().Where(x => string.IsNullOrWhiteSpace(x.Key)))
-                    {
-                        externalRunner.EnvironmentVariables.Remove(ev);
-                    }
-                }
                 var file = Path.Combine(AppPathHelper.Instance.ProtocolRunnerDirPath, $"{protocolName}.json");
                 RetryHelper.Try(() =>
                 {

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using Newtonsoft.Json;
-using _1RM.Model.Protocol;
-using _1RM.Service;
-using Shawn.Utils;
-
-namespace _1RM.Model.ProtocolRunner
+﻿namespace _1RM.Model.ProtocolRunner
 {
     public class ExternalRunnerForSSH : ExternalRunner
     {
@@ -16,11 +7,20 @@ namespace _1RM.Model.ProtocolRunner
         }
 
 
+        private string _argumentsForPrivateKey = "";
         public string ArgumentsForPrivateKey
         {
-            get => Params.ContainsKey(nameof(ArgumentsForPrivateKey)) ? Params[nameof(ArgumentsForPrivateKey)] : "";
+            get
+            {
+                if (string.IsNullOrEmpty(_argumentsForPrivateKey) && Params.ContainsKey(nameof(ArgumentsForPrivateKey)))
+                {
+                    _argumentsForPrivateKey = Params[nameof(ArgumentsForPrivateKey)];
+                }
+                return _argumentsForPrivateKey;
+            }
             set
             {
+                _argumentsForPrivateKey = value;
                 if (Params.ContainsKey(nameof(ArgumentsForPrivateKey)) == false)
                 {
                     Params.Add(nameof(ArgumentsForPrivateKey), value);
