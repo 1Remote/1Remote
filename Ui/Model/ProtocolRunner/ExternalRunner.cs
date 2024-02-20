@@ -99,6 +99,7 @@ namespace _1RM.Model.ProtocolRunner
         [JsonIgnore]
         public List<string> MarcoNames { get; set; } = new();
 
+        [Obsolete]
         public Dictionary<string, string> Params = new Dictionary<string, string>();
     }
 }

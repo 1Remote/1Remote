@@ -9,7 +9,6 @@ using _1RM.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -227,10 +226,10 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             value = forDemo ? "******" : UnSafeStringEncipher.DecryptOrReturnOriginalString(Value);
         }
 
-        if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
-        {
-            value = $"\"{value}\"";
-        }
+        //if (value.IndexOf(" ", StringComparison.Ordinal) > 0)
+        //{
+        //    value = $"\"{value}\"";
+        //}
 
         value = $"{value}{(AddBlankAfterValue ? " " : "")}";
 
@@ -342,7 +341,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         }
         if (string.IsNullOrEmpty(value) && type != AppArgumentType.Selection)
         {
-            if (!isNullable || type == AppArgumentType.Const)
+            if (!isNullable && type != AppArgumentType.Const)
                 return new Tuple<bool, string>(false, IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY));
             else
                 return new Tuple<bool, string>(true, "");
