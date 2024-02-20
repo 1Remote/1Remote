@@ -101,6 +101,8 @@ namespace _1RM.Utils
                         break;
                 }
             }
+
+            // SSH_PRIVATE_KEY_PATH 改名为 1RM_PRIVATE_KEY_PATH 2023年10月12日，TODO 一年后删除此代码
             exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%"));
 
             // make environment variables

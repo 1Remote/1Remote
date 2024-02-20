@@ -289,7 +289,7 @@ namespace _1RM.Service
             var runner = ProtocolHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, protocolClone.Protocol, assignRunnerName)!;
             if (runner.IsRunWithoutHosting())
             {
-                runner.RunWithoutHosting(protocol);
+                runner.RunWithoutHosting(protocolClone);
             }
             else
             {
