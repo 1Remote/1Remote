@@ -12,6 +12,9 @@ using System.Windows.Forms;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using Stylet;
 using Path = System.IO.Path;
@@ -177,23 +180,25 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly System.Windows.Forms.Panel _panel;
         private readonly HashSet<IntPtr> _exeHandles = new();
         public readonly string ExeFullName;
-        public readonly string ExeArguments;
+        public string ExeArguments { get; private set; }
         private readonly Dictionary<string, string> _environmentVariables;
+        private readonly  Runner _runner;
 
-        public static IntegrateHost Create(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
+        public static IntegrateHost Create(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
         {
             IntegrateHost? view = null;
             Execute.OnUIThreadSync(() =>
             {
-                view = new IntegrateHost(protocol, exeFullName, exeArguments, environmentVariables);
+                view = new IntegrateHost(protocol, runner, exeFullName, exeArguments, environmentVariables);
             });
             return view!;
         }
 
-        private IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null) : base(protocol, false)
+        private IntegrateHost(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null) : base(protocol, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
+            _runner = runner;
             _environmentVariables = environmentVariables ?? new Dictionary<string, string>();
             InitializeComponent();
 
@@ -363,6 +368,14 @@ namespace _1RM.View.Host.ProtocolHosts
 
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
+
+            if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is KittyRunner kittyRunner)
+            {
+                // TODO 修改到 Connect 函数中，否则 reconnect 时不会初始化配置
+                var sessionName = $"{Assert.APP_NAME}_{ProtocolServer.Protocol}_{ProtocolServer.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                ExeArguments = kittyConnectable.GetExeArguments(sessionName);
+                kittyConnectable.ConfigKitty(sessionName, kittyRunner, "");
+            }
 
             var startInfo = new ProcessStartInfo
             {

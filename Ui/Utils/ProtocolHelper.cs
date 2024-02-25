@@ -127,7 +127,7 @@ namespace _1RM.Utils
                 var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
                 if (isOk)
                 {
-                    var integrateHost = IntegrateHost.Create(protocol, exePath, exeArguments, environmentVariables);
+                    var integrateHost = IntegrateHost.Create(protocol, runner, exePath, exeArguments, environmentVariables);
                     return integrateHost;
                 }
             }
@@ -145,17 +145,18 @@ namespace _1RM.Utils
                         var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(ssh.ProtocolDisplayName);
                         var sessionName = $"{Assert.APP_NAME}_{ssh.Protocol}_{ssh.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         ssh.ConfigKitty(sessionName, kittyRunner, ssh.PrivateKey);
-                        var ih = IntegrateHost.Create(ssh, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName));
-                        ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
+                        var ih = IntegrateHost.Create(ssh, kittyRunner, kittyRunner.PuttyExePath, ssh.GetExeArguments(sessionName));
+                        ih.RunAfterConnected += () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
                         return ih;
                     }
                 case IKittyConnectable kittyConnectable:
                     {
+                        // TODO 修改到 Connect 函数中，否则 reconnect 时不会初始化配置
                         var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(protocol.ProtocolDisplayName);
                         var sessionName = $"{Assert.APP_NAME}_{protocol.Protocol}_{protocol.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
                         kittyConnectable.ConfigKitty(sessionName, kittyRunner, "");
-                        var ih = IntegrateHost.Create(protocol, kittyRunner.PuttyExePath, kittyConnectable.GetExeArguments(sessionName));
-                        ih.RunAfterConnected = () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
+                        var ih = IntegrateHost.Create(protocol, kittyRunner, kittyRunner.PuttyExePath, kittyConnectable.GetExeArguments(sessionName));
+                        ih.RunAfterConnected += () => PuttyConnectableExtension.DelKittySessionConfig(sessionName, kittyRunner.PuttyExePath);
                         return ih;
                     }
                 case VNC vnc:
