@@ -182,7 +182,8 @@ namespace _1RM.View.Host.ProtocolHosts
         public readonly string ExeFullName;
         public string ExeArguments { get; private set; }
         private readonly Dictionary<string, string> _environmentVariables;
-        private readonly  Runner _runner;
+        private readonly Runner _runner;
+        private readonly string _sessionName = "";
 
         public static IntegrateHost Create(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
         {
@@ -211,6 +212,13 @@ namespace _1RM.View.Host.ProtocolHosts
             _panel.SizeChanged += PanelOnSizeChanged;
 
             FormsHost.Child = _panel;
+
+
+            if (runner is KittyRunner kittyRunner)
+            {
+                _sessionName = $"{Assert.APP_NAME}_{protocol.Protocol}_{protocol.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                RunAfterConnected += () => PuttyConnectableExtension.DelKittySessionConfig(_sessionName, kittyRunner.PuttyExePath);
+            }
         }
 
         #region Resize
@@ -371,10 +379,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is KittyRunner kittyRunner)
             {
-                // TODO 修改到 Connect 函数中，否则 reconnect 时不会初始化配置
-                var sessionName = $"{Assert.APP_NAME}_{ProtocolServer.Protocol}_{ProtocolServer.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                ExeArguments = kittyConnectable.GetExeArguments(sessionName);
-                kittyConnectable.ConfigKitty(sessionName, kittyRunner, "");
+                ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
+                if(ProtocolServer is SSH ssh)
+                    ssh.ConfigKitty(_sessionName, kittyRunner, ssh.PrivateKey);
+                else
+                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
             }
 
             var startInfo = new ProcessStartInfo
@@ -409,7 +418,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(1 * 1000);
+                Thread.Sleep(5 * 1000);
                 RunAfterConnected?.Invoke();
             });
 
