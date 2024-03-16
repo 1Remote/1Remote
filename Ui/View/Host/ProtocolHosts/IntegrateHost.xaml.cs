@@ -295,7 +295,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     lStyle &= ~(int)WindowStyles.WS_CAPTION; // no title
                     lStyle &= ~(int)WindowStyles.WS_BORDER; // no border
                     lStyle &= ~(int)WindowStyles.WS_THICKFRAME;
-                    lStyle &= ~(int)WindowStyles.WS_VSCROLL;
+                    //lStyle &= ~(int)WindowStyles.WS_VSCROLL;
                     //lStyle |= (int)WindowExStyles.WS_EX_TOOLWINDOW;
                     SetWindowLong(exeHandle, (int)GetWindowLongIndex.GWL_STYLE, lStyle);
                 }

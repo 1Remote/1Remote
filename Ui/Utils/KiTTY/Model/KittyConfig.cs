@@ -255,10 +255,11 @@ namespace _1RM.Utils.KiTTY.Model
             Set(EnumKittyConfigKey.CJKAmbigWide, 0x00000000);
             Set(EnumKittyConfigKey.UTF8Override, 0x00000001);
             Set(EnumKittyConfigKey.CapsLockCyr, 0x00000000);
-            Set(EnumKittyConfigKey.ScrollBar, 0x00000000);
-            Set(EnumKittyConfigKey.ScrollBarFullScreen, 0x00000000);
+            Set(EnumKittyConfigKey.ScrollBar, 0x00000001); // ScrollBar在kitty终端中的作用是启用或禁用滚动条
+            Set(EnumKittyConfigKey.ScrollBarFullScreen, 0x00000001);
             Set(EnumKittyConfigKey.ScrollOnKey, 0x00000000);
             Set(EnumKittyConfigKey.ScrollOnDisp, 0x00000f001);
+            Set(EnumKittyConfigKey.ScrollbarOnLeft, 0x00000000);
             Set(EnumKittyConfigKey.EraseToScrollback, 0x00000001);
             Set(EnumKittyConfigKey.LockSize, 0x00000000);
             Set(EnumKittyConfigKey.BCE, 0x00000001);
@@ -279,7 +280,6 @@ namespace _1RM.Utils.KiTTY.Model
             Set(EnumKittyConfigKey.BugMaxPkt2, 0x00000000);
             Set(EnumKittyConfigKey.StampUtmp, 0x00000001);
             Set(EnumKittyConfigKey.LoginShell, 0x00000001);
-            Set(EnumKittyConfigKey.ScrollbarOnLeft, 0x00000000);
             Set(EnumKittyConfigKey.ShadowBold, 0x00000000);
             Set(EnumKittyConfigKey.ShadowBoldOffset, 0x00000001);
             Set(EnumKittyConfigKey.SerialSpeed, 0x00002580);
