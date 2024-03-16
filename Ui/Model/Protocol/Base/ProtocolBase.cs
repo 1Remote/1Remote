@@ -450,5 +450,12 @@ namespace _1RM.Model.Protocol.Base
             }
         }
         #endregion
+
+        [JsonIgnore]
+        public string HelpUrl => GetHelpUrl();
+        public virtual string GetHelpUrl()
+        {
+            return "";
+        }
     }
 }

@@ -508,10 +508,29 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Margin="15 0"
-                                                   Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                   FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                   Text="{Binding ProtocolDisplayName}"></TextBlock>
+                                        <StackPanel Orientation="Horizontal" Margin="15 0">
+                                            <TextBlock Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                       FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                       Text="{Binding ProtocolDisplayName}"></TextBlock>
+                                            <TextBlock Margin="5 0 0 0" 
+                                                       Opacity="0.7"
+                                                       Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Value="" Binding="{Binding HelpUrl}">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Hyperlink NavigateUri="{Binding HelpUrl}" 
+                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                           TextDecorations="{x:Null}" controls1:HyperlinkHelper.IsOpenExternal="True">
+                                                    ?
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ListBox>

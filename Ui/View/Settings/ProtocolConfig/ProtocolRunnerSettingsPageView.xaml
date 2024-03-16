@@ -7,6 +7,7 @@
              xmlns:protocolConfig="clr-namespace:_1RM.View.Settings.ProtocolConfig"
              xmlns:default="clr-namespace:_1RM.Model.ProtocolRunner.Default"
              xmlns:runner="clr-namespace:_1RM.Model.ProtocolRunner"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              d:DataContext="{d:DesignInstance protocolConfig:ProtocolRunnerSettingsPageViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -226,12 +227,20 @@
                             HorizontalAlignment="Right"
                             Command="{Binding CmdAddRunner}"
                             >
-                        <Grid Height="20" Width="20">
-                            <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Height="20" Width="20">
+                                <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                   StrokeThickness="2" Stretch="Uniform" />
-                        </Grid>
+                            </Grid>
+                            <TextBlock VerticalAlignment="Center" Margin="2 0">
+                                <Hyperlink NavigateUri="https://1remote.org/usage/protocol/runner/" TextDecorations="{x:Null}" 
+                                           controls:HyperlinkHelper.IsOpenExternal="True">
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </Button>
                 </Grid>
             </Grid>
