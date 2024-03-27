@@ -14,6 +14,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
+using _1RM.Utils;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using Stylet;
@@ -372,8 +373,6 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void Start()
         {
-            if (File.Exists(ExeFullName) == false) return;
-
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
 
@@ -384,6 +383,13 @@ namespace _1RM.View.Host.ProtocolHosts
                     ssh.ConfigKitty(_sessionName, kittyRunner, ssh.PrivateKey);
                 else
                     kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
+            }
+
+            if (Path.IsPathRooted(exeFullName)
+                && File.Exists(ExeFullName) == false)
+            {
+                MessageBoxHelper.ErrorAlert($"Exe file '{ExeFullName}' does not existed! We can not start the connection!");
+                return;
             }
 
             var startInfo = new ProcessStartInfo
