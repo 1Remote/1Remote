@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils.KiTTY;
 using Shawn.Utils;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 
 namespace _1RM.Model.Protocol
 {
