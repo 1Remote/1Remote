@@ -66,6 +66,7 @@ namespace _1RM.Controls
         {
             InitializeComponent();
             TbNewTag.OnSelectionConfirm += AddNewTag;
+            TbNewTag.Text = "";
         }
 
         private void UpdateSelections()

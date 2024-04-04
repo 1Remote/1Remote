@@ -57,6 +57,7 @@
     <s:String x:Key="Language">Язык</s:String>
     <s:String x:Key="Startup">Запуск</s:String>
     <s:String x:Key="Tags">Теги</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Нажмите Enter, чтобы добавить тег, который будет использоваться для группировки серверов. Щелкнув правой кнопкой мыши теги на главной странице, вы можете отфильтровать или закрепить определенный тег.</s:String>
     <s:String x:Key="Logo">Логотип</s:String>
     <s:String x:Key="Hostname">Имя хоста</s:String>
     <s:String x:Key="Target">Цель</s:String>

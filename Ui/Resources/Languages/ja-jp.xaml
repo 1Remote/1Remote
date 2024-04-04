@@ -57,6 +57,7 @@
     <s:String x:Key="Language">言語</s:String>
     <s:String x:Key="Startup">起動</s:String>
     <s:String x:Key="Tags">タグ</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Enter キーを押して、サーバーのグループ化に使用されるタグを追加します。ホームページ上のタグを右クリックすると、特定のタグをフィルターしたり固定したりできます。</s:String>
     <s:String x:Key="Logo">ロゴ</s:String>
     <s:String x:Key="Hostname">ホスト名</s:String>
     <s:String x:Key="Target">目標</s:String>

@@ -57,6 +57,7 @@
     <s:String x:Key="Language">Langue</s:String>
     <s:String x:Key="Startup">Commencez</s:String>
     <s:String x:Key="Tags">Mots clés</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Appuyez sur Entrée pour ajouter une balise utilisée pour regrouper les serveurs. En cliquant avec le bouton droit sur les balises de la page d'accueil, vous pouvez filtrer ou épingler une balise spécifique.</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Hostname">Nom d'hôte</s:String>
     <s:String x:Key="Target">Cibler</s:String>

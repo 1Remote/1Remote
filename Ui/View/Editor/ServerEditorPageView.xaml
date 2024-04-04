@@ -72,12 +72,22 @@
                                                                    Selections="{Binding NameSelections, Mode=OneTime}"/>
                                 </controls:GridWith4Columns>
 
-                                <controls:GridWith4Columns>
+
+
+                                <controls:GridWith4Columns Margin="0 15 0 0">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Tags}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
                                                  Tags="{Binding Server.Tags, Mode=TwoWay}"
                                                  TagsForSelect="{Binding TagSelections, Mode=OneTime}"></controls:TagsEditor>
                                 </controls:GridWith4Columns>
+                                <controls:GridWith4Columns Margin="0 5 0 15">
+                                    <TextBlock Grid.Column="1"
+                                               Text="{DynamicResource 'Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.'}"
+                                               TextWrapping="WrapWithOverflow" 
+                                               Opacity="0.5"></TextBlock>
+                                </controls:GridWith4Columns>
+
+
 
                                 <controls:GridWith4Columns Margin="0">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Logo}" Style="{StaticResource RowHeader}"></TextBlock>
@@ -204,6 +214,7 @@
                                 </Grid>
 
 
+
                                 <controls:GridWith4Columns Margin="0 15 0 0">
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script before connect'}" Style="{StaticResource RowHeader}"></TextBlock>
                                     <TextBox Grid.Column="1"
@@ -235,6 +246,8 @@
                                                    Opacity="0.5"></TextBlock>
                                     </CheckBox>
                                 </controls:GridWith4Columns>
+
+
 
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}" Style="{StaticResource RowHeader}"></TextBlock>
