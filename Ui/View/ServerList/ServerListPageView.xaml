@@ -707,6 +707,24 @@
             </Border>
 
 
+            <Border Grid.Row="1" HorizontalAlignment="Left" MinHeight="100" MinWidth="100" 
+                    Margin="10 0 0 0"
+                    Visibility="{Binding IsAddToolTipShow, Converter={StaticResource ConverterBool2Visible}}">
+                <StackPanel>
+                    <Path Fill="{DynamicResource BackgroundTextBrush}" 
+                          Margin="80 10 30 5" Width="60" HorizontalAlignment="Left"
+                          Stretch="UniformToFill" Data="M 67 0 L 62 4 L 66.62 2.035 C 66 12 47 10 47 24 C 47 24 47 24 48 24 C 48 10 67 13 67.362 2.074 L 72 4 Z" />
+                    <TextBlock Margin="0 0 10 0" 
+                               Foreground="{DynamicResource BackgroundTextBrush}" 
+                               FontSize="24" FontWeight="Bold">Right click on a tag</TextBlock>
+                    <TextBlock Margin="5 0 0 0"
+                               FontSize="22" Foreground="{DynamicResource BackgroundTextBrush}"  
+                    >and pin it here to to enable grouping function.</TextBlock>
+                </StackPanel>
+            </Border>
+
+
+
             <!-- popup when any item is selected-->
             <Grid Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Height="40">
                 <Grid.Style>

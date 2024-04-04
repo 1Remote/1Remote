@@ -57,6 +57,7 @@
     <s:String x:Key="Language">Jazyk</s:String>
     <s:String x:Key="Startup">Při startu</s:String>
     <s:String x:Key="Tags">Štítky</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Stisknutím klávesy Enter přidáte značku, která se používá pro seskupování serverů. Kliknutím pravým tlačítkem na štítky na domovské stránce můžete filtrovat nebo připnout konkrétní štítek.</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Hostname">Název stroje</s:String>
     <s:String x:Key="Target">Cíl</s:String>

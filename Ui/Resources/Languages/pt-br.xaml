@@ -57,6 +57,7 @@
     <s:String x:Key="Language">Idioma</s:String>
     <s:String x:Key="Startup">Inicialização</s:String>
     <s:String x:Key="Tags">Marcações</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Pressione Enter para adicionar uma tag, que é usada para agrupar servidores. Ao clicar com o botão direito nas tags da página inicial, você pode filtrar ou fixar uma tag específica.</s:String>
     <s:String x:Key="Logo">Logotipo</s:String>
     <s:String x:Key="Hostname">Hospedeiro</s:String>
     <s:String x:Key="Target">Alvo</s:String>

@@ -57,6 +57,7 @@
     <s:String x:Key="Language">Lingua</s:String>
     <s:String x:Key="Startup">Comezo</s:String>
     <s:String x:Key="Tags">Etiquetas</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Preme Intro para engadir unha etiqueta, que se usa para agrupar servidores. Facendo clic co botón dereito nas etiquetas da páxina de inicio, pode filtrar ou fixar unha etiqueta específica.</s:String>
     <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Hostname">Nome do host</s:String>
     <s:String x:Key="Target">Destiño</s:String>
