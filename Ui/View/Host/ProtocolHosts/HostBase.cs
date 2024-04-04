@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Ribbon;
 using System.Windows.Data;
 using System.Windows.Interop;
 using _1RM.Model;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Service;
 using _1RM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
-using Stylet;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -189,7 +184,7 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <summary>
         /// special menu for tab
         /// </summary>
-        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+        public List<System.Windows.Controls.MenuItem> MenuItems { get; set; } = new List<System.Windows.Controls.MenuItem>();
 
         /// <summary>
         /// since resizing when rdp is connecting would not tiger the rdp size change event

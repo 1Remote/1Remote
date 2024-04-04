@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using _1RM.Service;
-using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using FluentFTP.Helpers;
 using Newtonsoft.Json;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace _1RM.Model.Protocol.Base
 {
@@ -46,7 +40,7 @@ namespace _1RM.Model.Protocol.Base
             get
             {
                 if (string.IsNullOrEmpty(_id))
-                    GenerateIdForTmpSession();
+                    _id = "TMP_SESSION_" + new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
                 return _id;
             }
             set => SetAndNotifyIfChanged(ref _id, value);
@@ -55,12 +49,6 @@ namespace _1RM.Model.Protocol.Base
         public bool IsTmpSession()
         {
             return _id.StartsWith("TMP_SESSION_") || string.IsNullOrEmpty(_id);
-        }
-
-        public void GenerateIdForTmpSession()
-        {
-            Debug.Assert(IsTmpSession());
-            _id = "TMP_SESSION_" + new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
         }
 
         /// <summary>
@@ -407,16 +395,6 @@ namespace _1RM.Model.Protocol.Base
 
         [JsonIgnore]
         public DataSourceBase? DataSource { get; set; }
-
-        /// <summary>
-        /// check if every value is ok
-        /// </summary>
-        public virtual bool Verify()
-        {
-            if (string.IsNullOrEmpty(DisplayName))
-                return false;
-            return true;
-        }
 
         /// <summary>
         /// build the id for host

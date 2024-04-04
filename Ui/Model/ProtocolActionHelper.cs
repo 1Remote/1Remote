@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
@@ -149,6 +150,18 @@ public static class ProtocolActionHelper
             var iconPath = AppStartupHelper.MakeIcon(server.Id, server.IconImg);
             AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
         }));
+
+        if (forTabHeader)
+        {
+            if (server is SSH ssh)
+            {
+                actions.Add(new ProtocolAction(IoC.Translate("Create desktop shortcut"), () =>
+                {
+                    var iconPath = AppStartupHelper.MakeIcon(server.Id, server.IconImg);
+                    AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
+                }));
+            }
+        }
 
         #endregion Build Actions
 
