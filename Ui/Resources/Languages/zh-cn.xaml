@@ -137,6 +137,7 @@
     <s:String x:Key="Use private key">使用私钥连接</s:String>
     <s:String x:Key="Private key">私钥</s:String>
     <s:String x:Key="Open SFTP when connected">同时打开 SFTP</s:String>
+    <s:String x:Key="Open SFTP">打开 SFTP</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag">全屏模式</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">禁用</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">允许（单显示器）</s:String>

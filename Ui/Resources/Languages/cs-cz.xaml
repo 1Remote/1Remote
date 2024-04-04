@@ -137,6 +137,7 @@
     <s:String x:Key="Use private key">Použít soukromý klíč</s:String>
     <s:String x:Key="Private key">Soukromý klíč</s:String>
     <s:String x:Key="Open SFTP when connected">Při připojení otevřít SFTP</s:String>
+    <s:String x:Key="Open SFTP">Otevřete SFTP</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag">Vzdálená plocha na celou obrazovku</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Vypnout</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Zapnout (jeden monitor)</s:String>

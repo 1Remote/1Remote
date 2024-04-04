@@ -136,6 +136,7 @@ Run bat after disconnected;Run bat after disconnected(e.g. run 'C:\CloseSshTunne
 Use private key;Use private key;使用私钥连接;Použít soukromý klíč;Benutze privaten Schlüssel;utiliser la clé privée;Usar chave privada;秘密キーを使用する;使用私密金鑰連線;Usar chave privada;Użyj klucza prywatnego;Использовать закрытый ключ
 Private key;Private key;私钥;Soukromý klíč;Privater Schlüssel;Clé privée;Chave privada;秘密鍵;私密金鑰;Chave privada;Klucz prywatny;Закрытый ключ
 Open SFTP when connected;Open SFTP when connected;同时打开 SFTP;Při připojení otevřít SFTP;Öffnen Sie SFTP beim Anschluss;Ouvrir SFTP lorsqu'il est connecté;Abra o SFTP quando conectado;接続時にSFTPを開く;同時連線 SFTP;Abrir SFTP cando se conecte;Otwórz SFTP podczas połączenia;Открыть SFTP при подключении
+Open SFTP;Open SFTP;打开 SFTP;Otevřete SFTP;Öffnen Sie SFTP;Ouvrir SFTP;Abrir SFTP;オープンSFTP;打開SFTP;Abre SFTP;Otwórz SFTP;Открыть SFTP
 server_editor_display_full_screen_flag;Full screen remote desktop;全屏模式;Vzdálená plocha na celou obrazovku;Vollbild;Plein écran;Área de trabalho remota em tela cheia;全画面リモートデスクトップ;全螢幕;Pantalla completa do escritorio remoto;Tryb pełnoekranowy;Полноэкранный удаленный рабочий стол
 server_editor_display_full_screen_flag_window;Disable;禁用;Vypnout;Deaktivieren;Désactiver;Desativar;無効にする;停用;Deshabilitar;Dezaktywuj;Выключить
 server_editor_display_full_screen_flag_full_screen;Enable (single monitor);允许（单显示器）;Zapnout (jeden monitor);Aktivieren (Einzel-Monitor);Activer (moniteur unique);Ativar (monitor único);有効にする (シングルモニター);啟用 (單一顯示器);Habilitar (unha soa pantalla);Aktywuj (jeden monitor);Включить (один монитор)

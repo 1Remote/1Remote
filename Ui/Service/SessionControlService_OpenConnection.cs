@@ -144,7 +144,7 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
+        public string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
         {
             TabWindowView? tab = null;
             ProtocolBase p = protocol;

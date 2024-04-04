@@ -151,17 +151,29 @@ public static class ProtocolActionHelper
             AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
         }));
 
-        if (forTabHeader)
+
+        if (server is SSH ssh)
         {
-            if (server is SSH ssh)
+            actions.Add(new ProtocolAction(IoC.Translate("Open SFTP"), () =>
             {
-                actions.Add(new ProtocolAction(IoC.Translate("Create desktop shortcut"), () =>
+                var protocolClone = ssh.Clone();
+                // open SFTP when SSH is connected.
+                var tmpRunner = ProtocolHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
+                var sftp = new SFTP
                 {
-                    var iconPath = AppStartupHelper.MakeIcon(server.Id, server.IconImg);
-                    AppStartupHelper.InstallDesktopShortcutByUlid(server.DisplayName, new[] { server.Id }, iconPath);
-                }));
-            }
+                    ColorHex = ssh.ColorHex,
+                    IconBase64 = ssh.IconBase64,
+                    DisplayName = ssh.DisplayName + " (SFTP)",
+                    Address = ssh.Address,
+                    Port = ssh.Port,
+                    UserName = ssh.UserName,
+                    Password = ssh.Password,
+                    PrivateKey = ssh.PrivateKey
+                };
+                IoC.Get<SessionControlService>().ConnectWithTab(sftp, tmpRunner, "");
+            }));
         }
+
 
         #endregion Build Actions
 
