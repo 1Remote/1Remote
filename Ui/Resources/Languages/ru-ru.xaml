@@ -137,6 +137,7 @@
     <s:String x:Key="Use private key">Использовать закрытый ключ</s:String>
     <s:String x:Key="Private key">Закрытый ключ</s:String>
     <s:String x:Key="Open SFTP when connected">Открыть SFTP при подключении</s:String>
+    <s:String x:Key="Open SFTP">Открыть SFTP</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag">Полноэкранный удаленный рабочий стол</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Выключить</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Включить (один монитор)</s:String>

@@ -137,6 +137,7 @@
     <s:String x:Key="Use private key">秘密キーを使用する</s:String>
     <s:String x:Key="Private key">秘密鍵</s:String>
     <s:String x:Key="Open SFTP when connected">接続時にSFTPを開く</s:String>
+    <s:String x:Key="Open SFTP">オープンSFTP</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag">全画面リモートデスクトップ</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">無効にする</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">有効にする (シングルモニター)</s:String>

@@ -137,6 +137,7 @@
     <s:String x:Key="Use private key">Benutze privaten Schlüssel</s:String>
     <s:String x:Key="Private key">Privater Schlüssel</s:String>
     <s:String x:Key="Open SFTP when connected">Öffnen Sie SFTP beim Anschluss</s:String>
+    <s:String x:Key="Open SFTP">Öffnen Sie SFTP</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag">Vollbild</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Deaktivieren</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Aktivieren (Einzel-Monitor)</s:String>
