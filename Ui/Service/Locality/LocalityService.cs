@@ -42,6 +42,10 @@ namespace _1RM.Service.Locality
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
         public WindowStyle TabWindowStyle = WindowStyle.SingleBorderWindow;
+        public int FtpColumnFileNameLength = -1;
+        public int FtpColumnFileTimeLength = -1;
+        public int FtpColumnFileTypeLength = -1;
+        public int FtpColumnFileSizeLength = -1;
     }
 
     public sealed class LocalityService
@@ -183,5 +187,58 @@ namespace _1RM.Service.Locality
                 }
             }
         }
+
+        public int FtpColumnFileNameLength
+        {
+            get => _localitySettings.FtpColumnFileNameLength;
+            set
+            {
+                if (_localitySettings.FtpColumnFileNameLength != value)
+                {
+                    _localitySettings.FtpColumnFileNameLength = value;
+                    Save();
+                }
+            }
+        }
+
+        public int FtpColumnFileTimeLength
+        {
+            get => _localitySettings.FtpColumnFileTimeLength;
+            set
+            {
+                if (_localitySettings.FtpColumnFileTimeLength != value)
+                {
+                    _localitySettings.FtpColumnFileTimeLength = value;
+                    Save();
+                }
+            }
+        }
+
+        public int FtpColumnFileTypeLength
+        {
+            get => _localitySettings.FtpColumnFileTypeLength;
+            set
+            {
+                if (_localitySettings.FtpColumnFileTypeLength != value)
+                {
+                    _localitySettings.FtpColumnFileTypeLength = value;
+                    Save();
+                }
+            }
+        }
+        public int FtpColumnFileSizeLength
+        {
+            get => _localitySettings.FtpColumnFileSizeLength;
+            set
+            {
+                if (_localitySettings.FtpColumnFileSizeLength != value)
+                {
+                    _localitySettings.FtpColumnFileSizeLength = value;
+                    Save();
+                }
+            }
+        }
+
+
     }
 }

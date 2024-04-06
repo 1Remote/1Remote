@@ -15,6 +15,7 @@ using _1RM.Model.Protocol.FileTransmit;
 using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
 using _1RM.Service;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using Dapper;
 using Shawn.Utils;
@@ -952,7 +953,58 @@ namespace _1RM.View.Host.ProtocolHosts
             set => SetAndNotifyIfChanged(ref _ioMessage, value);
         }
 
-
+        public double ColumnFileNameLength
+        {
+            get
+            {
+                var w = IoC.Get<LocalityService>().FtpColumnFileNameLength;
+                if (w > 50)
+                {
+                    return w;
+                }
+                return -1;
+            }
+            set => IoC.Get<LocalityService>().FtpColumnFileNameLength = (int) value;
+        }
+        public double ColumnFileTimeLength
+        {
+            get
+            {
+                var w = IoC.Get<LocalityService>().FtpColumnFileTimeLength;
+                if (w > 50)
+                {
+                    return w;
+                }
+                return -1;
+            }
+            set => IoC.Get<LocalityService>().FtpColumnFileTimeLength = (int) value;
+        }
+        public double ColumnFileTypeLength
+        {
+            get
+            {
+                var w = IoC.Get<LocalityService>().FtpColumnFileTypeLength;
+                if (w > 50)
+                {
+                    return w;
+                }
+                return -1;
+            }
+            set => IoC.Get<LocalityService>().FtpColumnFileTypeLength = (int) value;
+        }
+        public double ColumnFileSizeLength
+        {
+            get
+            {
+                var w = IoC.Get<LocalityService>().FtpColumnFileSizeLength;
+                if (w > 50)
+                {
+                    return w;
+                }
+                return -1;
+            }
+            set => IoC.Get<LocalityService>().FtpColumnFileSizeLength = (int) value;
+        }
 
 
         #region Path conrol
