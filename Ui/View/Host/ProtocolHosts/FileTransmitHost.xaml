@@ -262,7 +262,7 @@
 
                     <ListView.View>
                         <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
-                            <GridViewColumn Width="Auto">
+                            <GridViewColumn Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=protocolHosts1:FileTransmitHost}, Path=DataContext.ColumnFileNameLength, Mode=TwoWay}">
                                 <GridViewColumnHeader Content="{DynamicResource 'File Name'}" HorizontalContentAlignment="Left">
                                     <GridViewColumnHeader.Style>
                                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
@@ -318,7 +318,8 @@
 
 
 
-                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_last_update}" Width="Auto">
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_last_update}" 
+                                            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=protocolHosts1:FileTransmitHost}, Path=DataContext.ColumnFileTimeLength, Mode=TwoWay}">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -351,7 +352,8 @@
 
 
 
-                            <GridViewColumn Header="{DynamicResource Type}" Width="Auto">
+                            <GridViewColumn Header="{DynamicResource Type}" 
+                                            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=protocolHosts1:FileTransmitHost}, Path=DataContext.ColumnFileTypeLength, Mode=TwoWay}">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="CommandParameter" Value="6"/>
@@ -380,7 +382,8 @@
 
 
 
-                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_size}">
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_size}"
+                                            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=protocolHosts1:FileTransmitHost}, Path=DataContext.ColumnFileSizeLength, Mode=TwoWay}">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="CommandParameter" Value="2"/>
