@@ -279,7 +279,16 @@ namespace _1RM.View.ServerList
                         SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
                     }
                 }
-                IsAddToolTipShow = !VmServerList.Any(x => x is not ProtocolBaseViewModelDummy);
+
+                if (VmServerList.Any(x => x is not ProtocolBaseViewModelDummy)
+                    || IoC.Get<ConfigurationService>().AdditionalDataSource.Any())
+                {
+                    IsAddToolTipShow = false;
+                }
+                else
+                {
+                    IsAddToolTipShow = true;
+                }
             });
             ApplySort();
         }
