@@ -11,6 +11,7 @@ namespace _1RM.Model.Protocol
         public static string ProtocolName = "Telnet";
         public Telnet() : base(Telnet.ProtocolName, "Putty.Telnet.V1", "Telnet")
         {
+            base.Port = "23";
         }
 
         public override bool IsOnlyOneInstance()
