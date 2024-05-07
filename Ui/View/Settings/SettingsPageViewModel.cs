@@ -48,7 +48,7 @@ namespace _1RM.View.Settings
         private INotifyPropertyChanged? _selectedViewModel;
         public INotifyPropertyChanged SelectedViewModel
         {
-            get => _selectedViewModel ??= IoC.Get<GeneralSettingViewModel>();
+            get => _selectedViewModel ??= GeneralSettingViewModel;
             set => SetAndNotifyIfChanged(ref _selectedViewModel, value);
         }
 
@@ -63,7 +63,7 @@ namespace _1RM.View.Settings
             switch (page)
             {
                 case EnumMainWindowPage.SettingsGeneral:
-                    SelectedViewModel = IoC.Get<GeneralSettingViewModel>();
+                    SelectedViewModel = GeneralSettingViewModel;
                     break;
                 case EnumMainWindowPage.SettingsData:
                     SelectedViewModel = IoC.Get<DataSourceViewModel>();
@@ -95,6 +95,9 @@ namespace _1RM.View.Settings
             get => _progressBarVisibility;
             private set => SetAndNotifyIfChanged(ref _progressBarVisibility, value);
         }
+
+        public GeneralSettingViewModel GeneralSettingViewModel => IoC.Get<GeneralSettingViewModel>();
+        public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
 
 
         public bool TabHeaderShowCloseButton

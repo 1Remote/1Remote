@@ -67,6 +67,11 @@ namespace _1RM.Service
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool CopyPortWhenCopyAddress = true;
+
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool TabWindowCloseButtonOnLeft = false;
     }
 
     public class LauncherConfig

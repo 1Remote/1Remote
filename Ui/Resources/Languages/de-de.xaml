@@ -312,4 +312,5 @@
     <s:String x:Key="Use vertical lines to separate descriptions">Verwenden Sie einen senkrechten Strich (Pipe), um Beschreibungen zu trennen (Wert|Beschreibung).</s:String>
     <s:String x:Key="Automatically focus on the content when selecting a tab">Automatisch Focus auf den Inhalten setzten, wenn ein Tab ausgwählt wird</s:String>
     <s:String x:Key="Copy the port along with the address when copying">Beim Kopieren Adresse mit Port verwenden</s:String>
+    <s:String x:Key="Place the close button on the left side to prevent accidental touches">Platzieren Sie die Schließtaste auf der linken Seite, um versehentliche Berührungen zu verhindern</s:String>
 </ResourceDictionary>

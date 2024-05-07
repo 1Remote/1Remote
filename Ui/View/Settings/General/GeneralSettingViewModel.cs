@@ -120,6 +120,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        public bool TabWindowCloseButtonOnLeft
+        {
+            get => _configurationService.General.TabWindowCloseButtonOnLeft;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.TabWindowCloseButtonOnLeft, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         private RelayCommand? _cmdExploreTo = null;
         public RelayCommand CmdExploreTo
         {
