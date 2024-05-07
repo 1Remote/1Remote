@@ -312,4 +312,5 @@
     <s:String x:Key="Use vertical lines to separate descriptions">K oddělení popisů použijte svislé čáry (hodnota|popis)</s:String>
     <s:String x:Key="Automatically focus on the content when selecting a tab">Při výběru karty se automaticky zaměří na obsah</s:String>
     <s:String x:Key="Copy the port along with the address when copying">Při kopírování zkopírujte port spolu s adresou</s:String>
+    <s:String x:Key="Place the close button on the left side to prevent accidental touches">Umístěte zavírací tlačítko na levou stranu, abyste zabránili náhodným dotykům</s:String>
 </ResourceDictionary>

@@ -160,8 +160,15 @@
 
 
 
-
-            <TextBlock Text="Misc" Style="{StaticResource BlockTitleColumn}" />
+            <TextBlock Text="Tab" Style="{StaticResource BlockTitleColumn}" />
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="1" IsChecked="{Binding TabWindowCloseButtonOnLeft, Mode=TwoWay}" Content="{DynamicResource 'Place the close button on the left side to prevent accidental touches'}" VerticalAlignment="Center"></CheckBox>
+            </Grid>
             <!--<Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
@@ -172,6 +179,7 @@
             </Grid>-->
 
 
+            <TextBlock Text="Misc" Style="{StaticResource BlockTitleColumn}" />
             <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>

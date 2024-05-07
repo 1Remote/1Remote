@@ -7,6 +7,7 @@ using Dragablz;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Host.ProtocolHosts;
+using _1RM.View.Settings;
 using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -17,6 +18,7 @@ namespace _1RM.View.Host
     {
         public readonly string Token;
         public new TabWindowView View { get; private set; }
+        public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
         public TabWindowViewModel(TabWindowView windowView)
         {
@@ -68,8 +70,6 @@ namespace _1RM.View.Host
                 return ResizeMode.CanResize;
             }
         }
-
-        public bool LauncherEnabled => IoC.Get<ConfigurationService>().Launcher.LauncherEnabled;
 
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
