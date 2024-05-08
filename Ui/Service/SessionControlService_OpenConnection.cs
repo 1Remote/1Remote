@@ -11,6 +11,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.View.Editor;
 using _1RM.View.Host;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -205,11 +206,39 @@ namespace _1RM.Service
                 if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray)
                     IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
             }
-            #endregion
 
             // clone and decrypt!
             var protocolClone = protocol.Clone();
             protocolClone.ConnectPreprocess();
+            if (protocolClone is ProtocolBaseWithAddressPortUserPwd pb)
+            {
+                if (protocolClone is RDP || (protocolClone is SSH ssh && string.IsNullOrEmpty(ssh.PrivateKey)) || protocolClone is VNC || protocolClone is SFTP)
+                {
+                    if (string.IsNullOrEmpty(pb.Password))
+                    {
+                        Execute.OnUIThreadSync(() =>
+                        {
+                            var pwdDlg = new PasswordPopupDialogViewModel();
+                            pwdDlg.Title = $"[{pb.ProtocolDisplayName}]{pb.Address}:{pb.Port}";
+                            pwdDlg.UserName = pb.UserName;
+                            pwdDlg.Password = pb.Password;
+                            if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
+                            {
+                                pb.UserName = pwdDlg.UserName;
+                                pb.Password = pwdDlg.Password;
+                                pwdDlg.Password = "";
+                            }
+                        });
+                    }
+
+                    if (string.IsNullOrEmpty(pb.Password))
+                    {
+                        return tabToken;
+                    }
+                }
+            }
+
+            #endregion
 
             // apply alternate credential
             {

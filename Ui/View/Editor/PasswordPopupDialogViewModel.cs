@@ -44,6 +44,26 @@ namespace _1RM.View.Editor
             Password = UnSafeStringEncipher.SimpleDecrypt(LastPassword) ?? LastPassword;
         }
 
+        protected override void OnViewLoaded()
+        {
+            base.OnViewLoaded();
+            if (View is PasswordPopupDialogView v)
+            {
+                v.TbUserName.Text = UserName;
+                v.TbPwd.Password = Password;
+
+                if (!string.IsNullOrEmpty(v.TbUserName.Text))
+                {
+                    v.TbPwd.Focus();
+                }
+                else
+                {
+                    v.TbUserName.Focus();
+                    v.TbUserName.CaretIndex = v.TbUserName.Text.Length;
+                }
+            }
+        }
+
 
         /// <summary>
         /// validate whether all fields are correct to save
@@ -53,8 +73,6 @@ namespace _1RM.View.Editor
         {
             if (!string.IsNullOrEmpty(UserName))
             {
-                LastUsername = UnSafeStringEncipher.SimpleEncrypt(UserName);
-                LastPassword = UnSafeStringEncipher.SimpleEncrypt(Password);
                 return true;
             }
             return false;
@@ -68,6 +86,8 @@ namespace _1RM.View.Editor
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
+                    LastUsername = UnSafeStringEncipher.SimpleEncrypt(UserName);
+                    LastPassword = UnSafeStringEncipher.SimpleEncrypt(Password);
                     this.DialogResult = true;
                     this.RequestClose(true);
                 }, o => CanSave());
