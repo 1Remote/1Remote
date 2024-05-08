@@ -80,8 +80,13 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
                         <Grid Style="{StaticResource EditorRowGridInput}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
                             <TextBox Name="TbPrivateKey" Text="{Binding New.PrivateKey}"></TextBox>
-                            <Button Content="{DynamicResource Select}" 
+                            <Button Grid.Column="1"
+                                    Content="{DynamicResource Select}" 
                                     Click="ButtonOpenPrivateKey_OnClick" 
                                     Style="{StaticResource ButtonPrimaryStyle}"
                                     HorizontalAlignment="Right"

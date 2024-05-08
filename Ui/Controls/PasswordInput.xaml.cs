@@ -23,6 +23,11 @@ namespace _1RM.Controls
             DependencyProperty.Register("Password", typeof(string), typeof(PasswordInput),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnServerDataChanged)));
 
+        public new void Focus()
+        {
+            CipherTextBox.Focus();
+        }
+
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is PasswordInput p && e.NewValue is string s && p.CipherTextBox.Password != s)

@@ -14,19 +14,10 @@ namespace _1RM.View.Editor
     /// </summary>
     public partial class PasswordPopupDialogView : WindowChromeBase
     {
-        private readonly PasswordPopupDialogViewModel _vm;
         public ProtocolBaseWithAddressPortUserPwd Result { get; } = new FTP();
-        public PasswordPopupDialogView(PasswordPopupDialogViewModel vm)
+        public PasswordPopupDialogView()
         {
-            _vm = vm;
             InitializeComponent();
-            DataContext = this;
-            Loaded += (sender, args) =>
-            {
-                TbUserName.Focus();
-                TbUserName.CaretIndex = TbUserName.Text.Length;
-            };
-
             PreviewKeyUp += (sender, e) =>
             {
                 if (e.Key == Key.Escape)
