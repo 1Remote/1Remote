@@ -300,24 +300,27 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             {
                 if (_sftp?.IsConnected != true)
                 {
-                    _sftp?.Dispose();
-                    if (string.IsNullOrEmpty(Password)
-                        && string.IsNullOrEmpty(SshKeyPath) == false
-                        && File.Exists(SshKeyPath))
+                    RetryHelper.Try(() =>
                     {
-                        try
+                        _sftp?.Dispose();
+                        if (string.IsNullOrEmpty(Password)
+                            && string.IsNullOrEmpty(SshKeyPath) == false
+                            && File.Exists(SshKeyPath))
                         {
-                            var connectionInfo = new ConnectionInfo(Hostname, Port, Username, new PrivateKeyAuthenticationMethod(Username, new PrivateKeyFile(SshKeyPath)));
-                            _sftp = new SftpClient(connectionInfo);
+                            try
+                            {
+                                var connectionInfo = new ConnectionInfo(Hostname, Port, Username, new PrivateKeyAuthenticationMethod(Username, new PrivateKeyFile(SshKeyPath)));
+                                _sftp = new SftpClient(connectionInfo);
+                            }
+                            catch (Exception e)
+                            {
+                                MsAppCenterHelper.Error(e);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            MsAppCenterHelper.Error(e);
-                        }
-                    }
-                    _sftp ??= new SftpClient(new ConnectionInfo(Hostname, Port, Username, new PasswordAuthenticationMethod(Username, Password)));
-                    //_sftp.KeepAliveInterval = new TimeSpan(0, 0, 10);
-                    _sftp.Connect();
+                        _sftp ??= new SftpClient(new ConnectionInfo(Hostname, Port, Username, new PasswordAuthenticationMethod(Username, Password)));
+                        //_sftp.KeepAliveInterval = new TimeSpan(0, 0, 10);
+                        _sftp.Connect();
+                    });
                 }
             }
         }
