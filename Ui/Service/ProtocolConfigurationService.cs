@@ -63,32 +63,6 @@ namespace _1RM.Service
             ProtocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
 
-            //// custom protocol
-            //var di = new DirectoryInfo(protocolFolderName);
-            //{
-            //    var customs = new Dictionary<string, ProtocolSettings>();
-            //    foreach (var fi in di.GetFiles("*.json"))
-            //    {
-            //        var protocolName = fi.Name.Replace(fi.Extension, "");
-            //        // remove existed protocol
-            //        if (ProtocolConfigs.Any(x => string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
-            //            continue;
-            //        // remove special protocol
-            //        if (CustomProtocolBlackList.Any(x => string.Equals(protocolName, x, StringComparison.CurrentCultureIgnoreCase)))
-            //            continue;
-            //        var c = LoadConfig(protocolFolderName, protocolName);
-            //        if (c != null)
-            //        {
-            //            customs.Add(protocolName, c);
-            //        }
-            //    }
-            //    foreach (var custom in customs)
-            //    {
-            //        ProtocolConfigs.Add(custom.Key, custom.Value);
-            //    }
-            //}
-
-
             // add macros to ExternalRunner
             foreach (var config in ProtocolConfigs)
             {

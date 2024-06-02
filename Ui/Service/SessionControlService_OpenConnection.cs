@@ -289,7 +289,7 @@ namespace _1RM.Service
             else if (protocolClone is SSH { OpenSftpOnConnected: true } ssh)
             {
                 // open SFTP when SSH is connected.
-                var tmpRunner = ProtocolHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
+                var tmpRunner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
                 var sftp = new SFTP
                 {
                     ColorHex = ssh.ColorHex,
@@ -315,7 +315,7 @@ namespace _1RM.Service
             }
 
 
-            var runner = ProtocolHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, protocolClone.Protocol, assignRunnerName)!;
+            var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, protocolClone.Protocol, assignRunnerName)!;
             if (runner.IsRunWithoutHosting())
             {
                 runner.RunWithoutHosting(protocolClone);

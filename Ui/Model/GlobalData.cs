@@ -150,29 +150,6 @@ namespace _1RM.Model
                     LocalityConnectRecorder.Cleanup();
                     ReadTagsFromServers();
                     OnDataReloaded?.Invoke();
-
-                    // old app turning to new app protocol, todo: remove after 2024
-                    foreach (var viewModel in VmItemList)
-                    {
-                        if (viewModel.Server is LocalApp app)
-                        {
-                            if (app.ArgumentList.Count == 0 && !string.IsNullOrEmpty(app.Arguments))
-                            {
-                                app.ArgumentList.Add(new AppArgument()
-                                {
-                                    Name = "Arg",
-                                    Key = "",
-                                    Type = AppArgumentType.Normal,
-                                    AddBlankAfterValue = false,
-                                    AddBlankAfterKey = false,
-                                    IsNullable = true,
-                                    Value = app.Arguments,
-                                });
-                                app.Arguments = "";
-                                UpdateServer(app);
-                            }
-                        }
-                    }
                     return true;
                 }
 
@@ -291,7 +268,7 @@ namespace _1RM.Model
                     var source = groupedServer.First().DataSource;
                     if (source?.IsWritable != true)
                     {
-                        failMessages.Add($"Can not update on DataSource({ source?.DataSourceName ?? "null"}) since it is not writable.");
+                        failMessages.Add($"Can not update on DataSource({source?.DataSourceName ?? "null"}) since it is not writable.");
                         continue;
                     }
                     needReload |= source.NeedRead();
@@ -480,7 +457,7 @@ namespace _1RM.Model
                 var listPageViewModel = IoC.TryGet<ServerListPageViewModel>();
                 var launcherWindowViewModel = IoC.TryGet<LauncherWindowViewModel>();
 
-                if(mainWindowViewModel == null
+                if (mainWindowViewModel == null
                    || listPageViewModel == null
                    || launcherWindowViewModel == null)
                     return;
