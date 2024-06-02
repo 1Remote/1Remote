@@ -1,14 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
-using _1Remote.Security;
 using _1RM.Utils;
 using _1RM.View.Utils;
 using _1RM.Utils.WindowsSdk;
 using _1RM.Utils.WindowsApi.Credential;
 using _1RM.Utils.WindowsSdk.PasswordVaultManager;
-using Org.BouncyCastle.Bcpg;
-using Org.BouncyCastle.Crypto.Signers;
 using Microsoft.Win32;
 
 namespace _1RM.Service
@@ -40,16 +36,7 @@ namespace _1RM.Service
         public static async Task<bool> GetEnabled()
         {
             if (_isEnabled != null) return (bool)_isEnabled;
-
             var ret = await GetEnabled(_key);
-            if (ret == null)
-            {
-                // TODO 修正拼写错误 20231109 2024 年后移除
-                const string keyOld = "SecondaryVerificationDisabled";
-                ret = await GetEnabled(keyOld);
-                if (ret != null)
-                    await SetEnabled((bool)ret, _key);
-            }
             _isEnabled = ret != false;
             return (bool)_isEnabled;
         }
@@ -65,7 +52,6 @@ namespace _1RM.Service
 
             bool? result;
             bool widowsHelloIsOk = await WindowsHelloHelper.HelloIsAvailable() == true;
-            int counter = 0;
             MaskLayerController.ShowProcessingRing(IoC.Translate("Please complete the windows credentials verification"));
             string title = Assert.APP_DISPLAY_NAME + ": " + IoC.Translate("Enter your credentials");
             string message = IoC.Translate("Before proceeding with sensitive operations, we need to make sure it is you.");
@@ -110,7 +96,6 @@ namespace _1RM.Service
                 if (returnUntilOkOrCancel == false)
                     break;
 
-                counter++;
                 message = IoC.Translate("Verification failed. Please try again.");
             }
 

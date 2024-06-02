@@ -31,7 +31,7 @@ namespace _1RM.Model.Protocol
             get => _exePath;
             set
             {
-                if(SetAndNotifyIfChanged(ref _exePath, value))
+                if (SetAndNotifyIfChanged(ref _exePath, value))
                     RaisePropertyChanged(nameof(SubTitle));
             }
         }

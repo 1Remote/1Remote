@@ -2,22 +2,20 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
+using _1RM.Utils;
 using _1RM.Utils.KiTTY;
 using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.Utils
+namespace _1RM.Model.ProtocolRunner
 {
-    public static class ProtocolHelper
+    public static class RunnerHelper
     {
         /// <summary>
         /// get a selected runner, or default runner.
@@ -67,7 +65,7 @@ namespace _1RM.Utils
             startInfo.UseShellExecute = false;
             startInfo.FileName = exePath;
             startInfo.Arguments = exeArguments;
-            var process = new Process() {StartInfo = startInfo};
+            var process = new Process() { StartInfo = startInfo };
             SessionControlService.AddUnHostingWatch(process, protocol);
             process.EnableRaisingEvents = true;
             process.Start();
@@ -77,21 +75,21 @@ namespace _1RM.Utils
         /// <summary>
         /// return (noError?, exePath, exeArguments, environmentVariables)
         /// </summary>
-        private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner er, ProtocolBase protocol)
+        private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner runner, ProtocolBase protocol)
         {
-            var exePath = er.ExePath;
+            var exePath = runner.ExePath;
             var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
             if (tmp.Item1 == false)
             {
-                MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
+                MessageBoxHelper.ErrorAlert($"Exe file '{runner.ExePath}' of runner '{runner.Name}' does not existed!");
                 return new Tuple<bool, string, string, Dictionary<string, string>>(false, "", "",
                     new Dictionary<string, string>());
             }
             exePath = tmp.Item2;
 
             // prepare args
-            var exeArguments = er.Arguments;
-            if (er is ExternalRunnerForSSH runnerForSsh)
+            var exeArguments = runner.Arguments;
+            if (runner is ExternalRunnerForSSH runnerForSsh)
             {
                 switch (protocol)
                 {
@@ -108,7 +106,7 @@ namespace _1RM.Utils
             // make environment variables
             var environmentVariables = new Dictionary<string, string>();
             {
-                foreach (var kv in er.EnvironmentVariables)
+                foreach (var kv in runner.EnvironmentVariables)
                 {
                     environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
                 }

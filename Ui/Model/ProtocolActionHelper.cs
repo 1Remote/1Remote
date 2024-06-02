@@ -158,7 +158,7 @@ public static class ProtocolActionHelper
             {
                 var protocolClone = ssh.Clone();
                 // open SFTP when SSH is connected.
-                var tmpRunner = ProtocolHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
+                var tmpRunner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
                 var sftp = new SFTP
                 {
                     ColorHex = ssh.ColorHex,
