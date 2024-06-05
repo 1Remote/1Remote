@@ -301,7 +301,8 @@ namespace _1RM.Service
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
-                assignTabToken = this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
+                assignTabToken = await Connect(sftp, fromView, assignTabToken, tmpRunner.Name, assignCredentialName);
+                //assignTabToken = this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
             else if (protocolClone is LocalApp { RunWithHosting: false } localApp)
             {

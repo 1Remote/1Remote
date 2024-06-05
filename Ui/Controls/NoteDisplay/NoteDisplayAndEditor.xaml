@@ -88,6 +88,7 @@
                     <Grid Margin="10"
                           MouseEnter="GridEditor_OnMouseEnter"
                           MouseLeave="GridEditor_OnMouseLeave"
+                          Background="Transparent"
                           >
                         <wpf:MarkdownViewer Name="MarkdownViewer"
                                             PreviewMouseDown="Ignore_OnPreviewMouseDown" 
