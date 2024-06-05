@@ -156,9 +156,7 @@ public static class ProtocolActionHelper
         {
             actions.Add(new ProtocolAction(IoC.Translate("Open SFTP"), () =>
             {
-                var protocolClone = ssh.Clone();
                 // open SFTP when SSH is connected.
-                var tmpRunner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, SFTP.ProtocolName);
                 var sftp = new SFTP
                 {
                     ColorHex = ssh.ColorHex,
@@ -170,7 +168,7 @@ public static class ProtocolActionHelper
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
-                IoC.Get<SessionControlService>().ConnectWithTab(sftp, tmpRunner, "");
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(sftp, fromView: $"{nameof(LauncherWindowView)} - Action - Open SFTP", assignTabToken: DateTime.Now.Ticks.ToString());
             }));
         }
 
