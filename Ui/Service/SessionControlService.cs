@@ -74,22 +74,9 @@ namespace _1RM.Service
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
 
-        private void OnRequestOpenConnection(in ProtocolBase? serverOrg, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
+        private void OnRequestOpenConnection(in ProtocolBase serverOrg, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
         {
             CleanupProtocolsAndWindows();
-            #region START MULTIPLE SESSION
-            // if server == null, then start multiple sessions
-            if (serverOrg == null)
-            {
-                var list = _appData.VmItemList
-                    .Where(x => x.IsSelected)
-                    .Select(x => x.Server)
-                    .ToArray();
-                OnRequestOpenConnection(list, in fromView, in assignTabToken, in assignRunnerName, in assignCredentialName);
-                MsAppCenterHelper.TraceSessionOpen($"multiple sessions ({((list.Length >= 5) ? ">=5" : list.Length.ToString())})", fromView);
-                return;
-            }
-            #endregion
 
             var org = serverOrg;
             var view = fromView;
@@ -137,24 +124,13 @@ namespace _1RM.Service
         }
 
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server, Credential? assignCredential)
+        private bool ActivateOrReConnIfServerSessionIsOpened(in ProtocolBase server)
         {
             if (!server.IsOnlyOneInstance()) return false;
             var connectionId = server.BuildConnectionId();
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (!_connectionId2Hosts.ContainsKey(connectionId))
                 return false;
-
-            // FOR RDP with alternative account
-            if (assignCredential != null)
-            {
-                if (_connectionId2Hosts[connectionId].ProtocolServer is ProtocolBaseWithAddressPort p
-                    && assignCredential.Address != p.Address)
-                    return false;
-                if (_connectionId2Hosts[connectionId].ProtocolServer is ProtocolBaseWithAddressPortUserPwd p2
-                    && assignCredential.UserName != p2.UserName)
-                    return false;
-            }
 
             SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {connectionId}");
             // Activate
@@ -163,7 +139,7 @@ namespace _1RM.Service
                 if (win is TabWindowView tab)
                 {
                     var serverId = server.Id;
-                    var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                    var s = tab.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.BuildConnectionId() == connectionId);
                     if (s != null)
                         tab.GetViewModel().SelectedItem = s;
                 }

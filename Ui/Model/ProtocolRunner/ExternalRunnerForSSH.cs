@@ -24,14 +24,13 @@
                 if (Params.ContainsKey(nameof(ArgumentsForPrivateKey)) == false)
                 {
                     Params.Add(nameof(ArgumentsForPrivateKey), value);
-                    RaisePropertyChanged();
 
                 }
                 else if (Params.ContainsKey(nameof(ArgumentsForPrivateKey)) && Params[nameof(ArgumentsForPrivateKey)] != value)
                 {
                     Params[nameof(ArgumentsForPrivateKey)] = value;
-                    RaisePropertyChanged();
                 }
+                RaisePropertyChanged();
             }
         }
     }

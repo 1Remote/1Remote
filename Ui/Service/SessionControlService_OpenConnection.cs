@@ -179,15 +179,6 @@ namespace _1RM.Service
         {
             string tabToken = "";
 
-            // if is OnlyOneInstance server and it is connected now, activate it and return.
-            {
-                Credential? assignCredential = null;
-                if (!string.IsNullOrEmpty(assignCredentialName) && protocol is ProtocolBaseWithAddressPort p)
-                    assignCredential = p.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
-                if (this.ActivateOrReConnIfServerSessionIsOpened(protocol, assignCredential))
-                    return tabToken;
-            }
-
             #region prepare
 
             // trace source view
@@ -210,6 +201,26 @@ namespace _1RM.Service
             // clone and decrypt!
             var protocolClone = protocol.Clone();
             protocolClone.ConnectPreprocess();
+
+            // apply alternate credential
+            {
+                if (protocolClone is ProtocolBaseWithAddressPort p)
+                {
+                    var c = await GetCredential(p, assignCredentialName);
+                    if (c == null)
+                    {
+                        return tabToken;
+                    }
+
+                    p.SetCredential(c);
+                    if (string.IsNullOrEmpty(assignCredentialName) == false)
+                        p.DisplayName += $" ({c.Name})";
+                }
+            }
+
+
+
+            // check if need to input password
             if (protocolClone is ProtocolBaseWithAddressPortUserPwd pb)
             {
                 if (protocolClone is RDP || (protocolClone is SSH ssh && string.IsNullOrEmpty(ssh.PrivateKey)) || protocolClone is VNC || protocolClone is SFTP)
@@ -240,21 +251,11 @@ namespace _1RM.Service
 
             #endregion
 
-            // apply alternate credential
-            {
-                if (protocolClone is ProtocolBaseWithAddressPort p)
-                {
-                    var c = await GetCredential(p, assignCredentialName);
-                    if (c == null)
-                    {
-                        return tabToken;
-                    }
 
-                    p.SetCredential(c);
-                    if (string.IsNullOrEmpty(assignCredentialName) == false)
-                        p.DisplayName += $" ({c.Name})";
-                }
-            }
+            // if is OnlyOneInstance server and it is connected now, activate it and return.
+            if (this.ActivateOrReConnIfServerSessionIsOpened(protocolClone))
+                return tabToken;
+
 
             // run script before connected
             {
