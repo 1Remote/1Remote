@@ -107,7 +107,7 @@ namespace _1RM.Model.Protocol.Base
         /// <returns></returns>
         public override string BuildConnectionId()
         {
-            return $"{Id}_{Address}:{Port}({UserName})";
+            return $"{Id}_{Address}:{Port}({MD5Helper.GetMd5Hash16BitString(Password)}@{UserName})";
         }
     }
 }
