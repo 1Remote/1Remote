@@ -100,6 +100,29 @@ namespace _1RM.Model.ProtocolRunner
                 }
             }
 
+            if (protocol is ProtocolBaseWithAddressPortUserPwd ppwd)
+            {
+                // Percent-encoding, some password may contain special characters, SFTP\XFTP need to encode them.
+                // see: https://github.com/1Remote/1Remote/issues/673
+                // ref: https://winscp.net/eng/docs/session_url#special
+                var specialCharacters = new Dictionary<string, string>
+                {
+                    {"%", "%25" },
+                    {";", "%3B" },
+                    {":", "%3A" },
+                    {" ", "%20" },
+                    {"#", "%23" },
+                    {"+", "%2B" },
+                    {"/", "%2F" },
+                    {"@", "%40" },
+                };
+                foreach (var kv in specialCharacters)
+                {
+                    ppwd.Password = ppwd.Password.Replace(kv.Key, kv.Value);
+                }
+            }
+
+
             // SSH_PRIVATE_KEY_PATH 改名为 1RM_PRIVATE_KEY_PATH 2023年10月12日，TODO 一年后删除此代码
             exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%"));
 
