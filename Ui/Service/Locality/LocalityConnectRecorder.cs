@@ -158,8 +158,9 @@ namespace _1RM.Service.Locality
         }
 
 
-        public static void RdpCacheUpdate(string key, bool isFullScreen, int fullScreenIndex = -1)
+        public static void RdpCacheUpdate(string id, bool isFullScreen, int fullScreenIndex = -1)
         {
+            if(ProtocolBase.IsTmpSession(id)) return;
             Load();
             var value = new RdpLocalSetting()
             {
@@ -167,7 +168,7 @@ namespace _1RM.Service.Locality
                 FullScreenLastSessionIsFullScreen = isFullScreen,
                 FullScreenLastSessionScreenIndex = isFullScreen ? fullScreenIndex : -1,
             };
-            _settings.RdpCaches.AddOrUpdate(key, value, (s, setting) => value);
+            _settings.RdpCaches.AddOrUpdate(id, value, (s, setting) => value);
             var obsoletes = _settings.RdpCaches.Where(x => x.Value.LastUpdateTime < DateTime.Now.AddDays(-30)).Select(x => x.Key).ToArray();
             foreach (var obsolete in obsoletes)
             {

@@ -267,22 +267,20 @@ namespace _1RM.View.Host
             {
                 return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
-                    if (_canCmdClose)
+                    if (_canCmdClose
+                        && this.Items.Count > 0
+                        && App.ExitingFlag == false)
                     {
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && this.Items.Count > 0
-                            && App.ExitingFlag == false
                             && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
+                            return;
                         }
-                        else
-                        {
-                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(
-                                Items
-                                .Where(x => x.Content.ProtocolServer.IsTmpSession() == false)
-                                .Select(x => x.Content.ConnectionId).ToArray());
-                        }
+
+                        IoC.Get<SessionControlService>().CloseProtocolHostAsync(
+                            Items
+                            .Select(x => x.Content.ConnectionId).ToArray());
                         _canCmdClose = true;
                     }
                 });
