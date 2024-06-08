@@ -194,8 +194,6 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Static");
-            // enable CredSSP, will use CredSsp if the client supports.
-            _rdpClient.AdvancedSettings7.EnableCredSspSupport = true;
             _rdpClient.AdvancedSettings2.EncryptionEnabled = 1;
             _rdpClient.AdvancedSettings5.AuthenticationLevel = 0;
             _rdpClient.AdvancedSettings5.EnableAutoReconnect = true;
@@ -980,8 +978,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                if (_rdpSettings.IsTmpSession() == false)
-                    LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, -1);
+                LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, -1);
                 return ScreenInfoEx.GetAllScreensSize();
             }
 
@@ -991,8 +988,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 screenIndex = this.ParentWindow != null ? ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index : ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
-            if (_rdpSettings.IsTmpSession() == false)
-                LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, screenIndex);
+            LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, screenIndex);
             return System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds;
         }
 

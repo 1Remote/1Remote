@@ -185,7 +185,7 @@ namespace _1RM.Service
             if (string.IsNullOrEmpty(fromView) == false)
                 MsAppCenterHelper.TraceSessionOpen(protocol.Protocol, fromView);
 
-            // recode connect count
+            // connect count save to config
             _configurationService.Engagement.ConnectCount++;
             _configurationService.Save();
 

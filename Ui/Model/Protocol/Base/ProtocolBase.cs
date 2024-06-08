@@ -46,9 +46,14 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _id, value);
         }
 
+        public static bool IsTmpSession(string id)
+        {
+            return id.StartsWith("TMP_SESSION_") || string.IsNullOrEmpty(id);
+        }
+
         public bool IsTmpSession()
         {
-            return _id.StartsWith("TMP_SESSION_") || string.IsNullOrEmpty(_id);
+            return IsTmpSession(Id);
         }
 
         /// <summary>
