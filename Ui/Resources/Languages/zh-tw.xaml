@@ -313,4 +313,5 @@
     <s:String x:Key="Automatically focus on the content when selecting a tab">選擇選項卡時自動對焦內容</s:String>
     <s:String x:Key="Copy the port along with the address when copying">複製的時候把連接埠和位址一起複製</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">將關閉按鈕置於左側，防止誤觸</s:String>
+    <s:String x:Key="Ask for password when open connect">開啟連線時詢問密碼</s:String>
 </ResourceDictionary>

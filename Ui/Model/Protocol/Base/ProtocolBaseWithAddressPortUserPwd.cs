@@ -1,4 +1,5 @@
-﻿using Shawn.Utils;
+﻿using System.ComponentModel;
+using Shawn.Utils;
 
 namespace _1RM.Model.Protocol.Base
 {
@@ -23,6 +24,16 @@ namespace _1RM.Model.Protocol.Base
             }
         }
 
+
+
+        private bool? _askPasswordWhenConnect = false;
+        [DefaultValue(null)]
+        public bool? AskPasswordWhenConnect
+        {
+            get => _askPasswordWhenConnect;
+            set => SetAndNotifyIfChanged(ref _askPasswordWhenConnect, value);
+        }
+
         public const string MACRO_PASSWORD = "%1RM_PASSWORD%";
         private string _password = "";
         [OtherName(Name = "1RM_PASSWORD")]
@@ -30,6 +41,14 @@ namespace _1RM.Model.Protocol.Base
         {
             get => _password;
             set => SetAndNotifyIfChanged(ref _password, value);
+        }
+
+        private bool? _usePrivateKeyForConnect;
+        [DefaultValue(null)]
+        public bool? UsePrivateKeyForConnect
+        {
+            get => _usePrivateKeyForConnect;
+            set => SetAndNotifyIfChanged(ref _usePrivateKeyForConnect, value);
         }
 
         public const string MACRO_PRIVATE_KEY_PATH = "%1RM_PRIVATE_KEY_PATH%";

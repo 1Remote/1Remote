@@ -378,9 +378,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is KittyRunner kittyRunner)
             {
+                // KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
                 ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
-                if(ProtocolServer is SSH ssh)
-                    ssh.ConfigKitty(_sessionName, kittyRunner, ssh.PrivateKey);
+                if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw)
+                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, pw.PrivateKey);
                 else
                     kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
             }
