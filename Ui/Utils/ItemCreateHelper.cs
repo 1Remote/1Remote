@@ -41,6 +41,12 @@ namespace _1RM.Utils
                     if (ret == null) continue;
                     // set id.
                     ret.Id = iDbServer.GetId();
+
+                    if (ret is ProtocolBaseWithAddressPortUserPwd p)
+                    {
+                        p.UsePrivateKeyForConnect ??= !string.IsNullOrEmpty(p.PrivateKey);
+                        p.AskPasswordWhenConnect ??= string.IsNullOrEmpty(p.Password);
+                    }
                     return ret;
                 }
             }

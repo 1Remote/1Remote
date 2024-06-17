@@ -347,3 +347,4 @@ Use vertical lines to separate descriptions;Use vertical lines to separate descr
 Automatically focus on the content when selecting a tab;Automatically focus on the content when selecting a tab;选择 tab 后自动聚焦内容;;Automatisch Focus auf den Inhalten setzten, wenn ein Tab ausgwählt wird;;;;;;;Автоматически фокусироваться на содержимом при выборе вкладки
 Copy the port along with the address when copying;Copy the port along with the address when copying;复制地址时同时复制端口;;Beim Kopieren Adresse mit Port verwenden;;;;;;;Копировать порт вместе с адресом при копировании
 Place the close button on the left side to prevent accidental touches;Place the close button on the left side to prevent accidental touches;将关闭按钮放在左侧以防止误触;;;;;;;;;
+Ask for password when open connect;Ask for password when open connect;打开连接时输入密码;;;;;;;;;

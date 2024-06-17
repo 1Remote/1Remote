@@ -64,6 +64,7 @@
                                                 Tag="leave it blank and it will prompt for the password later."
                                                 Password="{Binding New.Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"/>
                     </Grid>
+                    <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
                 </StackPanel>
             </Grid>
 
@@ -255,7 +256,7 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0 0 5 0" Text="{DynamicResource Custom}"></TextBlock>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0 0 5 0" Text="{DynamicResource Custom}" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
                         <Slider Grid.Column="1" Value="{Binding New.ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Minimum="100" Maximum="200"></Slider>
                         <TextBox Grid.Column="2" Width="50" TextAlignment="Center" Text="{Binding New.ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>

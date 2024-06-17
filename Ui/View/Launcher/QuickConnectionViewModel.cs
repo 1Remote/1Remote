@@ -237,7 +237,7 @@ namespace _1RM.View.Launcher
                 // pop password window if needed
                 if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
                 {
-                    var pwdDlg = IoC.Get<PasswordPopupDialogViewModel>();
+                    var pwdDlg = new PasswordPopupDialogViewModel(protocolBaseWithAddressPortUserPwd is SSH or SFTP);
                     pwdDlg.Title = $"[{server.ProtocolDisplayName}]{host}";
                     if (string.IsNullOrEmpty(pwdDlg.UserName))
                     {
@@ -247,7 +247,19 @@ namespace _1RM.View.Launcher
                     if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                     {
                         protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.UserName;
-                        protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
+                        if (pwdDlg.UsePrivateKeyForConnect)
+                        {
+                            protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = true;
+                            protocolBaseWithAddressPortUserPwd.Password = "";
+                            protocolBaseWithAddressPortUserPwd.PrivateKey = pwdDlg.PrivateKey;
+                        }
+                        else
+                        {
+                            protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = false;
+                            protocolBaseWithAddressPortUserPwd.PrivateKey = "";
+                            protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
+                        }
+                        pwdDlg.PrivateKey = "";
                         pwdDlg.Password = "";
                     }
                     else

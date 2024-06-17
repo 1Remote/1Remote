@@ -313,4 +313,5 @@
     <s:String x:Key="Automatically focus on the content when selecting a tab">Se concentrer automatiquement sur le contenu lors de la sélection d'un onglet</s:String>
     <s:String x:Key="Copy the port along with the address when copying">Copiez le port avec l'adresse lors de la copie</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Placez le bouton de fermeture sur le côté gauche pour éviter les contacts accidentels</s:String>
+    <s:String x:Key="Ask for password when open connect">Demander un mot de passe lors de l'ouverture de la connexion</s:String>
 </ResourceDictionary>

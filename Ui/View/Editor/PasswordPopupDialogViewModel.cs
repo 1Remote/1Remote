@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,10 +39,52 @@ namespace _1RM.View.Editor
             set => SetAndNotifyIfChanged(ref _password, value);
         }
 
-        public PasswordPopupDialogViewModel()
+        private bool _canUsePrivateKeyForConnect = true;
+        public bool CanUsePrivateKeyForConnect
+        {
+            get => _canUsePrivateKeyForConnect;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _canUsePrivateKeyForConnect, value))
+                {
+                    if (value == false)
+                    {
+                        UsePrivateKeyForConnect = false;
+                        PrivateKey = "";
+                    }
+                }
+            }
+        }
+
+        private bool _usePrivateKeyForConnect = false;
+        public bool UsePrivateKeyForConnect
+        {
+            get => _usePrivateKeyForConnect;
+            set
+            {
+                if (CanUsePrivateKeyForConnect)
+                {
+                    SetAndNotifyIfChanged(ref _usePrivateKeyForConnect, value);
+                }
+                else
+                {
+                    SetAndNotifyIfChanged(ref _usePrivateKeyForConnect, false);
+                }
+            }
+        }
+
+        private string _privateKey = "";
+        public string PrivateKey
+        {
+            get => _privateKey;
+            set => SetAndNotifyIfChanged(ref _privateKey, value);
+        }
+
+        public PasswordPopupDialogViewModel(bool canUsePrivateKeyForConnect = false)
         {
             UserName = UnSafeStringEncipher.SimpleDecrypt(LastUsername) ?? LastUsername;
             Password = UnSafeStringEncipher.SimpleDecrypt(LastPassword) ?? LastPassword;
+            CanUsePrivateKeyForConnect = canUsePrivateKeyForConnect;
         }
 
         protected override void OnViewLoaded()

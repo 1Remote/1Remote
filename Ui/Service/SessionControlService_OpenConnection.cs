@@ -177,7 +177,6 @@ namespace _1RM.Service
 
         private async Task<string> Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
         {
-            string tabToken = "";
 
             #region prepare
 
@@ -209,7 +208,7 @@ namespace _1RM.Service
                     var c = await GetCredential(p, assignCredentialName);
                     if (c == null)
                     {
-                        return tabToken;
+                        return "";
                     }
 
                     p.SetCredential(c);
@@ -221,31 +220,54 @@ namespace _1RM.Service
 
 
             // check if need to input password
-            if (protocolClone is ProtocolBaseWithAddressPortUserPwd pb)
+            if (protocolClone is ProtocolBaseWithAddressPortUserPwd { AskPasswordWhenConnect: true } pb)
             {
-                if (protocolClone is RDP || (protocolClone is SSH ssh && string.IsNullOrEmpty(ssh.PrivateKey)) || protocolClone is VNC || protocolClone is SFTP)
+                bool flag = false;
+                Execute.OnUIThreadSync(() =>
                 {
-                    if (string.IsNullOrEmpty(pb.Password))
+                    var pwdDlg = new PasswordPopupDialogViewModel(protocolClone is SSH or SFTP);
+                    pwdDlg.Title = $"[{pb.ProtocolDisplayName}]({pb.DisplayName}) -> {pb.Address}:{pb.Port}";
+                    pwdDlg.UserName = pb.UserName;
+                    if (pb.UsePrivateKeyForConnect == true)
                     {
-                        Execute.OnUIThreadSync(() =>
-                        {
-                            var pwdDlg = new PasswordPopupDialogViewModel();
-                            pwdDlg.Title = $"[{pb.ProtocolDisplayName}]{pb.Address}:{pb.Port}";
-                            pwdDlg.UserName = pb.UserName;
-                            pwdDlg.Password = pb.Password;
-                            if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
-                            {
-                                pb.UserName = pwdDlg.UserName;
-                                pb.Password = pwdDlg.Password;
-                                pwdDlg.Password = "";
-                            }
-                        });
+                        pwdDlg.CanUsePrivateKeyForConnect = true;
+                        pwdDlg.UsePrivateKeyForConnect = true;
+                        pwdDlg.PrivateKey = pb.PrivateKey;
+                    }
+                    else
+                    {
+                        pwdDlg.UsePrivateKeyForConnect = false;
+                        pwdDlg.Password = pb.Password;
                     }
 
-                    if (string.IsNullOrEmpty(pb.Password))
+                    if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
                     {
-                        return tabToken;
+                        flag = true;
+                        pb.UserName = pwdDlg.UserName;
+                        if (pwdDlg.UsePrivateKeyForConnect)
+                        {
+                            pb.UsePrivateKeyForConnect = true;
+                            pb.Password = "";
+                            pb.PrivateKey = pwdDlg.PrivateKey;
+                        }
+                        else
+                        {
+                            pb.UsePrivateKeyForConnect = false;
+                            pb.PrivateKey = "";
+                            pb.Password = pwdDlg.Password;
+                        }
+                        pwdDlg.PrivateKey = "";
+                        pwdDlg.Password = "";
                     }
+                    else
+                    {
+                        pwdDlg.Password = "";
+                    }
+                });
+
+                if (flag == false)
+                {
+                    return "";
                 }
             }
 
@@ -254,7 +276,7 @@ namespace _1RM.Service
 
             // if is OnlyOneInstance server and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(protocolClone))
-                return tabToken;
+                return "";
 
 
             // run script before connected
@@ -263,7 +285,7 @@ namespace _1RM.Service
                 if (0 != code)
                 {
                     MessageBoxHelper.ErrorAlert($"Script ExitCode = {code}, connection abort!");
-                    return tabToken;
+                    return "";
                 }
             }
 
@@ -271,20 +293,20 @@ namespace _1RM.Service
             if (protocolClone is RdpApp rdpApp)
             {
                 ConnectRemoteApp(rdpApp);
-                return tabToken;
+                return "";
             }
             else if (protocolClone is RDP rdp)
             {
                 if (rdp.IsNeedRunWithMstsc())
                 {
                     ConnectRdpByMstsc(rdp);
-                    return tabToken;
+                    return "";
                 }
                 // rdp full screen
                 if (protocolClone.IsThisTimeConnWithFullScreen())
                 {
                     this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
-                    return tabToken;
+                    return "";
                 }
             }
             else if (protocolClone is SSH { OpenSftpOnConnected: true } ssh)
@@ -303,7 +325,6 @@ namespace _1RM.Service
                     PrivateKey = ssh.PrivateKey
                 };
                 assignTabToken = await Connect(sftp, fromView, assignTabToken, tmpRunner.Name, assignCredentialName);
-                //assignTabToken = this.ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
             else if (protocolClone is LocalApp { RunWithHosting: false } localApp)
             {
@@ -313,10 +334,11 @@ namespace _1RM.Service
                     var process = Process.Start(tmp.Item2, localApp.GetArguments(false));
                     AddUnHostingWatch(process, localApp);
                 }
-                return tabToken;
+                return "";
             }
 
 
+            string tabToken = "";
             var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, protocolClone.Protocol, assignRunnerName)!;
             if (runner.IsRunWithoutHosting())
             {
@@ -326,7 +348,6 @@ namespace _1RM.Service
             {
                 tabToken = ConnectWithTab(protocolClone, runner, assignTabToken);
             }
-
             return tabToken;
         }
     }
