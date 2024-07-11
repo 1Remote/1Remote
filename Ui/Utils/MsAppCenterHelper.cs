@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using _1RM.Utils.WindowsApi;
 using Google.Protobuf.WellKnownTypes;
@@ -55,6 +56,25 @@ namespace _1RM.Utils
                 properties.Add("Version", AppVersion.Version);
             if (!properties.ContainsKey("BuildDate"))
                 properties.Add("BuildDate", AppVersion.BuildDate);
+
+            if (properties.ContainsKey("StackTrace") == false)
+                try
+                {
+                    string message = "";
+                    var stacktrace = new StackTrace();
+                    for (var i = 0; i < stacktrace.FrameCount; i++)
+                    {
+                        var frame = stacktrace.GetFrame(i);
+                        if (frame == null) continue;
+                        message += frame.GetMethod() + " -> " + frame.GetFileName() + ": " + frame.GetFileLineNumber() + "\r\n";
+                    }
+                    properties.Add("StackTrace", message);
+                }
+                catch
+                {
+                    // ignore
+                }
+
             if (attachments != null)
                 Crashes.TrackError(e, properties, attachments.ToArray());
             else

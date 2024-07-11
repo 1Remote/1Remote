@@ -72,19 +72,16 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             lock (this)
             {
                 if (IsConnected()) return Result.Success();
-                if (_dbConnection == null)
+                _dbConnection?.Close();
+                _dbConnection = DatabaseType switch
                 {
-                    _dbConnection?.Close();
-                    _dbConnection = DatabaseType switch
-                    {
-                        DatabaseType.MySql => new MySqlConnection(_connectionString),
-                        DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
-                        DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
-                        DatabaseType.PostgreSQL => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
-                        DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
-                        _ => throw new NotImplementedException(DatabaseType.ToString() + " not supported!")
-                    };
-                }
+                    DatabaseType.MySql => new MySqlConnection(_connectionString),
+                    DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
+                    DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                    DatabaseType.PostgreSQL => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                    DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                    _ => throw new NotImplementedException(DatabaseType.ToString() + " not supported!")
+                };
 
                 string error = "";
                 try
