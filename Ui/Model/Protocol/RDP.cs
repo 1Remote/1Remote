@@ -469,7 +469,9 @@ namespace _1RM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", 
+                this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password), 
+                RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
                 LoadBalanceInfo = this.LoadBalanceInfo,

@@ -207,7 +207,19 @@ namespace _1RM.Service
                 }
                 else
                 {
-                    MsAppCenterHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"));
+                    string message = "";
+                    var stacktrace = new StackTrace();
+                    for (var i = 0; i < stacktrace.FrameCount; i++)
+                    {
+                        var frame = stacktrace.GetFrame(i);
+                        if (frame == null) continue;
+                        message += frame.GetMethod() + " -> " + frame.GetFileName() + ": " + frame.GetFileLineNumber() + "\r\n";
+                    }
+
+                    MsAppCenterHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"), new Dictionary<string, string>()
+                    {
+                        {"StackTrace", message}
+                    });
 #if DEBUG
                     var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);
                     tw.WriteLine(key);

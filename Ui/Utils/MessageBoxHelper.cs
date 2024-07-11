@@ -35,7 +35,7 @@ namespace _1RM.Utils
         public static bool Confirm(string content, string yesButtonText, string noButtonText, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             if (string.IsNullOrEmpty(title))
-                title = IoC.TryGet<ILanguageService>()?.Translate("Warning") ?? "Warning";
+                title = IoC.Translate("Warning");
 
             var ownerViewAware = (ownerViewModel as IViewAware);
             var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();

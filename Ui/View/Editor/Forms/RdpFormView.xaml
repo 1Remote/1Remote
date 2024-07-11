@@ -318,7 +318,9 @@
                 <StackPanel>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" Margin="0 7 0 0"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                                       Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
+                                       Margin="0 7 30 0"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <Border>
                                     <Border.Style>
@@ -350,15 +352,11 @@
                                                                WordWrap="False"
                                                                ShowLineNumbers="True"
                                                                Text="{Binding New.RdpFileAdditionalSettings}"
-                                                               SyntaxHighlighting="PowerShell"
                                                                FontSize="{DynamicResource TextFontSize}">
                                     <controls:BindableAvalonEditor.Resources>
                                         <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                             <VisualBrush.Visual>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock xml:space="preserve" FontStyle="Italic" Margin="50 0 0 0" Background="Transparent"></TextBlock>
-                                                    <TextBlock FontStyle="Italic" Margin="20 0 0 0">e.g. selectedmonitors:s:0,2</TextBlock>
-                                                </StackPanel>
+                                                <TextBlock FontStyle="Italic">tip e.g. selectedmonitors:s:0,2</TextBlock>
                                             </VisualBrush.Visual>
                                         </VisualBrush>
                                     </controls:BindableAvalonEditor.Resources>
@@ -377,13 +375,6 @@
                                         </Style>
                                     </controls:BindableAvalonEditor.Style>
                                 </controls:BindableAvalonEditor>
-                                <!--<TextBox 
-                                    Height="100"
-                                    VerticalContentAlignment="Top"
-                                    TextWrapping="Wrap"
-                                    AcceptsReturn="True"
-                                    Text="{Binding New.RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
-                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>-->
                             </Grid>
 
                             <TextBlock VerticalAlignment="Top" Margin="2 0">
