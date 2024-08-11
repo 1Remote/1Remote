@@ -100,6 +100,8 @@ public abstract class ExternalRunnerSettingsBase : UserControl
                             CloseWhenCaretAtBeginning = true,
                             CloseAutomatically = true
                         };
+                        _completionWindow.Background = App.ResourceDictionary["BackgroundBrush"] as Brush;
+                        _completionWindow.Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush;
                         var completionData = _completionWindow.CompletionList.CompletionData;
                         foreach (var marcoName in list)
                         {
