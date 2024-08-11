@@ -18,29 +18,69 @@ namespace _1RM.View.Editor.Forms
 {
     public partial class RdpFormView : UserControl
     {
+        private CompletionWindow? _completionWindow;
+        private void ShowCompletionWindow(IEnumerable<string> completions, TextArea textArea)
+        {
+            _completionWindow?.Close();
+            var enumerable = completions as string[] ?? completions.ToArray();
+            if (enumerable?.Any() != true) return;
+            // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
+            _completionWindow = new CompletionWindow(textArea);
+            _completionWindow.Background = App.ResourceDictionary["BackgroundBrush"] as Brush;
+            _completionWindow.Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush;
+            var completionData = _completionWindow.CompletionList.CompletionData;
+            foreach (var str in enumerable)
+            {
+                completionData.Add(new RdpFileSettingCompletionData(str));
+            }
+            _completionWindow.Show();
+            if (enumerable.Count() == 1)
+                _completionWindow.CompletionList.SelectItem(enumerable.First());
+            _completionWindow.Closed += (o, args) => _completionWindow = null;
+        }
+
+
         public RdpFormView()
         {
             InitializeComponent();
-            TextBoxRdpFileAdditionalSettings.TextArea.TextEntered += TextAreaOnTextEntered;
+            TextBoxRdpFileAdditionalSettings.TextArea.TextEntered += OnTextEntered_TextBoxRdpFileAdditionalSettings;
             TextBoxRdpFileAdditionalSettings.GotFocus += (sender, args) =>
             {
                 if (TextBoxRdpFileAdditionalSettings.Text == "")
                 {
-                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
+                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
                 }
             };
             TextBoxRdpFileAdditionalSettings.TextChanged += (sender, args) =>
             {
                 if (TextBoxRdpFileAdditionalSettings.Text == "")
                 {
-                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
+                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
+                }
+            };
+
+
+
+
+            TextBoxRdpControlAdditionalSettings.TextArea.TextEntered += OnTextEntered_TextBoxRdpControlAdditionalSettings;
+            TextBoxRdpControlAdditionalSettings.GotFocus += (sender, args) =>
+            {
+                if (TextBoxRdpControlAdditionalSettings.Text == "")
+                {
+                    ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
+                }
+            };
+            TextBoxRdpControlAdditionalSettings.TextChanged += (sender, args) =>
+            {
+                if (TextBoxRdpControlAdditionalSettings.Text == "")
+                {
+                    ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
                 }
             };
         }
 
 
-        private CompletionWindow? _completionWindow;
-        private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
+        private void OnTextEntered_TextBoxRdpFileAdditionalSettings(object sender, TextCompositionEventArgs e)
         {
             int offset = TextBoxRdpFileAdditionalSettings.CaretOffset - 1;
             //char newChar = TextBoxRdpFileAdditionalSettings.Document.GetCharAt(offset); // current key down.
@@ -52,25 +92,23 @@ namespace _1RM.View.Editor.Forms
                 if (str.StartsWith(currentLine0ToCaret) && str != currentLine0ToCaret)
                     completions.Add(str);
             }
-            ShowCompletionWindow(completions);
+            ShowCompletionWindow(completions, TextBoxRdpFileAdditionalSettings.TextArea);
         }
 
-        private void ShowCompletionWindow(IEnumerable<string> completions)
+
+
+        private void OnTextEntered_TextBoxRdpControlAdditionalSettings(object sender, TextCompositionEventArgs e)
         {
-            _completionWindow?.Close();
-            var enumerable = completions as string[] ?? completions.ToArray();
-            if (enumerable?.Any() != true) return;
-            // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
-            _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea);
-            var completionData = _completionWindow.CompletionList.CompletionData;
-            foreach (var str in enumerable)
+            int offset = TextBoxRdpControlAdditionalSettings.CaretOffset - 1;
+            var currentLine = TextBoxRdpControlAdditionalSettings.Document.GetLineByOffset(TextBoxRdpControlAdditionalSettings.CaretOffset);
+            var currentLine0ToCaret = TextBoxRdpControlAdditionalSettings.Document.GetText(currentLine.Offset, offset - currentLine.Offset + 1); // currentLine[0: offset]
+            var completions = new List<string>();
+            foreach (var str in RDP.GetRdpControlAdditionalSettingKeys())
             {
-                completionData.Add(new RdpFileSettingCompletionData(str));
+                if (str.StartsWith(currentLine0ToCaret) && str != currentLine0ToCaret)
+                    completions.Add(str);
             }
-            _completionWindow.Show();
-            if (enumerable.Count() == 1)
-                _completionWindow.CompletionList.SelectItem(enumerable.First());
-            _completionWindow.Closed += (o, args) => _completionWindow = null;
+            ShowCompletionWindow(completions, TextBoxRdpControlAdditionalSettings.TextArea);
         }
 
 

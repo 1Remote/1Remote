@@ -10,6 +10,12 @@ using System.Collections.Generic;
 using _1RM.Service.Locality;
 using _1RM.Utils;
 using Shawn.Utils.Wpf;
+using MSTSCLib;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using AxMSTSCLib;
+using _1RM.View.Host.ProtocolHosts;
+using System.Windows.Forms;
 
 namespace _1RM.Model.Protocol
 {
@@ -85,6 +91,22 @@ namespace _1RM.Model.Protocol
         public DateTime LastUpdateTime { get; set; } = DateTime.MinValue;
         public bool FullScreenLastSessionIsFullScreen { get; set; } = false;
         public int FullScreenLastSessionScreenIndex { get; set; } = -1;
+    }
+
+    public class RdpControlAdditionalSetting
+    {
+        public string Name { get; set; } = "";
+        public string? Value { get; set; } = "";
+        public string ValueType { get; set; } = nameof(Int32);
+        public string Description { get; set; } = "";
+        public string HelpHrl { get; set; } = "";
+
+        public T? GetValue<T>()
+        {
+            if (string.IsNullOrEmpty(Value))
+                return default;
+            return (T)Convert.ChangeType(Value, typeof(T));
+        }
     }
 
     // ReSharper disable once InconsistentNaming
@@ -380,6 +402,253 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _rdpFileAdditionalSettings, value);
         }
 
+
+
+        #endregion
+
+        #region RdpControlAdditionalSettings
+
+        private string _rdpControlAdditionalSettings = "";
+        public string RdpControlAdditionalSettings
+        {
+            get => _rdpControlAdditionalSettings;
+            set => SetAndNotifyIfChanged(ref _rdpControlAdditionalSettings, value);
+        }
+
+
+        private static List<string>? _rdpControlAdditionalSettingKeys = null;
+        public static List<string> GetRdpControlAdditionalSettingKeys()
+        {
+            if (_rdpControlAdditionalSettingKeys != null)
+            {
+                return _rdpControlAdditionalSettingKeys;
+            }
+
+            var excludeKeys = new HashSet<string>()
+            {
+                "Name", "Parent",
+                nameof(AxMSTSCLib.AxMsRdpClient10.Server),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Domain),
+                nameof(AxMSTSCLib.AxMsRdpClient10.UserName),
+                nameof(IMsRdpClientAdvancedSettings8.RDPPort),
+                nameof(AxMSTSCLib.AxMsRdpClient10.FullScreenTitle),
+
+                nameof(AxMSTSCLib.AxMsRdpClient10.Width),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Height),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Handle),
+                nameof(AxMSTSCLib.AxMsRdpClient10.FullScreen),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Enabled),
+                nameof(AxMSTSCLib.AxMsRdpClient10.AutoSize),
+                nameof(AxMSTSCLib.AxMsRdpClient10.DesktopHeight),
+                nameof(AxMSTSCLib.AxMsRdpClient10.DesktopWidth),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Disposing),
+                nameof(AxMSTSCLib.AxMsRdpClient10.DeviceDpi),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Left),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Right),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Top),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Bottom),
+                nameof(AxMSTSCLib.AxMsRdpClient10.Visible),
+
+                nameof(IMsRdpClientAdvancedSettings8.ConnectToAdministerServer),
+                nameof(IMsRdpClientAdvancedSettings8.DisplayConnectionBar),
+                nameof(IMsRdpClientAdvancedSettings8.PinConnectionBar),
+
+                nameof(IMsRdpClientAdvancedSettings8.EnableMouse),
+                nameof(IMsRdpClientAdvancedSettings8.LoadBalanceInfo),
+
+                //nameof(IMsRdpClientAdvancedSettings8.RedirectDrives),
+                //nameof(IMsRdpClientAdvancedSettings8.RedirectClipboard),
+                //nameof(IMsRdpClientAdvancedSettings8.RedirectPrinters),
+                //nameof(IMsRdpClientAdvancedSettings8.RedirectPOSDevices),
+                //nameof(IMsRdpClientAdvancedSettings8.RedirectSmartCards),
+            };
+
+
+            // get all writable properties of AxMSTSCLib.AxMsRdpClient10/IMsRdpClientAdvancedSettings8 by reflection, which type is int or bool or string
+            var keys = new List<string>();
+            {
+                {
+                    var type = typeof(IMsRdpClientAdvancedSettings8);
+                    var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite && (p.PropertyType == typeof(int) || p.PropertyType == typeof(bool) || p.PropertyType == typeof(string)));
+                    foreach (var propertyInfo in properties)
+                    {
+                        if (excludeKeys.Contains(propertyInfo.Name)) continue;
+                        string typeStr = ":s:";
+                        if (propertyInfo.PropertyType == typeof(int))
+                        {
+                            typeStr = ":i:";
+                        }
+                        else if (propertyInfo.PropertyType == typeof(bool))
+                        {
+                            typeStr = ":i:";
+                        }
+
+                        keys.Add($"{propertyInfo.Name}{typeStr}");
+                    }
+                }
+                {
+                    var type = typeof(AxMSTSCLib.AxMsRdpClient10);
+                    var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite && (p.PropertyType == typeof(int) || p.PropertyType == typeof(bool) || p.PropertyType == typeof(string)));
+                    foreach (var propertyInfo in properties)
+                    {
+                        if (excludeKeys.Contains(propertyInfo.Name)) continue;
+                        string typeStr = ":s:";
+                        if (propertyInfo.PropertyType == typeof(int))
+                        {
+                            typeStr = ":i:";
+                        }
+                        else if (propertyInfo.PropertyType == typeof(bool))
+                        {
+                            typeStr = ":i:";
+                        }
+
+                        keys.Add($"{propertyInfo.Name}{typeStr}");
+                    }
+                }
+            }
+            _rdpControlAdditionalSettingKeys = keys.Distinct().OrderBy(x => x.ToLower()[0]).ToList();
+            return _rdpControlAdditionalSettingKeys;
+        }
+
+        /// <summary>
+        /// separate the rdpControlAdditionalSettings into `key`,`value`,`error message`, and `original string` tuples
+        /// </summary>
+        private static List<Tuple<string, string, string>> SplitAdditionalSettings(string rdpControlAdditionalSettings)
+        {
+            var results = new List<Tuple<string, string, string>>(); // return key, value, error message
+            if (string.IsNullOrWhiteSpace(rdpControlAdditionalSettings) != false) return results;
+            var separators = new[] { ":s:", ":i:", ":b:" };
+            foreach (var s in rdpControlAdditionalSettings.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                int count = separators.Count(separator => s.IndexOf(separator, StringComparison.OrdinalIgnoreCase) >= 0);
+                if (count != 1)
+                {
+                    results.Add(new Tuple<string, string, string>(s, "", $"{s}: format error"));
+                }
+                else
+                {
+                    foreach (var separator in separators)
+                    {
+                        if (s.IndexOf(separator, StringComparison.OrdinalIgnoreCase) <= 0) continue;
+                        var ss = s.Split(separator, StringSplitOptions.TrimEntries);
+                        if (ss.Length != 2)
+                        {
+                            results.Add(new Tuple<string, string, string>(ss[0], "", $"{s}: format error"));
+                        }
+                        else
+                        {
+                            var key = ss[0];
+                            if (results.Any(x => x.Item1 == key))
+                            {
+                                results.Add(new Tuple<string, string, string>(key, "", $"{key}: duplicate key"));
+                                break;
+                            }
+                            var value = ss[1];
+                            switch (separator)
+                            {
+                                case ":i:":
+                                    results.Add(new Tuple<string, string, string>(key, value, int.TryParse(value, out var i) ? "" : $"{key}: value is not int"));
+                                    break;
+                                case ":s:":
+                                    results.Add(new Tuple<string, string, string>(key, value, ""));
+                                    break;
+                                case ":b:":
+                                    results.Add(new Tuple<string, string, string>(key, value, ""));
+                                    break;
+                                default:
+                                    results.Add(new Tuple<string, string, string>(key, value, $"{key}: `{separator}` is not supported"));
+                                    break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            return results;
+        }
+
+        /// <summary>
+        /// separate the rdpControlAdditionalSettings into key-value pairs, and return the key-value pairs which error message is empty
+        /// </summary>
+        public Dictionary<string, string> GetRdpControlAdditionalSettings()
+        {
+            var dict = new Dictionary<string, string>();
+            var sss = SplitAdditionalSettings(_rdpControlAdditionalSettings);
+            foreach (var tuple in sss)
+            {
+                if (string.IsNullOrWhiteSpace(tuple.Item3) && GetRdpControlAdditionalSettingKeys().Contains(tuple.Item1))
+                {
+                    dict.Add(tuple.Item1, tuple.Item2);
+                }
+            }
+            return dict;
+        }
+
+        public void ApplyRdpControlAdditionalSettings(AxMSTSCLib.AxMsRdpClient9NotSafeForScripting _rdpClient)
+        {
+            var sss = SplitAdditionalSettings(_rdpControlAdditionalSettings);
+            var propertiesAxMsRdpClient10 = typeof(AxMSTSCLib.AxMsRdpClient10).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite && (p.PropertyType == typeof(int) || p.PropertyType == typeof(bool) || p.PropertyType == typeof(string))).ToArray();
+            var propertiesIMsRdpClientAdvancedSettings8 = typeof(IMsRdpClientAdvancedSettings8).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite && (p.PropertyType == typeof(int) || p.PropertyType == typeof(bool) || p.PropertyType == typeof(string))).ToArray();
+            foreach (var tuple in sss)
+            {
+                if(tuple.Item3 != "") continue;
+                if(GetRdpControlAdditionalSettingKeys().Any(x => x.StartsWith(tuple.Item1 + ":")) == false) continue;
+                var key = tuple.Item1;
+                var value = tuple.Item2;
+
+                // AxMsRdpClient10
+                {
+                    var pp = propertiesAxMsRdpClient10.FirstOrDefault(x => x.Name == key);
+                    if (pp != null)
+                    {
+                        if (pp.PropertyType == typeof(int))
+                        {
+                            if (int.TryParse(value, out var i))
+                            {
+                                pp.SetValue(_rdpClient, i);
+                            }
+                        }
+                        else if (pp.PropertyType == typeof(bool))
+                        {
+                            if (int.TryParse(value, out var i))
+                            {
+                                pp.SetValue(_rdpClient, i > 0);
+                            }
+                        }
+                        else if (pp.PropertyType == typeof(string))
+                        {
+                            pp.SetValue(_rdpClient, value);
+                        }
+                    }
+                }
+                // IMsRdpClientAdvancedSettings8
+                {
+                    var pp = propertiesIMsRdpClientAdvancedSettings8.FirstOrDefault(x => x.Name == key);
+                    if (pp != null)
+                    {
+                        if (pp.PropertyType == typeof(int))
+                        {
+                            if (int.TryParse(value, out var i))
+                            {
+                                pp.SetValue(_rdpClient.AdvancedSettings, i);
+                            }
+                        }
+                        else if (pp.PropertyType == typeof(bool))
+                        {
+                            if (int.TryParse(value, out var i))
+                            {
+                                pp.SetValue(_rdpClient.AdvancedSettings, i > 0);
+                            }
+                        }
+                        else if (pp.PropertyType == typeof(string))
+                        {
+                            pp.SetValue(_rdpClient.AdvancedSettings, value);
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Gateway
@@ -469,8 +738,8 @@ namespace _1RM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", 
-                this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password), 
+            var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}",
+                this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password),
                 RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
@@ -774,5 +1043,41 @@ namespace _1RM.Model.Protocol
 
             return false;
         }
+
+
+        #region IDataErrorInfo
+
+        [JsonIgnore]
+        public override string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(RdpControlAdditionalSettings):
+                        {
+                            var sss = SplitAdditionalSettings(RdpControlAdditionalSettings);
+                            string message = "";
+                            foreach (var tuple in sss)
+                            {
+                                if (!string.IsNullOrWhiteSpace(tuple.Item3))
+                                {
+                                    message += tuple.Item3 + "\n";
+                                }
+                                else if (GetRdpControlAdditionalSettingKeys().Any(x=>x.StartsWith(tuple.Item1+":")) == false)
+                                {
+                                    message += $"{tuple.Item1}: key is not supported\n";
+                                }
+                            }
+                            return message;
+                        }
+                    default:
+                        {
+                            return base[columnName];
+                        }
+                }
+            }
+        }
+        #endregion
     }
 }

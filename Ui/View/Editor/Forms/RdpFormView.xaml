@@ -28,7 +28,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
+                                 MinWidth="100" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"></TextBox>
                     </Grid>
@@ -314,90 +314,89 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2Visible}}">
-                <StackPanel>
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" 
-                                       Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
-                                       Margin="0 7 30 0"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <Border>
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="BorderThickness" Value="1" />
-                                            <Setter Property="CornerRadius" Value="5" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-                                            <Setter Property="Padding" Value="5 1" />
-                                            <Setter Property="Opacity" Value="1" />
-                                            <Style.Triggers>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=IsMouseOver}" Value="True"></Condition>
-                                                        <Condition Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=TextArea.IsFocused}" Value="False"></Condition>
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
-                                                    <Setter Property="Opacity" Value="0.6" />
-                                                </MultiDataTrigger>
-                                                <DataTrigger Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=TextArea.IsFocused}" Value="True">
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-                                <controls:BindableAvalonEditor Margin="8 0 4 0"
-                                                               Padding="0 5 0 5"
-                                                               x:Name="TextBoxRdpFileAdditionalSettings"
-                                                               WordWrap="False"
-                                                               ShowLineNumbers="True"
-                                                               Text="{Binding New.RdpFileAdditionalSettings}"
-                                                               FontSize="{DynamicResource TextFontSize}">
-                                    <controls:BindableAvalonEditor.Resources>
-                                        <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
-                                            <VisualBrush.Visual>
-                                                <TextBlock FontStyle="Italic">tip e.g. selectedmonitors:s:0,2</TextBlock>
-                                            </VisualBrush.Visual>
-                                        </VisualBrush>
-                                    </controls:BindableAvalonEditor.Resources>
-                                    <controls:BindableAvalonEditor.Style>
-                                        <Style TargetType="controls:BindableAvalonEditor">
-                                            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
-                                            <Setter Property="Background" Value="Transparent"/>
-                                            <Style.Triggers>
-                                                <Trigger Property="Text" Value="{x:Null}">
-                                                    <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
-                                                </Trigger>
-                                                <Trigger Property="Text" Value="">
-                                                    <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </controls:BindableAvalonEditor.Style>
-                                </controls:BindableAvalonEditor>
-                            </Grid>
+            <StackPanel Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2Visible}}">
+                <Grid Style="{StaticResource EditorRowGrid}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                                   Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
+                                   Margin="0 7 30 0"></TextBlock>
+                        <Grid Style="{StaticResource EditorRowGridInput}">
+                            <Border>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="CornerRadius" Value="5" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                        <Setter Property="Padding" Value="5 1" />
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=IsMouseOver}" Value="True"></Condition>
+                                                    <Condition Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                                <Setter Property="Opacity" Value="0.6" />
+                                            </MultiDataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=TextBoxRdpFileAdditionalSettings, Path=TextArea.IsFocused}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <controls:BindableAvalonEditor Margin="8 0 4 0"
+                                                           Padding="0 5 0 5"
+                                                           x:Name="TextBoxRdpFileAdditionalSettings"
+                                                           WordWrap="False"
+                                                           ShowLineNumbers="True"
+                                                           Text="{Binding New.RdpFileAdditionalSettings}"
+                                                           FontSize="{DynamicResource TextFontSize}">
+                                <controls:BindableAvalonEditor.Resources>
+                                    <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                                        <VisualBrush.Visual>
+                                            <TextBlock FontStyle="Italic">tip e.g. selectedmonitors:s:0,2</TextBlock>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </controls:BindableAvalonEditor.Resources>
+                                <controls:BindableAvalonEditor.Style>
+                                    <Style TargetType="controls:BindableAvalonEditor">
+                                        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="{x:Null}">
+                                                <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:BindableAvalonEditor.Style>
+                            </controls:BindableAvalonEditor>
+                        </Grid>
 
-                            <TextBlock VerticalAlignment="Top" Margin="2 0">
-                                <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
-                                           controls1:HyperlinkHelper.IsOpenExternal="True">
-                                    (?)
-                                </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
-                                    <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </Grid>
+                        <TextBlock VerticalAlignment="Top" Margin="2 0">
+                            <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
+                                       controls1:HyperlinkHelper.IsOpenExternal="True">
+                                (?)
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+                <Grid Style="{StaticResource EditorRowGrid}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
+                        <Grid Style="{StaticResource EditorRowGridInput}">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
+                                <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
         </StackPanel>
 
 
@@ -496,60 +495,131 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <Grid Margin="50 10 0 0">
-                        <StackPanel>
-                            <StackPanel Margin="20 0 0 0">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding New.GatewayMode}" Value="{x:Static protocol:EGatewayMode.DoNotUseGateway}">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <Grid Style="{StaticResource EditorRowGrid}" Margin="0 3 0 0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_server_host_name}"></TextBlock>
-                                        <TextBox Text="{Binding New.GatewayHostName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
-                                    </StackPanel>
-                                </Grid>
-                                <Grid Style="{StaticResource EditorRowGrid}" Margin="0 6 0 0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_logon_method}"></TextBlock>
-                                        <ComboBox SelectedIndex="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
-                                            <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}" />
-                                            <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}" />
-                                            <ComboBoxItem Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
-                                        </ComboBox>
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
-                                      Style="{StaticResource EditorRowGrid}"
-                                      Margin="0 6 0 0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
-                                        <TextBox Text="{Binding New.GatewayUserName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
-                                      Style="{StaticResource EditorRowGrid}"
-                                      Margin="0 6 0 0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
-                                        <controls:PasswordInput Height="28" Password="{Binding New.GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }"/>
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding New.GatewayMode}" Value="{x:Static protocol:EGatewayMode.DoNotUseGateway}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding New.MstscModeEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Margin="70 10 0 0">
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0 3 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_server_host_name}"></TextBlock>
+                            <TextBox Text="{Binding New.GatewayHostName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
                         </StackPanel>
                     </Grid>
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0 6 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_logon_method}"></TextBlock>
+                            <ComboBox SelectedIndex="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
+                                <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}" />
+                                <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}" />
+                                <ComboBoxItem Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
+                          Style="{StaticResource EditorRowGrid}"
+                          Margin="0 6 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
+                            <TextBox Text="{Binding New.GatewayUserName, UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Visibility="{Binding New.GatewayLogonMethod, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:EGatewayLogonMethod.SmartCard}}"
+                          Style="{StaticResource EditorRowGrid}"
+                          Margin="0 6 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
+                            <controls:PasswordInput Height="28" Password="{Binding New.GatewayPassword, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay }" Width="200"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+
+        <StackPanel Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2VisibleInv}}">
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="MISC"></TextBlock>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" 
+                               Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
+                               Margin="0 7 30 0"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1" />
+                                    <Setter Property="CornerRadius" Value="5" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                    <Setter Property="Padding" Value="5 1" />
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=IsMouseOver}" Value="True"></Condition>
+                                                <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                            <Setter Property="Opacity" Value="0.6" />
+                                        </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                        <controls:BindableAvalonEditor Margin="8 0 4 0"
+                                                       Padding="0 5 0 5"
+                                                       x:Name="TextBoxRdpControlAdditionalSettings"
+                                                       WordWrap="False"
+                                                       ShowLineNumbers="True"
+                                                       Text="{Binding New.RdpControlAdditionalSettings, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                                       FontSize="{DynamicResource TextFontSize}">
+                            <controls:BindableAvalonEditor.Resources>
+                                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                                    <VisualBrush.Visual>
+                                        <TextBlock FontStyle="Italic">e.g. EnableAutoReconnect:i:0</TextBlock>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </controls:BindableAvalonEditor.Resources>
+                            <controls:BindableAvalonEditor.Style>
+                                <Style TargetType="controls:BindableAvalonEditor">
+                                    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="Text" Value="{x:Null}">
+                                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="Text" Value="">
+                                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:BindableAvalonEditor.Style>
+                        </controls:BindableAvalonEditor>
+                    </Grid>
+
+                    <!--TODO: Add a link to the documentation
+                    <TextBlock VerticalAlignment="Top" Margin="2 0">
+                        <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
+                                   controls1:HyperlinkHelper.IsOpenExternal="True">
+                            (?)
+                        </Hyperlink>
+                    </TextBlock>-->
                 </StackPanel>
             </Grid>
         </StackPanel>
