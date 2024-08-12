@@ -556,70 +556,82 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
                                Margin="0 7 30 0"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
-                        <Border>
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="CornerRadius" Value="5" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-                                    <Setter Property="Padding" Value="5 1" />
-                                    <Setter Property="Opacity" Value="1" />
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=IsMouseOver}" Value="True"></Condition>
-                                                <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="False"></Condition>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
-                                            <Setter Property="Opacity" Value="0.6" />
-                                        </MultiDataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
-                        <controls:BindableAvalonEditor Margin="8 0 4 0"
-                                                       Padding="0 5 0 5"
-                                                       x:Name="TextBoxRdpControlAdditionalSettings"
-                                                       WordWrap="False"
-                                                       ShowLineNumbers="True"
-                                                       Text="{Binding New.RdpControlAdditionalSettings, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                                       FontSize="{DynamicResource TextFontSize}">
-                            <controls:BindableAvalonEditor.Resources>
-                                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
-                                    <VisualBrush.Visual>
-                                        <TextBlock FontStyle="Italic">e.g. EnableAutoReconnect:i:0</TextBlock>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </controls:BindableAvalonEditor.Resources>
-                            <controls:BindableAvalonEditor.Style>
-                                <Style TargetType="controls:BindableAvalonEditor">
-                                    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="Text" Value="{x:Null}">
-                                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
-                                        </Trigger>
-                                        <Trigger Property="Text" Value="">
-                                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:BindableAvalonEditor.Style>
-                        </controls:BindableAvalonEditor>
-                    </Grid>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1" />
+                                            <Setter Property="CornerRadius" Value="5" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                            <Setter Property="Padding" Value="5 1" />
+                                            <Setter Property="Opacity" Value="1" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=IsMouseOver}" Value="True"></Condition>
+                                                        <Condition Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                                    <Setter Property="Opacity" Value="0.6" />
+                                                </MultiDataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=TextBoxRdpControlAdditionalSettings, Path=TextArea.IsFocused}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                                <controls:BindableAvalonEditor Margin="8 0 4 0"
+                                                               Padding="0 5 0 5"
+                                                               x:Name="TextBoxRdpControlAdditionalSettings"
+                                                               WordWrap="False"
+                                                               ShowLineNumbers="True"
+                                                               Text="{Binding New.RdpControlAdditionalSettings, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                                                               FontSize="{DynamicResource TextFontSize}">
+                                    <controls:BindableAvalonEditor.Resources>
+                                        <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                                            <VisualBrush.Visual>
+                                                <TextBlock FontStyle="Italic" Margin="10 0 0 0">e.g. EnableAutoReconnect:i:0</TextBlock>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </controls:BindableAvalonEditor.Resources>
+                                    <controls:BindableAvalonEditor.Style>
+                                        <Style TargetType="controls:BindableAvalonEditor">
+                                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="Text" Value="{x:Null}">
+                                                    <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="Text" Value="">
+                                                    <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </controls:BindableAvalonEditor.Style>
+                                </controls:BindableAvalonEditor>
+                            </Grid>
+                            <!--TODO: Add a link to the documentation
+                            <TextBlock VerticalAlignment="Top" Margin="2 0">
+                                <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
+                                           controls1:HyperlinkHelper.IsOpenExternal="True">
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>-->
+                        </StackPanel>
 
-                    <!--TODO: Add a link to the documentation
-                    <TextBlock VerticalAlignment="Top" Margin="2 0">
-                        <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
-                                   controls1:HyperlinkHelper.IsOpenExternal="True">
-                            (?)
-                        </Hyperlink>
-                    </TextBlock>-->
+
+                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
+                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="Here you can set options not listed in the UI, enabling richer configuration possibilities, such as disabling automatic reconnection by `EnableAutoReconnect:i:0`, or disabling combination keys by `HotKeyAltTab:i:0`."></Run>
+                        </TextBlock>
+                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
+                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text=" Note that this option has the highest priority and will override previous configurations from UI."></Run>
+                        </TextBlock>
+
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>
