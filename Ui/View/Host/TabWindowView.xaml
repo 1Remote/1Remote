@@ -146,6 +146,7 @@
                                                    VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"
                                                    MaxWidth="250"
+                                                   MinWidth="40"
                                                    ToolTip="{Binding DisplayName}"
                                                    Text="{Binding DisplayName}"></TextBlock>
                                     </Border>
