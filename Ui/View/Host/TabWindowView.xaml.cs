@@ -35,10 +35,6 @@ namespace _1RM.View.Host
             this.MinWidth = this.MinHeight = 300;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.WindowStyle = WindowStyle.SingleBorderWindow;
-            if (IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
-            {
-                this.WindowState = IoC.Get<LocalityService>().TabWindowState;
-            }
 
             Focusable = true;
             this.Loaded += (_, _) =>
@@ -121,6 +117,11 @@ namespace _1RM.View.Host
                 {
                     this.StopFlashingWindow();
                 };
+
+                if (IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
+                {
+                    this.WindowState = IoC.Get<LocalityService>().TabWindowState;
+                }
             };
         }
 
