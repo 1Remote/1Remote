@@ -14,7 +14,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public readonly int Port;
         public readonly string Username;
         public readonly string Password;
-        private FtpClient? _ftp = null;
+        private AsyncFtpClient? _ftp = null;
 
         public TransmitterFtp(string host, int port, string username, string password)
         {
@@ -55,7 +55,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             if (_ftp == null) return null;
             lock (this)
             {
-                return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path)) : null;
+                return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path).Result) : null;
             }
         }
 
@@ -65,7 +65,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             lock (this)
             {
                 var ret = new List<RemoteItem>();
-                IEnumerable<FtpListItem> items = _ftp.GetListing(path);
+                IEnumerable<FtpListItem> items = _ftp.GetListing(path).Result;
                 if (items == null ||
                     !items.Any())
                     return ret;
@@ -86,9 +86,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             if (_ftp == null) return false;
             lock (this)
             {
-                if (_ftp.FileExists(path))
+                if (_ftp.FileExists(path).Result)
                     return true;
-                if (_ftp.DirectoryExists(path))
+                if (_ftp.DirectoryExists(path).Result)
                     return true;
                 return false;
             }
@@ -102,14 +102,14 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 var newItem = new RemoteItem()
                 {
                     Icon = null,
-                    IsDirectory = item.Type == FtpFileSystemObjectType.Directory,
+                    IsDirectory = item.Type == FtpObjectType.Directory,
                     Name = item.Name,
                     FullName = fn,
                     LastUpdate = item.RawModified,
                     ByteSize = (ulong)item.Size,
-                    IsSymlink = item.Type == FtpFileSystemObjectType.Link,
+                    IsSymlink = item.Type == FtpObjectType.Link,
                 };
-                if (item.Type == FtpFileSystemObjectType.Directory)
+                if (item.Type == FtpObjectType.Directory)
                 {
                     if (newItem.IsSymlink)
                     {
@@ -170,7 +170,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             if (_ftp == null) return;
             lock (this)
             {
-                if (_ftp.DirectoryExists(path) == false)
+                if (_ftp.DirectoryExists(path).Result == false)
                     _ftp.CreateDirectory(path);
             }
         }
@@ -202,11 +202,11 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                     {
                         var parent = saveToRemotePath.Substring(0,
                             saveToRemotePath.LastIndexOf("/", StringComparison.Ordinal));
-                        if (_ftp.DirectoryExists(parent) == false)
+                        if (_ftp.DirectoryExists(parent).Result == false)
                             _ftp.CreateDirectory(parent);
                     }
 
-                    _ftp.UploadFileAsync(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
+                    _ftp.UploadFile(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
                         new Progress<FtpProgress>(progress =>
                         {
                             writeCallBack?.Invoke((ulong)progress.TransferredBytes);
@@ -225,7 +225,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             if (_ftp == null) return;
             try
             {
-                var t = _ftp.DownloadFileAsync(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None,
+                var t = _ftp.DownloadFile(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None,
                     new Progress<FtpProgress>(progress =>
                     {
                         readCallBack?.Invoke((ulong)progress.TransferredBytes);
@@ -252,7 +252,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 if (_ftp?.IsConnected != true)
                 {
                     _ftp?.Dispose();
-                    _ftp = new FtpClient(Hostname, Port, Username, Password);
+                    _ftp = new AsyncFtpClient(Hostname, new System.Net.NetworkCredential(Username, Password), Port);
                     _ftp.Connect();
                 }
             }
