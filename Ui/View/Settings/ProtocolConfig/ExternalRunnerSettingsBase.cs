@@ -9,39 +9,13 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using Newtonsoft.Json.Bson;
 using _1RM.Controls;
 using _1RM.Service;
+using System.Windows;
 
 namespace _1RM.View.Settings.ProtocolConfig;
 
 public abstract class ExternalRunnerSettingsBase : UserControl
 {
     private CompletionWindow? _completionWindow;
-    //public void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
-    //{
-    //    if (e.Text == "%"
-    //        && sender is ICSharpCode.AvalonEdit.Editing.TextArea textArea
-    //        && this.DataContext is ExternalRunnerSettingsViewModel vm)
-    //    {
-    //        _completionWindow = new CompletionWindow(textArea)
-    //        {
-    //            CloseWhenCaretAtBeginning = true,
-    //            CloseAutomatically = true
-    //        };
-    //        var completionData = _completionWindow.CompletionList.CompletionData;
-    //        foreach (var marcoName in vm.ExternalRunner.MarcoNames)
-    //        {
-    //            completionData.Add(new MarcoCompletionData(marcoName));
-    //        }
-    //        _completionWindow.Show();
-    //        _completionWindow.Closed += (o, args) => _completionWindow = null;
-    //        return;
-    //    }
-    //    else if (_completionWindow != null)
-    //    {
-    //    }
-    //    _completionWindow?.Close();
-    //    _completionWindow = null;
-    //}
-
     public void InitBindableAvalonEditor(BindableAvalonEditor avalonEditor)
     {
         {
@@ -98,10 +72,13 @@ public abstract class ExternalRunnerSettingsBase : UserControl
                         _completionWindow = new CompletionWindow(textArea)
                         {
                             CloseWhenCaretAtBeginning = true,
-                            CloseAutomatically = true
+                            CloseAutomatically = true,
+                            BorderThickness = new System.Windows.Thickness(0),
+                            Background = App.ResourceDictionary["BackgroundBrush"] as Brush,
+                            Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush,
+                            ResizeMode = ResizeMode.NoResize,
+                            WindowStyle = WindowStyle.None,
                         };
-                        _completionWindow.Background = App.ResourceDictionary["BackgroundBrush"] as Brush;
-                        _completionWindow.Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush;
                         var completionData = _completionWindow.CompletionList.CompletionData;
                         foreach (var marcoName in list)
                         {

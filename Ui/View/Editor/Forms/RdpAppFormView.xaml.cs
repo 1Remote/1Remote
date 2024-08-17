@@ -61,7 +61,16 @@ namespace _1RM.View.Editor.Forms
             var enumerable = completions as string[] ?? completions.ToArray();
             if (enumerable?.Any() != true) return;
             // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
-            _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea);
+            _completionWindow = new CompletionWindow(TextBoxRdpFileAdditionalSettings.TextArea)
+            {
+                CloseWhenCaretAtBeginning = true,
+                CloseAutomatically = true,
+                BorderThickness = new System.Windows.Thickness(0),
+                Background = App.ResourceDictionary["BackgroundBrush"] as Brush,
+                Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStyle = WindowStyle.None,
+            };
             var completionData = _completionWindow.CompletionList.CompletionData;
             foreach (var str in enumerable)
             {
