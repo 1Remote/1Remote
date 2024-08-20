@@ -450,8 +450,8 @@ namespace _1RM.Model.Protocol
                 nameof(AxMSTSCLib.AxMsRdpClient10.Visible),
 
                 nameof(IMsRdpClientAdvancedSettings8.ConnectToAdministerServer),
-                nameof(IMsRdpClientAdvancedSettings8.DisplayConnectionBar),
-                nameof(IMsRdpClientAdvancedSettings8.PinConnectionBar),
+                //nameof(IMsRdpClientAdvancedSettings8.DisplayConnectionBar),
+                //nameof(IMsRdpClientAdvancedSettings8.PinConnectionBar),
 
                 nameof(IMsRdpClientAdvancedSettings8.EnableMouse),
                 nameof(IMsRdpClientAdvancedSettings8.LoadBalanceInfo),
@@ -567,23 +567,6 @@ namespace _1RM.Model.Protocol
             return results;
         }
 
-        /// <summary>
-        /// separate the rdpControlAdditionalSettings into key-value pairs, and return the key-value pairs which error message is empty
-        /// </summary>
-        public Dictionary<string, string> GetRdpControlAdditionalSettings()
-        {
-            var dict = new Dictionary<string, string>();
-            var sss = SplitAdditionalSettings(_rdpControlAdditionalSettings);
-            foreach (var tuple in sss)
-            {
-                if (string.IsNullOrWhiteSpace(tuple.Item3) && GetRdpControlAdditionalSettingKeys().Contains(tuple.Item1))
-                {
-                    dict.Add(tuple.Item1, tuple.Item2);
-                }
-            }
-            return dict;
-        }
-
         public void ApplyRdpControlAdditionalSettings(AxMSTSCLib.AxMsRdpClient9NotSafeForScripting _rdpClient)
         {
             var sss = SplitAdditionalSettings(_rdpControlAdditionalSettings);
@@ -599,7 +582,7 @@ namespace _1RM.Model.Protocol
                 // AxMsRdpClient10
                 {
                     var pp = propertiesAxMsRdpClient10.FirstOrDefault(x => x.Name == key);
-                    if (pp != null)
+                    if (pp != null && (pp.CanWrite || pp.SetMethod != null))
                     {
                         if (pp.PropertyType == typeof(int))
                         {
@@ -624,7 +607,7 @@ namespace _1RM.Model.Protocol
                 // IMsRdpClientAdvancedSettings8
                 {
                     var pp = propertiesIMsRdpClientAdvancedSettings8.FirstOrDefault(x => x.Name == key);
-                    if (pp != null)
+                    if (pp != null && (pp.CanWrite || pp.SetMethod != null))
                     {
                         if (pp.PropertyType == typeof(int))
                         {
@@ -1064,10 +1047,10 @@ namespace _1RM.Model.Protocol
                                 {
                                     message += tuple.Item3 + "\n";
                                 }
-                                else if (GetRdpControlAdditionalSettingKeys().Any(x=>x.StartsWith(tuple.Item1+":")) == false)
-                                {
-                                    message += $"{tuple.Item1}: key is not supported\n";
-                                }
+                                //else if (GetRdpControlAdditionalSettingKeys().Any(x=>x.StartsWith(tuple.Item1+":")) == false)
+                                //{
+                                //    message += $"{tuple.Item1}: key is not supported\n";
+                                //}
                             }
                             return message;
                         }

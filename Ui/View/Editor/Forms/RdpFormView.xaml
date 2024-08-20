@@ -625,7 +625,7 @@
 
 
                         <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
-                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="Here you can set options not listed in the UI, enabling richer configuration possibilities, such as disabling automatic reconnection by `EnableAutoReconnect:i:0`, or disabling combination keys by `HotKeyAltTab:i:0`."></Run>
+                            <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="Here you can set options not listed in the UI, enabling richer configuration possibilities, such as disabling automatic reconnection by `EnableAutoReconnect:i:0`, or disabling combination keys by `HotKeyAltTab:i:0`, or pin the connection bar by `PinConnectionBar:i:1`."></Run>
                         </TextBlock>
                         <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
                             <Run Foreground="{DynamicResource BackgroundTextBrush}" Text=" Note that this option has the highest priority and will override previous configurations from UI."></Run>
