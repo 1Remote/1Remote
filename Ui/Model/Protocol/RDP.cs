@@ -530,20 +530,20 @@ namespace _1RM.Model.Protocol
                     foreach (var separator in separators)
                     {
                         if (s.IndexOf(separator, StringComparison.OrdinalIgnoreCase) <= 0) continue;
-                        var ss = s.Split(separator, StringSplitOptions.TrimEntries);
+                        var ss = s.Split(new[]{ separator }, StringSplitOptions.RemoveEmptyEntries);
                         if (ss.Length != 2)
                         {
-                            results.Add(new Tuple<string, string, string>(ss[0], "", $"{s}: format error"));
+                            results.Add(new Tuple<string, string, string>(ss[0].Trim(), "", $"{s}: format error"));
                         }
                         else
                         {
-                            var key = ss[0];
+                            var key = ss[0].Trim();
                             if (results.Any(x => x.Item1 == key))
                             {
                                 results.Add(new Tuple<string, string, string>(key, "", $"{key}: duplicate key"));
                                 break;
                             }
-                            var value = ss[1];
+                            var value = ss[1].Trim();
                             switch (separator)
                             {
                                 case ":i:":
