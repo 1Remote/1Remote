@@ -30,6 +30,38 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "Chrome",
+                AppProtocolDisplayName = "Chrome",
+                RunWithHosting = false,
+                ArgumentList = new ObservableCollection<AppArgument>(argumentList),
+            };
+            return app;
+        }
+        return null;
+    }
+
+
+    private static LocalApp? GetNoMachine(string path)
+    {
+        if (path.Trim().EndsWith("nxplayer.exe", StringComparison.OrdinalIgnoreCase))
+        {
+            var argumentList = new List<AppArgument>
+            {
+                new AppArgument()
+                {
+                    Type = AppArgumentType.File,
+                    Name = "nxs file",
+                    Key = "",
+                    IsNullable = false,
+                    Value = "",
+                    Description = "The nxs file created by NoMachine",
+                    AddBlankAfterKey = false,
+                    AddBlankAfterValue = true,
+                },
+            };
+            var app = new LocalApp()
+            {
+                DisplayName = "NoMachine",
+                AppProtocolDisplayName = "NoMachine",
                 RunWithHosting = false,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -174,6 +206,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "FreeRdp",
+                AppProtocolDisplayName = "FreeRdp",
                 RunWithHosting = false,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -268,6 +301,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "PuTTY",
+                AppProtocolDisplayName = "PuTTY",
                 RunWithHosting = true,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -366,6 +400,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "Windows Terminal",
+                AppProtocolDisplayName = "WT",
                 RunWithHosting = false,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -459,6 +494,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "WinSCP",
+                AppProtocolDisplayName = "WinSCP",
                 RunWithHosting = false,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -594,6 +630,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "UltraVNC",
+                AppProtocolDisplayName = "VNC",
                 RunWithHosting = false,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -659,6 +696,7 @@ public static class AppArgumentHelper
             var app = new LocalApp()
             {
                 DisplayName = "TightVNC",
+                AppProtocolDisplayName = "VNC",
                 RunWithHosting = true,
                 ArgumentList = new ObservableCollection<AppArgument>(argumentList),
             };
@@ -678,6 +716,7 @@ public static class AppArgumentHelper
                ?? GetFilezilla(exePath)
                ?? GetTightVNC(exePath)
                ?? GetUltraVNC(exePath)
+               ?? GetNoMachine(exePath)
                ?? null;
     }
 }

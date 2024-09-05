@@ -82,12 +82,12 @@ jobs:
         run: ./scripts/Get-Version.ps1
 
       # echo ${{env.BuildVersion}} and ${{env.PreRelease}}
-      - name: Echo Version
-        shell: pwsh
-        if: ${{env.PreRelease}} != ""
-        run: |
-          echo ${{env.BuildVersion}}
-          echo ${{env.PreRelease}}
+      # - name: Echo Version
+      #   shell: pwsh
+      #   if: ${{env.PreRelease}} != ""
+      #   run: |
+      #     echo ${{env.BuildVersion}}
+      #     echo ${{env.PreRelease}}
 
       ## Publish the application Net4.8
       #- name: Publish the application Net4.8
@@ -136,7 +136,7 @@ jobs:
           submodules: recursive
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v2
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
@@ -148,7 +148,7 @@ jobs:
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
       ## download artifact net4.8
-      #- uses: actions/download-artifact@v4.1.7
+      #- uses: actions/download-artifact@v2
       #  with:
       #    name: ${{needs.JobBuild.outputs.artifact_net48}}
       #    path: ${{needs.JobBuild.outputs.artifact_net48}}
@@ -222,7 +222,7 @@ jobs:
           submodules: recursive
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v2
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
@@ -234,7 +234,7 @@ jobs:
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
       ## download artifact net4.8
-      #- uses: actions/download-artifact@v4.1.7
+      #- uses: actions/download-artifact@v2
       #  with:
       #    name: ${{needs.JobBuild.outputs.artifact_net48}}
       #    path: ${{needs.JobBuild.outputs.artifact_net48}}
@@ -303,7 +303,7 @@ jobs:
           echo ${{needs.JobBuild.outputs.PreRelease}}
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v2
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
