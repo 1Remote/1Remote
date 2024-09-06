@@ -94,7 +94,7 @@ jobs:
       #  run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
       #  # run: msbuild $env:Main_Project -t:rebuild -verbosity:diag -property:Configuration=ReleaseNet48
       ## artifact
-      #- uses: actions/upload-artifact@v3
+      #- uses: actions/upload-artifact@v4
       #  with:
       #    name: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
       #    path: Ui/bin/Release/net4.8-windows/publish
@@ -103,7 +103,7 @@ jobs:
       - name: Publish the application
         run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.pubxml
       # artifact
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: 1Remote-${{env.BuildVersion}}-net6-x64
           path: Ui/bin/Release/net6.0-windows/publish/win-x64
@@ -136,7 +136,7 @@ jobs:
           submodules: recursive
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
@@ -148,7 +148,7 @@ jobs:
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
       ## download artifact net4.8
-      #- uses: actions/download-artifact@v2
+      #- uses: actions/download-artifact@v4.1.7
       #  with:
       #    name: ${{needs.JobBuild.outputs.artifact_net48}}
       #    path: ${{needs.JobBuild.outputs.artifact_net48}}
@@ -194,9 +194,11 @@ jobs:
       #    asset_content_type: application/zip
 
       # set changelogs
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+          node-version: lts/*
+
       - run: npx changelogithub #--draft #--prerelease # or changelogithub@0.12 if ensure the stable result
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -222,7 +224,7 @@ jobs:
           submodules: recursive
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
@@ -234,7 +236,7 @@ jobs:
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
 
       ## download artifact net4.8
-      #- uses: actions/download-artifact@v2
+      #- uses: actions/download-artifact@v4.1.7
       #  with:
       #    name: ${{needs.JobBuild.outputs.artifact_net48}}
       #    path: ${{needs.JobBuild.outputs.artifact_net48}}
@@ -280,9 +282,11 @@ jobs:
       #    asset_content_type: application/zip
 
       # set changelogs
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+          node-version: lts/*
+
       - run: npx changelogithub --prerelease #--draft #--prerelease # or changelogithub@0.12 if ensure the stable result
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -293,8 +297,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: JobBuild
     if: |
-      !startsWith(github.ref, 'refs/tags/') &&
-      !startsWith(github.event.head_commit.message, 'chore:') &&
       !contains(github.event.head_commit.message, 'WIP')
     steps:
       - name: Echo
@@ -303,7 +305,7 @@ jobs:
           echo ${{needs.JobBuild.outputs.PreRelease}}
 
       # download artifact net6.x
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
