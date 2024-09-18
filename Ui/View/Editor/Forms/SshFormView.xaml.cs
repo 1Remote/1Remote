@@ -19,18 +19,24 @@ namespace _1RM.View.Editor.Forms
             {
                 if (DataContext is SshFormViewModel { New: var ssh })
                 {
-                    CbUsePrivateKey.IsChecked = false;
+	                bool? privateKey = false;
                     if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
                     {
                         CbUsePrivateKey.IsChecked = null;
+                        privateKey = null;
+
                     }
 
                     if (!string.IsNullOrEmpty(ssh.PrivateKey))
                     {
                         CbUsePrivateKey.IsChecked = true;
+                        privateKey = true;
+
                     }
+
+                    CbUsePrivateKey.IsChecked = privateKey;
                 }
-            };
+			};
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
