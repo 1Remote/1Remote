@@ -134,14 +134,16 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!--header item icon-->
-                                    <Border Grid.Column="1" Padding="4 0 4 0">
+                                    <Border Grid.Column="1" Padding="4 0 0 0"
+                                            Visibility="{Binding Content.SettingsPage.TabHeaderShowIconButton, Converter={StaticResource ConverterBool2Visible}}"
+                                            >
                                         <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
                                         </Grid>
                                     </Border>
 
                                     <!--header item content-->
-                                    <Border Grid.Column="2" Padding="0" Margin="0 0 5 0">
+                                    <Border Grid.Column="2" Padding="0" Margin="4 0 4 0">
                                         <TextBlock HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"
@@ -152,7 +154,7 @@
                                     </Border>
 
                                     <!--header item placeholder(do not move or remove this)-->
-                                    <Thumb Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
+									<Thumb Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
                                         <Thumb.Style>
                                             <Style TargetType="{x:Type Thumb}">
                                                 <Setter Property="Background" Value="Transparent" />
