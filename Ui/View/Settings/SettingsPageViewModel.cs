@@ -100,6 +100,18 @@ namespace _1RM.View.Settings
         public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
 
 
+        public bool TabHeaderShowIconButton
+		{
+            get => _configurationService.General.TabHeaderShowIconButton;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.TabHeaderShowIconButton, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         public bool TabHeaderShowCloseButton
         {
             get => _configurationService.General.TabHeaderShowCloseButton;

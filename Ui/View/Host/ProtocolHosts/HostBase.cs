@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Ribbon;
 using System.Windows.Data;
 using System.Windows.Interop;
 using _1RM.Model;
@@ -103,51 +104,85 @@ namespace _1RM.View.Host.ProtocolHosts
                 });
             }
 
-            {
-                var cb = new CheckBox
-                {
-                    Content = IoC.Translate("Show XXX button", IoC.Translate("Reconnect") ?? ""),
-                    IsHitTestVisible = false,
-                };
-
-                var binding = new Binding("TabHeaderShowReConnectButton")
-                {
-                    Source = SettingsPage,
-                    Mode = BindingMode.TwoWay,
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                };
-                cb.SetBinding(CheckBox.IsCheckedProperty, binding);
-                MenuItems.Add(new System.Windows.Controls.MenuItem()
-                {
-                    Header = cb,
-                    Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowReConnectButton = !SettingsPage.TabHeaderShowReConnectButton; }),
-                });
-            }
+            MenuItems.Add(new Separator());
 
             {
-                var cb = new CheckBox
-                {
-                    Content = IoC.Translate("Show XXX button", IoC.Translate("Close") ?? ""),
-                    IsHitTestVisible = false,
-                };
+	            var subMenu = new System.Windows.Controls.MenuItem()
+	            {
+		            Header = IoC.Translate("Custom"),
+	            };
 
-                var binding = new Binding("TabHeaderShowCloseButton")
-                {
-                    Source = SettingsPage,
-                    Mode = BindingMode.TwoWay,
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                };
-                cb.SetBinding(CheckBox.IsCheckedProperty, binding);
-                MenuItems.Add(new System.Windows.Controls.MenuItem()
-                {
-                    Header = cb,
-                    Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowCloseButton = !SettingsPage.TabHeaderShowCloseButton; }),
-                });
-            }
 
-            //MenuItems.Add(new RibbonApplicationSplitMenuItem());
+	            {
+		            var cb = new CheckBox
+		            {
+			            Content = IoC.Translate("Show XXX button", IoC.Translate("Reconnect") ?? ""),
+			            IsHitTestVisible = false,
+		            };
 
-            var actions = protocolServer.GetActions(true);
+		            var binding = new Binding("TabHeaderShowReConnectButton")
+		            {
+			            Source = SettingsPage,
+			            Mode = BindingMode.TwoWay,
+			            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+		            };
+		            cb.SetBinding(CheckBox.IsCheckedProperty, binding);
+		            subMenu.Items.Add(new System.Windows.Controls.MenuItem()
+		            {
+			            Header = cb,
+			            Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowReConnectButton = !SettingsPage.TabHeaderShowReConnectButton; }),
+		            });
+				}
+
+	            {
+		            var cb = new CheckBox
+		            {
+			            Content = IoC.Translate("Show XXX button", IoC.Translate("Close") ?? ""),
+			            IsHitTestVisible = false,
+		            };
+
+		            var binding = new Binding("TabHeaderShowCloseButton")
+		            {
+			            Source = SettingsPage,
+			            Mode = BindingMode.TwoWay,
+			            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+		            };
+		            cb.SetBinding(CheckBox.IsCheckedProperty, binding);
+		            subMenu.Items.Add(new System.Windows.Controls.MenuItem()
+		            {
+			            Header = cb,
+			            Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowCloseButton = !SettingsPage.TabHeaderShowCloseButton; }),
+		            });
+				}
+
+
+	            {
+		            var cb = new CheckBox
+		            {
+			            Content = IoC.Translate("Show XXX button", "Icon"),
+			            IsHitTestVisible = false,
+		            };
+
+		            var binding = new Binding("TabHeaderShowIconButton")
+		            {
+			            Source = SettingsPage,
+			            Mode = BindingMode.TwoWay,
+			            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+		            };
+		            cb.SetBinding(CheckBox.IsCheckedProperty, binding);
+		            subMenu.Items.Add(new System.Windows.Controls.MenuItem()
+		            {
+			            Header = cb,
+			            Command = new RelayCommand((_) => { SettingsPage.TabHeaderShowIconButton = !SettingsPage.TabHeaderShowIconButton; }),
+		            });
+	            }
+
+				MenuItems.Add(subMenu);
+			}
+
+			MenuItems.Add(new Separator());
+
+			var actions = protocolServer.GetActions(true);
             foreach (var action in actions)
             {
                 var tb = new TextBlock()
@@ -184,7 +219,7 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <summary>
         /// special menu for tab
         /// </summary>
-        public List<System.Windows.Controls.MenuItem> MenuItems { get; set; } = new List<System.Windows.Controls.MenuItem>();
+        public List<System.Windows.Controls.Control> MenuItems { get; set; } = new List<System.Windows.Controls.Control>();
 
         /// <summary>
         /// since resizing when rdp is connecting would not tiger the rdp size change event
