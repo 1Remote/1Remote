@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner.Default;
@@ -95,6 +98,28 @@ namespace _1RM.Model.ProtocolRunner
                 {
                     case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
                     case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
+                        var pw = protocol as ProtocolBaseWithAddressPortUserPwd;
+                        // if private key is not all ascii, copy it to temp file
+                        if (pw?.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
+                        {
+                            var pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
+                            File.Copy(pw.PrivateKey, pk, true);
+                            var autoDelTask = new Task(() =>
+                            {
+                                Thread.Sleep(30 * 1000);
+                                try
+                                {
+                                    if (File.Exists(pk))
+                                        File.Delete(pk);
+                                }
+                                catch
+                                {
+                                    // ignored
+                                }
+                            });
+                            autoDelTask.Start();
+                            pw.PrivateKey = pk;
+                        }
                         exeArguments = runnerForSsh.ArgumentsForPrivateKey;
                         break;
                 }

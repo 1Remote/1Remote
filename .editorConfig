@@ -1,0 +1,6 @@
+# All files
+[*]
+indent_style = space
+
+[*.csproj]
+indent_size = 4
