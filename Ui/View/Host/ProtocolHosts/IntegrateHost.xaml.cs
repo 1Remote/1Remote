@@ -380,8 +380,31 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 // KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
                 ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
-                if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw)
-                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, pw.PrivateKey);
+                if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw && string.IsNullOrEmpty(pw.PrivateKey) == false)
+                {
+                    var pk = pw.PrivateKey;
+                    // if private key is not all ascii, copy it to temp file
+                    if (pw.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
+                    {
+                        pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
+                        File.Copy(pw.PrivateKey, pk, true);
+                        var autoDelTask = new Task(() =>
+                        {
+                            Thread.Sleep(30 * 1000);
+                            try
+                            {
+                                if (File.Exists(pk))
+                                    File.Delete(pk);
+                            }
+                            catch
+                            {
+                                // ignored
+                            }
+                        });
+                        autoDelTask.Start();
+                    }
+                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, pk);
+                }
                 else
                     kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
             }

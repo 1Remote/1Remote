@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using Shawn.Utils;
 
 namespace _1RM.Model.Protocol.Base
@@ -58,6 +59,14 @@ namespace _1RM.Model.Protocol.Base
         {
             get => _privateKey;
             set => SetAndNotifyIfChanged(ref _privateKey, value);
+        }
+
+        /// <summary>
+        /// return true if private key is all ascii
+        /// </summary>
+        public bool IsPrivateKeyAllAscii()
+        {
+            return PrivateKey.All(c => c < 128);
         }
 
         protected override string GetSubTitle()
