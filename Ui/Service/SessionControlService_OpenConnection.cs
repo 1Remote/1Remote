@@ -13,6 +13,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using _1RM.View.Host;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -138,7 +139,7 @@ namespace _1RM.Service
 
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
             _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-            host.OnClosed += OnRequestCloseConnection;
+            host.OnProtocolClosed += OnRequestCloseConnection;
             host.OnFullScreen2Window += this.MoveSessionToTabWindow;
             this.MoveSessionToFullScreen(host.ConnectionId);
             host.Conn();
@@ -159,10 +160,11 @@ namespace _1RM.Service
                     if (tab.IsClosing) return;
                     tab.Show();
 
-                    var host = r.GetHost(p, tab);
+                    var host = r.GetHost(p, tab) as HostBase;
+                    if (host == null) return;
                     // get display area size for host
                     Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-                    host.OnClosed += OnRequestCloseConnection;
+                    host.OnProtocolClosed += OnRequestCloseConnection;
                     host.OnFullScreen2Window += this.MoveSessionToTabWindow;
                     tab.GetViewModel().AddItem(new TabItemViewModel(host, p.DisplayName));
                     _connectionId2Hosts.TryAdd(host.ConnectionId, host);

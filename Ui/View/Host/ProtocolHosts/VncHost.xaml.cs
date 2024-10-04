@@ -47,7 +47,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.CtrlAltDel);
-                }, o => Status == ProtocolHostStatus.Connected)
+                }, o => GetStatus() == ProtocolHostStatus.Connected)
             });
             MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
@@ -55,7 +55,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.CtrlEsc);
-                }, o => Status == ProtocolHostStatus.Connected)
+                }, o => GetStatus() == ProtocolHostStatus.Connected)
             });
             MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
@@ -63,7 +63,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.AltF4);
-                }, o => Status == ProtocolHostStatus.Connected)
+                }, o => GetStatus() == ProtocolHostStatus.Connected)
             });
             {
                 var tb = new TextBlock();
@@ -89,10 +89,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void Conn()
         {
-            Status = ProtocolHostStatus.Connecting;
+            SetStatus(ProtocolHostStatus.Connecting);
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
-            Status = ProtocolHostStatus.Connecting;
+            SetStatus(ProtocolHostStatus.Connecting);
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncBase.GetPort();
@@ -105,7 +105,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 VncFormsHost.Visibility = Visibility.Visible;
                 GridLoading.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Collapsed;
-                Status = ProtocolHostStatus.Connected;
+                SetStatus(ProtocolHostStatus.Connected);
             }
             catch (Exception e)
             {
@@ -132,7 +132,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void Close()
         {
-            Status = ProtocolHostStatus.Disconnected;
+            SetStatus(ProtocolHostStatus.Disconnected);
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
             base.Close();
@@ -156,7 +156,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnConnected(object sender, EventArgs e)
         {
-            Status = ProtocolHostStatus.Connected;
+            SetStatus(ProtocolHostStatus.Connected);
             VncFormsHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
@@ -166,7 +166,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnConnectionLost(object? sender, EventArgs e)
         {
-            Status = ProtocolHostStatus.Disconnected;
+            SetStatus(ProtocolHostStatus.Disconnected);
             VncFormsHost.Visibility = Visibility.Collapsed;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Visible;
@@ -174,7 +174,7 @@ namespace _1RM.View.Host.ProtocolHosts
             BtnReconn.Visibility = Visibility.Visible;
             TbMessage.Text = "Connection lost...";
             if (_invokeOnClosedWhenDisconnected)
-                base.OnClosed?.Invoke(base.ConnectionId);
+                base.OnProtocolClosed?.Invoke(base.ConnectionId);
         }
 
         #endregion connection
