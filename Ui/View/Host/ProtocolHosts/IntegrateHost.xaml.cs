@@ -306,7 +306,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void Conn()
         {
-            Status = ProtocolHostStatus.Connecting;
+            SetStatus(ProtocolHostStatus.Connecting);
             Debug.Assert(ParentWindow != null);
 
             var tsk = new Task(Start);
@@ -367,7 +367,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     }
                 }
 
-                Status = ProtocolHostStatus.Disconnected;
+                SetStatus(ProtocolHostStatus.Disconnected);
             });
         }
 

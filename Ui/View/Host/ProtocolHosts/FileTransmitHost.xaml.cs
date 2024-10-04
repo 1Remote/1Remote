@@ -111,15 +111,15 @@ namespace _1RM.View.Host.ProtocolHosts
         #region Base Interface
         public override void Conn()
         {
-            Status = ProtocolHostStatus.Connecting;
+            SetStatus(ProtocolHostStatus.Connecting);
             _vmRemote?.Conn();
-            Status = ProtocolHostStatus.Connected;
+            SetStatus(ProtocolHostStatus.Connected);
         }
 
         public override void Close()
         {
             _vmRemote?.Release();
-            Status = ProtocolHostStatus.Disconnected;
+            SetStatus(ProtocolHostStatus.Disconnected);
             base.Close();
         }
 

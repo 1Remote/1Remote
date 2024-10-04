@@ -252,7 +252,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     // invoke in the full screen mode.
                     SimpleLogHelper.Debug("RDP Host:  RdpOnConfirmClose");
-                    base.OnClosed?.Invoke(base.ConnectionId);
+                    base.OnProtocolClosed?.Invoke(base.ConnectionId);
                 };
                 _rdpClient.OnConnected += OnRdpClientConnected;
                 _rdpClient.OnLoginComplete += OnRdpClientLoginComplete;
@@ -686,11 +686,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void InitRdp(int width = 0, int height = 0, bool isReconnecting = false)
         {
-            if (Status != ProtocolHostStatus.NotInit)
+            if (GetStatus() != ProtocolHostStatus.NotInit)
                 return;
             try
             {
-                Status = ProtocolHostStatus.Initializing;
+                SetStatus(ProtocolHostStatus.Initializing);
                 RdpClientDispose();
                 CreateRdpClient();
                 RdpInitServerInfo();
@@ -701,7 +701,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 RdpInitPerformance();
                 RdpInitGateway();
                 _rdpSettings.ApplyRdpControlAdditionalSettings(_rdpClient!);
-                Status = ProtocolHostStatus.Initialized;
+                SetStatus(ProtocolHostStatus.Initialized);
             }
             catch (Exception e)
             {
@@ -709,7 +709,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 TbMessageTitle.Visibility = Visibility.Collapsed;
                 TbMessage.Text = e.Message;
 
-                Status = ProtocolHostStatus.NotInit;
+                SetStatus(ProtocolHostStatus.NotInit);
             }
         }
 
@@ -721,12 +721,12 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 try
                 {
-                    if (Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Connecting)
+                    if (GetStatus() == ProtocolHostStatus.Connected || GetStatus() == ProtocolHostStatus.Connecting)
                     {
                         return;
                     }
 
-                    Status = ProtocolHostStatus.Connecting;
+                    SetStatus(ProtocolHostStatus.Connecting);
                     GridLoading.Visibility = Visibility.Visible;
                     RdpHost.Visibility = Visibility.Collapsed;
                     _rdpClient.Connect();
@@ -737,7 +737,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     TbMessageTitle.Visibility = Visibility.Collapsed;
                     TbMessage.Text = e.Message;
                 }
-                Status = ProtocolHostStatus.Connected;
+                SetStatus(ProtocolHostStatus.Connected);
             });
         }
 
@@ -747,7 +747,7 @@ namespace _1RM.View.Host.ProtocolHosts
             base.Close();
         }
 
-        protected override void GoFullScreen()
+        public override void GoFullScreen()
         {
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable
                 || ParentWindow is not FullScreenWindowView
@@ -772,7 +772,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override bool CanResizeNow()
         {
-            return Status == ProtocolHostStatus.Connected;
+            return GetStatus() == ProtocolHostStatus.Connected;
         }
 
         #endregion Base Interface
@@ -786,7 +786,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         /// <summary>
         /// when tab window goes to min from max, base.SizeChanged invoke and size will get bigger, normal to min will not tiger this issue, don't know why.
-        /// so stop resize when window status change to min until status restore.
+        /// so stop resize when window GetStatus() change to min until GetStatus() restore.
         /// </summary>
         /// <param name="isEnable"></param>
         public override void ToggleAutoResize(bool isEnable)
