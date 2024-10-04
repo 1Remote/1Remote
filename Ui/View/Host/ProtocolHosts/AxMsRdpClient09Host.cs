@@ -20,7 +20,7 @@ namespace _1RM.View.Host.ProtocolHosts
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
         {
             this.Dispose();
-            base.OnClosed?.Invoke(base.ConnectionId);
+            base.OnProtocolClosed?.Invoke(base.ConnectionId);
         }
         private void BtnReconn_OnClick(object sender, RoutedEventArgs e)
         {
@@ -30,24 +30,24 @@ namespace _1RM.View.Host.ProtocolHosts
         public override void ReConn()
         {
             Debug.Assert(_rdpClient != null);
-            if (Status != ProtocolHostStatus.Connected
-                && Status != ProtocolHostStatus.Disconnected)
+            if (GetStatus() != ProtocolHostStatus.Connected
+                && GetStatus() != ProtocolHostStatus.Disconnected)
             {
-                SimpleLogHelper.Warning($"RDP Host: Call ReConn, but current status = " + Status);
+                SimpleLogHelper.Warning($"RDP Host: Call ReConn, but current GetStatus() = " + GetStatus());
                 return;
             }
             else
             {
                 SimpleLogHelper.Warning($"RDP Host: Call ReConn");
             }
-            Status = ProtocolHostStatus.WaitingForReconnect;
+            SetStatus(ProtocolHostStatus.WaitingForReconnect);
 
             RdpHost.Visibility = System.Windows.Visibility.Collapsed;
             GridLoading.Visibility = System.Windows.Visibility.Visible;
             GridMessageBox.Visibility = System.Windows.Visibility.Collapsed;
             RdpClientDispose();
 
-            Status = ProtocolHostStatus.NotInit;
+            SetStatus(ProtocolHostStatus.NotInit);
 
             int w = 0;
             int h = 0;
@@ -99,7 +99,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 var flagHasConnected = this._flagHasConnected;
                 _flagHasConnected = false;
 
-                Status = ProtocolHostStatus.Disconnected;
+                SetStatus(ProtocolHostStatus.Disconnected);
                 ParentWindowResize_StopWatch();
 
                 const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
@@ -151,7 +151,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 else
                 {
                     RdpClientDispose();
-                    base.OnClosed?.Invoke(base.ConnectionId);
+                    base.OnProtocolClosed?.Invoke(base.ConnectionId);
                 }
             }
         }

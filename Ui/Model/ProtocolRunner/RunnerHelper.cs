@@ -163,7 +163,7 @@ namespace _1RM.Model.ProtocolRunner
             return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }
 
-        public static HostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowView? tab = null)
+        public static IHostBase GetHost(this Runner runner, ProtocolBase protocol, TabWindowView? tab = null)
         {
             Debug.Assert(runner.IsRunWithoutHosting() == false);
 
@@ -183,8 +183,23 @@ namespace _1RM.Model.ProtocolRunner
             {
                 case RDP rdp:
                     {
-                        var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
-                        return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
+                        System.Windows.Size? size = null;
+                        if (tab != null)
+                        {
+                            size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                        }
+                        var form = new RdpHostForm(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
+                        if (tab != null)
+                        {
+                            var host = form.AttachToHostBase();
+                            return host;
+                        }
+                        else
+                        {
+                            return form;
+                        }
+                        //var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                        //return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
                     }
                 case IKittyConnectable kittyConnectable:
                     {
