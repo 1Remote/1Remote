@@ -55,10 +55,12 @@ namespace _1RM.Service
 
         private readonly object _dictLock = new object();
         private readonly ConcurrentDictionary<string, TabWindowView> _token2TabWindows = new ConcurrentDictionary<string, TabWindowView>();
-        private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
+        private readonly ConcurrentDictionary<string, IHostBase> _connectionId2Hosts = new ConcurrentDictionary<string, IHostBase>();
         private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
-        private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
+        private readonly ConcurrentQueue<IHostBase> _hostToBeDispose = new ConcurrentQueue<IHostBase>();
         private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
+        //public ConcurrentDictionary<string, HostBase> ConnectionId2TabHosts { get; } = new ConcurrentDictionary<string, HostBase>();
+        //private readonly ConcurrentDictionary<string, HostBaseWinform> _connectionId2WinFormHosts = new ConcurrentDictionary<string, HostBaseWinform>();
 
         public int TabWindowCount
         {
@@ -71,7 +73,7 @@ namespace _1RM.Service
             }
         }
 
-        public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
+        public ConcurrentDictionary<string, IHostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
 
         private void OnRequestOpenConnection(in ProtocolBase serverOrg, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
@@ -175,7 +177,7 @@ namespace _1RM.Service
             // Reconnect
             if (_connectionId2Hosts[connectionId].ParentWindow != null)
             {
-                if (_connectionId2Hosts[connectionId].Status != ProtocolHostStatus.Connected)
+                if (_connectionId2Hosts[connectionId].GetStatus() != ProtocolHostStatus.Connected)
                     _connectionId2Hosts[connectionId].ReConn();
             }
             return true;
@@ -208,7 +210,7 @@ namespace _1RM.Service
 
                     SimpleLogHelper.Debug($@"MarkProtocolHostToClose: marking to close: {host.GetType().Name}(id = {connectionId}, hash = {host.GetHashCode()})");
 
-                    host.OnClosed -= OnRequestCloseConnection;
+                    host.OnProtocolClosed -= OnRequestCloseConnection;
                     host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
                     _hostToBeDispose.Enqueue(host);
                     host.ProtocolServer.RunScriptAfterDisconnected();
@@ -282,7 +284,7 @@ namespace _1RM.Service
                     if (unhandledFlag && _connectionId2Hosts.TryRemove(id, out var host))
                     {
                         SimpleLogHelper.Warning($@"MarkUnhandledProtocolToClose: marking to close: {host.GetType().Name}(id = {id}, hash = {host.GetHashCode()})");
-                        host.OnClosed -= OnRequestCloseConnection;
+                        host.OnProtocolClosed -= OnRequestCloseConnection;
                         host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
                         _hostToBeDispose.Enqueue(host);
                         host.ProtocolServer.RunScriptAfterDisconnected();
@@ -300,7 +302,7 @@ namespace _1RM.Service
             while (_hostToBeDispose.TryDequeue(out var host))
             {
                 PrintCacheCount();
-                host.OnClosed -= OnRequestCloseConnection;
+                host.OnProtocolClosed -= OnRequestCloseConnection;
                 host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
                 // Dispose
                 try

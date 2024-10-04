@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Ribbon;
 using System.Windows.Data;
 using System.Windows.Interop;
 using _1RM.Model;
@@ -31,12 +30,15 @@ namespace _1RM.View.Host.ProtocolHosts
         Integrate
     }
 
-    public abstract class HostBase : UserControl
+
+
+    public abstract class HostBase : UserControl, IHostBase
     {
         public ProtocolBase ProtocolServer { get; }
 
         private WindowBase? _parentWindow;
         public WindowBase? ParentWindow => _parentWindow;
+        public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
         public virtual void SetParentWindow(WindowBase? value)
         {
@@ -53,30 +55,28 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-        public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
         /// <summary>
         /// a flag to id if ProtocolServer can open session successfully.
         /// </summary>
-        public bool HasConnected = false;
+        public bool HasConnected { get; set; } = false;
+
 
         private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
-        public ProtocolHostStatus Status
+        public virtual ProtocolHostStatus GetStatus()
         {
-            get => _status;
-            protected set
+            return _status;
+        }
+        public virtual void SetStatus(ProtocolHostStatus value)
+        {
+            if (_status != value)
             {
-                if (_status != value)
-                {
-                    if (value == ProtocolHostStatus.Connected)
-                        HasConnected = true;
-
-                    SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
-                    _status = value;
-                    OnCanResizeNowChanged?.Invoke();
-                }
+                SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
+                _status = value;
+                OnCanResizeNowChanged?.Invoke();
             }
         }
+
 
         protected HostBase(ProtocolBase protocolServer, bool canFullScreen = false)
         {
@@ -249,10 +249,10 @@ namespace _1RM.View.Host.ProtocolHosts
         /// </summary>
         public virtual void Close()
         {
-            this.OnClosed?.Invoke(ConnectionId);
+            this.OnProtocolClosed?.Invoke(ConnectionId);
         }
 
-        protected virtual void GoFullScreen()
+        public virtual void GoFullScreen()
         {
             throw new NotSupportedException();
         }
@@ -273,7 +273,7 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <returns></returns>
         public abstract IntPtr GetHostHwnd();
 
-        public Action<string>? OnClosed { get; set; } = null;
+        public Action<string>? OnProtocolClosed { get; set; } = null;
         public Action<string>? OnFullScreen2Window { get; set; } = null;
     }
 }
