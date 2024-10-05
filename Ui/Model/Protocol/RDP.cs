@@ -986,8 +986,8 @@ namespace _1RM.Model.Protocol
         public override bool IsThisTimeConnWithFullScreen()
         {
             if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                || this.IsConnWithFullScreen == true
-                || LocalityConnectRecorder.RdpCacheGet(this.Id)?.FullScreenLastSessionIsFullScreen == true)
+                || this.RdpFullScreenFlag != ERdpFullScreenFlag.Disable && this.IsConnWithFullScreen == true
+                || this.RdpFullScreenFlag != ERdpFullScreenFlag.Disable && LocalityConnectRecorder.RdpCacheGet(this.Id)?.FullScreenLastSessionIsFullScreen == true)
                 return true;
             return false;
         }
