@@ -123,12 +123,8 @@
                                     <controls2:VirtualizingWrapPanel IsVirtualizing="True"
                                                                      ScrollUnit="Item"
                                                                      SpacingMode="None"
-                                                                     VirtualizationMode="Recycling"
-                                                                     CanHorizontallyScroll="False"
-                                                                     MouseWheelDelta="1"
-                                                                     MouseWheelDeltaItem="1"
-                                                                     CacheLengthUnit="Item"
-                                                                     Orientation="Vertical" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
+                                                                     Margin="15 10 0 20"
+                                                                     Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}"></controls2:VirtualizingWrapPanel>
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
