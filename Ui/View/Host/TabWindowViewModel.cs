@@ -278,9 +278,7 @@ namespace _1RM.View.Host
                             return;
                         }
 
-                        IoC.Get<SessionControlService>().CloseProtocolHostAsync(
-                            Items
-                            .Select(x => x.Content.ConnectionId).ToArray());
+                        IoC.Get<SessionControlService>().CloseProtocolHostAsync(Items.Select(x => x.Content.ConnectionId).ToArray());
                         _canCmdClose = true;
                     }
                 });
