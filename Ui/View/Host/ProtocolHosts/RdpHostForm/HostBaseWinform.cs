@@ -58,16 +58,15 @@ public abstract class HostBaseWinform : Form, IHostBase
     public virtual void SetParentWindow(WindowBase? value)
     {
         if (_parentWindow == value) return;
-        _parentWindow = value;
-        ParentWindowHandle = IntPtr.Zero;
-
-        if (null == value) return;
-        var window = Window.GetWindow(value);
-        if (window != null)
-        {
-            var wih = new WindowInteropHelper(window);
-            ParentWindowHandle = wih.Handle;
-        }
+        //_parentWindow = value;
+        //ParentWindowHandle = IntPtr.Zero;
+        //if (null == value) return;
+        //var window = Window.GetWindow(value);
+        //if (window != null)
+        //{
+        //    var wih = new WindowInteropHelper(window);
+        //    ParentWindowHandle = wih.Handle;
+        //}
     }
 
     public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
@@ -133,7 +132,7 @@ public abstract class HostBaseWinform : Form, IHostBase
     /// <returns></returns>
     public virtual bool CanResizeNow()
     {
-        return true;
+        return GetStatus() == ProtocolHostStatus.Connected;
     }
 
     /// <summary>
@@ -202,18 +201,20 @@ public abstract class HostBaseWinform : Form, IHostBase
     }
 
 
-    //public void DetachFromHostBase()
-    //{
-    //    if (AttachedHost == null)
-    //        return;
+    public void DetachFromHostBase()
+    {
+        //if (AttachedHost == null)
+        //    return;
+        FormBorderStyle = FormBorderStyle.Sizable;
+        WindowState = FormWindowState.Normal;
+        ShowInTaskbar = true;
+        //Handle.SetParentEx(IntPtr.Zero);
+        //AttachedHost = null;
+    }
 
-    //    FormBorderStyle = FormBorderStyle.Sizable;
-    //    WindowState = FormWindowState.Normal;
-    //    ShowInTaskbar = true;
-    //    Handle.SetParentEx(IntPtr.Zero);
-
-    //    AttachedHost.Dispose();
-    //    AttachedHost = null;
-    //}
-
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        AttachedHost = null;
+    }
 }
