@@ -214,7 +214,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
-        public bool CanFullScreen { get; protected set; }
+        public bool CanFullScreen { get; protected set; } = false;
 
         /// <summary>
         /// special menu for tab
