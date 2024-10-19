@@ -13,6 +13,8 @@ using Stylet;
 using System.Windows;
 using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
+using Shawn.Utils.Wpf.Image;
+
 #if !DEV_RDP
 using _1RM.Service;
 using _1RM.Model;
@@ -105,7 +107,7 @@ namespace _1RM.View.Host.ProtocolHosts
 #if !DEV_RDP
             this.FormBorderStyle = FormBorderStyle.None;
 #endif
-
+            Icon = rdpSettings.IconImg.ToIcon();
             _rdpSettings = rdpSettings;
 
             this.Name = this.Text = $"{rdpSettings.DisplayName} @{rdpSettings.Address}";
@@ -198,7 +200,7 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
 
-        private void OnRdpClientConnected(object sender, EventArgs e)
+        private void OnRdpClientConnected(object? sender, EventArgs e)
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnConnected, rdpClient.Connected = " + _rdpClient.Connected);
             if (!this.Handle.IsActivated())
@@ -229,21 +231,25 @@ namespace _1RM.View.Host.ProtocolHosts
             });
         }
 
-        private void OnRdpClientLoginComplete(object sender, EventArgs e)
+        private void OnRdpClientLoginComplete(object? sender, EventArgs e)
         {
             SimpleLogHelper.Debug("RDP Host:  OnRdpClientLoginComplete");
             OnCanResizeNowChanged?.Invoke();
             ReSizeRdpToControlSize();
+
+            // TODO _resizeEndTimer.Start();
         }
 
         public override void GoFullScreen()
         {
             Execute.OnUIThreadSync(() =>
             {
-                if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
-                {
-                    return;
-                }
+                Debug.Assert(_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable);
+                DetachFromHostBase();
+                //if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
+                //{
+                //    return;
+                //}
                 _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
             });
         }

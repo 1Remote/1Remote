@@ -83,6 +83,7 @@ namespace _1RM.View.Host
 
                 Closing += (_, args) =>
                 {
+                    TimerDispose();
                     if (this.GetViewModel().Items.Count > 0
                         && App.ExitingFlag == false
                         && IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
@@ -95,14 +96,13 @@ namespace _1RM.View.Host
 
                 Closed += (_, _) =>
                 {
-                    TimerDispose();
                     try
                     {
-                        var ids = Vm.Items.Select(x => x.Content.ConnectionId).ToArray();
-                        if (ids.Length > 0)
-                        {
-                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(ids);
-                        }
+                        //var ids = Vm.Items.Select(x => x.Content.ConnectionId).ToArray();
+                        //if (ids.Length > 0)
+                        //{
+                        //    IoC.Get<SessionControlService>().CloseProtocolHostAsync(ids);
+                        //}
                         Vm?.Dispose();
                     }
                     finally

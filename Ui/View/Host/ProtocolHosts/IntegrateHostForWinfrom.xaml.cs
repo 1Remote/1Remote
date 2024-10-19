@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Forms;
-using _1RM.Model.Protocol.Base;
-using Org.BouncyCastle.Asn1.X509;
+using Shawn.Utils;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
 
@@ -26,31 +23,35 @@ We should add <UseWindowsForms>true</UseWindowsForms> in the csproj.
 
 namespace _1RM.View.Host.ProtocolHosts
 {
-    public partial class IntegrateHostForWinFrom : HostBase, IDisposable
+    public partial class IntegrateHostForWinFrom : HostBase
     {
         private HostBaseWinform? _form;
         public HostBaseWinform? Form => _form;
         private readonly System.Windows.Forms.Panel _panel;
 
-        public IntegrateHostForWinFrom(HostBaseWinform form) : base(form.GetProtocolServer(), true)
+        public IntegrateHostForWinFrom(HostBaseWinform form) : base(form.GetProtocolServer(), false)
         {
             _form = form;
             InitializeComponent();
 
-            //_panel = new System.Windows.Forms.Panel
-            //{
-            //    BackColor = System.Drawing.Color.Transparent,
-            //    Dock = System.Windows.Forms.DockStyle.Fill,
-            //    BorderStyle = BorderStyle.None
-            //};
-            //_panel.SizeChanged += PanelOnSizeChanged;
-            //FormsHost.Child = _panel;
+            _panel = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.Transparent,
+                Dock = System.Windows.Forms.DockStyle.Fill,
+                BorderStyle = BorderStyle.None
+            };
+            _panel.SizeChanged += PanelOnSizeChanged;
+            FormsHost.Child = _panel;
             //_form.Closed += FormOnClosed;
 
 
-            //_form.FormBorderStyle = FormBorderStyle.None;
-            //_form.WindowState = FormWindowState.Maximized;
-            //_form.Handle.SetParentEx(_panel.Handle);
+            _form.FormBorderStyle = FormBorderStyle.None;
+            _form.WindowState = FormWindowState.Maximized;
+            _form.Handle.SetParentEx(_panel.Handle);
+            _form.OnCanResizeNowChanged += () =>
+            {
+                OnCanResizeNowChanged?.Invoke();
+            };
 
             if (form.IsLoaded)
             {
@@ -63,8 +64,16 @@ namespace _1RM.View.Host.ProtocolHosts
                     _form.Show();
                 };
             }
+            SimpleLogHelper.Debug($"IntegrateHostForWinFrom({this.GetHashCode()}) Created");
+
+            // TODO: _form.CanFullScreen change invoke CanFullScreen changed
+            CanFullScreen = _form.CanFullScreen;
         }
 
+        ~IntegrateHostForWinFrom()
+        {
+            SimpleLogHelper.Debug($"IntegrateHostForWinFrom({this.GetHashCode()}) Released");
+        }
 
         //public override ProtocolHostStatus GetStatus()
         //{
@@ -74,6 +83,11 @@ namespace _1RM.View.Host.ProtocolHosts
         //{
         //    _form?.SetStatus(value);
         //}
+
+        public override bool CanResizeNow()
+        {
+            return _form?.CanResizeNow() ?? false;
+        }
 
 
 
@@ -118,17 +132,17 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
 
-        public void Dispose()
+        public override void Close()
         {
-            if (_form != null)
-            {
-                _form.Handle.SetParentEx(IntPtr.Zero);
-                _form = null;
-            }
-
             Execute.OnUIThread(() =>
             {
-                _panel.Dispose();
+                if (_form != null)
+                {
+                    _form.Handle.SetParentEx(IntPtr.Zero);
+                    _form.Close();
+                    _form = null;
+                }
+                _panel?.Dispose();
                 FormsHost?.Dispose();
                 GC.SuppressFinalize(this);
             });
