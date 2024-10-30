@@ -152,6 +152,17 @@ namespace _1RM.View.Settings
                         return;
                     }
 
+                    foreach (var additionalSource in _dataSourceService.AdditionalSources)
+                    {
+                        var status = additionalSource.Value.Database_SelfCheck();
+                        if (status.Status != EnumDatabaseStatus.OK)
+                        {
+                            ShowPage(EnumMainWindowPage.SettingsData);
+                            MessageBoxHelper.ErrorAlert(status.GetErrorMessage);
+                            return;
+                        }
+                    }
+
                     if (_configurationService.Launcher.LauncherEnabled != IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(_configurationService.Launcher.LauncherEnabled, _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey))
                     {
                         ShowPage(EnumMainWindowPage.SettingsLauncher);

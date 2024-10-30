@@ -36,6 +36,8 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
 		<XamlDebuggingInformation>True</XamlDebuggingInformation>
+
+        <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled> <!-- 20241030 fix https://github.com/dotnet/sdk/issues/43680 -->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'!='net48'">
@@ -73,7 +75,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<AssemblyVersion>1.0.1.41007</AssemblyVersion>
+		<AssemblyVersion>1.0.1.41030</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<Authors>Shawn</Authors>

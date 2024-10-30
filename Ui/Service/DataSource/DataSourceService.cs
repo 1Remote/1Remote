@@ -44,6 +44,10 @@ namespace _1RM.Service.DataSource
                     try
                     {
                         var pbs = dataSource.Value.GetServers(force);
+                        foreach (var pb in pbs)
+                        {
+                            pb.DataSourceNameForLauncher = AdditionalSources.Any() ? pb.DataSourceName : "";
+                        }
                         ret.AddRange(pbs);
                     }
                     catch (Exception e)

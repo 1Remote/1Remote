@@ -181,6 +181,7 @@ namespace _1RM.Model
             if (ret.IsSuccess)
             {
                 var @new = new ProtocolBaseViewModel(protocolServer);
+                @new.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? protocolServer?.DataSource?.DataSourceName ?? "" : "";
                 if (needReload == false)
                 {
                     VmItemList.Add(@new);
@@ -241,6 +242,7 @@ namespace _1RM.Model
                         if (old != null)
                         {
                             old.Server = protocolServer;
+                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
                         }
                         ReadTagsFromServers();
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
@@ -288,7 +290,9 @@ namespace _1RM.Model
                         var old = GetItemById(source.DataSourceName, protocolServer.Id);
                         // invoke main list ui change & invoke launcher ui change
                         if (old != null)
+                        {
                             old.Server = protocolServer;
+                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : ""; }
                     }
                 }
 

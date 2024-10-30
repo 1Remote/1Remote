@@ -20,6 +20,12 @@ namespace _1RM.View
     {
         public DataSourceBase? DataSource => Server.DataSource;
         public string DataSourceName => DataSource?.DataSourceName ?? "";
+        private string _dataSourceNameForLauncher = "";
+        public string DataSourceNameForLauncher
+        {
+            get => _dataSourceNameForLauncher;
+            set => SetAndNotifyIfChanged(ref _dataSourceNameForLauncher, value);
+        }
 
         /// <summary>
         /// Order in Main window list view
