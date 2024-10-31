@@ -83,9 +83,10 @@ namespace _1RM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig()
         {
+            var a = RdpFileAdditionalSettings + $"\ndisableremoteappcapscheck:i:0";
             var rdpConfig = new RdpConfig(DisplayName, $"{this.Address}:{this.GetPort()}", 
                 this.UserName, UnSafeStringEncipher.DecryptOrReturnOriginalString(Password),
-                RdpFileAdditionalSettings);
+                a);
 
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.KeyboardHook = 0;
