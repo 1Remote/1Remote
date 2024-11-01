@@ -314,4 +314,5 @@
     <s:String x:Key="Copy the port along with the address when copying">コピーするときはアドレスと一緒にポートもコピーします</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">誤操作を防ぐために閉じるボタンを左側に配置</s:String>
     <s:String x:Key="Ask for password when open connect">接続を開くときにパスワードを要求する</s:String>
+    <s:String x:Key="Remember the information above">上記の情報を覚えておいてください</s:String>
 </ResourceDictionary>

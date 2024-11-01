@@ -53,7 +53,7 @@ namespace _1RM.View
 			{
 				var mc = Regex.Matches(html, pattern, RegexOptions.IgnoreCase);
 				if (mc.Count <= 0) continue;
-				var versionString = mc[^1].Groups[1].Value;
+				var versionString = mc[0].Groups[1].Value;
 				var releasedVersion = VersionHelper.Version.FromString(versionString);
 				if (ignoreVersion is not null)
 				{

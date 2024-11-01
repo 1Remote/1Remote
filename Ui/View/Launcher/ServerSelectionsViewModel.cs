@@ -40,6 +40,9 @@ namespace _1RM.View.Launcher
             }
         }
 
+        /// <summary>
+        /// to identify if any key is pressed after list is shown, except Tab key, if true, then auto fill selected item info into quick connection
+        /// </summary>
         public bool AnyKeyExceptTabPressAfterShow = false;
         public void Show()
         {
@@ -55,6 +58,8 @@ namespace _1RM.View.Launcher
                 view.TbKeyWord.Focus();
             });
             CalcNoteFieldVisibility();
+            AnyKeyExceptTabPressAfterShow = false;
+            SelectedIndex = 0;
         }
 
         private readonly DebounceDispatcher _debounceDispatcher = new();
@@ -138,6 +143,7 @@ namespace _1RM.View.Launcher
                 {
                     SelectedIndex = -1;
                 }
+                RaisePropertyChanged(nameof(SelectedItem));
             }
         }
 

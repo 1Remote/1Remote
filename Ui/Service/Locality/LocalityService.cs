@@ -46,6 +46,7 @@ namespace _1RM.Service.Locality
         public int FtpColumnFileTimeLength = -1;
         public int FtpColumnFileTypeLength = -1;
         public int FtpColumnFileSizeLength = -1;
+        public Dictionary<string, string> Misc = new Dictionary<string, string>();
     }
 
     public sealed class LocalityService
@@ -239,6 +240,50 @@ namespace _1RM.Service.Locality
             }
         }
 
+        public void SetMisc(string key, string value)
+        {
+            if (_localitySettings.Misc.ContainsKey(key))
+            {
+                if (_localitySettings.Misc[key] == value) return;
+                _localitySettings.Misc[key] = value;
+            }
+            else
+            {
+                _localitySettings.Misc.Add(key, value);
+            }
+            Save();
+        }
 
+        
+        public T GetMisc<T>(string key, T defaultValue = default!)
+        {
+            var value = _localitySettings.Misc.ContainsKey(key) ? _localitySettings.Misc[key] : "";
+            // 如果 T 是 int
+            if (typeof(T) == typeof(int))
+            {
+                return int.TryParse(value, out var result) ? (T)(object)result : defaultValue;
+            }
+            // 如果 T 是 bool
+            if (typeof(T) == typeof(bool))
+            {
+                return bool.TryParse(value, out var result) ? (T)(object)result : defaultValue;
+            }
+            // 如果 T 是 float
+            if (typeof(T) == typeof(float))
+            {
+                return float.TryParse(value, out var result) ? (T)(object)result : defaultValue;
+            }
+            // 如果 T 是 float
+            if (typeof(T) == typeof(double))
+            {
+                return double.TryParse(value, out var result) ? (T)(object)result : defaultValue;
+            }
+            // 如果 T 是 string
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)value;
+            }
+            throw new NotSupportedException($"Not support type {typeof(T)}");
+        }
     }
 }

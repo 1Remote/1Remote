@@ -314,4 +314,5 @@
     <s:String x:Key="Copy the port along with the address when copying">Při kopírování zkopírujte port spolu s adresou</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Umístěte zavírací tlačítko na levou stranu, abyste zabránili náhodným dotykům</s:String>
     <s:String x:Key="Ask for password when open connect">Při otevření připojení požádat o heslo</s:String>
+    <s:String x:Key="Remember the information above">Pamatujte na výše uvedené informace</s:String>
 </ResourceDictionary>
