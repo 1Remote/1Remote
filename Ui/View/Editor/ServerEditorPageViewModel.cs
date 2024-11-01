@@ -32,7 +32,6 @@ namespace _1RM.View.Editor
         public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
-        private readonly ProtocolConfigurationService _protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
 
 
 
@@ -632,9 +631,9 @@ namespace _1RM.View.Editor
         {
             var selectedRunner = Server.SelectedRunnerName;
             Runners.Clear();
-            if (_protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName))
+            if (IoC.Get<ProtocolConfigurationService>().ProtocolConfigs.ContainsKey(protocolName))
             {
-                var c = _protocolConfigurationService.ProtocolConfigs[protocolName];
+                var c = IoC.Get<ProtocolConfigurationService>().ProtocolConfigs[protocolName];
                 Runners.Add("Follow the global settings");
                 foreach (var runner in c.Runners)
                 {

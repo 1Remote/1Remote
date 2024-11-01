@@ -542,27 +542,30 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
         private void DataTransmitting(ref TransmitItem item, ulong readLength)
         {
-            try
+            lock (item)
             {
-                if (readLength > item.TransmittedSize && readLength <= item.ByteSize)
+                try
                 {
-                    var add = readLength - item.TransmittedSize;
-                    item.TransmittedSize = readLength;
-                    TransmittedByteLength += add;
-                    _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
-                    RaisePropertyChanged(nameof(TransmitSpeed));
-                    SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                    if (readLength > item.TransmittedSize && readLength <= item.ByteSize)
+                    {
+                        var add = readLength - item.TransmittedSize;
+                        item.TransmittedSize = readLength;
+                        TransmittedByteLength += add;
+                        _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                        RaisePropertyChanged(nameof(TransmitSpeed));
+                        SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                MsAppCenterHelper.Error(e, new Dictionary<string, string>()
+                catch (Exception e)
                 {
-                    {"readLength", readLength.ToString()},
-                    {"item.TransmittedSize", item.TransmittedSize.ToString()},
-                    {"item.ByteSize", item.ByteSize.ToString()},
-                });
-                SimpleLogHelper.Fatal(e, $"readLength = {readLength}, item.TransmittedSize = {item.TransmittedSize}, item.ByteSize = {item.ByteSize}");
+                    MsAppCenterHelper.Error(e, new Dictionary<string, string>()
+                    {
+                        {"readLength", readLength.ToString()},
+                        {"item.TransmittedSize", item.TransmittedSize.ToString()},
+                        {"item.ByteSize", item.ByteSize.ToString()},
+                    });
+                    SimpleLogHelper.Fatal(e, $"readLength = {readLength}, item.TransmittedSize = {item.TransmittedSize}, item.ByteSize = {item.ByteSize}");
+                } 
             }
         }
 
