@@ -294,7 +294,7 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}" 
-                      Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
+                  Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_GRID_KEYWORD_HEIGHT}">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40"></ColumnDefinition>

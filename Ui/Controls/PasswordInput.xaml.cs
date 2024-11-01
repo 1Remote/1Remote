@@ -81,15 +81,29 @@ namespace _1RM.Controls
                     });
                 });
         }
-        private void SetSelection(PasswordBox passwordBox, int start, int length)
+        private void SetSelection(PasswordBox passwordBox, int start, int length = 0)
         {
+            if (start < 0) start = 0;
+            if (length < 0) length = 0;
             passwordBox.GetType().GetMethod("Select", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(passwordBox, new object[] { start, length });
         }
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             CipherTextBox.Focus();
-            SetSelection(CipherTextBox, CipherTextBox.Password.Length, 0);
+            SetSelection(CipherTextBox, CipherTextBox.Password.Length);
             PlainTextBox.Visibility = Visibility.Hidden;
+        }
+
+
+
+
+        public int CaretIndex
+        {
+            set
+            {
+                PlainTextBox.CaretIndex = value;
+                SetSelection(CipherTextBox, value);
+            }
         }
     }
 }

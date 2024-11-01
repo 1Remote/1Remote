@@ -313,5 +313,6 @@
     <s:String x:Key="Automatically focus on the content when selecting a tab">选择 tab 后自动聚焦内容</s:String>
     <s:String x:Key="Copy the port along with the address when copying">复制地址时同时复制端口</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">将关闭按钮放在左侧以防止误触</s:String>
-    <s:String x:Key="Ask for password when open connect">打开连接时再输入密码</s:String>
+    <s:String x:Key="Ask for password when open connect">打开连接时输入密码</s:String>
+    <s:String x:Key="Remember the information above">记住上述信息</s:String>
 </ResourceDictionary>

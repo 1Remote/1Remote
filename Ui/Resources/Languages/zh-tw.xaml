@@ -314,4 +314,5 @@
     <s:String x:Key="Copy the port along with the address when copying">複製的時候把連接埠和位址一起複製</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">將關閉按鈕置於左側，防止誤觸</s:String>
     <s:String x:Key="Ask for password when open connect">開啟連線時詢問密碼</s:String>
+    <s:String x:Key="Remember the information above">記住上面的訊息</s:String>
 </ResourceDictionary>

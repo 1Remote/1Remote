@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using _1Remote.Security;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -120,8 +121,14 @@ namespace _1RM.Service.Locality
         #region QuickConnectionHistory
 
         public static List<QuickConnectionItem> QuickConnectionHistoryGet() => new List<QuickConnectionItem>(_settings.QuickConnectionHistory);
-        public static void QuickConnectionHistoryAdd(QuickConnectionItem item)
+        public static void QuickConnectionHistoryAdd(string host, string protocol, string username, string password, string privateKeyPath)
         {
+            var item = new QuickConnectionItem()
+            {
+                Host = host,
+                Protocol = protocol,
+            };
+            item.SetUserPassword(username, password, privateKeyPath);
             Load();
             var old = _settings.QuickConnectionHistory.FirstOrDefault(x => x.Host == item.Host && x.Protocol == item.Protocol);
             if (old != null)

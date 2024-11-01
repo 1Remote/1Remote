@@ -314,4 +314,5 @@
     <s:String x:Key="Copy the port along with the address when copying">Copie a porta junto com o endereço ao copiar</s:String>
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Coloque o botão fechar no lado esquerdo para evitar toques acidentais</s:String>
     <s:String x:Key="Ask for password when open connect">Pedir senha quando abrir conectar</s:String>
+    <s:String x:Key="Remember the information above">Lembre-se das informações acima</s:String>
 </ResourceDictionary>
