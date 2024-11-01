@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace _1RM.Utils.WindowsApi.WindowsShortcutFactory
@@ -242,6 +243,24 @@ namespace _1RM.Utils.WindowsApi.WindowsShortcutFactory
         /// <exception cref="DirectoryNotFoundException">The directory specified in <paramref name="fileName"/> does not exit.</exception>
         public void Save(string fileName)
         {
+            var fi = new FileInfo(fileName);
+            if (fi.DirectoryName != null)
+            {
+                var name = fi.Name;
+                // if there is special character in the file name, remove them.
+                if (name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    name = new string(name.Where(c => !System.IO.Path.GetInvalidFileNameChars().Contains(c)).ToArray());
+                }
+                // if path is too long, truncate it.
+                if (name.Length > 200)
+                {
+                    name = name.Substring(0, 197) + fi.Extension;
+                }
+                fileName = System.IO.Path.Combine(fi.DirectoryName, name);
+            }
+
+
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException(nameof(fileName));
             if (System.IO.Path.IsPathRooted(fileName) && !Directory.Exists(System.IO.Path.GetDirectoryName(fileName)))

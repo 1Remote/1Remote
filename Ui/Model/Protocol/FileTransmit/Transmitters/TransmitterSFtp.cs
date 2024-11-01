@@ -44,7 +44,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                _sftp?.Dispose();
+                var sftp = _sftp;
+                _sftp = null;
+                sftp?.Dispose();
             }
         }
 

@@ -150,7 +150,6 @@ namespace _1RM.Utils
 
             try
             {
-                var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 if (System.IO.File.Exists(shortcutPath))
                 {
                     System.IO.File.Delete(shortcutPath);

@@ -119,7 +119,13 @@ namespace _1RM.View.Launcher
                             {
                                 if (tb.CaretIndex == tb.Text.Length)
                                 {
-                                    ShowActionsList(vm.SelectedItem ?? vm.VmServerList[vm.SelectedIndex]);
+                                    var selected = vm.SelectedItem;
+                                    if (selected == null && vm.SelectedIndex >= 0 && vm.SelectedIndex < vm.VmServerList.Count)
+                                    {
+                                        selected = vm.VmServerList[vm.SelectedIndex];
+                                    }
+                                    if (selected != null)
+                                        ShowActionsList(selected);
                                     return;
                                 }
                             }
