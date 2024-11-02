@@ -17,13 +17,11 @@ namespace _1RM.View.Editor
 {
     public class PasswordPopupDialogViewModel : NotifyPropertyChangedBaseScreen
     {
-        //public List<ProtocolBaseViewModel> ProtocolList { get; }
-
         public bool DialogResult { get; set; } = false;
 
         public string Title { get; set; } = "";
 
-        private string _userName = "Administrator";
+        private string _userName = "";
         public string UserName
         {
             get => _userName;

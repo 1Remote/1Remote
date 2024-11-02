@@ -100,8 +100,9 @@ namespace _1RM.View.Launcher
         {
             if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
             if (this.DataContext is not QuickConnectionViewModel vm) return;
-
-            if (e.ClickCount == 2)
+            
+            if (vm.ConnectHistory.Count == 1 // only one connect button
+                || e.ClickCount == 2) // or there multiple items and double click
                 vm.OpenConnection();
         }
 

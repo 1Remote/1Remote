@@ -92,6 +92,9 @@ namespace _1RM.Service
         public bool ShowNoteFieldInLauncher = true;
         public bool ShowCredentials = true;
         public bool IsMatchingCredentials = true;
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool AllowSaveInfoInQuickConnect = true;
     }
 
     public class KeywordMatchConfig
