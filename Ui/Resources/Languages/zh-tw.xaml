@@ -315,4 +315,6 @@
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">將關閉按鈕置於左側，防止誤觸</s:String>
     <s:String x:Key="Ask for password when open connect">開啟連線時詢問密碼</s:String>
     <s:String x:Key="Remember the information above">記住上面的訊息</s:String>
+    <s:String x:Key="Quick Connect">快速連接</s:String>
+    <s:String x:Key="Allow Quick Connect to save entered address information">允許快速連接保存輸入的地址信息</s:String>
 </ResourceDictionary>

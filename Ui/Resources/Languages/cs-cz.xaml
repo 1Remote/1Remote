@@ -315,4 +315,6 @@
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Umístěte zavírací tlačítko na levou stranu, abyste zabránili náhodným dotykům</s:String>
     <s:String x:Key="Ask for password when open connect">Při otevření připojení požádat o heslo</s:String>
     <s:String x:Key="Remember the information above">Pamatujte na výše uvedené informace</s:String>
+    <s:String x:Key="Quick Connect">Rychlé připojení</s:String>
+    <s:String x:Key="Allow Quick Connect to save entered address information">Povolte rychlému připojení uložit zadané informace o adrese</s:String>
 </ResourceDictionary>

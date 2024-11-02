@@ -107,6 +107,18 @@ namespace _1RM.View.Settings.Launcher
                 }
             }
         }
+
+        public bool AllowSaveInfoInQuickConnect
+        {
+            get => _configurationService.Launcher.AllowSaveInfoInQuickConnect;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.Launcher.AllowSaveInfoInQuickConnect, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
     }
 
 

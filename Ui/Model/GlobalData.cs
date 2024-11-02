@@ -147,7 +147,7 @@ namespace _1RM.Model
                 {
                     // read from db
                     VmItemList = _sourceService.GetServers(force);
-                    LocalityConnectRecorder.Cleanup();
+                    LocalityConnectRecorder.ConnectTimeCleanup();
                     ReadTagsFromServers();
                     OnDataReloaded?.Invoke();
                     return true;

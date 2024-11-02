@@ -192,7 +192,7 @@ namespace _1RM.Service
             // update the last conn time
             {
                 var vmServer = _appData.GetItemById(protocol.DataSource?.DataSourceName ?? "", protocol.Id);
-                vmServer?.UpdateConnectTime();
+                vmServer?.ConnectTimeAddOrUpdate();
                 if (IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray)
                     IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
             }

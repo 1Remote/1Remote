@@ -315,4 +315,6 @@
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Coloque o botão fechar no lado esquerdo para evitar toques acidentais</s:String>
     <s:String x:Key="Ask for password when open connect">Pedir senha quando abrir conectar</s:String>
     <s:String x:Key="Remember the information above">Lembre-se das informações acima</s:String>
+    <s:String x:Key="Quick Connect">Conexão rápida</s:String>
+    <s:String x:Key="Allow Quick Connect to save entered address information">Permitir que o Quick Connect salve as informações de endereço inseridas</s:String>
 </ResourceDictionary>

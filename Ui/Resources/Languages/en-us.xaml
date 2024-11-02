@@ -315,4 +315,6 @@
     <s:String x:Key="Place the close button on the left side to prevent accidental touches">Place the close button on the left side to prevent accidental touches</s:String>
     <s:String x:Key="Ask for password when open connect">Ask for password when open connect</s:String>
     <s:String x:Key="Remember the information above">Remember the information above</s:String>
+    <s:String x:Key="Quick Connect">Quick Connect</s:String>
+    <s:String x:Key="Allow Quick Connect to save entered address information">Allow Quick Connect to save entered address information</s:String>
 </ResourceDictionary>

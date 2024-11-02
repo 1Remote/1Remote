@@ -6,6 +6,7 @@ using System.Windows;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
@@ -154,7 +155,11 @@ namespace _1RM.View.Launcher
 
         public void RebuildConnectionHistory()
         {
-            var list = LocalityConnectRecorder.QuickConnectionHistoryGet();
+            if (!IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+            {
+                LocalityConnectRecorder.QuickConnectionHistoryRemoveAll();
+            }
+            var list = LocalityConnectRecorder.QuickConnectionHistoryGetAll();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
             IoC.Get<LauncherWindowViewModel>().ReSetWindowHeight();
@@ -185,7 +190,7 @@ namespace _1RM.View.Launcher
                 return;
             }
 
-            var newList = LocalityConnectRecorder.QuickConnectionHistoryGet().Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
+            var newList = LocalityConnectRecorder.QuickConnectionHistoryGetAll().Where(x => x.Host.StartsWith(keyword, StringComparison.OrdinalIgnoreCase));
             var list = newList?.ToList() ?? new List<QuickConnectionItem>();
             list.Insert(0, OpenConnectActionItem);
             ConnectHistory = new ObservableCollection<QuickConnectionItem>(list);
@@ -256,7 +261,7 @@ namespace _1RM.View.Launcher
                 var pwdDlg = new PasswordPopupDialogViewModel();
                 if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
                 {
-                    pwdDlg = new PasswordPopupDialogViewModel(protocolBaseWithAddressPortUserPwd is SSH or SFTP, true)
+                    pwdDlg = new PasswordPopupDialogViewModel(protocolBaseWithAddressPortUserPwd is SSH or SFTP, IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
                     {
                         Title = $"[{server.ProtocolDisplayName}]{host}"
                     };
@@ -272,11 +277,14 @@ namespace _1RM.View.Launcher
                     // otherwise, fill in the last used username and password
                     else
                     {
-                        // find saved username and password then fill in
-                        var history = LocalityConnectRecorder.QuickConnectionHistoryGet().FirstOrDefault(x => x.Host == host && x.Protocol == protocol);
-                        if (history != null)
+                        if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
                         {
-                            (pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey) = history.GetUserPassword();
+                            // find saved username and password then fill in
+                            var history = LocalityConnectRecorder.QuickConnectionHistoryGetAll().FirstOrDefault(x => x.Host == host && x.Protocol == protocol);
+                            if (history != null)
+                            {
+                                (pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey) = history.GetUserPassword();
+                            }
                         }
                     }
                     if (!string.IsNullOrEmpty(pwdDlg.PrivateKey) && File.Exists(pwdDlg.PrivateKey))
@@ -309,13 +317,16 @@ namespace _1RM.View.Launcher
                 MsAppCenterHelper.TraceSpecial("Quick connect", server.Protocol);
 
                 // save history
-                if (pwdDlg.CanRememberInfo)
+                if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
                 {
-                    LocalityConnectRecorder.QuickConnectionHistoryAdd(host, protocol, pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey);
-                }
-                else
-                {
-                    LocalityConnectRecorder.QuickConnectionHistoryAdd(host, protocol, "", "", "");
+                    if (pwdDlg.CanRememberInfo)
+                    {
+                        LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey);
+                    }
+                    else
+                    {
+                        LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, "", "", "");
+                    }
                 }
 
                 // connect

@@ -106,7 +106,7 @@ namespace _1RM.View
                             HoverNoteDisplayControl = new NoteIcon(this.Server);
                         });
                     }
-                    LastConnectTime = LocalityConnectRecorder.Get(Server);
+                    LastConnectTime = LocalityConnectRecorder.ConnectTimeGet(Server);
                     TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
                     RaisePropertyChanged(nameof(TagString));
                     ReLoadTags();
