@@ -1,22 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Shawn.Utils;
+using System.Net.NetworkInformation;
 
 namespace _1RM.Utils
 {
     public static class TcpHelper
     {
+        public static (bool, IPAddress?) IsIPv6(string address)
+        {
+            if (IPAddress.TryParse(address, out var ipAddress))
+            {
+                return (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6, ipAddress);
+            }
+            return (false, null);
+        }
+
         /// <summary>
         /// return true if connected, false if not connected, null if timeout or cancelled.
         /// </summary>
         public static async Task<bool?> TestConnectionAsync(string address, int port, CancellationToken? cancellationToken = null, int timeOutMillisecond = 0)
         {
-            using var client = new TcpClient();
+            var (isIPv6, iPv6) = IsIPv6(address);
+            using var client = isIPv6 ? new TcpClient(iPv6!.AddressFamily) : new TcpClient();
             try
             {
                 var cts = new CancellationTokenSource();
@@ -24,7 +36,7 @@ namespace _1RM.Utils
 #if NETCOREAPP
                 var connectTask = client.ConnectAsync(address, port, (CancellationToken)cancellationToken).AsTask();
 #else
-                var connectTask = client.ConnectAsync(address, port);
+                var connectTask = isIPv6 ? client.ConnectAsync(iPv6, port) : client.ConnectAsync(address, port);
 #endif
                 if (timeOutMillisecond <= 0)
                     timeOutMillisecond = 30 * 1000;
