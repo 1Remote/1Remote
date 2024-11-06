@@ -21,6 +21,8 @@ namespace _1RM.View
         {
             _vm = vm;
             InitializeComponent();
+            ShowInTaskbar = false;
+            this.Visibility = Visibility.Hidden;
             Loaded += (sender, args) =>
             {
                 var myWindowHandle = new WindowInteropHelper(this).Handle;
@@ -30,6 +32,11 @@ namespace _1RM.View
             };
         }
 
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            this.Hide();
+        }
 
         public override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {

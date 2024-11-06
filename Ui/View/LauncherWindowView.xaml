@@ -16,8 +16,8 @@
                          mc:Ignorable="d"
                          MinWidth="100"
                          MinHeight="100"
-                        d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
-                        Title="LauncherWindowView">
+                         d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
+                         Title="Launcher">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
