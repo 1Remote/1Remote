@@ -756,7 +756,8 @@ namespace _1RM.View.Host.ProtocolHosts
                 return;
             }
             Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
-            _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+            if (_rdpClient.FullScreen != true)
+                _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
         }
 
         public override ProtocolHostType GetProtocolHostType()
