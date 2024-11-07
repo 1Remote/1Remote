@@ -320,6 +320,7 @@ namespace _1RM.Model.Protocol.Base
                     exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false,
                         isHideWindow: HideCommandBeforeConnectedWindow && isTestRun != true,
                         workingDirectory: tuple.Item3,
+                        useShellExcute: tuple.Item4,
                         envVariables: GetEnvironmentVariablesForScript());
 
                     if (isTestRun)
@@ -356,6 +357,7 @@ namespace _1RM.Model.Protocol.Base
                     var exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true,
                         isHideWindow: isTestRun != true,
                         workingDirectory: tuple.Item3,
+                        useShellExcute: tuple.Item4,
                         envVariables: GetEnvironmentVariablesForScript());
 
                     if (isTestRun)
