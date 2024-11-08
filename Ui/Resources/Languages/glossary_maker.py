@@ -117,7 +117,7 @@ class glossary:
             file_list.append(xaml_file_name)
             pass
 
-        with open("LanguagesList.cs", 'w', encoding=encoding, newline='') as f:
+        with open("LanguagesList.cs", 'w', encoding=encoding, newline='\r\n') as f:
             f.write('''
 public static class LanguagesResources
 {
@@ -126,7 +126,7 @@ public static class LanguagesResources
 #REPLACEMENT#
     };
 }
-'''.replace('#REPLACEMENT#', '        "' + '",\r\n        "'.join(file_list) + '"'))
+'''.replace('#REPLACEMENT#', '        "' + '",\n        "'.join(file_list) + '"'))
 
     def clone(self):
         return copy.deepcopy(self)
