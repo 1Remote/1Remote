@@ -165,7 +165,6 @@
 		<PackageReference Include="1Remote.VncSharpCore" Version="1.2.1" />
 		<PackageReference Include="AvalonEdit" Version="6.3.0.90" />
 		<PackageReference Include="Dapper" Version="2.0.123" />
-		<PackageReference Include="Dragablz" Version="0.0.3.234" />
 		<PackageReference Include="FluentFTP" Version="51.0.0" />
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
@@ -185,6 +184,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Dragablz\Dragablz\Dragablz.csproj" />
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils.WpfResources\Shawn.Utils.WpfResources.csproj" />
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj" />
 		<ProjectReference Include="..\Shawn.Utils\Shawn.Utils\Shawn.Utils.csproj" />

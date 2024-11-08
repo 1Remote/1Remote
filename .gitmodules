@@ -4,3 +4,6 @@
 [submodule "Shawn.Utils"]
 	path = Shawn.Utils
 	url = https://github.com/VShawn/Shawn.Utils.git
+[submodule "Dragablz"]
+	path = Dragablz
+	url = https://github.com/1Remote/Dragablz.git
