@@ -63,7 +63,7 @@ class glossary:
             line = [column[row] for column in self.columns]
             lines.append([self.keys[row], self.english_words[row], *line])
         with open(csv_file_name, 'w', encoding=encoding, newline='') as f:
-            writer = csv.writer(f, delimiter=";")
+            writer = csv.writer(f, delimiter=";", lineterminator='\n')
             writer.writerows(lines)
 
     def do_translate(self, translator: Translator):
