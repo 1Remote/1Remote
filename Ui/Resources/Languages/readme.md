@@ -2,10 +2,37 @@
 
 ## How to Add or Edit a Language
 
-- Open the `glossary.csv` file. Please avoid using Office Excel, as it may alter the file encoding. You can use https://edit-csv.net for editing instead.
-- Insert the new language in the last column, filling in the first three rows with language information. `language_code-google` is used to automatically call Google Translate.
-- Enter the corresponding terms for the new language.
-- After completing this, run `conver_glossary_to_xaml.bat` to import the translated text into the APP source code. (Note: `conver_glossary_to_xaml.bat` requires Python support.)
+Text resources for multilingual support can be found in `Ui/Resources/Languages`.
+
+You should only edit `glossary.csv`. The `*.xaml` and `*.cs` files are generated from this and should not be edited directly.
+
+You can use the tool of your choice to edit `glossary.csv`, but be careful not to change the encoding, so avoid using Office Excel and so on. You can use https://edit-csv.net to edit it.
+
+> [!TIP]
+> When editing the CSV file with a plain text editor or similar, note the following - 
+> - The delimiter of this CSV file is a semicolon `;`.
+> - The line ending character is LF.
+> - To include semicolons or line breaks in the text, enclose the entire text in double quotation marks.
+> - To include double quotation marks in text, enclose the entire text in double quotation marks, where the double quotation marks are represented by `""`.
+
+Each column, except the first (leftmost), represents terms for the specific language. The first column is the key. You can find the language by looking in the row where the key is 'language_name' or 'key' (probably in the first four rows). To add a new language, add a new column to the right.
+
+After editing the CSV file, running `conver_glossary_to_xaml.bat` will generate new `*.xaml` and `LanguageList.cs` files.
+Terms left blank in `glossary.csv` will be filled in from `glossary_translated_by_google.csv`.
+If it is also blank in there, Google Translate will be called using `language_code-google` and the result is stored in `glossary_translated_by_google.csv`.
+
+> [!NOTE]
+> `conver_glossary_to_xaml.bat` requires Python support.
+> The first run may fail, so try it again.
+> 
+> To access Google Translate, you may need to edit `glossary_maker.py`.
+> For example, to remove proxy:
+> ```
+>  # http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
+>  # proxies = {'http': http_proxy, 'https': http_proxy}
+>  # translator = Translator(proxies=proxies)
+>  translator = Translator()
+> ```
 
 ## 如何新增或编辑语言
 
