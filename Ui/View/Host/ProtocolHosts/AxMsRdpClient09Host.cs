@@ -220,6 +220,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
             var screenSize = this.GetScreenSizeIfRdpIsFullScreen();
 
+            double width = screenSize.Width / (_primaryScaleFactor / 100.0);
+            double height = screenSize.Height / (_primaryScaleFactor / 100.0);
+            int ceilingWidth = (int)Math.Ceiling(width);
+            int ceilingHeight = (int)Math.Ceiling(height);
             ParentWindow.Dispatcher.Invoke(() =>
             {
                 // ! do not remove
@@ -227,13 +231,13 @@ namespace _1RM.View.Host.ProtocolHosts
                 ParentWindow.WindowStyle = WindowStyle.None;
                 ParentWindow.ResizeMode = ResizeMode.NoResize;
 
-                ParentWindow.Width = screenSize.Width / (_primaryScaleFactor / 100.0);
-                ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
+                ParentWindow.Width = ceilingWidth;
+                ParentWindow.Height = ceilingHeight;
                 ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
                 ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
             });
 
-            SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ParentWindow.Width}, H = {ParentWindow.Height}, while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
+            SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ceilingWidth}({width}), H = {ceilingHeight}({height}), while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
 
             // WARNING!: EnableFullAllScreens do not need a SetRdpResolution
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
