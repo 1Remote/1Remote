@@ -25,7 +25,7 @@
                                  Tag="e.g. 192.168.0.101"
                                  ></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}" Margin="20,0,30,0"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  MinWidth="100" HorizontalAlignment="Left"
@@ -388,7 +388,7 @@
                 <Grid Style="{StaticResource EditorRowGrid}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
-                        <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid>
                             <StackPanel Orientation="Horizontal">
                                 <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
                                 <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
