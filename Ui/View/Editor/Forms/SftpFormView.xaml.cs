@@ -15,17 +15,18 @@ namespace _1RM.View.Editor.Forms
 
             Loaded += (sender, args) =>
             {
-                if (DataContext is SFTP vm)
+                if (DataContext is SftpFormViewModel { New: var vm })
                 {
-                    CbUsePrivateKey.IsChecked = false;
+	                bool? privateKey = false;
                     if (vm.PrivateKey == vm.ServerEditorDifferentOptions)
                     {
-                        CbUsePrivateKey.IsChecked = null;
+                        privateKey = null;
                     }
                     if (!string.IsNullOrEmpty(vm.PrivateKey))
                     {
-                        CbUsePrivateKey.IsChecked = true;
+                        privateKey = true;
                     }
+                    CbUsePrivateKey.IsChecked = privateKey;
                 }
             };
         }
