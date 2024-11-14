@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Vous modifiez en masse :</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Nombre d'éléments sélectionnés:</s:String>
     <s:String x:Key="server_editor_group_title_common">Commun</s:String>
-    <s:String x:Key="Connection">Connexion</s:String>
+    <s:String x:Key="Connection Info">Informations de connexion</s:String>
+    <s:String x:Key="Connection Settings">Connexion</s:String>
     <s:String x:Key="server_editor_group_title_display">Affichage</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Avantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serveur de passerelle RD</s:String>

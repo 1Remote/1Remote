@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">您正在批次編輯：</s:String>
     <s:String x:Key="server_editor_multi_selected_count">已選取數量：</s:String>
     <s:String x:Key="server_editor_group_title_common">一般</s:String>
-    <s:String x:Key="Connection">連線</s:String>
+    <s:String x:Key="Connection Info">連線</s:String>
+    <s:String x:Key="Connection Settings">連線</s:String>
     <s:String x:Key="server_editor_group_title_display">顯示</s:String>
     <s:String x:Key="server_editor_group_title_advantage">進階</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 閘道伺服器</s:String>

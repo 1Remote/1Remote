@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">You are editing in bulk:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Number of selected items:</s:String>
     <s:String x:Key="server_editor_group_title_common">Common</s:String>
-    <s:String x:Key="Connection">Connection</s:String>
+    <s:String x:Key="Connection Info">Connection Info</s:String>
+    <s:String x:Key="Connection Settings">Connection</s:String>
     <s:String x:Key="server_editor_group_title_display">Display</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Advantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD Gateway Server</s:String>

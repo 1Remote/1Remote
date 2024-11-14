@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Edytujesz masowo:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Ilość zaznaczonych wpisów:</s:String>
     <s:String x:Key="server_editor_group_title_common">Wszystkie</s:String>
-    <s:String x:Key="Connection">Połączenie</s:String>
+    <s:String x:Key="Connection Info">Połączenie</s:String>
+    <s:String x:Key="Connection Settings">Połączenie</s:String>
     <s:String x:Key="server_editor_group_title_display">Wyświetl</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Zaawansowany</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serwer bramy RD</s:String>

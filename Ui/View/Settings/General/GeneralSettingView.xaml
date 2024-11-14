@@ -94,7 +94,7 @@
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Connection}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Connection Settings'}"></TextBlock>
                 <CheckBox Grid.Column="1" IsChecked="{Binding ConfirmBeforeClosingSession, Mode=TwoWay}" Content="{DynamicResource 'Confirm before closing'}" VerticalAlignment="Center"></CheckBox>
             </Grid>
 

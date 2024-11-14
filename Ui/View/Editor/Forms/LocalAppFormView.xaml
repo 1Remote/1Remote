@@ -61,7 +61,7 @@
 
         <StackPanel>
 
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
 
             <StackPanel Orientation="Horizontal" MinHeight="{StaticResource InputHeight}"  Margin="0 0 0 15"
                         Visibility="{Binding RequiredHostName, Converter={StaticResource ConverterBool2Visible}}">

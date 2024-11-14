@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance forms:ProtocolBaseWithAddressPortFormViewModel}"
              d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
 
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">

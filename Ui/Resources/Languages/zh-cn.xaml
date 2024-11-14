@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">你正在批量编辑:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">选中数量：</s:String>
     <s:String x:Key="server_editor_group_title_common">常规</s:String>
-    <s:String x:Key="Connection">连接</s:String>
+    <s:String x:Key="Connection Info">连接参数</s:String>
+    <s:String x:Key="Connection Settings">连接</s:String>
     <s:String x:Key="server_editor_group_title_display">显示</s:String>
     <s:String x:Key="server_editor_group_title_advantage">高级</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 网关服务器</s:String>
