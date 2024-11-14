@@ -22,18 +22,14 @@ namespace _1RM.View.Editor.Forms
 	                bool? privateKey = false;
                     if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
                     {
-                        CbUsePrivateKey.IsChecked = null;
                         privateKey = null;
 
                     }
-
                     if (!string.IsNullOrEmpty(ssh.PrivateKey))
                     {
-                        CbUsePrivateKey.IsChecked = true;
                         privateKey = true;
 
                     }
-
                     CbUsePrivateKey.IsChecked = privateKey;
                 }
 			};

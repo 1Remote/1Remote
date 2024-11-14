@@ -534,24 +534,26 @@ namespace _1RM.View.Editor
 
 
             #region change port and username if the old velue is the default port and username
-            if (server is ProtocolBaseWithAddressPort newPort && Server is ProtocolBaseWithAddressPort)
+            if (server is ProtocolBaseWithAddressPort newPort)
             {
-                var oldPortDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName!)!;
-                if (newPort.Port == oldPortDefault.Port)
+                bool isDefaultPort = false;
+                if (Server is ProtocolBaseWithAddressPort)
+                {
+                    var oldPortDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName!)!;
+                    isDefaultPort = newPort.Port == oldPortDefault.Port;
+                }
+                else if (string.IsNullOrEmpty(newPort.Port) || newPort.Port == "3389")
+                {
+                    isDefaultPort = true;
+                }
+                if (isDefaultPort)
                 {
                     var newDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
                     newPort.Port = newDefault.Port;
                 }
             }
-            if (server is ProtocolBaseWithAddressPortUserPwd newUserName && Server is ProtocolBaseWithAddressPortUserPwd)
-            {
-                var oldDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName!)!;
-                if (newUserName.UserName == oldDefault.UserName)
-                {
-                    var newDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
-                    newUserName.UserName = newDefault.UserName;
-                }
-            }
+
+
             #endregion
 
             Server = server;
