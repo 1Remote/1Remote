@@ -85,7 +85,7 @@ namespace _1RM.Service
                 // rebuild TaskTrayContextMenu while language changed
                 if (_taskTrayIcon == null) return;
 
-                var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("About") + $" {Assert.APP_DISPLAY_NAME}");
+                var about = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("About"));
                 about.Click += (sender, args) =>
                 {
                     //HyperlinkHelper.OpenUriBySystem("https://github.com/1Remote/1Remote");

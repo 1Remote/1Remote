@@ -101,7 +101,7 @@
                 <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" 
-                                Content="{DynamicResource Done}" 
+                                Content="{DynamicResource OK}" 
                                 Command="{s:Action ButtonClicked}" 
                                 CommandParameter="{x:Static MessageBoxResult.OK}"/>
                         <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}"

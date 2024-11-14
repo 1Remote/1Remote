@@ -115,7 +115,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_general_log_file_path}"></TextBlock>
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
                     <TextBox Text="{Binding LogPath, Mode=OneWay}"
                              MaxWidth="400"

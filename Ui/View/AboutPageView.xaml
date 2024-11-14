@@ -154,7 +154,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
                                                 <Hyperlink NavigateUri="https://1remote.github.io/usage/quick-start/" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
-                                                    How to use
+                                                    <Run Text="{DynamicResource 'about_page_how_to_use'}"/>
                                                 </Hyperlink>
                                             </TextBlock>
                                         </StackPanel>
