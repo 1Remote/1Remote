@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Você está editando em massa:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Número de itens selecionados:</s:String>
     <s:String x:Key="server_editor_group_title_common">Frequente</s:String>
-    <s:String x:Key="Connection">Conexão</s:String>
+    <s:String x:Key="Connection Info">Conexão</s:String>
+    <s:String x:Key="Connection Settings">Conexão</s:String>
     <s:String x:Key="server_editor_group_title_display">Tela</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Vantagem</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Servidor Gateway RD</s:String>

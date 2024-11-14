@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Вы редактируете массово:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Количество выбранных:</s:String>
     <s:String x:Key="server_editor_group_title_common">Общие</s:String>
-    <s:String x:Key="Connection">Подключение</s:String>
+    <s:String x:Key="Connection Info">Подключение</s:String>
+    <s:String x:Key="Connection Settings">Подключение</s:String>
     <s:String x:Key="server_editor_group_title_display">Экран</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Продвинутые</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Сервер шлюза удаленных рабочих столов</s:String>

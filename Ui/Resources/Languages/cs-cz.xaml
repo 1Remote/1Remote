@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Hromadně upravujete:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Počet vybraných položek:</s:String>
     <s:String x:Key="server_editor_group_title_common">Společné</s:String>
-    <s:String x:Key="Connection">Připojení</s:String>
+    <s:String x:Key="Connection Info">Připojení</s:String>
+    <s:String x:Key="Connection Settings">Připojení</s:String>
     <s:String x:Key="server_editor_group_title_display">Zobrazení</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Výhoda</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Server brány vzdálených ploch</s:String>

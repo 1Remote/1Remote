@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Sie bearbeiten große Mengen</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Anzahl ausgwählter Elemente</s:String>
     <s:String x:Key="server_editor_group_title_common">Allgemein</s:String>
-    <s:String x:Key="Connection">Verbindung</s:String>
+    <s:String x:Key="Connection Info">Verbindung</s:String>
+    <s:String x:Key="Connection Settings">Verbindung</s:String>
     <s:String x:Key="server_editor_group_title_display">Anzeige</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Erweitert</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Remotedesktop-Gatewayserver</s:String>

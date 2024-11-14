@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">一括編集中:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">選択項目数:</s:String>
     <s:String x:Key="server_editor_group_title_common">一般</s:String>
-    <s:String x:Key="Connection">コネクション</s:String>
+    <s:String x:Key="Connection Info">接続情报</s:String>
+    <s:String x:Key="Connection Settings">コネクション</s:String>
     <s:String x:Key="server_editor_group_title_display">ディスプレイ</s:String>
     <s:String x:Key="server_editor_group_title_advantage">高度な設定</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RDゲートウェイサーバー</s:String>

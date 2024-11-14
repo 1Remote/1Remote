@@ -125,7 +125,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Estás a editar en bloque:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Número de obxectos escollidos:</s:String>
     <s:String x:Key="server_editor_group_title_common">Común</s:String>
-    <s:String x:Key="Connection">Conexión</s:String>
+    <s:String x:Key="Connection Info">Conexión</s:String>
+    <s:String x:Key="Connection Settings">Conexión</s:String>
     <s:String x:Key="server_editor_group_title_display">Pantalla</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Ventaxa</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Porta en enlace do servidor RD</s:String>

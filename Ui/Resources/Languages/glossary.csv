@@ -124,7 +124,8 @@ server_editor_bulk_editing;Bulk editing;批量编辑;Hromadné upravování;Mass
 server_editor_bulk_editing_title;You are editing in bulk:;你正在批量编辑:;Hromadně upravujete:;Sie bearbeiten große Mengen;Vous modifiez en masse :;Você está editando em massa:;一括編集中:;您正在批次編輯：;Estás a editar en bloque:;Edytujesz masowo:;Вы редактируете массово:
 server_editor_multi_selected_count;Number of selected items:;选中数量：;Počet vybraných položek:;Anzahl ausgwählter Elemente;Nombre d'éléments sélectionnés:;Número de itens selecionados:;選択項目数:;已選取數量：;Número de obxectos escollidos:;Ilość zaznaczonych wpisów:;Количество выбранных:
 server_editor_group_title_common;Common;常规;Společné;Allgemein;Commun;Frequente;一般;一般;Común;Wszystkie;Общие
-Connection;Connection;连接;Připojení;Verbindung;;Conexão;コネクション;連線;Conexión;Połączenie;Подключение
+Connection Info;Connection Info;连接参数;Připojení;Verbindung;;Conexão;接続情报;連線;Conexión;Połączenie;Подключение
+Connection Settings;Connection;连接;Připojení;Verbindung;;Conexão;コネクション;連線;Conexión;Połączenie;Подключение
 server_editor_group_title_display;Display;显示;Zobrazení;Anzeige;Affichage;Tela;ディスプレイ;顯示;Pantalla;Wyświetl;Экран
 server_editor_group_title_advantage;Advantage;高级;Výhoda;Erweitert;Avantage;Vantagem;高度な設定;進階;Ventaxa;Zaawansowany;Продвинутые
 server_editor_group_title_gateway;RD Gateway Server;RD 网关服务器;Server brány vzdálených ploch;Remotedesktop-Gatewayserver;Serveur de passerelle RD;Servidor Gateway RD;RDゲートウェイサーバー;RD 閘道伺服器;Porta en enlace do servidor RD;Serwer bramy RD;Сервер шлюза удаленных рабочих столов
