@@ -31,16 +31,18 @@ jobs:
           echo "github.ref = ${{ github.ref }}"
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
       # Install the .NET Core workload https://github.com/actions/setup-dotnet
       - name: Install .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
       - name: Setup MSBuild.exe
