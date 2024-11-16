@@ -1,18 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--<Color x:Key="PrimaryLightColor">#445a68</Color>
-    <Color x:Key="PrimaryMidColor">#102b3e</Color>
-    <Color x:Key="PrimaryDarkColor">#0c2230</Color>
-    <Color x:Key="PrimaryTextColor">White</Color>
-
-    <Color x:Key="AccentLightColor">#ed6884</Color>
-    <Color x:Key="AccentMidColor">#e83d61</Color>
-    <Color x:Key="AccentDarkColor">#b5304c</Color>
-    <Color x:Key="AccentTextColor">#ffffff</Color>
-
-    <Color x:Key="BackgroundColor">#ced8e1</Color>
-    <Color x:Key="BackgroundTextColor">#000000</Color>-->
+    <FontFamily x:Key="GlobalFontFamily">Microsoft YaHei</FontFamily>
+    <!--<FontFamily x:Key="GlobalFontFamily">SimSun</FontFamily>-->
+    <!--<FontFamily x:Key="GlobalFontFamily">楷体</FontFamily>-->
 
     <Color x:Key="PrimaryLightColor">#474748</Color>
     <Color x:Key="PrimaryMidColor">#323233</Color>

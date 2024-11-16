@@ -968,6 +968,10 @@ namespace _1RM.View.Host.ProtocolHosts
                         _lastScaleFactor = newScaleFactor;
                         _rdpClient?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                     }
+                    catch (COMException)
+                    {
+                        // ignore error code 0x8000FFFF
+                    }
                     catch (Exception e)
                     {
                         SimpleLogHelper.Error(e);

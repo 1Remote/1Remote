@@ -13,14 +13,57 @@
             </s:ApplicationLoader.Bootstrapper>
             <s:ApplicationLoader.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Converter/Converter.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Theme/Basic/Default.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Theme/DefaultTheme.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Converter/Converter.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Default.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Markdown.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Icons/SVG.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Languages/en-us.xaml"></ResourceDictionary>
                 <ResourceDictionary>
+                    <Style x:Key="EditorRowGrid" TargetType="Grid">
+                        <Setter Property="Height" Value="Auto"></Setter>
+                        <Setter Property="MinHeight" Value="30"></Setter>
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Bottom="15"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style x:Key="EditorRowGridTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                        <Setter Property="Width" Value="150"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Right="30"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style x:Key="EditorRowGridTitle2" TargetType="TextBlock" BasedOn="{StaticResource EditorRowGridTitle}">
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Setter Property="TextAlignment" Value="Left"></Setter>
+                        <Setter Property="Margin" Value="0 0 0 0">
+                        </Setter>
+                    </Style>
+
+                    <Style x:Key="EditorRowGridInput" TargetType="Grid">
+                        <Setter Property="Width" Value="300"></Setter>
+                    </Style>
+
+                    <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock" BasedOn="{StaticResource EditorRowGridTitle}">
+                        <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeTitle}"></Setter>
+                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                        <Setter Property="TextAlignment" Value="Left"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Setter Property="Margin" Value="80 20 0 10"></Setter>
+                    </Style>
+
+
                     <Style TargetType="{x:Type avalonEdit:CompletionWindow}">
+                        <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
                         <Setter Property="WindowStyle" Value="None"></Setter>
                         <Setter Property="ResizeMode" Value="NoResize"></Setter>
                         <Setter Property="BorderThickness" Value="0"></Setter>
@@ -41,7 +84,7 @@
                         </Setter>
                     </Style>
 
-                    <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
+                    <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Right"></Setter>
@@ -50,14 +93,14 @@
                         <Setter Property="Margin" Value="20 0 10 0"></Setter>
                     </Style>
 
-                    <Style x:Key="BlockTitleColumn" TargetType="TextBlock">
+                    <Style x:Key="BlockTitleColumn" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                         <Setter Property="TextAlignment" Value="Right"></Setter>
                         <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
                         <Setter Property="Margin" Value="15"></Setter>
-                        <Setter Property="FontSize" Value="20"></Setter>
+                        <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeTitle}"></Setter>
                         <Setter Property="Height" Value="30"></Setter>
                     </Style>
                 </ResourceDictionary>

@@ -124,7 +124,7 @@
                                               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_email}"></TextBlock>
-                                    <TextBlock FontSize="10" Opacity="0.5" Text="veckshawn@gmail.com"></TextBlock>
+                                    <TextBlock FontSize="12" Opacity="0.5" Text="veckshawn@gmail.com"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Button>
@@ -138,7 +138,7 @@
                                               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_github}"></TextBlock>
-                                    <TextBlock FontSize="10" Opacity="0.5" Text="github.com/vshawn"></TextBlock>
+                                    <TextBlock FontSize="12" Opacity="0.5" Text="github.com/vshawn"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Button>

@@ -17,7 +17,7 @@
                 <ResourceDictionary Source="ProtocolConfiogDictionary.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
-            <Style TargetType="TextBlock">
+            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                 <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
             </Style>
 
@@ -165,9 +165,6 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <!--<TextBlock Text="{DynamicResource 'Protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
-                           FontSize="14pt"
-                           Margin="5"></TextBlock>-->
                 <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
                              Style="{StaticResource ListBoxForProtocols}">

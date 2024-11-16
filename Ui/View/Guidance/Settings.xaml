@@ -4,9 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.Guidance"
-             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-             xmlns:service="clr-namespace:_1RM.Service"
              Background="{DynamicResource PrimaryMidBrush}"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance local:GuidanceWindow}"
@@ -21,19 +19,19 @@
         <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8" Opacity="0.8">
             <StackPanel>
                 <TextBlock Margin="0 10 0 0"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="WrapWithOverflow"
-                                   HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource PrimaryTextBrush}"
-                                   Text="{DynamicResource guidance_feature_start_setting1}">
+                           FontSize="{DynamicResource GlobalFontSizeTitle}"
+                           FontWeight="SemiBold"
+                           TextWrapping="WrapWithOverflow"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
+                           Text="{DynamicResource guidance_feature_start_setting1}">
                 </TextBlock>
-                <TextBlock FontSize="16"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="WrapWithOverflow"
-                                   HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource PrimaryTextBrush}"
-                                   Text="{DynamicResource guidance_feature_start_setting2}">
+                <TextBlock FontSize="{DynamicResource GlobalFontSizeSubtitle}"
+                           FontWeight="SemiBold"
+                           TextWrapping="WrapWithOverflow"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
+                           Text="{DynamicResource guidance_feature_start_setting2}">
                 </TextBlock>
             </StackPanel>
         </Grid>
@@ -43,11 +41,10 @@
                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                     <Setter Property="Opacity" Value="0.8"></Setter>
-                    <Setter Property="FontSize" Value="14"></Setter>
                 </Style>
                 <Style TargetType="TextBlock" x:Key="TextBlockTitleColumn" BasedOn="{StaticResource TextBlockBase}">
                     <Setter Property="Opacity" Value="0.8"></Setter>
-                    <Setter Property="FontSize" Value="14"></Setter>
+                    <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeSubtitle}"></Setter>
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                     <Setter Property="Width" Value="201"></Setter>
                     <Setter Property="Margin" Value="0 0 10 0"></Setter>
@@ -73,7 +70,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
-                                       Text="{DynamicResource 'Run automatically at OS startup'}">
+                               Text="{DynamicResource 'Run automatically at OS startup'}">
                     </TextBlock>
                     <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
                 </Grid>
@@ -154,23 +151,24 @@
                                 <StackPanel Orientation="Horizontal" Margin="0" Background="Transparent">
                                     <Grid Width="16" Margin="5 0 0 0" Opacity="0.8">
                                         <Path Data="M760 432V144c0-17.7-14.3-32-32-32H296c-17.7 0-32 14.3-32 32v288c-66.2 0-120 52.1-120 116v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-24.3 21.6-44 48.1-44H759.9c26.5 0 48.1 19.7 48.1 44v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-63.9-53.8-116-120-116z m-424 0V184h352v248H336z"
-                                      Stroke="{DynamicResource PrimaryTextBrush}"
-                                      Fill="{DynamicResource PrimaryTextBrush}"
-                                      StrokeThickness="0" Stretch="Uniform" />
+                                              Stroke="{DynamicResource PrimaryTextBrush}"
+                                              Fill="{DynamicResource PrimaryTextBrush}"
+                                              StrokeThickness="0" Stretch="Uniform" />
                                     </Grid>
                                     <StackPanel Margin="5 0 0 0">
                                         <TextBlock Width="250"
-                                               HorizontalAlignment="Left"
-                                               TextWrapping="WrapWithOverflow"
-                                               Text="{DynamicResource 'Portable mode'}"
-                                               ToolTip="{DynamicResource 'Portable mode'}"/>
+                                                   HorizontalAlignment="Left"
+                                                   TextWrapping="WrapWithOverflow"
+                                                   Text="{DynamicResource 'Portable mode'}"
+                                                   ToolTip="{DynamicResource 'Portable mode'}"/>
                                         <TextBlock Width="250"
-                                               HorizontalAlignment="Left"
-                                               TextWrapping="WrapWithOverflow"
-                                               FontSize="12" Opacity="0.5" 
-                                               Text="{DynamicResource 'Profile is saved where executable is located'}"
-                                               ToolTip="{DynamicResource 'Profile is saved where executable is located'}"
-                                    />
+                                                   FontSize="{DynamicResource GlobalFontSizeSmall}"
+                                                   HorizontalAlignment="Left"
+                                                   TextWrapping="WrapWithOverflow"
+                                                   Opacity="0.5" 
+                                                   Text="{DynamicResource 'Profile is saved where executable is located'}"
+                                                   ToolTip="{DynamicResource 'Profile is saved where executable is located'}"
+                                        />
                                     </StackPanel>
                                 </StackPanel>
                             </CheckBox>
@@ -190,30 +188,31 @@
                                 </LinearGradientBrush>
                             </Border.BorderBrush>
                             <CheckBox Foreground="{DynamicResource PrimaryTextBrush}" 
-                                  IsChecked="{Binding SettingsPageViewModel.ProfileModeIsPortable, Converter={StaticResource ConverterBoolInverse}}"
-                                  IsEnabled="{Binding SettingsPageViewModel.ProfileModeIsEnabled, Mode=OneTime}">
+                                      IsChecked="{Binding SettingsPageViewModel.ProfileModeIsPortable, Converter={StaticResource ConverterBoolInverse}}"
+                                      IsEnabled="{Binding SettingsPageViewModel.ProfileModeIsEnabled, Mode=OneTime}">
                                 <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Stretch" Background="Transparent">
                                     <Grid Width="16" Margin="5 0 0 0" Opacity="0.8">
                                         <Path Data="M213.333333 597.333333h597.333334V170.666667H213.333333v426.666666z m0 85.333334v170.666666h597.333334v-170.666666H213.333333zM170.666667 85.333333h682.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v768a42.666667 42.666667 0 0 1-42.666667 42.666667H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667V128a42.666667 42.666667 0 0 1 42.666667-42.666667z m469.333333 640h85.333333v85.333334h-85.333333v-85.333334z"
-                                      Stroke="{DynamicResource PrimaryTextBrush}"
-                                      Fill="{DynamicResource PrimaryTextBrush}"
-                                      StrokeThickness="0" Stretch="Uniform" />
+                                              Stroke="{DynamicResource PrimaryTextBrush}"
+                                              Fill="{DynamicResource PrimaryTextBrush}"
+                                              StrokeThickness="0" Stretch="Uniform" />
                                     </Grid>
 
                                     <StackPanel Margin="5 0 0 0">
                                         <TextBlock Width="250"
-                                               HorizontalAlignment="Left"
-                                               TextWrapping="WrapWithOverflow"
-                                               Text="{DynamicResource 'Install for current windows account'}"
-                                               ToolTip="{DynamicResource 'Install for current windows account'}"
-                                    />
+                                                   HorizontalAlignment="Left"
+                                                   TextWrapping="WrapWithOverflow"
+                                                   Text="{DynamicResource 'Install for current windows account'}"
+                                                   ToolTip="{DynamicResource 'Install for current windows account'}"
+                                        />
                                         <TextBlock Width="250"
-                                               HorizontalAlignment="Left"
-                                               TextWrapping="WrapWithOverflow"
-                                               FontSize="12" Opacity="0.5"
-                                               Text="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
-                                               ToolTip="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
-                                    />
+                                                   HorizontalAlignment="Left"
+                                                   TextWrapping="WrapWithOverflow"
+                                                   FontSize="{DynamicResource GlobalFontSizeSmall}"
+                                                   Opacity="0.5"
+                                                   Text="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
+                                                   ToolTip="{DynamicResource 'Profile is saved in your Windows AppData folder'}"
+                                        />
                                     </StackPanel>
                                 </StackPanel>
                             </CheckBox>

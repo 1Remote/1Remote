@@ -14,7 +14,7 @@
                          AllowsTransparency="True"
                          d:DataContext="{d:DesignInstance local:SqliteSettingViewModel}">
     <Window.Resources>
-        <Style TargetType="TextBlock">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="HorizontalAlignment" Value="Right"></Setter>
@@ -52,7 +52,7 @@
                 </Grid.Style>
 
                 <StackPanel Margin="20 0" >
-                    <TextBlock Text="SQLite" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                    <TextBlock Text="SQLite" Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" Height="30" HorizontalAlignment="Left"></TextBlock>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -80,7 +80,7 @@
                         <TextBox Grid.Row="1" Grid.Column="1" 
                                  Style="{DynamicResource TbInput}"
                                  Text="{Binding Path, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                 FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" 
+                                 FontSize="{DynamicResource GlobalFontSizeSmall}" VerticalContentAlignment="Center" IsReadOnly="True" 
                                  Tag="{Binding Path, Mode=OneWay}"/>
                         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
                             <Button Margin="5 5 0 15" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>

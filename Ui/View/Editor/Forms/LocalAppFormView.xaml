@@ -69,7 +69,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
-                               Opacity="0.5" FontSize="10" Margin="0 25 30 0"
+                               Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeSmall}" Margin="0 25 30 0"
                                Text="%1RM_HOSTNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -87,7 +87,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Port}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
-                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeSmall}" Margin="0 25 30 0" 
                                Text="%1RM_PORT%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -105,7 +105,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
-                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeSmall}" Margin="0 25 30 0" 
                                Text="%1RM_USERNAME%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -123,7 +123,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
-                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeSmall}" Margin="0 25 30 0" 
                                Text="%1RM_PASSWORD%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -143,7 +143,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                VerticalAlignment="Top"
-                               Opacity="0.5" FontSize="10" Margin="0 25 30 0" 
+                               Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeSmall}" Margin="0 25 30 0" 
                                Text="%1RM_PRIVATE_KEY_PATH%"></TextBlock>
                 </Grid>
                 <Grid Style="{StaticResource EditorRowGridInput}" Height="{StaticResource InputHeight}">

@@ -99,7 +99,7 @@
                                         <TextBlock Grid.Row="2"
                                                Text="{Binding Title2}"
                                                ToolTip="{Binding Title2}"
-                                               FontSize="10" Opacity="0.6"></TextBlock>
+                                               FontSize="{DynamicResource GlobalFontSizeSmall}" Opacity="0.6"></TextBlock>
                                     </Grid>
                                 </DataTemplate>
                             </Grid.Resources>
