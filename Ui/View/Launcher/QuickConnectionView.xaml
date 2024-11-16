@@ -19,8 +19,8 @@
             <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                 <VisualBrush.Visual>
                     <Grid VerticalAlignment="Center">
-                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
-                        <TextBlock FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="Black" Opacity="0.5" FontSize="18" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="quick connect e.g. 192.168.0.100:3389" Foreground="White" Opacity="0.5" FontSize="18" />
                     </Grid>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -53,11 +53,11 @@
 
 
                         <TextBlock Grid.Column="0"
-                                       Text="{Binding Host}"
-                                       FontSize="16"
-                                       Margin="10 0"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       VerticalAlignment="Center">
+                                   Text="{Binding Host}"
+                                   FontSize="16"
+                                   Margin="10 0"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   VerticalAlignment="Center">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Style.Triggers>
@@ -72,13 +72,13 @@
                         </TextBlock>
 
                         <TextBlock Grid.Column="1"
-                                       Text="{Binding Protocol}"
-                                       FontSize="16" FontWeight="Bold"
-                                       HorizontalAlignment="Right"
-                                       Margin="5 0 0 0"
-                                       Opacity="0.3"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       VerticalAlignment="Center"></TextBlock>
+                                   Text="{Binding Protocol}"
+                                   FontSize="16" FontWeight="Bold"
+                                   HorizontalAlignment="Right"
+                                   Margin="5 0 0 0"
+                                   Opacity="0.3"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
+                                   VerticalAlignment="Center"></TextBlock>
 
 
                         <Button Grid.Column="2" Width="10" Height="10" 

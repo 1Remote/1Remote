@@ -71,14 +71,14 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" 
                                  Name="TbName" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  IsEnabled="{Binding NameWritable}"
                                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                         />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                         <TextBox Grid.Row="1" Grid.Column="1" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding Path, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  FontSize="{DynamicResource GlobalFontSizeSmall}" VerticalContentAlignment="Center" IsReadOnly="True" 
                                  Tag="{Binding Path, Mode=OneWay}"/>

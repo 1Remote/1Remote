@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.Settings.Theme"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
+             xmlns:controls="clr-namespace:_1RM.Controls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ThemeSettingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -30,16 +31,10 @@
                 <Button Grid.Column="2" HorizontalAlignment="Left" Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Reset}" Command="{Binding CmdResetTheme}"></Button>
             </Grid>
 
-            <Grid Style="{StaticResource GridOneRow}" Margin="0 20 0 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" SharedSizeGroup="ThemeColumn2"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Custom}"></TextBlock>
-            </Grid>
 
-            <Grid Width="450" HorizontalAlignment="Left" Margin="0 0 0 0">
+            <TextBlock Text="{DynamicResource Custom}" Style="{StaticResource BlockTitleColumn}" />
+
+            <Grid Width="450" HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
@@ -87,6 +82,63 @@
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="3" Grid.Column="0" Text="{DynamicResource Background}"></TextBlock>
                 <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="2" HexColor="{Binding BackgroundColor}" />
                 <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="5" HexColor="{Binding BackgroundTextColor}" />
+            </Grid>
+
+
+
+            <TextBlock Text="Font" Style="{StaticResource BlockTitleColumn}" />
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.Resources>
+                    <Style x:Key="YaHeiComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                        <Setter Property="FontFamily" Value="Microsoft YaHei"></Setter>
+                    </Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxAccentStyle}">
+                        <Setter Property="FontFamily" Value="Microsoft YaHei"></Setter>
+                        <Setter Property="ItemContainerStyle" Value="{StaticResource YaHeiComboBoxItemStyle}" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Font family" FontFamily="Microsoft YaHei"></TextBlock>
+
+                <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left"
+                          IsEditable="True" IsTextSearchEnabled="True"
+                          FontFamily="Microsoft YaHei"
+                          ItemsSource="{Binding FontFamilies}"
+                          SelectedItem="{Binding FontFamily}"
+                          >
+                </ComboBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.Resources>
+                    <Style x:Key="YaHeiComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                        <Setter Property="FontFamily" Value="Microsoft YaHei"></Setter>
+                    </Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxAccentStyle}">
+                        <Setter Property="FontFamily" Value="Microsoft YaHei"></Setter>
+                        <Setter Property="ItemContainerStyle" Value="{StaticResource YaHeiComboBoxItemStyle}" />
+                    </Style>
+                </Grid.Resources>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Font size" FontFamily="Microsoft YaHei"></TextBlock>
+
+                <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" 
+                          IsEditable="False"
+                          SelectedItem="{Binding FontSize}" 
+                          ItemsSource="{Binding FontSizeOptions}"
+                          DisplayMemberPath="Name"
+                          FontFamily="Microsoft YaHei">
+                </ComboBox>
             </Grid>
         </StackPanel>
     </Grid>

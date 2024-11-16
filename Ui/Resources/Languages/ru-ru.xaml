@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Буфер обмена</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Комбинации клавиш</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Диски</s:String>
-    <s:String x:Key="Drives plug in latter">Диски подключаются позже</s:String>
+    <s:String x:Key="Drives plug in later">Диски подключаются позже</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Звуки</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Выключены</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Проигрывать на локальном ПК</s:String>

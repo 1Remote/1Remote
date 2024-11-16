@@ -111,7 +111,7 @@
                         </ComboBox>
                     </Grid>
 
-                    <TextBlock VerticalAlignment="Center" Margin="2 0" 
+                    <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Center" Margin="2 0" 
                                Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}"
                                ToolTip="{DynamicResource 'How to select the specified monitors'}">
                                <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
@@ -295,7 +295,7 @@
                         <CheckBox Margin="0 2"
                                   IsChecked="{Binding New.MstscModeEnabled}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Margin="0 0 5 0">
+                                <TextBlock Style="{StaticResource TextBlockBase}" TextWrapping="Wrap" Margin="0 0 5 0">
                                     <Run Text="{DynamicResource Enabled}"></Run>
                                     <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/" TextDecorations="{x:Null}" 
                                                controls1:HyperlinkHelper.IsOpenExternal="True">
@@ -355,7 +355,7 @@
                                 <controls:BindableAvalonEditor.Resources>
                                     <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                         <VisualBrush.Visual>
-                                            <TextBlock FontStyle="Italic">tip e.g. selectedmonitors:s:0,2</TextBlock>
+                                            <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic">tip e.g. selectedmonitors:s:0,2</TextBlock>
                                         </VisualBrush.Visual>
                                     </VisualBrush>
                                 </controls:BindableAvalonEditor.Resources>
@@ -377,7 +377,7 @@
                             </controls:BindableAvalonEditor>
                         </Grid>
 
-                        <TextBlock VerticalAlignment="Top" Margin="2 0">
+                        <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Top" Margin="2 0">
                             <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
                                        controls1:HyperlinkHelper.IsOpenExternal="True">
                                 (?)
@@ -463,7 +463,7 @@
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding New.EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding New.EnableSmartCardsAndWinHello}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding New.EnableDiskDrives}"></CheckBox>
-                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding New.EnableRedirectDrivesPlugIn}"></CheckBox>
+                        <CheckBox Content="{DynamicResource 'Drives plug in later'}" IsChecked="{Binding New.EnableRedirectDrivesPlugIn}"></CheckBox>
                         <CheckBox Content="{DynamicResource Cameras}" IsChecked="{Binding New.EnableRedirectCameras}"></CheckBox>
                     </UniformGrid>
                 </StackPanel>
@@ -593,7 +593,7 @@
                                     <controls:BindableAvalonEditor.Resources>
                                         <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                             <VisualBrush.Visual>
-                                                <TextBlock FontStyle="Italic" Margin="10 0 0 0">e.g. EnableAutoReconnect:i:0</TextBlock>
+                                                <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Margin="10 0 0 0">e.g. EnableAutoReconnect:i:0</TextBlock>
                                             </VisualBrush.Visual>
                                         </VisualBrush>
                                     </controls:BindableAvalonEditor.Resources>
@@ -624,10 +624,10 @@
                         </StackPanel>
 
 
-                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
+                        <TextBlock Style="{StaticResource TextBlockBase}" Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
                             <Run Foreground="{DynamicResource BackgroundTextBrush}" Text="Here you can set options not listed in the UI, enabling richer configuration possibilities, such as disabling automatic reconnection by `EnableAutoReconnect:i:0`, or disabling combination keys by `HotKeyAltTab:i:0`, or pin the connection bar by `PinConnectionBar:i:1`."></Run>
                         </TextBlock>
-                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
+                        <TextBlock Style="{StaticResource TextBlockBase}" Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
                             <Run Foreground="{DynamicResource BackgroundTextBrush}" Text=" Note that this option has the highest priority and will override previous configurations from UI."></Run>
                         </TextBlock>
 

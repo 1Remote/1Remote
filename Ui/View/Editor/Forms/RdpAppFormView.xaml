@@ -82,8 +82,8 @@
                 <TextBlock Style="{StaticResource EditorRowGridTitle}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <StackPanel>
-                        <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource BackgroundTextBrush}" Text="Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'."></TextBlock>
-                        <TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" TextWrapping="Wrap" Foreground="{DynamicResource BackgroundTextBrush}" Text="Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'."></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}">
                                 <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/remoteapp/" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                     check how to config.
                                 </Hyperlink>
@@ -172,7 +172,7 @@
                                 <controls1:BindableAvalonEditor.Resources>
                                     <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
                                         <VisualBrush.Visual>
-                                            <TextBlock FontStyle="Italic">tip e.g. usbdevicestoredirect:s:-USB\VID_XXXX\XXXX</TextBlock>
+                                            <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic">tip e.g. usbdevicestoredirect:s:-USB\VID_XXXX\XXXX</TextBlock>
                                         </VisualBrush.Visual>
                                     </VisualBrush>
                                 </controls1:BindableAvalonEditor.Resources>
@@ -193,7 +193,7 @@
                             </controls1:BindableAvalonEditor>
                         </Grid>
 
-                        <TextBlock VerticalAlignment="Top" Margin="2 0">
+                        <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Top" Margin="2 0">
                                 <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
                                            controls:HyperlinkHelper.IsOpenExternal="True">
                                     (?)

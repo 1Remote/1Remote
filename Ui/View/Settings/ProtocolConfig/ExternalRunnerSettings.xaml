@@ -201,10 +201,10 @@
                         </ListBox.Style>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="270" HorizontalAlignment="Left">
+                                <Grid Width="360" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"></ColumnDefinition>
-                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1.5*"></ColumnDefinition>
                                         <ColumnDefinition Width="20"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
 
@@ -214,10 +214,10 @@
                                              ToolTip="Key e.g. User"/>
 
                                     <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
-                                                               Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
-                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
-                                                               Tag="Value e.g. %1RM_USERNAME%"
-                                                               ToolTip="Value e.g. %1RM_USERNAME%"/>
+                                                                   Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
+                                                                   Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
+                                                                   Tag="Value e.g. %1RM_USERNAME%"
+                                                                   ToolTip="Value e.g. %1RM_USERNAME%"/>
 
                                     <Button Grid.Column="2" Width="10" Height="10"
                                             ToolTip="{DynamicResource 'Delete'}"

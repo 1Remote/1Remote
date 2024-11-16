@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Presse-papiers</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinaisons de clés</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Disques durs</s:String>
-    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
+    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Désactivée</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Jouez en local</s:String>

@@ -44,7 +44,7 @@
 
 
                     <StackPanel Margin="0 15 " VerticalAlignment="Bottom">
-                        <Button Command="{Binding CmdClose}" Content="{DynamicResource Dismiss}" Style="{DynamicResource ButtonPrimaryStyle}"></Button>
+                        <Button Command="{Binding CmdClose}" Content="{DynamicResource Dismiss}" Style="{StaticResource ButtonPrimaryStyle}"></Button>
                     </StackPanel>
                 </StackPanel>
             </Border>

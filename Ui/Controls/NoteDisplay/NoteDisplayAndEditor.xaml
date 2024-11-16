@@ -34,6 +34,7 @@
                     </Border.CornerRadius>
                     <Grid>
                         <TextBlock Text="{DynamicResource Note}" 
+                                   Style="{StaticResource TextBlockBase}"
                                    FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
 

@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Portapapeis</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combiacións de teclas</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Unidades</s:String>
-    <s:String x:Key="Drives plug in latter">Conectar unidades máis tarde</s:String>
+    <s:String x:Key="Drives plug in later">Conectar unidades máis tarde</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Deshabilitado</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Soar en local</s:String>

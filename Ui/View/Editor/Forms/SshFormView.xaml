@@ -104,7 +104,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                        <TextBlock Text="{DynamicResource 'Supports the Putty-key only'}" Opacity="0.7"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource 'Supports the Putty-key only'}" Opacity="0.7"></TextBlock>
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -189,7 +189,7 @@
                             </Style>
                         </StackPanel.Style>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                        <TextBlock Text="{DynamicResource 'Supports the OpenSSH format key only with the internal SFTP client.'}" Opacity="0.7"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource 'Supports the OpenSSH format key only with the internal SFTP client.'}" Opacity="0.7"></TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Style>
@@ -202,7 +202,7 @@
                             </Style>
                         </StackPanel.Style>
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                        <TextBlock Text="{DynamicResource 'Supports the OpenSSH format key and Putty-key with WinSCP.'}" Opacity="0.7"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource 'Supports the OpenSSH format key and Putty-key with WinSCP.'}" Opacity="0.7"></TextBlock>
                     </StackPanel>
                 </StackPanel>
             </Grid>

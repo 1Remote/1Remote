@@ -75,34 +75,34 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource 'Data Source name'}"></TextBlock>
                         <TextBox Grid.Row="0" Grid.Column="1" Name="TbName" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Hostname}" />
                         <TextBox Grid.Row="1" Grid.Column="1" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding Host, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  />
 
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Port}"></TextBlock>
                         <TextBox Grid.Row="2" Grid.Column="1" Name="TbPort" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  />
 
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Database"></TextBlock>
                         <TextBox Grid.Row="3" Grid.Column="1" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding DatabaseName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  />
 
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource User}"></TextBlock>
                         <TextBox Grid.Row="4" Grid.Column="1" 
-                                 Style="{DynamicResource TbInput}"
+                                 Style="{StaticResource TbInput}"
                                  Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                         />
 

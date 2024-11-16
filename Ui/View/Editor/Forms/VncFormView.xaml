@@ -68,7 +68,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <StackPanel>
-                            <TextBlock TextWrapping="WrapWithOverflow" Foreground="{DynamicResource AccentMidBrush}">
+                            <TextBlock Style="{StaticResource TextBlockBase}" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource AccentMidBrush}">
                                 <Run>Caution: RFB protocol over 3.8 are proprietary. If you would like using RFB 3.8+, you have to try your own VNC runner:</Run>
                                 <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/runner/" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                     [More details]

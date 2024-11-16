@@ -29,6 +29,7 @@
         </Border>
         <Grid Name="GridBriefNote" Visibility="Collapsed" MouseEnter="ButtonShowNote_OnMouseEnter">
             <TextBlock Margin="25 5 5 5" 
+                       Style="{StaticResource TextBlockBase}"
                        HorizontalAlignment="Left" 
                        MaxWidth="400"
                        Text="{Binding Server.Note, Converter={StaticResource ConverterNoteToSingleLineNote}}" 

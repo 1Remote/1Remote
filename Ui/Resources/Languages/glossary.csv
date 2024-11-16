@@ -165,7 +165,7 @@ server_editor_advantage_resources;Resources;共享到远程桌面;Prostředky;Re
 server_editor_advantage_clipboard;Clipboard;剪贴板;Schránka;Zwischenablage;Presse-papiers;Área de transferência;クリップボード;剪貼簿;Portapapeis;Schowek;Буфер обмена
 server_editor_advantage_key_combinations;Key Combinations;组合键;Kombinace kláves;Tastenkombinationen;Combinaisons de clés;Combinações de teclas;キーの組み合わせ;按鍵組合;Combiacións de teclas;Kombinacje klawiszy;Комбинации клавиш
 server_editor_advantage_disk_drives;Drives;本地磁盘;Diskové jednotky;Laufwerke;Disques durs;Unidades de disco;ドライブ;本機磁碟;Unidades;Dyski;Диски
-Drives plug in latter;Drives plug in latter;稍后插入的U盘;Drives plug in latter;Laufwerke, die nachträglich angeschlossen wurden;Drives plug in latter;Drives plug in latter;後で接続したドライブ;稍後連接的磁碟機;Conectar unidades máis tarde;Dyski podłączone później;Диски подключаются позже
+Drives plug in later;Drives plug in later;稍后插入的U盘;Drives plug in later;Laufwerke, die nachträglich angeschlossen wurden;Drives plug in later;Drives plug in later;後で接続したドライブ;稍後連接的磁碟機;Conectar unidades máis tarde;Dyski podłączone później;Диски подключаются позже
 server_editor_advantage_sounds;Sounds;声音;Zvuky;Ton;Sons;Sons;リモートのオーディオ;音效;Sons;Dźwięk;Звуки
 server_editor_advantage_sounds_disabled;Disabled;禁用;Vypnuto;Nicht wiedergeben;Désactivée;Desabilitado;出力しない;停用;Deshabilitado;Dezaktywowane;Выключены
 server_editor_advantage_sounds_on_local;Play on local;在本地播放;Přehrávat lokálně;Lokal wiedergeben;Jouez en local;Rode localmente;このコンピューターで出力する;在本機播放;Soar en local;Słuchaj na lokalym;Проигрывать на локальном ПК

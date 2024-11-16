@@ -26,7 +26,7 @@
         </Grid.Resources>
         <Grid>
             <Grid.Resources>
-                <Style TargetType="TextBlock" x:Key="RowHeader">
+                <Style TargetType="TextBlock" x:Key="RowHeader" BasedOn="{StaticResource TextBlockBase}">
                     <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                     <Setter Property="MinWidth" Value="150"></Setter>
                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -82,6 +82,7 @@
                                 </controls:GridWith4Columns>
                                 <controls:GridWith4Columns Margin="0 5 0 15">
                                     <TextBlock Grid.Column="1"
+                                               Style="{StaticResource TextBlockBase}"
                                                Text="{DynamicResource 'Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.'}"
                                                TextWrapping="WrapWithOverflow" 
                                                Opacity="0.5"></TextBlock>
@@ -90,7 +91,7 @@
 
 
                                 <controls:GridWith4Columns Margin="0">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource Logo}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource Logo}"></TextBlock>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                                         <Grid Name="GridLogo" Width="64" Height="64"
@@ -216,7 +217,7 @@
 
 
                                 <controls:GridWith4Columns Margin="0 15 0 0">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Script before connect'}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource 'Script before connect'}"></TextBlock>
                                     <TextBox Grid.Column="1"
                                              Text="{Binding Server.CommandBeforeConnected, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat before connect'}"
@@ -250,7 +251,7 @@
 
 
                                 <controls:GridWith4Columns>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource 'Script after disconnected'}"></TextBlock>
                                     <TextBox Grid.Column="1"
                                              Text="{Binding Server.CommandAfterDisconnected, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              ToolTip="{DynamicResource 'Run bat after disconnected'}"
@@ -280,7 +281,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </controls:GridWith4Columns.Style>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource 'Selected runner'}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource 'Selected runner'}"></TextBlock>
 
                                     <ComboBox Grid.Column="1" 
                                               ItemsSource="{Binding Runners, UpdateSourceTrigger=PropertyChanged}"
@@ -299,7 +300,7 @@
                         <Grid Margin="40 25" Grid.Column="2" Grid.ColumnSpan="2">
                             <StackPanel>
                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                    <TextBlock Text="{DynamicResource Note}" TextAlignment="Center"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Text="{DynamicResource Note}" TextAlignment="Center"></TextBlock>
 
                                     <!--icon button show note-->
                                     <Button Name="ButtonShowNote"
@@ -316,7 +317,7 @@
                                             attachProperty:VisionElement.Opacity="0.8"
                                             attachProperty:VisionElement.OpacityAccent="0.9"
                                             MouseEnter="ButtonShowNote_OnMouseEnter"
-                                            Style="{DynamicResource ButtonBarPrimaryStyle}"
+                                            Style="{StaticResource ButtonBarPrimaryStyle}"
                                             Visibility="{Binding Server.Note, Converter={StaticResource ConverterNoteToVisibility}}"
                                             >
                                         <Path Data="{StaticResource NoteGeometry}"
@@ -384,7 +385,7 @@
                 <DropShadowEffect Color="Black" BlurRadius="10" Direction="0" ShadowDepth="2" Opacity="0.7" RenderingBias="Performance">
                 </DropShadowEffect>
             </StackPanel.Effect>
-            <TextBlock Name="TbServerType" Opacity="0.9"
+            <TextBlock Style="{StaticResource TextBlockBase}" Name="TbServerType" Opacity="0.9"
                        FontWeight="Bold" Text="{DynamicResource server_editor_bulk_editing}" 
                        Margin="0 5"
                        Width="100"
@@ -522,7 +523,8 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="15 0">
-                                            <TextBlock Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                            <TextBlock Style="{StaticResource TextBlockBase}"
+                                                       Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
                                                        FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
                                                        Text="{Binding ProtocolDisplayName}"></TextBlock>
                                             <TextBlock Margin="5 0 0 0" 
@@ -583,7 +585,7 @@
                                     </Border.Style>
                                     <Path Fill="Red" Height="14" Width="14" UseLayoutRounding="True" Stretch="Uniform" Data="{StaticResource GeometryCloudDisconnected}"/>
                                 </Border>
-                                <TextBlock Text="{DynamicResource Save}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                                <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource Save}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </StackPanel>
                         </Button>
 

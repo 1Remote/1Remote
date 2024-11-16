@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Zwischenablage</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Tastenkombinationen</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Laufwerke</s:String>
-    <s:String x:Key="Drives plug in latter">Laufwerke, die nachträglich angeschlossen wurden</s:String>
+    <s:String x:Key="Drives plug in later">Laufwerke, die nachträglich angeschlossen wurden</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Ton</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Nicht wiedergeben</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Lokal wiedergeben</s:String>

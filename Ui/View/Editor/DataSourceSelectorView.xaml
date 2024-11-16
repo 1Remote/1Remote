@@ -29,6 +29,7 @@
                 <StackPanel Margin="20 0" >
 
                     <TextBlock Text="{DynamicResource 'Please select a Data Source'}" 
+                                Style="{StaticResource TextBlockBase}"
                                Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" Height="30" 
                                Foreground="{DynamicResource PrimaryTextBrush}"
                                HorizontalAlignment="Center" ></TextBlock>

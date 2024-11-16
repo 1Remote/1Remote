@@ -102,11 +102,11 @@
                     </TextBlock>
 
                     <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="8 0 0 0">
                             <TextBlock>Alt</TextBlock>
                         </Border>
                         <TextBlock Text="+" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0"></TextBlock>
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="0 0 8 0">
                             <TextBlock>M</TextBlock>
                         </Border>
                     </StackPanel>
@@ -115,10 +115,10 @@
                                            Text="{DynamicResource guidance_feature_launcher_select}"></TextBlock>
 
                     <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="8 0">
                             <TextBlock>↑</TextBlock>
                         </Border>
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="0 0 8 0">
                             <TextBlock>↓</TextBlock>
                         </Border>
                     </StackPanel>
@@ -126,7 +126,7 @@
                     <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
                                            Text="{DynamicResource guidance_feature_launcher_connect}"></TextBlock>
                     <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="8 0">
                             <TextBlock>Enter</TextBlock>
                         </Border>
                     </StackPanel>
@@ -134,7 +134,7 @@
                     <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
                                            Text="{DynamicResource guidance_feature_launcher_menu}"></TextBlock>
                     <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
-                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                        <Border Style="{StaticResource ShortcutBorderStyle}" Margin="8 0">
                             <TextBlock>→</TextBlock>
                         </Border>
                     </StackPanel>
