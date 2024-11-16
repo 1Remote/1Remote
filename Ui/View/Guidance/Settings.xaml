@@ -69,7 +69,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}"
                                Text="{DynamicResource 'Run automatically at OS startup'}">
                     </TextBlock>
                     <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
@@ -80,7 +80,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}"
                                        Text="{DynamicResource 'Create desktop shortcut'}">
                     </TextBlock>
                     <ToggleButton Grid.Column="1" HorizontalAlignment="Left" IsChecked="{Binding SettingsPageViewModel.CreateDesktopShortcut, Mode=TwoWay}"></ToggleButton>
@@ -92,7 +92,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column2"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <StackPanel Style="{StaticResource StackPanelTitleColumn}">
-                        <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}"
                                    Margin="0"
                                    Width="Auto" Text="{DynamicResource Theme}">
                         </TextBlock>
@@ -120,7 +120,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Style="{StaticResource StackPanelTitleColumn}">
-                        <TextBlock Style="{DynamicResource TextBlockTitleColumn}"
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}"
                                    Margin="0"
                                    Width="Auto" Text="{DynamicResource 'User profile'}">
                         </TextBlock>

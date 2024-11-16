@@ -175,7 +175,7 @@
                             <Setter Property="Background" Value="Transparent" />
                         </Style>
 
-                        <Style TargetType="TextBlock" x:Key="HeaderTextBlockStyle">
+                        <Style TargetType="TextBlock" x:Key="HeaderTextBlockStyle" BasedOn="{StaticResource TextBlockBase}">
                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                             <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeSubtitle}" />
                             <Setter Property="Margin" Value="5,0,0,0" />

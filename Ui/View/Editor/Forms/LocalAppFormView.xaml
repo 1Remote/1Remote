@@ -42,7 +42,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
                     <CheckBox IsChecked="{Binding New.RunWithHosting}">
-                        <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in 1Remote.'}" TextWrapping="Wrap"></TextBlock>
                     </CheckBox>
                 </StackPanel>
             </Grid>

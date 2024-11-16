@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">剪貼簿</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">按鍵組合</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">本機磁碟</s:String>
-    <s:String x:Key="Drives plug in latter">稍後連接的磁碟機</s:String>
+    <s:String x:Key="Drives plug in later">稍後連接的磁碟機</s:String>
     <s:String x:Key="server_editor_advantage_sounds">音效</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">停用</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">在本機播放</s:String>

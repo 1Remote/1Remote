@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Schránka</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Kombinace kláves</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Diskové jednotky</s:String>
-    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
+    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Zvuky</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Vypnuto</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Přehrávat lokálně</s:String>

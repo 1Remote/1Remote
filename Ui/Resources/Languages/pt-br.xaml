@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Área de transferência</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinações de teclas</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Unidades de disco</s:String>
-    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
+    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Desabilitado</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Rode localmente</s:String>

@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Clipboard</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Key Combinations</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Drives</s:String>
-    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
+    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sounds</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Disabled</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Play on local</s:String>

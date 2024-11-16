@@ -44,12 +44,12 @@
                 <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
                 <TextBlock Text="{Binding Key}" ToolTip="{Binding Key}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
                 <controls:AutoCompleteComboBox Width="{StaticResource WidthValue}" Margin="0 0 10 0"
-                                                   ToolTip="{Binding HintDescription}"
-                                                   Tag="{Binding HintDescription}"
-                                                   Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
-                                                   Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                                                   Selections="{Binding SelectionKeys, Mode=OneWay}"
-                    />
+                                               ToolTip="{Binding HintDescription}"
+                                               Tag="{Binding HintDescription}"
+                                               Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                                               Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                                               Selections="{Binding SelectionKeys, Mode=OneWay}"
+                />
                 <argument:ArgumentListItemButtons Margin="0 0 10 0"></argument:ArgumentListItemButtons>
                 <TextBlock Text="{Binding DemoArgumentString}" Style="{StaticResource TextDemo}"></TextBlock>
             </StackPanel>

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 using _1RM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -19,11 +22,12 @@ namespace _1RM.View.Settings.Theme
         {
             _configurationService = configurationService;
             _themeService = themeService;
+            LoadSystemFonts();
         }
 
 
 
-        private void SetTheme(string name)
+        private void SetThemeByName(string name)
         {
             Debug.Assert(_themeService.Themes.ContainsKey(name));
             var theme = _themeService.Themes[name];
@@ -60,7 +64,7 @@ namespace _1RM.View.Settings.Theme
                 Debug.Assert(_themeService.Themes.ContainsKey(value));
                 if (SetAndNotifyIfChanged(ref _configurationService.Theme.ThemeName, value))
                 {
-                    SetTheme(value);
+                    SetThemeByName(value);
                     _configurationService.Save();
                 }
             }
@@ -196,6 +200,70 @@ namespace _1RM.View.Settings.Theme
         }
 
 
+
+
+        public class FontSizeOption
+        {
+            public string Name { get; set; }
+            public int Size { get; set; }
+        }
+
+        public List<FontSizeOption> FontSizeOptions { get; set; } = new List<FontSizeOption>();
+        public List<string> FontFamilies { get;  set; } = new();
+        private void LoadSystemFonts()
+        {
+            FontFamilies = Fonts.SystemFontFamilies.OrderBy(f => f.Source).Select(fontFamily => fontFamily.Source).ToList();
+            RaisePropertyChanged(nameof(FontFamilies));
+
+            FontSizeOptions = new List<FontSizeOption>
+            {
+                new FontSizeOption { Name = "S", Size = 10 },
+                new FontSizeOption { Name = "M", Size = 12 },
+                new FontSizeOption { Name = "L", Size = 14 },
+                new FontSizeOption { Name = "XL", Size = 16 },
+                new FontSizeOption { Name = "XXL", Size = 18 },
+                new FontSizeOption { Name = "XXXL", Size = 20 }
+            };
+            RaisePropertyChanged(nameof(FontSizeOptions));
+        }
+
+        public string FontFamily
+        {
+            get
+            {
+                var f = FontFamilies.FirstOrDefault(x => string.Equals(x, _configurationService.Theme.FontFamily, StringComparison.CurrentCultureIgnoreCase)) ??
+                       FontFamilies.FirstOrDefault(x => x.EndsWith("YaHei", StringComparison.OrdinalIgnoreCase)) ??
+                       FontFamilies.First();
+                return f;
+            }
+            set
+            {
+                SetAndNotifyIfChanged(ref _configurationService.Theme.FontFamily, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
+        }
+
+        public FontSizeOption FontSize
+        {
+            get
+            {
+                return FontSizeOptions.FirstOrDefault(x => x.Size == _configurationService.Theme.FontSize) ??
+                       FontSizeOptions.First();
+            }
+            set
+            {
+                var v = value.Size;
+                if (v < 10)
+                    v = 10;
+                if (v > 20)
+                    v = 20;
+                _configurationService.Theme.FontSize = v;
+                RaisePropertyChanged();
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
+        }
+
+
         private RelayCommand? _cmdPrmThemeReset;
         public RelayCommand CmdResetTheme
         {
@@ -203,7 +271,12 @@ namespace _1RM.View.Settings.Theme
             {
                 return _cmdPrmThemeReset ??= new RelayCommand((o) =>
                 {
-                    SetTheme(ThemeName);
+                    SetThemeByName(ThemeName);
+                    _configurationService.Theme.FontSize = 12;
+                    _configurationService.Theme.FontFamily = FontFamilies.FirstOrDefault(x => x.EndsWith("YaHei", StringComparison.OrdinalIgnoreCase)) ?? FontFamilies.First();
+                    RaisePropertyChanged(nameof(FontSize));
+                    RaisePropertyChanged(nameof(FontFamily));
+
                     _configurationService.Save();
                     _themeService.ApplyTheme(_configurationService.Theme);
                 });

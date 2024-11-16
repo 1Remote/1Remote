@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">クリップボード</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">キーの組み合わせ</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">ドライブ</s:String>
-    <s:String x:Key="Drives plug in latter">後で接続したドライブ</s:String>
+    <s:String x:Key="Drives plug in later">後で接続したドライブ</s:String>
     <s:String x:Key="server_editor_advantage_sounds">リモートのオーディオ</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">出力しない</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">このコンピューターで出力する</s:String>

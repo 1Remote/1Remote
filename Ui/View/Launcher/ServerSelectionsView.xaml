@@ -20,8 +20,8 @@
             <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                 <VisualBrush.Visual>
                     <Grid VerticalAlignment="Center">
-                        <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
-                        <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
                     </Grid>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -322,20 +322,23 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Grid.Column="0">
-                            <TextBlock TextTrimming="CharacterEllipsis"
+                            <TextBlock Style="{StaticResource TextBlockBase}"
+                                       TextTrimming="CharacterEllipsis"
                                        FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Center"
                                        Text="{Binding SelectedItem.Server.DisplayName}"></TextBlock>
                         </Grid>
 
                         <Grid Grid.Row="1" Grid.Column="0" Opacity="0.6">
-                            <TextBlock TextTrimming="CharacterEllipsis"
+                            <TextBlock Style="{StaticResource TextBlockBase}"
+                                       TextTrimming="CharacterEllipsis"
                                        FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Top"
                                        Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                         </Grid>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                        <TextBlock Style="{StaticResource TextBlockBase}"
+                                   Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource PrimaryMidBrush}"
@@ -343,7 +346,8 @@
                                    HorizontalAlignment="Right"
                                    Margin="10 0"
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                        <TextBlock Style="{StaticResource TextBlockBase}"
+                                   Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource PrimaryTextBrush}"

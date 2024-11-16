@@ -165,7 +165,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Schowek</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Kombinacje klawiszy</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Dyski</s:String>
-    <s:String x:Key="Drives plug in latter">Dyski podłączone później</s:String>
+    <s:String x:Key="Drives plug in later">Dyski podłączone później</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Dźwięk</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Dezaktywowane</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Słuchaj na lokalym</s:String>

@@ -104,7 +104,7 @@
                     <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
                     <MouseBinding Gesture="Alt+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                 </Border.InputBindings>
-                <TextBlock Style="{DynamicResource TextBlockBase}" Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}"></TextBlock>
             </Border>
         </DataTemplate>
 
@@ -181,7 +181,7 @@
 
             <!--protocol name-->
             <TextBlock Grid.Column="1" Margin="5 0 10 0" 
-                       Style="{DynamicResource TextBlockBase}"
+                       Style="{StaticResource TextBlockBase}"
                        Text="{Binding Server.ProtocolDisplayName}"
                        FontSize="{DynamicResource GlobalFontSizeSubtitle}" FontWeight="Bold"
                        Opacity="0.6"
@@ -212,7 +212,7 @@
 
             <!--display name-->
             <TextBlock Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent" 
-                       Style="{DynamicResource TextBlockBase}"
+                       Style="{StaticResource TextBlockBase}"
                        FontSize="{DynamicResource GlobalFontSizeSubtitle}" 
                        Margin="5 0 10 0" 
                        VerticalAlignment="Center" 
@@ -242,7 +242,7 @@
 
             <!--address-->
             <TextBlock Margin="5 0" MaxWidth="500"
-                       Style="{DynamicResource TextBlockBase}"
+                       Style="{StaticResource TextBlockBase}"
                        Grid.Column="6"
                        Background="Transparent"
                        ToolTip="{Binding Server.SubTitle}"
