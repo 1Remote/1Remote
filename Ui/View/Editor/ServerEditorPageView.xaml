@@ -421,7 +421,7 @@
                                ToolTip="{Binding Title}"
                                VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Style>
-                            <Style TargetType="TextBlock">
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsBuckEdit}" Value="True">
@@ -529,7 +529,7 @@
                                                        Opacity="0.7"
                                                        Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Style.Triggers>
                                                             <DataTrigger Value="" Binding="{Binding HelpUrl}">
                                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>

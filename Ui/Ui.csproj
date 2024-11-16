@@ -158,6 +158,7 @@
 		<None Remove="Resources\Icons\001_APP\011_NoMachine.png" />
 		<None Remove="Resources\Icons\001_APP\011_Wordpress.png" />
 		<None Remove="Resources\Image\Logo\logo32.png" />
+		<None Remove="Resources\Theme\Default.xaml.exclude" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -388,9 +389,6 @@
 		</Page>
 		<Page Update="Resources\Theme\Markdown.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Resources\Theme\Default.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\AboutPageView.xaml">

@@ -360,7 +360,7 @@
                                     </VisualBrush>
                                 </controls:BindableAvalonEditor.Resources>
                                 <controls:BindableAvalonEditor.Style>
-                                    <Style TargetType="controls:BindableAvalonEditor">
+                                    <Style TargetType="controls:BindableAvalonEditor" BasedOn="{StaticResource ControlBase}">
                                         <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
                                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
                                         <Setter Property="Background" Value="Transparent"/>
@@ -598,7 +598,7 @@
                                         </VisualBrush>
                                     </controls:BindableAvalonEditor.Resources>
                                     <controls:BindableAvalonEditor.Style>
-                                        <Style TargetType="controls:BindableAvalonEditor">
+                                        <Style TargetType="controls:BindableAvalonEditor" BasedOn="{StaticResource ControlBase}">
                                             <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
                                             <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
                                             <Setter Property="Background" Value="Transparent"/>

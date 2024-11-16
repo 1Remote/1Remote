@@ -19,7 +19,7 @@
             <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
-                    <Style TargetType="ListBoxItem">
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource ControlBase}">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
@@ -104,7 +104,7 @@
                     <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
                     <MouseBinding Gesture="Alt+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                 </Border.InputBindings>
-                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockBase}" Text="{Binding Name}" Foreground="{DynamicResource AccentTextBrush}"></TextBlock>
             </Border>
         </DataTemplate>
 
@@ -181,8 +181,9 @@
 
             <!--protocol name-->
             <TextBlock Grid.Column="1" Margin="5 0 10 0" 
+                       Style="{DynamicResource TextBlockBase}"
                        Text="{Binding Server.ProtocolDisplayName}"
-                       FontSize="14" FontWeight="Bold"
+                       FontSize="{DynamicResource GlobalFontSizeSubtitle}" FontWeight="Bold"
                        Opacity="0.6"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center">
@@ -211,7 +212,9 @@
 
             <!--display name-->
             <TextBlock Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent" 
-                       Margin="5 0 10 0" FontSize="14" 
+                       Style="{DynamicResource TextBlockBase}"
+                       FontSize="{DynamicResource GlobalFontSizeSubtitle}" 
+                       Margin="5 0 10 0" 
                        VerticalAlignment="Center" 
                        TextTrimming="CharacterEllipsis" 
                        Text="{Binding Server.DisplayName}"></TextBlock>
@@ -239,10 +242,11 @@
 
             <!--address-->
             <TextBlock Margin="5 0" MaxWidth="500"
+                       Style="{DynamicResource TextBlockBase}"
                        Grid.Column="6"
                        Background="Transparent"
                        ToolTip="{Binding Server.SubTitle}"
-                       FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       FontSize="{DynamicResource GlobalFontSizeSubtitle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
                        Text="{Binding Server.SubTitle}">
             </TextBlock>
         </Grid>

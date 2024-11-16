@@ -11,18 +11,16 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <Style TargetType="{x:Type TextBlock}">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
         </Style>
         <Style x:Key="ShortcutBorderStyle" TargetType="{x:Type Border}">
             <Style.Resources>
-                <Style TargetType="{x:Type TextBlock}">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                     <Setter Property="HorizontalAlignment" Value="Center" />
                     <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="FontSize" Value="12" />
                     <Setter Property="FontWeight" Value="Medium" />
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                 </Style>
@@ -51,7 +49,7 @@
                     <Image Source="/Resources/Image/Logo/logo64.png" Width="80" HorizontalAlignment="Left"></Image>
                 </Grid>
                 <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}" Text="{x:Static Rm:Assert.APP_NAME}"></TextBlock>
-                <TextBlock HorizontalAlignment="Center" FontSize="10" Foreground="{DynamicResource PrimaryTextBrush}">
+                <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}">
                     <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/1Remote/1Remote">https://github.com/1Remote/1Remote</Hyperlink>
                 </TextBlock>
             </StackPanel>

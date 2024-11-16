@@ -26,7 +26,7 @@
                 </VisualBrush.Visual>
             </VisualBrush>
 
-            <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SearchBoxTbKeyWordStyleBase}">
+            <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="TextBox" BasedOn="{StaticResource SearchBoxTbKeyWordStyleBase}">
                 <Style.Triggers>
                     <Trigger Property="Text" Value="{x:Null}">
                         <Setter Property="Background" Value="{StaticResource HintText}" />
@@ -244,7 +244,7 @@
                                                    Foreground="{DynamicResource AccentTextBrush}" 
                                                    VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
                                             <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsExcluded}" Value="True">
                                                             <Setter Property="TextDecorations">

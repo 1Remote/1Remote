@@ -16,7 +16,7 @@
                   ShowInTaskbar="False"
                   MinWidth="160" MaxWidth="485">
     <Window.Resources>
-        <Style TargetType="TextBlock">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
             <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="TextWrapping" Value="Wrap"></Setter>
@@ -73,7 +73,7 @@
                                Foreground="Red" 
                                HorizontalAlignment="Center">
                         <TextBlock.Style>
-                            <Style TargetType="TextBlock">
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ValidateMessage}" Value="">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>

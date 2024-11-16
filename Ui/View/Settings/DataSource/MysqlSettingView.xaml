@@ -15,7 +15,7 @@
                          AllowsTransparency="True"
                          d:DataContext="{d:DesignInstance local:MysqlSettingViewModel}">
     <Window.Resources>
-        <Style TargetType="TextBlock">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="HorizontalAlignment" Value="Right"></Setter>
@@ -55,7 +55,7 @@
 
                 <StackPanel Margin="20 0" >
 
-                    <TextBlock Text="MySQL" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                    <TextBlock Text="MySQL" Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" Height="30" HorizontalAlignment="Left"></TextBlock>
 
                     <Grid>
                         <Grid.RowDefinitions>

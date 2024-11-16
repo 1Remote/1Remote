@@ -74,8 +74,8 @@ public abstract class ExternalRunnerSettingsBase : UserControl
                             CloseWhenCaretAtBeginning = true,
                             CloseAutomatically = true,
                             BorderThickness = new System.Windows.Thickness(0),
-                            Background = App.ResourceDictionary["BackgroundBrush"] as Brush,
-                            Foreground = App.ResourceDictionary["BackgroundTextBrush"] as Brush,
+                            Background = (App.ResourceDictionary?["BackgroundBrush"] as Brush) ?? Brushes.White,
+                            Foreground = (App.ResourceDictionary?["BackgroundTextBrush"] as Brush) ?? Brushes.Black,
                             ResizeMode = ResizeMode.NoResize,
                             WindowStyle = WindowStyle.None,
                         };

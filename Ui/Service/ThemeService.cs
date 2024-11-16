@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Xps.Packaging;
 using Shawn.Utils.Wpf;
 
 namespace _1RM.Service
@@ -156,9 +158,6 @@ namespace _1RM.Service
                 else
                     rd[key] = value;
             }
-            var rs = _appResourceDictionary.MergedDictionaries.Where(o =>
-                (o.Source != null && o.Source.IsAbsoluteUri && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0)
-                || o[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
 
             // create new theme resources
             var rd = new ResourceDictionary();
@@ -190,10 +189,17 @@ namespace _1RM.Service
             SetKey(rd, "DarkPrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(theme.AccentDarkColor));
             SetKey(rd, "PrimaryDarkColor", ColorAndBrushHelper.HexColorToMediaColor(theme.AccentTextColor));
 
+
+            // remove old theme resources
+            var rs = _appResourceDictionary.MergedDictionaries.Where(o =>
+                (o?.Source?.IsAbsoluteUri == true && o.Source.AbsolutePath.ToLower().IndexOf("Default.xaml", StringComparison.OrdinalIgnoreCase) >= 0)
+                || o?[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
             foreach (var r in rs)
             {
                 _appResourceDictionary.MergedDictionaries.Remove(r);
             }
+
+            // add new theme resources
             _appResourceDictionary.MergedDictionaries.Add(rd);
         }
     }

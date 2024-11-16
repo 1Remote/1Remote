@@ -13,7 +13,7 @@
       FlowDirection="{Binding FlowDirection}">
 
     <UserControl.Resources>
-        <Style TargetType="TextBlock">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
             <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
             <Setter Property="TextWrapping" Value="Wrap"></Setter>

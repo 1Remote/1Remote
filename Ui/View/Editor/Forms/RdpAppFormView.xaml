@@ -177,7 +177,7 @@
                                     </VisualBrush>
                                 </controls1:BindableAvalonEditor.Resources>
                                 <controls1:BindableAvalonEditor.Style>
-                                    <Style TargetType="controls1:BindableAvalonEditor">
+                                    <Style TargetType="controls1:BindableAvalonEditor" BasedOn="{StaticResource ControlBase}">
                                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
                                         <Setter Property="Background" Value="Transparent"/>
                                         <Style.Triggers>

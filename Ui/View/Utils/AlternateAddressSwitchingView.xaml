@@ -80,7 +80,7 @@
                 <Grid Grid.Row="1"
                       Visibility="{Binding Message, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter=''}">
                     <TextBlock VerticalAlignment="Center" 
-                               FontSize="14"
+                               FontSize="{DynamicResource GlobalFontSizeSubtitle}"
                                FontWeight="Bold" HorizontalAlignment="Center" Margin="10 5"
                                TextWrapping="WrapWithOverflow"
                                TextTrimming="CharacterEllipsis"
@@ -128,7 +128,7 @@
                                            TextTrimming="CharacterEllipsis"
                                            Margin="5 0 0 0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">
@@ -147,7 +147,7 @@
                                            ToolTip="{Binding Address}"
                                            Margin="5 0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">
@@ -162,13 +162,13 @@
                                 </TextBlock>
 
                                 <TextBlock Grid.Column="1" Text="{Binding Ping, StringFormat={}  0ms}"
-                                           Opacity="0.8" FontSize="10" 
+                                           Opacity="0.8" FontSize="{DynamicResource GlobalFontSizeSmall}" 
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Right"
                                            Background="{DynamicResource PrimaryMidBrush}"
                                            Foreground="{DynamicResource PrimaryTextBrush}">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static utils:PingStatus.Success}">

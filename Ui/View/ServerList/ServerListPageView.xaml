@@ -210,7 +210,7 @@
                                                Foreground="{DynamicResource AccentTextBrush}" 
                                                Margin="0 0 3 0">
                                         <TextBlock.Resources>
-                                            <Style TargetType="TextBlock">
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsExcluded}" Value="True">
                                                         <Setter Property="TextDecorations">
@@ -312,11 +312,11 @@
 
                         <!--protocol name-->
                         <Button Grid.Column="1" HorizontalContentAlignment="Left" Style="{StaticResource ButtonBarPrimaryStyle}"
-                                                         Margin="0 0 10 0"
-                                                         attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
-                                                         Background="{DynamicResource BackgroundBrush}"
-                                                         Foreground="{DynamicResource BackgroundTextBrush}"
-                                                         Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
+                                Margin="0 0 10 0"
+                                attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                Foreground="{DynamicResource BackgroundTextBrush}"
+                                Command="{Binding CmdReOrder}" CommandParameter="{x:Static locality:EnumServerOrderBy.ProtocolAsc}">
                             <Grid>
                                 <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" 
                                       Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
@@ -330,7 +330,7 @@
                                       Visibility="{Binding ServerOrderBy, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static locality:EnumServerOrderBy.ProtocolDesc}}"
                                       >
                                 </Path>
-                                <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Protocol}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                                <TextBlock Style="{DynamicResource TextBlockBase}" Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Protocol}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </Grid>
                         </Button>
 
@@ -362,10 +362,11 @@
                         <!--brief note -->
                         <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0 10 0">
                             <TextBlock Text="{DynamicResource Note}" 
-                                               Margin="25 0 0 0" 
-                                               Visibility="{Binding BriefNoteVisibility}" 
-                                               Foreground="{DynamicResource BackgroundTextBrush}"
-                                               VerticalAlignment="Center"></TextBlock>
+                                       Style="{DynamicResource TextBlockBase}"
+                                       Margin="25 0 0 0" 
+                                       Visibility="{Binding BriefNoteVisibility}" 
+                                       Foreground="{DynamicResource BackgroundTextBrush}"
+                                       VerticalAlignment="Center"></TextBlock>
                             <Grid HorizontalAlignment="Left" Margin="5 0 0 0">
                                 <Button Width="20" Height="20"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -438,7 +439,9 @@
                                                     ConverterParameter={x:Static locality:EnumServerOrderBy.AddressDesc}}"
                                 >
                                 </Path>
-                                <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Target}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                                <TextBlock Margin="5" HorizontalAlignment="Left" 
+                                           Style="{DynamicResource TextBlockBase}"
+                                           Text="{DynamicResource Target}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                             </Grid>
                         </Button>
                     </Grid>
@@ -505,6 +508,7 @@
                                                                     </Grid>
 
                                                                     <TextBlock FontWeight="Bold" 
+                                                                               Style="{DynamicResource TextBlockBase}"
                                                                                FontSize="16"
                                                                                Text="{Binding Path=Name}" 
                                                                                Margin="0,0,0,0"/>
@@ -617,7 +621,7 @@
                                                                                Opacity="0.5"
                                                                                VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name.ReconnectInfo}">
                                                                         <TextBlock.Style>
-                                                                            <Style TargetType="TextBlock">
+                                                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                                                 <Style.Triggers>
                                                                                     <DataTrigger Binding="{Binding Name.Status, Converter={StaticResource ConverterIsEqual2Static}, ConverterParameter={x:Static dao:EnumDatabaseStatus.OK}}" Value="False">
@@ -672,8 +676,8 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}"></TextBlock>
-                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.SubTitle}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}" Style="{DynamicResource TextBlockBase}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.SubTitle}" Style="{DynamicResource TextBlockBase}"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -711,9 +715,11 @@
                           Margin="80 10 30 5" Width="60" HorizontalAlignment="Left"
                           Stretch="UniformToFill" Data="M 67 0 L 62 4 L 66.62 2.035 C 66 12 47 10 47 24 C 47 24 47 24 48 24 C 48 10 67 13 67.362 2.074 L 72 4 Z" />
                     <TextBlock Margin="0 0 10 0" 
+                               Style="{DynamicResource TextBlockBase}"
                                Foreground="{DynamicResource BackgroundTextBrush}" 
                                FontSize="24" FontWeight="Bold">Right click on a tag</TextBlock>
                     <TextBlock Margin="5 0 0 0"
+                               Style="{DynamicResource TextBlockBase}"
                                FontSize="22" Foreground="{DynamicResource BackgroundTextBrush}"  
                     >and pin it here to to enable grouping function.</TextBlock>
                 </StackPanel>
@@ -757,8 +763,8 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"></Button>
-                    <TextBlock Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
-                    <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock Style="{DynamicResource TextBlockBase}" Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
+                    <TextBlock Style="{DynamicResource TextBlockBase}" Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -807,8 +813,8 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button MinWidth="80"
-                                        Command="{Binding CmdShowMainTab}"
-                                        Content="{DynamicResource All}">
+                            Command="{Binding CmdShowMainTab}"
+                            Content="{DynamicResource All}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                 <Setter Property="Template">
@@ -816,12 +822,11 @@
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Grid>
                                                 <Border Background="{TemplateBinding Background}"
-                                                    SnapsToDevicePixels="true">
+                                                        SnapsToDevicePixels="true">
                                                 </Border>
-                                                <ContentPresenter
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                             </Grid>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -984,7 +989,7 @@
                                                            Margin="8 0"
                                                            HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=IsMouseOver}" Value="True">

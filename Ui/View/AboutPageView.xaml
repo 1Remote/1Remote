@@ -31,7 +31,7 @@
                 <Setter Property="Margin" Value="0 0 20 0"></Setter>
             </Style>
             <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                <Setter Property="FontSize" Value="16"></Setter>
+                <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeSubtitle}"></Setter>
                 <Setter Property="FontWeight" Value="Bold"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                 <Setter Property="TextAlignment" Value="Left"></Setter>
@@ -166,7 +166,7 @@
 
                                 <StackPanel HorizontalAlignment="Left" MaxWidth="500">
                                     <StackPanel>
-                                        <TextBlock FontSize="18" Opacity="0.7" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"
+                                        <TextBlock Opacity="0.7" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"
                                                        Text="{DynamicResource 'I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!'}" />
                                         <StackPanel Margin="0,16,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
                                             <StackPanel.Resources>

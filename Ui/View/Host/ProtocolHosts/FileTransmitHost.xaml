@@ -177,7 +177,7 @@
 
                         <Style TargetType="TextBlock" x:Key="HeaderTextBlockStyle">
                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="FontSize" Value="{DynamicResource GlobalFontSizeSubtitle}" />
                             <Setter Property="Margin" Value="5,0,0,0" />
                             <Setter Property="VerticalAlignment" Value="Center" />
                         </Style>
@@ -279,7 +279,7 @@
                                                        TextTrimming="CharacterEllipsis" 
                                                        VerticalAlignment="Center">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsRenaming}" Value="True">
@@ -331,7 +331,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding Path=LastUpdate}">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -364,7 +364,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding Path=FileType}">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -394,7 +394,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock TextTrimming="CharacterEllipsis">
                                                 <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -530,7 +530,7 @@
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="2 0">
                                         <ProgressBar Height="20" Value="{Binding TransmittedPercentage, Mode=OneWay}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#1789C6" BorderBrush="Gray"></ProgressBar>
                                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding TransmittedPercentage, Mode=OneWay,StringFormat='\{0\}%'}" Foreground="White"></TextBlock>
-                                        <TextBlock HorizontalAlignment="Right" Margin="8 0" FontSize="10" VerticalAlignment="Center" Text="{Binding TransmitSpeed, Mode=OneWay}" Foreground="White"></TextBlock>
+                                        <TextBlock HorizontalAlignment="Right" Margin="8 0" FontSize="{DynamicResource GlobalFontSizeSmall}" VerticalAlignment="Center" Text="{Binding TransmitSpeed, Mode=OneWay}" Foreground="White"></TextBlock>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="2" Margin="2 0">
                                         <StackPanel Orientation="Horizontal">
@@ -589,7 +589,7 @@
                            Text="{Binding IoMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}">
                     <TextBlock.Resources>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
                                     <Setter Property="Foreground" Value="White"></Setter>

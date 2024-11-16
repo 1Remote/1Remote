@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using _1RM.Service;
 using _1RM.Utils;
-using Google.Protobuf.WellKnownTypes;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
-using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View.Settings.General
 {

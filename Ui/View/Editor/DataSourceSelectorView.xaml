@@ -29,7 +29,7 @@
                 <StackPanel Margin="20 0" >
 
                     <TextBlock Text="{DynamicResource 'Please select a Data Source'}" 
-                               Margin="15" FontSize="20" Height="30" 
+                               Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" Height="30" 
                                Foreground="{DynamicResource PrimaryTextBrush}"
                                HorizontalAlignment="Center" ></TextBlock>
 
@@ -141,14 +141,14 @@
                                                 </Style>
                                             </Button.Style>
                                         </Button>
-                                        <TextBlock Grid.Column="1" FontSize="16" 
+                                        <TextBlock Grid.Column="1" FontSize="{DynamicResource GlobalFontSizeSubtitle}" 
                                                    Text="{Binding DataSourceName}" 
                                                    ToolTip="{Binding DataSourceName}" 
                                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                                    Margin="5 0" 
                                                    VerticalAlignment="Center"></TextBlock>
                                         <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                            <TextBlock FontSize="16" 
+                                            <TextBlock FontSize="{DynamicResource GlobalFontSizeSubtitle}" 
                                                        Text="(Readonly)" 
                                                        Margin="0 0 5 0" 
                                                        Visibility="{Binding IsWritable, Converter={StaticResource ConverterBool2VisibleInv}}" 
@@ -156,7 +156,7 @@
                                                        Background="{DynamicResource AccentMidBrush}" 
                                                        VerticalAlignment="Center" 
                                                        TextTrimming="CharacterEllipsis"></TextBlock>
-                                            <TextBlock FontSize="16" Text="{Binding Description}" 
+                                            <TextBlock FontSize="{DynamicResource GlobalFontSizeSubtitle}" Text="{Binding Description}" 
                                                        ToolTip="{Binding Description}" 
                                                        Foreground="{DynamicResource PrimaryTextBrush}"
                                                        Margin="5 0 10 0" 

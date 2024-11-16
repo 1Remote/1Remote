@@ -59,7 +59,9 @@
                     <Grid Background="Transparent" Width="24" Height="24" Margin="5">
                         <Image Source="/Resources/Image/Logo/logo32.png"></Image>
                     </Grid>
-                    <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
+                    <TextBlock VerticalAlignment="Center" 
+                               FontSize="{DynamicResource GlobalFontSizeBody}"
+                               Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
                 </StackPanel>
             </Grid>
 
