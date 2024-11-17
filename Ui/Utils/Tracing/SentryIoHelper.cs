@@ -22,20 +22,27 @@ namespace _1RM.Utils
                 return;
             if (dsn?.Length > 0 && dsn != "===REPLACE_ME_WITH_SENTRY_IO_DEN===")
             {
-                SentrySdk.Init(options =>
+                try
                 {
-                    options.Dsn = dsn; // Tells which project in Sentry to send events to: "https://22803c6274b266bbfb78e060f774883d@o4508311925686272.ingest.us.sentry.io/4508311950852096"
+                    SentrySdk.Init(options =>
+                    {
+                        options.Dsn = dsn; // Tells which project in Sentry to send events to: "https://22803c6274b266bbfb78e060f774883d@o4508311925686272.ingest.us.sentry.io/4508311950852096"
 #if DEBUG
-                    options.Debug = true;  // When configuring for the first time, to see what the SDK is doing:
+                        options.Debug = true;  // When configuring for the first time, to see what the SDK is doing:
 #else
-                    options.Debug = false;  // When configuring for the first time, to see what the SDK is doing:
+                        options.Debug = false;  // When configuring for the first time, to see what the SDK is doing:
 #endif
-                    options.TracesSampleRate = 1.0; // Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-                    options.IsGlobalModeEnabled = true; // Enabling this option is recommended for client applications only. It ensures all threads use the same global scope.
-                    options.AutoSessionTracking = true; // This option is recommended. It enables Sentry's "Release Health" feature.
-                });
-                _hasInit = true;
-                SimpleLogHelper.Debug(nameof(SentryIoHelper) + " init...");
+                        options.TracesSampleRate = 1.0; // Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+                        options.IsGlobalModeEnabled = true; // Enabling this option is recommended for client applications only. It ensures all threads use the same global scope.
+                        options.AutoSessionTracking = true; // This option is recommended. It enables Sentry's "Release Health" feature.
+                    });
+                    _hasInit = true;
+                    SimpleLogHelper.Debug(nameof(SentryIoHelper) + " init...");
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning(e);
+                }
             }
         }
 
