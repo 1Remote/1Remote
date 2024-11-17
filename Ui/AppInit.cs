@@ -108,6 +108,7 @@ namespace _1RM
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
             MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
+            SentryIoHelper.Init(Assert.SENTRY_IO_DEN);
 
             try
             {
