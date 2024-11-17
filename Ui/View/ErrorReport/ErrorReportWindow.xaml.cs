@@ -70,9 +70,7 @@ namespace _1RM.View.ErrorReport
             sb.AppendLine();
 
             TbErrorInfo.Text = sb.ToString();
-#if !Win7
-            MsAppCenterHelper.Error(e, attachments: new List<ErrorAttachmentLog>() { ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md") });
-#endif
+            MsAppCenterHelper.Error(e, attachments: new Dictionary<string, string>() { { "log.md", TbErrorInfo.Text } });
         }
 
         private void Init()
