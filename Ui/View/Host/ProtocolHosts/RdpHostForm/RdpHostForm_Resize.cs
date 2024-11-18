@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using System.Runtime.InteropServices;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -224,6 +225,10 @@ namespace _1RM.View.Host.ProtocolHosts
                     {
                         _lastScaleFactor = newScaleFactor;
                         _rdpClient.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                    }
+                    catch (COMException)
+                    {
+                        // ignore error code 0x8000FFFF
                     }
                     catch (Exception e)
                     {
