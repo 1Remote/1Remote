@@ -259,7 +259,7 @@ namespace _1RM.View.Host
         }
 
 
-        private bool _canCmdClose = true;
+        private object _canCmdClose = new object();
         private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {
@@ -267,21 +267,20 @@ namespace _1RM.View.Host
             {
                 return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
-                    if (_canCmdClose
-                        && this.Items.Count > 0
-                        && App.ExitingFlag == false)
+                    if (this.Items.Count <= 0 || App.ExitingFlag != false) return;
+                    lock (_canCmdClose)
                     {
-                        _canCmdClose = false;
+                        if (this.Items.Count <= 0 || App.ExitingFlag != false) return;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
                         {
-                            return;
                         }
-
-                        IoC.Get<SessionControlService>().CloseProtocolHostAsync(
-                            Items
-                            .Select(x => x.Content.ConnectionId).ToArray());
-                        _canCmdClose = true;
+                        else
+                        {
+                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(
+                                Items
+                                    .Select(x => x.Content.ConnectionId).ToArray());
+                        }
                     }
                 });
             }
@@ -294,9 +293,8 @@ namespace _1RM.View.Host
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    if (_canCmdClose)
+                    lock (_canCmdClose)
                     {
-                        _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && App.ExitingFlag == false
                             && false == MessageBoxHelper.Confirm(IoC.Translate("Are you sure you want to close the connection?"), ownerViewModel: this))
@@ -319,8 +317,6 @@ namespace _1RM.View.Host
                                 IoC.Get<SessionControlService>().CloseProtocolHostAsync(host.ConnectionId);
                             }
                         }
-
-                        _canCmdClose = true;
                     }
                 }, o => this.SelectedItem != null);
             }
