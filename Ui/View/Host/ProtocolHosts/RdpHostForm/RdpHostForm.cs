@@ -246,11 +246,8 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 Debug.Assert(_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable);
                 DetachFromHostBase();
-                //if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
-                //{
-                //    return;
-                //}
-                _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+                if (_rdpClient.FullScreen != true)
+                    _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
             });
         }
 
@@ -373,21 +370,15 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnGoToFullScreenRequested()
         {
-            //#if !DEV_RDP
-            //            if (ParentWindow is TabWindowView)
-            //            {
-            //                // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
-            //                _rdpClient.FullScreen = false;
-            //                if (_rdpSettings.IsTmpSession() == false)
-            //                {
-            //                    LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
-            //                }
-            //                return;
-            //            }
-            //#endif
-
-
             var screenSize = this.GetScreenSizeIfRdpIsFullScreen();
+
+            this.ShowInTaskbar = true;
+            this.FormBorderStyle = FormBorderStyle.None;
+
+            double width = screenSize.Width / (_primaryScaleFactor / 100.0);
+            double height = screenSize.Height / (_primaryScaleFactor / 100.0);
+            int ceilingWidth = (int)Math.Ceiling(width);
+            int ceilingHeight = (int)Math.Ceiling(height);
 
             // ! don not remove
             this.WindowState = FormWindowState.Normal;
@@ -395,15 +386,12 @@ namespace _1RM.View.Host.ProtocolHosts
             //ParentWindow.WindowStyle = WindowStyle.None;
             //ParentWindow.ResizeMode = ResizeMode.NoResize;
 
-            this.ShowInTaskbar = true;
-
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Width = (int)(screenSize.Width / (_primaryScaleFactor / 100.0));
-            this.Height = (int)(screenSize.Height / (_primaryScaleFactor / 100.0));
+            this.Width = ceilingWidth;
+            this.Height = ceilingHeight;
             this.Left = (int)(screenSize.Left / (_primaryScaleFactor / 100.0));
             this.Top = (int)(screenSize.Top / (_primaryScaleFactor / 100.0));
 
-            SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {Width}, H = {Height}, while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
+            SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ceilingWidth}({width}), H = {ceilingHeight}({height}), while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
 
             // WARNING!: EnableFullAllScreens do not need SetRdpResolution
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
@@ -450,15 +438,17 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
+                LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, -1);
                 return ScreenInfoEx.GetAllScreensSize();
             }
 
-            int screenIndex = -1;
+            int screenIndex = LocalityConnectRecorder.RdpCacheGet(_rdpSettings.Id)?.FullScreenLastSessionScreenIndex ?? -1;
             if (screenIndex < 0
                 || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
             {
                 screenIndex = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
+            LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, true, screenIndex);
             return System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds;
         }
 

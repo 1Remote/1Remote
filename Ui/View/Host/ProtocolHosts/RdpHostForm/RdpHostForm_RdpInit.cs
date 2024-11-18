@@ -72,10 +72,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             Debug.Assert(_rdpClient != null); if (_rdpClient == null) return;
             SimpleLogHelper.Debug("RDP Host: init Static");
-            // enable CredSSP, will use CredSsp if the client supports.
-            _rdpClient.AdvancedSettings7.EnableCredSspSupport = true;
             _rdpClient.AdvancedSettings2.EncryptionEnabled = 1;
-            _rdpClient.AdvancedSettings5.AuthenticationLevel = 0;
             _rdpClient.AdvancedSettings5.EnableAutoReconnect = true;
             // setting PublicMode to false allows the saving of credentials, which prevents
             _rdpClient.AdvancedSettings6.PublicMode = false;

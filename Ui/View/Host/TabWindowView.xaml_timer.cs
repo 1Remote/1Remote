@@ -148,7 +148,7 @@ TabWindowView: BringWindowToTop({_myHandle})");
         {
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
-            if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
+            if (Vm?.SelectedItem?.Content?.HasConnected != true)
                 return;
 
             // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
