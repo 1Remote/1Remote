@@ -134,7 +134,7 @@ TabWindowView: BringWindowToTop({_myHandle})");
         {
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
-            if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
+            if (Vm?.SelectedItem?.Content?.HasConnected != true)
                 return;
 
             var nowActivatedWindowHandle = GetForegroundWindow();
