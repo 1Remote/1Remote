@@ -15,6 +15,7 @@ using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.Model.ProtocolRunner
 {
@@ -167,65 +168,76 @@ namespace _1RM.Model.ProtocolRunner
         {
             Debug.Assert(runner.IsRunWithoutHosting() == false);
 
-            // custom runner
-            if (runner is ExternalRunner er)
+            IHostBase? ihost = null;
+            Execute.OnUIThreadSync(() =>
             {
-                var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
-                if (isOk)
+                // custom runner
+                if (runner is ExternalRunner er)
                 {
-                    var integrateHost = IntegrateHost.Create(protocol, runner, exePath, exeArguments, environmentVariables);
-                    return integrateHost;
+                    var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
+                    if (isOk)
+                    {
+                        var integrateHost = IntegrateHost.Create(protocol, runner, exePath, exeArguments, environmentVariables);
+                        ihost = integrateHost;
+                        return;
+                    }
                 }
-            }
 
-            // build-in runner
-            switch (protocol)
-            {
-                case RDP rdp:
-                    {
-                        System.Windows.Size? size = null;
-                        if (tab != null)
+                // build-in runner
+                switch (protocol)
+                {
+                    case RDP rdp:
                         {
-                            size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                            System.Windows.Size? size = null;
+                            if (tab != null)
+                            {
+                                size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
+                            }
+
+                            var form = new RdpHostForm(rdp, tab == null, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
+                            if (tab != null)
+                            {
+                                ihost = form.AttachToHostBase();
+                            }
+                            else
+                            {
+                                ihost = form;
+                            }
+
+                            return;
                         }
-                        var form = new RdpHostForm(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
-                        if (tab != null)
+                    case IKittyConnectable kittyConnectable:
                         {
-                            var host = form.AttachToHostBase();
-                            return host;
+                            var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(protocol.ProtocolDisplayName);
+                            ihost = IntegrateHost.Create(protocol, kittyRunner, kittyRunner.PuttyExePath, "");
+                            return;
                         }
-                        else
+                    case VNC vnc:
                         {
-                            return form;
+                            ihost = VncHost.Create(vnc);
+                            return;
                         }
-                        //var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
-                        //return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
-                    }
-                case IKittyConnectable kittyConnectable:
-                    {
-                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(protocol.ProtocolDisplayName);
-                        var ih = IntegrateHost.Create(protocol, kittyRunner, kittyRunner.PuttyExePath, "");
-                        return ih;
-                    }
-                case VNC vnc:
-                    {
-                        return VncHost.Create(vnc);
-                    }
-                case SFTP sftp:
-                    {
-                        return FileTransmitHost.Create(sftp);
-                    }
-                case FTP ftp:
-                    {
-                        return FileTransmitHost.Create(ftp);
-                    }
-                case LocalApp app:
-                    {
-                        return IntegrateHost.Create(app, runner, app.GetExePath(), app.GetArguments(false));
-                    }
-                default:
-                    throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");
-            }
+                    case SFTP sftp:
+                        {
+                            ihost = FileTransmitHost.Create(sftp);
+                            return;
+                        }
+                    case FTP ftp:
+                        {
+                            ihost = FileTransmitHost.Create(ftp);
+                            return;
+                        }
+                    case LocalApp app:
+                        {
+                            ihost = IntegrateHost.Create(app, runner, app.GetExePath(), app.GetArguments(false));
+                            return;
+                        }
+                    default:
+                        throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");
+                }
+            });
+            Debug.Assert(ihost != null);
+            return ihost;
         }
     }
 }

@@ -273,7 +273,7 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <returns></returns>
         public abstract IntPtr GetHostHwnd();
 
-        public Action<string>? OnProtocolClosed { get; set; } = null;
-        public Action<string>? OnFullScreen2Window { get; set; } = null;
+        public virtual Action<string>? OnProtocolClosed { get; set; } = null;
+        public virtual Action<string>? OnFullScreen2Window { get; set; } = null;
     }
 }
