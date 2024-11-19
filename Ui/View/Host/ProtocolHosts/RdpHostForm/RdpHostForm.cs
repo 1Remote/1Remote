@@ -100,13 +100,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
 
-        public RdpHostForm(RDP rdpSettings, int width = 800, int height = 600) : base(rdpSettings, true)
+        public RdpHostForm(RDP rdpSettings, bool connectWithFullScreen, int width = 800, int height = 600) : base(rdpSettings, true)
         {
             InitializeComponent();
 
-#if !DEV_RDP
-            this.FormBorderStyle = FormBorderStyle.None;
-#endif
             Icon = rdpSettings.IconImg.ToIcon();
             _rdpSettings = rdpSettings;
 
@@ -156,7 +153,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             this.Controls.Add(_rdpClient);
 
-
+            this.ShowInTaskbar = false;
             this.Width = width;
             this.Height = height;
 
@@ -181,6 +178,18 @@ namespace _1RM.View.Host.ProtocolHosts
                 GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
 #endif
             };
+
+            if (connectWithFullScreen)
+            {
+                ShowInTaskbar = true;
+                StartPosition = FormStartPosition.CenterScreen;
+            }
+            else
+            {
+                ShowInTaskbar = false;
+                FormBorderStyle = FormBorderStyle.None;
+                StartPosition = FormStartPosition.CenterParent;
+            }
         }
 
         private void OnActivated(object? sender, EventArgs e)
@@ -226,6 +235,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 if (AttachedHost == null)
                 {
                     SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
+                    FormBorderStyle = FormBorderStyle.None;
                     GoFullScreen();
                 }
             });
@@ -244,7 +254,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             Execute.OnUIThreadSync(() =>
             {
-                Debug.Assert(_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable);
+                Debug.Assert(_rdpSettings.RdpFullScreenFlag != ERdpFullScreenFlag.Disable);
                 DetachFromHostBase();
                 if (_rdpClient.FullScreen != true)
                     _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
@@ -341,31 +351,29 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnRequestLeaveFullScreen()
         {
-#if !DEV_RDP
-            // !do not remove
-            //ParentWindowSetToWindow();
             if (_rdpSettings.IsTmpSession() == false)
             {
                 LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
             }
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
-#if DEBUG
-            if (base.OnFullScreen2Window == null)
-            {
-                this.FormBorderStyle = FormBorderStyle.Sizable;
-                this.Width = 800;
-                this.Height = 600;
-            }
-#endif
-#else
-            // TODO 获取 tab 的尺寸，并设置为对应尺寸
-            this.FormBorderStyle = FormBorderStyle.Sizable;
-            this.Width = 800;
-            this.Height = 600;
-            var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
-            this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
-            this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
-#endif
+            //#if !DEV_RDP
+            //#if DEBUG
+            //            if (base.OnFullScreen2Window == null)
+            //            {
+            //                this.FormBorderStyle = FormBorderStyle.Sizable;
+            //                this.Width = 800;
+            //                this.Height = 600;
+            //            }
+            //#endif
+            //#else
+            //            // TODO 获取 tab 的尺寸，并设置为对应尺寸
+            //            this.FormBorderStyle = FormBorderStyle.Sizable;
+            //            this.Width = 800;
+            //            this.Height = 600;
+            //            var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
+            //            this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
+            //            this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
+            //#endif
         }
 
         private void OnGoToFullScreenRequested()
@@ -518,7 +526,10 @@ namespace _1RM.View.Host.ProtocolHosts
             });
         }
 
-
+        public override void Close()
+        {
+            base.Close();
+        }
 
 #if DEV_RDP
         public bool RdpFull

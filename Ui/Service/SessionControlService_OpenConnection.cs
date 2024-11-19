@@ -132,18 +132,28 @@ namespace _1RM.Service
 
         private void ConnectWithFullScreen(in ProtocolBase server, in Runner runner)
         {
+            ProtocolBase p = server;
+            Runner r = runner;
             // fullscreen normally
-            var host = runner.GetHost(server);
-            if (host == null)
-                return;
+            Execute.OnUIThreadSync(() =>
+            {
+                var host = r.GetHost(p);
+                Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
+                _connectionId2Hosts.TryAdd(host.ConnectionId, host);
 
-            Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-            _connectionId2Hosts.TryAdd(host.ConnectionId, host);
-            host.OnProtocolClosed += OnRequestCloseConnection;
-            host.OnFullScreen2Window += this.MoveSessionToTabWindow;
-            this.MoveSessionToFullScreen(host.ConnectionId);
-            host.Conn();
-            SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
+                if (host is RdpHostForm rdpHostForm)
+                {
+                    host.OnProtocolClosed += OnRequestCloseConnection;
+                    host.OnFullScreen2Window += this.MoveSessionToTabWindow;
+                    rdpHostForm.Show();
+                    host.Conn();
+                    SimpleLogHelper.Debug($@"Start Conn: {p.DisplayName}({p.GetHashCode()}) by host({host.GetHashCode()}) with full");
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            });
         }
 
         public string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
