@@ -62,8 +62,8 @@ namespace _1RM.Service
             {
                 if (_connectionId2Hosts[connectionId] is IntegrateHostForWinFrom { Form: HostBaseWinform hbw })
                     host = hbw;
-                //else if (_connectionId2Hosts[connectionId] is HostBaseWinform hbw2)
-                //    host = hbw2;
+                else if (_connectionId2Hosts[connectionId] is HostBaseWinform hbw2)
+                    host = hbw2;
             }
             if (host == null)
                 throw new NullReferenceException($"can not find host by connectionId = `{connectionId}`");

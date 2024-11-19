@@ -154,6 +154,7 @@ public abstract class HostBaseWinform : Form, IHostBase
     public new virtual void Close()
     {
         this.OnProtocolClosed?.Invoke(ConnectionId);
+        base.Close();
     }
 
     public abstract void GoFullScreen();
@@ -193,9 +194,6 @@ public abstract class HostBaseWinform : Form, IHostBase
     public IntegrateHostForWinFrom? AttachedHost { get; private set; } = null;
     public IntegrateHostForWinFrom AttachToHostBase()
     {
-        FormBorderStyle = FormBorderStyle.None;
-        WindowState = FormWindowState.Maximized;
-        ShowInTaskbar = false;
         AttachedHost ??= new IntegrateHostForWinFrom(this);
         return AttachedHost;
     }

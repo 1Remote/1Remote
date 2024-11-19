@@ -47,23 +47,19 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _form.FormBorderStyle = FormBorderStyle.None;
             _form.WindowState = FormWindowState.Maximized;
+            _form.ShowInTaskbar = false;
             _form.Handle.SetParentEx(_panel.Handle);
             _form.OnCanResizeNowChanged += () =>
             {
                 OnCanResizeNowChanged?.Invoke();
             };
 
-            if (form.IsLoaded)
+            Loaded += (sender, args) =>
             {
                 _form.Show();
-            }
-            else
-            {
-                Loaded += (sender, args) =>
-                {
-                    _form.Show();
-                };
-            }
+                _form.Handle.SetParentEx(_panel.Handle);
+                SetToPanelSize();
+            };
             SimpleLogHelper.Debug($"IntegrateHostForWinFrom({this.GetHashCode()}) Created");
 
             // TODO: _form.CanFullScreen change invoke CanFullScreen changed
@@ -161,6 +157,30 @@ namespace _1RM.View.Host.ProtocolHosts
         public override IntPtr GetHostHwnd()
         {
             return _form?.GetHostHwnd() ?? IntPtr.Zero;
+        }
+
+        private Action<string>? _onFullScreen2Window = null;
+        public override Action<string>? OnFullScreen2Window
+        {
+            get => _onFullScreen2Window;
+            set
+            {
+                _onFullScreen2Window = value;
+                if (Form != null) 
+                    Form.OnFullScreen2Window = value;
+            }
+        }
+
+        private Action<string>? _onProtocolClosed = null;
+        public override Action<string>? OnProtocolClosed
+        {
+            get => _onProtocolClosed;
+            set
+            {
+                _onProtocolClosed = value;
+                if (Form != null) 
+                    Form.OnProtocolClosed = value;
+            }
         }
     }
 }
