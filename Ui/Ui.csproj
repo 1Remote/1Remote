@@ -429,6 +429,9 @@
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="View\Editor\IconPopupDialogView.xaml">
+		  <SubType>Designer</SubType>
+		</Page>
 		<Page Update="View\Editor\ServerEditorPageView.xaml">
 			<SubType>Designer</SubType>
 		</Page>

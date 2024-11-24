@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">Inicialização</s:String>
     <s:String x:Key="Tags">Marcações</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Pressione Enter para adicionar uma tag, que é usada para agrupar servidores. Ao clicar com o botão direito nas tags da página inicial, você pode filtrar ou fixar uma tag específica.</s:String>
-    <s:String x:Key="Logo">Logotipo</s:String>
+    <s:String x:Key="Icon">Ícone</s:String>
     <s:String x:Key="Hostname">Hospedeiro</s:String>
     <s:String x:Key="Target">Alvo</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">Lembre-se das informações acima</s:String>
     <s:String x:Key="Quick Connect">Conexão rápida</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">Permitir que o Quick Connect salve as informações de endereço inseridas</s:String>
+    <s:String x:Key="Yes">Yes</s:String>
+    <s:String x:Key="No">No</s:String>
 </ResourceDictionary>

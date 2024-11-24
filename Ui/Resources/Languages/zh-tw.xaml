@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">啟動</s:String>
     <s:String x:Key="Tags">標籤</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">按 Enter 新增標籤，用於將伺服器分組。透過右鍵單擊主頁上的標籤，您可以過濾或固定特定標籤。</s:String>
-    <s:String x:Key="Logo">圖示</s:String>
+    <s:String x:Key="Icon">圖示</s:String>
     <s:String x:Key="Hostname">主機名稱</s:String>
     <s:String x:Key="Target">目標</s:String>
     <s:String x:Key="Port">連接埠</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">記住上面的訊息</s:String>
     <s:String x:Key="Quick Connect">快速連接</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">允許快速連接保存輸入的地址信息</s:String>
+    <s:String x:Key="Yes">是</s:String>
+    <s:String x:Key="No">否</s:String>
 </ResourceDictionary>

@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">Запуск</s:String>
     <s:String x:Key="Tags">Теги</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Нажмите Enter, чтобы добавить тег, который будет использоваться для группировки серверов. Щелкнув правой кнопкой мыши теги на главной странице, вы можете отфильтровать или закрепить определенный тег.</s:String>
-    <s:String x:Key="Logo">Логотип</s:String>
+    <s:String x:Key="Icon">Логотип</s:String>
     <s:String x:Key="Hostname">Имя хоста</s:String>
     <s:String x:Key="Target">Цель</s:String>
     <s:String x:Key="Port">Порт</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">Помните информацию выше</s:String>
     <s:String x:Key="Quick Connect">Быстрое подключение</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">Разрешить Quick Connect сохранять введенную информацию об адресе</s:String>
+    <s:String x:Key="Yes">Yes</s:String>
+    <s:String x:Key="No">No</s:String>
 </ResourceDictionary>

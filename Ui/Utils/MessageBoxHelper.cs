@@ -24,8 +24,8 @@ namespace _1RM.Utils
         public static bool Confirm(string content, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
             return Confirm(content,
-                IoC.TryGet<ILanguageService>()?.Translate("OK") ?? "OK",
-                IoC.TryGet<ILanguageService>()?.Translate("Cancel") ?? "Cancel",
+                IoC.TryGet<ILanguageService>()?.Translate("Yes") ?? "Yes",
+                IoC.TryGet<ILanguageService>()?.Translate("No") ?? "No",
                 title, useNativeBox, ownerViewModel);
         }
 

@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">Commencez</s:String>
     <s:String x:Key="Tags">Mots clés</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Appuyez sur Entrée pour ajouter une balise utilisée pour regrouper les serveurs. En cliquant avec le bouton droit sur les balises de la page d'accueil, vous pouvez filtrer ou épingler une balise spécifique.</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Icon">Icône</s:String>
     <s:String x:Key="Hostname">Nom d'hôte</s:String>
     <s:String x:Key="Target">Cibler</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">N'oubliez pas les informations ci-dessus</s:String>
     <s:String x:Key="Quick Connect">Connexion rapide</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">Autoriser Quick Connect à enregistrer les informations d'adresse saisies</s:String>
+    <s:String x:Key="Yes">Yes</s:String>
+    <s:String x:Key="No">No</s:String>
 </ResourceDictionary>
