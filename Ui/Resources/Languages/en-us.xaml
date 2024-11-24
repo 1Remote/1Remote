@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">Startup</s:String>
     <s:String x:Key="Tags">Tags</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Icon">Icon</s:String>
     <s:String x:Key="Hostname">Hostname</s:String>
     <s:String x:Key="Target">Target</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">Remember the information above</s:String>
     <s:String x:Key="Quick Connect">Quick Connect</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">Allow Quick Connect to save entered address information</s:String>
+    <s:String x:Key="Yes">Yes</s:String>
+    <s:String x:Key="No">No</s:String>
 </ResourceDictionary>

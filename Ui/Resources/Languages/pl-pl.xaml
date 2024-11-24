@@ -58,7 +58,7 @@
     <s:String x:Key="Startup">Uruchomienie</s:String>
     <s:String x:Key="Tags">Tagi</s:String>
     <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Naciśnij Enter, aby dodać tag, który służy do grupowania serwerów. Klikając prawym przyciskiem myszy tagi na stronie głównej, możesz odfiltrować lub przypiąć konkretny tag.</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Icon">Ikona</s:String>
     <s:String x:Key="Hostname">Nazwa komputera</s:String>
     <s:String x:Key="Target">Cel</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -318,4 +318,6 @@
     <s:String x:Key="Remember the information above">Zapamiętaj powyższe informacje</s:String>
     <s:String x:Key="Quick Connect">Szybkie połączenie</s:String>
     <s:String x:Key="Allow Quick Connect to save entered address information">Zezwól szybkiemu połączeniu na zapisanie wprowadzonych informacji adresowych</s:String>
+    <s:String x:Key="Yes">Yes</s:String>
+    <s:String x:Key="No">No</s:String>
 </ResourceDictionary>

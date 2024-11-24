@@ -71,6 +71,14 @@ namespace _1RM.Resources.Icons
 
         public List<string> IconsBase64 { get; set; } = new List<string>();
 
-        public List<BitmapSource> Icons => new List<BitmapSource>(IconsBase64.Select(x => Convert.FromBase64String(x).BitmapFromBytes().ToBitmapSource()));
+        public List<BitmapSource>? _icons;
+        public List<BitmapSource> Icons
+        {
+            get
+            {
+                _icons ??= new List<BitmapSource>(IconsBase64.Select(x => Convert.FromBase64String(x).BitmapFromBytes().ToBitmapSource()));
+                return _icons;
+            }
+        }
     }
 }

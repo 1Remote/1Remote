@@ -19,6 +19,7 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Shawn.Utils.Wpf.Image;
 using Stylet;
 using Credential = _1RM.Model.Protocol.Base.Credential;
 
@@ -675,6 +676,23 @@ namespace _1RM.View.Editor
                         {
                             Server.CommandAfterDisconnected = path;
                         }
+                    }
+                });
+            }
+        }
+
+
+        private RelayCommand? _cmdSelectImage;
+        public RelayCommand CmdSelectImage
+        {
+            get
+            {
+                return _cmdSelectImage ??= new RelayCommand((o) =>
+                {
+                    var dlg = new IconPopupDialogViewModel(Server.IconImg);
+                    if (true == MaskLayerController.ShowDialogWithMask(dlg))
+                    {
+                        Server.IconBase64 = dlg.Icon.ToBase64();
                     }
                 });
             }

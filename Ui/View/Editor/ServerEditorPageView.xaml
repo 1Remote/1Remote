@@ -91,15 +91,15 @@
 
 
                                 <controls:GridWith4Columns Margin="0">
-                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource Logo}"></TextBlock>
+                                    <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource Icon}"></TextBlock>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                                         <Grid Name="GridLogo" Width="64" Height="64"
-                                              MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp"
                                               Background="Transparent"
                                               Cursor="Hand"
                                               Margin="0 0 30 0">
-                                            <Border BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+                                            <Border BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" 
+                                                    ClipToBounds="True">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
@@ -107,13 +107,35 @@
                                                             <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
                                                                 <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
-                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                            </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                <Grid>
+                                                    <Image Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+
+                                                    <Button Background="{DynamicResource BackgroundBrush}" Opacity="0.9"
+                                                            Command="{Binding CmdSelectImage}"
+                                                            BorderThickness="0"
+                                                    >
+                                                        <Button.Style>
+                                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarBackgroundStyle}">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                        <Path Data="F1 M 10 18.75 C 11.002604 18.75 11.964518 18.595377 12.885742 18.286133 C 13.806965 17.976889 14.646809 17.540689 15.405273 16.977539 C 16.163736 16.414389 16.824543 15.737305 17.387695 14.946289 C 17.950846 14.155273 18.378906 13.277995 18.671875 12.314453 L 19.863281 12.685547 C 19.53776 13.772787 19.052734 14.763998 18.408203 15.65918 C 17.763672 16.554361 17.006836 17.324219 16.137695 17.96875 C 15.268555 18.613281 14.311523 19.112955 13.266602 19.467773 C 12.22168 19.822592 11.132812 20 10 20 C 9.108072 20 8.238932 19.889322 7.392578 19.667969 C 6.546224 19.446615 5.74707 19.125977 4.995117 18.706055 C 4.243164 18.286133 3.548177 17.775064 2.910156 17.172852 C 2.272135 16.570639 1.71875 15.888672 1.25 15.126953 L 1.25 17.5 L 0 17.5 L 0 12.5 L 5 12.5 L 5 13.75 L 1.914062 13.75 C 2.298177 14.511719 2.775065 15.200195 3.344727 15.81543 C 3.914388 16.430664 4.550781 16.954752 5.253906 17.387695 C 5.957031 17.820639 6.710612 18.155924 7.514648 18.393555 C 8.318685 18.631186 9.147135 18.75 10 18.75 Z M 20 2.5 L 20 7.5 L 15 7.5 L 15 6.25 L 18.085938 6.25 C 17.701822 5.488281 17.224934 4.799805 16.655273 4.18457 C 16.085611 3.569336 15.449219 3.045248 14.746094 2.612305 C 14.042969 2.179363 13.289388 1.844076 12.485352 1.606445 C 11.681314 1.368816 10.852864 1.25 10 1.25 C 8.997396 1.25 8.035481 1.404623 7.114258 1.713867 C 6.193034 2.023113 5.35319 2.459311 4.594727 3.022461 C 3.836263 3.585613 3.175456 4.262695 2.612305 5.053711 C 2.049154 5.844727 1.621094 6.722006 1.328125 7.685547 L 0.136719 7.314453 C 0.46224 6.233725 0.947266 5.244141 1.591797 4.345703 C 2.236328 3.447266 2.993164 2.675781 3.862305 2.03125 C 4.731445 1.386719 5.688477 0.887045 6.733398 0.532227 C 7.77832 0.17741 8.867188 0 10 0 C 10.891927 0 11.761067 0.110678 12.607422 0.332031 C 13.453775 0.553387 14.25293 0.874023 15.004883 1.293945 C 15.756836 1.713867 16.451822 2.224936 17.089844 2.827148 C 17.727863 3.429363 18.28125 4.111328 18.75 4.873047 L 18.75 2.5 Z " 
+                                                              StrokeThickness="1"
+                                                              Stroke="{DynamicResource BackgroundTextBrush}"
+                                                              Fill="{DynamicResource BackgroundTextBrush}" 
+                                                              Stretch="Uniform" 
+                                                              Width="30"
+                                                        />
+                                                    </Button>
+                                                </Grid>
                                             </Border>
                                         </Grid>
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
@@ -125,7 +147,7 @@
                                                    Text="{Binding Server.ColorHex}"></TextBlock>
                                     </StackPanel>
                                 </controls:GridWith4Columns>
-                                <Grid Name="PopupLogoSelector" Height="0">
+                                <!--<Grid Name="PopupLogoSelector" Height="0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
@@ -212,7 +234,7 @@
                                             </Border>
                                         </Grid>
                                     </StackPanel>
-                                </Grid>
+                                </Grid>-->
 
 
 

@@ -57,7 +57,7 @@ Language;Language;语言;Jazyk;Sprache;Langue;Idioma;言語;語言;Lingua;Język
 Startup;Startup;启动;Při startu;Start;Commencez;Inicialização;起動;啟動;Comezo;Uruchomienie;Запуск
 Tags;Tags;标签;Štítky;Tags;;Marcações;タグ;標籤;Etiquetas;Tagi;Теги
 Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;按下回车键添加一个标签，标签用于服务器分组。通过鼠标右键点击主页中的标签可签筛选或固定某个标签。;;;;;Enterキーまたは+ボタンでタグを追加します。タグはサーバーのグループ化に役立ちます。ホーム画面上の［タグ］をクリックすると、特定のタグをフィルタリングしたりピン留めすることができます。;;;;
-Logo;Logo;图标;Logo;Logo;;Logotipo;ロゴ;圖示;Logo;Logo;Логотип
+Icon;Icon;图标;Icon;Icon;;;ロゴ;;;;Логотип
 Hostname;Hostname;地址;Název stroje;Hostname;;Hospedeiro;ホスト名;主機名稱;Nome do host;Nazwa komputera;Имя хоста
 Target;Target;目标;Cíl;Ziel;Cibler;;ターゲット;目標;Destiño;Cel;Цель
 Port;Port;端口;Port;Port;Port;Port;ポート番号;連接埠;Porto;Port;Порт
@@ -357,3 +357,5 @@ Ask for password when open connect;Ask for password when open connect;打开连�
 Remember the information above;Remember the information above;记住上述信息;;;;;;;;;
 Quick Connect;Quick Connect;快速连接;;;;;;;;;
 Allow Quick Connect to save entered address information;Allow Quick Connect to save entered address information;允许`快速连接`保存输入的地址信息;;;;;;;;;
+Yes;Yes;是;;;;;;;;;
+No;No;否;;;;;;;;;
