@@ -30,7 +30,7 @@
             <Grid >
                 <StackPanel Margin="20 0" >
 
-                    <TextBlock Text="{DynamicResource 'Upload'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                    <TextBlock Text="{DynamicResource 'Icon'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
                     <Border BorderThickness="1" Width="144" Height="144"
                             Name="GridLogo"
@@ -63,6 +63,7 @@
                             </Button>
                         </Grid>
                     </Border>
+                    <TextBlock HorizontalAlignment="Center" Text="{DynamicResource 'Click on the icon above to change it to your own image'}" Opacity="0.5"></TextBlock>
 
                     <TextBlock Text="{DynamicResource 'Alternative'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 

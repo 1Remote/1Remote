@@ -320,4 +320,5 @@
     <s:String x:Key="Allow Quick Connect to save entered address information">允许`快速连接`保存输入的地址信息</s:String>
     <s:String x:Key="Yes">是</s:String>
     <s:String x:Key="No">否</s:String>
+    <s:String x:Key="Click on the icon above to change it to your own image">点击图标可选择本地图片</s:String>
 </ResourceDictionary>

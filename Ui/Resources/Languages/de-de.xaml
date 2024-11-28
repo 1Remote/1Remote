@@ -320,4 +320,5 @@
     <s:String x:Key="Allow Quick Connect to save entered address information">Erlauben Sie Quick Connect, eingegebene Adressinformationen zu speichern</s:String>
     <s:String x:Key="Yes">Yes</s:String>
     <s:String x:Key="No">No</s:String>
+    <s:String x:Key="Click on the icon above to change it to your own image">Klicken Sie auf das Symbol oben, um es in Ihr eigenes Bild zu ändern</s:String>
 </ResourceDictionary>
