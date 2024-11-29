@@ -194,7 +194,7 @@ namespace _1RM.Model.ProtocolRunner
                                 size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
                             }
 
-                            var form = new RdpHostForm(rdp, tab == null, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
+                            var form = new RdpHostForm(rdp, tab == null, (int)(size?.Width ?? 800), (int)(size?.Height ?? 600));
                             if (tab != null)
                             {
                                 ihost = form.AttachToHostBase();

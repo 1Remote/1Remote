@@ -68,8 +68,6 @@ namespace _1RM.Service
             if (host == null)
                 throw new NullReferenceException($"can not find host by connectionId = `{connectionId}`");
 
-            host.GoFullScreen();
-
             // remove from tab
             var tab = GetTabByConnectionId(connectionId);
             if (tab != null)
@@ -82,10 +80,9 @@ namespace _1RM.Service
                 tab.GetViewModel().TryRemoveItem(connectionId);
                 SimpleLogHelper.Debug($@"MoveSessionToFullScreen: remove connectionId = {connectionId} from tab({tab.GetHashCode()}) ");
             }
-
             _connectionId2Hosts[connectionId] = host;
 
-
+            host.GoFullScreen();
 
             this.CleanupProtocolsAndWindows();
             PrintCacheCount();

@@ -142,6 +142,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 // invoke in the full screen mode.
                 SimpleLogHelper.Debug("RDP Host:  RdpOnConfirmClose");
                 OnProtocolClosed?.Invoke(ConnectionId);
+                Close();
 #if DEV_RDP
                 Environment.Exit(-1);
 #endif
@@ -356,24 +357,17 @@ namespace _1RM.View.Host.ProtocolHosts
                 LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
             }
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
-            //#if !DEV_RDP
-            //#if DEBUG
-            //            if (base.OnFullScreen2Window == null)
-            //            {
-            //                this.FormBorderStyle = FormBorderStyle.Sizable;
-            //                this.Width = 800;
-            //                this.Height = 600;
-            //            }
-            //#endif
-            //#else
-            //            // TODO 获取 tab 的尺寸，并设置为对应尺寸
-            //            this.FormBorderStyle = FormBorderStyle.Sizable;
-            //            this.Width = 800;
-            //            this.Height = 600;
-            //            var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
-            //            this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
-            //            this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
-            //#endif
+
+
+            //{
+            //    _rdpClient.FullScreen = false;
+            //    this.FormBorderStyle = FormBorderStyle.Sizable;
+            //    this.Width = 800;
+            //    this.Height = 600;
+            //    var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
+            //    this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
+            //    this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
+            //}
         }
 
         private void OnGoToFullScreenRequested()

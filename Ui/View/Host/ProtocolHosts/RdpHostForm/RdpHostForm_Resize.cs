@@ -137,7 +137,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
 
-        private static bool _isReSizeRdpToControlSizeRunning = false;
+        private bool _isReSizeRdpToControlSizeRunning = false;
         void ReSizeRdpToControlSize()
         {
             if (_rdpClient.Connected != 1 // https://learn.microsoft.com/en-us/windows/win32/termserv/imstscax-connected
@@ -160,7 +160,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 while (true)
                 {
-                    // Window drag an drop resize only after mouse button release, 当拖动最大化的窗口时，需检测鼠标按键释放后再调整分辨率，详见：https://github.com/1Remote/1Remote/issues/553
+                    // Window drag and drop resize only after mouse button release, 当拖动最大化的窗口时，需检测鼠标按键释放后再调整分辨率，详见：https://github.com/1Remote/1Remote/issues/553
                     var isPressed = false;
                     Execute.OnUIThreadSync(() => { isPressed = Mouse.LeftButton == MouseButtonState.Pressed; });
                     if (!isPressed)

@@ -28,6 +28,7 @@ namespace _1RM.View.Host.ProtocolHosts
         private HostBaseWinform? _form;
         public HostBaseWinform? Form => _form;
         private readonly System.Windows.Forms.Panel _panel;
+        public IntPtr PanelHandle => _panel.Handle;
 
         public IntegrateHostForWinFrom(HostBaseWinform form) : base(form.GetProtocolServer(), false)
         {
@@ -44,11 +45,6 @@ namespace _1RM.View.Host.ProtocolHosts
             FormsHost.Child = _panel;
             //_form.Closed += FormOnClosed;
 
-
-            _form.FormBorderStyle = FormBorderStyle.None;
-            _form.WindowState = FormWindowState.Maximized;
-            _form.ShowInTaskbar = false;
-            _form.Handle.SetParentEx(_panel.Handle);
             _form.OnCanResizeNowChanged += () =>
             {
                 OnCanResizeNowChanged?.Invoke();

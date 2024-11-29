@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using System.Windows.Navigation;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
+using Org.BouncyCastle.Asn1.X509;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -194,20 +195,22 @@ public abstract class HostBaseWinform : Form, IHostBase
     public IntegrateHostForWinFrom? AttachedHost { get; private set; } = null;
     public IntegrateHostForWinFrom AttachToHostBase()
     {
+
+        FormBorderStyle = FormBorderStyle.None;
+        WindowState = FormWindowState.Maximized;
+        ShowInTaskbar = false;
         AttachedHost ??= new IntegrateHostForWinFrom(this);
+        Handle.SetParentEx(AttachedHost.PanelHandle);
         return AttachedHost;
     }
 
 
     public void DetachFromHostBase()
     {
-        //if (AttachedHost == null)
-        //    return;
         FormBorderStyle = FormBorderStyle.Sizable;
         WindowState = FormWindowState.Normal;
         ShowInTaskbar = true;
-        //Handle.SetParentEx(IntPtr.Zero);
-        //AttachedHost = null;
+        Handle.SetParentEx(IntPtr.Zero);
     }
 
     protected override void OnClosed(EventArgs e)
