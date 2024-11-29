@@ -318,12 +318,12 @@ namespace _1RM.Service
                     ConnectRdpByMstsc(rdp);
                     return "";
                 }
-                // rdp full screen
-                if (protocolClone.IsThisTimeConnWithFullScreen())
-                {
-                    this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
-                    return "";
-                }
+                //// rdp full screen // TODO not support when dev now
+                //if (protocolClone.IsThisTimeConnWithFullScreen())
+                //{
+                //    this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
+                //    return "";
+                //}
             }
             else if (protocolClone is SSH { OpenSftpOnConnected: true } ssh)
             {
