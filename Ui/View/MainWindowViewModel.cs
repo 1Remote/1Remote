@@ -14,6 +14,8 @@ using Shawn.Utils.Wpf;
 using Stylet;
 using _1RM.View.Settings.General;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
+using _1RM.Service.DataSource.DAO.Dapper;
+using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.View
 {
@@ -51,16 +53,16 @@ namespace _1RM.View
             }
         }
 
-        private bool _showAbout = false;
-        public bool ShowAbout
-        {
-            get => _showAbout;
-            set
-            {
-                SetAndNotifyIfChanged(ref _showAbout, value);
-                RaisePropertyChanged(nameof(IsShownList));
-            }
-        }
+        //private bool _showAbout = false;
+        //public bool ShowAbout
+        //{
+        //    get => _showAbout;
+        //    set
+        //    {
+        //        SetAndNotifyIfChanged(ref _showAbout, value);
+        //        RaisePropertyChanged(nameof(IsShownList));
+        //    }
+        //}
 
         private bool _showSetting = false;
         public bool ShowSetting
@@ -190,7 +192,6 @@ namespace _1RM.View
         {
             if (this.View is not MainWindowView { IsClosing: false } window) return;
             EditorViewModel = null;
-            ShowAbout = false;
             ShowSetting = false;
             if (clearSelection)
             {
@@ -199,7 +200,7 @@ namespace _1RM.View
         }
 
 
-        public bool IsShownList => EditorViewModel is null && ShowAbout == false && ShowSetting == false;
+        public bool IsShownList => EditorViewModel is null && ShowSetting == false;
 
 
         #region CMD
@@ -212,7 +213,6 @@ namespace _1RM.View
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
                     ShowSetting = true;
-                    ShowAbout = false;
                     EditorViewModel = null;
                     IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
                     if (this.View is MainWindowView v)
@@ -228,12 +228,10 @@ namespace _1RM.View
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    ShowAbout = true;
-                    ShowSetting = false;
-                    EditorViewModel = null;
-                    if (this.View is MainWindowView v)
-                        v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                    if (true == MaskLayerController.ShowDialogWithMask(AboutViewModel))
+                    {
+                    }
+                });
             }
         }
 

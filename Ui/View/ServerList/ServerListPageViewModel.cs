@@ -483,7 +483,8 @@ namespace _1RM.View.ServerList
             Execute.OnUIThread(() =>
             {
                 // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                CollectionViewSource.GetDefaultView((this.View as ServerListPageView)!.LvServerCards.ItemsSource).Refresh();
+                if ((this.View as ServerListPageView)?.LvServerCards.ItemsSource != null)
+                    CollectionViewSource.GetDefaultView((this.View as ServerListPageView)!.LvServerCards.ItemsSource).Refresh();
                 // invoke ServerListPageView.cs => ServerListItemSource_OnFilter
             });
         }

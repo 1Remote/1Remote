@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Timers;
 using _1RM.Service;
+using _1RM.Utils;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -13,7 +13,7 @@ using Stylet;
 
 namespace _1RM.View
 {
-    public class AboutPageViewModel : NotifyPropertyChangedBase
+    public class AboutPageViewModel : NotifyPropertyChangedBaseScreen
     {
         private readonly Timer _checkUpdateTimer;
 
@@ -124,7 +124,7 @@ namespace _1RM.View
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().ShowList(false);
+                    this.RequestClose(false);
                 });
             }
         }
