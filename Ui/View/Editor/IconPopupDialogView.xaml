@@ -26,71 +26,67 @@
     <Border Background="{DynamicResource PrimaryMidBrush}"
             BorderBrush="{DynamicResource PrimaryLightBrush}"
             BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
-        <Grid IsSharedSizeScope="True">
-            <Grid >
-                <StackPanel Margin="20 0" >
+            <StackPanel Margin="20 0" >
 
-                    <TextBlock Text="{DynamicResource 'Icon'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                <TextBlock Text="{DynamicResource 'Icon'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
-                    <Border BorderThickness="1" Width="144" Height="144"
-                            Name="GridLogo"
-                            BorderBrush="{DynamicResource DefaultBorderBrush}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}" 
-                            ClipToBounds="True">
-                        <Grid>
-                            <Image Source="{Binding Icon, UpdateSourceTrigger=PropertyChanged}"></Image>
-                            <Button Background="{DynamicResource BackgroundBrush}" Opacity="0.9"
-                                    Command="{Binding CmdSelectImage}"
-                                    BorderThickness="0"
-                            >
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarBackgroundStyle}">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Path Data="F1 M -1.743164 17.978516 L -1.743164 6.660156 C -1.743164 5.852865 -1.342773 5.449219 -0.541992 5.449219 L 0.014648 5.449219 C 0.294596 5.449219 0.493164 5.405273 0.610352 5.317383 C 0.727539 5.229492 0.818685 5.058594 0.883789 4.804688 L 0.981445 4.414062 C 1.085612 4.003907 1.219075 3.753256 1.381836 3.662109 C 1.538086 3.570964 1.91569 3.525391 2.514648 3.525391 L 6.245117 3.525391 C 6.785481 3.525391 7.130533 3.567709 7.280273 3.652344 C 7.430013 3.736979 7.560221 3.964844 7.670898 4.335938 L 7.77832 4.697266 C 7.888997 5.068359 7.991536 5.286459 8.085938 5.351562 C 8.180338 5.416667 8.442383 5.449219 8.87207 5.449219 L 15.620117 5.449219 C 16.082355 5.449219 16.396484 5.535482 16.5625 5.708008 C 16.728516 5.880535 16.811523 6.204428 16.811523 6.679688 L 16.811523 7.617188 L 20.688477 7.617188 C 21.391602 7.617188 21.75293 7.740886 21.772461 7.988281 C 21.778971 8.040365 21.665039 8.304037 21.430664 8.779297 L 16.811523 17.978516 Z M -1.264648 16.982422 L 2.93457 8.798828 C 3.24056 8.206381 3.478189 7.861328 3.647461 7.763672 C 3.816731 7.666016 4.256185 7.617188 4.96582 7.617188 L 16.333008 7.617188 L 16.333008 6.679688 C 16.333008 6.178386 16.088867 5.927734 15.600586 5.927734 L 8.813477 5.927734 C 8.201497 5.927734 7.823893 5.891928 7.680664 5.820312 C 7.537435 5.748698 7.420247 5.527344 7.329102 5.15625 L 7.211914 4.707031 C 7.127278 4.388021 7.03125 4.191081 6.923828 4.116211 C 6.816406 4.041342 6.577148 4.003907 6.206055 4.003906 L 2.592773 4.003906 C 2.176106 4.003907 1.896159 4.04297 1.75293 4.121094 C 1.6097 4.205729 1.499023 4.388021 1.420898 4.667969 L 1.303711 5.117188 C 1.199544 5.488282 1.083984 5.716146 0.957031 5.800781 C 0.830078 5.885417 0.548502 5.927734 0.112305 5.927734 L -0.493164 5.927734 C -0.805664 5.927734 -1.01237 5.974936 -1.113281 6.069336 C -1.214193 6.163737 -1.264648 6.363933 -1.264648 6.669922 Z M -0.97168 17.5 L 16.499023 17.5 L 20.825195 8.828125 C 20.968424 8.515625 21.040039 8.339844 21.040039 8.300781 C 21.020508 8.164062 20.818684 8.095703 20.43457 8.095703 L 4.672852 8.095703 C 4.295247 8.095703 4.034831 8.138021 3.891602 8.222656 C 3.748372 8.307292 3.601888 8.49935 3.452148 8.798828 Z" 
-                                      StrokeThickness="1"
-                                      Stroke="{DynamicResource BackgroundTextBrush}"
-                                      Fill="{DynamicResource BackgroundTextBrush}" 
-                                      Stretch="Uniform" 
-                                      Width="50"
-                                />
-                            </Button>
-                        </Grid>
-                    </Border>
-                    <TextBlock HorizontalAlignment="Center" Text="{DynamicResource 'Click on the icon above to change it to your own image'}" Opacity="0.5"></TextBlock>
+                <Border BorderThickness="1" Width="144" Height="144"
+                        Name="GridLogo"
+                        BorderBrush="{DynamicResource DefaultBorderBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}" 
+                        ClipToBounds="True">
+                    <Grid>
+                        <Image Source="{Binding Icon, UpdateSourceTrigger=PropertyChanged}"></Image>
+                        <Button Background="{DynamicResource BackgroundBrush}" Opacity="0.9"
+                                Command="{Binding CmdSelectImage}"
+                                BorderThickness="0"
+                        >
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonBarBackgroundStyle}">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Path Data="F1 M -1.743164 17.978516 L -1.743164 6.660156 C -1.743164 5.852865 -1.342773 5.449219 -0.541992 5.449219 L 0.014648 5.449219 C 0.294596 5.449219 0.493164 5.405273 0.610352 5.317383 C 0.727539 5.229492 0.818685 5.058594 0.883789 4.804688 L 0.981445 4.414062 C 1.085612 4.003907 1.219075 3.753256 1.381836 3.662109 C 1.538086 3.570964 1.91569 3.525391 2.514648 3.525391 L 6.245117 3.525391 C 6.785481 3.525391 7.130533 3.567709 7.280273 3.652344 C 7.430013 3.736979 7.560221 3.964844 7.670898 4.335938 L 7.77832 4.697266 C 7.888997 5.068359 7.991536 5.286459 8.085938 5.351562 C 8.180338 5.416667 8.442383 5.449219 8.87207 5.449219 L 15.620117 5.449219 C 16.082355 5.449219 16.396484 5.535482 16.5625 5.708008 C 16.728516 5.880535 16.811523 6.204428 16.811523 6.679688 L 16.811523 7.617188 L 20.688477 7.617188 C 21.391602 7.617188 21.75293 7.740886 21.772461 7.988281 C 21.778971 8.040365 21.665039 8.304037 21.430664 8.779297 L 16.811523 17.978516 Z M -1.264648 16.982422 L 2.93457 8.798828 C 3.24056 8.206381 3.478189 7.861328 3.647461 7.763672 C 3.816731 7.666016 4.256185 7.617188 4.96582 7.617188 L 16.333008 7.617188 L 16.333008 6.679688 C 16.333008 6.178386 16.088867 5.927734 15.600586 5.927734 L 8.813477 5.927734 C 8.201497 5.927734 7.823893 5.891928 7.680664 5.820312 C 7.537435 5.748698 7.420247 5.527344 7.329102 5.15625 L 7.211914 4.707031 C 7.127278 4.388021 7.03125 4.191081 6.923828 4.116211 C 6.816406 4.041342 6.577148 4.003907 6.206055 4.003906 L 2.592773 4.003906 C 2.176106 4.003907 1.896159 4.04297 1.75293 4.121094 C 1.6097 4.205729 1.499023 4.388021 1.420898 4.667969 L 1.303711 5.117188 C 1.199544 5.488282 1.083984 5.716146 0.957031 5.800781 C 0.830078 5.885417 0.548502 5.927734 0.112305 5.927734 L -0.493164 5.927734 C -0.805664 5.927734 -1.01237 5.974936 -1.113281 6.069336 C -1.214193 6.163737 -1.264648 6.363933 -1.264648 6.669922 Z M -0.97168 17.5 L 16.499023 17.5 L 20.825195 8.828125 C 20.968424 8.515625 21.040039 8.339844 21.040039 8.300781 C 21.020508 8.164062 20.818684 8.095703 20.43457 8.095703 L 4.672852 8.095703 C 4.295247 8.095703 4.034831 8.138021 3.891602 8.222656 C 3.748372 8.307292 3.601888 8.49935 3.452148 8.798828 Z" 
+                                  StrokeThickness="1"
+                                  Stroke="{DynamicResource BackgroundTextBrush}"
+                                  Fill="{DynamicResource BackgroundTextBrush}" 
+                                  Stretch="Uniform" 
+                                  Width="50"
+                            />
+                        </Button>
+                    </Grid>
+                </Border>
+                <TextBlock HorizontalAlignment="Center" Text="{DynamicResource 'Click on the icon above to change it to your own image'}" Opacity="0.5"></TextBlock>
 
-                    <TextBlock Text="{DynamicResource 'Alternative'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                <TextBlock Text="{DynamicResource 'Alternative'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
-                    <ListView BorderThickness="0"
-                              Width="510" Height="150"
-                              SelectedItem="{Binding SelectedIcon}"
-                              ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
-                              Background="Transparent">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Width="500"></WrapPanel>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding}" Height="30" Margin="2"></Image>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ListView>
+                <ListView BorderThickness="0"
+                          Width="510" Height="150"
+                          SelectedItem="{Binding SelectedIcon}"
+                          ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
+                          Background="Transparent">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Width="500"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding}" Height="30" Width="30" Margin="5" Cursor="Hand"></Image>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
 
 
-                    <StackPanel Margin="0 20" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" Width="100" Margin="10 0"></Button>
-                        <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" Width="100" Margin="10 0"></Button>
-                    </StackPanel>
+                <StackPanel Margin="0 20" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" Width="100" Margin="10 0"></Button>
+                    <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" Width="100" Margin="10 0"></Button>
                 </StackPanel>
-            </Grid>
-        </Grid>
+            </StackPanel>
     </Border>
 </styles:WindowChromeBase>
