@@ -215,7 +215,7 @@
                     </ComboBox>
 
 
-                    <Button Grid.Column="2" Width="30" Height="30" 
+                    <Button Grid.Column="2" Width="Auto" Height="30" 
                             Margin="10 0 0 0"
                             Background="Transparent"
                             attachProperty:VisionElement.BackgroundAccent="Transparent"
