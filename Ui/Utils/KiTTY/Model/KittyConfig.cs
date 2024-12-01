@@ -37,6 +37,10 @@ namespace _1RM.Utils.KiTTY.Model
                 {
                     var para = line.Substring(0, i0);
                     var val = line.Substring(i0 + 1).TrimEnd('\\');
+                    if (string.IsNullOrWhiteSpace(para) || string.IsNullOrWhiteSpace(val))
+                    {
+                        continue;
+                    }
                     if (double.TryParse(val.Replace(',', '_'), out _))
                     {
                         ret.Add(new KittyConfigKeyValuePair() { Key = para, Value = val, ValueKind = RegistryValueKind.DWord });
