@@ -30,6 +30,7 @@ namespace _1RM.View
             // restore the window size from 
             this.Width = localityService.MainWindowWidth;
             this.Height = localityService.MainWindowHeight;
+            this.WindowState = localityService.MainWindowState;
             // check the current screen size
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             if (this.Width > screenEx.VirtualWorkingArea.Width)
@@ -41,10 +42,16 @@ namespace _1RM.View
             {
                 if (this.WindowState == WindowState.Normal)
                 {
+                    localityService.MainWindowState = this.WindowState;
                     localityService.MainWindowHeight = this.Height;
                     localityService.MainWindowWidth = this.Width;
                     SimpleLogHelper.Debug($"Main window resize to: w = {this.Width}, h = {this.Height}");
                 }
+            };
+
+            this.StateChanged += (sender, args) =>
+            {
+                localityService.MainWindowState = this.WindowState;
             };
 
             WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
