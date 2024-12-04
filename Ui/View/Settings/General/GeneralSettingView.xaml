@@ -145,19 +145,17 @@
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log level"></TextBlock>
 
-                <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <ComboBox MinWidth="200" HorizontalAlignment="Left" 
+                <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" 
                           SelectedIndex="{Binding LogLevel, Converter={StaticResource ConverterEnumLogLevel}}">
-                        <ComboBoxItem>Debug</ComboBoxItem>
-                        <ComboBoxItem>Info</ComboBoxItem>
-                        <ComboBoxItem>Warning</ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
+                    <ComboBoxItem>Debug</ComboBoxItem>
+                    <ComboBoxItem>Info</ComboBoxItem>
+                    <ComboBoxItem>Warning</ComboBoxItem>
+                </ComboBox>
             </Grid>
 
 

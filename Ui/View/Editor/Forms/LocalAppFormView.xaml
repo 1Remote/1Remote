@@ -151,9 +151,11 @@
                              Tag="{Binding HintPrivateKey}"></TextBox>
                 </Grid>
                 <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                        Margin="5,0,0,0"
+                        Margin="5"
                         Content="{DynamicResource Select}" 
-                        Click="ButtonOpenPrivateKey_OnClick">
+                        Click="ButtonOpenPrivateKey_OnClick" 
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch">
                 </Button>
             </StackPanel>
 
