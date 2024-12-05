@@ -68,32 +68,6 @@ namespace _1RM.View.Editor.Forms
                 {
                     New.ExePath = value;
                     RaisePropertyChanged();
-
-                    var t = AppArgumentHelper.GetPresetArgumentList(ExePath);
-                    if (t != null)
-                    {
-                        bool same = New.ArgumentList.Count == t.ArgumentList.Count;
-                        if (same)
-                            for (int i = 0; i < New.ArgumentList.Count; i++)
-                            {
-                                if (!New.ArgumentList[i].IsConfigEqualTo(t.ArgumentList[i]))
-                                {
-                                    same = false;
-                                    break;
-                                }
-                            }
-                        if (!same && (New.ArgumentList.All(x => x.IsDefaultValue())
-                                      || MessageBoxHelper.Confirm(IoC.Translate("Do you want to replace the current parameter list with preset value?") + " " + t.DisplayName)))
-                        {
-                            New.RunWithHosting = t.RunWithHosting;
-                            New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
-                            New.ArgumentList = new ObservableCollection<AppArgument>(t.ArgumentList);
-                            New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
-                            CheckMacroRequirement();
-                        }
-                    }
-
-                    RaisePropertyChanged(nameof(Demo));
                 }
             }
         }
@@ -386,7 +360,33 @@ namespace _1RM.View.Editor.Forms
         #endregion
 
 
-
+        public void ResSetArguments()
+        {
+            var t = AppArgumentHelper.GetPresetArgumentList(ExePath);
+            if (t != null)
+            {
+                bool same = New.ArgumentList.Count == t.ArgumentList.Count;
+                if (same)
+                    for (int i = 0; i < New.ArgumentList.Count; i++)
+                    {
+                        if (!New.ArgumentList[i].IsConfigEqualTo(t.ArgumentList[i]))
+                        {
+                            same = false;
+                            break;
+                        }
+                    }
+                if (!same && (New.ArgumentList.All(x => x.IsDefaultValue())
+                              || MessageBoxHelper.Confirm(IoC.Translate("Do you want to replace the current parameter list with preset value?") + " " + t.DisplayName)))
+                {
+                    New.RunWithHosting = t.RunWithHosting;
+                    New.ArgumentList.CollectionChanged -= ArgumentListOnCollectionChanged;
+                    New.ArgumentList = new ObservableCollection<AppArgument>(t.ArgumentList);
+                    New.ArgumentList.CollectionChanged += ArgumentListOnCollectionChanged;
+                    CheckMacroRequirement();
+                }
+            }
+            RaisePropertyChanged(nameof(Demo));
+        }
 
         private RelayCommand? _cmdSelectExePath;
         [JsonIgnore]
@@ -409,6 +409,7 @@ namespace _1RM.View.Editor.Forms
                     var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
                     ExePath = path;
+                    ResSetArguments();
                 });
             }
         }

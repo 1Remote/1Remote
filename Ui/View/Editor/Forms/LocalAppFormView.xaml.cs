@@ -20,5 +20,13 @@ namespace _1RM.View.Editor.Forms
             if (DataContext is LocalApp app)
                 app.PrivateKey = path;
         }
+
+        private void TextBoxExePath_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is LocalAppFormViewModel vm)
+            {
+                vm.ResSetArguments();
+            }
+        }
     }
 }

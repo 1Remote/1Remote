@@ -63,8 +63,9 @@ public static class TagActionHelper
                 server.Tags.Remove(tagName!);
             }
         }
-        IoC.Get<GlobalData>().UpdateServer(protocolServerBases, false);
-        IoC.Get<ServerListPageViewModel>().CmdTagRemove?.Execute(tagName!);
+        IoC.Get<GlobalData>().UpdateServer(protocolServerBases, true);
+        if (IoC.Get<GlobalData>().TagList.Count == 0)
+            IoC.Get<ServerListPageViewModel>().CmdShowMainTab?.Execute();
     }
 
     public static void CmdTagRename(object? o)
