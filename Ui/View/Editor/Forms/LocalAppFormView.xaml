@@ -28,6 +28,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Tag="e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"
+                                 LostFocus="TextBoxExePath_OnLostFocus"
                                  Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                  ></TextBox>
                     </Grid>

@@ -94,20 +94,20 @@ namespace _1RM.View
             get => _server;
             set
             {
-                if (_server != value)
+                //if (_server != value)
                 {
                     _server = value;
                     _server.Tags = _server.Tags.Select(x => x.ToLower()).ToList();
 
-                    if (ConverterNoteToVisibility.IsVisible(Server.Note))
+                    if (ConverterNoteToVisibility.IsVisible(_server.Note))
                     {
                         Execute.OnUIThreadSync(() =>
                         {
-                            HoverNoteDisplayControl = new NoteIcon(this.Server);
+                            HoverNoteDisplayControl = new NoteIcon(_server);
                         });
                     }
-                    LastConnectTime = LocalityConnectRecorder.ConnectTimeGet(Server);
-                    TagString = string.Join(" ", Server.Tags.Select(x => "#" + x));
+                    LastConnectTime = LocalityConnectRecorder.ConnectTimeGet(_server);
+                    TagString = string.Join(" ", _server.Tags.Select(x => "#" + x));
                     RaisePropertyChanged(nameof(TagString));
                     ReLoadTags();
                     RaisePropertyChanged(nameof(Id));
