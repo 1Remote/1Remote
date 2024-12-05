@@ -48,6 +48,13 @@
                         <Setter Property="Margin" Value="0 0 0 0">
                         </Setter>
                     </Style>
+                    <Style x:Key="EditorRowGridTitleFollowing" TargetType="TextBlock" BasedOn="{StaticResource EditorRowGridTitle}">
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Left="20" Right="30"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
 
                     <Style x:Key="EditorRowGridInput" TargetType="Grid">
                         <Setter Property="Width" Value="300"></Setter>

@@ -22,7 +22,7 @@
                                                        Tag="e.g. COM1"
                                                        Selections="{Binding New.SerialPorts, Mode=OneTime}"/>
                     </Grid>
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="70" Text="Speed(bps)"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitleFollowing}" Width="70" Text="Speed(bps)"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <controls:AutoCompleteComboBox Text="{Binding New.BitRate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
                                                        Width="100" HorizontalAlignment="Left"
