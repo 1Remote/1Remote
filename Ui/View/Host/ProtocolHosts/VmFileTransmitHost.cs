@@ -781,8 +781,6 @@ namespace _1RM.View.Host.ProtocolHosts
                             return;
 
                         var fbd = new FolderBrowserDialog();
-                        fbd.Description = IoC.Get<ILanguageService>()
-                            .Translate("file_transmit_host_message_select_files_to_upload");
                         fbd.ShowNewFolderButton = false;
                         if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
