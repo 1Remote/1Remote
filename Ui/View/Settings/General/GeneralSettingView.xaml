@@ -11,6 +11,8 @@
              d:DataContext="{d:DesignInstance local:GeneralSettingViewModel}"
              d:DesignHeight="850" d:DesignWidth="800">
     <Grid Background="{DynamicResource BackgroundBrush}">
+        <ScrollViewer>
+
         <StackPanel>
 
             <TextBlock Text="{DynamicResource system_options_general_title}" Style="{StaticResource BlockTitleColumn}" />
@@ -189,5 +191,7 @@
                 <CheckBox Grid.Column="1" IsChecked="{Binding CopyPortWhenCopyAddress, Mode=TwoWay}" Content="{DynamicResource 'Copy the port along with the address when copying'}" VerticalAlignment="Center"></CheckBox>
             </Grid>
         </StackPanel>
+
+        </ScrollViewer>
     </Grid>
 </UserControl>
