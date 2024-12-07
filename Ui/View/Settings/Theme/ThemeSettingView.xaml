@@ -10,6 +10,8 @@
              d:DataContext="{d:DesignInstance local:ThemeSettingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <ScrollViewer>
+
         <StackPanel>
 
             <TextBlock Text="{DynamicResource Theme}" Style="{StaticResource BlockTitleColumn}" />
@@ -141,5 +143,7 @@
                 </ComboBox>
             </Grid>
         </StackPanel>
+
+        </ScrollViewer>
     </Grid>
 </UserControl>
