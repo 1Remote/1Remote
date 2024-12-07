@@ -13,6 +13,8 @@
         <local:ConverterHotkeyModifierKeys x:Key="ConverterHotkeyModifierKeys"></local:ConverterHotkeyModifierKeys>
     </UserControl.Resources>
     <Grid Background="{DynamicResource BackgroundBrush}">
+        <ScrollViewer>
+
         <StackPanel>
 
             <TextBlock Text="{DynamicResource Launcher}" Style="{StaticResource BlockTitleColumn}" />
@@ -161,5 +163,7 @@
 
             </StackPanel>
         </StackPanel>
+
+        </ScrollViewer>
     </Grid>
 </UserControl>
