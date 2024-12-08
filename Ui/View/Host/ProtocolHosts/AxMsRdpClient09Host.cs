@@ -189,13 +189,12 @@ namespace _1RM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
             ParentWindowResize_StartWatch();
-            _resizeEndTimer?.Stop();
-            _resizeEndTimer?.Start();
-            Task.Factory.StartNew(() =>
-            {
-                Thread.Sleep(5000);
-                _resizeEndTimer?.Stop();
-            });
+            //_resizeEndTimer?.Start();
+            //Task.Factory.StartNew(() =>
+            //{
+            //    Thread.Sleep(5000);
+            //    _resizeEndTimer?.Stop();
+            //});
         }
 
 
