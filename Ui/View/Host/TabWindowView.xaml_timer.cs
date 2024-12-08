@@ -89,7 +89,12 @@ TabWindowView: BringWindowToTop({_myHandle})");
             _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
-
+		/****
+         * THE PURPOSE OF THIS FUNCTION IS TO:
+         * - LET YOUR LOCAL DESKTOP WINDOW GET FOCUS WHEN YOU MOVE THE CURSOR OUT OF THE RDP WINDOW
+         * - LET THE RDP WINDOW GET FOCUS WHEN YOU MOVE THE CURSOR INTO THE RDP WINDOW
+         * - CAUTION: PAY ATTENTION TO THE RESIZE OF THE RDP WINDOW, IT MAY CAUSE THE CURSOR TO MOVE OUT OF THE RDP WINDOW, SO WE NEED TO CHECK IF THE LEFT MOUSE BUTTON IS PRESSED OR NOT
+        ***/
         #region RunForRdp
 
         [StructLayout(LayoutKind.Sequential)]
@@ -129,7 +134,8 @@ TabWindowView: BringWindowToTop({_myHandle})");
         }
 
 
-        private int _rdpStage = 0; // 0 - not connected, 1 - RDP got focus, 2 - RDP lost focus desk got focus(focus can rollback to RDP), 3 - RDP lost focus desk lost focus (focus can not rollback to RDP)
+        private int _rdpStage = 0; // flag: 0 - not connected, 1 - RDP got focus, 2 - RDP lost focus desk got focus(focus can rollback to RDP), 3 - RDP lost focus desk lost focus (focus can cannot rollback to RDP)
+
         private void RunForRdp()
         {
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
@@ -137,24 +143,36 @@ TabWindowView: BringWindowToTop({_myHandle})");
             if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
                 return;
 
+			// Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
+			bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
+								  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
+								  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
+			if (isMousePressed)
+			{
+#if DEBUG
+				SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
+#endif
+				return;
+			}
+
             var nowActivatedWindowHandle = GetForegroundWindow();
             var desktopHandle = GetDesktopWindow();
 
 #if DEBUG
-            SimpleLogHelper.Debug($"tabHwnd = {_myHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
+            SimpleLogHelper.Debug($"Tab focus: tabHwnd = {_myHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
 #endif
 
             bool isMouseInside = IsMouseInside(this);
 
             if (_rdpStage == 1 && !isMouseInside)
             {
-                // 1 - RDP got focus  AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
+                // 1 - RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
                 _rdpStage = 2;
                 SetForegroundWindow(desktopHandle);
             }
             else if (_rdpStage == 2)
             {
-                // if focus to other window, then stage = 3
+                // if focus is on another window, then stage = 3
                 if (nowActivatedWindowHandle != desktopHandle)
                 {
                     _rdpStage = 3;
@@ -168,14 +186,14 @@ TabWindowView: BringWindowToTop({_myHandle})");
             }
             else if (_rdpStage == 3)
             {
-                // 3 - neither RDP nor local desk lost focus, can not rollback to RDP, do nothing
+                // 3 - neither RDP nor local desktop has focus, cannot rollback to RDP, do nothing
             }
 
             if (_rdpStage != 1 && isMouseInside && _myHandle == nowActivatedWindowHandle)
             {
                 _rdpStage = 1;
             }
-        } 
+        }
         #endregion
     }
 }
