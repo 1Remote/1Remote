@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
 using Shawn.Utils;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using _1RM.Service;
+using _1RM.Utils;
 
 namespace _1RM.Model.Protocol
 {
@@ -100,7 +103,21 @@ namespace _1RM.Model.Protocol
                 }
                 return Address;
             }
-            return System.IO.Path.GetFileName(ExePath) + " " + GetArguments(true);
+
+            try
+            {
+                if (File.Exists(ExePath))
+                    return System.IO.Path.GetFileName(ExePath) + " " + GetArguments(true);
+            }
+            catch (Exception e)
+            {
+                MsAppCenterHelper.Error(e, new Dictionary<string, string>()
+                {
+                    {"ExePath", ExePath},
+                });
+            }
+
+            return "";
         }
 
         public override double GetListOrder()
