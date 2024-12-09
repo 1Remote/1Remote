@@ -150,7 +150,7 @@
             </Grid.RowDefinitions>
 
             <!-- Tag indicator: popup when any selected tag which is not in the `shown tag list` -->
-            <Grid Grid.Row="0" Height="40">
+            <Grid Grid.Row="0" MinHeight="40">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Setter Property="VerticalAlignment" Value="Top"></Setter>
@@ -163,7 +163,9 @@
                     </Style>
                 </Grid.Style>
 
-                <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
+                <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" 
+                              Margin="0 10 0 0"
+                              ItemsSource="{Binding TagFilters}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -805,7 +807,7 @@
             </Border>
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
-                <Grid Height="20">
+                <Grid MinHeight="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -836,23 +838,32 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="">
-                                        <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                                        <Setter Property="Cursor" Value="Arrow" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                                        <Setter Property="Cursor" Value="Arrow" />
-                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding SelectedTabName}" Value=""/>
+                                            <Condition Binding="{Binding TagListViewModel}" Value="{x:Null}"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding SelectedTabName}" Value="{x:Null}"/>
+                                            <Condition Binding="{Binding TagListViewModel}" Value="{x:Null}"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                     </Button>
 
-                    <Button Grid.Column="1"
-                            MinWidth="80"
+                    <Button Grid.Column="1" MinWidth="80"
                             Command="{Binding CmdShowTagTab}"
                             BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>
@@ -864,10 +875,9 @@
                                                 <Border Background="{TemplateBinding Background}"
                                                         SnapsToDevicePixels="true">
                                                 </Border>
-                                                <ContentPresenter
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                             </Grid>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -1019,7 +1029,7 @@
 
                     <CheckBox Grid.Column="3"
                               Name="CbPopForInExport" 
-                              Width="30">
+                              Width="30" Height="20">
                         <CheckBox.Template>
                             <ControlTemplate>
                                 <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">
@@ -1049,7 +1059,6 @@
                            StaysOpen="False"
                            AllowsTransparency="True"
                            PlacementTarget="{Binding ElementName=CbPopForInExport}">
-
                         <Border CornerRadius="5" Background="{DynamicResource PrimaryDarkBrush}">
                             <StackPanel Orientation="Vertical">
                                 <MenuItem Header="{DynamicResource Add}" Command="{Binding CmdAdd}">

@@ -30,7 +30,7 @@
 
                     <TextBlock Text="{DynamicResource 'Please select a Data Source'}" 
                                 Style="{StaticResource TextBlockBase}"
-                               Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" Height="30" 
+                               Margin="15" FontSize="{DynamicResource GlobalFontSizeTitle}" MinHeight="30" 
                                Foreground="{DynamicResource PrimaryTextBrush}"
                                HorizontalAlignment="Center" ></TextBlock>
 
@@ -68,7 +68,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="model:DataSourceBase">
-                                <Grid Height="35">
+                                <Grid MinHeight="35">
                                     <Border x:Name="GridContainer" CornerRadius="{StaticResource DefaultCornerRadius}"></Border>
                                     <Grid Width="440" HorizontalAlignment="Left">
                                         <Grid.ColumnDefinitions>

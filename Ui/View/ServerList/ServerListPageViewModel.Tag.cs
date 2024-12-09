@@ -22,11 +22,14 @@ namespace _1RM.View.ServerList
 
 
         private bool _isTagFiltersShown;
+        /// <summary>
+        /// a value indicating whether to display the `tag filters indicator bar`.
+        /// </summary>
         public bool IsTagFiltersShown
-        {
-            get => _isTagFiltersShown;
-            set => SetAndNotifyIfChanged(ref _isTagFiltersShown, value);
-        }
+		{
+			get => _isTagFiltersShown;
+			set => SetAndNotifyIfChanged(ref _isTagFiltersShown, value);
+		}
 
         private string _selectedTabName = TAB_ALL_NAME;
         public string SelectedTabName { get => _selectedTabName; private set => SetAndNotifyIfChanged(ref _selectedTabName, value); }
@@ -71,22 +74,20 @@ namespace _1RM.View.ServerList
                     {
                         tagName = TAB_ALL_NAME;
                     }
-                    else // if (filters?.Count > 1)
+                    else
                     {
                         tagName = TAB_NONE_SELECTED;
                     }
 
 
-                    if (_tagFilters.Count == 1
-                        && _tagFilters[0].IsIncluded == true
+                    if (_tagFilters is [{ IsIncluded: true }]
                         && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == _tagFilters[0].TagName))
                     {
-                        // 如果 tag 过滤器已经在 tab 上显示了，就不显示  tag on the top
+                        // If the current tag is `IsIncluded` and already pinned on top, then do not display the tag selector indicator.
                         IsTagFiltersShown = false;
                     }
                     else if (_tagFilters.Count > 0)
                     {
-                        // 如果 tag 过滤器已经在 tab 上显示了，就不显示  tag on the top
                         IsTagFiltersShown = true;
                     }
                     else
@@ -191,8 +192,9 @@ namespace _1RM.View.ServerList
             {
                 return _cmdShowTagTab ??= new RelayCommand((o) =>
                 {
+                    IoC.Get<MainWindowViewModel>().SetMainFilterString(null, null);
                     TagListViewModel = TagsPanelViewModel;
-                    SelectedTabName = TAB_NONE_SELECTED;
+                    SelectedTabName = TAB_ALL_NAME;
                 });
             }
         }

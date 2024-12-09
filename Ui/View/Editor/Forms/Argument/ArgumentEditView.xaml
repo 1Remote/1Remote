@@ -162,8 +162,8 @@
 
 
                 <StackPanel Margin="0 0 0 20" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" Width="100" Margin="10 0"></Button>
-                    <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" Width="100" Margin="10 0"></Button>
+                    <Button Command="{Binding CmdSave}" Content="{DynamicResource Save}" MinWidth="100" Margin="10 0"></Button>
+                    <Button Command="{Binding CmdCancel}" Content="{DynamicResource Cancel}" MinWidth="100" Margin="10 0"></Button>
                 </StackPanel>
             </StackPanel>
         </Grid>

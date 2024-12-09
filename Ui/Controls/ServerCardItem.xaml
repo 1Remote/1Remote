@@ -201,9 +201,9 @@
 
             <Grid Grid.Row="0" Grid.RowSpan="3">
                 <Image Source="{Binding Server.IconImg, Mode=OneWay}" 
-                               RenderOptions.BitmapScalingMode="LowQuality"
-                               Width="80" Height="80"
-                               Stretch="UniformToFill">
+                       RenderOptions.BitmapScalingMode="LowQuality"
+                       Width="80" Height="80"
+                       Stretch="UniformToFill">
                 </Image>
             </Grid>
 

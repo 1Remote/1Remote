@@ -170,7 +170,9 @@
 
                     <TextBlock TextWrapping="Wrap"
                                HorizontalAlignment="Left"
+                               Width="290"
                                Margin="0"
+                               FontSize="{DynamicResource GlobalFontSizeSmall}"
                                Text="{DynamicResource 'Before runner start the environment variables will be set'}" 
                                Opacity="0.8"></TextBlock>
                     <ListBox ItemsSource="{Binding ExternalRunner.EnvironmentVariables}"
