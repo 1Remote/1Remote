@@ -18,6 +18,7 @@ using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.Controls
 {
+    // TODO: DELETE THIS FILE AS IT IS NOT USED
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged

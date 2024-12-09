@@ -147,95 +147,6 @@
                                                    Text="{Binding Server.ColorHex}"></TextBlock>
                                     </StackPanel>
                                 </controls:GridWith4Columns>
-                                <!--<Grid Name="PopupLogoSelector" Height="0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                                        <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                            <Border BorderThickness="1" Background="{DynamicResource BackgroundBrush}">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
-                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
-                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <Grid Width="510">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                                        <ColumnDefinition></ColumnDefinition>
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel >
-                                                        <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Button Style="{StaticResource ButtonBarAccentStyle}" 
-                                                                    Content="{DynamicResource Done}" 
-                                                                    Click="ButtonLogoSave_OnClick">
-                                                            </Button>
-
-                                                            <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
-                                                                    Content="{DynamicResource Reset}" 
-                                                                    Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                            </Button>
-                                                        </Grid>
-                                                    </StackPanel>
-                                                    <Grid Grid.Column="1">
-                                                        <Border BorderThickness="1 0 0 0">
-                                                            <Border.Style>
-                                                                <Style TargetType="Border">
-                                                                    <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
-                                                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                                        </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
-                                                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Border.Style>
-                                                        </Border>
-                                                        <ListView BorderThickness="0"
-                                                                  SelectionChanged="Selector_OnSelectionChanged"
-                                                                  MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                                  ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
-                                                                  Background="Transparent">
-                                                            <ListView.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <controls2:VirtualizingWrapPanel Orientation="Vertical" 
-                                                                        IsVirtualizing="True"
-                                                                        ScrollUnit="Item"
-                                                                        SpacingMode="None"
-                                                                        VirtualizationMode="Recycling"
-                                                                        CanHorizontallyScroll="False"
-                                                                        MouseWheelDelta="1"
-                                                                        MouseWheelDeltaItem="1"
-                                                                        CacheLengthUnit="Item"
-                                                                        Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
-                                                                </ItemsPanelTemplate>
-                                                            </ListView.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Image Source="{Binding}" Height="30" Margin="2"></Image>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ListView>
-                                                    </Grid>
-                                                </Grid>
-                                            </Border>
-                                        </Grid>
-                                    </StackPanel>
-                                </Grid>-->
-
 
 
                                 <controls:GridWith4Columns Margin="0 15 0 0">
@@ -436,7 +347,7 @@
             </Border>
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
-                <Grid Height="{StaticResource TopHeight}">
+                <Grid MinHeight="{StaticResource TopHeight}">
                     <!-- buck edit title -->
                     <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" 
                                Margin="50 0" TextTrimming="CharacterEllipsis"
@@ -587,8 +498,8 @@
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
                     <Grid Width="300">
-                        <Button Name="ButtonSave"
-                                Padding="0 1 0 0" Width="80" Height="25"
+                        <Button Name="ButtonSave" MinWidth="80" MinHeight="25"
+                                Padding="0 1 0 0"
                                 HorizontalAlignment="Left"
                                 attachProperty:VisionElement.BorderBrushOnMouseOver="{DynamicResource AccentMidBrush}"
                                 attachProperty:VisionElement.BorderBrushOnMouseDown="{DynamicResource AccentMidBrush}"
@@ -611,7 +522,7 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Padding="0 1 0 0" Width="80" Height="25"
+                        <Button Padding="0 1 0 0" MinWidth="80" MinHeight="25"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
                                 Style="{StaticResource ButtonPrimaryStyle}"

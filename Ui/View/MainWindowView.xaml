@@ -69,7 +69,7 @@
             <StackPanel Grid.Row="0"
                         Orientation="Horizontal" HorizontalAlignment="Right">
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
-                    <TextBox Width="150" Height="25"
+                    <TextBox Width="150" Height="25" FontSize="12"
                              attachProperty:FocusExtension.IsFocused="{Binding MainFilterIsFocused}"
                              attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
                              Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"

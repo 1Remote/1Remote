@@ -25,7 +25,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitleFollowing}" Width="70" Text="Speed(bps)"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <controls:AutoCompleteComboBox Text="{Binding New.BitRate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                                       Width="100" HorizontalAlignment="Left"
+                                                       MinWidth="100" HorizontalAlignment="Left"
                                                        Tag="e.g. 9600"
                                                        Selections="{Binding New.BitRates, Mode=OneTime}"/>
                     </Grid>
