@@ -278,26 +278,6 @@ namespace _1RM.View.Host.ProtocolHosts
             t.Start();
         }
 
-        public void TvFileList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ListView? view = null;
-            ScrollContentPresenter? p = null;
-            if (sender is ListView lv)
-            {
-                view = lv;
-                var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
-                p = MyVisualTreeHelper.FindVisualChild<ScrollContentPresenter>((DependencyObject)ip!);
-            }
-            if (view == null || p == null)
-                return;
-            var curSelectedItem = MyVisualTreeHelper.GetItemOnPosition(p, e.GetPosition(p));
-            if (curSelectedItem == null)
-            {
-                ((ListView)sender).SelectedItem = null;
-            }
-            e.Handled = false;
-        }
-
         public void FileList_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             ListView? view = null;
