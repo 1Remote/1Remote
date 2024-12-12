@@ -107,7 +107,6 @@
                           ItemsSource="{Binding RemoteItems}" 
                           SelectedItem="{Binding SelectedRemoteItem}"
                           SelectionChanged="TvFileList_OnSelectionChanged"
-                          PreviewMouseDown="TvFileList_OnPreviewMouseDown"
                           PreviewKeyDown="TvFileList_OnKeyDown"
                           MouseDoubleClick="TvFileList_OnMouseDoubleClick"
                           PreviewMouseRightButtonDown="FileList_OnPreviewMouseRightButtonDown"
@@ -638,9 +637,9 @@
 
 
 
-        <Grid Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
+        <!--<Grid Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
             <Grid Background="Black" Opacity="{Binding GridLoadingBgOpacity}"></Grid>
             <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
-        </Grid>
+        </Grid>-->
     </Grid>
 </protocolHosts1:HostBase>

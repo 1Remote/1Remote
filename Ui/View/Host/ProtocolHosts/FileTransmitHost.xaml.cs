@@ -54,9 +54,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _vmRemote.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem))
+                if (args.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem)
+                    && _vmRemote.SelectedRemoteItem != null)
                 {
-                    TvFileList.ScrollIntoView(TvFileList.SelectedItem);
+                    TvFileList.ScrollIntoView(_vmRemote.SelectedRemoteItem);
                 }
             };
 
@@ -166,11 +167,6 @@ namespace _1RM.View.Host.ProtocolHosts
         private void FileList_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             _vmRemote.FileList_OnPreviewMouseRightButtonDown(sender, e);
-        }
-
-        private void TvFileList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _vmRemote.TvFileList_OnPreviewMouseDown(sender, e);
         }
 
         private void TvFileList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
