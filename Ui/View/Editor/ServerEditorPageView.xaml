@@ -44,7 +44,7 @@
                     <Setter Property="MinHeight" Value="30"></Setter>
                     <Setter Property="Margin">
                         <Setter.Value>
-                            <Thickness Bottom="15"></Thickness>
+                            <Thickness Bottom="0" Top="15"></Thickness>
                         </Setter.Value>
                     </Setter>
                 </Style>
@@ -62,8 +62,8 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
 
-                        <Grid>
 
+                        <Grid>
                             <StackPanel Orientation="Vertical">
                                 <controls:GridWith4Columns>
                                     <TextBlock Grid.Column="0" Text="{DynamicResource Name}" Style="{StaticResource RowHeader}"></TextBlock>
@@ -73,24 +73,7 @@
                                 </controls:GridWith4Columns>
 
 
-
-                                <controls:GridWith4Columns Margin="0 15 0 0">
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource Tags}" Style="{StaticResource RowHeader}"></TextBlock>
-                                    <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
-                                                 Tags="{Binding Server.Tags, Mode=TwoWay}"
-                                                 TagsForSelect="{Binding TagSelections, Mode=OneTime}"></controls:TagsEditor>
-                                </controls:GridWith4Columns>
-                                <controls:GridWith4Columns Margin="0 5 0 15">
-                                    <TextBlock Grid.Column="1"
-                                               Style="{StaticResource TextBlockBase}"
-                                               Text="{DynamicResource 'Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.'}"
-                                               TextWrapping="WrapWithOverflow" 
-                                               Opacity="0.5"></TextBlock>
-                                </controls:GridWith4Columns>
-
-
-
-                                <controls:GridWith4Columns Margin="0">
+                                <controls:GridWith4Columns>
                                     <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource Icon}"></TextBlock>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -149,7 +132,34 @@
                                 </controls:GridWith4Columns>
 
 
-                                <controls:GridWith4Columns Margin="0 15 0 0">
+
+
+
+                                <controls:GridWith4Columns>
+                                    <CheckBox IsChecked="{Binding Server.AlwaysOpenInNewTabWindow}" Grid.Column="1" Content="{DynamicResource 'Always open in new window'}"></CheckBox>
+                                </controls:GridWith4Columns>
+
+
+
+                                <controls:GridWith4Columns>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Tags}" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
+                                                         Tags="{Binding Server.Tags, Mode=TwoWay}"
+                                                         TagsForSelect="{Binding TagSelections, Mode=OneTime}"></controls:TagsEditor>
+                                </controls:GridWith4Columns>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <TextBlock Text="" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <TextBlock MaxWidth="600"
+                                               Style="{StaticResource TextBlockBase}"
+                                               Text="{DynamicResource 'Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.'}"
+                                               TextWrapping="WrapWithOverflow" 
+                                               Opacity="0.5"></TextBlock>
+                                </StackPanel>
+
+
+
+                                <controls:GridWith4Columns>
                                     <TextBlock Style="{StaticResource RowHeader}" Grid.Column="0" Text="{DynamicResource 'Script before connect'}"></TextBlock>
                                     <TextBox Grid.Column="1"
                                              Text="{Binding Server.CommandBeforeConnected, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
@@ -170,16 +180,17 @@
                                     </StackPanel>
                                 </controls:GridWith4Columns>
 
-                                <controls:GridWith4Columns Margin="0 5 0 15">
-                                    <CheckBox Grid.Column="1"
-                                              VerticalContentAlignment="Top"
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <TextBlock Text="" Style="{StaticResource RowHeader}"></TextBlock>
+                                    <CheckBox VerticalContentAlignment="Top"
+                                              MaxWidth="600"
                                               IsChecked="{Binding Server.HideCommandBeforeConnectedWindow}" 
                                               ToolTip="{DynamicResource 'Hide script window'}">
                                         <TextBlock Text="{DynamicResource 'Hide script window'}"
                                                    TextWrapping="WrapWithOverflow" 
                                                    Opacity="0.5"></TextBlock>
                                     </CheckBox>
-                                </controls:GridWith4Columns>
+                                </StackPanel>
 
 
 
@@ -206,7 +217,7 @@
 
                                 <controls:GridWith4Columns>
                                     <controls:GridWith4Columns.Style>
-                                        <Style TargetType="controls:GridWith4Columns">
+                                        <Style TargetType="controls:GridWith4Columns" BasedOn="{StaticResource {x:Type controls:GridWith4Columns}}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Runners.Count}" Value="0">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -230,7 +241,7 @@
 
 
                     <controls:GridWith4Columns VerticalAlignment="Top" MinHeight="60">
-                        <Grid Margin="40 25" Grid.Column="2" Grid.ColumnSpan="2">
+                        <Grid Margin="40 32" Grid.Column="2" Grid.ColumnSpan="2">
                             <StackPanel>
                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource RowHeader}" Text="{DynamicResource Note}" TextAlignment="Center"></TextBlock>

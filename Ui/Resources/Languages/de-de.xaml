@@ -321,4 +321,5 @@
     <s:String x:Key="Yes">Yes</s:String>
     <s:String x:Key="No">No</s:String>
     <s:String x:Key="Click on the icon above to change it to your own image">Klicken Sie auf das Symbol oben, um es in Ihr eigenes Bild zu ändern</s:String>
+    <s:String x:Key="Always open in new window">Immer in neuem Fenster öffnen</s:String>
 </ResourceDictionary>
