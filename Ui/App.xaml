@@ -65,7 +65,7 @@
                         <Setter Property="FontWeight" Value="Bold"></Setter>
                         <Setter Property="TextAlignment" Value="Left"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                        <Setter Property="Margin" Value="80 20 0 10"></Setter>
+                        <Setter Property="Margin" Value="60 20 0 10"></Setter>
                     </Style>
 
 

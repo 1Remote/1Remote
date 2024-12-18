@@ -321,4 +321,5 @@
     <s:String x:Key="Yes">是</s:String>
     <s:String x:Key="No">否</s:String>
     <s:String x:Key="Click on the icon above to change it to your own image">點擊上面的圖標將其更改為您自己的圖像</s:String>
+    <s:String x:Key="Always open in new window">始終在新視窗中打開</s:String>
 </ResourceDictionary>

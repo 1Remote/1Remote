@@ -154,6 +154,10 @@ namespace _1RM.Service
             {
                 lock (_dictLock)
                 {
+                    if (p.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken))
+                    {
+                        assignTabToken = DateTime.Now.Ticks.ToString();
+                    }
                     tab = this.GetOrCreateTabWindow(assignTabToken);
                     if (tab == null) return;
                     if (tab.IsClosing) return;

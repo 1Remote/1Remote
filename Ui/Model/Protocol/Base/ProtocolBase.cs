@@ -83,6 +83,13 @@ namespace _1RM.Model.Protocol.Base
         public string SubTitle => GetSubTitle();
 
 
+        private bool? _alwaysOpenInNewTabWindow = false;
+        public bool? AlwaysOpenInNewTabWindow
+        {
+            get => _alwaysOpenInNewTabWindow;
+            set => SetAndNotifyIfChanged(ref _alwaysOpenInNewTabWindow, value);
+        }
+
         // ReSharper disable once ArrangeObjectCreationWhenTypeEvident
         private List<string> _tags = new List<string>();
         public List<string> Tags
