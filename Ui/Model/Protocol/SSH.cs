@@ -74,7 +74,7 @@ namespace _1RM.Model.Protocol
         public override double GetListOrder()
         {
             // https://github.com/kovidgoyal/kitty
-            return 1;
+            return 2;
         }
 
         [JsonIgnore]
