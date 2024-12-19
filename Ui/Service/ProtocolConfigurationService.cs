@@ -59,6 +59,7 @@ namespace _1RM.Service
             ProtocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
             ProtocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
             ProtocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
+            ProtocolConfigs.Add(Serial.ProtocolName, InitProtocol(protocolFolderName, new Serial(), new KittyRunner(Serial.ProtocolName), $"Built-in KiTTY"));
             ProtocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
             ProtocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
