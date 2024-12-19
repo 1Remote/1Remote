@@ -63,8 +63,6 @@ namespace _1RM.Utils.KiTTY
                 puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
                 puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
 
-                puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
-
                 //SerialLine\COM1\
                 //SerialSpeed\9600\
                 //SerialDataBits\8\
