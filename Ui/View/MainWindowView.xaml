@@ -19,7 +19,7 @@
                          Style="{StaticResource WindowChromeBaseBaseStyle}"
                          Title="{x:Static Rm:Assert.APP_NAME}" 
                          Height="560" Width="900" 
-                         MinWidth="700" MinHeight="500">
+                         MinWidth="300" MinHeight="300">
     <styles:WindowChromeBase.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />

@@ -84,7 +84,7 @@
                 </ComboBox>
 
                 <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                    <Hyperlink NavigateUri="https://putty.org.ru/themes/" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>
                 </TextBlock>
@@ -104,7 +104,7 @@
                 </ComboBox>
 
                 <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
-                    <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                    <Hyperlink NavigateUri="https://putty.org.ru/themes/" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                         (?)
                     </Hyperlink>
                 </TextBlock>

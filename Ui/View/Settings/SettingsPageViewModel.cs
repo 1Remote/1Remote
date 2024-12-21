@@ -152,16 +152,17 @@ namespace _1RM.View.Settings
                         return;
                     }
 
-                    foreach (var additionalSource in _dataSourceService.AdditionalSources)
-                    {
-                        var status = additionalSource.Value.Database_SelfCheck();
-                        if (status.Status != EnumDatabaseStatus.OK)
-                        {
-                            ShowPage(EnumMainWindowPage.SettingsData);
-                            MessageBoxHelper.ErrorAlert(status.GetErrorMessage);
-                            return;
-                        }
-                    }
+                    // do not check additional sources here, because team database may not be connected when one leaves working place.
+                    //foreach (var additionalSource in _dataSourceService.AdditionalSources)
+                    //{
+                    //    var status = additionalSource.Value.Database_SelfCheck();
+                    //    if (status.Status != EnumDatabaseStatus.OK)
+                    //    {
+                    //        ShowPage(EnumMainWindowPage.SettingsData);
+                    //        MessageBoxHelper.ErrorAlert(status.GetErrorMessage);
+                    //        return;
+                    //    }
+                    //}
 
                     if (_configurationService.Launcher.LauncherEnabled != IoC.TryGet<LauncherWindowViewModel>()?.SetHotKey(_configurationService.Launcher.LauncherEnabled, _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey))
                     {

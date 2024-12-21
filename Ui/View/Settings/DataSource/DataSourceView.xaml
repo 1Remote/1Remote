@@ -172,7 +172,6 @@
         </DataGrid>
 
 
-        <ScrollViewer>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Height="35" HorizontalAlignment="Right">
 
             <!--SET DATA CHECK PERIOD-->
@@ -241,7 +240,5 @@
                 </Hyperlink>
             </TextBlock>
         </StackPanel>
-
-        </ScrollViewer>
     </Grid>
 </UserControl>

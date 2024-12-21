@@ -125,7 +125,8 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            MessageBoxHelper.ErrorAlert(IoC.Translate("system_options_data_security_error_can_not_open"), ownerViewModel: this);
+                            MsAppCenterHelper.Error(ee);
+                            MessageBoxHelper.ErrorAlert(ee.Message, ownerViewModel: this);
                         }
                     });
                 });
