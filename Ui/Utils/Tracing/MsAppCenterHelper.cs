@@ -72,9 +72,9 @@ namespace _1RM.Utils
                 }
 
             var list = new List<ErrorAttachmentLog>();
-            foreach (var (k,v) in attachments ?? new Dictionary<string, string>())
+            foreach (var kv in attachments ?? new Dictionary<string, string>())
             {
-                list.Add(ErrorAttachmentLog.AttachmentWithText(v, k));
+                list.Add(ErrorAttachmentLog.AttachmentWithText(kv.Value, kv.Key));
             }
             Crashes.TrackError(e, properties, list.ToArray());
 

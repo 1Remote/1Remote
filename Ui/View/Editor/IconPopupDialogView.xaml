@@ -10,6 +10,7 @@
                          xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                          xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                          xmlns:icons="clr-namespace:_1RM.Resources.Icons"
+                         xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d" 
                          ShowInTaskbar="False"
                          WindowStyle="None"
@@ -69,6 +70,7 @@
                           Width="510" Height="150"
                           SelectedItem="{Binding SelectedIcon}"
                           ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
+                          MouseDoubleClick="{s:Action ServerIconsOnDoubleClick}"
                           Background="Transparent">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>

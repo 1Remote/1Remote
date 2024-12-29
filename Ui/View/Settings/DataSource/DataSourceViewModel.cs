@@ -65,8 +65,7 @@ namespace _1RM.View.Settings.DataSource
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (o is not string type
-                        || _configurationService.AdditionalDataSource.Count >= 2)
+                    if (o is not string type)
                     {
                         return;
                     }
@@ -114,7 +113,6 @@ namespace _1RM.View.Settings.DataSource
                     });
                 }, _ =>
                         IoPermissionHelper.HasWritePermissionOnFile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath)
-                        && _configurationService.AdditionalDataSource.Count < 2
                     );
             }
         }

@@ -75,7 +75,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<AssemblyVersion>1.0.1.41117</AssemblyVersion>
+		<AssemblyVersion>1.0.1.41230</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<Authors>Shawn</Authors>
@@ -131,6 +131,8 @@
 		<None Remove="Resources\Icons\000_OS\000_Win2016.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win2019.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win2022.png" />
+		<None Remove="Resources\Icons\000_OS\000_Win2025.png" />
+		<None Remove="Resources\Icons\000_OS\000_Win2025_white.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win7.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win7_2.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win8.png" />
@@ -214,6 +216,8 @@
 		<Resource Include="Resources\Icons\000_OS\000_Win2016.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win2019.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win2022.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2025.png" />
+		<Resource Include="Resources\Icons\000_OS\000_Win2025_white.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win7.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win7_2.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win8_0.png" />
