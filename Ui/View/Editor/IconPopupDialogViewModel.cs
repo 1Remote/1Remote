@@ -43,6 +43,11 @@ namespace _1RM.View.Editor
             }
         }
 
+        public void ServerIconsOnDoubleClick()
+        {
+            this.RequestClose(true);
+        }
+
 
         private RelayCommand? _cmdSelectImage;
         public RelayCommand CmdSelectImage
@@ -90,12 +95,12 @@ namespace _1RM.View.Editor
         }
 
 
-        private RelayCommand? _CmdSave;
+        private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
         {
             get
             {
-                return _CmdSave ??= new RelayCommand((o) =>
+                return _cmdSave ??= new RelayCommand((o) =>
                 {
                     this.RequestClose(true);
                 });

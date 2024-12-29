@@ -80,7 +80,8 @@ namespace _1RM.View.ServerList
                     }
 
 
-                    if (_tagFilters is [{ IsIncluded: true }]
+                    if (_tagFilters.Count == 1
+                        && _tagFilters[0].IsIncluded == true
                         && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == _tagFilters[0].TagName))
                     {
                         // If the current tag is `IsIncluded` and already pinned on top, then do not display the tag selector indicator.
