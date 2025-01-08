@@ -43,19 +43,9 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 8 8 8" />
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 6 8" />
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
-                <!--<MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="WindowState" Value="Maximized"></Condition>
-                        <Condition Property="WindowStyle" Value="None"></Condition>
-                    </MultiTrigger.Conditions>
-                    <MultiTrigger.Setters>
-                        <Setter TargetName="WindowContentGrid" Property="Margin" Value="1" />
-                        <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
-                    </MultiTrigger.Setters>
-                </MultiTrigger>-->
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </Window.Template>
