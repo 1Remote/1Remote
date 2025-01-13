@@ -94,6 +94,25 @@ namespace _1RM.View.Host.ProtocolHosts
             _rdpClient.AdvancedSettings7.ConnectToAdministerServer = _rdpSettings.IsAdministrativePurposes == true;
         }
 
+        public void NotifyRedirectDeviceChange(int msg, IntPtr wParam, IntPtr lParam)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+
+            /* from https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable-notifyredirectdevicechange
+             *      https://learn.microsoft.com/en-us/windows/win32/devio/wm-devicechange
+             * wParam case when msg == WM_DEVICECHANGE:
+             * DBT_DEVNODES_CHANGED     0x0007      A device has been added to or removed from the system. param = 0
+             * DBT_DEVICEARRIVAL        0x8000      A device or piece of media has been inserted and is now available. param = A pointer to a structure identifying the device inserted.
+             */
+            SimpleLogHelper.Debug($"RDP: NotifyRedirectDeviceChange Receive(0x{msg:X}, 0x{wParam:X}, 0x{lParam:X})");
+            if (msg == WM_DEVICECHANGE
+                && _rdpClient != null
+                && ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices)
+            {
+                new MsRdpClientNonScriptableWrapper(_rdpClient.GetOcx()).NotifyRedirectDeviceChange(wParam, lParam);
+            }
+        }
+
 
         private void RdpInitConnBar()
         {

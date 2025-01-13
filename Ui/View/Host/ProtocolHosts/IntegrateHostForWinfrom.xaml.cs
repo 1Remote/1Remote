@@ -37,7 +37,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _panel = new System.Windows.Forms.Panel
             {
-                BackColor = System.Drawing.Color.Transparent,
+                BackColor = System.Drawing.Color.Blue,
                 Dock = System.Windows.Forms.DockStyle.Fill,
                 BorderStyle = BorderStyle.None
             };
@@ -53,6 +53,7 @@ namespace _1RM.View.Host.ProtocolHosts
             Loaded += (sender, args) =>
             {
                 _form.Show();
+                //_form.Parent = _panel;
                 _form.Handle.SetParentEx(_panel.Handle);
                 SetToPanelSize();
             };
@@ -87,14 +88,16 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void SetToPanelSize()
         {
-            if (_form == null) return;
-            if (_form.IsLoaded)
-                WindowExtensions.MoveWindow(_form.Handle, 0, 0, (int)(_panel.Width), (int)(_panel.Height), true);
+            _form?.SetWidthHeight((int)(_panel.Width), (int)(_panel.Height));
         }
 
         private void PanelOnSizeChanged(object? sender, EventArgs e)
         {
-            SetToPanelSize();
+            if (IsLoaded)
+            {
+                SimpleLogHelper.Warning($"IntegrateHostForWinFrom PanelOnSizeChanged -> _panel.Size = {_panel.Width}, {_panel.Height}");
+                SetToPanelSize();
+            }
         }
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {

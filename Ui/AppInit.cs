@@ -308,7 +308,7 @@ namespace _1RM
                 ConfigurationServiceObj = new ConfigurationService(KeywordMatchServiceObj, newConfiguration);
             }
 
-            SimpleLogHelper.WriteLogLevel = (SimpleLogHelper.EnumLogLevel)ConfigurationServiceObj.General.LogLevel;
+            SimpleLogHelper.PrintLogLevel = SimpleLogHelper.WriteLogLevel = (SimpleLogHelper.EnumLogLevel)ConfigurationServiceObj.General.LogLevel;
 
             // make sure path is not empty
             if (string.IsNullOrWhiteSpace(ConfigurationServiceObj.LocalDataSource.Path))

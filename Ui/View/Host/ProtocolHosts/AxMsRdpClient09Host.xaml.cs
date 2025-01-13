@@ -55,6 +55,7 @@ namespace _1RM.View.Host.ProtocolHosts
     }
 
 
+    [Obsolete]
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
         private AxMsRdpClient9NotSafeForScriptingEx? _rdpClient = null;

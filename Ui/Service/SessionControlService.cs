@@ -56,6 +56,7 @@ namespace _1RM.Service
         private readonly object _dictLock = new object();
         private readonly ConcurrentDictionary<string, TabWindowView> _token2TabWindows = new ConcurrentDictionary<string, TabWindowView>();
         private readonly ConcurrentDictionary<string, IHostBase> _connectionId2Hosts = new ConcurrentDictionary<string, IHostBase>();
+        [Obsolete]
         private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
         private readonly ConcurrentQueue<IHostBase> _hostToBeDispose = new ConcurrentQueue<IHostBase>();
         private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();

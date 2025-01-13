@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Threading;
 using _1RM.Model.Protocol;
-using System.Windows.Forms;
-using System.Windows;
 using System.Timers;
 using Shawn.Utils;
 using Stylet;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.WpfResources.Theme.Styles;
 using System.Runtime.InteropServices;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -62,8 +59,6 @@ namespace _1RM.View.Host.ProtocolHosts
             ParentWindowResize_StartWatch();
         }
 
-
-
         #region WindowOnResizeEnd
 
         private readonly System.Timers.Timer _resizeEndTimer = new(500) { Enabled = false, AutoReset = false };
@@ -87,10 +82,12 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             lock (_resizeEndLocker)
             {
+                //ReSizeRdpToControlSize();
                 _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
                 _resizeEndTimer.Elapsed += ResizeEndTimerOnElapsed;
                 SizeChanged -= WindowSizeChanged;
                 SizeChanged += WindowSizeChanged;
+                SimpleLogHelper.Warning("RdpHostForm SizeChanged is +");
             }
         }
 
@@ -101,6 +98,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 _resizeEndTimer.Stop();
                 _resizeEndTimer.Elapsed -= ResizeEndTimerOnElapsed;
                 base.SizeChanged -= WindowSizeChanged;
+                SimpleLogHelper.Warning("RdpHostForm SizeChanged is -");
             }
         }
 
@@ -108,8 +106,8 @@ namespace _1RM.View.Host.ProtocolHosts
         private uint _previousHeight = 0;
         private void WindowSizeChanged(object sender, EventArgs e)
         {
-            if (ParentWindow?.WindowState != System.Windows.WindowState.Minimized
-                && _canAutoResizeByWindowSizeChanged
+            if ( // TODO: ParentWindow?.WindowState != System.Windows.WindowState.Minimized 
+                _canAutoResizeByWindowSizeChanged
                 && this._rdpSettings.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
                 // start a timer to resize RDP after 500ms
@@ -126,6 +124,10 @@ namespace _1RM.View.Host.ProtocolHosts
                     });
                 }
             }
+            else
+            {
+                SimpleLogHelper.Warning("RdpHostForm SizeChanged is called by window state is minimized or _canAutoResizeByWindowSizeChanged is false");
+            }
         }
 
         private void ResizeEndTimerOnElapsed(object? sender, ElapsedEventArgs e)
@@ -138,7 +140,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private bool _isReSizeRdpToControlSizeRunning = false;
-        void ReSizeRdpToControlSize()
+        public void ReSizeRdpToControlSize()
         {
             if (_rdpClient.Connected != 1 // https://learn.microsoft.com/en-us/windows/win32/termserv/imstscax-connected
                 || _rdpClient.FullScreen != false

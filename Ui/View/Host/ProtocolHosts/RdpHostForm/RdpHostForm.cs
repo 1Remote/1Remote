@@ -14,6 +14,7 @@ using System.Windows;
 using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
 using Shawn.Utils.Wpf.Image;
+using Timer = System.Timers.Timer;
 
 #if !DEV_RDP
 using _1RM.Service;
@@ -99,24 +100,58 @@ namespace _1RM.View.Host.ProtocolHosts
             base.WndProc(ref m); // <--- TODO Cannot access a disposed object.
         }
 
-
         public RdpHostForm(RDP rdpSettings, bool connectWithFullScreen, int width = 800, int height = 600) : base(rdpSettings, true)
         {
             InitializeComponent();
 
+            this.BackColor = Color.Black;
+#if DEBUG
+            this.BackColor = Color.Aqua;
+#endif
             Icon = rdpSettings.IconImg.ToIcon();
             _rdpSettings = rdpSettings;
 
             this.Name = this.Text = $"{rdpSettings.DisplayName} @{rdpSettings.Address}";
-            this.BackColor = Color.Black;
             this.StartPosition = FormStartPosition.WindowsDefaultBounds;
+            if (connectWithFullScreen)
+            {
+                ShowInTaskbar = true;
+                StartPosition = FormStartPosition.CenterScreen;
+            }
+            else
+            {
+                ShowInTaskbar = false;
+                FormBorderStyle = FormBorderStyle.None;
+                StartPosition = FormStartPosition.CenterParent;
+            }
+
+            SimpleLogHelper.Warning($"RdpHostForm Create -> RdpHostForm.Size = {this.Width}, {this.Height}, target = {width}, {height}");
+            SizeChanged += (sender, args) =>
+            {
+                SimpleLogHelper.Warning($"RdpHostForm WindowSizeChanged -> RdpHostForm.Size = {this.Width}, {this.Height}");
+            };
 
             _rdpClient = new AxMsRdpClient9NotSafeForScriptingEx();
             ((System.ComponentModel.ISupportInitialize)(_rdpClient)).BeginInit();
             // set fill to make rdp widow, so that we can enable RDP SmartSizing
-            _rdpClient.Dock = DockStyle.Fill;
+            //_rdpClient.Dock = DockStyle.Fill;
             _rdpClient.Enabled = true;
             _rdpClient.BackColor = Color.White;
+            _rdpClient.Width = width;
+            _rdpClient.Height = height;
+
+            this.SizeChanged += (sender, args) =>
+            {
+                _rdpClient.Width = this.ClientSize.Width;
+                _rdpClient.Height = this.ClientSize.Height;
+                SimpleLogHelper.Warning($"RDP Host SizeChanged => {Width}, {Height}; ClientSize = {ClientSize}");
+            };
+
+            _rdpClient.SizeChanged += (sender, args) =>
+            {
+                SimpleLogHelper.Warning($"RDP Host: _rdpClient.SizeChanged => {_rdpClient.Width}, {_rdpClient.Height}");
+            };
+
             // set call back
             _rdpClient.OnRequestGoFullScreen += (sender, args) =>
             {
@@ -154,7 +189,6 @@ namespace _1RM.View.Host.ProtocolHosts
 
             this.Controls.Add(_rdpClient);
 
-            this.ShowInTaskbar = false;
             this.Width = width;
             this.Height = height;
 
@@ -179,18 +213,6 @@ namespace _1RM.View.Host.ProtocolHosts
                 GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
 #endif
             };
-
-            if (connectWithFullScreen)
-            {
-                ShowInTaskbar = true;
-                StartPosition = FormStartPosition.CenterScreen;
-            }
-            else
-            {
-                ShowInTaskbar = false;
-                FormBorderStyle = FormBorderStyle.None;
-                StartPosition = FormStartPosition.CenterParent;
-            }
         }
 
         private void OnActivated(object? sender, EventArgs e)
