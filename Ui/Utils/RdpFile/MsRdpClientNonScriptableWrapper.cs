@@ -59,6 +59,7 @@ namespace _1RM.Utils.RdpFile
         */
         public void SendKeys(int[] keyScanCodes, bool[] keyReleased)
         {
+            // TODO: make SendCtrlAltDel available
             if (keyScanCodes.Length != keyReleased.Length) throw new ArgumentException("MsRdpClientNonScriptableWrapper.SendKeys: Arraysize must match");
 
             int[] temp = new int[keyReleased.Length];

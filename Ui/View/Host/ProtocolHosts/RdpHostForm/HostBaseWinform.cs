@@ -55,19 +55,46 @@ public abstract class HostBaseWinform : Form, IHostBase
 
     public string LastTabToken { get; set; } = "";
 
+    protected override void OnLoad(EventArgs e)
+    {
+        IsLoaded = true;
+        HWND = this.Handle;
+        base.OnLoad(e);
+        SetWidthHeight(SetWidthOnLoaded, SetHeightOnLoaded);
+    }
+
+    protected int SetWidthOnLoaded = -1;
+    protected int SetHeightOnLoaded = -1;
+    public virtual void SetWidthHeight(int width, int height, int x = 0, int y = 0)
+    {
+        SetWidthOnLoaded = width;
+        SetHeightOnLoaded = height;
+        if (IsLoaded)
+        {
+            SimpleLogHelper.Warning($"SetWidthHeight: WindowExtensions.MoveWindow = {width}, {height}");
+            WindowExtensions.MoveWindow(Handle, x, y, width, height, true);
+            // 强制刷新布局
+            this.PerformLayout();
+            this.Refresh();
+        }
+        else
+        {
+            SimpleLogHelper.Warning($"SetWidthHeight: Set OnLoaded = {width}, {height}");
+        }
+    }
 
     public virtual void SetParentWindow(WindowBase? value)
     {
         if (_parentWindow == value) return;
-        //_parentWindow = value;
-        //ParentWindowHandle = IntPtr.Zero;
-        //if (null == value) return;
-        //var window = Window.GetWindow(value);
-        //if (window != null)
-        //{
-        //    var wih = new WindowInteropHelper(window);
-        //    ParentWindowHandle = wih.Handle;
-        //}
+        _parentWindow = value;
+        ParentWindowHandle = IntPtr.Zero;
+        if (null == value) return;
+        var window = Window.GetWindow(value);
+        if (window != null)
+        {
+            var wih = new WindowInteropHelper(window);
+            ParentWindowHandle = wih.Handle;
+        }
     }
 
     public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
@@ -96,12 +123,6 @@ public abstract class HostBaseWinform : Form, IHostBase
         FormBorderStyle = FormBorderStyle.Sizable;
         ProtocolServer = protocolServer;
         CanFullScreen = canFullScreen;
-        
-        Load += (sender, args) =>
-        {
-            IsLoaded = true;
-            HWND = this.Handle;
-        };
     }
 
     public string ConnectionId
@@ -195,12 +216,11 @@ public abstract class HostBaseWinform : Form, IHostBase
     public IntegrateHostForWinFrom? AttachedHost { get; private set; } = null;
     public IntegrateHostForWinFrom AttachToHostBase()
     {
-
-        FormBorderStyle = FormBorderStyle.None;
-        WindowState = FormWindowState.Maximized;
-        ShowInTaskbar = false;
+        //FormBorderStyle = FormBorderStyle.None;
+        //ShowInTaskbar = false;
+        //WindowState = FormWindowState.Maximized;
         AttachedHost ??= new IntegrateHostForWinFrom(this);
-        Handle.SetParentEx(AttachedHost.PanelHandle);
+        //Handle.SetParentEx(AttachedHost.PanelHandle);
         return AttachedHost;
     }
 

@@ -15,6 +15,7 @@ using Stylet;
 
 namespace _1RM.View.Host
 {
+    [Obsolete]
     public partial class FullScreenWindowView : WindowBase
     {
         private HostBase? _host = null;

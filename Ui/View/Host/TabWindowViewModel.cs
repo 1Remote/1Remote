@@ -259,7 +259,7 @@ namespace _1RM.View.Host
         }
 
 
-        private object _canCmdClose = new object();
+        private readonly object _canCmdClose = new object();
         private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {

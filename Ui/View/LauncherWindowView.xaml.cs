@@ -97,6 +97,10 @@ namespace _1RM.View
                     {
                         rdp.NotifyRedirectDeviceChange(WM_DEVICECHANGE, wParam, lParam);
                     }
+                    if (host is RdpHostForm rdpForm)
+                    {
+                        rdpForm.NotifyRedirectDeviceChange(WM_DEVICECHANGE, wParam, lParam);
+                    }
                 }
             }
             return IntPtr.Zero;
