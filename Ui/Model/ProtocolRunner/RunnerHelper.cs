@@ -26,13 +26,11 @@ namespace _1RM.Model.ProtocolRunner
         /// </summary>
         public static Runner GetRunner(ProtocolConfigurationService protocolConfigurationService, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
-            if (protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+            if (protocolConfigurationService.ProtocolConfigs.TryGetValue(protocolName, out var p) == false)
             {
-                //SimpleLogHelper.Debug($"we can not custom runner for protocol: {protocolName}");
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var p = protocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
                 //SimpleLogHelper.Debug($"we don't have any runner for protocol: {protocolName}");
@@ -197,7 +195,7 @@ namespace _1RM.Model.ProtocolRunner
                             var form = new RdpHostForm(rdp, tab == null, (int)(size?.Width ?? 800), (int)(size?.Height ?? 600));
                             if (tab != null)
                             {
-                                ihost = form.AttachToHostBase();
+                                ihost = form.AttachToHostBase(); // form call show() after AttachedHost is loaded
                             }
                             else
                             {

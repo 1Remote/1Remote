@@ -172,10 +172,7 @@ namespace _1RM.Service
                     tab = this.GetOrCreateTabWindow(assignTabToken);
                     if (tab == null) return;
                     if (tab.IsClosing) return;
-                    tab.Show();
-
-                    var host = r.GetHost(p, tab) as HostBase;
-                    if (host == null) return;
+                    if (r.GetHost(p, tab) is not HostBase host) return;
                     // get display area size for host
                     Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
                     host.OnProtocolClosed += OnRequestCloseConnection;
@@ -184,16 +181,24 @@ namespace _1RM.Service
                     _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                     host.Conn();
                     tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
-                    tab.Activate();
+                    if (tab.IsLoaded)
+                        tab.Activate();
+                    else
+                        tab.Show();
                 }
             });
             return tab?.Token ?? "";
         }
         #endregion
 
+
+
+
+
+
+
         private async Task<string> Connect(ProtocolBase protocol, string fromView, string assignTabToken = "", string assignRunnerName = "", string assignCredentialName = "")
         {
-
             #region prepare
 
             // trace source view
@@ -318,12 +323,12 @@ namespace _1RM.Service
                     ConnectRdpByMstsc(rdp);
                     return "";
                 }
-                //// rdp full screen // TODO not support when dev now
-                //if (protocolClone.IsThisTimeConnWithFullScreen())
-                //{
-                //    this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
-                //    return "";
-                //}
+                // rdp full screen
+                if (protocolClone.IsThisTimeConnWithFullScreen())
+                {
+                    this.ConnectWithFullScreen(protocolClone, new InternalDefaultRunner(RDP.ProtocolName));
+                    return "";
+                }
             }
             else if (protocolClone is SSH { OpenSftpOnConnected: true } ssh)
             {

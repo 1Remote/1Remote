@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using Shawn.Utils;
 using System.Diagnostics;
+using _1RM.Utils.RdpFile;
 using MSTSCLib;
 using Shawn.Utils.Wpf;
 
@@ -507,7 +508,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override ProtocolHostType GetProtocolHostType()
         {
-            throw new NotImplementedException();
+            return ProtocolHostType.Integrate;
         }
     }
 }
