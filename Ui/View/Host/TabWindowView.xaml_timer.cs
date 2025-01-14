@@ -10,6 +10,7 @@ using Shawn.Utils;
 using Stylet;
 using ProtocolHostType = _1RM.View.Host.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
+using System.Windows.Interop;
 
 namespace _1RM.View.Host
 {
@@ -43,7 +44,7 @@ namespace _1RM.View.Host
             _timer4CheckForegroundWindow.Stop();
             try
             {
-                RunForRdpV2();
+                RunForRdpWinform();
                 RunForIntegrate();
             }
             catch (Exception ex)
@@ -66,6 +67,21 @@ namespace _1RM.View.Host
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(POINT Point);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
 
         private void RunForIntegrate()
         {
@@ -123,7 +139,7 @@ TabWindowView: BringWindowToTop({_myHandle})");
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
 
-        private static bool IsMouseInside(Window window)
+        private static bool IsMouseInside(Window window, IntPtr windowHandle, IntPtr rdpHandle)
         {
             Point mousePos = GetMousePosition();
             Point windowPos = new Point(-1, -1);
@@ -133,22 +149,32 @@ TabWindowView: BringWindowToTop({_myHandle})");
                 windowPos = window.PointToScreen(new Point(0, 0));
                 windowBottomRight = window.PointToScreen(new Point(window.Width, window.Height));
             });
-#if DEBUG
-            var r = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y &&
-                    mousePos.Y <= windowBottomRight.Y;
-            SimpleLogHelper.Debug($@"TabWindowView IsMouseInside = {r}: mousePos = ({mousePos.X}, {mousePos.Y}), windowPos = ({windowPos.X}, {windowPos.Y}), windowBottomRight = ({windowBottomRight.X}, {windowBottomRight.Y})");
-#endif
-            return mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
+            bool isInside = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
+
+            //if (isInside)
+            //{
+            //    // 获取鼠标当前位置的窗口句柄
+            //    POINT pt = new POINT((int)mousePos.X, (int)mousePos.Y);
+            //    IntPtr hWndAtPoint = WindowFromPoint(pt);
+            //    SimpleLogHelper.Debug($@"WindowFromPoint = {hWndAtPoint}, windowHandle = {windowHandle}, rdpHandle = {rdpHandle}");
+            //    //// 获取当前窗口的句柄
+            //    //IntPtr hWndCurrent = new WindowInteropHelper(window).Handle;
+            //    // 检查鼠标位置的窗口是否是当前窗口
+            //    if (hWndAtPoint != windowHandle && hWndAtPoint != rdpHandle)
+            //    {
+            //        isInside = false;
+            //    }
+            //}
+
+            return isInside;
         }
 
-
-        private int _rdpStage = 0; // flag: 0 - not connected, 1 - RDP got focus, 2 - RDP lost focus desk got focus(focus can rollback to RDP), 3 - RDP lost focus desk lost focus (focus can cannot rollback to RDP)
 
         private void RunForRdp()
         {
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
-            if (Vm?.SelectedItem?.Content?.HasConnected != true)
+            if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
                 return;
 
             // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
@@ -157,89 +183,16 @@ TabWindowView: BringWindowToTop({_myHandle})");
                                   || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
             if (isMousePressed)
             {
-#if DEBUG
-                SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
-#endif
+//#if DEBUG
+//				SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
+//#endif
                 return;
             }
 
             var nowActivatedWindowHandle = GetForegroundWindow();
             var desktopHandle = GetDesktopWindow();
-
-#if DEBUG
-            SimpleLogHelper.Debug($"Tab focus: tabHwnd = {_myHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
-#endif
-
-            bool isMouseInside = IsMouseInside(this);
-
-            if (_rdpStage == 1 && !isMouseInside)
-            {
-                // 1 - RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
-                _rdpStage = 2;
-                SetForegroundWindow(desktopHandle);
-            }
-            else if (_rdpStage == 2)
-            {
-                // if focus is on another window, then stage = 3
-                if (nowActivatedWindowHandle != desktopHandle)
-                {
-                    _rdpStage = 3;
-                }
-                // mouse back to tab window, then focus back to RDP
-                else if (isMouseInside)
-                {
-                    SetForegroundWindow(_myHandle);
-                    _rdpStage = 1;
-                }
-            }
-            else if (_rdpStage == 3)
-            {
-                // 3 - neither RDP nor local desktop has focus, cannot rollback to RDP, do nothing
-            }
-
-            if (_rdpStage != 1 && isMouseInside && _myHandle == nowActivatedWindowHandle)
-            {
-                _rdpStage = 1;
-            }
-        }
-
-
-        private void RunForRdpV2()
-        {
-            if(IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow == false)
-                return;
-
-            if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
-                return;
-            //if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
-            //    return;
-            if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
-                return;
-
-            // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
-            bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
-                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
-                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
-            if (isMousePressed)
-            {
-                //SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
-                return;
-            }
-
-            var nowActivatedWindowHandle = GetForegroundWindow();
-            var desktopHandle = GetDesktopWindow();
-            IntPtr rdpHandle = IntPtr.Zero;
-            if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
-            {
-                rdpHandle = _myHandle;
-            }
-            else
-            {
-                //rdpHandle = ihfw.GetHostHwnd();
-                throw new NotImplementedException();
-            }
-
-            bool isMouseInside = IsMouseInside(this);
+            var rdpHandle = ihfw.GetHostHwnd();
+            bool isMouseInside = IsMouseInside(this, _myHandle, rdpHandle);
 //#if DEBUG
 //            SimpleLogHelper.Debug($"Tab focus: isMouseInside = {isMouseInside}, rdpHandle = {rdpHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
 //#endif
@@ -253,8 +206,50 @@ TabWindowView: BringWindowToTop({_myHandle})");
                 // 2 - desktop has focus
                 SetForegroundWindow(rdpHandle);
             }
-
-            #endregion
         }
+
+
+
+
+
+        private void RunForRdpWinform()
+        {
+            if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
+                return;
+            if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
+                return;
+
+            // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
+            bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
+            if (isMousePressed)
+            {
+                //#if DEBUG
+                //				SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
+                //#endif
+                return;
+            }
+
+            var nowActivatedWindowHandle = GetForegroundWindow();
+            var desktopHandle = GetDesktopWindow();
+            var rdpHandle = ihfw.GetHostHwnd();
+            bool isMouseInside = IsMouseInside(this, _myHandle, rdpHandle);
+            //#if DEBUG
+            //            SimpleLogHelper.Debug($"Tab focus: isMouseInside = {isMouseInside}, rdpHandle = {rdpHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
+            //#endif
+            if (!isMouseInside && rdpHandle == nowActivatedWindowHandle)
+            {
+                // 1 - RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
+                SetForegroundWindow(desktopHandle);
+            }
+            else if (isMouseInside && (nowActivatedWindowHandle == desktopHandle || nowActivatedWindowHandle == IntPtr.Zero))
+            {
+                // 2 - desktop has focus
+                SetForegroundWindow(rdpHandle);
+            }
+        }
+
+        #endregion
     }
 }

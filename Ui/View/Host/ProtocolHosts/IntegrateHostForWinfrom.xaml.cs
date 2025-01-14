@@ -133,7 +133,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 if (_form != null)
                 {
-                    _form.Handle.SetParentEx(IntPtr.Zero);
+                    _form.Hide();
                     _form.Close();
                     _form = null;
                 }

@@ -216,11 +216,11 @@ public abstract class HostBaseWinform : Form, IHostBase
     public IntegrateHostForWinFrom? AttachedHost { get; private set; } = null;
     public IntegrateHostForWinFrom AttachToHostBase()
     {
-        //FormBorderStyle = FormBorderStyle.None;
+        FormBorderStyle = FormBorderStyle.None;
+        /*** !!! For unknown reasons, setting ShowInTaskbar = false here will cause the RDP connection bar to be un-clickable when opened full screen for the second time.
         //ShowInTaskbar = false;
-        //WindowState = FormWindowState.Maximized;
-        AttachedHost ??= new IntegrateHostForWinFrom(this);
-        //Handle.SetParentEx(AttachedHost.PanelHandle);
+        ****/
+        AttachedHost ??= new IntegrateHostForWinFrom(this); // this call show() after AttachedHost is loaded
         return AttachedHost;
     }
 

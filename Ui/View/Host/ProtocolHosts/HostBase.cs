@@ -59,6 +59,7 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <summary>
         /// a flag to id if ProtocolServer can open session successfully.
         /// </summary>
+        [Obsolete]
         public bool HasConnected { get; set; } = false;
 
 

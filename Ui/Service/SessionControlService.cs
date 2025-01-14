@@ -201,6 +201,54 @@ namespace _1RM.Service
                 CleanupProtocolsAndWindows();
             });
         }
+
+        private void RemoveItemFormTab(string connectionId)
+        {
+            // remove host from tab and hide tab if empty
+#if NETFRAMEWORK
+                    foreach (var kv in _token2TabWindows.ToArray())
+                    {
+                        var key = kv.Key;
+                        var tab = kv.Value;
+#else
+            foreach (var (key, tab) in _token2TabWindows.ToArray())
+            {
+#endif
+                if (tab.GetViewModel().TryRemoveItem(connectionId))
+                {
+                    var items = tab.GetViewModel().Items.ToList();
+                    if (items.Count == 0)
+                    {
+                        tab.Hide();
+                        // move tab from dict to queue
+                        _token2TabWindows.TryRemove(key, out _);
+                        _windowToBeDispose.Enqueue(tab);
+                    }
+                }
+            }
+
+
+
+
+            // TODO: close full window
+#if NETFRAMEWORK
+                    foreach (var kv in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
+                    {
+                        var key = kv.Key;
+                        var full = kv.Value;
+#else
+            foreach (var (key, full) in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
+            {
+#endif
+                if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
+                {
+                    _connectionId2FullScreenWindows.TryRemove(key, out _);
+                    _windowToBeDispose.Enqueue(full);
+                    full.ShowOrHide(null);
+                }
+            }
+        }
+
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
             lock (_dictLock)
@@ -211,51 +259,9 @@ namespace _1RM.Service
 
                     SimpleLogHelper.Debug($@"MarkProtocolHostToClose: marking to close: {host.GetType().Name}(id = {connectionId}, hash = {host.GetHashCode()})");
 
-                    host.OnProtocolClosed -= OnRequestCloseConnection;
-                    host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
                     _hostToBeDispose.Enqueue(host);
-                    host.ProtocolServer.RunScriptAfterDisconnected();
+                    RemoveItemFormTab(connectionId);
                     PrintCacheCount();
-
-#if NETFRAMEWORK
-                    foreach (var kv in _token2TabWindows.ToArray())
-                    {
-                        var key = kv.Key;
-                        var tab = kv.Value;
-#else
-                    foreach (var (key, tab) in _token2TabWindows.ToArray())
-                    {
-#endif
-                        if (tab.GetViewModel().TryRemoveItem(connectionId))
-                        {
-                            var items = tab.GetViewModel().Items.ToList();
-                            if (items.Count == 0)
-                            {
-                                tab.Hide();
-                                // move tab from dict to queue
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
-                        }
-                    }
-
-                    // hide full
-#if NETFRAMEWORK
-                    foreach (var kv in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
-                    {
-                        var key = kv.Key;
-                        var full = kv.Value;
-#else
-                    foreach (var (key, full) in _connectionId2FullScreenWindows.Where(x => x.Key == connectionId).ToArray())
-                    {
-#endif
-                        if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
-                        {
-                            _connectionId2FullScreenWindows.TryRemove(key, out _);
-                            _windowToBeDispose.Enqueue(full);
-                            full.ShowOrHide(null);
-                        }
-                    }
                 }
 
                 // Mark Unhandled Protocol To Close
@@ -288,7 +294,6 @@ namespace _1RM.Service
                         host.OnProtocolClosed -= OnRequestCloseConnection;
                         host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
                         _hostToBeDispose.Enqueue(host);
-                        host.ProtocolServer.RunScriptAfterDisconnected();
                         PrintCacheCount();
                     }
                 }
@@ -304,18 +309,12 @@ namespace _1RM.Service
             {
                 PrintCacheCount();
                 host.OnProtocolClosed -= OnRequestCloseConnection;
-                host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
+                host.OnFullScreen2Window -= MoveSessionToTabWindow;
                 // Dispose
                 try
                 {
-                    if (host is IDisposable d)
-                    {
-                        d.Dispose();
-                    }
-                    else
-                    {
-                        host.Close();
-                    }
+                    host.Close();
+                    host.ProtocolServer.RunScriptAfterDisconnected();
                 }
                 catch (Exception e)
                 {
@@ -377,9 +376,9 @@ namespace _1RM.Service
         {
             lock (_dictLock)
             {
+                this.CloseMarkedProtocolHost();
                 this.CloseEmptyWindows();
             }
-            this.CloseMarkedProtocolHost();
         }
         #endregion
 

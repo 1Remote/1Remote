@@ -228,6 +228,8 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void ReconnectOnClick()
         {
+            _maskLayer.ShowProcessingRing();
+            //_maskLayer.Hide();
             ReConn();
         }
 
@@ -338,8 +340,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     else
                     {
                         // 显示错误提示
-                        //ParentWindowSetToWindow();
-                        if (FormBorderStyle == FormBorderStyle.None)
+                        if (WindowState == FormWindowState.Maximized)
                         {
                             this.FormBorderStyle = FormBorderStyle.Sizable;
                             this.Width = 800;
