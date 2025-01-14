@@ -40,7 +40,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _vncBase = vnc;
 
-            MenuItems.Clear();
+            MenuItems.Add(new System.Windows.Controls.Separator());
             MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
                 Header = "Ctrl + Alt + Del",
