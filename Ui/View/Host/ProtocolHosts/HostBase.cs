@@ -104,7 +104,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 });
             }
 
-            MenuItems.Add(new Separator());
+            MenuItems.Add(new System.Windows.Controls.Separator());
 
             {
 	            var subMenu = new System.Windows.Controls.MenuItem()
