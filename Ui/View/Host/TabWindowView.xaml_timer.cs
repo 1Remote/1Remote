@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Forms;
 using _1RM.Model.Protocol;
+using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Stylet;
 using ProtocolHostType = _1RM.View.Host.ProtocolHosts.ProtocolHostType;
@@ -35,12 +36,13 @@ namespace _1RM.View.Host
         }
 
         private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
+
         private void Timer4CheckForegroundWindowOnElapsed(object? sender, ElapsedEventArgs e)
         {
             _timer4CheckForegroundWindow.Stop();
             try
             {
-                RunForRdp();
+                RunForRdpV2();
                 RunForIntegrate();
             }
             catch (Exception ex)
@@ -59,6 +61,7 @@ namespace _1RM.View.Host
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
+
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
@@ -89,12 +92,13 @@ TabWindowView: BringWindowToTop({_myHandle})");
             _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
-		/****
+        /****
          * THE PURPOSE OF THIS FUNCTION IS TO:
          * - LET YOUR LOCAL DESKTOP WINDOW GET FOCUS WHEN YOU MOVE THE CURSOR OUT OF THE RDP WINDOW
          * - LET THE RDP WINDOW GET FOCUS WHEN YOU MOVE THE CURSOR INTO THE RDP WINDOW
          * - CAUTION: PAY ATTENTION TO THE RESIZE OF THE RDP WINDOW, IT MAY CAUSE THE CURSOR TO MOVE OUT OF THE RDP WINDOW, SO WE NEED TO CHECK IF THE LEFT MOUSE BUTTON IS PRESSED OR NOT
-        ***/
+         ***/
+
         #region RunForRdp
 
         [StructLayout(LayoutKind.Sequential)]
@@ -103,15 +107,18 @@ TabWindowView: BringWindowToTop({_myHandle})");
             public Int32 X;
             public Int32 Y;
         };
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetCursorPos(ref Win32Point pt);
+
         private static Point GetMousePosition()
         {
             var w32Mouse = new Win32Point();
             GetCursorPos(ref w32Mouse);
             return new Point(w32Mouse.X, w32Mouse.Y);
         }
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
 
@@ -143,17 +150,17 @@ TabWindowView: BringWindowToTop({_myHandle})");
             if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
                 return;
 
-			// Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
-			bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
-								  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
-								  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
-			if (isMousePressed)
-			{
+            // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
+            bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
+            if (isMousePressed)
+            {
 #if DEBUG
-				SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
+                SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
 #endif
-				return;
-			}
+                return;
+            }
 
             var nowActivatedWindowHandle = GetForegroundWindow();
             var desktopHandle = GetDesktopWindow();
@@ -194,6 +201,56 @@ TabWindowView: BringWindowToTop({_myHandle})");
                 _rdpStage = 1;
             }
         }
-        #endregion
+
+
+        private void RunForRdpV2()
+        {
+            if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
+                return;
+            //if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
+            //    return;
+            if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
+                return;
+
+            // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
+            bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
+                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
+            if (isMousePressed)
+            {
+                //SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
+                return;
+            }
+
+            var nowActivatedWindowHandle = GetForegroundWindow();
+            var desktopHandle = GetDesktopWindow();
+            IntPtr rdpHandle = IntPtr.Zero;
+            if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
+            {
+                rdpHandle = _myHandle;
+            }
+            else
+            {
+                //rdpHandle = ihfw.GetHostHwnd();
+                throw new NotImplementedException();
+            }
+
+            bool isMouseInside = IsMouseInside(this);
+//#if DEBUG
+//            SimpleLogHelper.Debug($"Tab focus: isMouseInside = {isMouseInside}, rdpHandle = {rdpHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
+//#endif
+            if (!isMouseInside && rdpHandle == nowActivatedWindowHandle)
+            {
+                // 1 - RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
+                SetForegroundWindow(desktopHandle);
+            }
+            else if (isMouseInside && (nowActivatedWindowHandle == desktopHandle || nowActivatedWindowHandle == IntPtr.Zero))
+            {
+                // 2 - desktop has focus
+                SetForegroundWindow(rdpHandle);
+            }
+
+            #endregion
+        }
     }
 }
