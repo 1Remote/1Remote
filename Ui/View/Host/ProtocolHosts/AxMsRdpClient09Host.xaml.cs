@@ -1034,6 +1034,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 // Kill logical focus
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RdpHost), null);
                 Keyboard.ClearFocus();
+                this.Focus();
                 RdpHost.Focus();
                 if (_rdpClient is { } rdp)
                 {

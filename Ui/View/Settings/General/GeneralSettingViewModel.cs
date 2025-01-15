@@ -128,6 +128,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        public bool TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow
+        {
+            get => _configurationService.General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         private RelayCommand? _cmdExploreTo = null;
         public RelayCommand CmdExploreTo
         {

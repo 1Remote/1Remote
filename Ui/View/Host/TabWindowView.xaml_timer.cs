@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Forms;
 using _1RM.Model.Protocol;
+using _1RM.Service;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Stylet;
@@ -205,6 +206,9 @@ TabWindowView: BringWindowToTop({_myHandle})");
 
         private void RunForRdpV2()
         {
+            if(IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow == false)
+                return;
+
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
             //if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
