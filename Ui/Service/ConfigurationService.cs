@@ -76,6 +76,11 @@ namespace _1RM.Service
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool TabWindowCloseButtonOnLeft = false;
+
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow = false;
     }
 
     public class LauncherConfig

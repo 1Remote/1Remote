@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">データベース</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">注意: データは暗号化されずに保存されます</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">データを処理しています。アプリを閉じないでください。</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">データベースを開けません</s:String>
     <s:String x:Key="string_database_error_permission_denied">データベースの読み書きが許可されていません</s:String>
     <s:String x:Key="server_card_operate_duplicate">複製</s:String>
     <s:String x:Key="server_card_operate_copy_address">ホスト名をクリップボードにコピー</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="No">いいえ</s:String>
     <s:String x:Key="Click on the icon above to change it to your own image">上のアイコンをクリックしてお持ちの画像に変更できます</s:String>
     <s:String x:Key="Always open in new window">常に新しいウィンドウで開く</s:String>
+    <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します</s:String>
 </ResourceDictionary>
