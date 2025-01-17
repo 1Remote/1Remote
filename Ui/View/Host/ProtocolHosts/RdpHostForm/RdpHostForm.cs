@@ -2,26 +2,17 @@
 using AxMSTSCLib;
 using System;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Shawn.Utils;
 using MSTSCLib;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
-using System.Windows;
 using System.Diagnostics;
-using System.Windows.Forms.VisualStyles;
 using Shawn.Utils.Wpf.Image;
-using Timer = System.Timers.Timer;
-
-#if !DEV_RDP
-using _1RM.Service;
 using _1RM.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
-#endif
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -57,6 +48,7 @@ namespace _1RM.View.Host.ProtocolHosts
         }
     }
 #endif
+
     public partial class RdpHostForm : HostBaseWinform
     {
         private readonly AxMsRdpClient9NotSafeForScriptingEx _rdpClient;
@@ -70,13 +62,6 @@ namespace _1RM.View.Host.ProtocolHosts
         private bool _flagHasConnected = false;
         private readonly WinformMaskLayer _maskLayer = new WinformMaskLayer();
 
-#if DEV_RDP
-        public ProtocolHostStatus Status { get; set; }
-        public bool CanFullScreen { get; protected set; }
-        public Action<string>? OnProtocolClosed { get; set; } = null;
-        public string ConnectionId = "";
-        public Action? OnCanResizeNowChanged { get; set; } = null;
-#endif
 
         protected override void WndProc(ref Message m)
         {
@@ -379,18 +364,23 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 LocalityConnectRecorder.RdpCacheUpdate(_rdpSettings.Id, false);
             }
-            base.OnFullScreen2Window?.Invoke(base.ConnectionId);
 
-
-            //{
-            //    _rdpClient.FullScreen = false;
-            //    this.FormBorderStyle = FormBorderStyle.Sizable;
-            //    this.Width = 800;
-            //    this.Height = 600;
-            //    var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
-            //    this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
-            //    this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
-            //}
+            if (base.OnFullScreen2Window != null)
+            {
+                base.OnFullScreen2Window.Invoke(base.ConnectionId);
+            }
+#if DEBUG
+            else
+            {
+                _rdpClient.FullScreen = false;
+                this.FormBorderStyle = FormBorderStyle.Sizable;
+                this.Width = 800;
+                this.Height = 600;
+                var si = ScreenInfoEx.GetCurrentScreen(this.Handle);
+                this.Left = si.VirtualBounds.Left + si.VirtualBounds.Width / 2 - this.Width / 2;
+                this.Top = si.VirtualBounds.Top + si.VirtualBounds.Height / 2 - this.Height / 2;
+            }
+#endif
         }
 
         private void OnGoToFullScreenRequested()

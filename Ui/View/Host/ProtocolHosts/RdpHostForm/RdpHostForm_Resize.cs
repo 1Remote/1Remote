@@ -13,10 +13,6 @@ namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class RdpHostForm : HostBaseWinform
     {
-#if DEV_RDP
-        public Window? ParentWindow { get; set; }
-#endif
-
         private readonly System.Timers.Timer _loginResizeTimer = new System.Timers.Timer(300) { Enabled = false, AutoReset = false };
 
         private void ResizeInit()
