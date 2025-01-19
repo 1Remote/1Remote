@@ -94,7 +94,7 @@
                                   controls:MouseMiddleClick.MouseMiddleDownParameter="{Binding Content.ConnectionId}"
                                   VerticalAlignment="Bottom">
                                 <Grid.ContextMenu>
-                                    <ContextMenu ItemsSource="{Binding Content.MenuItems}" StaysOpen="False">
+                                    <ContextMenu ItemsSource="{Binding Content.MenuItems}">
                                         <ContextMenu.Style>
                                             <Style TargetType="{x:Type ContextMenu}">
                                                 <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -756,7 +756,9 @@
                                  SelectionChanged="TabablzControl_OnSelectionChanged"
                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                  ItemsSource="{Binding Items}"
-                                 HeaderMemberPath="DisplayName">
+                                 HeaderMemberPath="DisplayName"
+                                 PreviewMouseLeftButtonDown="TabablzControl_OnPreviewMouseLeftButtonDown"
+                                 >
             <!-- important for docking -->
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
