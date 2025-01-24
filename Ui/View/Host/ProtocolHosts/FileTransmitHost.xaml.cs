@@ -219,29 +219,6 @@ namespace _1RM.View.Host.ProtocolHosts
                 if (_vmRemote.RemoteItems.Count == 0)
                     return;
 
-                if (_vmRemote.SelectedRemoteItem == null)
-                    return;
-
-                switch (e.Key)
-                {
-                    case Key.Up:
-                        {
-                            e.Handled = true;
-                            var i = _vmRemote.RemoteItems.IndexOf(_vmRemote.SelectedRemoteItem);
-                            if (i > 0)
-                                _vmRemote.SelectedRemoteItem = _vmRemote.RemoteItems[i - 1];
-                            return;
-                        }
-                    case Key.Down:
-                        {
-                            e.Handled = true;
-                            var i = _vmRemote.RemoteItems.IndexOf(_vmRemote.SelectedRemoteItem);
-                            if (i + 1 < _vmRemote.RemoteItems.Count)
-                                _vmRemote.SelectedRemoteItem = _vmRemote.RemoteItems[i + 1];
-                            return;
-                        }
-                }
-
                 if (_vmRemote.RemoteItems.Any(x => x.IsRenaming))
                     return;
 
