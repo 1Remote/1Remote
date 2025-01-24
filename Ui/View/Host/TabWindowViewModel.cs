@@ -205,9 +205,9 @@ namespace _1RM.View.Host
         {
             get
             {
-                return _cmdGoMinimize ??= new RelayCommand((o) =>
+                return _cmdGoMinimize ??= new RelayCommand((_) =>
                 {
-                    if (o is Window window)
+                    if (this.View is Window window)
                     {
                         window.WindowState = WindowState.Minimized;
                     }
@@ -259,7 +259,7 @@ namespace _1RM.View.Host
         }
 
 
-        private object _canCmdClose = new object();
+        private readonly object _canCmdClose = new object();
         private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {
