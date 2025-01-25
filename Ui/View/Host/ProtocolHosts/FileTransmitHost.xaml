@@ -106,6 +106,7 @@
                           FocusVisualStyle="{x:Null}"
                           ItemsSource="{Binding RemoteItems}" 
                           SelectedItem="{Binding SelectedRemoteItem}"
+                          SelectionMode="Extended"
                           SelectionChanged="TvFileList_OnSelectionChanged"
                           PreviewKeyDown="TvFileList_OnKeyDown"
                           MouseDoubleClick="TvFileList_OnMouseDoubleClick"
