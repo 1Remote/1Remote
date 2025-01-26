@@ -242,6 +242,13 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             _ftp = new AsyncFtpClient(Hostname, new System.Net.NetworkCredential(Username, Password), Port);
             _ftp.Config.Noop = true;
             await _ftp.AutoConnect();
+            if (!_ftp.IsConnected)
+            {
+                await _ftp.Disconnect();
+                _ftp.Dispose();
+                _ftp = null;
+                throw new Exception("Couldn't connect to the server.");
+            }
         }
     }
 }
