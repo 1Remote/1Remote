@@ -215,55 +215,65 @@ namespace _1RM.View.Host.ProtocolHosts
                         }
                     }
 
+                    ObservableCollection<RemoteItem>? remoteItemInfos = null;
                     try
                     {
-                        var remoteItemInfos = new ObservableCollection<RemoteItem>();
-                        //SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
-                        var items = await Trans.ListDirectoryItems(path);
-                        if (Enumerable.Any<RemoteItem>(items))
+                        if (await Trans.Exists(path))
                         {
-                            remoteItemInfos = new ObservableCollection<RemoteItem>(items);
-                        }
-
-                        RemoteItems = remoteItemInfos;
-                        //SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
-                        MakeRemoteItemsOrderBy();
-
-                        if (path != CurrentPath)
-                        {
-                            if (mode == 0
-                                && (_pathHistoryPrevious.Count == 0 || _pathHistoryPrevious.Peek() != CurrentPath))
+                            //SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
+                            var items = await Trans.ListDirectoryItems(path);
+                            if (Enumerable.Any<RemoteItem>(items))
                             {
-                                _pathHistoryPrevious.Push(CurrentPath);
-                                if (_pathHistoryFollowing.Count > 0 &&
-                                    _pathHistoryFollowing.Peek() != path)
-                                    _pathHistoryFollowing.Clear();
+                                remoteItemInfos = new ObservableCollection<RemoteItem>(items);
                             }
-
-                            CurrentPath = path;
                         }
-
-                        if (CurrentPath != "/" && CurrentPath != "")
-                            CmdGoToPathParentEnable = true;
                         else
-                            CmdGoToPathParentEnable = false;
-
-                        CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
-                        CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
-
-                        if (showIoMessage)
                         {
-                            IoMessageLevel = IoMessageLevelNormal;
-                            IoMessage = $"ls {CurrentPath}";
+                            IoMessageLevel = IoMessageLevelError;
+                            IoMessage = $"ls {path}: Not exists";
                         }
                     }
                     catch (Exception e)
                     {
                         IoMessageLevel = IoMessageLevelError;
                         IoMessage = $"ls {CurrentPath}: " + e.Message;
-                        if (CurrentPath != path)
-                            ShowFolder(CurrentPath, showIoMessage: false);
-                        return;
+                    }
+                    finally
+                    {
+                        if (remoteItemInfos != null)
+                        {
+                            RemoteItems = remoteItemInfos;
+                            //SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
+                            MakeRemoteItemsOrderBy();
+
+                            if (path != CurrentPath)
+                            {
+                                if (mode == 0
+                                    && (_pathHistoryPrevious.Count == 0 || _pathHistoryPrevious.Peek() != CurrentPath))
+                                {
+                                    _pathHistoryPrevious.Push(CurrentPath);
+                                    if (_pathHistoryFollowing.Count > 0 &&
+                                        _pathHistoryFollowing.Peek() != path)
+                                        _pathHistoryFollowing.Clear();
+                                }
+
+                                CurrentPath = path;
+                            }
+
+                            if (CurrentPath != "/" && CurrentPath != "")
+                                CmdGoToPathParentEnable = true;
+                            else
+                                CmdGoToPathParentEnable = false;
+
+                            CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
+                            CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
+
+                            if (showIoMessage)
+                            {
+                                IoMessageLevel = IoMessageLevelNormal;
+                                IoMessage = $"ls {CurrentPath}";
+                            }
+                        }
                     }
                 }
                 finally
