@@ -578,17 +578,18 @@ namespace _1RM.View.Host.ProtocolHosts
 
             // if win11 disable BandwidthDetection, make a workaround for #437 to hide info button after OS Win11 22H2 to avoid app crash when click the info button on Win11
             // detail: https://github.com/1Remote/1Remote/issues/437
-            try
-            {
-                if (_1RM.Utils.WindowsApi.WindowsVersionHelper.IsWindows1122H2OrHigher()) // Win11 22H2
-                {
-                    _rdpClient.AdvancedSettings9.BandwidthDetection = false;
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            // 20250126: removed due to https://github.com/1Remote/1Remote/issues/559 is fixed
+            //try
+            //{
+            //    if (_1RM.Utils.WindowsApi.WindowsVersionHelper.IsWindows1122H2OrHigher()) // Win11 22H2
+            //    {
+            //        _rdpClient.AdvancedSettings9.BandwidthDetection = false;
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    // ignored
+            //}
 
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;

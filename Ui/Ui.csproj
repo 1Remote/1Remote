@@ -11,6 +11,7 @@
 		<RootNamespace>_1RM</RootNamespace>
 		<AssemblyName>1Remote</AssemblyName>
 		<Configurations>Debug;Release;StoreRelease;ReleaseNet48;StoreDebug</Configurations>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
 
 		<ApplicationIcon Condition="'$(Configuration)'=='Debug'">LOGO_D.ico</ApplicationIcon>
 		<ApplicationIcon Condition="'$(Configuration)'=='StoreDebug'">LOGO_D.ico</ApplicationIcon>
