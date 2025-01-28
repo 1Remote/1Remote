@@ -119,7 +119,7 @@ namespace _1RM.Service.DataSource
 
                 config.Database_CloseConnection();
                 var ret = DatabaseStatus.New(EnumDatabaseStatus.NotConnectedYet);
-                if(connectTimeOutSeconds > 0)
+                if (connectTimeOutSeconds > 0)
                     ret = config.Database_SelfCheck(connectTimeOutSeconds);
                 AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
                 return ret;
@@ -128,7 +128,7 @@ namespace _1RM.Service.DataSource
             {
                 SimpleLogHelper.Warning(e);
                 MsAppCenterHelper.Error(e);
-                var ret = DatabaseStatus.New(EnumDatabaseStatus.AccessDenied, e.Message);
+                var ret = DatabaseStatus.New(EnumDatabaseStatus.OtherError, e.Message);
                 return ret;
             }
             finally
