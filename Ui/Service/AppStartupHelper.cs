@@ -260,6 +260,7 @@ namespace _1RM.Service
         public static string? MakeIcon(string name, Bitmap? bitmap)
         {
             if (bitmap == null) return null;
+            MakeFilenameValid(ref name);
             string? iconPath = null;
             iconPath = System.IO.Path.Combine(AppPathHelper.Instance.LocalityIconDirPath, $"{name}.ico");
             Executor.TryCatch(() =>
@@ -276,6 +277,19 @@ namespace _1RM.Service
             return null;
         }
 
+        private static void MakeFilenameValid(ref string name)
+        {
+            name = name.Replace('\\', '_')
+                       .Replace('/', '_')
+                       .Replace(':', '_')
+                       .Replace('*', '_')
+                       .Replace('?', '_')
+                       .Replace('"', '_')
+                       .Replace('<', '_')
+                       .Replace('>', '_')
+                       .Replace('|', '_');
+        }
+
         public static void InstallDesktopShortcutByTag(string name, string tag, string? iconLocation = null)
         {
             if (name.StartsWith("Tag=") == false)
@@ -290,6 +304,7 @@ namespace _1RM.Service
 
         public static void InstallDesktopShortcut(bool isInstall, string name = Assert.APP_DISPLAY_NAME, string parameter = "", string? iconLocation = null)
         {
+            MakeFilenameValid(ref name);
             try
             {
                 var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
