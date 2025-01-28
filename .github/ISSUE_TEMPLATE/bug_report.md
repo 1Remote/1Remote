@@ -4,7 +4,7 @@ about: Create a report to help us improve
 title: ''
 labels: bug
 assignees: VShawn
-
+type: Bug
 ---
 
 **Describe the bug**
