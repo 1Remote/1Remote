@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">資料庫</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">注意：您的數據將以未加密的方式保存！</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">正在處理資料，請勿關閉應用程式。</s:String>
-    <s:String x:Key="string_database_error_permission_denied">資料庫：沒有存取權限，或者正在被其他應用程式占用！</s:String>
     <s:String x:Key="server_card_operate_duplicate">建立副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">複製主機名稱或網址到剪貼簿</s:String>
     <s:String x:Key="server_card_operate_copy_username">複製使用者名稱到剪貼簿</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="Click on the icon above to change it to your own image">點擊上面的圖標將其更改為您自己的圖像</s:String>
     <s:String x:Key="Always open in new window">始終在新視窗中打開</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">當滑鼠移出 RDP 桌面時將焦點設定到本機桌面</s:String>
+    <s:String x:Key="Close button of the main window ends everything">主窗口的關閉按鈕結束了一切</s:String>
 </ResourceDictionary>

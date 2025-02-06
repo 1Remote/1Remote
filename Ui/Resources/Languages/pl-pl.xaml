@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Baza danych</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Uwaga: Twoje dane nie będą kodowane!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Przetwarzanie danych. Nie zamykaj aplikacji!</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Baza danych: odmowa dostępu do odczytu! Sprawdź hasło pliku albo plik jest w użyciu.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplikuj</s:String>
     <s:String x:Key="server_card_operate_copy_address">Kopiuj nazwę komputera do schowka</s:String>
     <s:String x:Key="server_card_operate_copy_username">Kopiuj nazwę użytkownika do schowka</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Kliknij powyższą ikonę, aby zmienić ją na swój własny obraz</s:String>
     <s:String x:Key="Always open in new window">Zawsze otwieraj w nowym oknie</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Ustaw fokus na pulpicie lokalnym, gdy mysz zostanie przeniesiona poza pulpit RDP</s:String>
+    <s:String x:Key="Close button of the main window ends everything">Zamknij przycisk głównego okna kończy wszystko</s:String>
 </ResourceDictionary>

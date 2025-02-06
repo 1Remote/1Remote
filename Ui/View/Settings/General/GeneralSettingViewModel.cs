@@ -49,6 +49,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        public bool CloseButtonEndsAll
+        {
+            get => _configurationService.General.ExitByClose;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.ExitByClose, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         public bool ConfirmBeforeClosingSession
         {
             get => _configurationService.General.ConfirmBeforeClosingSession;

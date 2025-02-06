@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Databáze</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Varování: vaše data budou uložena nešifrovaná!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Zpracovávají se data. Nezavírejte aplikaci!</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Zduplikovat</s:String>
     <s:String x:Key="server_card_operate_copy_address">Zkopírovat název stroje do schránky</s:String>
     <s:String x:Key="server_card_operate_copy_username">Zkopírovat uživatelské jméno do schránky</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Kliknutím na ikonu výše ji změníte na svůj vlastní obrázek</s:String>
     <s:String x:Key="Always open in new window">Vždy otevřít v novém okně</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Nastavte fokus na místní plochu, když se myš přesune mimo plochu RDP</s:String>
+    <s:String x:Key="Close button of the main window ends everything">Zavřít tlačítko hlavního okna končí vše</s:String>
 </ResourceDictionary>

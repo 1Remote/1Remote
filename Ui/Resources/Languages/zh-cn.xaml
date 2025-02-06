@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">数据库</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">导出数据将以明文显示，请妥善保管！</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">数据处理中，请勿关闭程序。</s:String>
-    <s:String x:Key="string_database_error_permission_denied">数据库：没有足够的权限读取，或数据库已被占用！</s:String>
     <s:String x:Key="server_card_operate_duplicate">创建副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">复制地址到剪贴板</s:String>
     <s:String x:Key="server_card_operate_copy_username">复制用户名到剪贴板</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="Click on the icon above to change it to your own image">点击图标可选择本地图片</s:String>
     <s:String x:Key="Always open in new window">总在新窗口打开</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">当鼠标移出RDP桌面时将焦点设定到本地桌面</s:String>
+    <s:String x:Key="Close button of the main window ends everything">主窗口的关闭按钮结束了一切</s:String>
 </ResourceDictionary>

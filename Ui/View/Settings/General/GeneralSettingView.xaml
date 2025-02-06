@@ -77,7 +77,19 @@
 
 
 
-            <Grid Style="{StaticResource GridOneRow}">
+                <Grid Style="{StaticResource GridOneRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Exit}"></TextBlock>
+                    <CheckBox Grid.Column="1" IsChecked="{Binding CloseButtonEndsAll, Mode=TwoWay}" Content="{DynamicResource 'Close button of the main window ends everything'}" VerticalAlignment="Center"></CheckBox>
+                </Grid>
+
+
+
+                <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>

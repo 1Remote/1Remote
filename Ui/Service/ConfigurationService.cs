@@ -42,6 +42,7 @@ namespace _1RM.Service
         public string CurrentLanguageCode = "en-us";
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
+        public bool ExitByClose = false;
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShowSessionIconInSessionWindow = true;

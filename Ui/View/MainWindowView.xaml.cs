@@ -76,9 +76,12 @@ namespace _1RM.View
                     return;
                 }
                 vm.HideMe();
-#if DEBUG
-                App.Close();
+#if !DEBUG
+                if (IoC.Get<ConfigurationService>().General.ExitByClose == true)
 #endif
+                {
+                    App.Close();
+                }
             };
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;

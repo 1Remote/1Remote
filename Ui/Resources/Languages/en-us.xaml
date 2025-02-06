@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Database</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Caution: Your data will be saved unencrypted!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Processing data. Do not close the app!</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Database: Permission denied for reading! Please check your password of db or the file occupation.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplicate</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copy hostname to clipboard</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copy username to clipboard</s:String>
@@ -322,4 +321,5 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Click on the icon above to change it to your own image</s:String>
     <s:String x:Key="Always open in new window">Always open in new window</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Set focus to local desktop when the mouse is moved out of RDP desktop</s:String>
+    <s:String x:Key="Close button of the main window ends everything">Close button of the main window ends everything</s:String>
 </ResourceDictionary>
