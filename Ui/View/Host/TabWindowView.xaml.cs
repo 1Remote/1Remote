@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,6 +24,7 @@ namespace _1RM.View.Host
         public string Token => Vm.Token;
 
         private IntPtr _myHandle = IntPtr.Zero;
+        private bool _firstChange = true;
 
 
 
@@ -167,12 +169,24 @@ namespace _1RM.View.Host
             }
         }
 
-        protected virtual void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        protected async virtual void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Vm?.SelectedItem?.Content != null)
             {
-                this.Icon = IoC.Get<ConfigurationService>().General.ShowSessionIconInSessionWindow ?
-                    Vm.SelectedItem.Content.ProtocolServer.IconImg : null;
+                if (IoC.Get<ConfigurationService>().General.ShowSessionIconInSessionWindow)
+                {
+                    if (_firstChange)
+                    {
+                        // Workaround to prevent the icon displayed in the Volume Mixer from becoming the session icon.
+                        await Task.Delay(2000);
+                    }
+                    this.Icon = Vm.SelectedItem.Content.ProtocolServer.IconImg;
+                }
+                else
+                {
+                    this.Icon = null;
+                }
+                _firstChange = false;
             }
         }
 
