@@ -41,8 +41,13 @@ namespace _1RM.Service
         #region General
         public string CurrentLanguageCode = "en-us";
         public bool ListPageIsCardView = false;
+        public enum EnumCloseButtonBehavior
+        {
+            Exit,
+            Minimize,
+        };
+        public int CloseButtonBehavior = (int)EnumCloseButtonBehavior.Minimize;
         public bool ConfirmBeforeClosingSession = false;
-        public bool ExitByClose = false;
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShowSessionIconInSessionWindow = true;

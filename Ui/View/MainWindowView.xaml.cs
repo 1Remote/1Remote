@@ -76,12 +76,20 @@ namespace _1RM.View
                     return;
                 }
                 vm.HideMe();
-#if !DEBUG
-                if (IoC.Get<ConfigurationService>().General.ExitByClose == true)
-#endif
+#if DEBUG
+                App.Close();
+#else
+                switch (IoC.Get<ConfigurationService>().General.CloseButtonBehavior)
                 {
-                    App.Close();
+                    case (int)GeneralConfig.EnumCloseButtonBehavior.Exit:
+                        App.Close();
+                        break;
+                    case (int)GeneralConfig.EnumCloseButtonBehavior.Minimize:
+                        // Minimize to system tray - just hide
+                    default:
+                        break;
                 }
+#endif
             };
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;

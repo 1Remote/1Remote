@@ -49,12 +49,12 @@ namespace _1RM.View.Settings.General
             }
         }
 
-        public bool CloseButtonEndsAll
+        public int CloseButtonBehavior
         {
-            get => _configurationService.General.ExitByClose;
+            get => _configurationService.General.CloseButtonBehavior;
             set
             {
-                if (SetAndNotifyIfChanged(ref _configurationService.General.ExitByClose, value))
+                if (SetAndNotifyIfChanged(ref _configurationService.General.CloseButtonBehavior, value))
                 {
                     _configurationService.Save();
                 }

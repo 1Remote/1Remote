@@ -321,5 +321,6 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Kliknij powyższą ikonę, aby zmienić ją na swój własny obraz</s:String>
     <s:String x:Key="Always open in new window">Zawsze otwieraj w nowym oknie</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Ustaw fokus na pulpicie lokalnym, gdy mysz zostanie przeniesiona poza pulpit RDP</s:String>
-    <s:String x:Key="Close button of the main window ends everything">Zamknij przycisk głównego okna kończy wszystko</s:String>
+    <s:String x:Key="Close button behavior">Zamknij zachowanie guzików</s:String>
+    <s:String x:Key="Minimize to system tray">Zminimalizuj tacę systemową</s:String>
 </ResourceDictionary>

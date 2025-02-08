@@ -83,8 +83,11 @@
                         <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Exit}"></TextBlock>
-                    <CheckBox Grid.Column="1" IsChecked="{Binding CloseButtonEndsAll, Mode=TwoWay}" Content="{DynamicResource 'Close button of the main window ends everything'}" VerticalAlignment="Center"></CheckBox>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Close button behavior}"></TextBlock>
+                    <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" SelectedIndex="{Binding CloseButtonBehavior}">
+                        <ComboBoxItem Content="{DynamicResource Exit}"/>
+                        <ComboBoxItem Content="{DynamicResource Minimize to system tray}"/>
+                    </ComboBox>
                 </Grid>
 
 

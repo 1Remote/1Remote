@@ -361,4 +361,5 @@ No;No;否;;;;;いいえ;;;;
 Click on the icon above to change it to your own image;Click on the icon above to change it to your own image;点击图标可选择本地图片;;;;;上のアイコンをクリックしてお持ちの画像に変更できます;;;;
 Always open in new window;Always open in new window;总在新窗口打开;;;;;常に新しいウィンドウで開く;;;;
 Set focus to local desktop when the mouse is moved out of RDP desktop;Set focus to local desktop when the mouse is moved out of RDP desktop;当鼠标移出RDP桌面时将焦点设定到本地桌面;;Den Fokus auf den lokalen Desktop setzen, wenn die Maus aus dem RDP-Desktop bewegt wird.;Définir le focus sur le bureau local lorsque la souris est déplacée hors du bureau RDP;;RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します;;;;Установите фокус на локальный рабочий стол, когда мышь выходит за пределы рабочего стола RDP
-Close button of the main window ends everything;Close button of the main window ends everything;;;;;;メインウィンドウの閉じるボタンですべてを終了する;;;;
+Close button behavior;Close button behavior;;;;;;閉じるボタンの挙動;;;;
+Minimize to system tray;Minimize to system tray;;;;;;システムトレイに最小化;;;;

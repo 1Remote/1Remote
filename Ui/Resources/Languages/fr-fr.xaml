@@ -321,5 +321,6 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Cliquez sur l'icône ci-dessus pour la remplacer par votre propre image</s:String>
     <s:String x:Key="Always open in new window">Toujours ouvrir dans une nouvelle fenêtre</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Définir le focus sur le bureau local lorsque la souris est déplacée hors du bureau RDP</s:String>
-    <s:String x:Key="Close button of the main window ends everything">Le bouton de fermeture de la fenêtre principale met fin à tout</s:String>
+    <s:String x:Key="Close button behavior">Comportement de bouton de fermeture</s:String>
+    <s:String x:Key="Minimize to system tray">Minimiser dans le plateau système</s:String>
 </ResourceDictionary>

@@ -321,5 +321,6 @@
     <s:String x:Key="Click on the icon above to change it to your own image">点击图标可选择本地图片</s:String>
     <s:String x:Key="Always open in new window">总在新窗口打开</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">当鼠标移出RDP桌面时将焦点设定到本地桌面</s:String>
-    <s:String x:Key="Close button of the main window ends everything">主窗口的关闭按钮结束了一切</s:String>
+    <s:String x:Key="Close button behavior">关闭按钮行为</s:String>
+    <s:String x:Key="Minimize to system tray">最小化系统托盘</s:String>
 </ResourceDictionary>
