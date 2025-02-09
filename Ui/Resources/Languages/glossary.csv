@@ -312,7 +312,7 @@ Show credentials info;Show credentials info;显示账号信息;;Anmeldeinformati
 Sorting;Sorting;排序;;Sortierung;;;並べ替え;排序;;Sortowanie;Сортировка
 Sort by drag;Sort by drag;自定义拖拽排序;;Sortieren durch Verschieben;;;ドラッグで並べ替え;自定義拖拽排序;;Sortuj przez przeciągnięcie;Сортировать перетаскиванием
 We can not connect database:;We can not connect database:;无法连接到数据库;;Datenbankverbindung nicht möglich:;;;データベースに接続できません;無法連接到數據庫;;Nie można połączyć się z bazą:;Невозможно подключить базу данных:
-We can not create tables on database:;We can not create tables on database:;无法创建数据表：;;Erstellen von Datenbanktabellen nicht möglich:;;;"データベースにテーブルを作成できません: ";無法創建數據表;;Nie można utworzyć tabel na bazie:;Невозможно создать таблицы в базе данных:
+We can not create tables on database:;We can not create tables on database:;无法创建数据表：;;Erstellen von Datenbanktabellen nicht möglich:;;;データベースにテーブルを作成できません: ;無法創建數據表;;Nie można utworzyć tabel na bazie:;Невозможно создать таблицы в базе данных:
 We can not insert into database:;We can not insert into database:;无法插入数据：;;Datenbank insert nicht möglich:;;;データベースに項目を追加できません;無法插入數據;;Nie można dodać wpisów do bazy:;Невозможно вставить в базу данных:
 We can not update on database:;We can not update on database:;无法更新数据：;;Datenbank update nicht möglich:;;;データベースを更新できません;無法更新數據;;Nie można zaktualizować wpisów na bazie:;Невозможно обновить базу данных:
 We can not read from database:;We can not read from database:;无法读取数据：;;Lesen aus Datenbank nicht möglich:;;;データベースからの読み出しができません;無法讀取數據;;Nie można odczytać z bazy:;Невозможно прочитать из базы данных:
@@ -361,3 +361,5 @@ No;No;否;;;;;いいえ;;;;
 Click on the icon above to change it to your own image;Click on the icon above to change it to your own image;点击图标可选择本地图片;;;;;上のアイコンをクリックしてお持ちの画像に変更できます;;;;
 Always open in new window;Always open in new window;总在新窗口打开;;;;;常に新しいウィンドウで開く;;;;
 Set focus to local desktop when the mouse is moved out of RDP desktop;Set focus to local desktop when the mouse is moved out of RDP desktop;当鼠标移出RDP桌面时将焦点设定到本地桌面;;Den Fokus auf den lokalen Desktop setzen, wenn die Maus aus dem RDP-Desktop bewegt wird.;Définir le focus sur le bureau local lorsque la souris est déplacée hors du bureau RDP;;RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します;;;;Установите фокус на локальный рабочий стол, когда мышь выходит за пределы рабочего стола RDP
+Close button behavior;Close button behavior;;;;;;閉じるボタンの挙動;;;;
+Minimize to system tray;Minimize to system tray;;;;;;システムトレイに最小化;;;;

@@ -77,7 +77,22 @@
 
 
 
-            <Grid Style="{StaticResource GridOneRow}">
+                <Grid Style="{StaticResource GridOneRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Close button behavior}"></TextBlock>
+                    <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" SelectedIndex="{Binding CloseButtonBehavior}">
+                        <ComboBoxItem Content="{DynamicResource Exit}"/>
+                        <ComboBoxItem Content="{DynamicResource Minimize to system tray}"/>
+                    </ComboBox>
+                </Grid>
+
+
+
+                <Grid Style="{StaticResource GridOneRow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
                     <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>

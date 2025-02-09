@@ -105,7 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Datenbank</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Achtung: Ihre Daten werden unverschlüsselt gespeichert</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Datenverarbeitung, Programm bitte nicht schließen.</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Datenbank: Berechtigung zum Lesen verweigert! Bitte überprüfen Sie Ihr Passwort der Datei.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplizieren</s:String>
     <s:String x:Key="server_card_operate_copy_address">Hostname in die Zwischenablage kopieren</s:String>
     <s:String x:Key="server_card_operate_copy_username">Benutzername in die Zwischenablage kopieren</s:String>
@@ -322,4 +321,6 @@
     <s:String x:Key="Click on the icon above to change it to your own image">Klicken Sie auf das Symbol oben, um es in Ihr eigenes Bild zu ändern</s:String>
     <s:String x:Key="Always open in new window">Immer in neuem Fenster öffnen</s:String>
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Den Fokus auf den lokalen Desktop setzen, wenn die Maus aus dem RDP-Desktop bewegt wird.</s:String>
+    <s:String x:Key="Close button behavior">Tastenverhalten schließen</s:String>
+    <s:String x:Key="Minimize to system tray">Minimieren</s:String>
 </ResourceDictionary>
