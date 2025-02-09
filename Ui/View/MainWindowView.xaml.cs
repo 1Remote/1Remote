@@ -78,6 +78,17 @@ namespace _1RM.View
                 vm.HideMe();
 #if DEBUG
                 App.Close();
+#else
+                switch (IoC.Get<ConfigurationService>().General.CloseButtonBehavior)
+                {
+                    case (int)GeneralConfig.EnumCloseButtonBehavior.Exit:
+                        App.Close();
+                        break;
+                    case (int)GeneralConfig.EnumCloseButtonBehavior.Minimize:
+                        // Minimize to system tray - just hide
+                    default:
+                        break;
+                }
 #endif
             };
 

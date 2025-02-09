@@ -49,6 +49,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        public int CloseButtonBehavior
+        {
+            get => _configurationService.General.CloseButtonBehavior;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.CloseButtonBehavior, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         public bool ConfirmBeforeClosingSession
         {
             get => _configurationService.General.ConfirmBeforeClosingSession;
