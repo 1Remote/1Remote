@@ -19,7 +19,21 @@ namespace _1RM.View.Editor
     {
         public bool DialogResult { get; set; } = false;
 
-        public string Title { get; set; } = "";
+        private string _title = "";
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (SetAndNotify(ref _title, value))
+                {
+                    if (View is PasswordPopupDialogView v)
+                    {
+                        v.Title = value;
+                    }
+                }
+            }
+        }
 
         private string _userName = "";
         public string UserName
@@ -91,6 +105,8 @@ namespace _1RM.View.Editor
             base.OnViewLoaded();
             if (View is PasswordPopupDialogView v)
             {
+                v.Title = Title;
+
                 v.TbUserName.Text = UserName;
                 v.TbPwd.Password = Password;
 

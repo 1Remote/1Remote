@@ -5,10 +5,6 @@
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                          xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                          xmlns:editor="clr-namespace:_1RM.View.Editor"
-                         xmlns:model="clr-namespace:_1RM.Service.DataSource.Model"
-                         xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
-                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-                         xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                          xmlns:icons="clr-namespace:_1RM.Resources.Icons"
                          xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d" 
@@ -17,6 +13,7 @@
                          SizeToContent="WidthAndHeight" 
                          Background="Transparent"
                          AllowsTransparency="True"
+                         Title="Select Icon"
                          d:DataContext="{d:DesignInstance editor:IconPopupDialogViewModel}">
     <Window.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
