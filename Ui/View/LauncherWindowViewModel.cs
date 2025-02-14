@@ -212,7 +212,13 @@ namespace _1RM.View
                     break;
                 }
                 default:
-                    throw new ArgumentOutOfRangeException(r.Item1.ToString());
+                {
+                    var msg = $"Failed to register hotkey {hotKeyModifierKeys} + {hotKeyKey}, error code: {r.Item1}";
+                    SimpleLogHelper.Warning(msg);
+                    MessageBoxHelper.Warning(msg);
+                    MsAppCenterHelper.Error(new Exception(msg));
+                    break;
+                }
             }
             return false;
         }
