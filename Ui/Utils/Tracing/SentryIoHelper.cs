@@ -93,20 +93,21 @@ namespace _1RM.Utils
 
         private static void Trace(EventName eventName, IDictionary<string, string>? properties = null)
         {
-            if (_hasInit == false) { return; }
-#if DEBUG
-            string en = $"{eventName}_Debug";
-#else
-            string en = eventName.ToString();
-#endif
-            SentrySdk.CaptureMessage(en, scope =>
-            {
-                if (properties == null) return;
-                foreach (var prop in properties)
-                {
-                    scope.SetTag(prop.Key, prop.Value);
-                }
-            }, SentryLevel.Info);
+            // DO NOT TRACE BY SENTRY.IO AVOID RATE LIMIT
+            //            if (_hasInit == false) { return; }
+            //#if DEBUG
+            //            string en = $"{eventName}_Debug";
+            //#else
+            //            string en = eventName.ToString();
+            //#endif
+            //            SentrySdk.CaptureMessage(en, scope =>
+            //            {
+            //                if (properties == null) return;
+            //                foreach (var prop in properties)
+            //                {
+            //                    scope.SetTag(prop.Key, prop.Value);
+            //                }
+            //            }, SentryLevel.Info);
         }
 
         public static void TraceAppStatus(bool isStart, bool? isStoreVersion = null)

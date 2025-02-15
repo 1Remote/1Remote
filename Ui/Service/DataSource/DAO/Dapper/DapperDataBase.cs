@@ -115,6 +115,11 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     error = te.Message;
                     _lastException = te;
                 }
+                catch (InvalidCastException ie)
+                {
+                    // ignore this exception
+                    _lastException = ie;
+                }
                 catch (Exception e)
                 {
                     if (_lastException?.Message != e.Message)
@@ -122,6 +127,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                         SimpleLogHelper.Error(e);
                         MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
                     }
+
                     error = e.Message;
                     _lastException = e;
                 }
