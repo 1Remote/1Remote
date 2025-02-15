@@ -41,10 +41,12 @@ namespace _1RM.View.Host.ProtocolHosts
                 SimpleLogHelper.Warning($"RDP Host: Call ReConn");
             }
             Status = ProtocolHostStatus.WaitingForReconnect;
-
-            RdpHost.Visibility = System.Windows.Visibility.Collapsed;
-            GridLoading.Visibility = System.Windows.Visibility.Visible;
-            GridMessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            Execute.OnUIThreadSync(() =>
+            {
+                RdpHost.Visibility = System.Windows.Visibility.Collapsed;
+                GridLoading.Visibility = System.Windows.Visibility.Visible;
+                GridMessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            });
             RdpClientDispose();
 
             Status = ProtocolHostStatus.NotInit;
