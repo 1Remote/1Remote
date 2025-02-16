@@ -476,6 +476,22 @@ namespace _1RM.View.ServerList
                 vm.CmdTagAddIncluded.Execute(name);
             }
         }
+
+        private void ServerName_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (DataContext is ServerListPageViewModel vm)
+            {
+                vm.NameWidth = (int)e.NewSize.Width;
+            }
+        }
+
+        private void ServerNote_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (DataContext is ServerListPageViewModel vm)
+            {
+                vm.NoteWidth = (int)e.NewSize.Width;
+            }
+        }
     }
 
 

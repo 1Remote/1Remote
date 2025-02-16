@@ -170,6 +170,8 @@ namespace _1RM.Service
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public int DatabaseCheckPeriod { get; set; } = 20;
         public int DatabaseReconnectPeriod { get; set; } = 60 * 5;
+        public int ServerListNameWidth { get; set; } = 500;
+        public int ServerListNoteWidth { get; set; } = 100;
 
         private string _sqliteDatabasePath = "./" + Assert.APP_NAME + ".db";
         public string SqliteDatabasePath
@@ -228,6 +230,16 @@ namespace _1RM.Service
             set => _cfg.DatabaseReconnectPeriod = value >= 0 ? (value > 60 * 60 ? 60 * 60 : value) : 0;
         }
 
+        public int ServerListNameWidth
+        {
+            get => _cfg.ServerListNameWidth < 50 ? 50 : _cfg.ServerListNameWidth;
+            set => _cfg.ServerListNameWidth = value < 50 ? 50 : value;
+        }
+        public int ServerListNoteWidth
+        {
+            get => _cfg.ServerListNoteWidth < 50 ? 50 : _cfg.ServerListNoteWidth;
+            set => _cfg.ServerListNoteWidth = value < 50 ? 50 : value;
+        }
 
         public ThemeConfig Theme => _cfg.Theme;
         public EngagementSettings Engagement => _cfg.Engagement;

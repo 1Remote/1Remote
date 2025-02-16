@@ -197,6 +197,32 @@ namespace _1RM.View.ServerList
             OnGlobalDataTagListChanged();
         }
 
+        public int NameWidth
+        {
+            get => IoC.Get<ConfigurationService>().ServerListNameWidth;
+            set
+            {
+                if (value != IoC.Get<ConfigurationService>().ServerListNameWidth)
+                {
+                    IoC.Get<ConfigurationService>().ServerListNameWidth = value;
+                    IoC.Get<ConfigurationService>().Save();
+                }
+            }
+        }
+
+        public int NoteWidth
+        {
+            get => IoC.Get<ConfigurationService>().ServerListNoteWidth;
+            set
+            {
+                if (value != IoC.Get<ConfigurationService>().ServerListNoteWidth)
+                {
+                    IoC.Get<ConfigurationService>().ServerListNoteWidth = value;
+                    IoC.Get<ConfigurationService>().Save();
+                }
+            }
+        }
+
         protected override void OnViewLoaded()
         {
             ApplySort();
