@@ -133,6 +133,8 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <serverList:NameMaxWidthConverter x:Key="NameMaxWidthConverter" />
+            <serverList:NoteMaxWidthConverter x:Key="NoteMaxWidthConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -299,8 +301,10 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="100"></ColumnDefinition>
                             <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
-                            <ColumnDefinition Width="{Binding NameWidth}" SharedSizeGroup="Name" MinWidth="50"></ColumnDefinition>
-                            <ColumnDefinition Width="{Binding NoteWidth}" SharedSizeGroup="BriefNote" MinWidth="50"></ColumnDefinition>
+                            <ColumnDefinition Width="{Binding NameWidth}" SharedSizeGroup="Name" MinWidth="50"
+                                              MaxWidth="{Binding NoteWidth, Converter={StaticResource NameMaxWidthConverter}}"></ColumnDefinition>
+                            <ColumnDefinition Width="{Binding NoteWidth}" SharedSizeGroup="BriefNote" MinWidth="50"
+                                              MaxWidth="{Binding NameWidth, Converter={StaticResource NoteMaxWidthConverter}}"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 

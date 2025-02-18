@@ -197,28 +197,28 @@ namespace _1RM.View.ServerList
             OnGlobalDataTagListChanged();
         }
 
-        public int NameWidth
+        public double NameWidth
         {
-            get => IoC.Get<ConfigurationService>().ServerListNameWidth;
+            get => LocalityListViewService.ServerListNameWidthGet();
             set
             {
-                if (value != IoC.Get<ConfigurationService>().ServerListNameWidth)
+                if (value != LocalityListViewService.ServerListNameWidthGet())
                 {
-                    IoC.Get<ConfigurationService>().ServerListNameWidth = value;
-                    IoC.Get<ConfigurationService>().Save();
+                    LocalityListViewService.ServerListNameWidthSet(value);
+                    RaisePropertyChanged();
                 }
             }
         }
 
-        public int NoteWidth
+        public double NoteWidth
         {
-            get => IoC.Get<ConfigurationService>().ServerListNoteWidth;
+            get => LocalityListViewService.ServerListNoteWidthGet();
             set
             {
-                if (value != IoC.Get<ConfigurationService>().ServerListNoteWidth)
+                if (value != LocalityListViewService.ServerListNoteWidthGet())
                 {
-                    IoC.Get<ConfigurationService>().ServerListNoteWidth = value;
-                    IoC.Get<ConfigurationService>().Save();
+                    LocalityListViewService.ServerListNoteWidthSet(value);
+                    RaisePropertyChanged();
                 }
             }
         }

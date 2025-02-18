@@ -479,21 +479,56 @@ namespace _1RM.View.ServerList
 
         private void ServerName_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (DataContext is ServerListPageViewModel vm)
+            if (sender is Grid g && DataContext is ServerListPageViewModel vm)
             {
-                vm.NameWidth = (int)e.NewSize.Width;
+                vm.NameWidth = e.NewSize.Width;
             }
         }
 
         private void ServerNote_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (DataContext is ServerListPageViewModel vm)
+            if (sender is Grid g && DataContext is ServerListPageViewModel vm)
             {
-                vm.NoteWidth = (int)e.NewSize.Width;
+                vm.NoteWidth = e.NewSize.Width;
             }
         }
     }
 
+    public class NameMaxWidthConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double windowWidth = IoC.Get<MainWindowView>().Width;
+            double free = windowWidth;
+            free -= 200.0; // subtract the size of fixed columns
+            free -= (double)value; // subtract the width of the note column
+            free -= 20.0; // leave minimum width for the address column
+            return free;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class NoteMaxWidthConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double windowWidth = IoC.Get<MainWindowView>().Width;
+            double free = windowWidth;
+            free -= 200.0; // subtract the size of fixed columns
+            free -= (double)value; // subtract the width of the name column
+            free -= 20.0; // leave minimum width for the address column
+            return free;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     public class ConverterTagNameCount : IMultiValueConverter
     {
