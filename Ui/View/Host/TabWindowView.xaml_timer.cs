@@ -45,7 +45,7 @@ namespace _1RM.View.Host
             try
             {
                 RunForRdpV2();
-                RunForIntegrate(true);
+                RunForIntegrate();
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace _1RM.View.Host
         /// 1. If the current ActivatedWindowHandle is the integrated exe, move the Tab to the foreground one time (BringWindowToTop(_myHandle);, achieving that after clicking the integrated exe, the tab is brought to the front and not obscured by other programs.
         /// 2. If isTimer is False and the current focus is on the Tab, then set the focus on the integrated exe. (To ensure that the focus is not lost after clicking on the tab label)
         /// </summary>
-        private void RunForIntegrate(bool isTimer = false)
+        private void RunForIntegrate()
         {
             if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
                 return;
@@ -89,9 +89,11 @@ namespace _1RM.View.Host
                 SimpleLogHelper.Debug($@"TabWindowView: BringWindowToTop({_myHandle})");
                 BringWindowToTop(_myHandle);
             }
-            // focus content when tab is focused and host is Integrate and left mouse is not pressed
-            else if (!isTimer
-                     && nowActivatedWindowHandle == _myHandle)
+
+            // focus content when tab is focused
+            // why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is needed: Without IT, once the tab gains focus, the timer will immediately transfer the focus to the integrated window, causing the tab to be unselectable or undraggable.
+            else if (nowActivatedWindowHandle == _myHandle 
+                     && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left) 
             {
                 SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
