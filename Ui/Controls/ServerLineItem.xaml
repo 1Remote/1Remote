@@ -149,7 +149,6 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Span"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="BriefNote"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -220,7 +219,7 @@
                        Text="{Binding Server.DisplayName}"></TextBlock>
 
             <!--tags-->
-            <ItemsControl Grid.Column="4" 
+            <ItemsControl Grid.Column="3" 
                           Margin="5 0 10 0" 
                           MaxWidth="200" 
                           VerticalAlignment="Center" HorizontalAlignment="Right" 
@@ -235,7 +234,7 @@
             </ItemsControl>
 
             <!--brief note -->
-            <ContentControl Grid.Column="5" 
+            <ContentControl Grid.Column="4" 
                             Margin="0 0 10 0"
                             VerticalAlignment="Center"
                             Content="{Binding HoverNoteDisplayControl}"></ContentControl>
@@ -243,7 +242,7 @@
             <!--address-->
             <TextBlock Margin="5 0" MaxWidth="500"
                        Style="{StaticResource TextBlockBase}"
-                       Grid.Column="6"
+                       Grid.Column="5"
                        Background="Transparent"
                        ToolTip="{Binding Server.SubTitle}"
                        FontSize="{DynamicResource GlobalFontSizeSubtitle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
