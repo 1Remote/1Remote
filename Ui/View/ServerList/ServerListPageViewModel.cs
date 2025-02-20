@@ -197,6 +197,32 @@ namespace _1RM.View.ServerList
             OnGlobalDataTagListChanged();
         }
 
+        public double NameWidth
+        {
+            get => LocalityListViewService.ServerListNameWidthGet();
+            set
+            {
+                if (value != LocalityListViewService.ServerListNameWidthGet())
+                {
+                    LocalityListViewService.ServerListNameWidthSet(value);
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double NoteWidth
+        {
+            get => LocalityListViewService.ServerListNoteWidthGet();
+            set
+            {
+                if (value != LocalityListViewService.ServerListNoteWidthGet())
+                {
+                    LocalityListViewService.ServerListNoteWidthSet(value);
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         protected override void OnViewLoaded()
         {
             ApplySort();
