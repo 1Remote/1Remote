@@ -216,22 +216,23 @@ namespace _1RM.Service
                     }
 
                     p.SetCredential(c);
-                    if (string.IsNullOrEmpty(assignCredentialName) == false)
-                        p.DisplayName += $" ({c.Name})";
+                    p.DisplayName = c.Name;
                 }
             }
 
 
 
-            // check if need to input password
+            // check if it needs password
             if (protocolClone is ProtocolBaseWithAddressPortUserPwd { AskPasswordWhenConnect: true } pb)
             {
                 bool flag = false;
                 Execute.OnUIThreadSync(() =>
                 {
-                    var pwdDlg = new PasswordPopupDialogViewModel(protocolClone is SSH or SFTP);
-                    pwdDlg.Title = $"[{pb.ProtocolDisplayName}]({pb.DisplayName}) -> {pb.Address}:{pb.Port}";
-                    pwdDlg.UserName = pb.UserName;
+                    var pwdDlg = new PasswordPopupDialogViewModel(protocolClone is SSH or SFTP)
+                    {
+                        Title = $"[{pb.ProtocolDisplayName}]({pb.DisplayName}) -> {pb.Address}:{pb.Port}",
+                        UserName = pb.UserName
+                    };
                     if (pb.UsePrivateKeyForConnect == true)
                     {
                         pwdDlg.CanUsePrivateKeyForConnect = true;

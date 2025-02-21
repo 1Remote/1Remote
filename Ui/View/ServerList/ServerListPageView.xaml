@@ -690,7 +690,7 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}" Style="{StaticResource TextBlockBase}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}" Style="{StaticResource TextBlockBase}" Margin="5 0"></TextBlock>
                         <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.SubTitle}" Style="{StaticResource TextBlockBase}"></TextBlock>
                     </StackPanel>
                 </Grid>

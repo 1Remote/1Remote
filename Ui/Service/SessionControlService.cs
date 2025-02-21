@@ -128,12 +128,12 @@ namespace _1RM.Service
         {
             if (!server.IsOnlyOneInstance()) return false;
             var connectionId = server.BuildConnectionId();
-            // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
+            // if is `OnlyOneInstance Protocol`, and it is connected, activate it and return.
             if (!_connectionId2Hosts.ContainsKey(connectionId))
                 return false;
 
             SimpleLogHelper.Debug($"_connectionId2Hosts ContainsKey {connectionId}");
-            // Activate
+            // Find activate
             if (_connectionId2Hosts[connectionId].ParentWindow is { } win)
             {
                 if (win is TabWindowView tab)
