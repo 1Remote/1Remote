@@ -123,7 +123,7 @@ namespace _1RM.Service
                         true => PingStatus.Success,
                         _ => PingStatus.Failed
                     };
-                    Task.Delay(200).Wait(); // 避免界面关闭太快，根本看不清
+                    Task.Delay(200, cts.Token).Wait(cts.Token); // 避免界面关闭太快，根本看不清
                     return ret;
                 }, cts.Token));
             }
@@ -212,32 +212,35 @@ namespace _1RM.Service
         private static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName)
         {
             var newCredential = protocol.GetCredential();
-            newCredential.Name = "default";
+            newCredential.Name = protocol.DisplayName;
             // use assign credential 应用指定的 credential
             var assignCredential = protocol.AlternateCredentials.FirstOrDefault(x => x.Name == assignCredentialName);
             if (assignCredential != null)
             {
                 SimpleLogHelper.Debug("using assign credential: " + assignCredentialName);
                 newCredential.SetCredential(assignCredential);
+                newCredential.Name = $"{protocol.DisplayName} ({assignCredentialName})";
             }
 
-
-            // check if need to ping before connect
+            // check if it needs to ping before connect
             bool isPingBeforeConnect = protocol.IsPingBeforeConnect == true
                                        // do not ping if rdp protocol and gateway is used
                                        && protocol is not RDP { GatewayMode: EGatewayMode.UseTheseGatewayServerSettings };
+            // check if it needs to auto switch address
             var isAutoAlternateAddressSwitching = protocol.IsAutoAlternateAddressSwitching == true
                                                   // if any host or port in assignCredential，then disabled `AutoAlternateAddressSwitching`
                                                   && string.IsNullOrEmpty(assignCredential?.Address) && string.IsNullOrEmpty(assignCredential?.Port)
                                                   // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
                                                   && protocol.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
 
-            // if both `IsPingBeforeConnect` and `IsAutoAlternateAddressSwitching` are false, then return directly
-            if (isPingBeforeConnect == false && isAutoAlternateAddressSwitching == false)
+            if (
+                // if both `IsPingBeforeConnect` and `IsAutoAlternateAddressSwitching` are false, then return directly
+                (isPingBeforeConnect == false && isAutoAlternateAddressSwitching == false)
+                // if LocalApp protocol are not showing address input, then return directly
+                || (protocol is LocalApp app && app.ShowAddressInput() == false))
+            {
                 return newCredential;
-
-            if (protocol is LocalApp app && app.ShowAddressInput() == false)
-                return newCredential;
+            }
 
             // a quick test for the first credential, if pass return directly to avoid window pop
             var ret = await TcpHelper.TestConnectionAsync(newCredential.Address, newCredential.Port, null, 100);
@@ -245,13 +248,15 @@ namespace _1RM.Service
                 return newCredential;
 
             var credentials = new List<Credential> { newCredential };
+            // if `IsAutoAlternateAddressSwitching` is true, then add all alternate credentials, else only add the main address to ping
             if (isAutoAlternateAddressSwitching)
                 credentials.AddRange(protocol.AlternateCredentials.Where(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port)));
 
+            // find the first response address from `credentials`
             var connectableAddress = await FindFirstConnectableAddressAsync(credentials, protocol.DisplayName);
             if (connectableAddress != null)
             {
-                newCredential.Name = connectableAddress.Name;
+                newCredential.Name = $"{protocol.DisplayName} ({connectableAddress.Name})";
                 newCredential.SetAddress(connectableAddress);
                 newCredential.SetPort(connectableAddress);
                 return newCredential;
