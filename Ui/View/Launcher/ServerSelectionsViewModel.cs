@@ -302,7 +302,9 @@ namespace _1RM.View.Launcher
                     server.KeywordMark = 0;
                     foreach (var kw in mrs.Keywords)
                     {
-                        if (server.DisplayName.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        if (server.DisplayName.ToLower() == kw.ToLower())
+                            server.KeywordMark += 100;
+                        else if (server.DisplayName.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
                             server.KeywordMark += 10;
                         if (ShowCredentials && server.SubTitle.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
                             server.KeywordMark += 1;
