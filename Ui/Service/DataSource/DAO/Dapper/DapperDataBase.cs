@@ -6,6 +6,7 @@ using Dapper;
 using _1RM.Model.Protocol.Base;
 using System.Data.SQLite;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
@@ -18,6 +19,21 @@ namespace _1RM.Service.DataSource.DAO.Dapper
     {
         public DapperDatabase(string databaseName, DatabaseType databaseType) : base(databaseName, databaseType)
         {
+        }
+
+        /// <summary>
+        /// Quote character         sqlite              MySQL             Postgres
+        /// Double quote (")      Identifier       String literal       Identifier
+        /// Single quote (')    String literal     String literal     String literal
+        /// Backtick (`)          Identifier         Identifier            N/A
+        ///
+        /// So we write SQL in sqlite/MySQL style, using backtick for identifiers
+        /// and single quote for string literals. When backend is postgres, replace
+        /// the backtick with double quote
+        /// </summary>
+        string NormalizedSql(string sql)
+        {
+            return DatabaseType == DatabaseType.PostgreSQL ? sql.Replace('`', '"') : sql;
         }
 
         protected IDbConnection? _dbConnection;
@@ -78,7 +94,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     DatabaseType.MySql => new MySqlConnection(_connectionString),
                     DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
                     DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
-                    DatabaseType.PostgreSQL => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
+                    DatabaseType.PostgreSQL => new NpgsqlConnection(_connectionString),
                     DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
                     _ => throw new NotImplementedException(DatabaseType.ToString() + " not supported!")
                 };
@@ -107,6 +123,17 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
                     error = mse.Message;
                     _lastException = mse;
+                }
+                catch (NpgsqlException pgse)
+                {
+                    if (_lastException?.Message != pgse.Message)
+                    {
+                        SimpleLogHelper.Error(pgse);
+                        MsAppCenterHelper.Error(pgse);
+                    }
+
+                    error = pgse.Message;
+                    _lastException = pgse;
                 }
                 catch (TimeoutException te)
                 {
@@ -152,17 +179,16 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
             try
             {
-                _dbConnection?.Execute(@$"
+                _dbConnection?.Execute(NormalizedSql(@$"
 CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
     `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
                                         NOT NULL
                                         UNIQUE,
     `{nameof(Config.Value)}` TEXT NOT NULL
 );
-");
+"));
 
-
-                _dbConnection?.Execute(@$"
+                _dbConnection?.Execute(NormalizedSql(@$"
 CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
                                              NOT NULL
@@ -171,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.ClassVersion)}` VARCHAR (32) NOT NULL,
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
-");
+"));
                 SetEncryptionTest();
             }
             catch (Exception e)
@@ -213,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
                 if (!result.IsSuccess) return ResultSelects.Fail(result.ErrorInfo);
                 try
                 {
-                    var ps = _dbConnection.Query<Server>($"SELECT * FROM `{Server.TABLE_NAME}`")
+                    var ps = _dbConnection.Query<Server>(NormalizedSql($"SELECT * FROM `{Server.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
                     return ResultSelects.Success((ps as List<ProtocolBase>)!);
@@ -225,10 +251,11 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        private const string SqlInsert = $@"INSERT INTO `{Server.TABLE_NAME}`
+        private string SqlInsert => NormalizedSql($@"INSERT INTO `{Server.TABLE_NAME}`
 (`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
 VALUES
-(@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});";
+(@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});");
+
         /// <summary>
         /// 插入成功后会更新 protocolBase.Id
         /// </summary>
@@ -288,11 +315,11 @@ VALUES
             }
         }
 
-        static readonly string SqlUpdate = $@"UPDATE `{Server.TABLE_NAME}` SET
+        private string SqlUpdate => NormalizedSql($@"UPDATE `{Server.TABLE_NAME}` SET
 `{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
 `{nameof(Server.Json)}` = @{nameof(Server.Json)}
-WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
+WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
         public override Result UpdateServer(ProtocolBase server)
         {
             string info = IoC.Translate("We can not update on database:");
@@ -357,7 +384,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var ret = _dbConnection?.Execute($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
+                    var ret = _dbConnection?.Execute(NormalizedSql($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};"), new { Id = ids }) > 0;
                     if (ret)
                         SetDataUpdateTimestamp();
                     return Result.Success();
@@ -383,7 +410,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
                 if (!result.IsSuccess) return ResultString.Fail(result.ErrorInfo);
                 try
                 {
-                    var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
+                    var config = _dbConnection?.QueryFirstOrDefault<Config>(NormalizedSql($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}"),
                         new { Key = key, });
                     return ResultString.Success(config?.Value);
                 }
@@ -394,9 +421,9 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             }
         }
 
-        private static readonly string SqlInsertConfig = $@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
-        private static readonly string SqlUpdateConfig = $@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
-        private static readonly string SqlDeleteConfig = $@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
+        private string SqlInsertConfig => NormalizedSql($@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})");
+        private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
+        private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
 
         public override Result SetConfig(string key, string? value)
         {

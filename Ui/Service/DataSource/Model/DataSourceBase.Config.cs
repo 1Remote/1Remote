@@ -19,6 +19,7 @@ namespace _1RM.Service.DataSource.Model
     [JsonConverter(typeof(JsonKnownTypesConverter<DataSourceBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     [JsonKnownType(typeof(MysqlSource), nameof(MysqlSource))]
     [JsonKnownType(typeof(SqliteSource), nameof(SqliteSource))]
+    [JsonKnownType(typeof(PgsqlSource), nameof(PgsqlSource))]
     public abstract partial class DataSourceBase : NotifyPropertyChangedBase
     {
         protected DataSourceBase()
