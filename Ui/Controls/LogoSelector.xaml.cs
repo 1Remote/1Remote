@@ -382,7 +382,6 @@ namespace _1RM.Controls
             var path = SelectFileHelper.OpenFile(title: IoC.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*");
             if (path != null)
             {
-                MsAppCenterHelper.TraceSpecial("SessionLogo", "");
                 if (path.EndsWith(".exe", true, null))
                 {
                     using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);

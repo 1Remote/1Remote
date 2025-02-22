@@ -60,7 +60,6 @@ namespace _1RM.View.Editor
                     if (path != null)
                     {
                         BitmapSource? img = null;
-                        MsAppCenterHelper.TraceSpecial("SessionLogo", "");
                         if (path.EndsWith(".exe", true, null))
                         {
                             using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);

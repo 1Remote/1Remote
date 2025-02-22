@@ -304,10 +304,6 @@ namespace _1RM.View
                 }
             }
 
-            if (window.Visibility != Visibility.Visible)
-            {
-                MsAppCenterHelper.TraceView(nameof(MainWindowView), true);
-            }
             Execute.OnUIThread(() =>
             {
                 if (window.WindowState == WindowState.Minimized)
@@ -328,10 +324,6 @@ namespace _1RM.View
             if (this.View is not MainWindowView { IsClosing: false } window) return;
             if (Shawn.Utils.ConsoleManager.HasConsole)
                 Shawn.Utils.ConsoleManager.Hide();
-            if (window.Visibility == Visibility.Visible)
-            {
-                MsAppCenterHelper.TraceView(nameof(MainWindowView), false);
-            }
             Execute.OnUIThread(() =>
             {
                 window.ShowInTaskbar = false;

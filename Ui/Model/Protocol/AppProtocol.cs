@@ -111,7 +111,7 @@ namespace _1RM.Model.Protocol
             }
             catch (Exception e)
             {
-                MsAppCenterHelper.Error(e, new Dictionary<string, string>()
+                SentryIoHelper.Error(e, new Dictionary<string, string>()
                 {
                     {"ExePath", ExePath},
                 });

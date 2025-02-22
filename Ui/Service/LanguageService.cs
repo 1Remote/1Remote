@@ -216,7 +216,7 @@ namespace _1RM.Service
                         message += frame.GetMethod() + " -> " + frame.GetFileName() + ": " + frame.GetFileLineNumber() + "\r\n";
                     }
 
-                    MsAppCenterHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"), new Dictionary<string, string>()
+                    SentryIoHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"), new Dictionary<string, string>()
                     {
                         {"StackTrace", message}
                     });

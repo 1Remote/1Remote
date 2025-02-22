@@ -167,7 +167,7 @@ namespace _1RM.Utils
             }
             catch (Exception e)
             {
-                MsAppCenterHelper.Error(e);
+                SentryIoHelper.Error(e);
             }
         }
 

@@ -36,13 +36,8 @@ namespace _1RM.View
                     IoC.Get<ConfigurationService>().Engagement.ConnectCount = -100;
                     if (DoNotShowAgain)
                     {
-                        MsAppCenterHelper.TraceView(nameof(RequestRatingView) + " do not show again", true);
                         IoC.Get<ConfigurationService>().Engagement.DoNotShowAgain = true;
                         IoC.Get<ConfigurationService>().Engagement.DoNotShowAgainVersionString = AppVersion.Version;
-                    }
-                    else
-                    {
-                        MsAppCenterHelper.TraceView(nameof(RequestRatingView), true);
                     }
                     IoC.Get<ConfigurationService>().Save();
 #if DEBUG
