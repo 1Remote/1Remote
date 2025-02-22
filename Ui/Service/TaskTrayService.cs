@@ -57,13 +57,10 @@ namespace _1RM.Service
 
         private void TaskTrayIconOnMouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            lock (this)
+            if (_taskTrayIcon?.Visible == true
+                && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if (_taskTrayIcon?.Visible == true
-                    && e.Button == System.Windows.Forms.MouseButtons.Left)
-                {
-                    IoC.Get<MainWindowViewModel>()?.ShowMe();
-                }
+                IoC.Get<MainWindowViewModel>()?.ShowMe();
             }
         }
 
@@ -105,12 +102,8 @@ namespace _1RM.Service
                 var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("Exit"));
                 exit.Click += (sender, args) =>
                 {
-                    lock (this)
-                    {
-                        MsAppCenterHelper.TraceAppStatus(false);
-                        TaskTrayDispose();
-                        App.Close();
-                    }
+                    TaskTrayDispose();
+                    App.Close();
                 };
 
                 _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
@@ -151,7 +144,6 @@ namespace _1RM.Service
                         IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = true;
                         IoC.Get<ConfigurationService>().Save();
                         ReloadTaskTrayContextMenu();
-                        MsAppCenterHelper.TraceSpecial("Tray recently", "Show");
                     };
                     _taskTrayIcon.ContextMenuStrip.Items.Add(item);
                 }
@@ -166,7 +158,6 @@ namespace _1RM.Service
                         IoC.Get<ConfigurationService>().General.ShowRecentlySessionInTray = false;
                         IoC.Get<ConfigurationService>().Save();
                         ReloadTaskTrayContextMenu();
-                        MsAppCenterHelper.TraceSpecial("Tray recently", "Hide");
                     };
                     _taskTrayIcon.ContextMenuStrip.Items.Add(item);
                 }

@@ -23,6 +23,7 @@ namespace _1RM.Utils
     /// <summary>
     /// https://appcenter.ms/
     /// </summary>
+    [Obsolete("Use SentryIoHelper instead")]
     public static class MsAppCenterHelper
     {
         private static bool _hasInit = false;
@@ -77,8 +78,6 @@ namespace _1RM.Utils
                 list.Add(ErrorAttachmentLog.AttachmentWithText(kv.Value, kv.Key));
             }
             Crashes.TrackError(e, properties, list.ToArray());
-
-            SentryIoHelper.Error(e, properties, attachments);
         }
 
 
@@ -106,7 +105,6 @@ namespace _1RM.Utils
                 properties.Add("Version", isStoreVersion == true ? "MS Store" : "Exe");
             }
             Trace(EventName.App, properties);
-            SentryIoHelper.TraceAppStatus(isStart, isStoreVersion);
         }
 
         public static void TraceView(string viewName, bool isShow)
@@ -116,7 +114,6 @@ namespace _1RM.Utils
                 { "View", (isShow ? "Show":"Hide") + viewName },
             };
             Trace(EventName.View, properties);
-            SentryIoHelper.TraceView(viewName, isShow);
         }
 
 
@@ -130,7 +127,6 @@ namespace _1RM.Utils
                 { "Via", via },
             };
             Trace(EventName.SessionConnect, properties);
-            SentryIoHelper.TraceSessionOpen(protocol, via);
         }
 
 
@@ -142,7 +138,6 @@ namespace _1RM.Utils
                 { "Protocol", protocol },
             };
             Trace(EventName.SessionEdit, properties);
-            SentryIoHelper.TraceSessionEdit(protocol);
         }
 
 
@@ -150,7 +145,6 @@ namespace _1RM.Utils
         {
             if (_hasInit == false) { return; }
             Trace(EventName.Special, kys);
-            SentryIoHelper.TraceSpecial(kys);
         }
         public static void TraceSpecial(string key, string value)
         {

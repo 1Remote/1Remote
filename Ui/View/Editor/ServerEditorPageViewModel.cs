@@ -97,7 +97,7 @@ namespace _1RM.View.Editor
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                MsAppCenterHelper.Error(e);
+                SentryIoHelper.Error(e);
                 SelectedProtocol = ProtocolList.First();
             }
 
@@ -434,8 +434,6 @@ namespace _1RM.View.Editor
                             }
                             else
                             {
-                                MsAppCenterHelper.TraceSessionEdit(Server.Protocol);
-
                                 // edit
                                 if (IsAddMode == false
                                     && Server.IsTmpSession() == false)
@@ -460,7 +458,7 @@ namespace _1RM.View.Editor
                         }
                         catch (Exception e)
                         {
-                            MsAppCenterHelper.Error(e);
+                            SentryIoHelper.Error(e);
                             MessageBoxHelper.ErrorAlert(e.Message);
                         }
                         finally

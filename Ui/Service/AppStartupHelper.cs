@@ -327,7 +327,7 @@ namespace _1RM.Service
             }
             catch (Exception e)
             {
-                MsAppCenterHelper.Error(e);
+                SentryIoHelper.Error(e);
             }
         }
     }

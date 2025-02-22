@@ -109,7 +109,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 catch (DllNotFoundException e)
                 {
                     SimpleLogHelper.Error(e);
-                    MsAppCenterHelper.Error(e);
+                    SentryIoHelper.Error(e);
                     MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
                     Environment.Exit(2);
                 }
@@ -118,7 +118,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != mse.Message)
                     {
                         SimpleLogHelper.Error(mse);
-                        MsAppCenterHelper.Error(mse);
+                        SentryIoHelper.Error(mse);
                     }
 
                     error = mse.Message;
@@ -129,7 +129,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != pgse.Message)
                     {
                         SimpleLogHelper.Error(pgse);
-                        MsAppCenterHelper.Error(pgse);
+                        SentryIoHelper.Error(pgse);
                     }
 
                     error = pgse.Message;
@@ -152,7 +152,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != e.Message)
                     {
                         SimpleLogHelper.Error(e);
-                        MsAppCenterHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
+                        SentryIoHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
                     }
 
                     error = e.Message;

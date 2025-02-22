@@ -128,10 +128,6 @@ namespace _1RM.View
 
                 lock (this)
                 {
-                    if (window.Visibility != Visibility.Visible)
-                    {
-                        MsAppCenterHelper.TraceView(nameof(LauncherWindowView), true);
-                    }
                     window.WindowState = WindowState.Normal;
                     QuickConnectionViewModel.SelectedProtocol = QuickConnectionViewModel.Protocols.First();
                     ReSetWindowHeight();
@@ -171,10 +167,6 @@ namespace _1RM.View
             {
                 Execute.OnUIThread(() =>
                 {
-                    if (window.Visibility == Visibility.Visible)
-                    {
-                        MsAppCenterHelper.TraceView(nameof(LauncherWindowView), false);
-                    }
                     window.Hide();
                     QuickConnectionViewModel.Filter = "";
                     QuickConnectionViewModel.Show();
@@ -216,7 +208,7 @@ namespace _1RM.View
                     var msg = $"Failed to register hotkey {hotKeyModifierKeys} + {hotKeyKey}, error code: {r.Item1}";
                     SimpleLogHelper.Warning(msg);
                     MessageBoxHelper.Warning(msg);
-                    MsAppCenterHelper.Error(new Exception(msg));
+                    SentryIoHelper.Error(new Exception(msg));
                     break;
                 }
             }

@@ -70,7 +70,7 @@ namespace _1RM.View.ErrorReport
             sb.AppendLine();
 
             TbErrorInfo.Text = sb.ToString();
-            MsAppCenterHelper.Error(e, attachments: new Dictionary<string, string>() { { "log.md", TbErrorInfo.Text } });
+            SentryIoHelper.Error(e, attachments: new Dictionary<string, string>() { { "log.md", TbErrorInfo.Text } });
         }
 
         private void Init()

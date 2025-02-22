@@ -18,6 +18,7 @@ using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 using System.Collections.Generic;
+using Stylet;
 
 namespace _1RM
 {
@@ -106,30 +107,7 @@ namespace _1RM
             // Set salt by github action with repository secret
             UnSafeStringEncipher.Init(Assert.STRING_SALT);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
-
-            MsAppCenterHelper.Init(Assert.MS_APP_CENTER_SECRET);
             SentryIoHelper.Init(Assert.SENTRY_IO_DEN);
-
-            try
-            {
-                var kys = new Dictionary<string, string>();
-#if FOR_MICROSOFT_STORE_ONLY
-                kys.Add("Distributor", $"{Assert.APP_NAME} MS Store");
-#else
-                kys.Add("Distributor", $"{Assert.APP_NAME} Exe");
-#endif
-
-#if NETFRAMEWORK
-                kys.Add($"App start with - Net", $"4.8");
-#else
-                kys.Add($"App start with - Net", $"6.x");
-#endif
-                MsAppCenterHelper.TraceSpecial(kys);
-            }
-            catch (Exception ex)
-            {
-                MsAppCenterHelper.Error(ex);
-            }
         }
 
         public static LanguageService? LanguageServiceObj;
@@ -356,14 +334,38 @@ namespace _1RM
         {
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
-                var kys = new Dictionary<string, string>
+                Task.Factory.StartNew(async () =>
                 {
-                    { $"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}" },
-                    { $"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}" },
-                    { $"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}" },
-                    { $"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}" }
-                };
-                MsAppCenterHelper.TraceSpecial(kys);
+                    try
+                    {
+                        var kys = new Dictionary<string, string>
+                        {
+                            { $"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}" },
+                            { $"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}" },
+                            { $"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}" },
+                            { $"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}" },
+                            { $"App start with - Tray + ShowRecentlySessionInTray", $"{ConfigurationServiceObj.General.ShowRecentlySessionInTray}" },
+                            { $"App start with - Windows Hello Enabled", $"{await SecondaryVerificationHelper.GetEnabled()}" },
+                            { $"App start with - Language", $"{ConfigurationServiceObj.General.CurrentLanguageCode}" },
+                        };
+#if FOR_MICROSOFT_STORE_ONLY
+                kys.Add("Distributor", $"{Assert.APP_NAME} MS Store");
+#else
+                        kys.Add("Distributor", $"{Assert.APP_NAME} Exe");
+#endif
+
+#if NETFRAMEWORK
+                kys.Add($"App start with - Net", $"4.8");
+#else
+                        kys.Add($"App start with - Net", $"6.x");
+#endif
+                        SentryIoHelper.TraceSpecial(kys);
+                    }
+                    catch (Exception ex)
+                    {
+                        SentryIoHelper.Error(ex);
+                    }
+                });
             }
 
             KittyConfig.CleanUpOldConfig();

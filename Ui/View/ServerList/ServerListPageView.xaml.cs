@@ -210,7 +210,7 @@ namespace _1RM.View.ServerList
                         { "e.Source", e.Source.GetType().Name },
                         { "e.OriginalSource", e.OriginalSource.GetType().Name }
                     };
-                    MsAppCenterHelper.Error(ex, properties: ps);
+                    SentryIoHelper.Error(ex, properties: ps);
                 }
             }
         }
@@ -344,7 +344,7 @@ namespace _1RM.View.ServerList
                     { "e.Source", e.Source.GetType().Name },
                     { "e.OriginalSource", e.OriginalSource.GetType().Name }
                 };
-                MsAppCenterHelper.Error(ex, properties: ps);
+                SentryIoHelper.Error(ex, properties: ps);
             }
         }
 
@@ -372,7 +372,7 @@ namespace _1RM.View.ServerList
                         { "e.Source", e.Source.GetType().Name },
                         { "e.OriginalSource", e.OriginalSource.GetType().Name }
                     };
-                    MsAppCenterHelper.Error(ex, properties: ps);
+                    SentryIoHelper.Error(ex, properties: ps);
                 }
             }
         }
@@ -464,7 +464,7 @@ namespace _1RM.View.ServerList
                     { "e.Source", e.Source.GetType().Name },
                     { "e.OriginalSource", e.OriginalSource.GetType().Name }
                 };
-                MsAppCenterHelper.Error(ex, properties: ps);
+                SentryIoHelper.Error(ex, properties: ps);
             }
         }
 

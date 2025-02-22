@@ -96,11 +96,6 @@ namespace _1RM
 
         protected override void OnLaunch()
         {
-#if FOR_MICROSOFT_STORE_ONLY
-            MsAppCenterHelper.TraceAppStatus(true, true);
-#else
-            MsAppCenterHelper.TraceAppStatus(true, false);
-#endif
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here

@@ -209,7 +209,7 @@ maxchar=85
 reload=yes
 ");
                 Thread.Sleep(50);
-            }, actionOnError: exception => MsAppCenterHelper.Error(exception));
+            }, actionOnError: exception => SentryIoHelper.Error(exception));
         }
 
         public static string GetInternalKittyExeFullName()

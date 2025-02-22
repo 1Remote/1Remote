@@ -314,7 +314,6 @@ namespace _1RM.View.Launcher
                     }
                 }
 
-                MsAppCenterHelper.TraceSpecial("Quick connect", server.Protocol);
 
                 // save history
                 if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
