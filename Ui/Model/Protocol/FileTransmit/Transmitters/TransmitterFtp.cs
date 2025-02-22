@@ -61,8 +61,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             if (_ftp != null)
             {
                 IEnumerable<FtpListItem> items = await _ftp.GetListing(path);
-                if (items == null ||
-                    !items.Any())
+                if (!items.Any())
                     return ret;
 
                 items = items.OrderBy(x => x.Name);
@@ -102,19 +101,17 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             };
             if (item.Type == FtpObjectType.Directory)
             {
-                if (newItem.IsSymlink)
-                {
-                    newItem.Icon = TransmitItemIconCache.GetDictIcon(Environment.GetFolderPath(Environment.SpecialFolder.Favorites));
-                }
-                else
-                {
-                    newItem.Icon = TransmitItemIconCache.GetDictIcon();
-                }
+                newItem.Icon = TransmitItemIconCache.GetDictIcon();
                 newItem.ByteSize = 0;
                 newItem.FileType = "folder";
+                if (newItem.IsSymlink)
+                    newItem.Icon = TransmitItemIconCache.GetDictIcon(Environment.GetFolderPath(Environment.SpecialFolder.Favorites));
             }
             else
             {
+                if (newItem.IsSymlink)
+                    newItem.FileType = ".lnk";
+
                 if (item.Name.IndexOf(".", StringComparison.Ordinal) > 0)
                 {
                     var ext = item.Name.Substring(item.Name.LastIndexOf(".", StringComparison.Ordinal)).ToLower();

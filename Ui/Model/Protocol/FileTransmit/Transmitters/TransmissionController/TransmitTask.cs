@@ -510,7 +510,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
         /// <summary>
-        /// check if any same name file exited, return if can continue transmit.
+        /// check if any same name file exited, return if it can continue to transmit.
         /// </summary>
         /// <returns></returns>
         private async Task<bool> CheckExistedFiles(IEnumerable<RemoteItem> remoteItems)
@@ -538,7 +538,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
             var vm = IoC.Get<SessionControlService>().GetTabByConnectionId(ConnectionId)?.GetViewModel();
             if (existedFiles > 0
-            && false == MessageBoxHelper.Confirm(_languageService.Translate("file_transmit_host_warning_same_names", existedFiles.ToString()),
+                && false == MessageBoxHelper.Confirm(_languageService.Translate("file_transmit_host_warning_same_names", existedFiles.ToString()),
                 _languageService.Translate("file_transmit_host_warning_same_names_title"), ownerViewModel: vm == null ? this : vm))
             {
                 return false;
@@ -577,26 +577,34 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
         private async Task RunTransmitServerToHost(TransmitItem item)
         {
-            if (item.IsDirectory)
+            try
             {
-                if (!Directory.Exists(item.DstPath))
-                    Directory.CreateDirectory(item.DstPath);
-            }
-            else
-            {
-                var fi = new FileInfo(item.DstPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-                if (fi!.Exists)
-                    fi.Delete();
-
-                if (_trans != null)
+                if (item.IsDirectory)
                 {
-                    item.TransmittedSize = 0;
-                    await _trans.DownloadFile(item.SrcPath, item.DstPath,
-                                              readLength => { DataTransmitting(ref item, readLength); },
-                                              _cancellationSource.Token);
+                    if (!Directory.Exists(item.DstPath))
+                        Directory.CreateDirectory(item.DstPath);
                 }
+                else
+                {
+                    var fi = new FileInfo(item.DstPath);
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                    if (fi!.Exists)
+                        fi.Delete();
+
+                    if (_trans != null)
+                    {
+                        item.TransmittedSize = 0;
+                        await _trans.DownloadFile(item.SrcPath, item.DstPath,
+                                                  readLength => { DataTransmitting(ref item, readLength); },
+                                                  _cancellationSource.Token);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+                SimpleLogHelper.Error(e);
             }
         }
 

@@ -76,12 +76,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             var ret = new List<RemoteItem>();
             if (_sftp != null)
             {
-                IEnumerable<ISftpFile> items = new List<SftpFile>();
-                items = _sftp.ListDirectory(path);
-                if (items == null || !items.Any())
+                var items = _sftp!.ListDirectory(path);
+                var sftpFiles = items as ISftpFile[] ?? items.ToArray();
+                if (!sftpFiles.Any())
                     return ret;
 
-                items = items.OrderBy(x => x.Name);
+                items = sftpFiles.OrderBy(x => x.Name);
                 foreach (var item in items)
                 {
                     if (item.Name == "." || item.Name == "..")
@@ -108,7 +108,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 Name = item.Name,
                 FullName = fn,
                 LastUpdate = item.LastWriteTime,
-                ByteSize = (ulong)item.Length,
+                ByteSize = (ulong)Math.Max(item.Length, 0),
             };
             if (item.IsDirectory)
             {
@@ -123,18 +123,16 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 if (item.IsSymbolicLink)
                     newItem.FileType = ".lnk";
 
-                BitmapSource icon;
                 if (item.Name.IndexOf(".", StringComparison.Ordinal) > 0)
                 {
                     var ext = item.Name.Substring(item.Name.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
                     newItem.FileType = ext;
-                    icon = TransmitItemIconCache.GetFileIcon(ext);
+                    newItem.Icon = TransmitItemIconCache.GetFileIcon(ext);
                 }
                 else
                 {
-                    icon = TransmitItemIconCache.GetFileIcon();
+                    newItem.Icon = TransmitItemIconCache.GetFileIcon();
                 }
-                newItem.Icon = icon;
             }
             return newItem;
         }
