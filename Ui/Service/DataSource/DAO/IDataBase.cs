@@ -202,12 +202,16 @@ namespace _1RM.Service.DataSource.DAO
         {
             return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
         }
+
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
         {
             return $"server={host};port={port};database={dbName};Character Set=utf8;Uid={user};password={password};Connect Timeout={connectTimeOutSeconds};";
         }
 
-
+        public static string GetPgsqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
+        {
+            return $"Host={host};Port={port};Database=\"{dbName}\";Username={user};Password={password};Timeout={connectTimeOutSeconds};";
+        }
 
         //private static string? TryGetConfig(this IDatabase iDatabase, string key)
         //{
