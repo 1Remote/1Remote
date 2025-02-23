@@ -60,7 +60,7 @@ namespace _1RM.Service.Locality
                 CanSave = false;
                 AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
                 RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(_settings, Formatting.Indented), Encoding.UTF8); },
-                    actionOnError: exception => SentryIoHelper.Error(exception));
+                    actionOnError: exception => MsAppCenterHelper.Error(exception));
                 CanSave = true;
             }
         }
@@ -156,7 +156,7 @@ namespace _1RM.Service.Locality
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e);
+                MsAppCenterHelper.Error(e);
                 _settings.GroupedIsExpanded = new Dictionary<string, bool>();
             }
             Save();
