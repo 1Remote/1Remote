@@ -125,7 +125,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            SentryIoHelper.Error(ee);
+                            MsAppCenterHelper.Error(ee);
                             MessageBoxHelper.ErrorAlert(ee.Message, ownerViewModel: this);
                         }
                     });

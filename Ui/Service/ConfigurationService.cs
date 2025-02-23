@@ -324,7 +324,7 @@ namespace _1RM.Service
                     RetryHelper.Try(() =>
                     {
                         File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
-                    }, actionOnError: exception => SentryIoHelper.Error(exception));
+                    }, actionOnError: exception => MsAppCenterHelper.Error(exception));
                 }
 
                 DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);

@@ -285,7 +285,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                             }
                             catch (Exception e)
                             {
-                                SentryIoHelper.Error(e);
+                                MsAppCenterHelper.Error(e);
                             }
                         }
                         _sftp ??= new SftpClient(new ConnectionInfo(Hostname, Port, Username, new PasswordAuthenticationMethod(Username, Password)));

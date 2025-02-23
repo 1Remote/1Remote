@@ -36,7 +36,7 @@ namespace _1RM.Service
             if (RetryHelper.Try(() =>
                 {
                     File.WriteAllText(rdpFile, text);
-                }, actionOnError: exception => SentryIoHelper.Error(exception)))
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
                 // delete tmp rdp file, ETA 30s
                 Task.Factory.StartNew(() =>
@@ -71,7 +71,7 @@ namespace _1RM.Service
                 }
                 catch (Exception e)
                 {
-                    SentryIoHelper.Error(e);
+                    MsAppCenterHelper.Error(e);
                     MessageBoxHelper.ErrorAlert(e.Message + "\r\n while Run mstsc.exe");
                 }
             }
@@ -91,7 +91,7 @@ namespace _1RM.Service
             if (RetryHelper.Try(() =>
             {
                 File.WriteAllText(rdpFile, text);
-            }, actionOnError: exception => SentryIoHelper.Error(exception)))
+            }, actionOnError: exception => MsAppCenterHelper.Error(exception)))
             {
                 var p = new Process
                 {
@@ -183,6 +183,10 @@ namespace _1RM.Service
         {
 
             #region prepare
+
+            // trace source view
+            if (string.IsNullOrEmpty(fromView) == false)
+                MsAppCenterHelper.TraceSessionOpen(protocol.Protocol, fromView);
 
             // connect count save to config
             _configurationService.Engagement.ConnectCount++;

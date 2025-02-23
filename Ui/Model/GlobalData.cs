@@ -379,7 +379,7 @@ namespace _1RM.Model
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e);
+                MsAppCenterHelper.Error(e);
                 throw;
             }
             finally
@@ -564,7 +564,7 @@ namespace _1RM.Model
             }
             catch (Exception ex)
             {
-                SentryIoHelper.Error(ex);
+                MsAppCenterHelper.Error(ex);
                 throw;
             }
             finally

@@ -425,7 +425,7 @@ namespace _1RM.Utils.KiTTY.Model
                 RetryHelper.Try(() =>
                 {
                     File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
-                }, actionOnError: exception => SentryIoHelper.Error(exception));
+                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
             }
             catch (Exception e)
             {
