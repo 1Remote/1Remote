@@ -122,6 +122,7 @@
 
 	<ItemGroup>
 		<None Remove="LOGO_D.ico" />
+		<None Remove="Resources\dummy.wav" />
 		<None Remove="Resources\Icons\000_OS\000_Win10_1.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win10_2.png" />
 		<None Remove="Resources\Icons\000_OS\000_Win11_0.png" />
@@ -209,6 +210,9 @@
 	<ItemGroup>
 		<Resource Include="LOGO.ico" />
 		<Resource Include="LOGO_D.ico" />
+		<EmbeddedResource Include="Resources\dummy.wav">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
 		<Resource Include="Resources\Icons\000_OS\000_Win10_1.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win11_0.png" />
 		<Resource Include="Resources\Icons\000_OS\000_Win11_1.png" />
