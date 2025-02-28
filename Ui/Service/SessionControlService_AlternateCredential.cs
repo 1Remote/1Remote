@@ -74,7 +74,7 @@ namespace _1RM.Service
         /// <summary>
         /// Find the first connectable address from the given credentials. if return null then no address is connectable.
         /// </summary>
-        private static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string protocolDisplayName)
+        public static async Task<Credential?> FindFirstConnectableAddressAsync(IEnumerable<Credential> pingCredentials, string protocolDisplayName)
         {
             var credentials = pingCredentials.Select(x => x.CloneMe()).ToList();
             const int maxWaitSeconds = 5;
@@ -209,7 +209,7 @@ namespace _1RM.Service
         /// <summary>
         /// if return null then no address is connectable.
         /// </summary>
-        private static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName)
+        public static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName = "")
         {
             var newCredential = protocol.GetCredential();
             newCredential.Name = protocol.DisplayName;

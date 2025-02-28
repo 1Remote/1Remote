@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,10 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
+using Windows.Security.Credentials;
+using System.Collections.Generic;
+using _1RM.Model.Protocol.Base;
+using _1RM.Service;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -48,6 +53,28 @@ namespace _1RM.View.Host.ProtocolHosts
                 GridMessageBox.Visibility = System.Windows.Visibility.Collapsed;
             });
             RdpClientDispose();
+
+
+            // check if it needs to auto switch address
+            var isAutoAlternateAddressSwitching = _rdpSettings.IsAutoAlternateAddressSwitching == true
+                                                  // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
+                                                  && _rdpSettings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
+            if (isAutoAlternateAddressSwitching)
+            {
+                var t = Task.Factory.StartNew(async () =>
+                {
+                    var c = await SessionControlService.GetCredential(_rdpSettings);
+                    if (c != null)
+                    {
+                        _rdpSettings.SetCredential(c);
+                        _rdpSettings.DisplayName = c.Name;
+                        _rdpClient.Server = _rdpSettings.Address;
+                        _rdpClient.AdvancedSettings2.RDPPort = _rdpSettings.GetPort();
+                    }
+                });
+                t.Wait();
+            }
+
 
             Status = ProtocolHostStatus.NotInit;
 
