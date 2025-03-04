@@ -202,7 +202,7 @@ namespace _1RM.View.ServerList
             get => LocalityListViewService.ServerListNameWidthGet();
             set
             {
-                if (value != LocalityListViewService.ServerListNameWidthGet())
+                if (Math.Abs(value - LocalityListViewService.ServerListNameWidthGet()) > 0.001)
                 {
                     LocalityListViewService.ServerListNameWidthSet(value);
                     RaisePropertyChanged();
@@ -215,7 +215,7 @@ namespace _1RM.View.ServerList
             get => LocalityListViewService.ServerListNoteWidthGet();
             set
             {
-                if (value != LocalityListViewService.ServerListNoteWidthGet())
+                if (Math.Abs(value - LocalityListViewService.ServerListNoteWidthGet()) > 0.001)
                 {
                     LocalityListViewService.ServerListNoteWidthSet(value);
                     RaisePropertyChanged();

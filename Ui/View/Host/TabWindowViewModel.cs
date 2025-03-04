@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
@@ -86,8 +87,13 @@ namespace _1RM.View.Host
                     _selectedItem.Content.OnCanResizeNowChanged -= OnCanResizeNowChanged;
                 }
 
+                var old = _selectedItem;
                 if (SetAndNotifyIfChanged(ref _selectedItem, value))
                 {
+                    if(old != null)
+                        old.PropertyChanged -= SelectedItemOnPropertyChanged;
+                    if (_selectedItem != null)
+                        _selectedItem.PropertyChanged += SelectedItemOnPropertyChanged;
                     if (_selectedItem != null)
                     {
                         SetTitle();
@@ -103,6 +109,14 @@ namespace _1RM.View.Host
                     }
                     RaisePropertyChanged(nameof(WindowResizeMode));
                 }
+            }
+        }
+
+        private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TabItemViewModel.DisplayName))
+            {
+                SetTitle();
             }
         }
 
