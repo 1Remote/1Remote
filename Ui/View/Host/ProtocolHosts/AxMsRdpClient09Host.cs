@@ -55,39 +55,38 @@ namespace _1RM.View.Host.ProtocolHosts
             RdpClientDispose();
 
 
-            // check if it needs to auto switch address
-            var isAutoAlternateAddressSwitching = _rdpSettings.IsAutoAlternateAddressSwitching == true
-                                                  // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
-                                                  && _rdpSettings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
-            if (isAutoAlternateAddressSwitching)
+            var t = Task.Factory.StartNew(async () =>
             {
-                var t = Task.Factory.StartNew(async () =>
+                // check if it needs to auto switch address
+                var isAutoAlternateAddressSwitching = _rdpSettings.IsAutoAlternateAddressSwitching == true
+                                                      // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
+                                                      && _rdpSettings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
+                if (isAutoAlternateAddressSwitching)
                 {
                     var c = await SessionControlService.GetCredential(_rdpSettings);
                     if (c != null)
                     {
                         _rdpSettings.SetCredential(c);
                         _rdpSettings.DisplayName = c.Name;
-                        _rdpClient.Server = _rdpSettings.Address;
-                        _rdpClient.AdvancedSettings2.RDPPort = _rdpSettings.GetPort();
                     }
+                }
+
+                Status = ProtocolHostStatus.NotInit;
+
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    int w = 0;
+                    int h = 0;
+                    if (ParentWindow is TabWindowView tab)
+                    {
+                        var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(this._rdpSettings.ColorHex) == true);
+                        w = (int)size.Width;
+                        h = (int)size.Height;
+                    }
+                    InitRdp(w, h, true);
+                    Conn();
                 });
-                t.Wait();
-            }
-
-
-            Status = ProtocolHostStatus.NotInit;
-
-            int w = 0;
-            int h = 0;
-            if (ParentWindow is TabWindowView tab)
-            {
-                var size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(this._rdpSettings.ColorHex) == true);
-                w = (int)size.Width;
-                h = (int)size.Height;
-            }
-            InitRdp(w, h, true);
-            Conn();
+            });
         }
 
 

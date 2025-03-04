@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using _1RM.Model.Protocol.Base;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -15,9 +17,33 @@ namespace _1RM.View.Host
             DisplayName = displayName;
             ColorHex = hostBase.ProtocolServer.ColorHex;
             IconImg = hostBase.ProtocolServer.IconImg;
+            Content.ProtocolServer.PropertyChanged += ProtocolServerOnPropertyChanged;
         }
 
-        public string DisplayName { get; }
+        private void ProtocolServerOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == nameof(ProtocolBase.DisplayName))
+            {
+                DisplayName = Content.ProtocolServer.DisplayName;
+            }
+        }
+
+        ~TabItemViewModel()
+        {
+            Content.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
+        }
+
+
+        public string DisplayName
+        {
+            get => _displayName;
+            private set
+            {
+                _displayName = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public HostBase Content { get; }
         /// <summary>
         /// tab title mark color
@@ -28,6 +54,8 @@ namespace _1RM.View.Host
 
 
         private RelayCommand? _cmdReconnect;
+        private string _displayName;
+
         public RelayCommand CmdReconnect
         {
             get

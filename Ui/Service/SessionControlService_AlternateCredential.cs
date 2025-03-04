@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
+using _1RM.View.ServerList;
 using Shawn.Utils;
 using Stylet;
 using _1RM.View.Utils;
+using _1RM.Model;
 
 namespace _1RM.Service
 {
@@ -211,6 +213,13 @@ namespace _1RM.Service
         /// </summary>
         public static async Task<Credential?> GetCredential(ProtocolBaseWithAddressPort protocol, string assignCredentialName = "")
         {
+            // set the credential from the raw protocol (for reconnection since the credential may be changed when first connection)
+            if (IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => x.Id == protocol.Id) is { Server: ProtocolBaseWithAddressPort swap })
+            {
+                protocol.DisplayName = swap.DisplayName;
+                protocol.SetCredential(swap.GetCredential());
+            }
+
             var newCredential = protocol.GetCredential();
             newCredential.Name = protocol.DisplayName;
             // use assign credential 应用指定的 credential

@@ -141,8 +141,8 @@
                                                    TextTrimming="CharacterEllipsis"
                                                    MaxWidth="250"
                                                    MinWidth="40"
-                                                   ToolTip="{Binding DisplayName}"
-                                                   Text="{Binding DisplayName}"></TextBlock>
+                                                   ToolTip="{Binding DisplayName, Mode=OneWay}"
+                                                   Text="{Binding DisplayName, Mode=OneWay}"></TextBlock>
                                     </Border>
 
                                     <!--header item placeholder(do not move or remove this)-->
