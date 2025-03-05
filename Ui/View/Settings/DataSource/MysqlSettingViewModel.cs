@@ -10,10 +10,11 @@ using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Windows.Networking;
+using _1RM.View.Utils.MaskAndPop;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class MysqlSettingViewModel : MaskLayerContainerScreenBase, IDataErrorInfo
+    public class MysqlSettingViewModel : PopupBase, IDataErrorInfo
     {
         private readonly MysqlSource? _orgMysqlConfig = null;
         public MysqlSource New = new MysqlSource();

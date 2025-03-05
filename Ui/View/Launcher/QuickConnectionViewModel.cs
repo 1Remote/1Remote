@@ -10,6 +10,8 @@ using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
+using _1RM.View.Utils;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
 using File = System.IO.File;
@@ -198,138 +200,151 @@ namespace _1RM.View.Launcher
         }
 
 
-        public void OpenConnection()
+        public async void OpenConnection()
         {
-            var serverSelectionsViewSelected = _serverSelectionsViewSelected;
-            _serverSelectionsViewSelected = null; // release the reference to avoid memory leak
-
-            if (this.View is not QuickConnectionView) return;
-            if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
-
-            if (ConnectHistory.Count > 0
-                && SelectedIndex >= 0
-                && SelectedIndex < ConnectHistory.Count)
+            try
             {
-                var host = ConnectHistory[SelectedIndex] != OpenConnectActionItem ? ConnectHistory[SelectedIndex].Host.Trim() : Filter.Trim();
-                if (string.IsNullOrWhiteSpace(host))
-                    return;
+                var serverSelectionsViewSelected = _serverSelectionsViewSelected;
+                _serverSelectionsViewSelected = null; // release the reference to avoid memory leak
 
-                string protocol = SelectedProtocol.Protocol;
-                string address = host;
-                string port = "";
-                var i = host.LastIndexOf(":", StringComparison.Ordinal);
-                if (i >= 0)
+                if (this.View is not QuickConnectionView) return;
+                if (IoC.TryGet<LauncherWindowView>()?.IsClosing != false) return;
+
+                if (ConnectHistory.Count > 0
+                    && SelectedIndex >= 0
+                    && SelectedIndex < ConnectHistory.Count)
                 {
-                    if (int.TryParse(host.Substring(i + 1), out var intPort))
-                    {
-                        address = host.Substring(0, i).Trim();
-                        port = intPort.ToString();
-                    }
-                    else
-                    {
-                        // invalid port, reset address to let it be invalid
-                        address = "";
-                    }
-                }
+                    var host = ConnectHistory[SelectedIndex] != OpenConnectActionItem ? ConnectHistory[SelectedIndex].Host.Trim() : Filter.Trim();
+                    if (string.IsNullOrWhiteSpace(host))
+                        return;
 
-                // stop if address is empty
-                if (string.IsNullOrWhiteSpace(address))
-                    return;
-
-                // Hide Ui
-                Filter = "";
-                IoC.Get<LauncherWindowViewModel>().HideMe();
-
-                // create protocol
-                var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();
-                server.DisplayName = host;
-                if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
-                {
-                    protocolBaseWithAddressPort.Address = address;
-                    if (string.IsNullOrWhiteSpace(port) == false)
+                    string protocol = SelectedProtocol.Protocol;
+                    string address = host;
+                    string port = "";
+                    var i = host.LastIndexOf(":", StringComparison.Ordinal);
+                    if (i >= 0)
                     {
-                        protocolBaseWithAddressPort.Port = port;
-                    }
-                }
-
-                if (serverSelectionsViewSelected != null)
-                {
-                    server.IconBase64 = serverSelectionsViewSelected.IconBase64;
-                }
-
-                // pop password window if needed
-                var pwdDlg = new PasswordPopupDialogViewModel();
-                if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
-                {
-                    pwdDlg = new PasswordPopupDialogViewModel(protocolBaseWithAddressPortUserPwd is SSH or SFTP, IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
-                    {
-                        Title = $"[{server.ProtocolDisplayName}]{host}"
-                    };
-
-                    // if selected server in launcher list, and it is writable, then auto fill the server password into quick connect view
-                    // fill user and password
-                    if (serverSelectionsViewSelected is ProtocolBaseWithAddressPortUserPwd pup)
-                    {
-                        pwdDlg.UserName = pup.UserName;
-                        pwdDlg.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(pup.Password);
-                        pwdDlg.PrivateKey = UnSafeStringEncipher.DecryptOrReturnOriginalString(pup.PrivateKey);
-                    }
-                    // otherwise, fill in the last used username and password
-                    else
-                    {
-                        if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+                        if (int.TryParse(host.Substring(i + 1), out var intPort))
                         {
-                            // find saved username and password then fill in
-                            var history = LocalityConnectRecorder.QuickConnectionHistoryGetAll().FirstOrDefault(x => x.Host == host && x.Protocol == protocol);
-                            if (history != null)
-                            {
-                                (pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey) = history.GetUserPassword();
-                            }
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(pwdDlg.PrivateKey) && File.Exists(pwdDlg.PrivateKey))
-                    {
-                        pwdDlg.UsePrivateKeyForConnect = true;
-                    }
-
-                    if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
-                    {
-                        protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.UserName;
-                        if (pwdDlg.UsePrivateKeyForConnect)
-                        {
-                            protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = true;
-                            protocolBaseWithAddressPortUserPwd.Password = "";
-                            protocolBaseWithAddressPortUserPwd.PrivateKey = pwdDlg.PrivateKey;
+                            address = host.Substring(0, i).Trim();
+                            port = intPort.ToString();
                         }
                         else
                         {
-                            protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = false;
-                            protocolBaseWithAddressPortUserPwd.PrivateKey = "";
-                            protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
+                            // invalid port, reset address to let it be invalid
+                            address = "";
                         }
                     }
-                    else
-                    {
+
+                    // stop if address is empty
+                    if (string.IsNullOrWhiteSpace(address))
                         return;
+
+                    // Hide Ui
+                    Filter = "";
+                    IoC.Get<LauncherWindowViewModel>().HideMe();
+
+                    // create protocol
+                    var server = (Protocols.FirstOrDefault(x => x.Protocol == protocol) ?? SelectedProtocol).Clone();
+                    server.DisplayName = host;
+                    if (server is ProtocolBaseWithAddressPort protocolBaseWithAddressPort)
+                    {
+                        protocolBaseWithAddressPort.Address = address;
+                        if (string.IsNullOrWhiteSpace(port) == false)
+                        {
+                            protocolBaseWithAddressPort.Port = port;
+                        }
                     }
+
+                    if (serverSelectionsViewSelected != null)
+                    {
+                        server.IconBase64 = serverSelectionsViewSelected.IconBase64;
+                    }
+
+                    // pop password window if needed
+                    var pwdDlg = new PasswordPopupDialogViewModel();
+                    if (server is ProtocolBaseWithAddressPortUserPwd protocolBaseWithAddressPortUserPwd)
+                    {
+                        pwdDlg = new PasswordPopupDialogViewModel(protocolBaseWithAddressPortUserPwd is SSH or SFTP, IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+                        {
+                            Title = $"[{server.ProtocolDisplayName}]{host}"
+                        };
+
+                        // if selected server in launcher list, and it is writable, then auto fill the server password into quick connect view
+                        // fill user and password
+                        if (serverSelectionsViewSelected is ProtocolBaseWithAddressPortUserPwd pup)
+                        {
+                            pwdDlg.UserName = pup.UserName;
+                            pwdDlg.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(pup.Password);
+                            pwdDlg.PrivateKey = UnSafeStringEncipher.DecryptOrReturnOriginalString(pup.PrivateKey);
+                        }
+                        // otherwise, fill in the last used username and password
+                        else
+                        {
+                            if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+                            {
+                                // find saved username and password then fill in
+                                var history = LocalityConnectRecorder.QuickConnectionHistoryGetAll().FirstOrDefault(x => x.Host == host && x.Protocol == protocol);
+                                if (history != null)
+                                {
+                                    (pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey) = history.GetUserPassword();
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(pwdDlg.PrivateKey) && File.Exists(pwdDlg.PrivateKey))
+                        {
+                            pwdDlg.UsePrivateKeyForConnect = true;
+                        }
+
+                        MaskLayerController.ShowWindowWithMask(pwdDlg);
+
+                        if (await pwdDlg.WaitDialogResult() == true)
+                        {
+                            protocolBaseWithAddressPortUserPwd.UserName = pwdDlg.UserName;
+                            if (pwdDlg.UsePrivateKeyForConnect)
+                            {
+                                protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = true;
+                                protocolBaseWithAddressPortUserPwd.Password = "";
+                                protocolBaseWithAddressPortUserPwd.PrivateKey = pwdDlg.PrivateKey;
+                            }
+                            else
+                            {
+                                protocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect = false;
+                                protocolBaseWithAddressPortUserPwd.PrivateKey = "";
+                                protocolBaseWithAddressPortUserPwd.Password = pwdDlg.Password;
+                            }
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+
+
+                    // save history
+                    if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+                    {
+                        if (pwdDlg.CanRememberInfo)
+                        {
+                            LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey);
+                        }
+                        else
+                        {
+                            LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, "", "", "");
+                        }
+                    }
+
+                    // connect
+                    GlobalEventHelper.OnRequestQuickConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - {nameof(QuickConnectionView)}");
                 }
-
-
-                // save history
-                if (IoC.Get<ConfigurationService>().Launcher.AllowSaveInfoInQuickConnect)
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                SentryIoHelper.Error(e, new Dictionary<string, string>()
                 {
-                    if (pwdDlg.CanRememberInfo)
-                    {
-                        LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, pwdDlg.UserName, pwdDlg.Password, pwdDlg.PrivateKey);
-                    }
-                    else
-                    {
-                        LocalityConnectRecorder.QuickConnectionHistoryAddOrUpdate(host, protocol, "", "", "");
-                    }
-                }
-
-                // connect
-                GlobalEventHelper.OnRequestQuickConnect?.Invoke(server, fromView: $"{nameof(LauncherWindowView)} - {nameof(QuickConnectionView)}");
+                    {"Action", "QuickConnectionViewModel.OpenConnection"}
+                });
             }
         }
     }

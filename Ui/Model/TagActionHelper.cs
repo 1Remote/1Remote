@@ -7,6 +7,7 @@ using _1RM.Utils;
 using _1RM.View;
 using _1RM.View.ServerList;
 using _1RM.View.Utils;
+using Shawn.Utils;
 using Shawn.Utils.Interface;
 
 namespace _1RM.Model;
@@ -68,73 +69,84 @@ public static class TagActionHelper
             IoC.Get<ServerListPageViewModel>().CmdShowMainTab?.Execute();
     }
 
-    public static void CmdTagRename(object? o)
+    public static async void CmdTagRename(object? o)
     {
-        var tagName = GetTagNameFromObject(o);
-        if (string.IsNullOrEmpty(tagName))
-            return;
-
-        string oldTagName = tagName!;
-        var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(oldTagName) && x.IsEditable).Select(x => x.Server).ToArray();
-        if (protocolServerBases.Any() != true)
+        try
         {
-            return;
-        }
+            var tagName = GetTagNameFromObject(o);
+            if (string.IsNullOrEmpty(tagName))
+                return;
 
-        var newTagName = InputBoxViewModel.GetValue(IoC.Translate("Tags"), new Func<string, string>((str) =>
-        {
-            if (string.IsNullOrWhiteSpace(str))
-                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
-            if (str == tagName)
-                return "";
-            if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
-                return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
-            return "";
-        }), defaultResponse: tagName!, ownerViewModel: IoC.Get<MainWindowViewModel>());
-
-        newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
-        if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
-            return;
-
-        // 1. update is pin
-        var oldTag = LocalityTagService.GetAndRemoveTag(oldTagName);
-        if (oldTag != null)
-        {
-            oldTag.Name = newTagName;
-            LocalityTagService.UpdateTag(oldTag);
-        }
-
-        // 2. update server tags
-        foreach (var server in protocolServerBases)
-        {
-            if (server.Tags.Contains(oldTagName))
+            string oldTagName = tagName!;
+            var protocolServerBases = IoC.Get<GlobalData>().VmItemList.Where(x => x.Server.Tags.Contains(oldTagName) && x.IsEditable).Select(x => x.Server).ToArray();
+            if (protocolServerBases.Any() != true)
             {
-                var tags = new List<string>(server.Tags);
-                tags.Remove(oldTagName);
-                tags.Add(newTagName);
-                server.Tags = tags;
+                return;
             }
-        }
 
-        // 2.5 update tags
+            var newTagName = await InputBoxViewModel.GetValue(IoC.Translate("Tags"), new Func<string, string>((str) =>
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                    return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                if (str == tagName)
+                    return "";
+                if (IoC.Get<GlobalData>().TagList.Any(x => x.Name == str))
+                    return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
+                return "";
+            }), defaultResponse: tagName!, ownerViewModel: IoC.Get<MainWindowViewModel>());
+
+            newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
+            if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
+                return;
+
+            // 1. update is pin
+            var oldTag = LocalityTagService.GetAndRemoveTag(oldTagName);
+            if (oldTag != null)
+            {
+                oldTag.Name = newTagName;
+                LocalityTagService.UpdateTag(oldTag);
+            }
+
+            // 2. update server tags
+            foreach (var server in protocolServerBases)
+            {
+                if (server.Tags.Contains(oldTagName))
+                {
+                    var tags = new List<string>(server.Tags);
+                    tags.Remove(oldTagName);
+                    tags.Add(newTagName);
+                    server.Tags = tags;
+                }
+            }
+
+            // 2.5 update tags
+            {
+                var tag = IoC.Get<GlobalData>().TagList.FirstOrDefault(x => x.Name == oldTagName);
+                if (tag != null) tag.Name = newTagName;
+            }
+
+
+            // 3. restore selected scene
+            var tagFilters = new List<TagFilter>(IoC.Get<ServerListPageViewModel>().TagFilters);
+            var rename = tagFilters.FirstOrDefault(x => x.TagName == oldTagName);
+            if (rename != null)
+            {
+                rename.TagName = newTagName;
+            }
+            IoC.Get<ServerListPageViewModel>().TagFilters = tagFilters;
+            IoC.Get<MainWindowViewModel>().SetMainFilterString(tagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString).KeyWords);
+
+            // 4. update to db and reload tags. not tag reload
+            IoC.Get<GlobalData>().UpdateServer(protocolServerBases, false);
+        }
+        catch (Exception e)
         {
-            var tag = IoC.Get<GlobalData>().TagList.FirstOrDefault(x => x.Name == oldTagName);
-            if (tag != null) tag.Name = newTagName;
+            SimpleLogHelper.Error(e);
+            SentryIoHelper.Error(e, new Dictionary<string, string>()
+            {
+                {"Action", "TagActionHelper.CmdTagRename"}
+            });
         }
-
-
-        // 3. restore selected scene
-        var tagFilters = new List<TagFilter>(IoC.Get<ServerListPageViewModel>().TagFilters);
-        var rename = tagFilters.FirstOrDefault(x => x.TagName == oldTagName);
-        if (rename != null)
-        {
-            rename.TagName = newTagName;
-        }
-        IoC.Get<ServerListPageViewModel>().TagFilters = tagFilters;
-        IoC.Get<MainWindowViewModel>().SetMainFilterString(tagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString).KeyWords);
-
-        // 4. update to db and reload tags. not tag reload
-        IoC.Get<GlobalData>().UpdateServer(protocolServerBases, false);
     }
 
     public static void CmdTagConnect(object? o)

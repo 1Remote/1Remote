@@ -6,14 +6,13 @@ using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Windows.Networking;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class PgsqlSettingViewModel : MaskLayerContainerScreenBase, IDataErrorInfo
+    public class PgsqlSettingViewModel : PopupBase, IDataErrorInfo
     {
         private readonly PgsqlSource? _orgPgsqlConfig = null;
         public PgsqlSource New = new PgsqlSource();

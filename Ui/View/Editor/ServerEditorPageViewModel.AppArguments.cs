@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
@@ -142,7 +144,11 @@ namespace _1RM.View.Editor
                         }
                         arguments = arguments.Distinct().ToList();
                         var vm = new ArgumentEditViewModel(protocol, arguments, o as AppArgument);
-                        MaskLayerController.ShowDialogWithMask(vm);
+                        MaskLayerController.ShowWindowWithMask(vm);
+                        Task.Factory.StartNew(async void () =>
+                        {
+                            await vm.WaitDialogResult();
+                        });
                     }
                 }, o => Server is LocalApp);
             }

@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using _1RM.Model;
-using _1RM.Model.Protocol;
-using _1RM.Model.Protocol.Base;
-using _1RM.Service;
-using _1RM.Service.Locality;
-using _1RM.Utils;
-using Shawn.Utils;
+﻿using _1RM.Service.Locality;
+using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Editor
 {
-    public class PasswordPopupDialogViewModel : NotifyPropertyChangedBaseScreen
+    public class PasswordPopupDialogViewModel : PopupBase
     {
-        public bool DialogResult { get; set; } = false;
-
         private string _title = "";
         public string Title
         {
@@ -145,7 +132,6 @@ namespace _1RM.View.Editor
             {
                 return _cmdSave ??= new RelayCommand((o) =>
                 {
-                    this.DialogResult = true;
                     this.RequestClose(true);
                 }, o => CanSave());
             }
@@ -159,7 +145,6 @@ namespace _1RM.View.Editor
             {
                 return _cmdQuit ??= new RelayCommand((o) =>
                 {
-                    this.DialogResult = false;
                     this.RequestClose(false);
                 });
             }

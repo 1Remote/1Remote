@@ -688,10 +688,10 @@ namespace _1RM.View.Editor
                 return _cmdSelectImage ??= new RelayCommand((o) =>
                 {
                     var dlg = new IconPopupDialogViewModel(Server.IconImg);
-                    if (true == MaskLayerController.ShowDialogWithMask(dlg))
+                    MaskLayerController.ShowWindowWithMask(dlg, onCloseWithTrue: () =>
                     {
                         Server.IconBase64 = dlg.Icon.ToBase64();
-                    }
+                    });
                 });
             }
         }
@@ -750,7 +750,7 @@ namespace _1RM.View.Editor
                         }
                         existedNames = existedNames.Distinct().ToList();
                         var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
-                        MaskLayerController.ShowDialogWithMask(vm);
+                        MaskLayerController.ShowWindowWithMask(vm);
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
             }

@@ -11,8 +11,10 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.View;
 using _1RM.View.Editor;
 using _1RM.View.Host;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -226,49 +228,52 @@ namespace _1RM.Service
             if (protocolClone is ProtocolBaseWithAddressPortUserPwd { AskPasswordWhenConnect: true } pb)
             {
                 bool flag = false;
+                var pwdDlg = new PasswordPopupDialogViewModel(protocolClone is SSH or SFTP)
+                {
+                    Title = $"[{pb.ProtocolDisplayName}]({pb.DisplayName}) -> {pb.Address}:{pb.Port}",
+                    UserName = pb.UserName
+                };
+                if (pb.UsePrivateKeyForConnect == true)
+                {
+                    pwdDlg.CanUsePrivateKeyForConnect = true;
+                    pwdDlg.UsePrivateKeyForConnect = true;
+                    pwdDlg.PrivateKey = pb.PrivateKey;
+                }
+                else
+                {
+                    pwdDlg.UsePrivateKeyForConnect = false;
+                    pwdDlg.Password = pb.Password;
+                }
+
                 Execute.OnUIThreadSync(() =>
                 {
-                    var pwdDlg = new PasswordPopupDialogViewModel(protocolClone is SSH or SFTP)
-                    {
-                        Title = $"[{pb.ProtocolDisplayName}]({pb.DisplayName}) -> {pb.Address}:{pb.Port}",
-                        UserName = pb.UserName
-                    };
-                    if (pb.UsePrivateKeyForConnect == true)
-                    {
-                        pwdDlg.CanUsePrivateKeyForConnect = true;
-                        pwdDlg.UsePrivateKeyForConnect = true;
-                        pwdDlg.PrivateKey = pb.PrivateKey;
-                    }
-                    else
-                    {
-                        pwdDlg.UsePrivateKeyForConnect = false;
-                        pwdDlg.Password = pb.Password;
-                    }
-
-                    if (IoC.Get<IWindowManager>().ShowDialog(pwdDlg) == true)
-                    {
-                        flag = true;
-                        pb.UserName = pwdDlg.UserName;
-                        if (pwdDlg.UsePrivateKeyForConnect)
-                        {
-                            pb.UsePrivateKeyForConnect = true;
-                            pb.Password = "";
-                            pb.PrivateKey = pwdDlg.PrivateKey;
-                        }
-                        else
-                        {
-                            pb.UsePrivateKeyForConnect = false;
-                            pb.PrivateKey = "";
-                            pb.Password = pwdDlg.Password;
-                        }
-                        pwdDlg.PrivateKey = "";
-                        pwdDlg.Password = "";
-                    }
-                    else
-                    {
-                        pwdDlg.Password = "";
-                    }
+                    MaskLayerController.ShowWindowWithMask(pwdDlg);
                 });
+
+                if (await pwdDlg.WaitDialogResult() == true)
+                {
+                    flag = true;
+                    pb.UserName = pwdDlg.UserName;
+                    if (pwdDlg.UsePrivateKeyForConnect)
+                    {
+                        pb.UsePrivateKeyForConnect = true;
+                        pb.Password = "";
+                        pb.PrivateKey = pwdDlg.PrivateKey;
+                    }
+                    else
+                    {
+                        pb.UsePrivateKeyForConnect = false;
+                        pb.PrivateKey = "";
+                        pb.Password = pwdDlg.Password;
+                    }
+                    pwdDlg.PrivateKey = "";
+                    pwdDlg.Password = "";
+                }
+                else
+                {
+                    pwdDlg.Password = "";
+                }
+
 
                 if (flag == false)
                 {

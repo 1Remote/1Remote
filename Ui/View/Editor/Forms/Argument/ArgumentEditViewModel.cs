@@ -8,13 +8,14 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
 using Enum = System.Enum;
 
 namespace _1RM.View.Editor.Forms.Argument
 {
-    public class ArgumentEditViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
+    public class ArgumentEditViewModel : PopupBase, IDataErrorInfo
     {
         private readonly LocalApp _localApp;
         private readonly AppArgument? _org = null;
