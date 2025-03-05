@@ -11,13 +11,14 @@ using System.Windows.Input;
 using _1RM.Utils;
 using Shawn.Utils.Wpf;
 using _1RM.Service;
+using _1RM.View.Utils.MaskAndPop;
 
 namespace _1RM.View.Utils
 {
     /// <summary>
     /// Default implementation of IMessageBoxViewModel, and is therefore the ViewModel shown by default by ShowMessageBox
     /// </summary>
-    public class InputBoxViewModel : NotifyPropertyChangedBaseScreen
+    public class InputBoxViewModel : PopupBase
     {
         /// <summary>
         /// input string return error message or null
@@ -133,10 +134,11 @@ namespace _1RM.View.Utils
             }
         }
 
-        public static string? GetValue(string caption, Func<string, string>? validator = null, string defaultResponse = "", IViewAware? ownerViewModel = null)
+        public static async Task<string?> GetValue(string caption, Func<string, string>? validator = null, string defaultResponse = "", IViewAware? ownerViewModel = null)
         {
             var vm = new InputBoxViewModel(caption, validator, defaultResponse);
-            if (true == IoC.Get<IWindowManager>().ShowDialog(vm, ownerViewModel))
+            MaskLayerController.ShowWindowWithMask(vm);
+            if (true == await vm.WaitDialogResult())
             {
                 return vm.Response;
             }

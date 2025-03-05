@@ -608,6 +608,27 @@ namespace _1RM.View.ServerList
                 MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
                 return new Tuple<DataSourceBase?, string?>(null, null);
             }
+            // select file with filter
+            if (this.View is ServerListPageView view)
+                view.CbPopForInExport.IsChecked = false;
+            var path = SelectFileHelper.OpenFile(title: IoC.Translate("import_server_dialog_title"), filter: filter);
+            return path == null ? new Tuple<DataSourceBase?, string?>(null, null) : new Tuple<DataSourceBase?, string?>(source, path);
+        }
+
+
+        private async Task<Tuple<DataSourceBase?, string?>> GetImportParamsAsync(string filter)
+        {
+            // select save to which source
+            var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
+            if (source == null)
+            {
+                return new Tuple<DataSourceBase?, string?>(null, null);
+            }
+            if (source?.IsWritable != true)
+            {
+                MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                return new Tuple<DataSourceBase?, string?>(null, null);
+            }
 
             // select file with filter
             if (this.View is ServerListPageView view)

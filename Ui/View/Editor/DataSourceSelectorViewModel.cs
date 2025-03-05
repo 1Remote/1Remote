@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using _1RM.Model;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service;
@@ -9,12 +10,13 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils.Wpf;
 using Stylet;
 
 namespace _1RM.View.Editor
 {
-    public class DataSourceSelectorViewModel : NotifyPropertyChangedBaseScreen
+    public class DataSourceSelectorViewModel : PopupBase
     {
         private readonly DataSourceService _dataSourceService;
         protected DataSourceSelectorViewModel()
@@ -106,9 +108,24 @@ namespace _1RM.View.Editor
             if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any())
             {
                 var vm = new DataSourceSelectorViewModel();
-                if (MaskLayerController.ShowDialogWithMask(vm) != true)
-                    return null;
-                return IoC.Get<DataSourceService>().GetDataSource(vm.SelectedSource.DataSourceName);
+                return MaskLayerController.ShowDialogWithMask(vm) != true ? null : IoC.Get<DataSourceService>().GetDataSource(vm.SelectedSource.DataSourceName);
+            }
+            else
+            {
+                return IoC.Get<DataSourceService>().LocalDataSource;
+            }
+        }
+
+        public static async Task<DataSourceBase?> SelectDataSourceAsync()
+        {
+            if (IoC.Get<ConfigurationService>().AdditionalDataSource.Any())
+            {
+                var vm = new DataSourceSelectorViewModel();
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    MaskLayerController.ShowWindowWithMask(vm);
+                });
+                return await vm.WaitDialogResult() != true ? null : IoC.Get<DataSourceService>().GetDataSource(vm.SelectedSource.DataSourceName);
             }
             else
             {

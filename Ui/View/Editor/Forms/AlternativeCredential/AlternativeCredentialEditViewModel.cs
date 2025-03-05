@@ -10,6 +10,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -17,7 +18,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
-    public class AlternativeCredentialEditViewModel : NotifyPropertyChangedBaseScreen, IDataErrorInfo
+    public class AlternativeCredentialEditViewModel : PopupBase, IDataErrorInfo
     {
         private readonly Model.Protocol.Base.Credential? _org = null;
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();

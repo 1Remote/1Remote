@@ -7,7 +7,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using _1RM.View.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -15,7 +15,7 @@ using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Settings.DataSource
 {
-    public class SqliteSettingViewModel : MaskLayerContainerScreenBase, IDataErrorInfo
+    public class SqliteSettingViewModel : PopupBase, IDataErrorInfo
     {
         public SqliteSource? OrgSqliteConfig { get; } = null;
 

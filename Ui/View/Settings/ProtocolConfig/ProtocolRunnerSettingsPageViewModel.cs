@@ -89,28 +89,39 @@ namespace _1RM.View.Settings.ProtocolConfig
         {
             get
             {
-                return _cmdAddRunner ??= new RelayCommand((o) =>
+                return _cmdAddRunner ??= new RelayCommand( async void (o) =>
                 {
-                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    var name = InputBoxViewModel.GetValue(_languageService.Translate("New runner name"), new Func<string, string>((str) =>
+                    try
                     {
-                        if (string.IsNullOrWhiteSpace(str))
-                            return _languageService.Translate(LanguageService.CAN_NOT_BE_EMPTY);
-                        if (c.Runners.Any(x => x.Name == str))
-                            return _languageService.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
-                        return "";
-                    }), ownerViewModel: IoC.Get<MainWindowViewModel>());
-
-                    if (name != null && string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
-                    {
-                        var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
-                        if (SelectedProtocol == SSH.ProtocolName || SelectedProtocol == SFTP.ProtocolName)
+                        var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                        var name = await InputBoxViewModel.GetValue(_languageService.Translate("New runner name"), new Func<string, string>((str) =>
                         {
-                            newRunner = new ExternalRunnerForSSH(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
+                            if (string.IsNullOrWhiteSpace(str))
+                                return _languageService.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (c.Runners.Any(x => x.Name == str))
+                                return _languageService.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, str);
+                            return "";
+                        }), ownerViewModel: IoC.Get<MainWindowViewModel>());
+
+                        if (name != null && string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
+                        {
+                            var newRunner = new ExternalRunner(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
+                            if (SelectedProtocol == SSH.ProtocolName || SelectedProtocol == SFTP.ProtocolName)
+                            {
+                                newRunner = new ExternalRunnerForSSH(name, SelectedProtocol) { MarcoNames = c.MarcoNames };
+                            }
+                            c.Runners.Add(newRunner);
+                            Runners.Add(newRunner);
+                            _protocolConfigurationService.Save();
                         }
-                        c.Runners.Add(newRunner);
-                        Runners.Add(newRunner);
-                        _protocolConfigurationService.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                        SentryIoHelper.Error(e, new Dictionary<string, string>()
+                        {
+                            {"Action", "ProtocolRunnerSettingsPageViewModel.CmdAddRunner"}
+                        });
                     }
                 });
             }

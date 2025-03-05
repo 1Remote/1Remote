@@ -8,6 +8,7 @@ using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -135,7 +136,7 @@ namespace _1RM.View.Settings.DataSource
                 {
                     if (o is not DataSourceBase dataSource) return;
 
-                    object? vm = dataSource switch
+                    PopupBase? vm = dataSource switch
                     {
                         SqliteSource sqliteConfig => new SqliteSettingViewModel(this, sqliteConfig),
                         MysqlSource mysqlConfig => new MysqlSettingViewModel(this, mysqlConfig),

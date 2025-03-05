@@ -15,6 +15,7 @@ using Stylet;
 using _1RM.View.Settings.General;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 using _1RM.Service.DataSource.DAO.Dapper;
+using Shawn.Utils;
 using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.View
@@ -95,17 +96,64 @@ namespace _1RM.View
         protected override void OnViewLoaded()
         {
             base.OnViewLoaded();
-            GlobalEventHelper.OnRequestGoToServerDuplicatePage += (server, isInAnimationShow) =>
+
+            GlobalEventHelper.OnGoToServerAddPage += async void (tagNames, assignDataSource) =>
             {
-                var source = DataSourceSelectorViewModel.SelectDataSource();
-                if (source?.IsWritable == true)
+                try
                 {
-                    EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
-                    ShowMe();
+                    var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
+#if !DEBUG
+                    // use this to test the error message
+                    if (source == null)
+                    {
+                        return;
+                    }
+#endif
+                    if (source?.IsWritable == true)
+                    {
+                        EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
+                        ShowMe();
+                    }
+                    else
+                    {
+                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                    SimpleLogHelper.Error(e);
+                    SentryIoHelper.Error(e, new Dictionary<string, string>()
+                    {
+                        {"Action", "MainWindowViewModel.OnGoToServerAddPage"}
+                    });
+                }
+            };
+            GlobalEventHelper.OnRequestGoToServerDuplicatePage += async void (server, isInAnimationShow) =>
+            {
+                try
+                {
+                    var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
+                    if (source == null)
+                    {
+                        return;
+                    }
+                    if (source.IsWritable == true)
+                    {
+                        EditorViewModel = ServerEditorPageViewModel.Duplicate(_appData, source, server);
+                        ShowMe();
+                    }
+                    else
+                    {
+                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    SentryIoHelper.Error(e, new Dictionary<string, string>()
+                    {
+                        {"Action", "MainWindowViewModel.OnRequestGoToServerDuplicatePage"}
+                    });
                 }
             };
 
@@ -120,20 +168,6 @@ namespace _1RM.View
                 {
                     EditorViewModel = ServerEditorPageViewModel.Edit(_appData, server);
                     ShowMe();
-                }
-            };
-
-            GlobalEventHelper.OnGoToServerAddPage += (tagNames, assignDataSource) =>
-            {
-                var source = assignDataSource ?? DataSourceSelectorViewModel.SelectDataSource();
-                if (source?.IsWritable == true)
-                {
-                    EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
-                    ShowMe();
-                }
-                else
-                {
-                    MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
                 }
             };
 
@@ -228,9 +262,7 @@ namespace _1RM.View
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    if (true == MaskLayerController.ShowDialogWithMask(AboutViewModel))
-                    {
-                    }
+                    MaskLayerController.ShowWindowWithMask(AboutViewModel, this);
                 });
             }
         }

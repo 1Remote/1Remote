@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Timers;
 using _1RM.Service;
-using _1RM.Utils;
 using _1RM.View.Utils;
+using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
@@ -13,7 +13,7 @@ using Stylet;
 
 namespace _1RM.View
 {
-    public class AboutPageViewModel : NotifyPropertyChangedBaseScreen
+    public class AboutPageViewModel : PopupBase
     {
         private readonly Timer _checkUpdateTimer;
 
@@ -124,7 +124,7 @@ namespace _1RM.View
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    this.RequestClose(false);
+                    this.RequestClose();
                 });
             }
         }
