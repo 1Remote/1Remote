@@ -216,8 +216,10 @@ namespace _1RM.Service
             // set the credential from the raw protocol (for reconnection since the credential may be changed when first connection)
             if (IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => x.Id == protocol.Id) is { Server: ProtocolBaseWithAddressPort swap })
             {
-                protocol.DisplayName = swap.DisplayName;
-                protocol.SetCredential(swap.GetCredential());
+                var swap2 = (ProtocolBaseWithAddressPort)swap.Clone();
+                swap2.DecryptToConnectLevel();
+                protocol.DisplayName = swap2.DisplayName;
+                protocol.SetCredential(swap2.GetCredential());
             }
 
             var newCredential = protocol.GetCredential();
