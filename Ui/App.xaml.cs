@@ -85,8 +85,18 @@ namespace _1RM
             // icon that it first retrieved. So, by first playing the sound in
             // the main window first, we can get Volume Mixer to display the
             // application icon and keep it there.
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer("Resources/dummy.wav");
-            player.Play();
+            //System.Media.SoundPlayer player = new System.Media.SoundPlayer("Resources/dummy.wav");
+            //player.Play();
+
+            // Set dummy.wav as a resource to avoid copy the file to the output folder when build.
+            var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/dummy.wav"));
+            if (sri != null)
+            {
+                using var s = sri.Stream;
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(s);
+                player.Load();
+                player.Play();
+            }
         }
 
         public static bool ExitingFlag = false;
