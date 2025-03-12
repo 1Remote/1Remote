@@ -139,7 +139,7 @@ namespace _1RM.Model.ProtocolRunner
                     {"#", "%23" },
                     {"+", "%2B" },
                     {"/", "%2F" },
-                    {"@", "%40" },
+                    //{"@", "%40" },
                 };
                 foreach (var kv in specialCharacters)
                 {
