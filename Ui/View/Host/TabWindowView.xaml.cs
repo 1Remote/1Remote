@@ -45,6 +45,9 @@ namespace _1RM.View.Host
                 _myHandle = new WindowInteropHelper(this).Handle;
                 Keyboard.Focus(this);
 
+                var _myHwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
+                _myHwndSource.AddHook(new HwndSourceHook(AdditionalWndProc));
+
                 // remember window size when size changed
                 SizeChanged += (_, _) =>
                 {
@@ -124,6 +127,33 @@ namespace _1RM.View.Host
                     this.WindowState = IoC.Get<LocalityService>().TabWindowState;
                 }
             };
+        }
+
+        private IntPtr AdditionalWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_GETICON = 0x007F;
+            const int ICON_BIG = 1;
+            const int ICON_SMALL = 0;
+            // const int ICON_SMALL2 = 2;
+
+            if (msg == WM_GETICON)
+            {
+                // Abort the GETICON message under certain conditions to
+                // prevent the Windows 10 Volume Mixer from picking up the
+                // session icons. Not an elegant way, but it works.
+
+                // Experiments confirmed that the following items display
+                // session icon as before (as expected).
+                //   This tab, Taskbar, Alt+Tab, Win+Tab, Task Manager
+
+                int size = wParam.ToInt32();
+                int dpi = lParam.ToInt32();
+                if (dpi == 0 && (size == ICON_SMALL || size == ICON_BIG))
+                {
+                    handled = true;  // Abort
+                }
+            }
+            return IntPtr.Zero;
         }
 
         private void InitWindowSizeOnLoaded()
