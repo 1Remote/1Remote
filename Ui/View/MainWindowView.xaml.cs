@@ -161,7 +161,7 @@ namespace _1RM.View
             // 等待动画实现拖拽
             if (e.ClickCount >= 2)
                 return;
-            base.WinTitleBar_OnPreviewMouseDown(sender, e);
+            WinTitleBar_OnPreviewMouseDown(sender, e);
         }
 
 
@@ -171,6 +171,14 @@ namespace _1RM.View
             if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
             Vm.SetMainFilterString(s.KeyWords.Count == 0 ? null : s.TagFilterList, null);
+        }
+
+
+        public override void WinTitleBar_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Vm.TopLevelViewModel != null)
+                return;
+            base.WinTitleBar_OnPreviewMouseDown(sender, e);
         }
     }
 }

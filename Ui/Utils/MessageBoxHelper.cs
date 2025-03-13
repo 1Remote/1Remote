@@ -30,7 +30,7 @@ namespace _1RM.Utils
         }
 
         /// <summary>
-        /// show a confirm box on owner, the default value owner is MainWindowViewModel
+        /// show a confirmation box on owner, the default value owner is MainWindowViewModel
         /// </summary>
         public static bool Confirm(string content, string yesButtonText, string noButtonText, string title = "", bool useNativeBox = false, object? ownerViewModel = null)
         {
