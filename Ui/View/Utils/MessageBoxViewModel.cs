@@ -1,20 +1,14 @@
-﻿using _1RM.Utils;
-using Stylet;
-using System;
+﻿using Stylet;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using _1RM.View.Utils.MaskAndPop;
 
 namespace _1RM.View.Utils
 {
     /// <summary>
     /// Default implementation of IMessageBoxViewModel, and is therefore the ViewModel shown by default by ShowMessageBox
     /// </summary>
-    public class MessageBoxViewModel : NotifyPropertyChangedBaseScreen, IMessageBoxViewModel
+    public class MessageBoxViewModel : PopupBase, IMessageBoxViewModel
     {
         private MessageBoxPageViewModel? _pageViewModel;
 
