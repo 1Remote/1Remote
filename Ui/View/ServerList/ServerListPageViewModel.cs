@@ -375,7 +375,7 @@ namespace _1RM.View.ServerList
             {
                 Execute.OnUIThreadSync(() =>
                 {
-                    var cvs = CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
+                    var cvs = (ListCollectionView)CollectionViewSource.GetDefaultView(v.LvServerCards.ItemsSource);
                     if (cvs == null) return;
 
                     string propertyName = "";
@@ -429,8 +429,15 @@ namespace _1RM.View.ServerList
                     if (needRefresh)
                     {
                         cvs.SortDescriptions.Clear();
-                        cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.GroupedOrder), ListSortDirection.Ascending));
-                        cvs.SortDescriptions.Add(new SortDescription(propertyName, direction));
+                        if (propertyName == nameof(ProtocolBaseViewModel.SubTitle))
+                        {
+                            cvs.CustomSort = new SubTitleSortByNaturalIp(direction == ListSortDirection.Ascending);
+                        }
+                        else
+                        {
+                            cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.GroupedOrder), ListSortDirection.Ascending));
+                            cvs.SortDescriptions.Add(new SortDescription(propertyName, direction));
+                        }
                     }
                     //cvs.Refresh();
 
