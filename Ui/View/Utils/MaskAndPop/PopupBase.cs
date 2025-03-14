@@ -16,11 +16,13 @@ namespace _1RM.View.Utils.MaskAndPop
 
         public bool? ShowDialog(IViewAware? ownerViewModel = null)
         {
+            IsShowWithDialog = true;
             return IoC.Get<IWindowManager>().ShowDialog(this, ownerViewModel);
         }
 
         public void ShowWindow(IViewAware? ownerViewModel = null)
         {
+            IsShowWithDialog = false;
             IoC.Get<IWindowManager>().ShowWindow(this, ownerViewModel);
         }
 
