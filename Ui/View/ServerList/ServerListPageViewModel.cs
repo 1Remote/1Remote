@@ -466,7 +466,8 @@ namespace _1RM.View.ServerList
                 return;
             }
 
-            if(_lastKeyword != filter || force)
+            if (_lastKeyword != filter || force)
+            {
                 lock (this)
                 {
                     List<ProtocolBaseViewModel> servers;
@@ -485,6 +486,7 @@ namespace _1RM.View.ServerList
                         servers = IoC.Get<GlobalData>().VmItemList;
                         IsServerVisible.Clear();
                     }
+
                     _lastKeyword = filter;
 
                     var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
@@ -498,8 +500,8 @@ namespace _1RM.View.ServerList
                             // we get error report here that i is out of range, so we add this check 2024.10.31 https://appcenter.ms/users/VShawn/apps/1Remote-1/crashes/errors/859400306/overview
                             SentryIoHelper.Error(new Exception($"MatchKeywords: i({i}) is out of range(0-{matchResults.Count})"), new Dictionary<string, string>()
                             {
-                                {"filter", filter},
-                                {"servers.Count", servers.Count.ToString()},
+                                { "filter", filter },
+                                { "servers.Count", servers.Count.ToString() },
                             });
                             continue;
                         }
@@ -512,6 +514,7 @@ namespace _1RM.View.ServerList
                         }
                     }
                 }
+            }
 
             Execute.OnUIThread(() =>
             {
@@ -742,7 +745,7 @@ namespace _1RM.View.ServerList
                                 }
                             }
 
-                            if(list.Count == 0)
+                            if (list.Count == 0)
                                 return;
 
                             foreach (var server in list)
