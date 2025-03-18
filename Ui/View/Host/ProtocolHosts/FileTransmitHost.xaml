@@ -282,7 +282,7 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsRenaming}" Value="True">
                                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -332,7 +332,7 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
@@ -361,7 +361,7 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
@@ -387,7 +387,7 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                                         <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                                     </Style>
                                                 </TextBlock.Style>
                                                 <TextBlock.Text>

@@ -67,8 +67,6 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private bool _flagHasConnected = false;
 
-        private int _retryCount = 0;
-        private const int MAX_RETRY_COUNT = 20;
 
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login
         private DateTime _lastLoginTime = DateTime.MinValue;

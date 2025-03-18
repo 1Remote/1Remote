@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AxMSTSCLib;
@@ -13,9 +12,6 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
-using Windows.Security.Credentials;
-using System.Collections.Generic;
-using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -118,6 +114,21 @@ namespace _1RM.View.Host.ProtocolHosts
 
         #region event handler
 
+        private enum EnumDiscReason
+        {
+            // https://learn.microsoft.com/en-us/windows/win32/termserv/imstscaxevents-ondisconnected
+            xdisconnectReasonAtClientWinsockFDCLOSE = 2308,
+            disconnectReasonByServer = 3,
+            disconnectReasonClientDecompressionError = 3080,
+            disconnectReasonConnectionTimedOut = 264,
+            disconnectReasonDecryptionError = 3078,
+            disconnectReasonHostNotFound = 520,
+            disconnectReasonInternalError = 1032,
+        }
+
+
+        //private int _retryCount = 0;
+        //private const int MAX_RETRY_COUNT = 20;
         private void OnRdpClientDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
@@ -131,6 +142,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 ParentWindowResize_StopWatch();
 
                 const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
+
                 string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
                 if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
                     SimpleLogHelper.Warning($"RDP({_rdpSettings.DisplayName}) exit with error code {e.discReason}({reason})");
@@ -144,30 +156,31 @@ namespace _1RM.View.Host.ProtocolHosts
                         e.discReason != UI_ERR_NORMAL_DISCONNECT
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
+                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                          // log out from win2008 will reply exDiscReasonNoInfo, conn to a power-off PC will get exDiscReasonNoInfo, connection is dropped we get exDiscReasonNoInfo
+                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser                    // log out from win10 will reply exDiscReasonLogoffByUser
                         && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 will reply exDiscReasonLogoffByUser
                     ))
                 {
                     BtnReconn.Visibility = Visibility.Collapsed;
                     RdpHost.Visibility = Visibility.Collapsed;
                     GridMessageBox.Visibility = Visibility.Visible;
-                    if (flagHasConnected == true
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnection
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
-                        && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo  // conn to a power-off PC will get exDiscReasonNoInfo
-                        && _retryCount < MAX_RETRY_COUNT)
-                    {
-                        ++_retryCount;
-                        TbMessageTitle.Visibility = Visibility.Visible;
-                        TbMessageTitle.Text = IoC.Translate("host_reconecting_info") + $"({_retryCount}/{MAX_RETRY_COUNT})";
-                        TbMessage.Text = reason;
-                        this.ReConn();
-                    }
-                    else
+                    // 2025.03.15 disabled auto reconn by 1Remote 
+                    //if (flagHasConnected == true
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnection
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
+                    //    && _rdpClient?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo  // conn to a power-off PC will get exDiscReasonNoInfo
+                    //    && _retryCount < MAX_RETRY_COUNT)
+                    //{
+                    //    ++_retryCount;
+                    //    TbMessageTitle.Visibility = Visibility.Visible;
+                    //    TbMessageTitle.Text = IoC.Translate("host_reconecting_info") + $"({_retryCount}/{MAX_RETRY_COUNT})";
+                    //    TbMessage.Text = reason;
+                    //    this.ReConn();
+                    //}
+                    //else
                     {
                         TbMessageTitle.Visibility = Visibility.Collapsed;
                         BtnReconn.Visibility = Visibility.Visible;
