@@ -76,7 +76,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<AssemblyVersion>1.1.1.50304</AssemblyVersion>
+		<AssemblyVersion>1.1.2.50322</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<Authors>Shawn</Authors>
@@ -178,7 +178,6 @@
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="Npgsql" Version="9.0.2" />
 		<PackageReference Include="NUlid" Version="1.7.1" />
 		<PackageReference Include="Sentry" Version="4.13.0" />
 		<PackageReference Include="SSH.NET" Version="2023.0.0" />
