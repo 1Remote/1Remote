@@ -103,7 +103,7 @@ jobs:
       #    path: Ui/bin/Release/net4.8-windows/publish
 
       # Publish the application Net6.0
-      - name: Publish the application
+      - name: Publish the application net6
         run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application-net6.pubxml
       # artifact
       - uses: actions/upload-artifact@v4
@@ -112,7 +112,7 @@ jobs:
           path: Ui/bin/Release/net6.0-windows/publish/win-x64
 
       # Publish the application net9.0
-      - name: Publish the application
+      - name: Publish the application net9
         run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-single.file.application.pubxml
       # artifact
       - uses: actions/upload-artifact@v4
@@ -206,7 +206,7 @@ jobs:
       #    asset_content_type: application/zip
 
       # upload package net6.x
-      - name: Upload Release Asset
+      - name: Upload Release Asset net6
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -218,7 +218,7 @@ jobs:
           prerelease: false
 
       # upload package net9.x
-      - name: Upload Release Asset
+      - name: Upload Release Asset net9
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -275,8 +275,7 @@ jobs:
         with:
           name: ${{needs.JobBuild.outputs.artifact_net6x}}
           path: ${{needs.JobBuild.outputs.artifact_net6x}}
-      - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
+      - uses: vimtor/action-zip@v1
         with:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
@@ -286,8 +285,7 @@ jobs:
         with:
           name: ${{needs.JobBuild.outputs.artifact_net9x}}
           path: ${{needs.JobBuild.outputs.artifact_net9x}}
-      - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
+      - uses: vimtor/action-zip@v1
         with:
           files: ${{needs.JobBuild.outputs.artifact_net9x}}
           dest: ${{needs.JobBuild.outputs.artifact_net9x}}.zip
@@ -316,8 +314,7 @@ jobs:
       #    asset_content_type: application/zip
 
       # upload package net6.x
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+      - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -327,8 +324,7 @@ jobs:
           asset_content_type: application/zip
 
       # upload package net9.x
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+      - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
