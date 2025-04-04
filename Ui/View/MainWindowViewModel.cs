@@ -14,9 +14,7 @@ using Shawn.Utils.Wpf;
 using Stylet;
 using _1RM.View.Settings.General;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
-using _1RM.Service.DataSource.DAO.Dapper;
 using Shawn.Utils;
-using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.View
 {
