@@ -491,7 +491,7 @@ namespace _1RM.View.ServerList
 
                     var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
                     TagFilters = tmp.TagFilterList;
-                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, false);
+                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, true);
                     for (int i = 0; i < servers.Count; i++)
                     {
                         var vm = servers[i];
@@ -519,8 +519,8 @@ namespace _1RM.View.ServerList
             Execute.OnUIThread(() =>
             {
                 // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                if ((this.View as ServerListPageView)?.LvServerCards.ItemsSource != null)
-                    CollectionViewSource.GetDefaultView((this.View as ServerListPageView)!.LvServerCards.ItemsSource).Refresh();
+                if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                    CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource).Refresh();
                 // invoke ServerListPageView.cs => ServerListItemSource_OnFilter
             });
         }
