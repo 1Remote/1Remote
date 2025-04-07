@@ -34,6 +34,15 @@ namespace _1RM.View.Editor.Forms
                 Foreground = (App.ResourceDictionary?["BackgroundTextBrush"] as Brush) ?? Brushes.Black,
                 ResizeMode = ResizeMode.NoResize,
                 WindowStyle = WindowStyle.None,
+                Width = 500,
+            };
+            _completionWindow.KeyDown += (sender, e) =>
+            {
+                if (e.Key == Key.Escape)
+                {
+                    _completionWindow.Close();
+                    e.Handled = true;
+                }
             };
             var completionData = _completionWindow.CompletionList.CompletionData;
             foreach (var str in enumerable)
