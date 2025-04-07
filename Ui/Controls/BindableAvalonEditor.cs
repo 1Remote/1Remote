@@ -28,7 +28,7 @@ namespace _1RM.Controls
         /// The bindable text property dependency property
         /// </summary>
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(BindableAvalonEditor), new FrameworkPropertyMetadata
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(BindableAvalonEditor), new FrameworkPropertyMetadata
             {
                 DefaultValue = default(string),
                 BindsTwoWayByDefault = true,
