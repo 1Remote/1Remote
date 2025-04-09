@@ -54,10 +54,17 @@ namespace _1RM.View.Host.ProtocolHosts
 
             _vmRemote.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem)
-                    && _vmRemote.SelectedRemoteItem != null)
+                if (args.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem))
                 {
-                    TvFileList.ScrollIntoView(_vmRemote.SelectedRemoteItem);
+                    var scrollTo = _vmRemote.SelectedRemoteItem;
+                    if (scrollTo == null && _vmRemote.RemoteItems.Count >= 1)
+                    {
+                        scrollTo = _vmRemote.RemoteItems.First();
+                    }
+                    if (scrollTo != null)
+                    {
+                        TvFileList.ScrollIntoView(scrollTo);
+                    }
                 }
             };
 

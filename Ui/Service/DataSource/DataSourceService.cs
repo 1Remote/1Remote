@@ -12,7 +12,6 @@ using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;

@@ -115,7 +115,9 @@
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Border Name="DragablzHeaderItemBorder"></Border>
-                                <Grid Name="Trapezoid" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Center">
+                                <Grid Name="Trapezoid" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" 
+                                      ToolTip="{Binding DisplayName, Mode=OneWay}"
+                                      VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
@@ -141,7 +143,6 @@
                                                    TextTrimming="CharacterEllipsis"
                                                    MaxWidth="250"
                                                    MinWidth="40"
-                                                   ToolTip="{Binding DisplayName, Mode=OneWay}"
                                                    Text="{Binding DisplayName, Mode=OneWay}"></TextBlock>
                                     </Border>
 

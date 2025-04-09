@@ -11,7 +11,6 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using Shawn.Utils.Wpf;
 using MSTSCLib;
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AxMSTSCLib;
 using _1RM.View.Host.ProtocolHosts;
