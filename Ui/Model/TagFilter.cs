@@ -51,7 +51,7 @@ namespace _1RM.Model
 
         public override string ToString()
         {
-            throw new NotSupportedException();
+            return _tagName;
         }
     }
 }

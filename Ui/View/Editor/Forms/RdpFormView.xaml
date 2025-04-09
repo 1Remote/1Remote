@@ -109,15 +109,6 @@
                             <ComboBoxItem Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding New.ServerEditorDifferentOptions}" />
                         </ComboBox>
                     </Grid>
-
-                    <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Center" Margin="2 0" 
-                               Visibility="{Binding New.RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static protocol:ERdpFullScreenFlag.Disable}}"
-                               ToolTip="{DynamicResource 'How to select the specified monitors'}">
-                               <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
-                                          controls1:HyperlinkHelper.IsOpenExternal="True">
-                            (?)
-                        </Hyperlink>
-                    </TextBlock>
                 </StackPanel>
             </Grid>
             <Grid Style="{StaticResource EditorRowGrid}" 
@@ -319,7 +310,7 @@
                         <TextBlock Style="{StaticResource EditorRowGridTitle}" 
                                    Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top" 
                                    Margin="0 7 30 0"></TextBlock>
-                        <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
                             <Border>
                                 <Border.Style>
                                     <Style TargetType="Border">
@@ -376,7 +367,7 @@
                             </controls:BindableAvalonEditor>
                         </Grid>
 
-                        <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Top" Margin="2 0">
+                        <TextBlock Style="{StaticResource TextBlockBase}" VerticalAlignment="Top" Margin="2 6 2 0">
                             <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings" TextDecorations="{x:Null}" 
                                        controls1:HyperlinkHelper.IsOpenExternal="True">
                                 (?)

@@ -11,12 +11,10 @@ using Newtonsoft.Json;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
-using Google.Protobuf.WellKnownTypes;
 using System.Windows.Media;
 
 namespace _1RM.Service

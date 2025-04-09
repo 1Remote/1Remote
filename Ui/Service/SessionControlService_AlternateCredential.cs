@@ -230,7 +230,8 @@ namespace _1RM.Service
             {
                 SimpleLogHelper.Debug("using assign credential: " + assignCredentialName);
                 newCredential.SetCredential(assignCredential);
-                newCredential.Name = $"{protocol.DisplayName} ({assignCredentialName})";
+                if (protocol.DisplayName != assignCredentialName)
+                    newCredential.Name = $"{protocol.DisplayName} ({assignCredentialName})";
             }
 
             // check if it needs to ping before connect
@@ -267,7 +268,8 @@ namespace _1RM.Service
             var connectableAddress = await FindFirstConnectableAddressAsync(credentials, protocol.DisplayName);
             if (connectableAddress != null)
             {
-                newCredential.Name = $"{protocol.DisplayName} ({connectableAddress.Name})";
+                if (protocol.DisplayName != connectableAddress.Name)
+                    newCredential.Name = $"{protocol.DisplayName} ({connectableAddress.Name})";
                 newCredential.SetAddress(connectableAddress);
                 newCredential.SetPort(connectableAddress);
                 return newCredential;

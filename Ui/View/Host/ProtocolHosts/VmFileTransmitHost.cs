@@ -222,10 +222,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         {
                             //SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
                             var items = await Trans.ListDirectoryItems(path);
-                            if (items.Any())
-                            {
-                                remoteItemInfos = new ObservableCollection<RemoteItem>(items);
-                            }
+                            remoteItemInfos = new ObservableCollection<RemoteItem>(items);
                         }
                         else
                         {

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 namespace _1RM.Utils.WindowsSdk.PasswordVaultManager
 {
