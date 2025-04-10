@@ -384,7 +384,11 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var ret = _dbConnection?.Execute(NormalizedSql($@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};"), new { Id = ids }) > 0;
+                    // special case: dapper does not support IN operator for postgresql
+                    var sql = DatabaseType == DatabaseType.PostgreSQL
+                        ? $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = ANY(@{nameof(Server.Id)});"
+                        : $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};";
+                    var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = ids }) > 0;
                     if (ret)
                         SetDataUpdateTimestamp();
                     return Result.Success();
