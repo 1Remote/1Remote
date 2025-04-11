@@ -126,7 +126,7 @@ namespace _1RM.Service.DataSource
             catch (Exception e)
             {
                 SimpleLogHelper.Warning(e);
-                MsAppCenterHelper.Error(e);
+                SentryIoHelper.Error(e);
                 var ret = DatabaseStatus.New(EnumDatabaseStatus.OtherError, e.Message);
                 return ret;
             }
@@ -183,7 +183,7 @@ namespace _1RM.Service.DataSource
                         RetryHelper.Try(() =>
                         {
                             File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
-                        }, actionOnError: exception => MsAppCenterHelper.Error(exception));
+                        }, actionOnError: exception => SentryIoHelper.Error(exception));
                 }
             }
             finally
