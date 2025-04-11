@@ -52,7 +52,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 
         public bool IsConnected()
         {
-            return _sftp?.IsConnected == true;
+            bool isConnected = true;
+            lock (this)
+            {
+                isConnected = _sftp?.IsConnected == true;
+            }
+            return isConnected;
         }
 
         public ITransmitter Clone()
@@ -95,7 +100,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task<bool> Exists(string path)
         {
             await SFtpConnection;
-            return _sftp?.Exists(path) == true;
+            bool ret = false;
+            lock (this)
+            {
+                ret = _sftp?.Exists(path) == true;
+            }
+            return ret;
         }
 
         private RemoteItem SftpFile2RemoteItem(ISftpFile item)
@@ -258,22 +268,32 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 
         public void Release()
         {
-            SFtpConnection?.Dispose();
-            var sftp = _sftp;
-            sftp?.Disconnect();
-            sftp?.Dispose();
-            _sftp = null;
+            if (SFtpConnection?.IsCompleted == true)
+            {
+                SFtpConnection?.Dispose();
+            }
+            ReleaseSftp();
+        }
+
+        private void ReleaseSftp()
+        {
+            lock (this)
+            {
+                _sftp?.Disconnect();
+                _sftp?.Dispose();
+                _sftp = null;
+            }
         }
 
         private async Task InitClient()
         {
             await Task.Run(() =>
             {
-                if (_sftp?.IsConnected != true)
+                if (IsConnected() != true)
                 {
                     RetryHelper.Try(() =>
                     {
-                        _sftp?.Dispose();
+                        ReleaseSftp();
                         if (string.IsNullOrEmpty(Password)
                             && string.IsNullOrEmpty(SshKeyPath) == false
                             && File.Exists(SshKeyPath))
@@ -285,7 +305,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                             }
                             catch (Exception e)
                             {
-                                MsAppCenterHelper.Error(e);
+                                SentryIoHelper.Error(e);
                             }
                         }
                         _sftp ??= new SftpClient(new ConnectionInfo(Hostname, Port, Username, new PasswordAuthenticationMethod(Username, Password)));

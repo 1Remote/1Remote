@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
+using static System.Net.WebRequestMethods;
 
 namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 {
@@ -39,7 +40,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 
         public bool IsConnected()
         {
-            return _ftp?.IsConnected == true;
+            bool isConnected = true;
+            lock (this)
+            {
+                isConnected = _ftp?.IsConnected == true;
+            }
+            return isConnected;
         }
 
         public ITransmitter Clone()
@@ -50,7 +56,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task<RemoteItem?> Get(string path)
         {
             await FtpConnection;
-            if (_ftp == null) return null;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return null;
+            }
             return await Exists(path) ? FtpListItem2RemoteItem(await _ftp.GetObjectInfo(path)) : null;
         }
 
@@ -58,19 +67,20 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         {
             await FtpConnection;
             var ret = new List<RemoteItem>();
-            if (_ftp != null)
+            lock (this)
             {
-                IEnumerable<FtpListItem> items = await _ftp.GetListing(path);
-                if (!items.Any())
-                    return ret;
+                if (_ftp == null || _ftp.IsDisposed) return ret;
+            }
+            IEnumerable<FtpListItem> items = await _ftp.GetListing(path);
+            if (!items.Any())
+                return ret;
 
-                items = items.OrderBy(x => x.Name);
-                foreach (var item in items)
-                {
-                    if (item.Name == "." || item.Name == "..")
-                        continue;
-                    ret.Add(FtpListItem2RemoteItem(item));
-                }
+            items = items.OrderBy(x => x.Name);
+            foreach (var item in items)
+            {
+                if (item.Name == "." || item.Name == "..")
+                    continue;
+                ret.Add(FtpListItem2RemoteItem(item));
             }
             return ret;
         }
@@ -78,7 +88,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task<bool> Exists(string path)
         {
             await FtpConnection;
-            if (_ftp == null) return false;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return false;
+            }
             if (await _ftp.FileExists(path))
                 return true;
             if (await _ftp.DirectoryExists(path))
@@ -129,7 +142,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task Delete(string path)
         {
             await FtpConnection;
-            if (_ftp == null) return;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return;
+            }
             var item = await Get(path);
             if (item != null)
             {
@@ -152,7 +168,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task CreateDirectory(string path)
         {
             await FtpConnection;
-            if (_ftp == null) return;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return;
+            }
             if (await _ftp.DirectoryExists(path) == false)
                 await _ftp.CreateDirectory(path);
         }
@@ -160,6 +179,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task RenameFile(string path, string newPath)
         {
             await FtpConnection;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return;
+            }
             if (_ftp != null && path != newPath && await Exists(path))
                 await _ftp.Rename(path, newPath);
         }
@@ -171,7 +194,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                 return;
 
             await FtpConnection;
-            if (_ftp == null) return;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return;
+            }
             await FtpSemaphoe.WaitAsync().ConfigureAwait(false);
             try
             {
@@ -204,7 +230,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         public async Task DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack, CancellationToken cancellationToken)
         {
             await FtpConnection;
-            if (_ftp == null) return;
+            lock (this)
+            {
+                if (_ftp == null || _ftp.IsDisposed) return;
+            }
             await FtpSemaphoe.WaitAsync().ConfigureAwait(false);
             try
             {
@@ -227,23 +256,33 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
         {
             FtpSemaphoe?.Dispose();
             FtpConnection?.Dispose();
-            var ftp = _ftp;
-            ftp?.Disconnect();
-            ftp?.Dispose();
-            _ftp = null;
+            lock (this)
+            {
+                _ftp?.Disconnect();
+            }
+            ReleaseFtp();
+        }
+
+        private void ReleaseFtp()
+        {
+            lock (this)
+            {
+                _ftp?.Dispose();
+                _ftp = null;
+            }
         }
 
         private async Task InitClient()
         {
-            _ftp?.Dispose();
+            await _ftp?.Disconnect();
+            ReleaseFtp();
             _ftp = new AsyncFtpClient(Hostname, new System.Net.NetworkCredential(Username, Password), Port);
             _ftp.Config.Noop = true;
             await _ftp.AutoConnect();
             if (!_ftp.IsConnected)
             {
                 await _ftp.Disconnect();
-                _ftp.Dispose();
-                _ftp = null;
+                ReleaseFtp();
                 throw new Exception("Couldn't connect to the server.");
             }
         }

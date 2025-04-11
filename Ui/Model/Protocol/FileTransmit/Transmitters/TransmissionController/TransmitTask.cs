@@ -564,7 +564,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 }
                 catch (Exception e)
                 {
-                    MsAppCenterHelper.Error(e, new Dictionary<string, string>()
+                    SentryIoHelper.Error(e, new Dictionary<string, string>()
                     {
                         {"readLength", readLength.ToString()},
                         {"item.TransmittedSize", item.TransmittedSize.ToString()},

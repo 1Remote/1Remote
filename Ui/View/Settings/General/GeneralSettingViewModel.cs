@@ -165,7 +165,7 @@ namespace _1RM.View.Settings.General
                     }
                     catch (Exception e)
                     {
-                        MsAppCenterHelper.Error(e);
+                        SentryIoHelper.Error(e);
                     }
                 });
             }

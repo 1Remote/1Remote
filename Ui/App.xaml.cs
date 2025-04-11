@@ -40,7 +40,7 @@ namespace _1RM
             }
             catch (Exception e)
             {
-                MsAppCenterHelper.Error(e);
+                SentryIoHelper.Error(e);
             }
 #if DEV
             string kind = aea?.Kind.ToString() ?? "null";
