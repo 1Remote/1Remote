@@ -240,7 +240,6 @@ namespace _1RM.View.Host
                     {
                         View.WindowState = WindowState.Maximized;
                     }
-
                     else
                     {
                         View.WindowStyle = WindowStyle.SingleBorderWindow;
