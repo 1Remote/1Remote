@@ -73,13 +73,6 @@
             <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
                 <Grid Height="{x:Static view:LauncherWindowViewModel.LAUNCHER_SERVER_LIST_ITEM_HEIGHT}"
                       Width="{x:Static view:LauncherWindowViewModel.LAUNCHER_LIST_AREA_WIDTH}">
-                    <!--<Grid.InputBindings>
-                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
-                        <MouseBinding MouseAction="RightClick" 
-                                      Command="{Binding  RelativeSource={RelativeSource FindAncestor, AncestorType=local:ServerSelectionsView}, Path=DataContext.CmdShowActionsList}"
-                                      CommandParameter="{Binding}"
-                                      ></MouseBinding>
-                    </Grid.InputBindings>-->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition> <!-- Main title -->
