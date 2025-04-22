@@ -78,13 +78,19 @@ namespace _1RM
             // So while this application is running, from start to finish,
             // it's better to be visible as a sound application in the Volume
             // Mixer and others.
-            var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/dummy.wav"));
-            if (sri != null)
+            try
             {
-                using var s = sri.Stream;
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer(s);
-                player.Load();
-                player.Play();
+                var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/dummy.wav"));
+                if (sri != null)
+                {
+                    using var s = sri.Stream;
+                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(s);
+                    player.Load();
+                    player.Play();
+                }
+            }
+            catch (Exception)
+            {
             }
         }
 
