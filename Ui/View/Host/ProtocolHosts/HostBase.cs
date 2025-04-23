@@ -19,9 +19,9 @@ namespace _1RM.View.Host.ProtocolHosts
         Initializing,
         Initialized,
         Connecting,
+        WaitingForReconnect,
         Connected,
         Disconnected,
-        WaitingForReconnect
     }
 
     public enum ProtocolHostType

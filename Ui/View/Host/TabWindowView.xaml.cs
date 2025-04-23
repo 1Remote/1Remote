@@ -53,10 +53,10 @@ namespace _1RM.View.Host
                 {
                     if (this.WindowState == WindowState.Normal)
                     {
-                        IoC.Get<LocalityService>().TabWindowHeight = this.Height;
-                        IoC.Get<LocalityService>().TabWindowWidth = this.Width;
+                        IoC.Get<LocalityService>().TabWindowWidth = this.ActualWidth;
+                        IoC.Get<LocalityService>().TabWindowHeight = this.ActualHeight;
                     }
-                    SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}");
+                    SimpleLogHelper.DebugInfo($"(Window size changed) Tab size change to:W = {this.ActualWidth}, H = {this.ActualHeight}");
                 };
 
                 // remember window pos when size changed
@@ -81,7 +81,7 @@ namespace _1RM.View.Host
                     }
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
                     IoC.Get<LocalityService>().TabWindowState = this.WindowState;
-                    SimpleLogHelper.Debug($"(Window state changed)Tab size change to:W = {this.Width}, H = {this.Height}");
+                    SimpleLogHelper.DebugInfo($"(Window state changed) Tab size change to:W = {this.ActualWidth}, H = {this.ActualHeight}");
                 };
 
 

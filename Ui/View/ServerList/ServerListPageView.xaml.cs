@@ -16,8 +16,6 @@ using _1RM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using Windows.Security.Credentials;
-using Windows.Security.Credentials.UI;
 
 namespace _1RM.View.ServerList
 {
@@ -145,19 +143,60 @@ namespace _1RM.View.ServerList
             });
         }
 
-
+        private ProtocolBaseViewModel? _shiftSelectStartItem = null;
         private void ServerList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
             if (sender is DependencyObject obj)
             {
-                var item = MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj);
-                if (item != null)
+                if (MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj) != null)
                 {
                     e.Handled = true;
+                    return;
+                }
+                if (e.ClickCount == 1
+                    && MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(obj) is { DataContext: ProtocolBaseViewModel vm } listBoxItem)
+                {
+                    if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                    {
+                        vm.IsSelected = !vm.IsSelected;
+                    }
+                    else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                    {
+                        if (_shiftSelectStartItem != null)
+                        {
+                            // shift select from _shiftSelectStartItem to listBoxItem
+                            var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
+                            int startIdx = items.IndexOf(_shiftSelectStartItem);
+                            int endIdx = items.IndexOf(vm);
+                            if (startIdx < 0 || endIdx < 0)
+                            {
+                                _shiftSelectStartItem = null;
+                            }
+                            if (startIdx > endIdx)
+                                (startIdx, endIdx) = (endIdx, startIdx);
+                            for (int i = 0; i < items.Count; i++)
+                            {
+                                if (i >= startIdx && i <= endIdx)
+                                {
+                                    items[i].IsSelected = true;
+                                }
+                                else
+                                {
+                                    items[i].IsSelected = false;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _shiftSelectStartItem = vm;
+                    }
                 }
             }
         }
+
+
         private void ServerList_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
         {
             //SimpleLogHelper.Debug($"{e.LeftButton} + {sender is Grid}");

@@ -61,7 +61,7 @@ namespace _1RM.Service.Locality
                 CanSave = false;
                 AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
                 RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(_settings, Formatting.Indented), Encoding.UTF8); },
-                    actionOnError: exception => MsAppCenterHelper.Error(exception));
+                    actionOnError: exception => SentryIoHelper.Error(exception));
                 CanSave = true;
             }
         }
