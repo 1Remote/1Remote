@@ -785,7 +785,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override bool CanResizeNow()
         {
-            return Status == ProtocolHostStatus.Connected;
+            return Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Disconnected;
         }
 
         #endregion Base Interface
@@ -793,8 +793,8 @@ namespace _1RM.View.Host.ProtocolHosts
 
         #region WindowOnResizeEnd
 
-        private readonly System.Timers.Timer _resizeEndTimer = new(500) { Enabled = false, AutoReset = false };
-        private readonly object _resizeEndLocker = new();
+        private readonly Timer _resizeEndTimer = new Timer(500) { Enabled = false, AutoReset = false };
+        private readonly Lock _resizeEndLocker = new Lock();
         private bool _canAutoResizeByWindowSizeChanged = true;
 
         /// <summary>

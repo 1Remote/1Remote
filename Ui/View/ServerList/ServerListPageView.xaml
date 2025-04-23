@@ -39,6 +39,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" 
+                                  PreviewMouseDown="ServerList_OnPreviewMouseDown"
                                   Background="{DynamicResource BackgroundBrush}"
                                   Visibility="{Binding Server.Id, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter='0'}">
 
@@ -537,7 +538,7 @@
                                                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=serverList:ServerListPageView}, Path=DataContext.CmdRefreshDataSource}"
                                                                             CommandParameter="{Binding Name}"
                                                                             ToolTip="{Binding Name.StatusInfo}">
-                                                                        <Button.Style>  
+                                                                        <Button.Style>
                                                                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
                                                                                 <Setter Property="Content">
                                                                                     <Setter.Value>

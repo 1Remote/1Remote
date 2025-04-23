@@ -231,7 +231,7 @@ namespace _1RM.Service
                 RetryHelper.Try(() =>
                 {
                     File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
-                }, actionOnError: exception => MsAppCenterHelper.Error(exception));
+                }, actionOnError: exception => SentryIoHelper.Error(exception));
             }
         }
     }
