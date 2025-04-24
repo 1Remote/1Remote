@@ -20,7 +20,7 @@ namespace _1RM
 #endif
 
 
-        public const string MS_APP_CENTER_SECRET = "===REPLACE_ME_WITH_APP_CENTER_SECRET===";
+        //public const string MS_APP_CENTER_SECRET = "===REPLACE_ME_WITH_APP_CENTER_SECRET===";
         public const string SENTRY_IO_DEN = "===REPLACE_ME_WITH_SENTRY_IO_DEN===";
         public const string STRING_SALT = "===REPLACE_ME_WITH_SALT===";
         public const string MS_STORE_PATH = "ms-windows-store://review/?productid=9PNMNF92JNFP";
