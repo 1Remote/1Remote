@@ -504,7 +504,7 @@
                                                                     <Grid Background="Transparent"
                                                                           Cursor="SizeNS"
                                                                           ToolTip="Drag to reorder groups"
-                                                                          PreviewMouseDown="ServerList_OnPreviewMouseDown"
+                                                                          PreviewMouseDown="ServerListExpanderIcon_OnPreviewMouseDown"
                                                                           PreviewMouseMove="ServerList_PreviewMouseMoveEvent">
                                                                         <Grid.Style>
                                                                             <Style TargetType="Grid">
