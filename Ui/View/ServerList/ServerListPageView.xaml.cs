@@ -146,20 +146,15 @@ namespace _1RM.View.ServerList
         private ProtocolBaseViewModel? _shiftSelectStartItem = null;
         private void ServerList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
-            if (sender is DependencyObject obj)
+            if (e.ClickCount == 1 && sender is DependencyObject obj)
             {
-                if (MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj) != null)
-                {
-                    e.Handled = true;
-                    return;
-                }
-                if (e.ClickCount == 1
-                    && MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(obj) is { DataContext: ProtocolBaseViewModel vm } listBoxItem)
+                // shift or ctrl + mouse button down to select item
+                if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(obj) is { DataContext: ProtocolBaseViewModel vm } listBoxItem)
                 {
                     if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                     {
                         vm.IsSelected = !vm.IsSelected;
+                        // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
                     }
                     else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                     {
@@ -186,12 +181,24 @@ namespace _1RM.View.ServerList
                                     items[i].IsSelected = false;
                                 }
                             }
+                            e.Handled = true;
                         }
                     }
                     else
                     {
                         _shiftSelectStartItem = vm;
                     }
+                }
+            }
+        }
+        private void ServerListExpanderIcon_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DependencyObject obj)
+            {
+                // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
+                if (MyVisualTreeHelper.VisualUpwardSearch<GroupItem>(obj) != null)
+                {
+                    e.Handled = true;
                 }
             }
         }

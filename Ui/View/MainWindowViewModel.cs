@@ -336,16 +336,20 @@ namespace _1RM.View
 
             Execute.OnUIThread(() =>
             {
-                if (window.WindowState == WindowState.Minimized)
-                    window.WindowState = WindowState.Normal;
-                if (isForceActivate)
-                    HideMe();
-                window.Show();
-                window.ShowInTaskbar = true;
-                window.Topmost = true;
-                window.Activate();
-                window.Topmost = false;
-                window.Focus();
+                if (window.IsVisible) return;
+                lock (window)
+                {
+                    if (window.WindowState == WindowState.Minimized)
+                        window.WindowState = WindowState.Normal;
+                    if (window.IsVisible) return;
+                    if (isForceActivate) HideMe();
+                    window.Show();
+                    window.ShowInTaskbar = true;
+                    window.Topmost = true;
+                    window.Activate();
+                    window.Topmost = false;
+                    window.Focus();
+                }
             });
         }
 
