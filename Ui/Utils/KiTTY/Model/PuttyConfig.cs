@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using _1RM.Service;
 using Microsoft.Win32;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace _1RM.Utils.KiTTY.Model
 {
-    public class KittyConfig
+    public class PuttyConfig
     {
         public readonly List<PuttyConfigKeyValuePair> Options = new List<PuttyConfigKeyValuePair>();
-        public readonly string SessionName;
+        public readonly string PuttySessionName;
+        public readonly string SessionId;
 
         /// <summary>
         /// read existed config files.
@@ -54,9 +55,13 @@ namespace _1RM.Utils.KiTTY.Model
             return ret;
         }
 
-        public KittyConfig(string sessionName)
+        public PuttyConfig(string sessionId)
         {
-            SessionName = sessionName;
+            PuttySessionName = SessionId = sessionId;
+            if (!PuttySessionName.StartsWith($"{Assert.APP_NAME}_"))
+            {
+                throw new NotSupportedException($"A wrong session id is generated: {sessionId}");
+            }
             InitDefault();
 
             // DISABLED ALT + F4
@@ -115,7 +120,7 @@ namespace _1RM.Utils.KiTTY.Model
             Set(EnumKittyConfigKey.LogHost, "");
             Set(EnumKittyConfigKey.PublicKeyFile, "");
             Set(EnumKittyConfigKey.RemoteCommand, "");
-            Set(EnumKittyConfigKey.Answerback, "KiTTY");
+            Set(EnumKittyConfigKey.Answerback, "PuTTY");
             Set(EnumKittyConfigKey.BellWaveFile, "");
             Set(EnumKittyConfigKey.WinTitle, "");
             Set(EnumKittyConfigKey.Colour0, "187,187,187");
@@ -317,24 +322,22 @@ namespace _1RM.Utils.KiTTY.Model
         /// <summary>
         /// save to reg table
         /// </summary>
-        public void SaveToPuttyRegistryTable()
+        private void SaveToPuttyRegistryTable()
         {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{PuttySessionName}";
             using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-            if (regKey == null) return;
             foreach (var item in Options)
             {
-                if (item.Value != null)
-                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                regKey.SetValue(item.Key, item.Value, item.ValueKind);
             }
         }
 
         /// <summary>
         /// del from reg table
         /// </summary>
-        public void DelFromPuttyRegistryTable()
+        private static void DelFromPuttyRegistryTable(string sessionName)
         {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{sessionName}";
             try
             {
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
@@ -345,193 +348,48 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        /// <summary>
-        /// save to reg table
-        /// </summary>
-        private void SaveToKittyRegistryTable()
+        public void SaveToConfig(string kittyExePath)
         {
-            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionName}";
-            try
-            {
-                using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                if (regKey == null) return;
-                foreach (var item in Options.Where(item => !string.IsNullOrWhiteSpace(item.Key) && item.Value != null))
-                {
-                    try
-                    {
-                        regKey.SetValue(item.Key, item.Value, item.ValueKind);
-                    }
-                    catch (Exception e1)
-                    {
-                        SimpleLogHelper.Warning(e1, $"regKey.SetValue({item.Key}, {item.Value}, {item.ValueKind})");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Warning(e);
-            }
+            SaveToPuttyRegistryTable();
         }
 
-        public void SaveToKittyConfig(string kittyExePath)
+        public void DelFromConfig()
         {
-            SaveToKittyPortableConfig(kittyExePath, SessionName, Options);
-            SaveToKittyRegistryTable();
+            DelFromPuttyRegistryTable(PuttySessionName);
         }
 
-        public void DelFromKittyConfig(string kittyPath)
-        {
-            DelFromKittyPortableConfig(kittyPath, SessionName);
-            DelFromKittyRegistryTable(SessionName);
-        }
-
-
-
-
-
-
-        /// <summary>
-        /// del from reg table
-        /// </summary>
-        private static void DelFromKittyRegistryTable(string sessionName)
-        {
-            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{sessionName}";
-            try
-            {
-                Registry.CurrentUser.DeleteSubKeyTree(regPath);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
-
-        private static void SaveToKittyPortableConfig(string kittyExePath, string sessionName, List<PuttyConfigKeyValuePair> options)
-        {
-            try
-            {
-                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath)!, "Sessions", sessionName.Replace(" ", "%20"));
-                var sb = new StringBuilder();
-                foreach (var item in options)
-                {
-                    if (item.Value != null)
-                        sb.AppendLine($@"{item.Key}\{item.Value}\");
-                }
-
-                var fi = new FileInfo(configPath);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
-
-                RetryHelper.Try(() =>
-                {
-                    File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
-                }, actionOnError: exception => SentryIoHelper.Error(exception));
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Warning(e);
-            }
-        }
-
-        private static void DelFromKittyPortableConfig(string kittyPath, string sessionName)
-        {
-            try
-            {
-                string configPath = Path.Combine(kittyPath, "Sessions", sessionName.Replace(" ", "%20"));
-                if (File.Exists(configPath))
-                    File.Delete(configPath);
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Warning(e);
-            }
-        }
 
         public static void CleanUpOldConfig()
         {
-            if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
+            using var key = Registry.CurrentUser.OpenSubKey($"Software\\SimonTatham\\PuTTY\\Sessions", true);
+            if (key == null) return;
+            var subKeyNames = key.GetSubKeyNames();
+            foreach (var sessionName in subKeyNames)
             {
-                Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
-                return;
-            }
-
-            string configPath = Path.Combine(AppPathHelper.Instance.KittyDirPath, "Sessions");
-            var di = new DirectoryInfo(configPath);
-            if (di.Exists)
-            {
-                var fis = di.GetFiles();
-                foreach (var fi in fis)
+                try
                 {
-                    try
+                    if (sessionName.StartsWith($"{Assert.APP_NAME}_"))
                     {
-                        var sessionName = fi.Name;
-                        DelFromKittyPortableConfig(AppPathHelper.Instance.KittyDirPath, sessionName);
-                        DelFromKittyRegistryTable(sessionName);
+                        DelFromPuttyRegistryTable(sessionName);
                     }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Warning(e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning(e);
                 }
             }
         }
 
 
 
-        [Obsolete]
-        public static void WriteKittyDefaultConfig(string kittyFullName)
-        {
-            var fi = new FileInfo(kittyFullName);
-            if (fi?.Directory?.Exists == false)
-                fi.Directory.Create();
 
-            RetryHelper.Try(() =>
-            {
-                File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
-                    @"
-[Agent]
-[ConfigBox]
-dblclick=open
-filter=yes
-height=21
-[KiTTY]
-adb=yes
-; antiidle: character string regularly sent to maintain the connection alive
-antiidle=
-; antiidledelay: time delay between two sending
-antiidledelay=60
-; autoreconnect: enable/disable the automatic reconnection feature
-autoreconnect=yes
-backgroundimage=no
-capslock=no
-conf=yes
-ctrltab=no
-cygterm=no
-hyperlink=yes
-icon=no
-maxblinkingtime=5
-mouseshortcuts=yes
-paste=no
-ReconnectDelay=5
-size=no
-transparency=yes
-userpasssshnosave=no
-winrol=yes
-wintitle=yes
-zmodem=yes
-[Shortcuts]
-;input=SHIFT+CONTROL+ALT+F11
-;inputm=SHIFT+CONTROL+ALT+F12
-;rollup=SHIFT+CONTROL+ALT+F10
-[Print]
-height=100
-maxline=60
-maxchar=85
-[Launcher]
-reload=yes
-");
-                Thread.Sleep(50);
-            }, actionOnError: exception => SentryIoHelper.Error(exception));
+        public static string GetInternalPuttyExeFullName()
+        {
+            string kittyExeName = $"putty_portable_{Assert.APP_NAME}.exe";
+            if (!Directory.Exists(AppPathHelper.Instance.PuttyDirPath))
+                Directory.CreateDirectory(AppPathHelper.Instance.PuttyDirPath);
+            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.PuttyDirPath, kittyExeName);
+            return kittyExeFullName;
         }
     }
 }

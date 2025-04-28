@@ -69,6 +69,7 @@ namespace _1RM
             {
                 appPathHelper.BaseDirPath,
                 appPathHelper.KittyDirPath,
+                appPathHelper.PuttyDirPath,
                 appPathHelper.ProtocolRunnerDirPath,
                 appPathHelper.LocalityDirPath,
                 appPathHelper.LocalityIconDirPath,
@@ -246,6 +247,7 @@ namespace _1RM
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.KittyDirPath, false);
+                    AppPathHelper.CreateDirIfNotExist(paths.PuttyDirPath, false);
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
                 }

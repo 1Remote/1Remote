@@ -48,7 +48,7 @@
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Margin="0" Width="Auto" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     </StackPanel>
                 </Grid>
-                <TextBox Grid.Column="1" Text="{Binding PuttyExePath, UpdateSourceTrigger=PropertyChanged}" 
+                <TextBox Grid.Column="1" Text="{Binding ExePath, UpdateSourceTrigger=PropertyChanged}" 
                          VerticalContentAlignment="Center"
                          TextWrapping="Wrap"
                          ></TextBox>

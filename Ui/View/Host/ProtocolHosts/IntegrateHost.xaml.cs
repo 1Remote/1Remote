@@ -16,6 +16,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Utils;
 using _1RM.Utils.KiTTY;
+using _1RM.Utils.KiTTY.Model;
 using Shawn.Utils;
 using Stylet;
 using Path = System.IO.Path;
@@ -181,10 +182,10 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly System.Windows.Forms.Panel _panel;
         private readonly HashSet<IntPtr> _exeHandles = new();
         public readonly string ExeFullName;
-        public string ExeArguments { get; private set; }
+        public string ExeArguments { get; init; }
         private readonly Dictionary<string, string> _environmentVariables;
         private readonly Runner _runner;
-        private readonly string _sessionName = "";
+        private readonly string _sessionId = "";
 
         public static IntegrateHost Create(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
         {
@@ -200,6 +201,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
+            _sessionId = protocol.SessionId;
             _runner = runner;
             _environmentVariables = environmentVariables ?? new Dictionary<string, string>();
             InitializeComponent();
@@ -214,11 +216,27 @@ namespace _1RM.View.Host.ProtocolHosts
 
             FormsHost.Child = _panel;
 
-
+            /*
             if (runner is KittyRunner kittyRunner)
             {
-                _sessionName = $"{Assert.APP_NAME}_{protocol.Protocol}_{protocol.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                RunAfterConnected += () => PuttyConnectableExtension.DelKittySessionConfig(_sessionName, kittyRunner.PuttyExePath);
+                RunAfterConnected += () =>
+                {
+                    var fi = new FileInfo(kittyRunner.ExePath);
+                    var kittyExeFolderPath = fi!.Directory!.FullName;
+                    var puttyOption = new KittyConfig(_sessionName);
+                    puttyOption.DelFromKittyConfig(kittyExeFolderPath);
+                };
+            }
+            */
+
+            if (runner is PuttyRunner puttyRunner)
+            {
+                RunAfterConnected += () =>
+                {
+                    //var puttyOption = new PuttyConfig(_sessionName);
+                    //puttyOption.DelFromConfig();
+                    PuttyConfig.CleanUpOldConfig();
+                };
             }
         }
 
@@ -376,10 +394,10 @@ namespace _1RM.View.Host.ProtocolHosts
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
 
-            if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is KittyRunner kittyRunner)
+            if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is PuttyRunner kittyRunner)
             {
-                // KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
-                ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
+                //// KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
+                //ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
                 if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw && string.IsNullOrEmpty(pw.PrivateKey) == false)
                 {
                     var pk = pw.PrivateKey;
@@ -403,10 +421,10 @@ namespace _1RM.View.Host.ProtocolHosts
                         });
                         autoDelTask.Start();
                     }
-                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, pk);
+                    kittyConnectable.ConfigPutty(_sessionId, kittyRunner, pk);
                 }
                 else
-                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
+                    kittyConnectable.ConfigPutty(_sessionId, kittyRunner, "");
             }
 
             if (Path.IsPathRooted(exeFullName)

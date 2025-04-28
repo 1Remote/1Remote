@@ -8,20 +8,20 @@ using _1RM.Utils.KiTTY;
 using _1RM.Utils.KiTTY.Model;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
-using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol;
 using System.Text.RegularExpressions;
+using _1RM.Model.Protocol.Base;
+using _1RM.Utils;
 using _1RM.Service;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
-    public class KittyRunner : InternalExeRunner
+    public class PuttyRunner : InternalExeRunner
     {
-        public new static string Name = "Internal KiTTY";
+        public new static string Name = "Internal PuTTY";
 
         [JsonConstructor]
-        [Obsolete]
-        public KittyRunner(string ownerProtocolName) : base(ownerProtocolName)
+        public PuttyRunner(string ownerProtocolName) : base(ownerProtocolName)
         {
             base._name = Name;
             CodePages = new List<string>
@@ -145,22 +145,6 @@ namespace _1RM.Model.ProtocolRunner.Default
             }
         }
 
-        public override void Install(string path = "")
-        {
-            if (string.IsNullOrEmpty(path))
-                path = GetExeInstallPath();
-            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/KiTTY/kitty_portable.exe", path);
-            KittyConfig.WriteKittyDefaultConfig(path);
-        }
-
-        public override string GetExeInstallPath()
-        {
-            string kittyExeName = $"kitty_portable_{Assert.APP_NAME}.exe";
-            if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
-                Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
-            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, kittyExeName);
-            return kittyExeFullName;
-        }
 
 
         private static bool ValidateIPv6(string ipAddress)
@@ -179,6 +163,7 @@ namespace _1RM.Model.ProtocolRunner.Default
                 p.DecryptToConnectLevel();
             }
 
+
             if (p is SSH ssh)
             {
                 //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
@@ -188,6 +173,7 @@ namespace _1RM.Model.ProtocolRunner.Default
                 var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
                 //var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
                 // TODO: 当 cmd 指令不为空时，增加 -m "C:\path\to\commands.txt"
+                var puttyOption = new PuttyConfig(protocol.SessionId);
                 var arg = $@" -load ""{protocol.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} {ipv6}";
                 return " " + arg;
             }
@@ -211,6 +197,25 @@ namespace _1RM.Model.ProtocolRunner.Default
                 return $@" -load ""{protocol.SessionId}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{serial.DataBits},{serial.GetParityFlag()},{serial.StopBits},{serial.GetFlowControlFlag()}";
             }
             throw new NotSupportedException($"The protocol type {p.GetType()} is not supported for PuttyRunner.");
+        }
+
+        /// <summary>
+        /// install the runner exe to the path. if path is empty, use the default path.
+        /// </summary>
+        public override void Install(string path = "")
+        {
+            var installPath = GetExeInstallPath();
+            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/PuTTY/putty.exe", installPath);
+        }
+
+
+        public override string GetExeInstallPath()
+        {
+            string kittyExeName = $"putty_portable_{Assert.APP_NAME}.exe";
+            if (!Directory.Exists(AppPathHelper.Instance.PuttyDirPath))
+                Directory.CreateDirectory(AppPathHelper.Instance.PuttyDirPath);
+            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.PuttyDirPath, kittyExeName);
+            return kittyExeFullName;
         }
     }
 }
