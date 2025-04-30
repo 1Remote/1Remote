@@ -55,12 +55,5 @@ namespace _1RM.Model.Protocol
             get => _externalKittySessionConfigPath;
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
-
-        public string GetExeArguments(string sessionName)
-        {
-            var tel = (this.Clone() as Telnet)!;
-            tel.ConnectPreprocess();
-            return $@" -load ""{sessionName}"" -telnet {tel.Address} -P {tel.Port}";
-        }
     }
 }

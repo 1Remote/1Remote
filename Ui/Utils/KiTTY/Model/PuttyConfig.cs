@@ -74,6 +74,11 @@ namespace _1RM.Utils.KiTTY.Model
                 Set(EnumKittyConfigKey.AltF4, 0x00000000); // DISABLED ALTF4
         }
 
+        /// <summary>
+        /// Apply the overwrite session to current session.
+        /// user can choose an ini session file to overwrite current session.
+        /// </summary>
+        /// <param name="overwritePath"></param>
         public void ApplyOverwriteSession(string? overwritePath = null)
         {
             if (!string.IsNullOrEmpty(overwritePath) && File.Exists(overwritePath))

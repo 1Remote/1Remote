@@ -3,6 +3,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol.FileTransmit;
 using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using Shawn.Utils;
+using _1RM.Service;
 
 namespace _1RM.Model.Protocol
 {
@@ -49,7 +50,7 @@ namespace _1RM.Model.Protocol
         public ITransmitter GeTransmitter()
         {
             var ftp = (this.Clone() as FTP)!;
-            ftp.ConnectPreprocess();
+            ftp.DecryptToConnectLevel();
             return new TransmitterFtp(ftp.Address, ftp.GetPort(), ftp.UserName, ftp.Password);
         }
 

@@ -162,7 +162,7 @@ namespace _1RM.Model.Protocol
             // A single upper-case letter specifies the flow control: ‘N’ for none, ‘X’ for XON/XOFF, ‘R’ for RTS/CTS and ‘D’ for DSR/DTR.
             // For example, ‘-sercfg 19200,8,n,1,N’ denotes a baud rate of 19200, 8 data bits, no parity, 1 stop bit and no flow control.
             var serial = (this.Clone() as Serial)!;
-            serial.ConnectPreprocess();
+            serial.DecryptToConnectLevel();
             return $@" -load ""{sessionName}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{DataBits},{GetParityFlag()},{StopBits},{GetFlowControlFlag()}";
         }
 

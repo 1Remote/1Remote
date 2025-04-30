@@ -79,11 +79,6 @@ namespace _1RM.Model.ProtocolRunner
         /// </summary>
         private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this Runner runner, ProtocolBase protocol)
         {
-            if(runner is not ExternalRunner && runner is not InternalExeRunner)
-            {
-            }
-
-
             string exePath = "";
             string exeArguments = "";
             var environmentVariables = new Dictionary<string, string>();
@@ -199,7 +194,7 @@ namespace _1RM.Model.ProtocolRunner
                     return integrateHost;
                 }
             }
-            if (runner is PuttyRunner ir)
+            if (runner is InternalExeRunner ir)
             {
                 // default runner
                 var (isOk, exePath, exeArguments, environmentVariables) = ir.GetStartInfo(protocol);

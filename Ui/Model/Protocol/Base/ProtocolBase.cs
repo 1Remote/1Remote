@@ -79,6 +79,17 @@ namespace _1RM.Model.Protocol.Base
             set => SetAndNotifyIfChanged(ref _displayName, value);
         }
 
+        /// <summary>
+        /// 会话的ID
+        /// </summary>
+        [JsonIgnore]
+        public string SessionId { get; private set; } = "";
+
+        public void GenerateSessionId()
+        {
+            SessionId = $"{Assert.APP_NAME}_{Protocol}_{Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+        }
+
         [JsonIgnore]
         public string SubTitle => GetSubTitle();
 
@@ -379,16 +390,7 @@ namespace _1RM.Model.Protocol.Base
                 MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script after disconnected"));
             }
         }
-
-        /// <summary>
-        /// run before connect, decrypt all fields
-        /// </summary>
-        public virtual void ConnectPreprocess()
-        {
-            var s = this;
-            s.DecryptToConnectLevel();
-        }
-
+        
         public static List<ProtocolBase> GetAllSubInstance()
         {
             var assembly = typeof(ProtocolBase).Assembly;
@@ -411,7 +413,7 @@ namespace _1RM.Model.Protocol.Base
         public DataSourceBase? DataSource { get; set; }
 
         /// <summary>
-        /// build the id for host
+        /// build the id for host, ConnectionId internal id while session id is the outer id
         /// </summary>
         /// <returns></returns>
         public virtual string BuildConnectionId()

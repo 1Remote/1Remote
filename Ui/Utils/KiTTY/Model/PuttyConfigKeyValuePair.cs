@@ -3,11 +3,11 @@ using Microsoft.Win32;
 
 namespace _1RM.Utils.KiTTY.Model
 {
-    public class KittyConfigKeyValuePair
+    public class PuttyConfigKeyValuePair
     {
-        public static KittyConfigKeyValuePair Create(string key, int value)
+        public static PuttyConfigKeyValuePair Create(string key, int value)
         {
-            return new KittyConfigKeyValuePair
+            return new PuttyConfigKeyValuePair
             {
                 Key = key,
                 Value = value,
@@ -15,12 +15,12 @@ namespace _1RM.Utils.KiTTY.Model
             };
         }
 
-        public static KittyConfigKeyValuePair Create(string key, string value)
+        public static PuttyConfigKeyValuePair Create(string key, string value)
         {
             if (key.ToCharArray().Count(c => c == '.') <= 1
-                && double.TryParse(value.Replace(',', '_'), out double nValue))
+                && double.TryParse(value.Replace(',', '_'), out var nValue))
             {
-                return new KittyConfigKeyValuePair
+                return new PuttyConfigKeyValuePair
                 {
                     Key = key,
                     Value = value,
@@ -29,7 +29,7 @@ namespace _1RM.Utils.KiTTY.Model
             }
             else
             {
-                return new KittyConfigKeyValuePair
+                return new PuttyConfigKeyValuePair
                 {
                     Key = key,
                     Value = value,

@@ -204,8 +204,9 @@ namespace _1RM.Model.ProtocolRunner.Default
         /// </summary>
         public override void Install(string path = "")
         {
-            var installPath = GetExeInstallPath();
-            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/PuTTY/putty.exe", installPath);
+            if (string.IsNullOrEmpty(path))
+                path = GetExeInstallPath();
+            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/PuTTY/putty.exe", path);
         }
 
 
