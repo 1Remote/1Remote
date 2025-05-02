@@ -12,9 +12,12 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.Protocol;
 using System.Text.RegularExpressions;
 using _1RM.Service;
+using Microsoft.Win32;
+using Shawn.Utils;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
+    [Obsolete]
     public class KittyRunner : InternalExeRunner
     {
         public new static string Name = "Internal KiTTY";
@@ -181,20 +184,17 @@ namespace _1RM.Model.ProtocolRunner.Default
 
             if (p is SSH ssh)
             {
-                //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
-                //var template = $@" -load ""{this.GetSessionName()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+                //var arg = $@" -load ""{ssh.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+                //var template = $@" -load ""{this.GetSessionId()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
                 //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
-
                 var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
-                //var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
-                // TODO: 当 cmd 指令不为空时，增加 -m "C:\path\to\commands.txt"
-                var arg = $@" -load ""{protocol.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} {ipv6}";
+                var arg = $""" -load "{protocol.SessionId}" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd "{ssh.StartupAutoCommand}" {ipv6}""";
                 return " " + arg;
             }
 
             if (p is Telnet tel)
             {
-                return $@" -load ""{protocol.SessionId}"" -telnet {tel.Address} -P {tel.Port}";
+                return $""" -load "{protocol.SessionId}" -telnet {tel.Address} -P {tel.Port}""";
             }
 
             if (p is Serial serial)
@@ -208,9 +208,83 @@ namespace _1RM.Model.ProtocolRunner.Default
                 // A single upper-case letter specifies the flow control: ‘N’ for none, ‘X’ for XON/XOFF, ‘R’ for RTS/CTS and ‘D’ for DSR/DTR.
                 // For example, ‘-sercfg 19200,8,n,1,N’ denotes a baud rate of 19200, 8 data bits, no parity, 1 stop bit and no flow control.
                 serial.DecryptToConnectLevel();
-                return $@" -load ""{protocol.SessionId}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{serial.DataBits},{serial.GetParityFlag()},{serial.StopBits},{serial.GetFlowControlFlag()}";
+                return $""" -load "{protocol.SessionId}" -serial {serial.SerialPort} -sercfg {serial.BitRate},{serial.DataBits},{serial.GetParityFlag()},{serial.StopBits},{serial.GetFlowControlFlag()}""";
             }
             throw new NotSupportedException($"The protocol type {p.GetType()} is not supported for PuttyRunner.");
+        }
+
+
+        [Obsolete]
+        public void ConfigKitty(IKittyConnectable iKittyConnectable, string sessionId, string sshPrivateKeyPath)
+        {
+            var kittyRunner = this;
+            // install kitty if `kittyRunner.PuttyExePath` not exists
+            if (string.IsNullOrEmpty(kittyRunner.ExePath) || File.Exists(kittyRunner.ExePath) == false)
+            {
+                kittyRunner.ExePath = GetExeInstallPath();
+                if (File.Exists(kittyRunner.ExePath) == false)
+                    Install();
+            }
+            KittyConfig.WriteKittyDefaultConfig(kittyRunner.ExePath);
+
+            // create session config
+            var puttyOption = new KittyConfig(sessionId);
+            puttyOption.Set(EnumKittyConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
+            puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+
+            if (iKittyConnectable is SSH server)
+            {
+                if (!string.IsNullOrEmpty(sshPrivateKeyPath))
+                {
+                    // set key
+                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                }
+                puttyOption.Set(EnumKittyConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
+            }
+            if (iKittyConnectable is Serial serial)
+            {
+                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
+
+                //SerialLine\COM1\
+                //SerialSpeed\9600\
+                //SerialDataBits\8\
+                //SerialStopHalfbits\2\
+                //SerialParity\0\
+                //SerialFlowControl\1\
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, serial.FlowControl);
+            }
+
+            // set theme
+            var options = PuttyThemes.Themes[kittyRunner.PuttyThemeName];
+            foreach (var option in options)
+            {
+                try
+                {
+                    if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
+                    {
+                        if (option.ValueKind == RegistryValueKind.DWord)
+                            puttyOption.Set(key, (int)(option.Value));
+                        else
+                            puttyOption.Set(key, (string)option.Value);
+                    }
+                }
+                catch (Exception)
+                {
+                    SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                }
+            }
+
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, kittyRunner.PuttyFontSize);
+            puttyOption.SaveToKittyConfig(kittyRunner.ExePath);
         }
     }
 }

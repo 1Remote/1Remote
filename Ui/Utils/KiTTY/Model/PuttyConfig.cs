@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using _1RM.Service;
 using Microsoft.Win32;
 using Shawn.Utils;
-using Shawn.Utils.Wpf;
 
 namespace _1RM.Utils.KiTTY.Model
 {
     public class PuttyConfig
     {
         public readonly List<PuttyConfigKeyValuePair> Options = new List<PuttyConfigKeyValuePair>();
-        public readonly string PuttySessionName;
+        public readonly string PuttySessionId;
         public readonly string SessionId;
 
         /// <summary>
@@ -57,8 +55,8 @@ namespace _1RM.Utils.KiTTY.Model
 
         public PuttyConfig(string sessionId)
         {
-            PuttySessionName = SessionId = sessionId;
-            if (!PuttySessionName.StartsWith($"{Assert.APP_NAME}_"))
+            PuttySessionId = SessionId = sessionId;
+            if (!PuttySessionId.StartsWith($"{Assert.APP_NAME}_"))
             {
                 throw new NotSupportedException($"A wrong session id is generated: {sessionId}");
             }
@@ -283,9 +281,9 @@ namespace _1RM.Utils.KiTTY.Model
             Set(EnumKittyConfigKey.LocalPortAcceptAll, 0x00000000);
             Set(EnumKittyConfigKey.RemotePortAcceptAll, 0x00000000);
             Set(EnumKittyConfigKey.BugIgnore1, 0x00000000);
+            Set(EnumKittyConfigKey.BugIgnore2, 0x00000000);
             Set(EnumKittyConfigKey.BugPlainPW1, 0x00000000);
             Set(EnumKittyConfigKey.BugRSA1, 0x00000000);
-            Set(EnumKittyConfigKey.BugIgnore2, 0x00000000);
             Set(EnumKittyConfigKey.BugHMAC2, 0x00000000);
             Set(EnumKittyConfigKey.BugDeriveKey2, 0x00000000);
             Set(EnumKittyConfigKey.BugRSAPad2, 0x00000000);
@@ -301,7 +299,6 @@ namespace _1RM.Utils.KiTTY.Model
             Set(EnumKittyConfigKey.SerialStopHalfbits, 0x00000002);
             Set(EnumKittyConfigKey.SerialParity, 0x00000000);
             Set(EnumKittyConfigKey.SerialFlowControl, 0x00000001);
-            Set(EnumKittyConfigKey.Autocommand, "");
 
             #endregion Default
         }
@@ -325,24 +322,11 @@ namespace _1RM.Utils.KiTTY.Model
         }
 
         /// <summary>
-        /// save to reg table
-        /// </summary>
-        private void SaveToPuttyRegistryTable()
-        {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{PuttySessionName}";
-            using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-            foreach (var item in Options)
-            {
-                regKey.SetValue(item.Key, item.Value, item.ValueKind);
-            }
-        }
-
-        /// <summary>
         /// del from reg table
         /// </summary>
-        private static void DelFromPuttyRegistryTable(string sessionName)
+        private static void DelFromPuttyRegistryTable(string sessionId)
         {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{sessionName}";
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{sessionId}";
             try
             {
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
@@ -353,14 +337,20 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        public void SaveToConfig(string kittyExePath)
+        public void SaveToConfig()
         {
-            SaveToPuttyRegistryTable();
+            // save to reg table
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{PuttySessionId}";
+            using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+            foreach (var item in Options)
+            {
+                regKey.SetValue(item.Key, item.Value, item.ValueKind);
+            }
         }
 
-        public void DelFromConfig()
+        public void DeleteFromConfig()
         {
-            DelFromPuttyRegistryTable(PuttySessionName);
+            DelFromPuttyRegistryTable(PuttySessionId);
         }
 
 
@@ -369,13 +359,13 @@ namespace _1RM.Utils.KiTTY.Model
             using var key = Registry.CurrentUser.OpenSubKey($"Software\\SimonTatham\\PuTTY\\Sessions", true);
             if (key == null) return;
             var subKeyNames = key.GetSubKeyNames();
-            foreach (var sessionName in subKeyNames)
+            foreach (var sessionId in subKeyNames)
             {
                 try
                 {
-                    if (sessionName.StartsWith($"{Assert.APP_NAME}_"))
+                    if (sessionId.StartsWith($"{Assert.APP_NAME}_"))
                     {
-                        DelFromPuttyRegistryTable(sessionName);
+                        DelFromPuttyRegistryTable(sessionId);
                     }
                 }
                 catch (Exception e)

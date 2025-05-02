@@ -151,22 +151,6 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
-        public string GetExeArguments(string sessionName)
-        {
-            // https://stackoverflow.com/questions/35411927/putty-command-line-automate-serial-commands-from-file
-            // https://documentation.help/PuTTY/using-cmdline-sercfg.html
-            // Any single digit from 5 to 9 sets the number of data bits.
-            // ‘1’, ‘1.5’ or ‘2’ sets the number of stop bits.
-            // Any other numeric string is interpreted as a baud rate.
-            // A single lower-case letter specifies the parity: ‘n’ for none, ‘o’ for odd, ‘e’ for even, ‘m’ for mark and ‘s’ for space.
-            // A single upper-case letter specifies the flow control: ‘N’ for none, ‘X’ for XON/XOFF, ‘R’ for RTS/CTS and ‘D’ for DSR/DTR.
-            // For example, ‘-sercfg 19200,8,n,1,N’ denotes a baud rate of 19200, 8 data bits, no parity, 1 stop bit and no flow control.
-            var serial = (this.Clone() as Serial)!;
-            serial.DecryptToConnectLevel();
-            return $@" -load ""{sessionName}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{DataBits},{GetParityFlag()},{StopBits},{GetFlowControlFlag()}";
-        }
-
-
         #region IDataErrorInfo
         [JsonIgnore]
         public override string this[string columnName]

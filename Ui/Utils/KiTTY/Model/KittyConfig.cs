@@ -13,7 +13,7 @@ namespace _1RM.Utils.KiTTY.Model
     public class KittyConfig
     {
         public readonly List<PuttyConfigKeyValuePair> Options = new List<PuttyConfigKeyValuePair>();
-        public readonly string SessionName;
+        public readonly string SessionId;
 
         /// <summary>
         /// read existed config files.
@@ -54,9 +54,9 @@ namespace _1RM.Utils.KiTTY.Model
             return ret;
         }
 
-        public KittyConfig(string sessionName)
+        public KittyConfig(string sessionId)
         {
-            SessionName = sessionName;
+            SessionId = sessionId;
             InitDefault();
 
             // DISABLED ALT + F4
@@ -319,7 +319,7 @@ namespace _1RM.Utils.KiTTY.Model
         /// </summary>
         public void SaveToPuttyRegistryTable()
         {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionId}";
             using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
             if (regKey == null) return;
             foreach (var item in Options)
@@ -334,7 +334,7 @@ namespace _1RM.Utils.KiTTY.Model
         /// </summary>
         public void DelFromPuttyRegistryTable()
         {
-            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
+            string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionId}";
             try
             {
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
@@ -350,7 +350,7 @@ namespace _1RM.Utils.KiTTY.Model
         /// </summary>
         private void SaveToKittyRegistryTable()
         {
-            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionName}";
+            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionId}";
             try
             {
                 using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
@@ -375,14 +375,14 @@ namespace _1RM.Utils.KiTTY.Model
 
         public void SaveToKittyConfig(string kittyExePath)
         {
-            SaveToKittyPortableConfig(kittyExePath, SessionName, Options);
+            SaveToKittyPortableConfig(kittyExePath, SessionId, Options);
             SaveToKittyRegistryTable();
         }
 
         public void DelFromKittyConfig(string kittyPath)
         {
-            DelFromKittyPortableConfig(kittyPath, SessionName);
-            DelFromKittyRegistryTable(SessionName);
+            DelFromKittyPortableConfig(kittyPath, SessionId);
+            DelFromKittyRegistryTable(SessionId);
         }
 
 
@@ -393,9 +393,9 @@ namespace _1RM.Utils.KiTTY.Model
         /// <summary>
         /// del from reg table
         /// </summary>
-        private static void DelFromKittyRegistryTable(string sessionName)
+        private static void DelFromKittyRegistryTable(string sessionId)
         {
-            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{sessionName}";
+            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{sessionId}";
             try
             {
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
@@ -406,11 +406,11 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        private static void SaveToKittyPortableConfig(string kittyExePath, string sessionName, List<PuttyConfigKeyValuePair> options)
+        private static void SaveToKittyPortableConfig(string kittyExePath, string sessionId, List<PuttyConfigKeyValuePair> options)
         {
             try
             {
-                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath)!, "Sessions", sessionName.Replace(" ", "%20"));
+                string configPath = Path.Combine(Path.GetDirectoryName(kittyExePath)!, "Sessions", sessionId.Replace(" ", "%20"));
                 var sb = new StringBuilder();
                 foreach (var item in options)
                 {
@@ -433,11 +433,11 @@ namespace _1RM.Utils.KiTTY.Model
             }
         }
 
-        private static void DelFromKittyPortableConfig(string kittyPath, string sessionName)
+        private static void DelFromKittyPortableConfig(string kittyPath, string sessionId)
         {
             try
             {
-                string configPath = Path.Combine(kittyPath, "Sessions", sessionName.Replace(" ", "%20"));
+                string configPath = Path.Combine(kittyPath, "Sessions", sessionId.Replace(" ", "%20"));
                 if (File.Exists(configPath))
                     File.Delete(configPath);
             }
@@ -464,9 +464,9 @@ namespace _1RM.Utils.KiTTY.Model
                 {
                     try
                     {
-                        var sessionName = fi.Name;
-                        DelFromKittyPortableConfig(AppPathHelper.Instance.KittyDirPath, sessionName);
-                        DelFromKittyRegistryTable(sessionName);
+                        var sessionId = fi.Name;
+                        DelFromKittyPortableConfig(AppPathHelper.Instance.KittyDirPath, sessionId);
+                        DelFromKittyRegistryTable(sessionId);
                     }
                     catch (Exception e)
                     {

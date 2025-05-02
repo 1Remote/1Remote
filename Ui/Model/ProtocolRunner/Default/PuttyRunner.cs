@@ -10,9 +10,12 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Model.Protocol;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils;
 using _1RM.Service;
+using Shawn.Utils;
+using Microsoft.Win32;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
@@ -157,7 +160,7 @@ namespace _1RM.Model.ProtocolRunner.Default
 
         public override string GetExeArguments(ProtocolBase protocol)
         {
-            var p = (protocol.Clone() as ProtocolBase)!;
+            var p = protocol.Clone();
             if (p is ProtocolBaseWithAddressPortUserPwd)
             {
                 p.DecryptToConnectLevel();
@@ -166,15 +169,19 @@ namespace _1RM.Model.ProtocolRunner.Default
 
             if (p is SSH ssh)
             {
-                //var arg = $@" -load ""{ssh.SessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
-                //var template = $@" -load ""{this.GetSessionName()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+                //var arg = $@" -load ""{ssh.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+                //var template = $@" -load ""{this.GetSessionId()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
                 //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
 
                 var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
-                //var arg = $@" -load ""{sessionName}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
+                //var arg = $@" -load ""{sessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
                 // TODO: 当 cmd 指令不为空时，增加 -m "C:\path\to\commands.txt"
-                var puttyOption = new PuttyConfig(protocol.SessionId);
-                var arg = $@" -load ""{protocol.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} {ipv6}";
+                string m = GetAutoCommandFilePath(protocol);
+                if (!string.IsNullOrEmpty(m))
+                {
+                    m = $" -m \"{m}\" -t";
+                }
+                var arg = $@" -load ""{protocol.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} {ipv6} {m}";
                 return " " + arg;
             }
 
@@ -217,6 +224,152 @@ namespace _1RM.Model.ProtocolRunner.Default
                 Directory.CreateDirectory(AppPathHelper.Instance.PuttyDirPath);
             var kittyExeFullName = Path.Combine(AppPathHelper.Instance.PuttyDirPath, kittyExeName);
             return kittyExeFullName;
+        }
+
+        public static string GetAutoCommandFilePath(ProtocolBase protocol)
+        {
+            if (protocol is SSH ssh && !string.IsNullOrEmpty(ssh.StartupAutoCommand))
+                return Path.Combine(Path.GetTempPath(), $"{protocol.SessionId}_putty_auto_command.txt");
+            return "";
+        }
+
+        public void SaveAutoCommandFile(ProtocolBase protocol, int autoDeleteSeconds = 0)
+        {
+            if (protocol is SSH ssh)
+            {
+                // write command
+                var tempFile = GetAutoCommandFilePath(protocol);
+                File.WriteAllText(tempFile,
+$@"{ssh.StartupAutoCommand}
+# echo ""Press any key to continue...""
+# read -n 1 -s
+exec $SHELL # to keep putty alive
+            ");
+
+                if (autoDeleteSeconds > 0)
+                {
+                    var autoDelTask = new Task(() =>
+                    {
+                        Thread.Sleep(autoDeleteSeconds * 1000);
+                        try
+                        {
+                            if (File.Exists(tempFile))
+                                File.Delete(tempFile);
+                            SimpleLogHelper.DebugWarning($"AutoCommandFile {tempFile} is deleted!");
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    });
+                    autoDelTask.Start();
+                }
+            }
+        }
+
+        /// <summary>
+        /// return the private key path for the protocol if exists.
+        /// when the key is original keep in a none-ascii path, we will copy it to a temp path and delete it after use.
+        /// </summary>
+        public string GetPrivateKeyPath(ProtocolBase protocol, int autoDeleteSeconds = 30)
+        {
+            string sshPrivateKeyPath = "";
+            if (protocol is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw && string.IsNullOrEmpty(pw.PrivateKey) == false)
+            {
+                sshPrivateKeyPath = pw.PrivateKey;
+                // if private key is not all ascii, copy it to temp file
+                if (pw.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
+                {
+                    sshPrivateKeyPath = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
+                    File.Copy(pw.PrivateKey, sshPrivateKeyPath, true);
+                    var autoDelTask = new Task(() =>
+                    {
+                        Thread.Sleep(30 * 1000);
+                        try
+                        {
+                            if (File.Exists(sshPrivateKeyPath))
+                                File.Delete(sshPrivateKeyPath);
+                            SimpleLogHelper.DebugWarning($"SSH KEY {sshPrivateKeyPath} is deleted!");
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    });
+                    autoDelTask.Start();
+                }
+            }
+            return sshPrivateKeyPath;
+        }
+
+
+        public void ConfigPutty(IKittyConnectable iKittyConnectable, string sessionId, string sshPrivateKeyPath)
+        {
+            PuttyRunner puttyRunner = this;
+            // install PUTTY if `puttyRunner.PuttyExePath` not exists
+            if (string.IsNullOrEmpty(puttyRunner.ExePath) || File.Exists(puttyRunner.ExePath) == false)
+            {
+                puttyRunner.Install();
+            }
+
+            // create session config
+            var puttyOption = new PuttyConfig(sessionId);
+            puttyOption.Set(EnumKittyConfigKey.LineCodePage, puttyRunner.GetLineCodePageForIni());
+            puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+
+            if (iKittyConnectable is SSH server)
+            {
+                if (!string.IsNullOrEmpty(sshPrivateKeyPath))
+                {
+                    // set key
+                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                }
+                puttyOption.Set(EnumKittyConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
+            }
+            if (iKittyConnectable is Serial serial)
+            {
+                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
+
+                //SerialLine\COM1\
+                //SerialSpeed\9600\
+                //SerialDataBits\8\
+                //SerialStopHalfbits\2\
+                //SerialParity\0\
+                //SerialFlowControl\1\
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumKittyConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, serial.FlowControl);
+            }
+
+            // set theme
+            var options = PuttyThemes.Themes[puttyRunner.PuttyThemeName];
+            foreach (var option in options)
+            {
+                try
+                {
+                    if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
+                    {
+                        if (option.ValueKind == RegistryValueKind.DWord)
+                            puttyOption.Set(key, (int)(option.Value));
+                        else
+                            puttyOption.Set(key, (string)option.Value);
+                    }
+                }
+                catch (Exception)
+                {
+                    SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                }
+            }
+
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, puttyRunner.PuttyFontSize);
+            puttyOption.SaveToConfig();
         }
     }
 }

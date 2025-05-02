@@ -186,7 +186,7 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly Dictionary<string, string> _environmentVariables;
         private readonly Runner _runner;
         private readonly string _sessionId = "";
-
+ 
         public static IntegrateHost Create(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
         {
             IntegrateHost? view = null;
@@ -216,26 +216,22 @@ namespace _1RM.View.Host.ProtocolHosts
 
             FormsHost.Child = _panel;
 
-            /*
-            if (runner is KittyRunner kittyRunner)
-            {
-                RunAfterConnected += () =>
-                {
-                    var fi = new FileInfo(kittyRunner.ExePath);
-                    var kittyExeFolderPath = fi!.Directory!.FullName;
-                    var puttyOption = new KittyConfig(_sessionName);
-                    puttyOption.DelFromKittyConfig(kittyExeFolderPath);
-                };
-            }
-            */
 
-            if (runner is PuttyRunner puttyRunner)
+            if (runner is PuttyRunner)
             {
                 RunAfterConnected += () =>
                 {
-                    //var puttyOption = new PuttyConfig(_sessionName);
-                    //puttyOption.DelFromConfig();
-                    PuttyConfig.CleanUpOldConfig();
+                    try
+                    {
+                        PuttyConfig.CleanUpOldConfig();
+                        var path = PuttyRunner.GetAutoCommandFilePath(ProtocolServer);
+                        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                            File.Delete(path);
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 };
             }
         }
@@ -396,35 +392,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is PuttyRunner kittyRunner)
             {
-                //// KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
-                //ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
-                if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw && string.IsNullOrEmpty(pw.PrivateKey) == false)
-                {
-                    var pk = pw.PrivateKey;
-                    // if private key is not all ascii, copy it to temp file
-                    if (pw.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
-                    {
-                        pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
-                        File.Copy(pw.PrivateKey, pk, true);
-                        var autoDelTask = new Task(() =>
-                        {
-                            Thread.Sleep(30 * 1000);
-                            try
-                            {
-                                if (File.Exists(pk))
-                                    File.Delete(pk);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
-                        });
-                        autoDelTask.Start();
-                    }
-                    kittyConnectable.ConfigPutty(_sessionId, kittyRunner, pk);
-                }
-                else
-                    kittyConnectable.ConfigPutty(_sessionId, kittyRunner, "");
+                if (PuttyRunner.GetAutoCommandFilePath(ProtocolServer) != "")
+                    kittyRunner.SaveAutoCommandFile(ProtocolServer, 30); // save auto command file
+                var sshPrivateKeyPath = kittyRunner.GetPrivateKeyPath(ProtocolServer); // prepare ssh key path
+                kittyRunner.ConfigPutty(kittyConnectable, _sessionId, sshPrivateKeyPath);
             }
 
             if (Path.IsPathRooted(exeFullName)
@@ -466,7 +437,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(5 * 1000);
+                Thread.Sleep(10 * 1000);
                 RunAfterConnected?.Invoke();
             });
 
@@ -482,9 +453,8 @@ namespace _1RM.View.Host.ProtocolHosts
                     return;
                 }
                 else if (_process.MainWindowHandle != IntPtr.Zero
-                    && _exeHandles.Contains(_process.MainWindowHandle) == false)
+                    && _exeHandles.Add(_process.MainWindowHandle) != false)
                 {
-                    _exeHandles.Add(_process.MainWindowHandle);
                     SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");
                     SetExeWindowStyle();
                 }

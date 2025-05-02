@@ -128,7 +128,7 @@ namespace _1RM.Model.ProtocolRunner
             }
             else if (runner is InternalExeRunner ir)
             {
-                exePath = ir.GetExeInstallPath();
+                exePath = ir.GetExeInstallPath(); // TODO: WHAT IF A CUSTOM EXE PATH?
                 var check = WinCmdRunner.CheckFileExistsAndFullName(exePath);
                 if (check.Item1 == false)
                 {
