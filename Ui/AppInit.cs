@@ -11,14 +11,14 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service.DataSource;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY.Model;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
 using _1RM.View.ServerList;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 using System.Collections.Generic;
-using Stylet;
+using _1RM.Utils.PuTTY.Model;
+using _1RM.Utils.PuTTY.Model;
 
 namespace _1RM
 {
@@ -68,7 +68,6 @@ namespace _1RM
             var dirPaths = new List<string>
             {
                 appPathHelper.BaseDirPath,
-                appPathHelper.KittyDirPath,
                 appPathHelper.PuttyDirPath,
                 appPathHelper.ProtocolRunnerDirPath,
                 appPathHelper.LocalityDirPath,
@@ -246,7 +245,6 @@ namespace _1RM
                     AppPathHelper.CreateDirIfNotExist(paths.ProfileJsonPath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
-                    AppPathHelper.CreateDirIfNotExist(paths.KittyDirPath, false);
                     AppPathHelper.CreateDirIfNotExist(paths.PuttyDirPath, false);
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
@@ -371,6 +369,7 @@ namespace _1RM
             }
 
             KittyConfig.CleanUpOldConfig();
+            PuttyConfig.CleanUpOldConfig();
 
             var mvm = IoC.Get<MainWindowViewModel>();
             if (AppStartupHelper.IsStartMinimized == false

@@ -260,6 +260,8 @@ namespace _1RM.View
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
                     MaskLayerController.ShowWindowWithMask(AboutViewModel, this);
                 });
             }

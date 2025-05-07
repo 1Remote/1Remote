@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
@@ -195,9 +197,18 @@ namespace _1RM.Model.Protocol.Base
         public string SelectedRunnerName
         {
             get => _selectedRunnerName;
-            set => SetAndNotifyIfChanged(ref _selectedRunnerName, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _selectedRunnerName, value))
+                {
+                    var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), this, this.Protocol);
+                    RaisePropertyChanged(nameof(SelectedRunnerIsInternalRunner));
+                }
+            }
         }
 
+        [JsonIgnore] 
+        public bool SelectedRunnerIsInternalRunner => RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), this, this.Protocol) is InternalDefaultRunner;
 
         /// <summary>
         /// copy all value type fields

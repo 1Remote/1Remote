@@ -52,12 +52,12 @@
 
         <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sftp_startup_path}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding New.StartupPath, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Tag="e.g. /home/user/Desktop"></TextBox>
+                             Tag="e.g. /home/user/Desktop"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>

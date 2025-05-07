@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using _1RM.Utils.KiTTY;
-using _1RM.Utils.KiTTY.Model;
-using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
-using _1RM.Model.Protocol;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using Newtonsoft.Json;
+using Microsoft.Win32;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using Shawn.Utils;
-using Microsoft.Win32;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
+using System.Windows;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
     public class PuttyRunner : InternalExeRunner
     {
-        public new static string Name = "Internal PuTTY";
+        public new static string Name = "Built-in PuTTY";
 
         [JsonConstructor]
         public PuttyRunner(string ownerProtocolName) : base(ownerProtocolName)
@@ -84,14 +86,108 @@ namespace _1RM.Model.ProtocolRunner.Default
         public string PuttyThemeName
         {
             get => PuttyThemeNames.Contains(_puttyThemeName) ? _puttyThemeName : PuttyThemeNames.First();
-            set => SetAndNotifyIfChanged(ref _puttyThemeName, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _puttyThemeName, value))
+                {
+                    if (PuttyThemes.Themes.ContainsKey(PuttyThemeName))
+                    {
+                        var options = PuttyThemes.Themes[PuttyThemeName];
+                        SetBrush(options, nameof(Colour0));
+                        //SetBrush(options, nameof(Colour1));
+                        SetBrush(options, nameof(Colour2));
+                        //SetBrush(options, nameof(Colour3));
+                        //SetBrush(options, nameof(Colour4));
+                        //SetBrush(options, nameof(Colour5));
+                        //SetBrush(options, nameof(Colour6));
+                        //SetBrush(options, nameof(Colour7));
+                        //SetBrush(options, nameof(Colour8));
+                        SetBrush(options, nameof(Colour9));
+                        SetBrush(options, nameof(Colour10));
+                        SetBrush(options, nameof(Colour11));
+                        SetBrush(options, nameof(Colour15));
+                    }
+                }
+            }
         }
+
+        [JsonIgnore] public SolidColorBrush Colour0 { get; set; } = Brushes.White;
+        //[JsonIgnore] public SolidColorBrush Colour1 { get; set; } = Brushes.Black;
+        [JsonIgnore] public SolidColorBrush Colour2 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour3 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour4 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour5 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour6 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour7 { get; set; } = Brushes.Black;
+        //[JsonIgnore] public SolidColorBrush Colour8 { get; set; } = Brushes.Black;
+        [JsonIgnore] public SolidColorBrush Colour9 { get; set; } = Brushes.Black;
+        [JsonIgnore] public SolidColorBrush Colour10 { get; set; } = Brushes.Black;
+        [JsonIgnore] public SolidColorBrush Colour11 { get; set; } = Brushes.Black;
+        [JsonIgnore] public SolidColorBrush Colour15 { get; set; } = Brushes.Black;
+
+        private void SetBrush(List<PuttyConfigKeyValuePair> options, string name)
+        {
+            var t = this.GetType();
+            var prop = t.GetProperty(name);
+            if (prop == null) return;
+
+            var option = options.FirstOrDefault(x => string.Equals(x.Key, name, StringComparison.CurrentCultureIgnoreCase));
+            if (option != null)
+            {
+                var rgb = ((string)option.Value).Split(',');
+                try
+                {
+                    if (rgb.Length == 3)
+                    {
+                        var r = byte.Parse(rgb[0]);
+                        var g = byte.Parse(rgb[1]);
+                        var b = byte.Parse(rgb[2]);
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
+                            prop.SetValue(this, brush, null);
+                            //brush = Brushes.LightSeaGreen;
+                            RaisePropertyChanged(name);
+                        });
+
+
+                        //// 创建一个 1x1 像素的图像，并填充为指定的颜色
+                        //var color = Color.FromRgb(r, g, b);
+                        //var bitmap = new WriteableBitmap(1, 1, 96, 96, PixelFormats.Bgra32, null);
+                        //bitmap.Lock();
+                        //unsafe
+                        //{
+                        //    IntPtr pBackBuffer = bitmap.BackBuffer;
+                        //    *((uint*)pBackBuffer) = (uint)(color.A << 24 | color.R << 16 | color.G << 8 | color.B);
+                        //}
+                        //bitmap.AddDirtyRect(new Int32Rect(0, 0, 1, 1));
+                        //bitmap.Unlock();
+
+                        //// 将生成的图像设置为 ImageBrush
+                        //brush = new ImageBrush(bitmap);
+
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+        }
+
 
         [JsonIgnore]
         public ObservableCollection<string> PuttyThemeNames => new ObservableCollection<string>(PuttyThemes.Themes.Keys);
 
         [JsonIgnore]
         public List<string> CodePages { get; }
+
+
+
+
+
+
 
         private string _lineCodePage = "UTF-8";
         public string LineCodePage
@@ -213,17 +309,17 @@ namespace _1RM.Model.ProtocolRunner.Default
         {
             if (string.IsNullOrEmpty(path))
                 path = GetExeInstallPath();
-            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/PuTTY/putty.exe", path);
+            _1RM.Utils.PuTTY.Model.Utils.Install("Resources/PuTTY/putty.exe", path);
         }
 
 
         public override string GetExeInstallPath()
         {
-            string kittyExeName = $"putty_portable_{Assert.APP_NAME}.exe";
+            string exeName = $"putty_portable_{Assert.APP_NAME}.exe";
             if (!Directory.Exists(AppPathHelper.Instance.PuttyDirPath))
                 Directory.CreateDirectory(AppPathHelper.Instance.PuttyDirPath);
-            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.PuttyDirPath, kittyExeName);
-            return kittyExeFullName;
+            var exeFullName = Path.Combine(AppPathHelper.Instance.PuttyDirPath, exeName);
+            return exeFullName;
         }
 
         public static string GetAutoCommandFilePath(ProtocolBase protocol)
@@ -240,7 +336,10 @@ namespace _1RM.Model.ProtocolRunner.Default
                 // write command
                 var tempFile = GetAutoCommandFilePath(protocol);
                 File.WriteAllText(tempFile,
-$@"{ssh.StartupAutoCommand}
+$@"# to setup environment
+source /etc/profile
+source ~/.bashrc
+{ssh.StartupAutoCommand}
 # echo ""Press any key to continue...""
 # read -n 1 -s
 exec $SHELL # to keep putty alive
@@ -303,7 +402,7 @@ exec $SHELL # to keep putty alive
         }
 
 
-        public void ConfigPutty(IKittyConnectable iKittyConnectable, string sessionId, string sshPrivateKeyPath)
+        public void ConfigPutty(IPuttyConnectable iPuttyConnectable, string sessionId, string sshPrivateKeyPath)
         {
             PuttyRunner puttyRunner = this;
             // install PUTTY if `puttyRunner.PuttyExePath` not exists
@@ -314,24 +413,24 @@ exec $SHELL # to keep putty alive
 
             // create session config
             var puttyOption = new PuttyConfig(sessionId);
-            puttyOption.Set(EnumKittyConfigKey.LineCodePage, puttyRunner.GetLineCodePageForIni());
-            puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+            puttyOption.Set(EnumConfigKey.LineCodePage, puttyRunner.GetLineCodePageForIni());
+            puttyOption.ApplyOverwriteSession(iPuttyConnectable.ExternalSessionConfigPath);
 
-            if (iKittyConnectable is SSH server)
+            if (iPuttyConnectable is SSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))
                 {
                     // set key
-                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                    puttyOption.Set(EnumConfigKey.PublicKeyFile, sshPrivateKeyPath);
                 }
-                puttyOption.Set(EnumKittyConfigKey.HostName, server.Address);
-                puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
-                puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
+                puttyOption.Set(EnumConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumConfigKey.Protocol, "ssh");
             }
-            if (iKittyConnectable is Serial serial)
+            if (iPuttyConnectable is Serial serial)
             {
-                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
-                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
+                puttyOption.Set(EnumConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumConfigKey.LinuxFunctionKeys, 4);
 
                 //SerialLine\COM1\
                 //SerialSpeed\9600\
@@ -339,13 +438,13 @@ exec $SHELL # to keep putty alive
                 //SerialStopHalfbits\2\
                 //SerialParity\0\
                 //SerialFlowControl\1\
-                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
-                puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
-                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
-                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, serial.DataBits);
-                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, serial.StopBits);
-                puttyOption.Set(EnumKittyConfigKey.SerialParity, serial.Parity);
-                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, serial.FlowControl);
+                puttyOption.Set(EnumConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumConfigKey.SerialFlowControl, serial.FlowControl);
             }
 
             // set theme
@@ -354,7 +453,7 @@ exec $SHELL # to keep putty alive
             {
                 try
                 {
-                    if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
+                    if (Enum.TryParse(option.Key, out EnumConfigKey key))
                     {
                         if (option.ValueKind == RegistryValueKind.DWord)
                             puttyOption.Set(key, (int)(option.Value));
@@ -368,7 +467,7 @@ exec $SHELL # to keep putty alive
                 }
             }
 
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, puttyRunner.PuttyFontSize);
+            puttyOption.Set(EnumConfigKey.FontHeight, puttyRunner.PuttyFontSize);
             puttyOption.SaveToConfig();
         }
     }

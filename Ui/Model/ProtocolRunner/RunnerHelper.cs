@@ -10,7 +10,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
 using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -176,7 +176,7 @@ namespace _1RM.Model.ProtocolRunner
                     withAddressPortUserPwd.Password = withAddressPortUserPwd.Password.Replace(kv.Key, kv.Value);
                 }
             }
-
+            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments);
             return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }
 

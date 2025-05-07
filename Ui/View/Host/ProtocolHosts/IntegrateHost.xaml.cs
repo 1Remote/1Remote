@@ -15,8 +15,9 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY;
-using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
 using Stylet;
 using Path = System.IO.Path;
@@ -210,7 +211,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 BackColor = System.Drawing.Color.Transparent,
                 Dock = System.Windows.Forms.DockStyle.Fill,
-                BorderStyle = BorderStyle.None
+                BorderStyle = BorderStyle.None,
             };
             _panel.SizeChanged += PanelOnSizeChanged;
 
@@ -390,12 +391,12 @@ namespace _1RM.View.Host.ProtocolHosts
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
 
-            if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is PuttyRunner kittyRunner)
+            if (ProtocolServer is IPuttyConnectable kittyConnectable && _runner is PuttyRunner putty)
             {
                 if (PuttyRunner.GetAutoCommandFilePath(ProtocolServer) != "")
-                    kittyRunner.SaveAutoCommandFile(ProtocolServer, 30); // save auto command file
-                var sshPrivateKeyPath = kittyRunner.GetPrivateKeyPath(ProtocolServer); // prepare ssh key path
-                kittyRunner.ConfigPutty(kittyConnectable, _sessionId, sshPrivateKeyPath);
+                    putty.SaveAutoCommandFile(ProtocolServer, 30); // save auto command file
+                var sshPrivateKeyPath = putty.GetPrivateKeyPath(ProtocolServer); // prepare ssh key path
+                putty.ConfigPutty(kittyConnectable, _sessionId, sshPrivateKeyPath);
             }
 
             if (Path.IsPathRooted(exeFullName)

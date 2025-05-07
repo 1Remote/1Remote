@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using _1RM.Utils.KiTTY.Model;
 
 namespace _1RM.Model.Protocol
 {
     // ReSharper disable once InconsistentNaming
-    public class SSH : ProtocolBaseWithAddressPortUserPwd, IKittyConnectable
+    public class SSH : ProtocolBaseWithAddressPortUserPwd, IPuttyConnectable
     {
         public static string ProtocolName = "SSH";
         public SSH() : base(SSH.ProtocolName, $"Putty.{SSH.ProtocolName}.V1", SSH.ProtocolName)
@@ -43,6 +40,13 @@ namespace _1RM.Model.Protocol
         {
             get => _externalKittySessionConfigPath;
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
+        }
+
+        private string _externalSessionConfigPath = "";
+        public string ExternalSessionConfigPath
+        {
+            get => string.IsNullOrEmpty(_externalSessionConfigPath) ? _externalKittySessionConfigPath : _externalSessionConfigPath;
+            set => SetAndNotifyIfChanged(ref _externalSessionConfigPath, value);
         }
 
 

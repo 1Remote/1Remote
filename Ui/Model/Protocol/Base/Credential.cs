@@ -13,9 +13,6 @@ using Shawn.Utils;
 namespace _1RM.Model.Protocol.Base
 {
     [JsonConverter(typeof(JsonKnownTypesConverter<Credential>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
-    //[JsonKnownType(typeof(ExternalRunner), nameof(ExternalRunner))]
-    //[JsonKnownType(typeof(KittyRunner), nameof(KittyRunner))]
-    //[JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
     public class Credential : NotifyPropertyChangedBase, ICloneable
     {
         public Credential(bool? isEditable = true)

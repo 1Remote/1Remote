@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
-using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PuTTY.Model;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.Utils.KiTTY
+namespace _1RM.Utils.PuTTY
 {
     public static class PuttyThemes
     {

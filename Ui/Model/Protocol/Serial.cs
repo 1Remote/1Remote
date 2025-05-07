@@ -2,14 +2,15 @@
 using System.Linq;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
 using System.Collections.Generic;
 using _1RM.Service;
+using _1RM.Utils.PuTTY;
 
 namespace _1RM.Model.Protocol
 {
-    public class Serial : ProtocolBase, IKittyConnectable
+    public class Serial : ProtocolBase, IPuttyConnectable
     {
         public static string ProtocolName = "Serial";
         public Serial() : base(Serial.ProtocolName, "Putty.Serial.V1", "Serial")
@@ -149,6 +150,13 @@ namespace _1RM.Model.Protocol
         {
             get => _externalKittySessionConfigPath;
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
+        }
+
+        private string _externalSessionConfigPath = "";
+        public string ExternalSessionConfigPath
+        {
+            get => string.IsNullOrEmpty(_externalSessionConfigPath) ? _externalKittySessionConfigPath : _externalSessionConfigPath;
+            set => SetAndNotifyIfChanged(ref _externalSessionConfigPath, value);
         }
 
         #region IDataErrorInfo

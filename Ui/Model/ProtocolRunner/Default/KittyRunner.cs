@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using _1RM.Utils.KiTTY;
-using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Model.Protocol.Base;
@@ -20,7 +20,7 @@ namespace _1RM.Model.ProtocolRunner.Default
     [Obsolete]
     public class KittyRunner : InternalExeRunner
     {
-        public new static string Name = "Internal KiTTY";
+        public new static string Name = "Built-in KiTTY";
 
         [JsonConstructor]
         [Obsolete]
@@ -152,16 +152,16 @@ namespace _1RM.Model.ProtocolRunner.Default
         {
             if (string.IsNullOrEmpty(path))
                 path = GetExeInstallPath();
-            _1RM.Utils.KiTTY.Model.Utils.Install("Resources/KiTTY/kitty_portable.exe", path);
+            _1RM.Utils.PuTTY.Model.Utils.Install("Resources/KiTTY/kitty_portable.exe", path);
             KittyConfig.WriteKittyDefaultConfig(path);
         }
 
         public override string GetExeInstallPath()
         {
-            string kittyExeName = $"kitty_portable_{Assert.APP_NAME}.exe";
+            string exeName = $"kitty_portable_{Assert.APP_NAME}.exe";
             if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
                 Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
-            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, kittyExeName);
+            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, exeName);
             return kittyExeFullName;
         }
 
@@ -215,7 +215,7 @@ namespace _1RM.Model.ProtocolRunner.Default
 
 
         [Obsolete]
-        public void ConfigKitty(IKittyConnectable iKittyConnectable, string sessionId, string sshPrivateKeyPath)
+        public void ConfigKitty(IPuttyConnectable IPuttyConnectable, string sessionId, string sshPrivateKeyPath)
         {
             var kittyRunner = this;
             // install kitty if `kittyRunner.PuttyExePath` not exists
@@ -229,24 +229,24 @@ namespace _1RM.Model.ProtocolRunner.Default
 
             // create session config
             var puttyOption = new KittyConfig(sessionId);
-            puttyOption.Set(EnumKittyConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
-            puttyOption.ApplyOverwriteSession(iKittyConnectable.ExternalKittySessionConfigPath);
+            puttyOption.Set(EnumConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
+            puttyOption.ApplyOverwriteSession(IPuttyConnectable.ExternalKittySessionConfigPath);
 
-            if (iKittyConnectable is SSH server)
+            if (IPuttyConnectable is SSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))
                 {
                     // set key
-                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                    puttyOption.Set(EnumConfigKey.PublicKeyFile, sshPrivateKeyPath);
                 }
-                puttyOption.Set(EnumKittyConfigKey.HostName, server.Address);
-                puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
-                puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
+                puttyOption.Set(EnumConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumConfigKey.Protocol, "ssh");
             }
-            if (iKittyConnectable is Serial serial)
+            if (IPuttyConnectable is Serial serial)
             {
-                puttyOption.Set(EnumKittyConfigKey.BackspaceIsDelete, 0);
-                puttyOption.Set(EnumKittyConfigKey.LinuxFunctionKeys, 4);
+                puttyOption.Set(EnumConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumConfigKey.LinuxFunctionKeys, 4);
 
                 //SerialLine\COM1\
                 //SerialSpeed\9600\
@@ -254,13 +254,13 @@ namespace _1RM.Model.ProtocolRunner.Default
                 //SerialStopHalfbits\2\
                 //SerialParity\0\
                 //SerialFlowControl\1\
-                puttyOption.Set(EnumKittyConfigKey.Protocol, "serial");
-                puttyOption.Set(EnumKittyConfigKey.SerialLine, serial.SerialPort);
-                puttyOption.Set(EnumKittyConfigKey.SerialSpeed, serial.GetBitRate());
-                puttyOption.Set(EnumKittyConfigKey.SerialDataBits, serial.DataBits);
-                puttyOption.Set(EnumKittyConfigKey.SerialStopHalfbits, serial.StopBits);
-                puttyOption.Set(EnumKittyConfigKey.SerialParity, serial.Parity);
-                puttyOption.Set(EnumKittyConfigKey.SerialFlowControl, serial.FlowControl);
+                puttyOption.Set(EnumConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumConfigKey.SerialFlowControl, serial.FlowControl);
             }
 
             // set theme
@@ -269,7 +269,7 @@ namespace _1RM.Model.ProtocolRunner.Default
             {
                 try
                 {
-                    if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
+                    if (Enum.TryParse(option.Key, out EnumConfigKey key))
                     {
                         if (option.ValueKind == RegistryValueKind.DWord)
                             puttyOption.Set(key, (int)(option.Value));
@@ -283,7 +283,7 @@ namespace _1RM.Model.ProtocolRunner.Default
                 }
             }
 
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, kittyRunner.PuttyFontSize);
+            puttyOption.Set(EnumConfigKey.FontHeight, kittyRunner.PuttyFontSize);
             puttyOption.SaveToKittyConfig(kittyRunner.ExePath);
         }
     }

@@ -71,6 +71,10 @@
             </Grid>
 
             <Grid Style="{StaticResource GridOneRow}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
                     <ColumnDefinition Width="290"></ColumnDefinition>
@@ -88,6 +92,35 @@
                         (?)
                     </Hyperlink>
                 </TextBlock>
+
+
+                <Grid Row="1" Column="1" ColumnSpan="2">
+                    <Grid Background="{Binding Colour2}" Height="100" Margin="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour11}">1Remote</TextBlock>
+                            <TextBlock Grid.Column="1" FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour15}">cmake</TextBlock>
+                            <TextBlock Grid.Column="2" FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour15}">packages</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour9}">data.zip</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour15}">version.cpp</TextBlock>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="3">
+                            <TextBlock FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour0}">root@putty: /mnt</TextBlock>
+                            <TextBlock FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour0}" Margin="5 0 0 0">cd /usr/files</TextBlock>
+                            <TextBlock FontSize="{Binding PuttyFontSize}" Foreground="{Binding Colour0}" Margin="5 0 0 0">▊</TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
             </Grid>
 
             <Grid Style="{StaticResource GridOneRow}">

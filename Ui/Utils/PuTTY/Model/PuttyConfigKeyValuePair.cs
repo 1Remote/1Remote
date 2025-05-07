@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.Win32;
 
-namespace _1RM.Utils.KiTTY.Model
+namespace _1RM.Utils.PuTTY.Model
 {
     public class PuttyConfigKeyValuePair
     {

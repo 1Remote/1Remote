@@ -3,7 +3,7 @@ using System.IO;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.Utils.KiTTY.Model
+namespace _1RM.Utils.PuTTY.Model
 {
     internal class Utils
     {
