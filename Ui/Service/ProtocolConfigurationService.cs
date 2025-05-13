@@ -140,15 +140,58 @@ namespace _1RM.Service
             if (File.Exists(file))
             {
                 var jsonStr = File.ReadAllText(file, Encoding.UTF8);
-                var c = JsonConvert.DeserializeObject<ProtocolSettings>(jsonStr);
-                if (c != null)
+                try
                 {
-                    foreach (var runner in c.Runners)
+                    var c = JsonConvert.DeserializeObject<ProtocolSettings>(jsonStr);
+                    if (c != null)
                     {
-                        runner.OwnerProtocolName = protocolName;
+                        foreach (var runner in c.Runners)
+                        {
+                            runner.OwnerProtocolName = protocolName;
+                        }
+                        return c;
                     }
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
 
-                    return c;
+                // fallback to manual parse
+                try
+                {
+                    var c = new ProtocolSettings();
+                    var jObject = JObject.Parse(jsonStr);
+                    if (jObject["SelectedRunnerName"] == null || jObject["Runners"] == null)
+                    {
+                        return null;
+                    }
+                    c.SelectedRunnerName = jObject["SelectedRunnerName"]!.ToString();
+
+                    // 读取 Runners 数组
+                    var runners = (JArray)jObject["Runners"];
+                    foreach (var runnerJObj in runners)
+                    {
+                        var runnerJson = runnerJObj.ToString();
+                        try
+                        {
+                            var runner = JsonConvert.DeserializeObject<Runner>(runnerJson);
+                            if (runner != null)
+                            {
+                                runner.OwnerProtocolName = protocolName;
+                                c.Runners.Add(runner);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            SentryIoHelper.Error(e);
+                            SimpleLogHelper.Error(e);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // ignored
                 }
             }
 
