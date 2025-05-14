@@ -349,7 +349,8 @@ namespace _1RM.Service
 
 
             string tabToken = "";
-            var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), protocolClone, protocolClone.Protocol, assignRunnerName)!;
+            var s = IoC.Get<ProtocolConfigurationService>();
+            var runner = RunnerHelper.GetRunner(s, protocolClone, protocolClone.Protocol, assignRunnerName)!;
             if (runner.IsRunWithoutHosting())
             {
                 runner.RunWithoutHosting(protocolClone);

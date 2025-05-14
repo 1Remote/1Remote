@@ -123,16 +123,15 @@
                     </TextBox>
                 </Grid>
 
-                <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
-                    <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
+                <Grid Width="45" Height="35" Margin="0" VerticalAlignment="Top">
+                    <CheckBox Name="CbPopForMenu" Width="45" Height="35" VerticalAlignment="Top" Margin="0">
                         <CheckBox.Template>
                             <ControlTemplate>
                                 <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">
                                     <Grid VerticalAlignment="Center">
-                                        <Grid Width="15" Height="15">
-                                            <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
+                                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
+                                              Width="10" Height="10"
                                               Fill="{DynamicResource PrimaryTextBrush}" Opacity="0.8" StrokeThickness="0.5" Stretch="Fill" />
-                                        </Grid>
                                     </Grid>
                                 </Border>
                                 <ControlTemplate.Triggers>
@@ -176,7 +175,7 @@
                         <StackPanel Orientation="Vertical" MinWidth="138">
                             <MenuItem Header="{DynamicResource Options}" Command="{Binding CmdGoSysOptionsPage}">
                                 <MenuItem.Icon>
-                                    <Path UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                                    <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="{DynamicResource 'Toggle Cards/List'}" Command="{Binding CmdToggleCardList}"></MenuItem>
@@ -413,13 +412,13 @@
                 </Popup>
 
                 <Button Name="BtnMinimize" Style="{StaticResource ButtonBarPrimaryStyle}"
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
-                    <Rectangle Width="15" Height="1" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" StrokeThickness="0.5" />
+                               Width="45" Height="35" VerticalAlignment="Top" BorderThickness="0">
+                    <Rectangle Width="10" Height="1" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" StrokeThickness="0.5" />
                 </Button>
 
-                <Button Name="BtnMaximize" Style="{StaticResource ButtonBarPrimaryStyle}" Width="35" Height="35" VerticalAlignment="Top">
+                <Button Name="BtnMaximize" Style="{StaticResource ButtonBarPrimaryStyle}" Width="45" Height="35" VerticalAlignment="Top">
                     <Grid>
-                        <Path Height="15" Width="15"
+                        <Path Height="10" Width="10"
                               StrokeThickness="0.5" 
                               Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                               Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
@@ -436,7 +435,7 @@
                             </Path.Style>
                         </Path>
 
-                        <Path Height="15" Width="15"
+                        <Path Height="10" Width="10"
                               StrokeThickness="1" 
                               Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                               Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
@@ -455,13 +454,13 @@
                     </Grid>
                 </Button>
 
-                <Button Name="BtnClose" Width="35" Height="35" VerticalAlignment="Top"
+                <Button Name="BtnClose" Width="45" Height="35" VerticalAlignment="Top"
                     Style="{StaticResource ButtonBarPrimaryStyle}"
                     attachProperty:VisionElement.ForegroundAccent="White"
                     attachProperty:VisionElement.BackgroundAccent="Red"
                     attachProperty:VisionElement.ForegroundOnMouseDown="White"
                     attachProperty:VisionElement.BackgroundOnMouseDown="Red">
-                    <Path Height="15" Width="15"
+                    <Path Height="10" Width="10"
                           StrokeThickness="0.5" 
                           Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                           Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"

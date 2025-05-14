@@ -287,10 +287,10 @@
                             <StackPanel Visibility="{Binding SettingsPage.GeneralSettingViewModel.TabWindowCloseButtonOnLeft, Converter={StaticResource ConverterBool2Visible}}"
                                         Orientation="Horizontal"
                                         Background="{DynamicResource PrimaryMidBrush}">
-                                <!--IT ONLY A PLACEHOLDER FOR 6 BUTTONS, 4 * 35 + 5 + 35 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
-                                <Grid Width="145"></Grid>
-                                <Grid Width="35" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
-                                <Grid Width="35" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
+                                <!--IT ONLY A PLACEHOLDER FOR 6 BUTTONS, 4 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
+                                <Grid Width="185"></Grid>
+                                <Grid Width="45" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
+                                <Grid Width="45" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
                             </StackPanel>
 
                             <Grid Width="20" Height="20" VerticalAlignment="Center">
@@ -340,10 +340,10 @@
                                         Visibility="{Binding SettingsPage.GeneralSettingViewModel.TabWindowCloseButtonOnLeft, Converter={StaticResource ConverterBool2VisibleInv}}"
                                         Orientation="Horizontal" HorizontalAlignment="Right"
                                         Background="{DynamicResource PrimaryMidBrush}">
-                                <!--IT ONLY A PLACEHOLDER FOR 5 BUTTONS, 4 * 35 + 5 + 35 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
-                                <Grid Width="145"></Grid>
-                                <Grid Width="35" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
-                                <Grid Width="35" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
+                                <!--IT ONLY A PLACEHOLDER FOR 5 BUTTONS, 4 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
+                                <Grid Width="185"></Grid>
+                                <Grid Width="45" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
+                                <Grid Width="45" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
                             </StackPanel>
 
                         </Grid>
@@ -481,7 +481,7 @@
                       IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=Topmost}">
                 <CheckBox.Style>
                     <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
-                        <Setter Property="Width" Value="35" />
+                        <Setter Property="Width" Value="45" />
                         <Setter Property="Height" Value="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" />
                         <Setter Property="Focusable" Value="False" />
                         <Setter Property="Background" Value="Transparent" />
@@ -501,7 +501,7 @@
                                     <Setter.Value>
                                         <ControlTemplate>
                                             <Grid Name="Grid" Background="{TemplateBinding Background}">
-                                                <Path Height="15" Width="15" Stretch="Uniform" Fill="{DynamicResource PrimaryTextBrush}" Data="F1 M 19.433594 7.304688 C 19.21875 7.519531 19.008789 7.716472 18.803711 7.895508 C 18.598633 8.074545 18.387043 8.225912 18.168945 8.349609 C 17.950846 8.473308 17.713215 8.569336 17.456055 8.637695 C 17.198893 8.706055 16.907551 8.740234 16.582031 8.740234 C 16.360676 8.740234 16.149088 8.720703 15.947266 8.681641 L 12.246094 12.382812 C 12.330729 12.630209 12.392578 12.884115 12.431641 13.144531 C 12.470703 13.404948 12.490234 13.665365 12.490234 13.925781 C 12.490234 14.348959 12.447916 14.733073 12.363281 15.078125 C 12.278646 15.423178 12.156575 15.748698 11.99707 16.054688 C 11.837564 16.360678 11.64388 16.65202 11.416016 16.928711 C 11.18815 17.205404 10.930989 17.486979 10.644531 17.773438 L 6.875 14.003906 L 1.328125 19.560547 L 0 20 L 0.439453 18.671875 L 5.996094 13.125 L 2.226562 9.355469 L 2.666016 8.916016 C 3.121745 8.460287 3.644206 8.111979 4.233398 7.871094 C 4.822591 7.630209 5.439453 7.509766 6.083984 7.509766 C 6.617838 7.509766 7.128906 7.591146 7.617188 7.753906 L 11.318359 4.052734 C 11.279297 3.850912 11.259766 3.639324 11.259766 3.417969 C 11.259766 3.098959 11.293945 2.810873 11.362305 2.553711 C 11.430664 2.296551 11.526692 2.057293 11.650391 1.835938 C 11.774088 1.614584 11.925455 1.401367 12.104492 1.196289 C 12.283528 0.991211 12.480469 0.78125 12.695312 0.566406 Z M 16.582031 7.490234 C 16.940104 7.490235 17.278645 7.4056 17.597656 7.236328 L 12.763672 2.402344 C 12.5944 2.721355 12.509765 3.059896 12.509766 3.417969 C 12.509765 3.600262 12.530924 3.77116 12.573242 3.930664 C 12.61556 4.09017 12.66276 4.254558 12.714844 4.423828 L 7.910156 9.21875 C 7.747396 9.153646 7.594401 9.091797 7.451172 9.033203 C 7.307942 8.974609 7.164713 8.925781 7.021484 8.886719 C 6.878255 8.847656 6.730143 8.816732 6.577148 8.793945 C 6.424153 8.771159 6.259766 8.759766 6.083984 8.759766 C 5.712891 8.759766 5.35319 8.813477 5.004883 8.920898 C 4.656575 9.02832 4.332682 9.186198 4.033203 9.394531 L 10.605469 15.966797 C 10.813802 15.667318 10.973307 15.343425 11.083984 14.995117 C 11.194661 14.646811 11.25 14.290365 11.25 13.925781 C 11.25 13.75 11.238606 13.585612 11.21582 13.432617 C 11.193033 13.279623 11.160481 13.129883 11.118164 12.983398 C 11.075846 12.836914 11.025391 12.692058 10.966797 12.548828 C 10.908203 12.4056 10.846354 12.252604 10.78125 12.089844 L 15.576172 7.285156 C 15.745442 7.33724 15.90983 7.38444 16.069336 7.426758 C 16.22884 7.469076 16.399738 7.490235 16.582031 7.490234 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <Path Height="10" Width="10" Stretch="Uniform" Fill="{DynamicResource PrimaryTextBrush}" Data="F1 M 19.433594 7.304688 C 19.21875 7.519531 19.008789 7.716472 18.803711 7.895508 C 18.598633 8.074545 18.387043 8.225912 18.168945 8.349609 C 17.950846 8.473308 17.713215 8.569336 17.456055 8.637695 C 17.198893 8.706055 16.907551 8.740234 16.582031 8.740234 C 16.360676 8.740234 16.149088 8.720703 15.947266 8.681641 L 12.246094 12.382812 C 12.330729 12.630209 12.392578 12.884115 12.431641 13.144531 C 12.470703 13.404948 12.490234 13.665365 12.490234 13.925781 C 12.490234 14.348959 12.447916 14.733073 12.363281 15.078125 C 12.278646 15.423178 12.156575 15.748698 11.99707 16.054688 C 11.837564 16.360678 11.64388 16.65202 11.416016 16.928711 C 11.18815 17.205404 10.930989 17.486979 10.644531 17.773438 L 6.875 14.003906 L 1.328125 19.560547 L 0 20 L 0.439453 18.671875 L 5.996094 13.125 L 2.226562 9.355469 L 2.666016 8.916016 C 3.121745 8.460287 3.644206 8.111979 4.233398 7.871094 C 4.822591 7.630209 5.439453 7.509766 6.083984 7.509766 C 6.617838 7.509766 7.128906 7.591146 7.617188 7.753906 L 11.318359 4.052734 C 11.279297 3.850912 11.259766 3.639324 11.259766 3.417969 C 11.259766 3.098959 11.293945 2.810873 11.362305 2.553711 C 11.430664 2.296551 11.526692 2.057293 11.650391 1.835938 C 11.774088 1.614584 11.925455 1.401367 12.104492 1.196289 C 12.283528 0.991211 12.480469 0.78125 12.695312 0.566406 Z M 16.582031 7.490234 C 16.940104 7.490235 17.278645 7.4056 17.597656 7.236328 L 12.763672 2.402344 C 12.5944 2.721355 12.509765 3.059896 12.509766 3.417969 C 12.509765 3.600262 12.530924 3.77116 12.573242 3.930664 C 12.61556 4.09017 12.66276 4.254558 12.714844 4.423828 L 7.910156 9.21875 C 7.747396 9.153646 7.594401 9.091797 7.451172 9.033203 C 7.307942 8.974609 7.164713 8.925781 7.021484 8.886719 C 6.878255 8.847656 6.730143 8.816732 6.577148 8.793945 C 6.424153 8.771159 6.259766 8.759766 6.083984 8.759766 C 5.712891 8.759766 5.35319 8.813477 5.004883 8.920898 C 4.656575 9.02832 4.332682 9.186198 4.033203 9.394531 L 10.605469 15.966797 C 10.813802 15.667318 10.973307 15.343425 11.083984 14.995117 C 11.194661 14.646811 11.25 14.290365 11.25 13.925781 C 11.25 13.75 11.238606 13.585612 11.21582 13.432617 C 11.193033 13.279623 11.160481 13.129883 11.118164 12.983398 C 11.075846 12.836914 11.025391 12.692058 10.966797 12.548828 C 10.908203 12.4056 10.846354 12.252604 10.78125 12.089844 L 15.576172 7.285156 C 15.745442 7.33724 15.90983 7.38444 16.069336 7.426758 C 16.22884 7.469076 16.399738 7.490235 16.582031 7.490234 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Grid>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -516,58 +516,10 @@
                 </CheckBox.Style>
             </CheckBox>
 
-            <Button Command="{Binding CmdGoMinimize}" 
-                    Width="35" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
-                    Style="{StaticResource ButtonBarPrimaryStyle}">
-                <Rectangle Width="15" Height="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" />
-            </Button>
 
-            <Button Command="{Binding CmdGoMaximize}"
-                    Width="35" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
-                    >
-                <Button.InputBindings>
-                    <MouseBinding Gesture="RightClick" Command="{Binding CmdGoMaximizeF11}" />
-                </Button.InputBindings>
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                        <Setter Property="Visibility" Value="Visible"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <Grid>
-                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z " Stretch="Uniform">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                        <Setter Property="Visibility" Value="Hidden"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
-
-                    <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Height="15" Width="15" Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z" Stretch="Uniform">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
-                </Grid>
-            </Button>
 
             <Button Command="{Binding CmdHostGoFullScreen}"
-                    Width="35" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
+                    Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
                     >
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -590,28 +542,87 @@
 
             <Button ToolTip="{DynamicResource 'Close all'}" 
                     Command="{Binding CmdCloseAll}" 
-                    Width="35" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
+                    Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
                     Style="{StaticResource ButtonBarPrimaryStyle}"
                     attachProperty:VisionElement.ForegroundAccent="White"
                     attachProperty:VisionElement.BackgroundAccent="Red"
                     attachProperty:VisionElement.ForegroundOnMouseDown="White"
                     attachProperty:VisionElement.BackgroundOnMouseDown="Red"
                     Visibility="{Binding BtnCloseAllVisibility}">
-                <Grid Width="15" Height="15">
+                <Grid Height="15" Width="15">
                     <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z "
                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </Button>
 
+            <Button Command="{Binding CmdGoMinimize}" 
+                    Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
+                    Style="{StaticResource ButtonBarPrimaryStyle}">
+                <Rectangle Width="10" Height="1" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" StrokeThickness="0.5" />
+            </Button>
+
+            <Button Command="{Binding CmdGoMaximize}"
+                    Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
+                    >
+                <Button.InputBindings>
+                    <MouseBinding Gesture="RightClick" Command="{Binding CmdGoMaximizeF11}" />
+                </Button.InputBindings>
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Grid>
+                    <Path Height="10" Width="10"
+                          StrokeThickness="0.5" 
+                          Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                          Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                          Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
+                          Stretch="Uniform">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+
+                    <Path Height="10" Width="10"
+                          StrokeThickness="1" 
+                          Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                          Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
+                          Stretch="Uniform">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+                </Grid>
+            </Button>
+
             <Button ToolTip="{DynamicResource Close}" 
-                    Width="35" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
+                    Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
                     Command="{Binding CmdClose}" 
                     Style="{StaticResource ButtonBarPrimaryStyle}"
                     attachProperty:VisionElement.ForegroundAccent="White"
                     attachProperty:VisionElement.BackgroundAccent="Red"
                     attachProperty:VisionElement.ForegroundOnMouseDown="White"
                     attachProperty:VisionElement.BackgroundOnMouseDown="Red">
-                <Path Height="15" Width="15"
+                <Path Height="10" Width="10"
                       StrokeThickness="0.5" 
                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                       Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
@@ -619,6 +630,7 @@
                       Stretch="Uniform">
                 </Path>
             </Button>
+
         </StackPanel>
 
         <ContentControl s:View.Model="{Binding TopLevelViewModel}"></ContentControl>
