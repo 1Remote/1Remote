@@ -338,10 +338,8 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/PRM.sln.DotSettings
 /scripts/Test-Sandbox_Temp
-/PRemoteM/Resources/vncviewer.ico
-/PRemoteM/zlib.NET
 /*.DotSettings
 /Ui/Resources/Languages/glossary_backup.csv
 /Ui/Properties/launchSettings.json
+/Ui/Resources/PuTTY
