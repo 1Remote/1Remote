@@ -125,7 +125,7 @@ namespace _1RM.Service
                         true => PingStatus.Success,
                         _ => PingStatus.Failed
                     };
-                    Task.Delay(200, cts.Token).Wait(cts.Token); // 避免界面关闭太快，根本看不清
+                    Thread.Sleep(200); // To avoid the UI closing too quickly, making it hard to see.
                     return ret;
                 }, cts.Token));
             }
@@ -136,7 +136,11 @@ namespace _1RM.Service
                 for (int i = 0; i < maxWaitSeconds; i++)
                 {
                     dlg.Eta = maxWaitSeconds - i;
-                    Task.Delay(1000, cts.Token).Wait(cts.Token);
+                    if (cts.Token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1000);
                 }
 
                 bool? ret = null;
@@ -157,7 +161,7 @@ namespace _1RM.Service
                     break;
                 }
                 var completedTask = await Task.WhenAny(ts);
-                if (completedTask.IsCanceled == false && completedTask?.Result == true)
+                if (completedTask.IsCanceled == false && completedTask.Result == true)
                 {
                     completedTaskIndex = tasks.IndexOf(completedTask);
                     SimpleLogHelper.DebugInfo($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
@@ -172,8 +176,7 @@ namespace _1RM.Service
             {
                 try
                 {
-                    cts.Cancel();
-                    Task.WaitAll(tasks.ToArray());
+                    await cts.CancelAsync();
                 }
                 catch (Exception)
                 {
