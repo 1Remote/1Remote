@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
-using _1RM.View.ServerList;
 using Shawn.Utils;
 using Stylet;
 using _1RM.View.Utils;
@@ -271,10 +270,9 @@ namespace _1RM.Service
             var connectableAddress = await FindFirstConnectableAddressAsync(credentials, protocol.DisplayName);
             if (connectableAddress != null)
             {
+                newCredential = connectableAddress.CloneMe();
                 if (protocol.DisplayName != connectableAddress.Name)
                     newCredential.Name = $"{protocol.DisplayName} ({connectableAddress.Name})";
-                newCredential.SetAddress(connectableAddress);
-                newCredential.SetPort(connectableAddress);
                 return newCredential;
             }
             return null;
