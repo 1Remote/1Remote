@@ -57,9 +57,9 @@ namespace _1RM.Service
             //ProtocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Built-in AxMsRdpClient", RDP.ProtocolName));
             //ProtocolConfigs[RDP.ProtocolName].Runners.Add(new Runner("Mstsc.exe", RDP.ProtocolName));
             ProtocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(VNC.ProtocolName), $"Built-in VNC"));
-            ProtocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(SSH.ProtocolName), $"Built-in KiTTY"));
-            ProtocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(Telnet.ProtocolName), $"Built-in KiTTY"));
-            ProtocolConfigs.Add(Serial.ProtocolName, InitProtocol(protocolFolderName, new Serial(), new KittyRunner(Serial.ProtocolName), $"Built-in KiTTY"));
+            ProtocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new PuttyRunner(SSH.ProtocolName), PuttyRunner.Name));
+            ProtocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new PuttyRunner(Telnet.ProtocolName), PuttyRunner.Name));
+            ProtocolConfigs.Add(Serial.ProtocolName, InitProtocol(protocolFolderName, new Serial(), new PuttyRunner(Serial.ProtocolName), PuttyRunner.Name));
             ProtocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(SFTP.ProtocolName), $"Built-in SFTP"));
             ProtocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(FTP.ProtocolName), $"Built-in FTP"));
 
@@ -254,11 +254,14 @@ namespace _1RM.Service
                         });
                 }
             }
-            if (c.Runners.FirstOrDefault() is InternalDefaultRunner == false)
+
+            if (c.Runners.FirstOrDefault() is InternalDefaultRunner == false
+                || c.Runners.FirstOrDefault()?.Name != defaultRunnerName)
             {
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
                 c.Runners.Insert(0, defaultRunner);
             }
+
             // 最后赋值，确保无论是从配置加载的还是上面初始化的 InternalDefaultRunner 名称正确
             c.Runners.First(x => x is InternalDefaultRunner).Name = defaultRunnerName;
             return c;

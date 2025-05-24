@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
@@ -77,6 +79,17 @@ namespace _1RM.Model.Protocol.Base
         {
             get => _displayName;
             set => SetAndNotifyIfChanged(ref _displayName, value);
+        }
+
+        /// <summary>
+        /// 会话的ID
+        /// </summary>
+        [JsonIgnore]
+        public string SessionId { get; private set; } = "";
+
+        public void GenerateSessionId()
+        {
+            SessionId = $"{Assert.APP_NAME}_{Protocol}_{Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
         }
 
         [JsonIgnore]
@@ -184,9 +197,18 @@ namespace _1RM.Model.Protocol.Base
         public string SelectedRunnerName
         {
             get => _selectedRunnerName;
-            set => SetAndNotifyIfChanged(ref _selectedRunnerName, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _selectedRunnerName, value))
+                {
+                    var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), this, this.Protocol);
+                    RaisePropertyChanged(nameof(SelectedRunnerIsInternalRunner));
+                }
+            }
         }
 
+        [JsonIgnore] 
+        public bool SelectedRunnerIsInternalRunner => RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), this, this.Protocol) is InternalDefaultRunner;
 
         /// <summary>
         /// copy all value type fields
@@ -379,16 +401,7 @@ namespace _1RM.Model.Protocol.Base
                 MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script after disconnected"));
             }
         }
-
-        /// <summary>
-        /// run before connect, decrypt all fields
-        /// </summary>
-        public virtual void ConnectPreprocess()
-        {
-            var s = this;
-            s.DecryptToConnectLevel();
-        }
-
+        
         public static List<ProtocolBase> GetAllSubInstance()
         {
             var assembly = typeof(ProtocolBase).Assembly;
@@ -411,7 +424,7 @@ namespace _1RM.Model.Protocol.Base
         public DataSourceBase? DataSource { get; set; }
 
         /// <summary>
-        /// build the id for host
+        /// build the id for host, ConnectionId internal id while session id is the outer id
         /// </summary>
         /// <returns></returns>
         public virtual string BuildConnectionId()

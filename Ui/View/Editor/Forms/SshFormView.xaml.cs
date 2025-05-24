@@ -5,8 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using _1RM.Model.Protocol;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY;
-using _1RM.Utils.KiTTY.Model;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
+using _1RM.Utils.PuTTY.Model;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms

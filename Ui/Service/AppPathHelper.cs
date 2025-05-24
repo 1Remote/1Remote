@@ -51,7 +51,8 @@ namespace _1RM.Service
         #region Remoting
         public string ProfileJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".json");
         public string ProfileAdditionalDataSourceJsonPath => Path.Combine(BaseDirPath, Assert.APP_NAME + ".dataSources.json");
-        public string KittyDirPath => Path.Combine(BaseDirPathForLocality, "kitty");
+        public string KittyDirPath => Path.Combine(BaseDirPathForLocality, "KiTTY");
+        public string PuttyDirPath => Path.Combine(BaseDirPathForLocality, "PuTTY");
         public string SqliteDbDefaultPath => Path.Combine(BaseDirPath, $"{Assert.APP_NAME}.db");
         public string ProtocolRunnerDirPath => Path.Combine(BaseDirPath, "Protocols");
         #endregion
@@ -62,7 +63,5 @@ namespace _1RM.Service
         public string LocalityDirPath => Path.Combine(BaseDirPathForLocality, ".locality");
         public string LocalityIconDirPath => Path.Combine(BaseDirPathForLocality, ".icons");
         #endregion
-
-
     }
 }

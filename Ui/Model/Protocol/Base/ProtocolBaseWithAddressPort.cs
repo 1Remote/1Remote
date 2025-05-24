@@ -132,7 +132,7 @@ namespace _1RM.Model.Protocol.Base
         }
 
         /// <summary>
-        /// build the id for host
+        /// build the id for host, TODO: DO WE STILL NEED BOTH ConnectionId and SESSIONID?
         /// </summary>
         /// <returns></returns>
         public override string BuildConnectionId()

@@ -222,6 +222,9 @@
                                                 <DataTrigger Binding="{Binding Runners.Count}" Value="0">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding Runners.Count}" Value="1">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </controls:GridWith4Columns.Style>

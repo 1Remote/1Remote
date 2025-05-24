@@ -7,3 +7,6 @@
 [submodule "Dragablz"]
 	path = Dragablz
 	url = https://github.com/1Remote/Dragablz.git
+[submodule "PuTTY"]
+	path = Ui/Resources/PuTTY
+	url = https://github.com/1Remote/PuTTY.git

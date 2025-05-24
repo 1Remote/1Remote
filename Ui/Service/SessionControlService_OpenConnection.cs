@@ -138,8 +138,11 @@ namespace _1RM.Service
             if (host == null)
                 return;
 
-            Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
-            _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+            lock (_dictLock)
+            {
+                Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
+                _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+            }
             host.OnClosed += OnRequestCloseConnection;
             host.OnFullScreen2Window += this.MoveSessionToTabWindow;
             this.MoveSessionToFullScreen(host.ConnectionId);
@@ -147,16 +150,16 @@ namespace _1RM.Service
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        public string ConnectWithTab(in ProtocolBase protocol, in Runner runner, string assignTabToken)
+        public string ConnectWithTab(in ProtocolBase protocolIn, in Runner runnerIn, string assignTabToken)
         {
             TabWindowView? tab = null;
-            ProtocolBase p = protocol;
-            Runner r = runner;
+            ProtocolBase protocol = protocolIn;
+            Runner runner = runnerIn;
             Execute.OnUIThreadSync(() =>
             {
                 lock (_dictLock)
                 {
-                    if (p.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken))
+                    if (protocol.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken))
                     {
                         assignTabToken = DateTime.Now.Ticks.ToString();
                     }
@@ -165,12 +168,12 @@ namespace _1RM.Service
                     if (tab.IsClosing) return;
                     tab.Show();
 
-                    var host = r.GetHost(p, tab);
+                    var host = runner.GetHost(protocol, tab);
                     // get display area size for host
                     Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
                     host.OnClosed += OnRequestCloseConnection;
                     host.OnFullScreen2Window += this.MoveSessionToTabWindow;
-                    tab.GetViewModel().AddItem(new TabItemViewModel(host, p.DisplayName));
+                    tab.GetViewModel().AddItem(new TabItemViewModel(host, protocol.DisplayName));
                     _connectionId2Hosts.TryAdd(host.ConnectionId, host);
                     host.Conn();
                     tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
@@ -205,7 +208,9 @@ namespace _1RM.Service
 
             // clone and decrypt!
             var protocolClone = protocol.Clone();
-            protocolClone.ConnectPreprocess();
+            protocolClone.DecryptToConnectLevel();
+            protocolClone.GenerateSessionId();
+
 
             // apply alternate credential
             {
@@ -284,7 +289,7 @@ namespace _1RM.Service
             #endregion
 
 
-            // if is OnlyOneInstance server and it is connected now, activate it and return.
+            // if is OnlyOneInstance server, and it is connected now, activate it and return.
             if (this.ActivateOrReConnIfServerSessionIsOpened(protocolClone))
                 return "";
 
