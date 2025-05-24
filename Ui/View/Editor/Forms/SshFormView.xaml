@@ -148,18 +148,19 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding New.StartupAutoCommand, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="e.g. cd /home/user/Desktop/"></TextBox>
+                                 Tag="e.g. cd /home/user/Desktop/;./build.sh;"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Style="{StaticResource EditorRowGrid}">
+
+            <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="KiTTY Session"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="PuTTY session file"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding New.ExternalKittySessionConfigPath, UpdateSourceTrigger=PropertyChanged}"
                                  ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
@@ -167,6 +168,15 @@
                         ></TextBox>
                     </Grid>
                     <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBlock Opacity="0.8" Text="Tips: You can modify the color scheme in Settings -> Protocol -> SSH -> Built-in" TextWrapping="Wrap"></TextBlock>
+                    </Grid>
                 </StackPanel>
             </Grid>
 

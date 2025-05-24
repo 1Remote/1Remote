@@ -2,14 +2,15 @@
 using System.Linq;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
 using System.Collections.Generic;
 using _1RM.Service;
+using _1RM.Utils.PuTTY;
 
 namespace _1RM.Model.Protocol
 {
-    public class Serial : ProtocolBase, IKittyConnectable
+    public class Serial : ProtocolBase, IPuttyConnectable
     {
         public static string ProtocolName = "Serial";
         public Serial() : base(Serial.ProtocolName, "Putty.Serial.V1", "Serial")
@@ -151,21 +152,12 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
-        public string GetExeArguments(string sessionName)
+        private string _externalSessionConfigPath = "";
+        public string ExternalSessionConfigPath
         {
-            // https://stackoverflow.com/questions/35411927/putty-command-line-automate-serial-commands-from-file
-            // https://documentation.help/PuTTY/using-cmdline-sercfg.html
-            // Any single digit from 5 to 9 sets the number of data bits.
-            // ‘1’, ‘1.5’ or ‘2’ sets the number of stop bits.
-            // Any other numeric string is interpreted as a baud rate.
-            // A single lower-case letter specifies the parity: ‘n’ for none, ‘o’ for odd, ‘e’ for even, ‘m’ for mark and ‘s’ for space.
-            // A single upper-case letter specifies the flow control: ‘N’ for none, ‘X’ for XON/XOFF, ‘R’ for RTS/CTS and ‘D’ for DSR/DTR.
-            // For example, ‘-sercfg 19200,8,n,1,N’ denotes a baud rate of 19200, 8 data bits, no parity, 1 stop bit and no flow control.
-            var serial = (this.Clone() as Serial)!;
-            serial.ConnectPreprocess();
-            return $@" -load ""{sessionName}"" -serial {serial.SerialPort} -sercfg {serial.BitRate},{DataBits},{GetParityFlag()},{StopBits},{GetFlowControlFlag()}";
+            get => string.IsNullOrEmpty(_externalSessionConfigPath) ? _externalKittySessionConfigPath : _externalSessionConfigPath;
+            set => SetAndNotifyIfChanged(ref _externalSessionConfigPath, value);
         }
-
 
         #region IDataErrorInfo
         [JsonIgnore]

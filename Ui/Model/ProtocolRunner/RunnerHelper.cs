@@ -10,7 +10,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
 using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -25,13 +25,12 @@ namespace _1RM.Model.ProtocolRunner
         /// </summary>
         public static Runner GetRunner(ProtocolConfigurationService protocolConfigurationService, ProtocolBase server, string protocolName, string? assignRunnerName = null)
         {
-            if (protocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+            if (protocolConfigurationService.ProtocolConfigs.TryGetValue(protocolName, out var p) == false)
             {
-                //SimpleLogHelper.Debug($"we can not custom runner for protocol: {protocolName}");
+                //SimpleLogHelper.Debug($"we can not customize runner for protocol: {protocolName}");
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var p = protocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
                 //SimpleLogHelper.Debug($"we don't have any runner for protocol: {protocolName}");
@@ -78,54 +77,85 @@ namespace _1RM.Model.ProtocolRunner
         /// <summary>
         /// return (noError?, exePath, exeArguments, environmentVariables)
         /// </summary>
-        private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this ExternalRunner runner, ProtocolBase protocol)
+        private static Tuple<bool, string, string, Dictionary<string, string>> GetStartInfo(this Runner runner, ProtocolBase protocol)
         {
-            var exePath = runner.ExePath;
+            string exePath = "";
+            string exeArguments = "";
+            var environmentVariables = new Dictionary<string, string>();
+            if (runner is ExternalRunner er)
+            {
+                exePath = er.ExePath;
+                // prepare args
+                exeArguments = er.Arguments;
+                if (runner is ExternalRunnerForSSH runnerForSsh)
+                {
+                    switch (protocol)
+                    {
+                        case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
+                        case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
+                            var pw = protocol as ProtocolBaseWithAddressPortUserPwd;
+                            // if private key is not all ascii, copy it to temp file
+                            if (pw?.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
+                            {
+                                var pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
+                                File.Copy(pw.PrivateKey, pk, true);
+                                var autoDelTask = new Task(() =>
+                                {
+                                    Thread.Sleep(30 * 1000);
+                                    try
+                                    {
+                                        if (File.Exists(pk))
+                                            File.Delete(pk);
+                                    }
+                                    catch
+                                    {
+                                        // ignored
+                                    }
+                                });
+                                autoDelTask.Start();
+                                pw.PrivateKey = pk;
+                            }
+                            exeArguments = runnerForSsh.ArgumentsForPrivateKey;
+                            break;
+                    }
+                }
+
+                // make environment variables
+                foreach (var kv in er.EnvironmentVariables)
+                {
+                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
+                }
+            }
+            else if (runner is InternalExeRunner ir)
+            {
+                exePath = ir.GetExeInstallPath(); // TODO: WHAT IF A CUSTOM EXE PATH?
+                var check = WinCmdRunner.CheckFileExistsAndFullName(exePath);
+                if (check.Item1 == false)
+                {
+                    ir.Install();
+                }
+                exeArguments = ir.GetExeArguments(protocol);
+            }
+            else
+            {
+                SimpleLogHelper.Error($"GetStartInfo: Runner '{runner.Name}' is not supported!");
+                return new Tuple<bool, string, string, Dictionary<string, string>>(false, "", "",
+                    new Dictionary<string, string>());
+            }
+
+            // check exe path exists
             var tmp = WinCmdRunner.CheckFileExistsAndFullName(exePath);
             if (tmp.Item1 == false)
             {
-                MessageBoxHelper.ErrorAlert($"Exe file '{runner.ExePath}' of runner '{runner.Name}' does not existed!");
+                MessageBoxHelper.ErrorAlert($"Exe file '{exePath}' of runner '{runner.Name}' does not existed!");
                 return new Tuple<bool, string, string, Dictionary<string, string>>(false, "", "",
                     new Dictionary<string, string>());
             }
             exePath = tmp.Item2;
 
-            // prepare args
-            var exeArguments = runner.Arguments;
-            if (runner is ExternalRunnerForSSH runnerForSsh)
-            {
-                switch (protocol)
-                {
-                    case SSH ssh when string.IsNullOrEmpty(ssh.PrivateKey) == false:
-                    case SFTP sftp when string.IsNullOrEmpty(sftp.PrivateKey) == false:
-                        var pw = protocol as ProtocolBaseWithAddressPortUserPwd;
-                        // if private key is not all ascii, copy it to temp file
-                        if (pw?.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
-                        {
-                            var pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
-                            File.Copy(pw.PrivateKey, pk, true);
-                            var autoDelTask = new Task(() =>
-                            {
-                                Thread.Sleep(30 * 1000);
-                                try
-                                {
-                                    if (File.Exists(pk))
-                                        File.Delete(pk);
-                                }
-                                catch
-                                {
-                                    // ignored
-                                }
-                            });
-                            autoDelTask.Start();
-                            pw.PrivateKey = pk;
-                        }
-                        exeArguments = runnerForSsh.ArgumentsForPrivateKey;
-                        break;
-                }
-            }
 
-            if (protocol is ProtocolBaseWithAddressPortUserPwd ppwd)
+            // prepare args
+            if (protocol is ProtocolBaseWithAddressPortUserPwd withAddressPortUserPwd)
             {
                 // Percent-encoding, some password may contain special characters, SFTP\XFTP need to encode them.
                 // see: https://github.com/1Remote/1Remote/issues/673
@@ -143,23 +173,10 @@ namespace _1RM.Model.ProtocolRunner
                 };
                 foreach (var kv in specialCharacters)
                 {
-                    ppwd.Password = ppwd.Password.Replace(kv.Key, kv.Value);
+                    withAddressPortUserPwd.Password = withAddressPortUserPwd.Password.Replace(kv.Key, kv.Value);
                 }
             }
-
-
-            // SSH_PRIVATE_KEY_PATH 改名为 1RM_PRIVATE_KEY_PATH 2023年10月12日，TODO 一年后删除此代码
-            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%"));
-
-            // make environment variables
-            var environmentVariables = new Dictionary<string, string>();
-            {
-                foreach (var kv in runner.EnvironmentVariables)
-                {
-                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
-                }
-            }
-
+            exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments);
             return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }
 
@@ -167,10 +184,20 @@ namespace _1RM.Model.ProtocolRunner
         {
             Debug.Assert(runner.IsRunWithoutHosting() == false);
 
-            // custom runner
             if (runner is ExternalRunner er)
             {
+                // custom runner
                 var (isOk, exePath, exeArguments, environmentVariables) = er.GetStartInfo(protocol);
+                if (isOk)
+                {
+                    var integrateHost = IntegrateHost.Create(protocol, runner, exePath, exeArguments, environmentVariables);
+                    return integrateHost;
+                }
+            }
+            if (runner is InternalExeRunner ir)
+            {
+                // default runner
+                var (isOk, exePath, exeArguments, environmentVariables) = ir.GetStartInfo(protocol);
                 if (isOk)
                 {
                     var integrateHost = IntegrateHost.Create(protocol, runner, exePath, exeArguments, environmentVariables);
@@ -185,12 +212,6 @@ namespace _1RM.Model.ProtocolRunner
                     {
                         var size = tab?.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex) == true);
                         return AxMsRdpClient09Host.Create(rdp, (int)(size?.Width ?? 0), (int)(size?.Height ?? 0));
-                    }
-                case IKittyConnectable kittyConnectable:
-                    {
-                        var kittyRunner = runner is KittyRunner kitty ? kitty : new KittyRunner(protocol.ProtocolDisplayName);
-                        var ih = IntegrateHost.Create(protocol, kittyRunner, kittyRunner.PuttyExePath, "");
-                        return ih;
                     }
                 case VNC vnc:
                     {
@@ -209,8 +230,10 @@ namespace _1RM.Model.ProtocolRunner
                         return IntegrateHost.Create(app, runner, app.GetExePath(), app.GetArguments(false));
                     }
                 default:
-                    throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented");
+                    break;
             }
+            SimpleLogHelper.Fatal($"Host of {protocol.GetType()} is not implemented, or the runner ${runner.Name} is not supported");
+            throw new NotImplementedException($"Host of {protocol.GetType()} is not implemented, or the ${runner.Name} is not supported");
         }
     }
 }

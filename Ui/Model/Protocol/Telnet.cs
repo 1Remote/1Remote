@@ -1,12 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol.Base;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
 
 namespace _1RM.Model.Protocol
 {
-    public class Telnet : ProtocolBaseWithAddressPort, IKittyConnectable
+    public class Telnet : ProtocolBaseWithAddressPort, IPuttyConnectable
     {
         public static string ProtocolName = "Telnet";
         public Telnet() : base(Telnet.ProtocolName, "Putty.Telnet.V1", "Telnet")
@@ -56,11 +57,13 @@ namespace _1RM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
-        public string GetExeArguments(string sessionName)
+
+
+        private string _externalSessionConfigPath = "";
+        public string ExternalSessionConfigPath
         {
-            var tel = (this.Clone() as Telnet)!;
-            tel.ConnectPreprocess();
-            return $@" -load ""{sessionName}"" -telnet {tel.Address} -P {tel.Port}";
+            get => string.IsNullOrEmpty(_externalSessionConfigPath) ? _externalKittySessionConfigPath : _externalSessionConfigPath;
+            set => SetAndNotifyIfChanged(ref _externalSessionConfigPath, value);
         }
     }
 }

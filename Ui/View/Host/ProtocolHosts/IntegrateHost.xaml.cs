@@ -15,7 +15,9 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Utils;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
+using _1RM.Utils.PuTTY;
 using Shawn.Utils;
 using Stylet;
 using Path = System.IO.Path;
@@ -181,11 +183,11 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly System.Windows.Forms.Panel _panel;
         private readonly HashSet<IntPtr> _exeHandles = new();
         public readonly string ExeFullName;
-        public string ExeArguments { get; private set; }
+        public string ExeArguments { get; init; }
         private readonly Dictionary<string, string> _environmentVariables;
         private readonly Runner _runner;
-        private readonly string _sessionName = "";
-
+        private readonly string _sessionId = "";
+ 
         public static IntegrateHost Create(ProtocolBase protocol, Runner runner, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null)
         {
             IntegrateHost? view = null;
@@ -200,6 +202,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
+            _sessionId = protocol.SessionId;
             _runner = runner;
             _environmentVariables = environmentVariables ?? new Dictionary<string, string>();
             InitializeComponent();
@@ -208,17 +211,29 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 BackColor = System.Drawing.Color.Transparent,
                 Dock = System.Windows.Forms.DockStyle.Fill,
-                BorderStyle = BorderStyle.None
+                BorderStyle = BorderStyle.None,
             };
             _panel.SizeChanged += PanelOnSizeChanged;
 
             FormsHost.Child = _panel;
 
 
-            if (runner is KittyRunner kittyRunner)
+            if (runner is PuttyRunner)
             {
-                _sessionName = $"{Assert.APP_NAME}_{protocol.Protocol}_{protocol.Id}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
-                RunAfterConnected += () => PuttyConnectableExtension.DelKittySessionConfig(_sessionName, kittyRunner.PuttyExePath);
+                RunAfterConnected += () =>
+                {
+                    try
+                    {
+                        PuttyConfig.CleanUpOldConfig();
+                        var path = PuttyRunner.GetAutoCommandFilePath(ProtocolServer);
+                        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                            File.Delete(path);
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                };
             }
         }
 
@@ -376,37 +391,12 @@ namespace _1RM.View.Host.ProtocolHosts
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
 
-            if (ProtocolServer is IKittyConnectable kittyConnectable && _runner is KittyRunner kittyRunner)
+            if (ProtocolServer is IPuttyConnectable kittyConnectable && _runner is PuttyRunner putty)
             {
-                // KITTY 需要根据 _sessionName 配置 cli 命令参数，所以在 start 时重新计算 cli 参数。
-                ExeArguments = kittyConnectable.GetExeArguments(_sessionName);
-                if (ProtocolServer is ProtocolBaseWithAddressPortUserPwd { UsePrivateKeyForConnect: true } pw && string.IsNullOrEmpty(pw.PrivateKey) == false)
-                {
-                    var pk = pw.PrivateKey;
-                    // if private key is not all ascii, copy it to temp file
-                    if (pw.IsPrivateKeyAllAscii() == false && File.Exists(pw.PrivateKey))
-                    {
-                        pk = Path.Combine(Path.GetTempPath(), new FileInfo(pw.PrivateKey).Name);
-                        File.Copy(pw.PrivateKey, pk, true);
-                        var autoDelTask = new Task(() =>
-                        {
-                            Thread.Sleep(30 * 1000);
-                            try
-                            {
-                                if (File.Exists(pk))
-                                    File.Delete(pk);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
-                        });
-                        autoDelTask.Start();
-                    }
-                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, pk);
-                }
-                else
-                    kittyConnectable.ConfigKitty(_sessionName, kittyRunner, "");
+                if (PuttyRunner.GetAutoCommandFilePath(ProtocolServer) != "")
+                    putty.SaveAutoCommandFile(ProtocolServer, 30); // save auto command file
+                var sshPrivateKeyPath = putty.GetPrivateKeyPath(ProtocolServer); // prepare ssh key path
+                putty.ConfigPutty(kittyConnectable, _sessionId, sshPrivateKeyPath);
             }
 
             if (Path.IsPathRooted(exeFullName)
@@ -448,7 +438,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(5 * 1000);
+                Thread.Sleep(10 * 1000);
                 RunAfterConnected?.Invoke();
             });
 
@@ -464,9 +454,8 @@ namespace _1RM.View.Host.ProtocolHosts
                     return;
                 }
                 else if (_process.MainWindowHandle != IntPtr.Zero
-                    && _exeHandles.Contains(_process.MainWindowHandle) == false)
+                    && _exeHandles.Add(_process.MainWindowHandle) != false)
                 {
-                    _exeHandles.Add(_process.MainWindowHandle);
                     SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");
                     SetExeWindowStyle();
                 }

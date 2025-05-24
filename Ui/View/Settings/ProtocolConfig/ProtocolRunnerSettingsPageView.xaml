@@ -132,6 +132,11 @@
                 <protocolConfig:KittyRunnerSettings Runner="{Binding}"></protocolConfig:KittyRunnerSettings>
             </DataTemplate>
 
+
+            <DataTemplate DataType="{x:Type default:PuttyRunner}">
+                <protocolConfig:PuttyRunnerSettings Runner="{Binding}"></protocolConfig:PuttyRunnerSettings>
+            </DataTemplate>
+
             <protocolConfig:ConverterExternalRunner2Vm x:Key="ExternalRunner2Vm"></protocolConfig:ConverterExternalRunner2Vm>
 
 

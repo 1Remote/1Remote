@@ -1,6 +1,6 @@
-﻿namespace _1RM.Utils.KiTTY
+﻿namespace _1RM.Utils.PuTTY
 {
-    public enum EnumKittyConfigKey
+    public enum EnumConfigKey
     {
         #region Enum
 

@@ -356,6 +356,7 @@
         <Resource Include="Resources\Image\Logo\logo64.png" />
         <Resource Include="Resources\KiTTY\kitty_portable.exe" />
         <Resource Include="Resources\KiTTY\PuttyThemes.json" />
+        <Resource Include="Resources\PuTTY\putty.exe" />
         <Resource Include="View\Guidance\Resources\demo.png" />
         <Resource Include="View\Guidance\Resources\launcher_main1.png" />
     </ItemGroup>

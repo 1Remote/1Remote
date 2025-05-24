@@ -4,17 +4,26 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using _1RM.Utils.KiTTY;
+using _1RM.Utils.PuTTY;
+using _1RM.Utils.PuTTY.Model;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using _1RM.Model.Protocol.Base;
+using _1RM.Model.Protocol;
+using System.Text.RegularExpressions;
+using _1RM.Service;
+using Microsoft.Win32;
+using Shawn.Utils;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
-    public class KittyRunner : InternalDefaultRunner
+    [Obsolete]
+    public class KittyRunner : InternalExeRunner
     {
-        public new static string Name = "Internal KiTTY";
+        public new static string Name = "Built-in KiTTY";
 
         [JsonConstructor]
+        [Obsolete]
         public KittyRunner(string ownerProtocolName) : base(ownerProtocolName)
         {
             base._name = Name;
@@ -106,9 +115,9 @@ namespace _1RM.Model.ProtocolRunner.Default
         }
 
         private string _puttyExePath = "";
-        public string PuttyExePath
+        public string ExePath
         {
-            get => (File.Exists(_puttyExePath) ? _puttyExePath : PuttyConnectableExtension.GetInternalKittyExeFullName()).Replace(Environment.CurrentDirectory, ".");
+            get => (File.Exists(_puttyExePath) ? _puttyExePath : PuttyConfig.GetInternalPuttyExeFullName()).Replace(Environment.CurrentDirectory, ".");
             set => SetAndNotifyIfChanged(ref _puttyExePath, value.Replace(Environment.CurrentDirectory, "."));
         }
 
@@ -124,7 +133,7 @@ namespace _1RM.Model.ProtocolRunner.Default
                     string? initPath = null;
                     try
                     {
-                        initPath = new FileInfo(PuttyExePath).DirectoryName;
+                        initPath = new FileInfo(ExePath).DirectoryName;
                     }
                     catch
                     {
@@ -134,9 +143,148 @@ namespace _1RM.Model.ProtocolRunner.Default
 
                     var path = SelectFileHelper.OpenFile(filter: "exe|*.exe", checkFileExists: true, initialDirectory: initPath);
                     if (path == null) return;
-                    PuttyExePath = path;
+                    ExePath = path;
                 });
             }
+        }
+
+        public override void Install(string path = "")
+        {
+            if (string.IsNullOrEmpty(path))
+                path = GetExeInstallPath();
+            _1RM.Utils.PuTTY.Model.Utils.Install("Resources/KiTTY/kitty_portable.exe", path);
+            KittyConfig.WriteKittyDefaultConfig(path);
+        }
+
+        public override string GetExeInstallPath()
+        {
+            string exeName = $"kitty_portable_{Assert.APP_NAME}.exe";
+            if (!Directory.Exists(AppPathHelper.Instance.KittyDirPath))
+                Directory.CreateDirectory(AppPathHelper.Instance.KittyDirPath);
+            var kittyExeFullName = Path.Combine(AppPathHelper.Instance.KittyDirPath, exeName);
+            return kittyExeFullName;
+        }
+
+
+        private static bool ValidateIPv6(string ipAddress)
+        {
+            string pattern = @"^([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}$";
+            Regex regex = new Regex(pattern);
+
+            return regex.IsMatch(ipAddress);
+        }
+
+        public override string GetExeArguments(ProtocolBase protocol)
+        {
+            var p = (protocol.Clone() as ProtocolBase)!;
+            if (p is ProtocolBaseWithAddressPortUserPwd)
+            {
+                p.DecryptToConnectLevel();
+            }
+
+            if (p is SSH ssh)
+            {
+                //var arg = $@" -load ""{ssh.SessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}""";
+                //var template = $@" -load ""{this.GetSessionId()}"" %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+                //var arg = OtherNameAttributeExtensions.Replace(ssh, template);
+                var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
+                var arg = $""" -load "{protocol.SessionId}" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd "{ssh.StartupAutoCommand}" {ipv6}""";
+                return " " + arg;
+            }
+
+            if (p is Telnet tel)
+            {
+                return $""" -load "{protocol.SessionId}" -telnet {tel.Address} -P {tel.Port}""";
+            }
+
+            if (p is Serial serial)
+            {
+                // https://stackoverflow.com/questions/35411927/putty-command-line-automate-serial-commands-from-file
+                // https://documentation.help/PuTTY/using-cmdline-sercfg.html
+                // Any single digit from 5 to 9 sets the number of data bits.
+                // ‘1’, ‘1.5’ or ‘2’ sets the number of stop bits.
+                // Any other numeric string is interpreted as a baud rate.
+                // A single lower-case letter specifies the parity: ‘n’ for none, ‘o’ for odd, ‘e’ for even, ‘m’ for mark and ‘s’ for space.
+                // A single upper-case letter specifies the flow control: ‘N’ for none, ‘X’ for XON/XOFF, ‘R’ for RTS/CTS and ‘D’ for DSR/DTR.
+                // For example, ‘-sercfg 19200,8,n,1,N’ denotes a baud rate of 19200, 8 data bits, no parity, 1 stop bit and no flow control.
+                serial.DecryptToConnectLevel();
+                return $""" -load "{protocol.SessionId}" -serial {serial.SerialPort} -sercfg {serial.BitRate},{serial.DataBits},{serial.GetParityFlag()},{serial.StopBits},{serial.GetFlowControlFlag()}""";
+            }
+            throw new NotSupportedException($"The protocol type {p.GetType()} is not supported for PuttyRunner.");
+        }
+
+
+        [Obsolete]
+        public void ConfigKitty(IPuttyConnectable IPuttyConnectable, string sessionId, string sshPrivateKeyPath)
+        {
+            var kittyRunner = this;
+            // install kitty if `kittyRunner.PuttyExePath` not exists
+            if (string.IsNullOrEmpty(kittyRunner.ExePath) || File.Exists(kittyRunner.ExePath) == false)
+            {
+                kittyRunner.ExePath = GetExeInstallPath();
+                if (File.Exists(kittyRunner.ExePath) == false)
+                    Install();
+            }
+            KittyConfig.WriteKittyDefaultConfig(kittyRunner.ExePath);
+
+            // create session config
+            var puttyOption = new KittyConfig(sessionId);
+            puttyOption.Set(EnumConfigKey.LineCodePage, kittyRunner.GetLineCodePageForIni());
+            puttyOption.ApplyOverwriteSession(IPuttyConnectable.ExternalKittySessionConfigPath);
+
+            if (IPuttyConnectable is SSH server)
+            {
+                if (!string.IsNullOrEmpty(sshPrivateKeyPath))
+                {
+                    // set key
+                    puttyOption.Set(EnumConfigKey.PublicKeyFile, sshPrivateKeyPath);
+                }
+                puttyOption.Set(EnumConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumConfigKey.Protocol, "ssh");
+            }
+            if (IPuttyConnectable is Serial serial)
+            {
+                puttyOption.Set(EnumConfigKey.BackspaceIsDelete, 0);
+                puttyOption.Set(EnumConfigKey.LinuxFunctionKeys, 4);
+
+                //SerialLine\COM1\
+                //SerialSpeed\9600\
+                //SerialDataBits\8\
+                //SerialStopHalfbits\2\
+                //SerialParity\0\
+                //SerialFlowControl\1\
+                puttyOption.Set(EnumConfigKey.Protocol, "serial");
+                puttyOption.Set(EnumConfigKey.SerialLine, serial.SerialPort);
+                puttyOption.Set(EnumConfigKey.SerialSpeed, serial.GetBitRate());
+                puttyOption.Set(EnumConfigKey.SerialDataBits, serial.DataBits);
+                puttyOption.Set(EnumConfigKey.SerialStopHalfbits, serial.StopBits);
+                puttyOption.Set(EnumConfigKey.SerialParity, serial.Parity);
+                puttyOption.Set(EnumConfigKey.SerialFlowControl, serial.FlowControl);
+            }
+
+            // set theme
+            var options = PuttyThemes.Themes[kittyRunner.PuttyThemeName];
+            foreach (var option in options)
+            {
+                try
+                {
+                    if (Enum.TryParse(option.Key, out EnumConfigKey key))
+                    {
+                        if (option.ValueKind == RegistryValueKind.DWord)
+                            puttyOption.Set(key, (int)(option.Value));
+                        else
+                            puttyOption.Set(key, (string)option.Value);
+                    }
+                }
+                catch (Exception)
+                {
+                    SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                }
+            }
+
+            puttyOption.Set(EnumConfigKey.FontHeight, kittyRunner.PuttyFontSize);
+            puttyOption.SaveToKittyConfig(kittyRunner.ExePath);
         }
     }
 }

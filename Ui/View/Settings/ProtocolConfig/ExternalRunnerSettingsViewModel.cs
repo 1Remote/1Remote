@@ -74,13 +74,25 @@ public class ExternalRunnerSettingsViewModel
             }
 
 
+
             if (string.IsNullOrEmpty(ExternalRunner.Arguments)
                 && ExternalRunner.OwnerProtocolName == SSH.ProtocolName
-                && (name.IndexOf("kitty", StringComparison.OrdinalIgnoreCase) >= 0
-                    || name.IndexOf("putty", StringComparison.OrdinalIgnoreCase) >= 0
-                ))
+                && name.IndexOf("kitty", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 ExternalRunner.Arguments = @"-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""";
+                if (ExternalRunner is ExternalRunnerForSSH ers)
+                {
+                    // NOT SUPPORTED
+                    ers.ArgumentsForPrivateKey = @"";
+                }
+                ExternalRunner.RunWithHosting = true;
+            }
+
+            if (string.IsNullOrEmpty(ExternalRunner.Arguments)
+                && ExternalRunner.OwnerProtocolName == SSH.ProtocolName
+                && name.IndexOf("putty", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                ExternalRunner.Arguments = @"-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION%";
                 if (ExternalRunner is ExternalRunnerForSSH ers)
                 {
                     // NOT SUPPORTED
