@@ -90,14 +90,6 @@ namespace _1RM.View.Settings.DataSource
                                 dataSource = vm.New;
                                 break;
                             }
-                        case "postgresql":
-                            {
-                                var vm = new PgsqlSettingViewModel(this);
-                                if (MaskLayerController.ShowDialogWithMask(vm, doNotHideMaskIfReturnTrue: true, ownerViewModel: IoC.Get<MainWindowViewModel>()) != true)
-                                    return;
-                                dataSource = vm.New;
-                                break;
-                            }
                         default:
                             throw new ArgumentOutOfRangeException($"{type} is not a vaild type");
                     }
@@ -140,7 +132,6 @@ namespace _1RM.View.Settings.DataSource
                     {
                         SqliteSource sqliteConfig => new SqliteSettingViewModel(this, sqliteConfig),
                         MysqlSource mysqlConfig => new MysqlSettingViewModel(this, mysqlConfig),
-                        PgsqlSource pgsqlConfig => new PgsqlSettingViewModel(this, pgsqlConfig),
                         _ => throw new NotSupportedException($"{o?.GetType()} is not a supported type")
                     };
 

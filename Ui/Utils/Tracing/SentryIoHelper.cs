@@ -50,10 +50,13 @@ namespace _1RM.Utils
         {
             if (_hasInit == false) { return; }
             properties ??= new Dictionary<string, string>();
-            properties.TryAdd("Version", AppVersion.Version);
-            properties.TryAdd("BuildDate", AppVersion.BuildDate);
+            if (!properties.ContainsKey("Version"))
+                properties.Add("Version", AppVersion.Version);
+            if (!properties.ContainsKey("BuildDate"))
+                properties.Add("BuildDate", AppVersion.BuildDate);
 #if FOR_MICROSOFT_STORE_ONLY
-            properties.TryAdd("Distributor", $"{Assert.APP_NAME} MS Store");
+            if (!properties.ContainsKey("Distributor"))
+                properties.Add("Distributor", $"{Assert.APP_NAME} MS Store");
 #else
             properties.TryAdd("Distributor", $"{Assert.APP_NAME} Exe");
 #endif
