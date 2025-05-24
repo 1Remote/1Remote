@@ -6,7 +6,6 @@ using Dapper;
 using _1RM.Model.Protocol.Base;
 using System.Data.SQLite;
 using MySql.Data.MySqlClient;
-using Npgsql;
 using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
@@ -94,7 +93,6 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     DatabaseType.MySql => new MySqlConnection(_connectionString),
                     DatabaseType.Sqlite => new SQLiteConnection(_connectionString),
                     DatabaseType.SqlServer => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
-                    DatabaseType.PostgreSQL => new NpgsqlConnection(_connectionString),
                     DatabaseType.Oracle => throw new NotImplementedException(DatabaseType.ToString() + " not supported!"),
                     _ => throw new NotImplementedException(DatabaseType.ToString() + " not supported!")
                 };
@@ -123,17 +121,6 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
                     error = mse.Message;
                     _lastException = mse;
-                }
-                catch (NpgsqlException pgse)
-                {
-                    if (_lastException?.Message != pgse.Message)
-                    {
-                        SimpleLogHelper.Error(pgse);
-                        SentryIoHelper.Error(pgse);
-                    }
-
-                    error = pgse.Message;
-                    _lastException = pgse;
                 }
                 catch (TimeoutException te)
                 {

@@ -14,7 +14,7 @@ namespace _1RM.Service.DataSource.DAO
         OtherError,
     }
 
-    public readonly struct DatabaseStatus
+    public struct DatabaseStatus
     {
         public static DatabaseStatus New(EnumDatabaseStatus status, string extend = "")
         {
@@ -29,8 +29,8 @@ namespace _1RM.Service.DataSource.DAO
             };
             return ret;
         }
-        public EnumDatabaseStatus Status { get; private init; }
-        public string ExtendInfo { get; private init; }
+        public EnumDatabaseStatus Status { get; private set; }
+        public string ExtendInfo { get; private set; }
         public string GetErrorMessage
         {
             get
