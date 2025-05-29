@@ -329,6 +329,7 @@ namespace _1RM.Utils.PuTTY.Model
             string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{sessionId}";
             try
             {
+                SimpleLogHelper.Debug($"Deleting configs from {regPath}");
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
             }
             catch (Exception e)
@@ -341,10 +342,18 @@ namespace _1RM.Utils.PuTTY.Model
         {
             // save to reg table
             string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{PuttySessionId}";
+            SimpleLogHelper.Debug($"Saving configs to registry: {regPath}");
             using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-            foreach (var item in Options)
+            if (regKey != null)
             {
-                regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                foreach (var item in Options)
+                {
+                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                }
+            }
+            else
+            {
+                SimpleLogHelper.Error($"Failed to create registry key for {regPath}");
             }
         }
 

@@ -246,7 +246,6 @@ namespace _1RM
                     AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.SqliteDbDefaultPath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.PuttyDirPath, false);
-                    AppPathHelper.CreateDirIfNotExist(paths.LogFilePath, true);
                     AppPathHelper.CreateDirIfNotExist(paths.LocalityDirPath, false);
                 }
             }

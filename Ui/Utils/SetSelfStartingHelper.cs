@@ -203,6 +203,7 @@ namespace _1RM.Utils
         private static bool _isStartupTaskStateEnable = false;
         public static async void SetSelfStartByStartupTask(string appName, bool? isSetSelfStart = null)
         {
+#if !DEBUG
             _startupTask ??= await StartupTask.GetAsync(appName); // Pass the task ID you specified in the appxmanifest file
             switch (_startupTask.State)
             {
@@ -244,6 +245,7 @@ namespace _1RM.Utils
                     }
                     break;
             }
+#endif
         }
 
 
