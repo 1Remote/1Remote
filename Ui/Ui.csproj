@@ -79,11 +79,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <AssemblyVersion>1.2.0.50504</AssemblyVersion>
+        <AssemblyVersion>1.2.1.50528</AssemblyVersion>
         <FileVersion>$(AssemblyVersion)</FileVersion>
         <Version>$(AssemblyVersion)</Version>
-        <Authors>Shawn</Authors>
-        <Product>Shawn Veck</Product>
+        <Authors>Shawn Veck</Authors>
+        <Product>1Remote</Product>
         <Description>1Remote is a modern personal remote session manager and launcher.</Description>
         <Copyright>1remote.github.io</Copyright>
     </PropertyGroup>
@@ -100,6 +100,7 @@
     <PropertyGroup>
         <DefineConstants>TRACE;</DefineConstants>
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+        <Optimize>True</Optimize>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
@@ -111,8 +112,9 @@
         <DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(Configuration.Contains('Release'))">
-        <Optimize>True</Optimize>
+    <PropertyGroup Condition="$(Configuration.Contains('Store')) and $(Configuration.Contains('Debug')) ">
+        <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
+        <Optimize>False</Optimize>
     </PropertyGroup>
 
 

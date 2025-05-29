@@ -1,25 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"  
-  IgnorableNamespaces="uap rescap">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+         xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+         xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+         xmlns:virtualization="http://schemas.microsoft.com/appx/manifest/virtualization/windows10"
+         IgnorableNamespaces="uap rescap desktop6 virtualization">
 
-	<Identity
-	  Name="16536Shawn.V.Workshop.PRemoteM"
-	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
-	  Version="1.0.104.0" />
+	<Identity Name="16536Shawn.V.Workshop.PRemoteM"
+              Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
+              Version="1.0.104.0" />
 
 	<Properties>
 		<DisplayName>1Remote</DisplayName>
 		<PublisherDisplayName>Shawn Veck</PublisherDisplayName>
 		<Logo>Images\PackageLogo.png</Logo>
-		<!-- If you don't want virtualization of file system writes to the user's AppData folder, then include the property, and set it to disabled. https://docs.microsoft.com/zh-cn/windows/msix/desktop/flexible-virtualization -->
+		<!-- https://learn.microsoft.com/en-us/windows/msix/desktop/flexible-virtualization If you don't want virtualization of file system writes to the user's AppData folder, then include the property, and set it to disabled. https://docs.microsoft.com/zh-cn/windows/msix/desktop/flexible-virtualization -->
 		<desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+		<desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
+        <virtualization:FileSystemWriteVirtualization>
+            <virtualization:ExcludedDirectories>
+                <virtualization:ExcludedDirectory>$(KnownFolder:LocalAppData)\1Remote</virtualization:ExcludedDirectory>
+                <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\1Remote</virtualization:ExcludedDirectory>
+                <virtualization:ExcludedDirectory>$(KnownFolder:LocalAppData)\1Remote_Debug</virtualization:ExcludedDirectory>
+                <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\1Remote_Debug</virtualization:ExcludedDirectory>
+            </virtualization:ExcludedDirectories>
+        </virtualization:FileSystemWriteVirtualization>
+        <virtualization:RegistryWriteVirtualization>
+            <virtualization:ExcludedKeys>
+                <virtualization:ExcludedKey>HKEY_CURRENT_USER\SOFTWARE\SimonTatham\PuTTY\Sessions</virtualization:ExcludedKey>
+            </virtualization:ExcludedKeys>
+        </virtualization:RegistryWriteVirtualization>
 	</Properties>
 
 	<Dependencies>

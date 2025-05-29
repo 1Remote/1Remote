@@ -12,7 +12,7 @@ namespace _1RM.Utils
 {
     public class SubTitleSortByNaturalIp : IComparer
     {
-        private bool _orderIsAsc = true;
+        private readonly bool _orderIsAsc = true;
         private int return1 => _orderIsAsc ? 1 : -1;
         private int return_1 => _orderIsAsc ? -1 : 1;
 
@@ -22,7 +22,7 @@ namespace _1RM.Utils
         }
 
 
-        public int Compare(object x, object y)
+        public int Compare(object? x, object? y)
         {
             if (x is not ProtocolBaseViewModel px || y is not ProtocolBaseViewModel py)
             {
