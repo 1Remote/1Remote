@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.Model.Protocol
 {
@@ -111,7 +112,7 @@ namespace _1RM.Model.Protocol
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e, new Dictionary<string, string>()
+                UnifyTracing.Error(e, new Dictionary<string, string>()
                 {
                     {"ExePath", ExePath},
                 });

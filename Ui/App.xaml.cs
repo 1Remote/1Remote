@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Service;
+using _1RM.Utils.Tracing;
 #if FOR_MICROSOFT_STORE_ONLY
 #if DEV
 using System.IO;
@@ -47,7 +48,7 @@ namespace _1RM
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e);
+                UnifyTracing.Error(e);
             }
 #endif
             AppStartupHelper.Init(argss); // in this method, it will call Environment.Exit() if needed

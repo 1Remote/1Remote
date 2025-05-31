@@ -9,6 +9,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
 using _1RM.View.Utils;
 using Shawn.Utils;
@@ -341,7 +342,7 @@ namespace _1RM.View.Launcher
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                SentryIoHelper.Error(e, new Dictionary<string, string>()
+                UnifyTracing.Error(e, new Dictionary<string, string>()
                 {
                     {"Action", "QuickConnectionViewModel.OpenConnection"}
                 });

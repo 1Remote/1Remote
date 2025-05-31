@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
@@ -564,7 +565,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 }
                 catch (Exception e)
                 {
-                    SentryIoHelper.Error(e, new Dictionary<string, string>()
+                    UnifyTracing.Error(e, new Dictionary<string, string>()
                     {
                         {"readLength", readLength.ToString()},
                         {"item.TransmittedSize", item.TransmittedSize.ToString()},

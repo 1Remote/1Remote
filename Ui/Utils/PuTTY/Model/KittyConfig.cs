@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using _1RM.Service;
+using _1RM.Utils.Tracing;
 using Microsoft.Win32;
 using Shawn.Utils;
 
@@ -425,7 +426,7 @@ namespace _1RM.Utils.PuTTY.Model
                 RetryHelper.Try(() =>
                 {
                     File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
-                }, actionOnError: exception => SentryIoHelper.Error(exception));
+                }, actionOnError: exception => UnifyTracing.Error(exception));
             }
             catch (Exception e)
             {
@@ -531,7 +532,7 @@ maxchar=85
 reload=yes
 ");
                 Thread.Sleep(50);
-            }, actionOnError: exception => SentryIoHelper.Error(exception));
+            }, actionOnError: exception => UnifyTracing.Error(exception));
         }
     }
 }

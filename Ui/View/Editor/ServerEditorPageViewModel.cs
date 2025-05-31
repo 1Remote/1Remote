@@ -13,6 +13,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View.Editor.Forms;
 using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
@@ -97,7 +98,7 @@ namespace _1RM.View.Editor
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                SentryIoHelper.Error(e);
+                UnifyTracing.Error(e);
                 SelectedProtocol = ProtocolList.First();
             }
 
@@ -458,7 +459,7 @@ namespace _1RM.View.Editor
                         }
                         catch (Exception e)
                         {
-                            SentryIoHelper.Error(e);
+                            UnifyTracing.Error(e);
                             MessageBoxHelper.ErrorAlert(e.Message);
                         }
                         finally

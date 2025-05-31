@@ -7,6 +7,7 @@ using _1RM.Service.DataSource.DAO;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
@@ -120,7 +121,7 @@ namespace _1RM.View
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    SentryIoHelper.Error(e, new Dictionary<string, string>()
+                    UnifyTracing.Error(e, new Dictionary<string, string>()
                     {
                         {"Action", "MainWindowViewModel.OnGoToServerAddPage"}
                     });
@@ -148,7 +149,7 @@ namespace _1RM.View
                 catch (Exception e)
                 {
                     SimpleLogHelper.Error(e);
-                    SentryIoHelper.Error(e, new Dictionary<string, string>()
+                    UnifyTracing.Error(e, new Dictionary<string, string>()
                     {
                         {"Action", "MainWindowViewModel.OnRequestGoToServerDuplicatePage"}
                     });

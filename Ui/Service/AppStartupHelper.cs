@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.Utils.WindowsApi.WindowsShortcutFactory;
 using _1RM.View;
 using _1RM.View.Settings.General;
@@ -327,7 +328,7 @@ namespace _1RM.Service
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e);
+                UnifyTracing.Error(e);
             }
         }
     }

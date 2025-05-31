@@ -15,6 +15,7 @@ using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using System.Collections.Generic;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.View.ErrorReport
 {
@@ -70,7 +71,7 @@ namespace _1RM.View.ErrorReport
             sb.AppendLine();
 
             TbErrorInfo.Text = sb.ToString();
-            SentryIoHelper.Error(e, attachments: new Dictionary<string, string>() { { "log.md", TbErrorInfo.Text } });
+            UnifyTracing.Error(e, attachments: new Dictionary<string, string>() { { "log.md", TbErrorInfo.Text } });
         }
 
         private void Init()

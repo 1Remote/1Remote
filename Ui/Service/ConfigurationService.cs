@@ -16,6 +16,7 @@ using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Provider.DirectMatch;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 using System.Windows.Media;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.Service
 {
@@ -322,7 +323,7 @@ namespace _1RM.Service
                     RetryHelper.Try(() =>
                     {
                         File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
-                    }, actionOnError: exception => SentryIoHelper.Error(exception));
+                    }, actionOnError: exception => UnifyTracing.Error(exception));
                 }
 
                 DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);

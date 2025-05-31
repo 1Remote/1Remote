@@ -11,6 +11,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -126,7 +127,7 @@ namespace _1RM.Service.DataSource
             catch (Exception e)
             {
                 SimpleLogHelper.Warning(e);
-                SentryIoHelper.Error(e);
+                UnifyTracing.Error(e);
                 var ret = DatabaseStatus.New(EnumDatabaseStatus.OtherError, e.Message);
                 return ret;
             }
@@ -183,7 +184,7 @@ namespace _1RM.Service.DataSource
                         RetryHelper.Try(() =>
                         {
                             File.WriteAllText(path, JsonConvert.SerializeObject(sources, Formatting.Indented), Encoding.UTF8);
-                        }, actionOnError: exception => SentryIoHelper.Error(exception));
+                        }, actionOnError: exception => UnifyTracing.Error(exception));
                 }
             }
             finally

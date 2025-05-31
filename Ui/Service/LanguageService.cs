@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows;
 using _1RM.Model;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -216,7 +217,7 @@ namespace _1RM.Service
                         message += frame.GetMethod() + " -> " + frame.GetFileName() + ": " + frame.GetFileLineNumber() + "\r\n";
                     }
 
-                    SentryIoHelper.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"), new Dictionary<string, string>()
+                    UnifyTracing.Error(new Exception($"[Warning] In {_languageCode}, key not found: `{key}`"), new Dictionary<string, string>()
                     {
                         {"StackTrace", message}
                     });

@@ -6,7 +6,7 @@ using _1RM.Utils.WindowsApi;
 using Sentry;
 using Shawn.Utils;
 
-namespace _1RM.Utils
+namespace _1RM.Utils.Tracing
 {
     /// <summary>
     /// https://sentry.io/

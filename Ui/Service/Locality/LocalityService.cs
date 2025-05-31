@@ -10,6 +10,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service.DataSource;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Newtonsoft.Json;
@@ -64,7 +65,7 @@ namespace _1RM.Service.Locality
                 CanSave = false;
                 AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
                 RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._localitySettings, Formatting.Indented), Encoding.UTF8); },
-                    actionOnError: exception => SentryIoHelper.Error(exception));
+                    actionOnError: exception => UnifyTracing.Error(exception));
                 CanSave = true;
             }
         }

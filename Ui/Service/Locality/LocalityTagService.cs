@@ -10,6 +10,7 @@ using _1RM.Utils;
 using Shawn.Utils;
 using _1RM.Model;
 using System.Diagnostics;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.Service.Locality
 {
@@ -54,7 +55,7 @@ namespace _1RM.Service.Locality
                 CanSave = false;
                 AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
                 RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(_settings, Formatting.Indented), Encoding.UTF8); },
-                    actionOnError: exception => SentryIoHelper.Error(exception));
+                    actionOnError: exception => UnifyTracing.Error(exception));
                 CanSave = true;
             }
         }
