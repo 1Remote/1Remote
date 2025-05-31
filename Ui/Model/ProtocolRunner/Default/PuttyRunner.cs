@@ -18,6 +18,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using System.Windows;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
@@ -68,6 +69,8 @@ namespace _1RM.Model.ProtocolRunner.Default
                 "CP878",
                 "Use font encoding",
             };
+
+            LoadColours();
         }
 
         private int _puttyFontSize = 14;
@@ -90,24 +93,29 @@ namespace _1RM.Model.ProtocolRunner.Default
             {
                 if (SetAndNotifyIfChanged(ref _puttyThemeName, value))
                 {
-                    if (PuttyThemes.Themes.ContainsKey(PuttyThemeName))
-                    {
-                        var options = PuttyThemes.Themes[PuttyThemeName];
-                        SetBrush(options, nameof(Colour0));
-                        //SetBrush(options, nameof(Colour1));
-                        SetBrush(options, nameof(Colour2));
-                        //SetBrush(options, nameof(Colour3));
-                        //SetBrush(options, nameof(Colour4));
-                        //SetBrush(options, nameof(Colour5));
-                        //SetBrush(options, nameof(Colour6));
-                        //SetBrush(options, nameof(Colour7));
-                        //SetBrush(options, nameof(Colour8));
-                        SetBrush(options, nameof(Colour9));
-                        SetBrush(options, nameof(Colour10));
-                        SetBrush(options, nameof(Colour11));
-                        SetBrush(options, nameof(Colour15));
-                    }
+                    LoadColours();
                 }
+            }
+        }
+
+        private void LoadColours()
+        {
+            if (PuttyThemes.Themes.ContainsKey(PuttyThemeName))
+            {
+                var options = PuttyThemes.Themes[PuttyThemeName];
+                SetBrush(options, nameof(Colour0));
+                //SetBrush(options, nameof(Colour1));
+                SetBrush(options, nameof(Colour2));
+                //SetBrush(options, nameof(Colour3));
+                //SetBrush(options, nameof(Colour4));
+                //SetBrush(options, nameof(Colour5));
+                //SetBrush(options, nameof(Colour6));
+                //SetBrush(options, nameof(Colour7));
+                //SetBrush(options, nameof(Colour8));
+                SetBrush(options, nameof(Colour9));
+                SetBrush(options, nameof(Colour10));
+                SetBrush(options, nameof(Colour11));
+                SetBrush(options, nameof(Colour15));
             }
         }
 
