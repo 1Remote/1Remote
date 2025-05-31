@@ -7,6 +7,7 @@ using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -125,7 +126,7 @@ namespace _1RM.View.Settings.DataSource
                         {
                             Path = oldPath;
                             SimpleLogHelper.Warning(ee);
-                            SentryIoHelper.Error(ee);
+                            UnifyTracing.Error(ee);
                             MessageBoxHelper.ErrorAlert(ee.Message, ownerViewModel: this);
                         }
                     });

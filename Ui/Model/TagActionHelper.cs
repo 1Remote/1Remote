@@ -4,6 +4,7 @@ using System.Linq;
 using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.ServerList;
 using _1RM.View.Utils;
@@ -142,7 +143,7 @@ public static class TagActionHelper
         catch (Exception e)
         {
             SimpleLogHelper.Error(e);
-            SentryIoHelper.Error(e, new Dictionary<string, string>()
+            UnifyTracing.Error(e, new Dictionary<string, string>()
             {
                 {"Action", "TagActionHelper.CmdTagRename"}
             });

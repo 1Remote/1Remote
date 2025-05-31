@@ -7,6 +7,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -118,7 +119,7 @@ namespace _1RM.View.Settings.ProtocolConfig
                     catch (Exception e)
                     {
                         SimpleLogHelper.Error(e);
-                        SentryIoHelper.Error(e, new Dictionary<string, string>()
+                        UnifyTracing.Error(e, new Dictionary<string, string>()
                         {
                             {"Action", "ProtocolRunnerSettingsPageViewModel.CmdAddRunner"}
                         });

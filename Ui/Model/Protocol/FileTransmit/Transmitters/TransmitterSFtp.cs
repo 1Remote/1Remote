@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Shawn.Utils;
@@ -305,7 +306,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                             }
                             catch (Exception e)
                             {
-                                SentryIoHelper.Error(e);
+                                UnifyTracing.Error(e);
                             }
                         }
                         _sftp ??= new SftpClient(new ConnectionInfo(Hostname, Port, Username, new PasswordAuthenticationMethod(Username, Password)));

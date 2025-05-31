@@ -13,6 +13,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -256,7 +257,7 @@ namespace _1RM.View.ServerList
                         { "e.Source", e.Source.GetType().Name },
                         { "e.OriginalSource", e.OriginalSource.GetType().Name }
                     };
-                    SentryIoHelper.Error(ex, properties: ps);
+                    UnifyTracing.Error(ex, properties: ps);
                 }
             }
         }
@@ -390,7 +391,7 @@ namespace _1RM.View.ServerList
                     { "e.Source", e.Source.GetType().Name },
                     { "e.OriginalSource", e.OriginalSource.GetType().Name }
                 };
-                SentryIoHelper.Error(ex, properties: ps);
+                UnifyTracing.Error(ex, properties: ps);
             }
         }
 
@@ -418,7 +419,7 @@ namespace _1RM.View.ServerList
                         { "e.Source", e.Source.GetType().Name },
                         { "e.OriginalSource", e.OriginalSource.GetType().Name }
                     };
-                    SentryIoHelper.Error(ex, properties: ps);
+                    UnifyTracing.Error(ex, properties: ps);
                 }
             }
         }
@@ -510,7 +511,7 @@ namespace _1RM.View.ServerList
                     { "e.Source", e.Source.GetType().Name },
                     { "e.OriginalSource", e.OriginalSource.GetType().Name }
                 };
-                SentryIoHelper.Error(ex, properties: ps);
+                UnifyTracing.Error(ex, properties: ps);
             }
         }
 

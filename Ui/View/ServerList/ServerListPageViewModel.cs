@@ -23,6 +23,7 @@ using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
+using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Utils;
@@ -416,7 +417,7 @@ namespace _1RM.View.ServerList
                             break;
                         default:
                             SimpleLogHelper.Error($"ApplySort: type {orderBy} is not supported");
-                            SentryIoHelper.Error(new NotImplementedException($"ApplySort: type {orderBy} is not supported"));
+                            UnifyTracing.Error(new NotImplementedException($"ApplySort: type {orderBy} is not supported"));
                             break;
                     }
 
@@ -498,7 +499,7 @@ namespace _1RM.View.ServerList
                         if (i < 0 || i >= matchResults.Count)
                         {
                             // we get error report here that i is out of range, so we add this check 2024.10.31 https://appcenter.ms/users/VShawn/apps/1Remote-1/crashes/errors/859400306/overview
-                            SentryIoHelper.Error(new Exception($"MatchKeywords: i({i}) is out of range(0-{matchResults.Count})"), new Dictionary<string, string>()
+                            UnifyTracing.Error(new Exception($"MatchKeywords: i({i}) is out of range(0-{matchResults.Count})"), new Dictionary<string, string>()
                             {
                                 { "filter", filter },
                                 { "servers.Count", servers.Count.ToString() },

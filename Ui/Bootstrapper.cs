@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -7,7 +8,7 @@ using _1RM.Model;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.Locality;
-using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.ErrorReport;
 using _1RM.View.Launcher;
@@ -130,6 +131,10 @@ namespace _1RM
                 lock (this)
                 {
                     SimpleLogHelper.Fatal(e.Exception);
+                    UnifyTracing.Error(e.Exception, new Dictionary<string, string>()
+                    {
+                        {"Where", "Bootstrapper.OnUnhandledException"},
+                    });
                     Execute.OnUIThread(() =>
                     {
                         if (!App.ExitingFlag)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -165,7 +166,7 @@ namespace _1RM.View.Settings.General
                     }
                     catch (Exception e)
                     {
-                        SentryIoHelper.Error(e);
+                        UnifyTracing.Error(e);
                     }
                 });
             }

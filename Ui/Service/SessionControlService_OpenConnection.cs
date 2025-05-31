@@ -11,6 +11,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Editor;
 using _1RM.View.Host;
@@ -38,7 +39,7 @@ namespace _1RM.Service
             if (RetryHelper.Try(() =>
                 {
                     File.WriteAllText(rdpFile, text);
-                }, actionOnError: exception => SentryIoHelper.Error(exception)))
+                }, actionOnError: exception => UnifyTracing.Error(exception)))
             {
                 // delete tmp rdp file, ETA 30s
                 Task.Factory.StartNew(() =>
@@ -73,7 +74,7 @@ namespace _1RM.Service
                 }
                 catch (Exception e)
                 {
-                    SentryIoHelper.Error(e);
+                    UnifyTracing.Error(e);
                     MessageBoxHelper.ErrorAlert(e.Message + "\r\n while Run mstsc.exe");
                 }
             }
@@ -93,7 +94,7 @@ namespace _1RM.Service
             if (RetryHelper.Try(() =>
             {
                 File.WriteAllText(rdpFile, text);
-            }, actionOnError: exception => SentryIoHelper.Error(exception)))
+            }, actionOnError: exception => UnifyTracing.Error(exception)))
             {
                 var p = new Process
                 {

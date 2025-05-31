@@ -14,6 +14,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.Service
 {
@@ -184,7 +185,7 @@ namespace _1RM.Service
                         }
                         catch (Exception e)
                         {
-                            SentryIoHelper.Error(e);
+                            UnifyTracing.Error(e);
                             SimpleLogHelper.Error(e);
                         }
                     }
@@ -277,7 +278,7 @@ namespace _1RM.Service
                 RetryHelper.Try(() =>
                 {
                     File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
-                }, actionOnError: exception => SentryIoHelper.Error(exception));
+                }, actionOnError: exception => UnifyTracing.Error(exception));
             }
         }
     }

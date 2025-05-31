@@ -19,6 +19,7 @@ using _1RM.View.Utils;
 using System.Collections.Generic;
 using _1RM.Utils.PuTTY.Model;
 using _1RM.Utils.PuTTY.Model;
+using _1RM.Utils.Tracing;
 
 namespace _1RM
 {
@@ -107,7 +108,7 @@ namespace _1RM
             // Set salt by github action with repository secret
             UnSafeStringEncipher.Init(Assert.STRING_SALT);
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
-            SentryIoHelper.Init(Assert.SENTRY_IO_DEN);
+            UnifyTracing.Init();
         }
 
         public static LanguageService? LanguageServiceObj;
@@ -358,11 +359,11 @@ namespace _1RM
 #else
                         kys.Add($"App start with - Net", $"6.x");
 #endif
-                        SentryIoHelper.TraceSpecial(kys);
+                        UnifyTracing.TraceSpecial(kys);
                     }
                     catch (Exception ex)
                     {
-                        SentryIoHelper.Error(ex);
+                        UnifyTracing.Error(ex);
                     }
                 });
             }

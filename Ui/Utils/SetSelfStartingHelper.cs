@@ -9,6 +9,7 @@
 
 using System;
 using System.Diagnostics;
+using _1RM.Utils.Tracing;
 #if STORE_UWP_METHOD
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -167,7 +168,7 @@ namespace _1RM.Utils
             }
             catch (Exception e)
             {
-                SentryIoHelper.Error(e);
+                UnifyTracing.Error(e);
             }
         }
 

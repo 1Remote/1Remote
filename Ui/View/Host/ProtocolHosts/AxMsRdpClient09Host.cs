@@ -13,6 +13,7 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Stylet;
 using _1RM.Service;
+using _1RM.Utils.Tracing;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
@@ -295,7 +296,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         SetRdpResolution((uint)(_rdpSettings.RdpWidth ?? 800), (uint)(_rdpSettings.RdpHeight ?? 600), true);
                         break;
                     default:
-                        SentryIoHelper.Error(new ArgumentOutOfRangeException($"{_rdpSettings.RdpWindowResizeMode} is not processed!"));
+                        UnifyTracing.Error(new ArgumentOutOfRangeException($"{_rdpSettings.RdpWindowResizeMode} is not processed!"));
                         SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height, true);
                         break;
                 }

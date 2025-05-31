@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -216,7 +217,7 @@ namespace _1RM.View
                     var msg = $"Failed to register hotkey {hotKeyModifierKeys} + {hotKeyKey}, error code: {r.Item1}";
                     SimpleLogHelper.Warning(msg);
                     MessageBoxHelper.Warning(msg);
-                    SentryIoHelper.Error(new Exception(msg));
+                    UnifyTracing.Error(new Exception(msg));
                     break;
                 }
             }

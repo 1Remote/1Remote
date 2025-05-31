@@ -6,7 +6,6 @@ using _1RM.Utils.WindowsApi;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
-using MySqlX.XDevAPI.Common;
 using Shawn.Utils;
 
 /*
@@ -17,12 +16,12 @@ powershell.exe $(SolutionDir)\scripts\Set-Secret.ps1 -fileDir .\Ui\Utils -fileNa
 
  */
 
-namespace _1RM.Utils
+namespace _1RM.Utils.Tracing
 {
     /// <summary>
     /// https://appcenter.ms/
     /// </summary>
-    [Obsolete("Use SentryIoHelper instead")]
+    //[Obsolete("Use SentryIoHelper instead")]
     public static class MsAppCenterHelper
     {
         private static bool _hasInit = false;

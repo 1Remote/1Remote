@@ -10,6 +10,7 @@ using Npgsql;
 using NUlid;
 using Shawn.Utils;
 using _1RM.Utils;
+using _1RM.Utils.Tracing;
 
 // ReSharper disable InconsistentNaming
 
@@ -109,7 +110,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 catch (DllNotFoundException e)
                 {
                     SimpleLogHelper.Error(e);
-                    SentryIoHelper.Error(e);
+                    UnifyTracing.Error(e);
                     MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
                     Environment.Exit(2);
                 }
@@ -118,7 +119,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != mse.Message)
                     {
                         SimpleLogHelper.Error(mse);
-                        SentryIoHelper.Error(mse);
+                        UnifyTracing.Error(mse);
                     }
 
                     error = mse.Message;
@@ -129,7 +130,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != pgse.Message)
                     {
                         SimpleLogHelper.Error(pgse);
-                        SentryIoHelper.Error(pgse);
+                        UnifyTracing.Error(pgse);
                     }
 
                     error = pgse.Message;
@@ -152,7 +153,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != e.Message)
                     {
                         SimpleLogHelper.Error(e);
-                        SentryIoHelper.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
+                        UnifyTracing.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
                     }
 
                     error = e.Message;
