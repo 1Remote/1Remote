@@ -66,6 +66,17 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
+                <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font'}"></TextBlock>
+                <ComboBox Grid.Column="1" Name="CbFonts" SelectedValue="{Binding PuttyFont, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+            </Grid>
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
                 <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font size'}"></TextBlock>
                 <TextBox Grid.Column="1" Text="{Binding PuttyFontSize, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"></TextBox>
             </Grid>
