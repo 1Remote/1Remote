@@ -73,6 +73,28 @@ namespace _1RM.Model.ProtocolRunner.Default
             LoadColours();
         }
 
+        /// <summary>
+        /// FOR puttyOption.Set
+        /// </summary>
+        [JsonIgnore] public string PuttyFontSource { get; set; } = "Consolas";
+
+
+        private string _puttyFont = "Consolas";
+        /// <summary>
+        /// FOR UI BINDING
+        /// </summary>
+        public string PuttyFont
+        {
+            get => _puttyFont;
+            set
+            {
+                SetAndNotifyIfChanged(ref _puttyFont, value);
+                PuttyFontSource =
+                    Fonts.SystemFontFamilies.FirstOrDefault(x => x.FamilyNames.Last().Value == value)?.Source ??
+                    "Consolas";
+            }
+        }
+
         private int _puttyFontSize = 14;
         public int PuttyFontSize
         {
@@ -476,6 +498,7 @@ exec $SHELL # to keep putty alive
             }
 
             puttyOption.Set(EnumConfigKey.FontHeight, puttyRunner.PuttyFontSize);
+            puttyOption.Set(EnumConfigKey.Font, puttyRunner.PuttyFontSource);
             puttyOption.SaveToConfig();
         }
     }

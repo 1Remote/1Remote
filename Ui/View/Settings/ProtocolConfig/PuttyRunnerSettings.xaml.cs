@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using _1RM.Model.ProtocolRunner;
+using System.Windows.Media;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 
@@ -35,6 +37,15 @@ namespace _1RM.View.Settings.ProtocolConfig
         public PuttyRunnerSettings()
         {
             InitializeComponent();
+
+            var fonts = new Dictionary<string, string>();
+            // Enumerate the current set of system fonts,
+            // and fill the combo box with the names of the fonts.
+            foreach (var fontFamily in Fonts.SystemFontFamilies)
+            {
+                // FontFamily.Source contains the font family name.
+                CbFonts.Items.Add(fontFamily.FamilyNames.Last().Value);
+            }
         }
     }
 }
