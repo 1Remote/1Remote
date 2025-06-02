@@ -115,6 +115,31 @@
 
             <Button Width="200" Height="40"
                     Command="{Binding CmdShowPage}"
+                    CommandParameter="{x:Static view:EnumMainWindowPage.SettingsPasswordVault}"
+                    Content="TXT: PasswordVault">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static view:EnumMainWindowPage.SettingsPasswordVault}" Binding="{Binding CurrentPage}">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                <Setter Property="Cursor" Value="Arrow"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+            <Button Width="200" Height="40"
+                    Command="{Binding CmdShowPage}"
                     CommandParameter="{x:Static view:EnumMainWindowPage.SettingsTheme}"
                     Content="{DynamicResource Theme}">
                 <Button.Style>

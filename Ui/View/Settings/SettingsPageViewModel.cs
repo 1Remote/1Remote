@@ -23,6 +23,7 @@ using _1RM.View.Settings.Launcher;
 using _1RM.View.Settings.ProtocolConfig;
 using _1RM.View.Settings.Theme;
 using _1RM.Service.DataSource.DAO;
+using _1RM.View.Settings.PasswordVault;
 
 namespace _1RM.View.Settings
 {
@@ -67,6 +68,9 @@ namespace _1RM.View.Settings
                     break;
                 case EnumMainWindowPage.SettingsData:
                     SelectedViewModel = IoC.Get<DataSourceViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsPasswordVault:
+                    SelectedViewModel = IoC.Get<PasswordVaultViewModel>();
                     break;
                 case EnumMainWindowPage.SettingsLauncher:
                     SelectedViewModel = IoC.Get<LauncherSettingViewModel>();

@@ -12,6 +12,17 @@ namespace _1RM.Model.Protocol.Base
 
         #region Conn
 
+
+        private bool _isUserPswInheritedFromElseWhere = false;
+        /// <summary>
+        /// 是否从别处继承账号密码
+        /// </summary>
+        public bool IsUserPswInheritedFromElseWhere
+        {
+            get => _isUserPswInheritedFromElseWhere;
+            set => SetAndNotifyIfChanged(ref _isUserPswInheritedFromElseWhere, value);
+        }
+
         public const string MACRO_USERNAME = "%1RM_USERNAME%";
         private string _userName = "";
         [OtherName(Name = "1RM_USERNAME")]
@@ -84,6 +95,7 @@ namespace _1RM.Model.Protocol.Base
                 Port = Port,
                 Password = Password,
                 UserName = UserName,
+                PrivateKeyPath = PrivateKey
             };
             return c;
         }

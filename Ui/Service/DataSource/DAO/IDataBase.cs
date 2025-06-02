@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
@@ -56,25 +57,25 @@ namespace _1RM.Service.DataSource.DAO
         }
     }
 
-    public class ResultSelects : Result
+    public class ResultSelects<T> : Result
     {
-        public readonly List<ProtocolBase> ProtocolBases;
+        public readonly List<T> ProtocolBases;
 
-        public ResultSelects(List<ProtocolBase> protocolBases)
+        public ResultSelects(List<T> protocolBases)
         {
             ProtocolBases = protocolBases;
         }
-        public static ResultSelects Success(List<ProtocolBase> protocolBases)
+        public static ResultSelects<T> Success(List<T> protocolBases)
         {
-            return new ResultSelects(protocolBases) { IsSuccess = true };
+            return new ResultSelects<T>(protocolBases) { IsSuccess = true };
         }
-        public new static ResultSelects Fail(string message, string databaseName, string reason)
+        public new static ResultSelects<T> Fail(string message, string databaseName, string reason)
         {
-            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
+            return new ResultSelects<T>(null!) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
         }
-        public new static ResultSelects Fail(string message)
+        public new static ResultSelects<T> Fail(string message)
         {
-            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = message };
+            return new ResultSelects<T>(null!) { IsSuccess = false, ErrorInfo = message };
         }
     }
 
@@ -148,7 +149,7 @@ namespace _1RM.Service.DataSource.DAO
 
         //public abstract ResultSelect GetServer(int id);
 
-        public abstract ResultSelects GetServers();
+        public abstract ResultSelects<ProtocolBase> GetServers();
 
         //public abstract ResultLong GetServerCount();
 
@@ -171,6 +172,30 @@ namespace _1RM.Service.DataSource.DAO
         public abstract Result UpdateServer(IEnumerable<ProtocolBase> servers);
 
         public abstract Result DeleteServer(IEnumerable<string> ids);
+
+        #region TablePasswordVault
+
+        public abstract ResultSelects<Credential> GetPasswords();
+        /// <summary>
+        /// insert and return id
+        /// </summary>
+        public abstract Result AddPassword(ref Credential credential);
+        /// <summary>
+        /// insert and return count
+        /// </summary>
+        /// <returns></returns>
+        public abstract Result AddPassword(IEnumerable<Credential> credentials);
+
+        /// <summary>
+        /// update Password by id
+        /// </summary>
+        public abstract Result UpdatePassword(Credential credential);
+        public abstract Result UpdatePassword(IEnumerable<Credential> credentials);
+
+        public abstract Result DeletePassword(IEnumerable<string> ids);
+
+        #endregion
+
 
         public abstract ResultString GetConfig(string key);
 

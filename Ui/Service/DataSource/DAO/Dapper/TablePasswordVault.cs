@@ -1,0 +1,38 @@
+﻿using System;
+using _1RM.Model.Protocol.Base;
+using Newtonsoft.Json;
+using Shawn.Utils;
+
+namespace _1RM.Service.DataSource.DAO.Dapper
+{
+    public class TablePasswordVault
+    {
+        public const string TABLE_NAME = "TablePasswordVault";
+
+        /// <summary>
+        /// ULID since 1Remote
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+        public string Json { get; set; } = "";
+        public string Hash { get; set; } = "";
+
+        public Credential? ToCredential()
+        {
+            try
+            {
+                var c = JsonConvert.DeserializeObject<Credential>(Json);
+                if (c != null)
+                {
+                    c.Id = Id;
+                    c.Hash = Hash;
+                }
+                return c;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error($"Failed to deserialize Credential from JSON: {Json}", e);
+                return null;
+            }
+        }
+    }
+}

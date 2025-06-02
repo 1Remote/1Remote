@@ -16,7 +16,7 @@ using _1RM.Utils.Tracing;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
-    public class DapperDatabase : IDatabase
+    public partial class DapperDatabase : IDatabase
     {
         public DapperDatabase(string databaseName, DatabaseType databaseType) : base(databaseName, databaseType)
         {
@@ -199,6 +199,8 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
     `{nameof(Server.Json)}`     TEXT         NOT NULL
 );
 "));
+
+                InitPasswordVault();
                 SetEncryptionTest();
             }
             catch (Exception e)
@@ -230,24 +232,24 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        public override ResultSelects GetServers()
+        public override ResultSelects<ProtocolBase> GetServers()
         {
             string info = IoC.Translate("We can not select from database:");
 
             lock (this)
             {
                 var result = OpenConnection(info);
-                if (!result.IsSuccess) return ResultSelects.Fail(result.ErrorInfo);
+                if (!result.IsSuccess) return ResultSelects<ProtocolBase>.Fail(result.ErrorInfo);
                 try
                 {
                     var ps = _dbConnection.Query<Server>(NormalizedSql($"SELECT * FROM `{Server.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
-                    return ResultSelects.Success((ps as List<ProtocolBase>)!);
+                    return ResultSelects<ProtocolBase>.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
                 {
-                    return ResultSelects.Fail(info, DatabaseName, e.Message);
+                    return ResultSelects<ProtocolBase>.Fail(info, DatabaseName, e.Message);
                 }
             }
         }

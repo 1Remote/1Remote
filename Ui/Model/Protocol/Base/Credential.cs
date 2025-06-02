@@ -1,10 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net.Sockets;
-using System.Reflection;
-using _1Remote.Security;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Utils;
 using JsonKnownTypes;
 using Newtonsoft.Json;
@@ -19,6 +15,11 @@ namespace _1RM.Model.Protocol.Base
         {
             IsEditable = isEditable;
         }
+
+        [JsonIgnore]
+        public string Id = "";
+        [JsonIgnore]
+        public string Hash = "";
 
         /// <summary>
         /// 批量编辑时，如果参数列表不同，禁用
@@ -201,6 +202,16 @@ namespace _1RM.Model.Protocol.Base
             if (UnSafeStringEncipher.DecryptOrReturnOriginalString(Password) != UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password)) return false;
             if (UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath) != UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath)) return false;
             return true;
+        }
+
+        public string GetHash()
+        {
+            if (string.IsNullOrEmpty(Hash))
+            {
+                string all = $"{this.Address}|{this.Port}|{this.UserName}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(Password)}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath)}";
+                Hash = MD5Helper.GetMd5Hash32BitString(all);
+            }
+            return Hash;
         }
     }
 }

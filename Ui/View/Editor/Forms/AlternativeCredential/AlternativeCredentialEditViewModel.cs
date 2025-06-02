@@ -23,11 +23,12 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
         private readonly ProtocolBaseWithAddressPort _protocol;
         private readonly List<string>? _existedNames;
-        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, List<string>? existedNames, Model.Protocol.Base.Credential? org = null)
+        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true)
         {
             _protocol = protocol;
             _org = org;
             _existedNames = existedNames;
+            ShowHost = showHost;
 
             if (_org != null && _existedNames?.Contains(_org.Name) == true)
                 _existedNames.Remove(_org.Name);
@@ -76,6 +77,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             }
         }
 
+        public bool ShowHost { get; }
         public bool ShowUsername { get; }
         public bool ShowPassword { get; }
         public bool ShowPrivateKeyPath { get; }
