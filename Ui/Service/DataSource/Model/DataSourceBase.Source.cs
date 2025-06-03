@@ -27,7 +27,8 @@ namespace _1RM.Service.DataSource.Model
         /// </summary>
         [JsonIgnore]
         public List<ProtocolBaseViewModel> CachedProtocols { get; protected set; } = new List<ProtocolBaseViewModel>();
-
+        [JsonIgnore]
+        public List<Credential> CachedCredentials { get; protected set; } = new List<Credential>();
 
         private EnumDatabaseStatus? _dataSourceDataUpdateStatus = null;
         private long _lastReadFromDataSourceMillisecondsTimestamp = 0;
@@ -109,8 +110,8 @@ namespace _1RM.Service.DataSource.Model
                 if (result.IsSuccess)
                 {
                     LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    CachedProtocols = new List<ProtocolBaseViewModel>(result.ProtocolBases.Count);
-                    foreach (var protocol in result.ProtocolBases)
+                    CachedProtocols = new List<ProtocolBaseViewModel>(result.Items.Count);
+                    foreach (var protocol in result.Items)
                     {
                         try
                         {
@@ -240,19 +241,23 @@ namespace _1RM.Service.DataSource.Model
 
         public Result Database_InsertServer(ProtocolBase server)
         {
-            var tmp = (ProtocolBase)server.Clone();
-            tmp.SetNotifyPropertyChangedEnabled(false);
-            tmp.EncryptToDatabaseLevel();
-            var result = GetDataBase().AddServer(ref tmp);
-            if (result.IsSuccess)
+            if (_isWritable)
             {
-                server.Id = tmp.Id;
-                server.DataSource = this;
-                result.NeedReload = true;
-                MarkAsNeedRead();
-                SetStatus(true);
+                var tmp = (ProtocolBase)server.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                tmp.EncryptToDatabaseLevel();
+                var result = GetDataBase().AddServer(ref tmp);
+                if (result.IsSuccess)
+                {
+                    server.Id = tmp.Id;
+                    server.DataSource = this;
+                    result.NeedReload = true;
+                    MarkAsNeedRead();
+                    SetStatus(true);
+                }
+                return result;
             }
-            return result;
+            return Result.Success();
         }
 
         public Result Database_InsertServer(List<ProtocolBase> servers)
@@ -368,18 +373,158 @@ namespace _1RM.Service.DataSource.Model
             return Result.Success();
         }
 
-        private ResultSelects Database_GetServers()
+        private ResultSelects<ProtocolBase> Database_GetServers()
         {
             var ret = GetDataBase().GetServers();
             if (ret.IsSuccess)
             {
-                foreach (var protocolBase in ret.ProtocolBases)
+                foreach (var protocolBase in ret.Items)
                 {
                     protocolBase.DataSource = this;
                 }
                 SetStatus(true);
             }
             return ret;
+        }
+
+
+
+        public Result Database_InsertCredential(Credential credential)
+        {
+            if (_isWritable)
+            {
+                var tmp = (Credential) credential.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                tmp.EncryptToDatabaseLevel();
+                var result = GetDataBase().AddPassword(tmp);
+                if (result.IsSuccess)
+                {
+                    credential.DataSource = this;
+                    result.NeedReload = true;
+                    MarkAsNeedRead();
+                    SetStatus(true);
+                }
+                return result;
+            }
+            return Result.Success();
+        }
+
+
+        public Result Database_UpdateCredential(Credential org)
+        {
+            if (_isWritable)
+            {
+                var tmp = (Credential)org.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                tmp.EncryptToDatabaseLevel();
+                var ret = GetDataBase().UpdatePassword(tmp);
+                if (ret.IsSuccess)
+                {
+                    MarkAsNeedRead();
+                    ret.NeedReload = true;
+                    SetStatus(true);
+                }
+                return ret;
+            }
+            return Result.Success();
+        }
+
+        public Result Database_UpdateCredential(IEnumerable<Credential> credentials)
+        {
+            if (_isWritable)
+            {
+                var cloneList = new List<Credential>();
+                foreach (var credential in credentials)
+                {
+                    var tmp = (Credential)credential.Clone();
+                    tmp.SetNotifyPropertyChangedEnabled(false);
+                    tmp.EncryptToDatabaseLevel();
+                    cloneList.Add(tmp);
+                }
+
+                var ret = GetDataBase().UpdatePassword(cloneList);
+                if (!ret.IsSuccess) return ret;
+
+                ret.NeedReload = true;
+                MarkAsNeedRead();
+                SetStatus(true);
+                return ret;
+            }
+            return Result.Success();
+        }
+
+
+        public Result Database_DeleteCredential(IEnumerable<string> names)
+        {
+            if (_isWritable)
+            {
+                var enumerable = names.ToArray();
+                var ret = GetDataBase().DeletePassword(enumerable);
+                if (ret.IsSuccess)
+                {
+                    CachedCredentials.RemoveAll(x => enumerable.Contains(x.Name));
+                    SetStatus(true);
+                }
+                return ret;
+            }
+            return Result.Success();
+        }
+
+        private ResultSelects<Credential> Database_GetCredentials()
+        {
+            var ret = GetDataBase().GetPasswords();
+            if (ret.IsSuccess)
+            {
+                foreach (var credential in ret.Items)
+                {
+                    credential.DataSource = this;
+                }
+                SetStatus(true);
+            }
+            return ret;
+        }
+
+
+        public IEnumerable<Credential> GetCredentials(bool force = false)
+        {
+            var result = Database_GetCredentials();
+            if (result.IsSuccess)
+            {
+                return result.Items;
+            }
+            return Array.Empty<Credential>();
+
+            //if (Status != EnumDatabaseStatus.OK
+            //    || force == false && !NeedRead())
+            //{
+            //    return CachedCredentials;
+            //}
+            //lock (this)
+            //{
+            //    var result = Database_GetCredentials();
+            //    if (result.IsSuccess)
+            //    {
+            //        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            //        CachedCredentials = new List<ProtocolBaseViewModel>(result.Items.Count);
+            //        foreach (var protocol in result.Items)
+            //        {
+            //            try
+            //            {
+            //                Execute.OnUIThreadSync(() =>
+            //                {
+            //                    var vm = new ProtocolBaseViewModel(protocol);
+            //                    CachedCredentials.Add(vm);
+            //                });
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                SimpleLogHelper.DebugInfo(e);
+            //            }
+            //        }
+            //        SetStatus(true);
+            //    }
+            //    return CachedCredentials;
+            //}
         }
     }
 }

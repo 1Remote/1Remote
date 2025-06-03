@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net.Sockets;
+using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using JsonKnownTypes;
 using Newtonsoft.Json;
@@ -15,9 +16,7 @@ namespace _1RM.Model.Protocol.Base
         {
             IsEditable = isEditable;
         }
-
-        [JsonIgnore]
-        public string Id = "";
+        
         [JsonIgnore]
         public string Hash = "";
 
@@ -42,7 +41,11 @@ namespace _1RM.Model.Protocol.Base
         public string Name
         {
             get => _name;
-            set => SetAndNotifyIfChanged(ref _name, value);
+            set
+            {
+                var v = value.Length > 128 ? value.Substring(0, 100) : value;
+                SetAndNotifyIfChanged(ref _name, v);
+            }
         }
 
 
@@ -86,6 +89,10 @@ namespace _1RM.Model.Protocol.Base
             get => _privateKeyPath;
             set => SetAndNotifyIfChanged(ref _privateKeyPath, value);
         }
+
+
+        [JsonIgnore]
+        public DataSourceBase? DataSource { get; set; }
 
         public static bool TestAddressPortIsAvailable(string address, string port, int timeOutMillisecond = 0)
         {

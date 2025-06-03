@@ -2,6 +2,7 @@
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Dapper;
+using Newtonsoft.Json;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
@@ -27,7 +28,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override ResultSelects GetServers()
+        public override ResultSelects<ProtocolBase> GetServers()
         {
             lock (this)
             {
@@ -143,6 +144,64 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             {
                 OpenConnection();
                 var ret = base.GetDataUpdateTimestamp();
+                CloseConnection();
+                return ret;
+            }
+        }
+
+
+
+        public override ResultSelects<Credential> GetPasswords()
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetPasswords();
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result AddPassword(Credential credential)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.AddPassword(credential);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+
+        public override Result UpdatePassword(Credential credential)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.UpdatePassword(credential);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result UpdatePassword(IEnumerable<Credential> credentials)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.UpdatePassword(credentials);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result DeletePassword(IEnumerable<string> names)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.DeletePassword(names);
                 CloseConnection();
                 return ret;
             }

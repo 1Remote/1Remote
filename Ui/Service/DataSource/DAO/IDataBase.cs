@@ -59,11 +59,11 @@ namespace _1RM.Service.DataSource.DAO
 
     public class ResultSelects<T> : Result
     {
-        public readonly List<T> ProtocolBases;
+        public readonly List<T> Items;
 
-        public ResultSelects(List<T> protocolBases)
+        public ResultSelects(List<T> items)
         {
-            ProtocolBases = protocolBases;
+            Items = items;
         }
         public static ResultSelects<T> Success(List<T> protocolBases)
         {
@@ -179,12 +179,7 @@ namespace _1RM.Service.DataSource.DAO
         /// <summary>
         /// insert and return id
         /// </summary>
-        public abstract Result AddPassword(ref Credential credential);
-        /// <summary>
-        /// insert and return count
-        /// </summary>
-        /// <returns></returns>
-        public abstract Result AddPassword(IEnumerable<Credential> credentials);
+        public abstract Result AddPassword(Credential credential);
 
         /// <summary>
         /// update Password by id
@@ -192,7 +187,7 @@ namespace _1RM.Service.DataSource.DAO
         public abstract Result UpdatePassword(Credential credential);
         public abstract Result UpdatePassword(IEnumerable<Credential> credentials);
 
-        public abstract Result DeletePassword(IEnumerable<string> ids);
+        public abstract Result DeletePassword(IEnumerable<string> names);
 
         #endregion
 

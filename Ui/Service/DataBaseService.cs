@@ -14,7 +14,7 @@ namespace _1RM.Service
                 s.Password = UnSafeStringEncipher.EncryptOnce(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
-                    credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
+                    credential.EncryptToDatabaseLevel();
                 }
             }
             switch (server)
@@ -49,7 +49,7 @@ namespace _1RM.Service
                 s.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
-                    credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
+                    credential.DecryptToConnectLevel();
                 }
             }
             switch (server)
@@ -72,6 +72,19 @@ namespace _1RM.Service
                     }
                     break;
             }
+        }
+
+
+        public static void EncryptToDatabaseLevel(this Credential credential)
+        {
+            credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
+            credential.PrivateKeyPath = UnSafeStringEncipher.EncryptOnce(credential.PrivateKeyPath);
+        }
+
+        public static void DecryptToConnectLevel(this Credential credential)
+        {
+            credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
+            credential.PrivateKeyPath = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath);
         }
     }
 }

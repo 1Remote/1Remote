@@ -391,6 +391,13 @@ namespace _1RM.Model
 
         #endregion Server Data
 
+        #region Credentials
+
+        
+
+        #endregion
+
+
         public void StopTick()
         {
             lock (this)

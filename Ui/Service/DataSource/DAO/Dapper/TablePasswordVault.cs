@@ -8,11 +8,8 @@ namespace _1RM.Service.DataSource.DAO.Dapper
     public class TablePasswordVault
     {
         public const string TABLE_NAME = "TablePasswordVault";
-
-        /// <summary>
-        /// ULID since 1Remote
-        /// </summary>
-        public string Id { get; set; } = string.Empty;
+        
+        public string Name { get; set; } = string.Empty;
         public string Json { get; set; } = "";
         public string Hash { get; set; } = "";
 
@@ -23,7 +20,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 var c = JsonConvert.DeserializeObject<Credential>(Json);
                 if (c != null)
                 {
-                    c.Id = Id;
+                    c.Name = Name;
                     c.Hash = Hash;
                 }
                 return c;
