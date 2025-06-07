@@ -370,7 +370,7 @@ namespace _1RM.Service.DataSource.Model
                 }
                 return ret;
             }
-            return Result.Success();
+            return Result.Fail(IoC.Translate("We can not delete from database:") + " readonly");
         }
 
         private ResultSelects<ProtocolBase> Database_GetServers()
@@ -467,7 +467,7 @@ namespace _1RM.Service.DataSource.Model
                 }
                 return ret;
             }
-            return Result.Success();
+            return Result.Fail(IoC.Translate("We can not delete from database:") + " readonly");
         }
 
         private ResultSelects<Credential> Database_GetCredentials()

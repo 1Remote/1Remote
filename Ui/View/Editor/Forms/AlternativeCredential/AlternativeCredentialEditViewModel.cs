@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -19,61 +20,82 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
 {
     public class AlternativeCredentialEditViewModel : PopupBase, IDataErrorInfo
     {
-        private readonly Model.Protocol.Base.Credential? _org = null;
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
-        private readonly ProtocolBaseWithAddressPort _protocol;
         private readonly List<string>? _existedNames;
-        public AlternativeCredentialEditViewModel(ProtocolBaseWithAddressPort protocol, List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true)
+        public Action? OnSave { get; set; }
+        public bool RequireHost = false;
+        public bool RequirePort = false;
+        public bool RequireUserName = false;
+        public bool RequirePassword = false;
+        public bool RequirePrivateKey = false;
+
+
+        public static AlternativeCredentialEditViewModel NewFormProtocol(ProtocolBaseWithAddressPort protocol, List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true)
         {
-            _protocol = protocol;
-            _org = org;
-            _existedNames = existedNames;
-            ShowHost = showHost;
-
-            if (_org != null && _existedNames?.Contains(_org.Name) == true)
-                _existedNames.Remove(_org.Name);
-
-            ShowUsername = true;
-            ShowPassword = true;
-            ShowPrivateKeyPath = false;
+            bool showUsername = true;
+            bool showPassword = true;
+            bool showPrivateKeyPath = false;
 
             if (protocol is not ProtocolBaseWithAddressPortUserPwd pp)
             {
-                ShowUsername = false;
-                ShowPassword = false;
-                ShowPrivateKeyPath = false;
+                showUsername = false;
+                showPassword = false;
+                showPrivateKeyPath = false;
             }
             else
             {
-                ShowUsername = pp.ShowUserNameInput();
-                ShowPassword = pp.ShowPasswordInput();
-                ShowPrivateKeyPath = pp.ShowPrivateKeyInput();
+                showUsername = pp.ShowUserNameInput();
+                showPassword = pp.ShowPasswordInput();
+                showPrivateKeyPath = pp.ShowPrivateKeyInput();
             }
+            return new AlternativeCredentialEditViewModel(existedNames, org, showHost, showUsername, showPassword, showPrivateKeyPath);
+        }
 
-            if (_org != null)
+        /// <summary>
+        /// </summary>
+        /// <param name="existedNames">current protocol's existed names, used to check if the name is already existed</param>
+        /// <param name="org">the original credential, if null, it means a new credential</param>
+        /// <param name="showHost"> if true, show host input and port input, otherwise hide it</param>
+        public AlternativeCredentialEditViewModel(List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true, bool showUsername = true, bool showPassword = true, bool showPrivateKey = true)
+        {
+            _existedNames = existedNames;
+            if (org != null && _existedNames?.Contains(org.Name) == true)
+                _existedNames.Remove(org.Name);
+
+            ShowHost = showHost;
+            ShowUsername = showUsername;
+            ShowPassword = showPassword;
+            ShowPrivateKeyPath = showPrivateKey;
+
+            if (org != null)
             {
-                if (string.IsNullOrEmpty(_org.UserName) == false)
+                if (string.IsNullOrEmpty(org.UserName) == false)
                 {
                     ShowUsername = true;
                 }
-                if (string.IsNullOrEmpty(_org.Password) == false)
+                if (string.IsNullOrEmpty(org.Password) == false)
                 {
                     ShowPassword = true;
                 }
-                if (string.IsNullOrEmpty(_org.PrivateKeyPath) == false)
+                if (string.IsNullOrEmpty(org.PrivateKeyPath) == false)
                 {
                     ShowPrivateKeyPath = true;
                 }
             }
 
-            // Edit mode
-            if (_org != null)
+            if (!ShowPassword && ShowPrivateKeyPath)
             {
-                if (string.IsNullOrEmpty(_org.PrivateKeyPath) == false)
+                IsUsePrivateKey = true;
+            }
+
+            // Edit mode
+            if (org != null)
+            {
+                if (string.IsNullOrEmpty(org.PrivateKeyPath) == false)
                 {
                     IsUsePrivateKey = true;
                 }
-                New = (Model.Protocol.Base.Credential)_org.Clone();
+                New = (Model.Protocol.Base.Credential)org.Clone();
             }
         }
 
@@ -88,6 +110,13 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => _isUsePrivateKey && ShowPrivateKeyPath;
             set
             {
+                if (!ShowPassword && ShowPrivateKeyPath)
+                {
+                    _isUsePrivateKey = true;
+                    New.Password = "";
+                    RaisePropertyChanged();
+                    return;
+                }
                 if (SetAndNotifyIfChanged(ref _isUsePrivateKey, value))
                 {
                     if (value)
@@ -108,21 +137,26 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => New.Name;
             set
             {
-                if (New.Name != value)
+                var v = value;
+                if (New.Name != v)
                 {
-                    New.Name = value;
+                    New.Name = v;
                     RaisePropertyChanged();
                 }
             }
         }
 
-        public string PrivateKeyPath
+        public string Address
         {
-            get => New.PrivateKeyPath;
+            get => New.Address;
             set
             {
-                New.PrivateKeyPath = value;
-                RaisePropertyChanged();
+                var v = value;
+                if (New.Address != v)
+                {
+                    New.Address = v;
+                    RaisePropertyChanged();
+                }
             }
         }
 
@@ -131,8 +165,8 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             get => New.Port;
             set
             {
-                var v = value.Trim();
-                if (New.Port != v)
+                var v = value;
+                if (New.Port != v && int.TryParse(v, out _))
                 {
                     New.Port = v;
                     RaisePropertyChanged();
@@ -140,6 +174,35 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             }
         }
 
+        public string UserName
+        {
+            get => New.UserName;
+            set
+            {
+                New.UserName = value.Trim();
+                RaisePropertyChanged();
+            }
+        }
+
+        public string Password
+        {
+            get => New.Password;
+            set
+            {
+                New.Password = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string PrivateKeyPath
+        {
+            get => New.PrivateKeyPath;
+            set
+            {
+                New.PrivateKeyPath = value.Trim();
+                RaisePropertyChanged();
+            }
+        }
 
         private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
@@ -148,29 +211,14 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             {
                 return _cmdSave ??= new RelayCommand((_) =>
                 {
-                    _protocol.AlternateCredentials ??= new ObservableCollection<Model.Protocol.Base.Credential>();
-
                     if (!ShowUsername)
                         New.UserName = "";
                     if (!ShowPassword || _isUsePrivateKey)
                         New.Password = "";
                     if (!ShowPrivateKeyPath || !_isUsePrivateKey)
                         New.PrivateKeyPath = "";
-
-
                     New.Trim();
-                    if (_org != null && _protocol.AlternateCredentials.Any(x => x.Equals(_org)))
-                    {
-                        // edit
-                        var i = _protocol.AlternateCredentials.IndexOf(_org);
-                        _protocol.AlternateCredentials.Remove(_org);
-                        _protocol.AlternateCredentials.Insert(i, New);
-                    }
-                    else
-                    {
-                        // add
-                        _protocol.AlternateCredentials.Add(New);
-                    }
+                    OnSave?.Invoke();
                     RequestClose(true);
                 }, o => CanSave());
             }
@@ -178,17 +226,19 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
 
         public bool CanSave()
         {
-            if (!string.IsNullOrEmpty(this[nameof(Port)])
-                || !string.IsNullOrEmpty(this[nameof(Name)]
+            if (!string.IsNullOrEmpty(this[nameof(Name)])
+                || !string.IsNullOrEmpty(this[nameof(Address)])
+                || !string.IsNullOrEmpty(this[nameof(Port)])
+                || !string.IsNullOrEmpty(this[nameof(UserName)])
+                || !string.IsNullOrEmpty(this[nameof(Password)])
+                || !string.IsNullOrEmpty(this[nameof(PrivateKeyPath)])
                 )
-               )
                 return false;
             return true;
         }
 
 
         private RelayCommand? _cmdCancel;
-
         public RelayCommand CmdCancel
         {
             get
@@ -220,19 +270,45 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 switch (columnName)
                 {
                     case nameof(Name):
-                    {
-                        if (string.IsNullOrWhiteSpace(Name))
-                            return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
-                        if (_existedNames?.Any(x => string.Equals(x, Name, StringComparison.CurrentCultureIgnoreCase)) == true)
-                            return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, Name);
-                        break;
+                        {
+                            if (string.IsNullOrWhiteSpace(Name))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            if (_existedNames?.Any(x => string.Equals(x, Name.Trim(), StringComparison.CurrentCultureIgnoreCase)) == true)
+                                return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, Name.Trim());
+                            if (Name.Length > 100)
+                                return "too long";
+                            break;
+                        }
+                    case nameof(Address):
+                        {
+                            if (ShowHost && RequireHost && string.IsNullOrWhiteSpace(Address))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
                         }
                     case nameof(Port):
-                    {
-                        if (!string.IsNullOrWhiteSpace(Port) && (int.TryParse(Port, out var p) == false || p < 0 || p > 65535))
-                            return "1 - 65535";
-                        break;
-                    }
+                        {
+                            if (!string.IsNullOrWhiteSpace(Port) && (int.TryParse(Port, out var p) == false || p < 0 || p > 65535))
+                                return "1 - 65535";
+                            break;
+                        }
+                    case nameof(UserName):
+                        {
+                            if (ShowUsername && RequireUserName && string.IsNullOrWhiteSpace(UserName))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(Password):
+                        {
+                            if (ShowPassword && RequirePassword && !IsUsePrivateKey && string.IsNullOrWhiteSpace(Password))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
+                    case nameof(PrivateKeyPath):
+                        {
+                            if (ShowPrivateKeyPath && RequirePrivateKey && IsUsePrivateKey && string.IsNullOrWhiteSpace(PrivateKeyPath))
+                                return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
+                            break;
+                        }
                 }
                 return "";
             }

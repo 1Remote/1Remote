@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net.Sockets;
+using _1RM.Service;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using JsonKnownTypes;
@@ -16,9 +17,12 @@ namespace _1RM.Model.Protocol.Base
         {
             IsEditable = isEditable;
         }
-        
+
+        /// <summary>
+        /// use to find if there are duplicated credentials
+        /// </summary>
         [JsonIgnore]
-        public string Hash = "";
+        public string Hash { get; set; } = "";
 
         /// <summary>
         /// 批量编辑时，如果参数列表不同，禁用
@@ -38,6 +42,9 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _name = "";
+        /// <summary>
+        /// database id
+        /// </summary>
         public string Name
         {
             get => _name;
@@ -54,7 +61,13 @@ namespace _1RM.Model.Protocol.Base
         public string Address
         {
             get => _address;
-            set => SetAndNotifyIfChanged(ref _address, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _address, value))
+                {
+                    GetHash();
+                }
+            }
         }
 
         private string _port = "";
@@ -62,7 +75,13 @@ namespace _1RM.Model.Protocol.Base
         public string Port
         {
             get => _port;
-            set => SetAndNotifyIfChanged(ref _port, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _port, value))
+                {
+                    GetHash();
+                }
+            }
         }
 
         private string _userName = "";
@@ -70,7 +89,13 @@ namespace _1RM.Model.Protocol.Base
         public string UserName
         {
             get => _userName;
-            set => SetAndNotifyIfChanged(ref _userName, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _userName, value))
+                {
+                    GetHash();
+                }
+            }
         }
 
         private string _password = "";
@@ -78,18 +103,28 @@ namespace _1RM.Model.Protocol.Base
         public string Password
         {
             get => _password;
-            set => SetAndNotifyIfChanged(ref _password, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _password, value))
+                {
+                    GetHash();
+                }
+            }
         }
 
         private string _privateKeyPath = "";
-
         [OtherName(Name = "1RM_PRIVATE_KEY_PATH")]
         public string PrivateKeyPath
         {
             get => _privateKeyPath;
-            set => SetAndNotifyIfChanged(ref _privateKeyPath, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _privateKeyPath, value))
+                {
+                    GetHash();
+                }
+            }
         }
-
 
         [JsonIgnore]
         public DataSourceBase? DataSource { get; set; }
@@ -213,11 +248,10 @@ namespace _1RM.Model.Protocol.Base
 
         public string GetHash()
         {
-            if (string.IsNullOrEmpty(Hash))
-            {
-                string all = $"{this.Address}|{this.Port}|{this.UserName}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(Password)}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath)}";
-                Hash = MD5Helper.GetMd5Hash32BitString(all);
-            }
+            var clone = (Credential) this.Clone();
+            clone.DecryptToConnectLevel();
+            string all = $"{clone.Address}|{clone.Port}|{clone.UserName}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(Password)}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath)}";
+            Hash = MD5Helper.GetMd5Hash32BitString(all);
             return Hash;
         }
     }

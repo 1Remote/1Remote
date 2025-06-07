@@ -81,6 +81,30 @@ namespace _1RM.Service.DataSource
                 return ret;
             }
         }
+        public List<(DataSourceBase, Credential)> GetSourceCredentials(bool force)
+        {
+            lock (this)
+            {
+                var ret = new List<(DataSourceBase, Credential)>(100);
+                if (LocalDataSource != null)
+                {
+                    ret.AddRange(LocalDataSource.GetCredentials().Select(credential => (LocalDataSource, credential)).Select(dummy => ((DataSourceBase, Credential)) dummy));
+                }
+                foreach (var dataSource in AdditionalSources)
+                {
+                    try
+                    {
+                        var cs = dataSource.Value.GetCredentials(force);
+                        ret.AddRange(cs.Select(credential => (dataSource.Value, credential)).Select(dummy => ((DataSourceBase, Credential))dummy));
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.DebugWarning(e);
+                    }
+                }
+                return ret;
+            }
+        }
 
 
         public DataSourceBase? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)

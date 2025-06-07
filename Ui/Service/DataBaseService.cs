@@ -77,14 +77,18 @@ namespace _1RM.Service
 
         public static void EncryptToDatabaseLevel(this Credential credential)
         {
-            credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
-            credential.PrivateKeyPath = UnSafeStringEncipher.EncryptOnce(credential.PrivateKeyPath);
+            if (!string.IsNullOrEmpty(credential.Password))
+                credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
+            if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
+                credential.PrivateKeyPath = UnSafeStringEncipher.EncryptOnce(credential.PrivateKeyPath);
         }
 
         public static void DecryptToConnectLevel(this Credential credential)
         {
-            credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
-            credential.PrivateKeyPath = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath);
+            if (!string.IsNullOrEmpty(credential.Password))
+                credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
+            if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
+                credential.PrivateKeyPath = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath);
         }
     }
 }

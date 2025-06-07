@@ -162,7 +162,7 @@ WHERE `{nameof(TablePasswordVault.Name)}`= @{nameof(TablePasswordVault.Name)};")
                     var sql = DatabaseType == DatabaseType.PostgreSQL
                         ? $@"DELETE FROM `{TablePasswordVault.TABLE_NAME}` WHERE `{nameof(TablePasswordVault.Name)}` = ANY(@{nameof(TablePasswordVault.Name)});"
                         : $@"DELETE FROM `{TablePasswordVault.TABLE_NAME}` WHERE `{nameof(TablePasswordVault.Name)}` IN @{nameof(TablePasswordVault.Name)};";
-                    var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = names }) > 0;
+                    var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Name = names }) > 0;
                     if (ret)
                         SetDataUpdateTimestamp();
                     return Result.Success();

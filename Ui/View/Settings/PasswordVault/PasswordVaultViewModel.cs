@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -17,39 +16,30 @@ namespace _1RM.View.Settings.PasswordVault
 {
     public class CredentialItem
     {
-        public CredentialItem(DataSourceBase database, Credential credential)
+        public CredentialItem(DataSourceBase dataSource, Credential credential)
         {
-            Database = database;
+            DataSource = dataSource;
             Credential = credential;
         }
 
-        public DataSourceBase Database { get; }
+        public DataSourceBase DataSource { get; }
         public Credential Credential { get; }
     }
 
     public class PasswordVaultViewModel : NotifyPropertyChangedBase
     {
-        private DataSourceService _sourceService;
+        private readonly DataSourceService _sourceService;
 
         public ObservableCollection<CredentialItem> Credentials { get; } = new ObservableCollection<CredentialItem>();
         public PasswordVaultViewModel(DataSourceService sourceService)
         {
             _sourceService = sourceService;
             // TODO Read from data sources
-            var source = _sourceService.LocalDataSource;
-            Credentials.Add(new CredentialItem(source, new Credential()
+            var tuples = _sourceService.GetSourceCredentials(false);
+            foreach (var tuple in tuples)
             {
-                Name = "sd123123123123213123123123",
-                UserName = "user121231231231231231232133",
-                Password = "123dsdads",
-            }));
-            Credentials.Add(new CredentialItem(source, new Credential()
-            {
-                Name = "xxxxxsd123123123123213123123123",
-                UserName = "user121231231231231231232133",
-                Password = "0",
-                PrivateKeyPath = "sadasdasdasdasd"
-            }));
+                Credentials.Add(new CredentialItem(tuple.Item1, tuple.Item2));
+            }
         }
 
 
@@ -64,24 +54,19 @@ namespace _1RM.View.Settings.PasswordVault
                 {
                     var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
                     if(source == null) return;
-
-                    var protocol = new RDP();
-                    var existedNames = new List<string>();
-                    var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, showHost: false);
-                    MaskLayerController.ShowWindowWithMask(vm);
-
-                    var c = protocol.AlternateCredentials.FirstOrDefault();
-                    if (c != null)
+                    var existedNames = Credentials.Select(x => x.Credential.Name).ToList();
+                    var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false)
                     {
-                        if (!string.IsNullOrEmpty(c.PrivateKeyPath))
-                        {
-                            c.Password = "";
-                        }
-                        else
-                        {
-                            c.PrivateKeyPath = "";
-                        }
-                    }
+                        RequireUserName = true,
+                        RequirePassword = true,
+                        RequirePrivateKey = true,
+                    };
+                    vm.OnSave += () =>
+                    {
+                        source.Database_InsertCredential(vm.New);
+                        Credentials.Add(new CredentialItem(source, vm.New));
+                    };
+                    MaskLayerController.ShowWindowWithMask(vm);
                 });
             }
         }
@@ -96,6 +81,24 @@ namespace _1RM.View.Settings.PasswordVault
                 {
                     if (o is CredentialItem item)
                     {
+                        var source = item.DataSource;
+                        item.Credential.DecryptToConnectLevel();
+                        var existedNames = Credentials.Where(x => x != item).Select(x => x.Credential.Name).ToList();
+                        var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false)
+                        {
+                            RequireUserName = true,
+                            RequirePassword = true,
+                            RequirePrivateKey = true,
+                        };
+                        vm.OnSave += () =>
+                        {
+                            source.Database_UpdateCredential(vm.New);
+                            // edit
+                            var i = Credentials.IndexOf(item);
+                            Credentials.Remove(item);
+                            Credentials.Insert(i, new CredentialItem(source, vm.New));
+                        };
+                        MaskLayerController.ShowWindowWithMask(vm);
                     }
                 });
             }
@@ -109,17 +112,15 @@ namespace _1RM.View.Settings.PasswordVault
             {
                 return _cmdDelete ??= new RelayCommand((o) =>
                 {
-                    if (o is CredentialItem item)
-                    {
-                        if (true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected") + " -> " + item.Credential.Name))
-                        {
-                            //if (_configurationService.AdditionalDataSource.Contains(configBase))
-                            //{
-                            //    _configurationService.AdditionalDataSource.Remove(configBase);
-                            //    _configurationService.Save();
-                            //}
-                        }
-                    }
+                    if (o is not CredentialItem item
+                        || true != MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete_selected") + " -> " + item.Credential.Name))
+                        return;
+
+                    var ret = item.DataSource.Database_DeleteCredential(new[] { item.Credential.Name });
+                    if (ret.IsSuccess)
+                        Credentials.Remove(item);
+                    else
+                        MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
                 });
             }
         }

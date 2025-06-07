@@ -750,7 +750,22 @@ namespace _1RM.View.Editor
                             }
                         }
                         existedNames = existedNames.Distinct().ToList();
-                        var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
+                        var vm = AlternativeCredentialEditViewModel.NewFormProtocol(protocol, existedNames, credential);
+                        vm.OnSave += () =>
+                        {
+                            if (credential != null && protocol.AlternateCredentials.Any(x => x.Equals(credential)))
+                            {
+                                // edit
+                                var i = protocol.AlternateCredentials.IndexOf(credential);
+                                protocol.AlternateCredentials.Remove(credential);
+                                protocol.AlternateCredentials.Insert(i, vm.New);
+                            }
+                            else
+                            {
+                                // add
+                                protocol.AlternateCredentials.Add(vm.New);
+                            }
+                        };
                         MaskLayerController.ShowWindowWithMask(vm);
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
