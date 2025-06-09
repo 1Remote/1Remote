@@ -72,7 +72,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 return OpenConnection();
             }
         }
-        
+
 
         private Exception? _lastException = null;
         protected virtual Result OpenConnection(string actionInfo = "")
@@ -181,22 +181,22 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             try
             {
                 _dbConnection?.Execute(NormalizedSql(@$"
-CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
-    `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS `{TableConfig.TABLE_NAME}` (
+    `{nameof(TableConfig.Key)}` VARCHAR (64) PRIMARY KEY
                                         NOT NULL
                                         UNIQUE,
-    `{nameof(Config.Value)}` TEXT NOT NULL
+    `{nameof(TableConfig.Value)}` TEXT NOT NULL
 );
 "));
 
                 _dbConnection?.Execute(NormalizedSql(@$"
-CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
-    `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS `{TableServer.TABLE_NAME}` (
+    `{nameof(TableServer.Id)}`       VARCHAR (64) PRIMARY KEY
                                              NOT NULL
                                              UNIQUE,
-    `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
-    `{nameof(Server.ClassVersion)}` VARCHAR (32) NOT NULL,
-    `{nameof(Server.Json)}`     TEXT         NOT NULL
+    `{nameof(TableServer.Protocol)}` VARCHAR (32) NOT NULL,
+    `{nameof(TableServer.ClassVersion)}` VARCHAR (32) NOT NULL,
+    `{nameof(TableServer.Json)}`     TEXT         NOT NULL
 );
 "));
 
@@ -242,9 +242,10 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
                 if (!result.IsSuccess) return ResultSelects<ProtocolBase>.Fail(result.ErrorInfo);
                 try
                 {
-                    var ps = _dbConnection.Query<Server>(NormalizedSql($"SELECT * FROM `{Server.TABLE_NAME}`"))
+                    var ps = _dbConnection.Query<TableServer>(NormalizedSql($"SELECT * FROM `{TableServer.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
+                    SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                     return ResultSelects<ProtocolBase>.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
@@ -254,10 +255,10 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        private string SqlInsert => NormalizedSql($@"INSERT INTO `{Server.TABLE_NAME}`
-(`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
+        private string SqlInsert => NormalizedSql($@"INSERT INTO `{TableServer.TABLE_NAME}`
+(`{nameof(TableServer.Id)}`,`{nameof(TableServer.Protocol)}`, `{nameof(TableServer.ClassVersion)}`, `{nameof(TableServer.Json)}`)
 VALUES
-(@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});");
+(@{nameof(TableServer.Id)}, @{nameof(TableServer.Protocol)}, @{nameof(TableServer.ClassVersion)}, @{nameof(TableServer.Json)});");
 
         /// <summary>
         /// 插入成功后会更新 protocolBase.Id
@@ -277,8 +278,8 @@ VALUES
                     var server = protocolBase.ToDbServer();
                     int affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
                     if (affCount > 0)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
+                        return Result.Success();
+                    return Result.Fail(info, DatabaseName, "Insert failed, no rows affected.");
                 }
                 catch (Exception e)
                 {
@@ -308,8 +309,8 @@ VALUES
                     var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
                     var affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
                     if (affCount > 0)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
+                        return Result.Success();
+                    return Result.Fail(info, DatabaseName, "Insert failed, no rows affected.");
                 }
                 catch (Exception e)
                 {
@@ -318,11 +319,11 @@ VALUES
             }
         }
 
-        private string SqlUpdate => NormalizedSql($@"UPDATE `{Server.TABLE_NAME}` SET
-`{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
-`{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
-`{nameof(Server.Json)}` = @{nameof(Server.Json)}
-WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
+        private string SqlUpdate => NormalizedSql($@"UPDATE `{TableServer.TABLE_NAME}` SET
+`{nameof(TableServer.Protocol)}` = @{nameof(TableServer.Protocol)},
+`{nameof(TableServer.ClassVersion)}` = @{nameof(TableServer.ClassVersion)},
+`{nameof(TableServer.Json)}` = @{nameof(TableServer.Json)}
+WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
         public override Result UpdateServer(ProtocolBase server)
         {
             string info = IoC.Translate("We can not update on database:");
@@ -335,13 +336,13 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                     var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
                     if (ret)
                     {
-                        SetDataUpdateTimestamp();
+                        return Result.Success();
                     }
                     else
                     {
                         // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                        return Result.Fail(info, DatabaseName, "Update failed, no rows affected.");
                     }
-                    return Result.Success();
                 }
                 catch (Exception e)
                 {
@@ -363,13 +364,13 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                     var ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
                     if (ret)
                     {
-                        SetDataUpdateTimestamp();
+                        return Result.Success();
                     }
                     else
                     {
                         // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                        return Result.Fail(info, DatabaseName, "Update failed, no rows affected.");
                     }
-                    return Result.Success();
                 }
                 catch (Exception e)
                 {
@@ -389,12 +390,12 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 {
                     // special case: dapper does not support IN operator for postgresql
                     var sql = DatabaseType == DatabaseType.PostgreSQL
-                        ? $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = ANY(@{nameof(Server.Id)});"
-                        : $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};";
+                        ? $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` = ANY(@{nameof(TableServer.Id)});"
+                        : $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` IN @{nameof(TableServer.Id)};";
                     var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = ids }) > 0;
                     if (ret)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
+                        return Result.Success();
+                    return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
                 }
                 catch (Exception e)
                 {
@@ -417,7 +418,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 if (!result.IsSuccess) return ResultString.Fail(result.ErrorInfo);
                 try
                 {
-                    var config = _dbConnection?.QueryFirstOrDefault<Config>(NormalizedSql($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}"),
+                    var config = _dbConnection?.QueryFirstOrDefault<TableConfig>(NormalizedSql($"SELECT * FROM `{TableConfig.TABLE_NAME}` WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}"),
                         new { Key = key, });
                     return ResultString.Success(config?.Value);
                 }
@@ -428,9 +429,9 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
             }
         }
 
-        private string SqlInsertConfig => NormalizedSql($@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})");
-        private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
-        private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
+        private string SqlInsertConfig => NormalizedSql($@"INSERT INTO `{TableConfig.TABLE_NAME}` (`{nameof(TableConfig.Key)}`, `{nameof(TableConfig.Value)}`)  VALUES (@{nameof(TableConfig.Key)}, @{nameof(TableConfig.Value)})");
+        private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{TableConfig.TABLE_NAME}` SET `{nameof(TableConfig.Value)}` = @{nameof(TableConfig.Value)} WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
+        private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{TableConfig.TABLE_NAME}` WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
 
         public override Result SetConfig(string key, string? value)
         {
@@ -468,22 +469,22 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
             }
         }
 
-        public override Result SetDataUpdateTimestamp(long time = -1)
+        public override Result SetTableUpdateTimestamp(string tableName, long time = -1)
         {
             lock (this)
             {
                 var timestamp = time;
                 if (time <= 0)
                     timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                return SetConfigPrivate("UpdateTimestamp", timestamp.ToString());
+                return SetConfigPrivate("UpdateTimestamp_" + tableName, timestamp.ToString());
             }
         }
 
-        public override ResultLong GetDataUpdateTimestamp()
+        public override ResultLong GetTableUpdateTimestamp(string tableName)
         {
             lock (this)
             {
-                var val = GetConfigPrivate("UpdateTimestamp");
+                var val = GetConfigPrivate("UpdateTimestamp_" + tableName);
                 if (!val.IsSuccess) return ResultLong.Fail(val.ErrorInfo);
                 if (long.TryParse(val.Result, out var t)
                     && t > 0)

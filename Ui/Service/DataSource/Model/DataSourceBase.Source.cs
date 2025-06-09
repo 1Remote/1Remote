@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.View;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -30,64 +31,76 @@ namespace _1RM.Service.DataSource.Model
         [JsonIgnore]
         public List<Credential> CachedCredentials { get; protected set; } = new List<Credential>();
 
-        private EnumDatabaseStatus? _dataSourceDataUpdateStatus = null;
-        private long _lastReadFromDataSourceMillisecondsTimestamp = 0;
-        [JsonIgnore]
-        protected virtual long LastReadFromDataSourceMillisecondsTimestamp
+        private EnumDatabaseStatus? _lastReadDataSourceStatus = null;
+
+        /// <summary>
+        /// Last time read servers from data source, in milliseconds since epoch.
+        /// </summary>
+        [JsonIgnore] private readonly Dictionary<string, long> _lastReadTimestamp = new Dictionary<string, long>();
+
+
+        /// <summary>
+        /// to return whether the table need to be read from data source.
+        /// </summary>
+        /// <param name="tableName"></param>
+        public bool NeedRead(string tableName)
         {
-            get => _lastReadFromDataSourceMillisecondsTimestamp;
-            set
+            if (!_lastReadTimestamp.ContainsKey(tableName) || _lastReadTimestamp[tableName] <= 0)
+                return true;
+
+
+            if (_lastReadDataSourceStatus != null
+                && _lastReadDataSourceStatus != Status)
             {
-                _lastReadFromDataSourceMillisecondsTimestamp = value;
-                _dataSourceDataUpdateStatus = Status;
-            }
-        }
-
-        [JsonIgnore]
-        private long _dataSourceDataUpdateTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-
-        public virtual bool NeedRead()
-        {
-            if (Status == EnumDatabaseStatus.OK)
-            {
-                var dataBase = GetDataBase();
-                var ret = dataBase.GetDataUpdateTimestamp();
-                if (!ret.IsSuccess)
-                {
-                    SetStatus(false);
-                }
-                else
-                {
-                    _dataSourceDataUpdateTimestamp = ret.Result;
-                    SimpleLogHelper.Debug($"{DataSourceName}：NeedRead = {LastReadFromDataSourceMillisecondsTimestamp} < {_dataSourceDataUpdateTimestamp} = {LastReadFromDataSourceMillisecondsTimestamp < _dataSourceDataUpdateTimestamp}");
-                    return LastReadFromDataSourceMillisecondsTimestamp < _dataSourceDataUpdateTimestamp;
-                }
-            }
-
-
-
-            if (_dataSourceDataUpdateStatus != null
-                && _dataSourceDataUpdateStatus != Status)
-            {
-                // 数据库状态改变
-                _dataSourceDataUpdateStatus = Status;
+                // 数据库状态改变，例如从 LostConnection 或 AccessDenied 等状态变为 OK。
+                _lastReadDataSourceStatus = Status;
                 return true;
             }
 
 
             if (Status != EnumDatabaseStatus.OK)
             {
-                // 当连接不成功时，设置为 0，以便下次重新连接
-                MarkAsNeedRead();
+                // 当连接不成功时，标记为需要读取以便下次重新连接
+                return true;
             }
 
+            var dataBase = GetDataBase();
+            var ret = dataBase.GetTableUpdateTimestamp(tableName);
+            if (!ret.IsSuccess)
+            {
+                SetStatus(false);
+            }
+            else
+            {
+                SimpleLogHelper.Debug($"{DataSourceName}：NeedRead = {_lastReadTimestamp[tableName]} < {ret.Result} = {_lastReadTimestamp[tableName] < ret.Result}");
+                // read data source update timestamp，and compare with last read timestamp. if 
+                return _lastReadTimestamp[tableName] < ret.Result;
+            }
             return true;
         }
 
-        public void MarkAsNeedRead()
+        public void ClearReadTimestamp()
         {
-            LastReadFromDataSourceMillisecondsTimestamp = 0;
+            _lastReadTimestamp.Clear();
+        }
+        private void SetReadTimestampTo0(string tableName)
+        {
+            SetReadTimestamp(tableName, 0); // reset to 0, means need read.
+        }
+        private void SetReadTimestamp(string tableName, long timestamp = -1)
+        {
+            if (timestamp < 0)
+            {
+                timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            }
+            if (_lastReadTimestamp.ContainsKey(tableName))
+            {
+                _lastReadTimestamp[tableName] = timestamp;
+            }
+            else
+            {
+                _lastReadTimestamp.Add(tableName, timestamp);
+            }
         }
 
 
@@ -99,7 +112,7 @@ namespace _1RM.Service.DataSource.Model
         public IEnumerable<ProtocolBaseViewModel> GetServers(bool force = false)
         {
             if (Status != EnumDatabaseStatus.OK
-                || force == false && !NeedRead())
+                || force == false && !NeedRead(TableServer.TABLE_NAME))
             {
                 return CachedProtocols;
             }
@@ -109,7 +122,7 @@ namespace _1RM.Service.DataSource.Model
                 var result = Database_GetServers();
                 if (result.IsSuccess)
                 {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    SetReadTimestamp(TableServer.TABLE_NAME);
                     CachedProtocols = new List<ProtocolBaseViewModel>(result.Items.Count);
                     foreach (var protocol in result.Items)
                     {
@@ -230,10 +243,6 @@ namespace _1RM.Service.DataSource.Model
                 return DatabaseStatus.New(Status);
             }
 
-            if (Status != EnumDatabaseStatus.OK)
-            {
-                MarkAsNeedRead();
-            }
             SetStatus(true);
             dataBase.CloseConnection();
             return DatabaseStatus.New(Status);
@@ -251,8 +260,7 @@ namespace _1RM.Service.DataSource.Model
                 {
                     server.Id = tmp.Id;
                     server.DataSource = this;
-                    result.NeedReload = true;
-                    MarkAsNeedRead();
+                    SetReadTimestampTo0(TableServer.TABLE_NAME);
                     SetStatus(true);
                 }
                 return result;
@@ -275,7 +283,7 @@ namespace _1RM.Service.DataSource.Model
                 var ret = GetDataBase().AddServer(cloneList);
                 if (ret.IsSuccess)
                 {
-                    MarkAsNeedRead();
+                    SetReadTimestampTo0(TableServer.TABLE_NAME);
                     SetStatus(true);
                 }
                 return ret;
@@ -298,13 +306,11 @@ namespace _1RM.Service.DataSource.Model
                     if (old != null)
                     {
                         old.Server = org;
-                        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     }
                     else
                     {
                         // cached data not equal to db data, refresh caches.
-                        ret.NeedReload = true;
-                        MarkAsNeedRead();
+                        SetReadTimestampTo0(TableServer.TABLE_NAME);
                     }
                     SetStatus(true);
                 }
@@ -340,16 +346,11 @@ namespace _1RM.Service.DataSource.Model
                     }
                     else
                     {
-                        ret.NeedReload = true;
-                        MarkAsNeedRead();
+                        SetReadTimestampTo0(TableServer.TABLE_NAME);
                         break;
                     }
                 }
-
-                if (!ret.NeedReload)
-                {
-                    LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                }
+                
                 SetStatus(true);
                 return ret;
             }
@@ -396,12 +397,11 @@ namespace _1RM.Service.DataSource.Model
                 var tmp = (Credential) credential.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 tmp.EncryptToDatabaseLevel();
-                var result = GetDataBase().AddPassword(tmp);
+                var result = GetDataBase().AddCredential(ref tmp);
                 if (result.IsSuccess)
                 {
+                    credential.DatabaseId = tmp.DatabaseId; // update the DatabaseId to match the new Id
                     credential.DataSource = this;
-                    result.NeedReload = true;
-                    MarkAsNeedRead();
                     SetStatus(true);
                 }
                 return result;
@@ -417,11 +417,10 @@ namespace _1RM.Service.DataSource.Model
                 var tmp = (Credential)org.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 tmp.EncryptToDatabaseLevel();
-                var ret = GetDataBase().UpdatePassword(tmp);
+                var ret = GetDataBase().UpdateCredential(tmp);
                 if (ret.IsSuccess)
                 {
-                    MarkAsNeedRead();
-                    ret.NeedReload = true;
+                    org.DataSource = this;
                     SetStatus(true);
                 }
                 return ret;
@@ -429,29 +428,27 @@ namespace _1RM.Service.DataSource.Model
             return Result.Success();
         }
 
-        public Result Database_UpdateCredential(IEnumerable<Credential> credentials)
-        {
-            if (_isWritable)
-            {
-                var cloneList = new List<Credential>();
-                foreach (var credential in credentials)
-                {
-                    var tmp = (Credential)credential.Clone();
-                    tmp.SetNotifyPropertyChangedEnabled(false);
-                    tmp.EncryptToDatabaseLevel();
-                    cloneList.Add(tmp);
-                }
-
-                var ret = GetDataBase().UpdatePassword(cloneList);
-                if (!ret.IsSuccess) return ret;
-
-                ret.NeedReload = true;
-                MarkAsNeedRead();
-                SetStatus(true);
-                return ret;
-            }
-            return Result.Success();
-        }
+        //public Result Database_UpdateCredential(IEnumerable<Credential> credentials)
+        //{
+        //    if (_isWritable)
+        //    {
+        //        var cloneList = new List<Credential>();
+        //        foreach (var credential in credentials)
+        //        {
+        //            var tmp = (Credential)credential.Clone();
+        //            tmp.SetNotifyPropertyChangedEnabled(false);
+        //            tmp.EncryptToDatabaseLevel();
+        //            cloneList.Add(tmp);
+        //        }
+        //        var ret = GetDataBase().UpdateCredential(cloneList);
+        //        if (!ret.IsSuccess) return ret;
+        //        ret.NeedReload = true;
+        //        SetReadTimestampTo0();
+        //        SetStatus(true);
+        //        return ret;
+        //    }
+        //    return Result.Success();
+        //}
 
 
         public Result Database_DeleteCredential(IEnumerable<string> names)
@@ -459,7 +456,7 @@ namespace _1RM.Service.DataSource.Model
             if (_isWritable)
             {
                 var enumerable = names.ToArray();
-                var ret = GetDataBase().DeletePassword(enumerable);
+                var ret = GetDataBase().DeleteCredential(enumerable);
                 if (ret.IsSuccess)
                 {
                     CachedCredentials.RemoveAll(x => enumerable.Contains(x.Name));
@@ -470,61 +467,31 @@ namespace _1RM.Service.DataSource.Model
             return Result.Fail(IoC.Translate("We can not delete from database:") + " readonly");
         }
 
-        private ResultSelects<Credential> Database_GetCredentials()
-        {
-            var ret = GetDataBase().GetPasswords();
-            if (ret.IsSuccess)
-            {
-                foreach (var credential in ret.Items)
-                {
-                    credential.DataSource = this;
-                }
-                SetStatus(true);
-            }
-            return ret;
-        }
-
 
         public IEnumerable<Credential> GetCredentials(bool force = false)
         {
-            var result = Database_GetCredentials();
-            if (result.IsSuccess)
+            if (Status != EnumDatabaseStatus.OK
+                || (force == false && !NeedRead(TableCredential.TABLE_NAME))
+                )
             {
-                return result.Items;
+                return CachedCredentials;
             }
-            return Array.Empty<Credential>();
-
-            //if (Status != EnumDatabaseStatus.OK
-            //    || force == false && !NeedRead())
-            //{
-            //    return CachedCredentials;
-            //}
-            //lock (this)
-            //{
-            //    var result = Database_GetCredentials();
-            //    if (result.IsSuccess)
-            //    {
-            //        LastReadFromDataSourceMillisecondsTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            //        CachedCredentials = new List<ProtocolBaseViewModel>(result.Items.Count);
-            //        foreach (var protocol in result.Items)
-            //        {
-            //            try
-            //            {
-            //                Execute.OnUIThreadSync(() =>
-            //                {
-            //                    var vm = new ProtocolBaseViewModel(protocol);
-            //                    CachedCredentials.Add(vm);
-            //                });
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                SimpleLogHelper.DebugInfo(e);
-            //            }
-            //        }
-            //        SetStatus(true);
-            //    }
-            //    return CachedCredentials;
-            //}
+            lock (this)
+            {
+                var result = GetDataBase().GetCredentials();
+                if (result.IsSuccess)
+                {
+                    SetReadTimestamp(TableCredential.TABLE_NAME);
+                    foreach (var credential in result.Items)
+                    {
+                        credential.DataSource = this;
+                    }
+                    SetStatus(true);
+                    CachedCredentials = result.Items;
+                    SetStatus(true);
+                }
+                return CachedCredentials;
+            }
         }
     }
 }

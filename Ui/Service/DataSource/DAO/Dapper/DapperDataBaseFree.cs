@@ -3,6 +3,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Dapper;
 using Newtonsoft.Json;
+using Npgsql.Internal.Postgres;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
@@ -127,81 +128,81 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
 
 
-        public override Result SetDataUpdateTimestamp(long time = -1)
+        public override Result SetTableUpdateTimestamp(string dataType, long time = -1)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.SetDataUpdateTimestamp(time);
+                var ret = base.SetTableUpdateTimestamp(dataType, time);
                 CloseConnection();
                 return ret;
             }
         }
 
-        public override ResultLong GetDataUpdateTimestamp()
+        public override ResultLong GetTableUpdateTimestamp(string tableName)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.GetDataUpdateTimestamp();
-                CloseConnection();
-                return ret;
-            }
-        }
-
-
-
-        public override ResultSelects<Credential> GetPasswords()
-        {
-            lock (this)
-            {
-                OpenConnection();
-                var ret = base.GetPasswords();
-                CloseConnection();
-                return ret;
-            }
-        }
-
-        public override Result AddPassword(Credential credential)
-        {
-            lock (this)
-            {
-                OpenConnection();
-                var ret = base.AddPassword(credential);
+                var ret = base.GetTableUpdateTimestamp(tableName);
                 CloseConnection();
                 return ret;
             }
         }
 
 
-        public override Result UpdatePassword(Credential credential)
+
+        public override ResultSelects<Credential> GetCredentials()
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.UpdatePassword(credential);
+                var ret = base.GetCredentials();
                 CloseConnection();
                 return ret;
             }
         }
 
-        public override Result UpdatePassword(IEnumerable<Credential> credentials)
+        public override Result AddCredential(ref Credential credential)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.UpdatePassword(credentials);
+                var ret = base.AddCredential(ref credential);
                 CloseConnection();
                 return ret;
             }
         }
 
-        public override Result DeletePassword(IEnumerable<string> names)
+
+        public override Result UpdateCredential(Credential credential)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.DeletePassword(names);
+                var ret = base.UpdateCredential(credential);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result UpdateCredential(IEnumerable<Credential> credentials)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.UpdateCredential(credentials);
+                CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result DeleteCredential(IEnumerable<string> names)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.DeleteCredential(names);
                 CloseConnection();
                 return ret;
             }

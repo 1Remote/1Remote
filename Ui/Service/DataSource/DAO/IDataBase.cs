@@ -29,7 +29,6 @@ namespace _1RM.Service.DataSource.DAO
     public class Result
     {
         public bool IsSuccess = false;
-        public bool NeedReload = false;
         public string ErrorInfo = string.Empty;
         private static readonly Result _SUCCESS = new Result() { IsSuccess = true };
         public static Result Success()
@@ -173,21 +172,21 @@ namespace _1RM.Service.DataSource.DAO
 
         public abstract Result DeleteServer(IEnumerable<string> ids);
 
-        #region TablePasswordVault
+        #region TableCredential
 
-        public abstract ResultSelects<Credential> GetPasswords();
+        public abstract ResultSelects<Credential> GetCredentials();
         /// <summary>
         /// insert and return id
         /// </summary>
-        public abstract Result AddPassword(Credential credential);
+        public abstract Result AddCredential(ref Credential credential);
 
         /// <summary>
         /// update Password by id
         /// </summary>
-        public abstract Result UpdatePassword(Credential credential);
-        public abstract Result UpdatePassword(IEnumerable<Credential> credentials);
+        public abstract Result UpdateCredential(Credential credential);
+        public abstract Result UpdateCredential(IEnumerable<Credential> credentials);
 
-        public abstract Result DeletePassword(IEnumerable<string> names);
+        public abstract Result DeleteCredential(IEnumerable<string> names);
 
         #endregion
 
@@ -196,8 +195,8 @@ namespace _1RM.Service.DataSource.DAO
 
         public abstract Result SetConfig(string key, string? value);
 
-        public abstract Result SetDataUpdateTimestamp(long time = -1);
-        public abstract ResultLong GetDataUpdateTimestamp();
+        public abstract Result SetTableUpdateTimestamp(string tableName, long time = -1);
+        public abstract ResultLong GetTableUpdateTimestamp(string tableName);
 
         protected void SetEncryptionTest()
         {

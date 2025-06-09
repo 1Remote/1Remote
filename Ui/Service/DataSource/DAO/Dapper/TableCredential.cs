@@ -5,10 +5,11 @@ using Shawn.Utils;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
-    public class TablePasswordVault
+    public class TableCredential
     {
-        public const string TABLE_NAME = "TablePasswordVault";
+        public const string TABLE_NAME = "Credentials";
         
+        public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Json { get; set; } = "";
         public string Hash { get; set; } = "";
@@ -20,6 +21,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 var c = JsonConvert.DeserializeObject<Credential>(Json);
                 if (c != null)
                 {
+                    c.DatabaseId = Id;
                     c.Name = Name;
                     c.Hash = Hash;
                 }

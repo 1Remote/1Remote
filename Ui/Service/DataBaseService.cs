@@ -4,6 +4,9 @@ using _1RM.Utils;
 
 namespace _1RM.Service
 {
+    /// <summary>
+    /// TODO: make it utils
+    /// </summary>
     public static class DataService
     {
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
