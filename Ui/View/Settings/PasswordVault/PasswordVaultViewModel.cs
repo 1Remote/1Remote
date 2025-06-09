@@ -92,8 +92,8 @@ namespace _1RM.View.Settings.PasswordVault
                         };
                         vm.OnSave += () =>
                         {
+                            // TODO: 编辑后，把所有引用这个 Credential 的 Protocol 都更新，使用事务
                             source.Database_UpdateCredential(vm.New);
-                            // edit
                             var i = Credentials.IndexOf(item);
                             Credentials.Remove(item);
                             Credentials.Insert(i, new CredentialItem(source, vm.New));

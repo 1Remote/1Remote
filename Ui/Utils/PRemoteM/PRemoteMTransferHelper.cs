@@ -184,14 +184,14 @@ namespace _1RM.Utils.PRemoteM
         {
             RSA? rsa = null;
             // check database rsa encrypt
-            var privateKeyPath = dataBase.Connection?.QueryFirstOrDefault<Config>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PrivateKeyPath", })?.Value ?? "";
+            var privateKeyPath = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PrivateKeyPath", })?.Value ?? "";
 
 
             if (!string.IsNullOrWhiteSpace(privateKeyPath)
                 && File.Exists(privateKeyPath))
             {
                 // validate encryption
-                var publicKey = dataBase.Connection?.QueryFirstOrDefault<Config>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PublicKey", })?.Value ?? "";
+                var publicKey = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PublicKey", })?.Value ?? "";
                 var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
                 if (pks != RSA.EnumRsaStatus.NoError)
                 {

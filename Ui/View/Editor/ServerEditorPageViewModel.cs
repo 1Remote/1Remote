@@ -340,32 +340,60 @@ namespace _1RM.View.Editor
                                 var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                                 foreach (var property in properties)
                                 {
-                                    if (property.SetMethod?.IsPublic == true
-                                        && property.SetMethod.IsAbstract == false
-                                        && property.Name != nameof(ProtocolBase.Id)
-                                        && property.Name != nameof(ProtocolBase.Tags)
-                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
-                                        && property.Name != nameof(LocalApp.ArgumentList))
+                                    if (property.SetMethod?.IsPublic != true
+                                        || property.SetMethod.IsAbstract == true
+                                        || property.Name == nameof(ProtocolBase.Id)
+                                        || property.Name == nameof(ProtocolBase.Tags)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.UserName)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.Password)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.PrivateKey)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
+                                        || property.Name == nameof(LocalApp.ArgumentList))
                                     {
-                                        if (property.PropertyType.IsGenericType
-                                            && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
-                                                || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
-                                        {
-                                            SimpleLogHelper.Warning(property.Name + " IsGenericType!");
-                                        }
-                                        var obj = property.GetValue(Server);
-                                        if (obj == null)
-                                            continue;
-                                        else if (obj.ToString() == Server.ServerEditorDifferentOptions)
-                                            continue;
-                                        else
-                                            foreach (var server in _serversInBuckEdit)
-                                            {
-                                                property.SetValue(server, obj);
-                                            }
+                                        continue;
                                     }
+
+
+                                    if (property.PropertyType.IsGenericType
+                                        && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                                            || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
+                                    {
+                                        SimpleLogHelper.Warning(property.Name + " IsGenericType!");
+                                    }
+                                    var obj = property.GetValue(Server);
+                                    if (obj == null)
+                                        continue;
+                                    else if (obj.ToString() == Server.ServerEditorDifferentOptions)
+                                        continue;
+                                    else
+                                        foreach (var server in _serversInBuckEdit)
+                                        {
+                                            property.SetValue(server, obj);
+                                        }
                                 }
 
+                                // handle credentials
+                                if (Server is ProtocolBaseWithAddressPortUserPwd sp && sp.InheritedCredentialName != sp.ServerEditorDifferentOptions)
+                                {
+                                    foreach (var server in _serversInBuckEdit)
+                                    {
+                                        if (server is not ProtocolBaseWithAddressPortUserPwd protocol) continue;
+                                        // do not overwrite the user & pass when the server is inherited from credential
+                                        if (protocol.InheritedCredentialName == sp.ServerEditorDifferentOptions && !string.IsNullOrEmpty(protocol.InheritedCredentialName)) continue;
+                                        if (sp.InheritedCredentialName != sp.ServerEditorDifferentOptions)
+                                            protocol.InheritedCredentialName = sp.InheritedCredentialName;
+                                        if (sp.UsePrivateKeyForConnect != null)
+                                            protocol.UsePrivateKeyForConnect = sp.UsePrivateKeyForConnect;
+                                        if (sp.UserName != sp.ServerEditorDifferentOptions)
+                                            protocol.UserName = sp.UserName;
+                                        if (sp.Password != sp.ServerEditorDifferentOptions)
+                                            protocol.Password = sp.Password;
+                                        if (sp.PrivateKey != sp.ServerEditorDifferentOptions)
+                                            protocol.PrivateKey = sp.PrivateKey;
+                                    }
+                                }
 
                                 // merge tags
                                 foreach (var server in _serversInBuckEdit)

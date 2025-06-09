@@ -13,14 +13,11 @@ namespace _1RM.Model.Protocol.Base
         #region Conn
 
 
-        private bool _isUserPswInheritedFromElseWhere = false;
-        /// <summary>
-        /// 是否从别处继承账号密码
-        /// </summary>
-        public bool IsUserPswInheritedFromElseWhere
+        private string _inheritedCredentialName = "";
+        public string InheritedCredentialName
         {
-            get => _isUserPswInheritedFromElseWhere;
-            set => SetAndNotifyIfChanged(ref _isUserPswInheritedFromElseWhere, value);
+            get => _inheritedCredentialName;
+            set => SetAndNotifyIfChanged(ref _inheritedCredentialName, value);
         }
 
         public const string MACRO_USERNAME = "%1RM_USERNAME%";

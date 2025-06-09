@@ -676,7 +676,7 @@ namespace _1RM.View.ServerList
                             }
 
                             source.Database_InsertServer(list);
-                            AppData.ReloadServerList(true);
+                            AppData.ReloadServerList(true); // reload server list after import
                             MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                         }
                         catch (Exception e)
@@ -757,7 +757,7 @@ namespace _1RM.View.ServerList
                             var ret = source.Database_InsertServer(list);
                             if (ret.IsSuccess)
                             {
-                                AppData.ReloadServerList(true);
+                                AppData.ReloadServerList(true); // reload server list after import db
                                 MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                             }
                             else
@@ -802,7 +802,7 @@ namespace _1RM.View.ServerList
                             if (list?.Count > 0)
                             {
                                 source.Database_InsertServer(list);
-                                AppData.ReloadServerList(true);
+                                AppData.ReloadServerList(true); // reload server list after import csv
                                 MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                                 return;
                             }

@@ -22,6 +22,12 @@ namespace _1RM.Model.Protocol.Base
         /// use to find if there are duplicated credentials
         /// </summary>
         [JsonIgnore]
+        public string DatabaseId { get; set; } = "";
+
+        /// <summary>
+        /// use to find if there are duplicated credentials
+        /// </summary>
+        [JsonIgnore]
         public string Hash { get; set; } = "";
 
         /// <summary>
