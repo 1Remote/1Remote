@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `{TableCredential.TABLE_NAME}` (
     `{nameof(TableCredential.Id)}`       VARCHAR (64) PRIMARY KEY
                                               NOT NULL
                                               UNIQUE,
-    `{nameof(TableCredential.Name)}`     VARCHAR (128) PRIMARY KEY
+    `{nameof(TableCredential.Name)}`     VARCHAR (128)
                                               NOT NULL
                                               UNIQUE,
     `{nameof(TableCredential.Hash)}`     VARCHAR (32) NOT NULL,

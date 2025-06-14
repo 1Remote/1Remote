@@ -50,11 +50,11 @@ namespace _1RM.View.Settings.PasswordVault
         {
             get
             {
-                return _cmdAdd ??= new RelayCommand( async (o) =>
+                return _cmdAdd ??= new RelayCommand(async (o) =>
                 {
                     var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
-                    if(source == null) return;
-                    var existedNames = Credentials.Select(x => x.Credential.Name).ToList();
+                    if (source == null) return;
+                    var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Credential.Name).ToList();
                     var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false)
                     {
                         RequireUserName = true,

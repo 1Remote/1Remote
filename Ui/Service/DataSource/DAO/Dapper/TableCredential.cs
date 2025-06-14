@@ -8,8 +8,13 @@ namespace _1RM.Service.DataSource.DAO.Dapper
     public class TableCredential
     {
         public const string TABLE_NAME = "Credentials";
-        
+        /// <summary>
+        /// use for update, delete
+        /// </summary>
         public string Id { get; set; } = string.Empty;
+        /// <summary>
+        /// use for find
+        /// </summary>
         public string Name { get; set; } = string.Empty;
         public string Json { get; set; } = "";
         public string Hash { get; set; } = "";
