@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.DAO.Dapper;
@@ -409,15 +410,25 @@ namespace _1RM.Service.DataSource.Model
             return Result.Success();
         }
 
-
-        public Result Database_UpdateCredential(Credential org)
+        /// <summary>
+        /// update credential in database by Id, and update related protocols.
+        /// </summary>
+        /// <param name="org">the credential to update</param>
+        /// <para name="credentialNameBeforeUpdate">the credential name before update, used to find related protocols.</para>
+        /// <returns></returns>
+        public Result Database_UpdateCredential(Credential org, string credentialNameBeforeUpdate)
         {
             if (_isWritable)
             {
+                var servers = GetServers();
+                var relatedProtocol = servers.Select(x => x.Server)
+                    .Where(x => (x as ProtocolBaseWithAddressPortUserPwd)?.InheritedCredentialName == credentialNameBeforeUpdate)
+                    .Select(x => (ProtocolBaseWithAddressPortUserPwd)x).ToList();
+
                 var tmp = (Credential)org.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 tmp.EncryptToDatabaseLevel();
-                var ret = GetDataBase().UpdateCredential(tmp);
+                var ret = GetDataBase().UpdateCredential(tmp, relatedProtocol);
                 if (ret.IsSuccess)
                 {
                     org.DataSource = this;
@@ -456,7 +467,11 @@ namespace _1RM.Service.DataSource.Model
             if (_isWritable)
             {
                 var enumerable = names.ToArray();
-                var ret = GetDataBase().DeleteCredential(enumerable);
+                var servers = GetServers();
+                var relatedProtocols = servers.Select(x => x.Server)
+                    .Where(x => enumerable.Any(name => name == (x as ProtocolBaseWithAddressPortUserPwd)?.InheritedCredentialName))
+                    .Select(x => (ProtocolBaseWithAddressPortUserPwd)x).ToList();
+                var ret = GetDataBase().DeleteCredential(enumerable, relatedProtocols);
                 if (ret.IsSuccess)
                 {
                     CachedCredentials.RemoveAll(x => enumerable.Contains(x.Name));

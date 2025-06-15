@@ -175,29 +175,29 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
 
 
-        public override Result UpdateCredential(Credential credential)
+        public override Result UpdateCredential(Credential credential, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.UpdateCredential(credential);
+                var ret = base.UpdateCredential(credential, relatedProtocols);
                 CloseConnection();
                 return ret;
             }
         }
 
-        public override Result UpdateCredential(IEnumerable<Credential> credentials)
-        {
-            lock (this)
-            {
-                OpenConnection();
-                var ret = base.UpdateCredential(credentials);
-                CloseConnection();
-                return ret;
-            }
-        }
+        //public override Result UpdateCredential(IEnumerable<Credential> credentials)
+        //{
+        //    lock (this)
+        //    {
+        //        OpenConnection();
+        //        var ret = base.UpdateCredential(credentials);
+        //        CloseConnection();
+        //        return ret;
+        //    }
+        //}
 
-        public override Result DeleteCredential(IEnumerable<string> names)
+        public override Result DeleteCredential(IEnumerable<string> names, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null)
         {
             lock (this)
             {

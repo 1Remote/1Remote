@@ -180,13 +180,17 @@ namespace _1RM.Service.DataSource.DAO
         /// </summary>
         public abstract Result AddCredential(ref Credential credential);
 
-        /// <summary>
-        /// update Password by id
-        /// </summary>
-        public abstract Result UpdateCredential(Credential credential);
-        public abstract Result UpdateCredential(IEnumerable<Credential> credentials);
 
-        public abstract Result DeleteCredential(IEnumerable<string> names);
+        /// <summary>
+        /// update credential in database by Id, and update related protocols.
+        /// </summary>
+        /// <param name="credential">the credential to update</param>
+        /// <param name="relatedProtocols">the protocols used this credential, will update the credential in these protocols</param>
+        /// <returns></returns>
+        public abstract Result UpdateCredential(Credential credential, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null);
+        //public abstract Result UpdateCredential(IEnumerable<Credential> credentials);
+
+        public abstract Result DeleteCredential(IEnumerable<string> names, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null);
 
         #endregion
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
@@ -12,7 +11,7 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
-namespace _1RM.View.Settings.PasswordVault
+namespace _1RM.View.Settings.CredentialVault
 {
     public class CredentialItem
     {
@@ -26,15 +25,13 @@ namespace _1RM.View.Settings.PasswordVault
         public Credential Credential { get; }
     }
 
-    public class PasswordVaultViewModel : NotifyPropertyChangedBase
+    public class CredentialVaultViewModel : NotifyPropertyChangedBase
     {
         private readonly DataSourceService _sourceService;
-
         public ObservableCollection<CredentialItem> Credentials { get; } = new ObservableCollection<CredentialItem>();
-        public PasswordVaultViewModel(DataSourceService sourceService)
+        public CredentialVaultViewModel(DataSourceService sourceService)
         {
             _sourceService = sourceService;
-            // TODO Read from data sources
             var tuples = _sourceService.GetSourceCredentials(false);
             foreach (var tuple in tuples)
             {
@@ -63,8 +60,15 @@ namespace _1RM.View.Settings.PasswordVault
                     };
                     vm.OnSave += () =>
                     {
-                        source.Database_InsertCredential(vm.New);
-                        Credentials.Add(new CredentialItem(source, vm.New));
+                        var ret = source.Database_InsertCredential(vm.New);
+                        if (ret.IsSuccess)
+                        {
+                            Credentials.Add(new CredentialItem(source, vm.New));
+                        }
+                        else
+                        {
+                            MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                        }
                     };
                     MaskLayerController.ShowWindowWithMask(vm);
                 });
@@ -83,6 +87,7 @@ namespace _1RM.View.Settings.PasswordVault
                     {
                         var source = item.DataSource;
                         item.Credential.DecryptToConnectLevel();
+                        var name = item.Credential.Name;
                         var existedNames = Credentials.Where(x => x != item).Select(x => x.Credential.Name).ToList();
                         var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false)
                         {
@@ -93,7 +98,7 @@ namespace _1RM.View.Settings.PasswordVault
                         vm.OnSave += () =>
                         {
                             // TODO: 编辑后，把所有引用这个 Credential 的 Protocol 都更新，使用事务
-                            source.Database_UpdateCredential(vm.New);
+                            source.Database_UpdateCredential(vm.New, name);
                             var i = Credentials.IndexOf(item);
                             Credentials.Remove(item);
                             Credentials.Insert(i, new CredentialItem(source, vm.New));
