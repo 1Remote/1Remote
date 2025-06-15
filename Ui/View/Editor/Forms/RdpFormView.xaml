@@ -16,24 +16,7 @@
         <StackPanel>
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
-
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                 Tag="e.g. 192.168.0.101"></TextBox>
-                    </Grid>
-                    <TextBlock Style="{StaticResource EditorRowGridTitleFollowing}" Width="60" Text="{DynamicResource Port}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
-                                 InputMethod.IsInputMethodEnabled="False"
-                                 InputScope="Number"></TextBox>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-
+            <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
 
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
@@ -45,7 +28,7 @@
             </Grid>
 
 
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <!--<Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -65,7 +48,7 @@
                     </Grid>
                     <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
 
             <Grid Style="{StaticResource EditorRowGrid}">

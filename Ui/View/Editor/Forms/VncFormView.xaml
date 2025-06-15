@@ -15,8 +15,9 @@
         <StackPanel>
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+            <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
 
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <!--<Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -32,9 +33,9 @@
                         ></TextBox>
                     </Grid>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <!--<Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -42,8 +43,9 @@
                     </Grid>
                     <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
+            <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
             <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
 

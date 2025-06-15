@@ -31,7 +31,19 @@
             </StackPanel>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
+
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Availability detection'}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <CheckBox Content="{DynamicResource 'Check if address is available before connect'}" 
+                              IsChecked="{Binding New.IsPingBeforeConnect}"
+                              Margin="0 5 0 0"></CheckBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <!--<Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -48,8 +60,9 @@
                 </Grid>
                 <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
+        <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
         <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
         <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">

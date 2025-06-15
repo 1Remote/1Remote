@@ -1,5 +1,6 @@
 ﻿using _1RM.Model.Protocol.Base;
 using _1RM.View.Editor.Forms.AlternativeCredential;
+using _1RM.View.Editor.Forms.Utils;
 
 namespace _1RM.View.Editor.Forms
 {

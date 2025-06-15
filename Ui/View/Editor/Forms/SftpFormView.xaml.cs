@@ -13,22 +13,22 @@ namespace _1RM.View.Editor.Forms
         {
             InitializeComponent();
 
-            Loaded += (sender, args) =>
-            {
-                if (DataContext is SftpFormViewModel { New: var vm })
-                {
-	                bool? privateKey = false;
-                    if (vm.PrivateKey == vm.ServerEditorDifferentOptions)
-                    {
-                        privateKey = null;
-                    }
-                    if (!string.IsNullOrEmpty(vm.PrivateKey))
-                    {
-                        privateKey = true;
-                    }
-                    CbUsePrivateKey.IsChecked = privateKey;
-                }
-            };
+            //Loaded += (sender, args) =>
+            //{
+            //    if (DataContext is SftpFormViewModel { New: var vm })
+            //    {
+	           //     bool? privateKey = false;
+            //        if (vm.PrivateKey == vm.ServerEditorDifferentOptions)
+            //        {
+            //            privateKey = null;
+            //        }
+            //        if (!string.IsNullOrEmpty(vm.PrivateKey))
+            //        {
+            //            privateKey = true;
+            //        }
+            //        CbUsePrivateKey.IsChecked = privateKey;
+            //    }
+            //};
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)

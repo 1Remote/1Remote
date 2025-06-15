@@ -49,7 +49,19 @@ namespace _1RM.Model.Protocol.Base
         public string Password
         {
             get => _password;
-            set => SetAndNotifyIfChanged(ref _password, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _password, value))
+                {
+                    if (!string.IsNullOrEmpty(_password) && _password != ServerEditorDifferentOptions)
+                    {
+                        _privateKey = "";
+                        RaisePropertyChanged(nameof(PrivateKey));
+                        _usePrivateKeyForConnect = false;
+                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
+                    }
+                }
+            }
         }
 
         private bool? _usePrivateKeyForConnect;
@@ -66,7 +78,19 @@ namespace _1RM.Model.Protocol.Base
         public string PrivateKey
         {
             get => _privateKey;
-            set => SetAndNotifyIfChanged(ref _privateKey, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _privateKey, value))
+                {
+                    if (!string.IsNullOrEmpty(_privateKey) && _privateKey != ServerEditorDifferentOptions)
+                    {
+                        _password = "";
+                        RaisePropertyChanged(nameof(Password));
+                        _usePrivateKeyForConnect = true;
+                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
+                    }
+                }
+            }
         }
 
         /// <summary>

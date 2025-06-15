@@ -14,8 +14,9 @@
     <StackPanel>
 
         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+        <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <!--<Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -24,15 +25,17 @@
                 </Grid>
                 <TextBlock Style="{StaticResource EditorRowGridTitleFollowing}" Width="60" Text="{DynamicResource Port}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                             MinWidth="50" HorizontalAlignment="Left"
+                    <TextBox MinWidth="50" 
+                             Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
+                             HorizontalAlignment="Left"
                              InputMethod.IsInputMethodEnabled="False"
-                             InputScope="Number"></TextBox>
+                             InputScope="Number"
+                    ></TextBox>
                 </Grid>
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <!--<Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -49,8 +52,9 @@
                 </Grid>
                 <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
+        <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
         <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
         <Grid Style="{StaticResource EditorRowGrid}">
@@ -129,7 +133,7 @@
         </Grid>
 
 
-        <Grid Visibility="{Binding New.MstscModeEnabled, Converter={StaticResource ConverterBool2Visible}}">
+        <Grid>
             <StackPanel>
                 <Grid Style="{StaticResource EditorRowGrid}">
                     <StackPanel Orientation="Horizontal">
