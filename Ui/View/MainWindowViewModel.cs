@@ -25,7 +25,7 @@ namespace _1RM.View
         About,
         SettingsGeneral,
         SettingsData,
-        SettingsPasswordVault,
+        SettingsCredentialVault,
         SettingsLauncher,
         SettingsTheme,
         SettingsRunners,

@@ -58,7 +58,7 @@ namespace _1RM.View.Settings
                 case EnumMainWindowPage.SettingsData:
                     SelectedViewModel = IoC.Get<DataSourceViewModel>();
                     break;
-                case EnumMainWindowPage.SettingsPasswordVault:
+                case EnumMainWindowPage.SettingsCredentialVault:
                     SelectedViewModel = IoC.Get<CredentialVaultViewModel>();
                     break;
                 case EnumMainWindowPage.SettingsLauncher:

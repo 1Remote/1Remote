@@ -4,8 +4,11 @@ using System.Linq;
 using System.Windows;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
-using _1RM.Service.DataSource;
 using _1RM.Utils;
+using _1RM.View.Editor.Forms.AlternativeCredential;
+using _1RM.View.Settings.CredentialVault;
+using _1RM.View.Utils;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.Utils;
@@ -13,24 +16,30 @@ namespace _1RM.View.Editor.Forms.Utils;
 public class CredentialViewModel : NotifyPropertyChangedBaseScreen
 {
     public ProtocolBaseWithAddressPortUserPwd New { get; }
-    public List<Credential> Credentials { get; }
+    public List<Credential> Credentials { get; private set; }
     public List<string> CredentialNames { get; }
     public bool ShowPrivateKeyInput { get; }
     public CredentialViewModel(ProtocolBaseWithAddressPortUserPwd protocol)
     {
         New = protocol;
-        var credentials = IoC.Get<DataSourceService>().GetCredentials(true);
-        if (protocol.ShowPasswordInput() && protocol.ShowPrivateKeyInput())
+        var credentials = protocol.DataSource?.GetCredentials(true)?.ToList() ?? new List<Credential>();
+        if (credentials.Any())
         {
+            if (protocol.ShowPasswordInput() && protocol.ShowPrivateKeyInput())
+            {
+            }
+
+            if (protocol.ShowPasswordInput() && !protocol.ShowPrivateKeyInput())
+            {
+                credentials = credentials.Where(x => !string.IsNullOrEmpty(x.Password)).ToList();
+            }
+
+            if (!protocol.ShowPasswordInput() && protocol.ShowPrivateKeyInput())
+            {
+                credentials = credentials.Where(x => !string.IsNullOrEmpty(x.PrivateKeyPath)).ToList();
+            }
         }
-        if (protocol.ShowPasswordInput() && !protocol.ShowPrivateKeyInput())
-        {
-            credentials = credentials.Where(x => !string.IsNullOrEmpty(x.Password)).ToList();
-        }
-        if (!protocol.ShowPasswordInput() && protocol.ShowPrivateKeyInput())
-        {
-            credentials = credentials.Where(x => !string.IsNullOrEmpty(x.PrivateKeyPath)).ToList();
-        }
+
         ShowPrivateKeyInput = protocol.ShowPrivateKeyInput();
         if (New.UsePrivateKeyForConnect == true)
         {
@@ -55,12 +64,14 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         _selectedCredential = selected ?? Credentials.First();
     }
 
-    private Credential _selectedCredential;
-    public Credential SelectedCredential
+
+    private Credential? _selectedCredential = null;
+    public Credential? SelectedCredential
     {
         get => _selectedCredential;
         set
         {
+            if (value == null) return;
             if (SetAndNotifyIfChanged(ref _selectedCredential, value))
             {
                 New.InheritedCredentialName = value.Name;
@@ -93,10 +104,10 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
 
     public string SelectedCredentialName
     {
-        get => _selectedCredential.Name;
+        get => _selectedCredential?.Name ?? "";
         set
         {
-            if (_selectedCredential.Name != value)
+            if (_selectedCredential?.Name != value)
             {
                 SelectedCredential = Credentials.FirstOrDefault(x => x.Name == value) ?? Credentials.First();
             }
@@ -110,5 +121,43 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         if (path == null) return;
         New.PrivateKey = path;
         New.Password = "";
+    }
+
+
+
+
+    private RelayCommand? _cmdAdd;
+    public RelayCommand CmdAdd
+    {
+        get
+        {
+            return _cmdAdd ??= new RelayCommand(async (o) =>
+            {
+                var source = New.DataSource;
+                if (source == null) return;
+                var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Name).ToList();
+                var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false)
+                {
+                    RequireUserName = New.ShowUserNameInput(),
+                    RequirePassword = New.ShowPasswordInput(),
+                    RequirePrivateKey = New.ShowPrivateKeyInput(),
+                };
+                vm.OnSave += () =>
+                {
+                    var ret = source.Database_InsertCredential(vm.New);
+                    if (ret.IsSuccess)
+                    {
+                        Credentials.Add(vm.New);
+                        Credentials = new List<Credential>(Credentials);
+                        RaisePropertyChanged(nameof(Credentials));
+                    }
+                    else
+                    {
+                        MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                    }
+                };
+                MaskLayerController.ShowWindowWithMask(vm);
+            }, o => New.DataSource != null); // when DataSource is null, it means in bulk edit and servers from different database are editing.
+        }
     }
 }
