@@ -71,7 +71,6 @@ VALUES
 
                 try
                 {
-                    // TODO: 检查 credential.Name 是否已经存在
                     var tpv = new TableCredential()
                     {
                         Id = Ulid.NewUlid().ToString(),

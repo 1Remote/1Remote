@@ -368,7 +368,6 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                     }
                     else
                     {
-                        // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
                         return Result.Fail(info, DatabaseName, "Update failed, no rows affected.");
                     }
                 }
