@@ -174,7 +174,7 @@ namespace _1RM.Service.DataSource.DAO
 
         #region TableCredential
 
-        public abstract ResultSelects<Credential> GetCredentials();
+        public abstract ResultSelects<Credential> GetCredentials(bool closeInEnd = true);
         /// <summary>
         /// insert and return id
         /// </summary>
@@ -195,12 +195,12 @@ namespace _1RM.Service.DataSource.DAO
         #endregion
 
 
-        public abstract ResultString GetConfig(string key);
+        public abstract ResultString GetConfig(string key, bool closeInEnd = true);
 
-        public abstract Result SetConfig(string key, string? value);
+        public abstract Result SetConfig(string key, string? value, bool closeInEnd = true);
 
-        public abstract Result SetTableUpdateTimestamp(string tableName, long time = -1);
-        public abstract ResultLong GetTableUpdateTimestamp(string tableName);
+        public abstract Result SetTableUpdateTimestamp(string tableName, long time = -1, bool closeInEnd = true);
+        public abstract ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = true);
 
         protected void SetEncryptionTest()
         {

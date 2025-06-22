@@ -112,11 +112,12 @@ namespace _1RM.Model.Protocol.Base
         {
             var c = new Credential()
             {
+                Name = InheritedCredentialName,
                 Address = Address,
                 Port = Port,
                 Password = Password,
                 UserName = UserName,
-                PrivateKeyPath = PrivateKey
+                PrivateKeyPath = PrivateKey,
             };
             return c;
         }

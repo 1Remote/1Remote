@@ -5,8 +5,6 @@ using Dapper;
 using _1RM.Model.Protocol.Base;
 using NUlid;
 using Newtonsoft.Json;
-using System.Data;
-using System.Windows;
 
 // ReSharper disable InconsistentNaming
 
@@ -33,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `{TableCredential.TABLE_NAME}` (
             }
         }
 
-        public override ResultSelects<Credential> GetCredentials()
+        public override ResultSelects<Credential> GetCredentials(bool closeInEnd = false)
         {
             string info = IoC.Translate("We can not select from database:");
 
@@ -46,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `{TableCredential.TABLE_NAME}` (
                     var ps = _dbConnection.Query<TableCredential>(NormalizedSql($"SELECT * FROM `{TableCredential.TABLE_NAME}`"))
                                                             .Select(x => x.ToCredential())
                                                             .Where(x => x != null).ToList();
-                    SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
+                    SetTableUpdateTimestamp(TableCredential.TABLE_NAME, closeInEnd: closeInEnd);
                     return ResultSelects<Credential>.Success((ps as List<Credential>)!);
                 }
                 catch (Exception e)
@@ -71,17 +69,11 @@ VALUES
 
                 try
                 {
-                    var tpv = new TableCredential()
-                    {
-                        Id = Ulid.NewUlid().ToString(),
-                        Name = credential.Name,
-                        Hash = credential.GetHash(),
-                        Json = JsonConvert.SerializeObject(credential),
-                    };
-                    int affCount = _dbConnection?.Execute(SqlInsertCredentialVault, tpv) ?? 0;
+                    var tableCredential = credential.ToTableCredential();
+                    int affCount = _dbConnection?.Execute(SqlInsertCredentialVault, tableCredential) ?? 0;
                     if (affCount > 0)
                     {
-                        credential.DatabaseId = tpv.Id; // update the DatabaseId to match the new Id
+                        credential.DatabaseId = tableCredential.Id; // update the DatabaseId to match the new Id
                         return Result.Success();
                     }
                     return Result.Fail(info, DatabaseName, "No rows affected during insert operation.");
@@ -132,7 +124,7 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                                 protocol.InheritedCredentialName = tpv.Name;
                                 protocol.SetCredential(credential);
                             }
-                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToDbServer())) > 0;
+                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
                         }
                         if (!ret)
                         {
@@ -220,7 +212,7 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                             {
                                 protocol.InheritedCredentialName = ""; // clear the credential name
                             }
-                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToDbServer())) > 0;
+                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
                         }
                         if (!ret)
                         {

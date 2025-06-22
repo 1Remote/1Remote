@@ -104,61 +104,66 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override ResultString GetConfig(string key)
+        public override ResultString GetConfig(string key, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.GetConfig(key);
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }
 
         /// <inheritdoc />
-        public override Result SetConfig(string key, string? value)
+        public override Result SetConfig(string key, string? value, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.SetConfig(key, value);
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }
 
 
-        public override Result SetTableUpdateTimestamp(string dataType, long time = -1)
+        public override Result SetTableUpdateTimestamp(string dataType, long time = -1, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.SetTableUpdateTimestamp(dataType, time);
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }
 
-        public override ResultLong GetTableUpdateTimestamp(string tableName)
+        public override ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.GetTableUpdateTimestamp(tableName);
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }
 
 
 
-        public override ResultSelects<Credential> GetCredentials()
+        public override ResultSelects<Credential> GetCredentials(bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.GetCredentials();
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }

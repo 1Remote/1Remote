@@ -675,14 +675,21 @@ namespace _1RM.View.ServerList
                                 list.Add(server);
                             }
 
-                            source.Database_InsertServer(list);
-                            AppData.ReloadServerList(true); // reload server list after import
-                            MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
+                            var ret = source.Database_InsertServer(list);
+                            if (ret.IsSuccess)
+                            {
+                                AppData.ReloadServerList(true); // reload server list after import
+                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
+                            }
+                            else
+                            {
+                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                            }
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Warning(e);
-                            MessageBoxHelper.ErrorAlert(IoC.Translate("import_failure_with_data_format_error"));
+                            MessageBoxHelper.ErrorAlert(IoC.Translate("import_failure_with_data_format_error") + " : " + e.Message);
                         }
                         finally
                         {
@@ -801,10 +808,16 @@ namespace _1RM.View.ServerList
                             var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.IconsBase64);
                             if (list?.Count > 0)
                             {
-                                source.Database_InsertServer(list);
-                                AppData.ReloadServerList(true); // reload server list after import csv
-                                MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
-                                return;
+                                var ret = source.Database_InsertServer(list);
+                                if (ret.IsSuccess)
+                                {
+                                    AppData.ReloadServerList(true); // reload server list after import db
+                                    MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
+                                }
+                                else
+                                {
+                                    MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                                }
                             }
                         }
                         catch (Exception e)

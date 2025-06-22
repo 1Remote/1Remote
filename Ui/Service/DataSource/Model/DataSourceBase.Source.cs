@@ -84,10 +84,17 @@ namespace _1RM.Service.DataSource.Model
         {
             _lastReadTimestamp.Clear();
         }
+
+        /// <summary>
+        /// reset to 0, means need read.
+        /// </summary>
         private void SetReadTimestampTo0(string tableName)
         {
             SetReadTimestamp(tableName, 0); // reset to 0, means need read.
         }
+        /// <summary>
+        /// set the table read timestamp to a specific value, default is current time in milliseconds since epoch.
+        /// </summary>
         private void SetReadTimestamp(string tableName, long timestamp = -1)
         {
             if (timestamp < 0)
@@ -249,6 +256,7 @@ namespace _1RM.Service.DataSource.Model
             return DatabaseStatus.New(Status);
         }
 
+
         public Result Database_InsertServer(ProtocolBase server)
         {
             if (_isWritable)
@@ -259,9 +267,8 @@ namespace _1RM.Service.DataSource.Model
                 var result = GetDataBase().AddServer(ref tmp);
                 if (result.IsSuccess)
                 {
-                    server.Id = tmp.Id;
-                    server.DataSource = this;
                     SetReadTimestampTo0(TableServer.TABLE_NAME);
+                    SetReadTimestampTo0(TableCredential.TABLE_NAME); // because server may add by import one have credential, so we need to reload credentials too.
                     SetStatus(true);
                 }
                 return result;
@@ -285,6 +292,7 @@ namespace _1RM.Service.DataSource.Model
                 if (ret.IsSuccess)
                 {
                     SetReadTimestampTo0(TableServer.TABLE_NAME);
+                    SetReadTimestampTo0(TableCredential.TABLE_NAME); // because server may add by import one have credential, so we need to reload credentials too.
                     SetStatus(true);
                 }
                 return ret;

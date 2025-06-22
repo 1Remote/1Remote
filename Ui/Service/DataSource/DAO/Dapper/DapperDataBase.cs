@@ -275,7 +275,7 @@ VALUES
                 {
                     if (protocolBase.IsTmpSession())
                         protocolBase.Id = Ulid.NewUlid().ToString();
-                    var server = protocolBase.ToDbServer();
+                    var server = protocolBase.ToTableServer();
                     int affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
                     if (affCount > 0)
                         return Result.Success();
@@ -297,20 +297,105 @@ VALUES
             lock (this)
             {
                 var result = OpenConnection(info);
-                if (!result.IsSuccess) return result;
+                if (!result.IsSuccess || _dbConnection == null) return result;
                 try
                 {
+                    var credentialsToAdd = new List<Credential>();
+                    var credentials = new List<Credential>();
+                    var cred2Servers = new Dictionary<string, List<ProtocolBaseWithAddressPortUserPwd>>();
+                    foreach (var protocolBase in protocolBases)
+                    {
+                        protocolBase.DecryptToConnectLevel();
+                        if (protocolBase is ProtocolBaseWithAddressPortUserPwd p && !string.IsNullOrEmpty(p.InheritedCredentialName))
+                        {
+                            var c = p.GetCredential();
+                            c.Address = "";
+                            c.Port = "";
+                            if (cred2Servers.ContainsKey(c.GetHash()))
+                            {
+                                cred2Servers[c.GetHash()].Add(p);
+                            }
+                            else
+                            {
+                                cred2Servers.Add(c.GetHash(), new List<ProtocolBaseWithAddressPortUserPwd>() { p });
+                            }
+                            credentials.Add(c);
+                        }
+                    }
+                    if (credentials.Count > 0)
+                    {
+                        var result1 = GetCredentials(false);
+                        if (!result1.IsSuccess) return result1;
+                        result = OpenConnection(info);
+                        if (!result.IsSuccess || _dbConnection == null) return result;
+                        var credentialsInDb = result1.Items;
+                        foreach (var credential in credentials)
+                        {
+                            var hash = credential.GetHash();
+                            // check if already exists
+                            if (credentialsInDb.Any(x => string.Equals(x.Hash, hash, StringComparison.OrdinalIgnoreCase))) continue;
+                            var name = credential.Name;
+                            // check name, append (1) or (2) or (3) if duplicate existed.
+                            {
+                                int i = 2;
+                                while (credentialsInDb.Any(x => x.Name == credential.Name))
+                                {
+                                    credential.Name = $"{name}({i})";
+                                    i++;
+                                }
+                            }
+                            if (credentialsToAdd.Any(x => string.Equals(x.GetHash(), hash, StringComparison.OrdinalIgnoreCase))) continue;
+                            // check name, append (1) or (2) or (3) if duplicate existed.
+                            {
+                                int i = 2;
+                                while (credentialsToAdd.Any(x => x.Name == credential.Name))
+                                {
+                                    credential.Name = $"{name}({i})";
+                                    i++;
+                                }
+                            }
+
+                            foreach (var ss in cred2Servers[hash])
+                            {
+                               ss.InheritedCredentialName = credential.Name;
+                            }
+                            credentialsToAdd.Add(credential);
+                        }
+                    }
+
+                    using var transaction = _dbConnection.BeginTransaction();
+
+
+                    bool ret = false;
                     var rng = new NUlid.Rng.MonotonicUlidRng();
                     foreach (var protocolBase in protocolBases)
                     {
                         if (protocolBase.IsTmpSession())
                             protocolBase.Id = Ulid.NewUlid(rng).ToString();
                     }
-                    var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
-                    var affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
-                    if (affCount > 0)
-                        return Result.Success();
-                    return Result.Fail(info, DatabaseName, "Insert failed, no rows affected.");
+
+                    // INSERT CREDENTIALS
+                    if (credentialsToAdd.Count > 0)
+                    {
+                        var tableCredentials = credentialsToAdd.Select(x => x.ToTableCredential()).ToList();
+                        ret = _dbConnection?.Execute(SqlInsertCredentialVault, tableCredentials) > 0;
+                        if (!ret)
+                        {
+                            transaction.Rollback();
+                            return Result.Fail(info, DatabaseName, "Insert credentials failed, no rows affected.");
+                        }
+                    }
+
+                    // INSERT SERVERS
+                    var servers = protocolBases.Select(x => x.ToTableServer()).ToList();
+                    ret = _dbConnection?.Execute(SqlInsert, servers) > 0;
+                    if (!ret)
+                    {
+                        transaction.Rollback();
+                        return Result.Fail(info, DatabaseName, "Insert servers failed, no rows affected.");
+                    }
+                    transaction.Commit();
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
@@ -333,7 +418,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+                    var ret = _dbConnection?.Execute(SqlUpdate, server.ToTableServer()) > 0;
                     if (ret)
                     {
                         return Result.Success();
@@ -360,7 +445,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var items = servers.Select(x => x.ToDbServer());
+                    var items = servers.Select(x => x.ToTableServer());
                     var ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
                     if (ret)
                     {
@@ -403,12 +488,12 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
             }
         }
 
-        public override ResultString GetConfig(string key)
+        public override ResultString GetConfig(string key, bool closeInEnd = false)
         {
-            return GetConfigPrivate(key);
+            return GetConfigPrivate(key, closeInEnd);
         }
 
-        protected ResultString GetConfigPrivate(string key)
+        protected ResultString GetConfigPrivate(string key, bool closeInEnd = false)
         {
             string info = IoC.Translate("We can not read from database:");
             lock (this)
@@ -432,12 +517,12 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
         private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{TableConfig.TABLE_NAME}` SET `{nameof(TableConfig.Value)}` = @{nameof(TableConfig.Value)} WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
         private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{TableConfig.TABLE_NAME}` WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
 
-        public override Result SetConfig(string key, string? value)
+        public override Result SetConfig(string key, string? value, bool closeInEnd = false)
         {
-            return SetConfigPrivate(key, value);
+            return SetConfigPrivate(key, value, closeInEnd);
         }
 
-        protected Result SetConfigPrivate(string key, string? value)
+        protected Result SetConfigPrivate(string key, string? value, bool closeInEnd = false)
         {
             string info = IoC.Translate("We can not update on database:");
             lock (this)
@@ -468,7 +553,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
             }
         }
 
-        public override Result SetTableUpdateTimestamp(string tableName, long time = -1)
+        public override Result SetTableUpdateTimestamp(string tableName, long time = -1, bool closeInEnd = false)
         {
             lock (this)
             {
@@ -479,7 +564,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
             }
         }
 
-        public override ResultLong GetTableUpdateTimestamp(string tableName)
+        public override ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = false)
         {
             lock (this)
             {

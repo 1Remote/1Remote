@@ -44,9 +44,9 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
     }
 
-    internal static class ServerHelperStatic
+    internal static class TableServerHelperStatic
     {
-        public static TableServer ToDbServer(this ProtocolBase s)
+        public static TableServer ToTableServer(this ProtocolBase s)
         {
             var ret = new TableServer()
             {
