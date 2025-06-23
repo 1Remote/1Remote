@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `{TableCredential.TABLE_NAME}` (
                     var ps = _dbConnection.Query<TableCredential>(NormalizedSql($"SELECT * FROM `{TableCredential.TABLE_NAME}`"))
                                                             .Select(x => x.ToCredential())
                                                             .Where(x => x != null).ToList();
-                    SetTableUpdateTimestamp(TableCredential.TABLE_NAME, closeInEnd: closeInEnd);
                     return ResultSelects<Credential>.Success((ps as List<Credential>)!);
                 }
                 catch (Exception e)
@@ -74,6 +73,7 @@ VALUES
                     if (affCount > 0)
                     {
                         credential.DatabaseId = tableCredential.Id; // update the DatabaseId to match the new Id
+                        SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
                         return Result.Success();
                     }
                     return Result.Fail(info, DatabaseName, "No rows affected during insert operation.");
@@ -139,6 +139,7 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
 
                     if (ret)
                     {
+                        SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
                         return Result.Success();
                     }
                     return Result.Fail(info, DatabaseName, "No rows affected during update operation.");
@@ -225,7 +226,10 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                     }
 
                     if (ret)
+                    {
+                        SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
                         return Result.Success();
+                    }
                     return Result.Fail(info, DatabaseName, "No rows affected during delete operation.");
                 }
                 catch (Exception e)

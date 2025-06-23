@@ -245,7 +245,6 @@ CREATE TABLE IF NOT EXISTS `{TableServer.TABLE_NAME}` (
                     var ps = _dbConnection.Query<TableServer>(NormalizedSql($"SELECT * FROM `{TableServer.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
-                    SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                     return ResultSelects<ProtocolBase>.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
@@ -278,7 +277,10 @@ VALUES
                     var server = protocolBase.ToTableServer();
                     int affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
                     if (affCount > 0)
+                    {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                         return Result.Success();
+                    }
                     return Result.Fail(info, DatabaseName, "Insert failed, no rows affected.");
                 }
                 catch (Exception e)
@@ -357,7 +359,7 @@ VALUES
 
                             foreach (var ss in cred2Servers[hash])
                             {
-                               ss.InheritedCredentialName = credential.Name;
+                                ss.InheritedCredentialName = credential.Name;
                             }
                             credentialsToAdd.Add(credential);
                         }
@@ -395,6 +397,8 @@ VALUES
                         return Result.Fail(info, DatabaseName, "Insert servers failed, no rows affected.");
                     }
                     transaction.Commit();
+
+                    SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                     return Result.Success();
                 }
                 catch (Exception e)
@@ -421,6 +425,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                     var ret = _dbConnection?.Execute(SqlUpdate, server.ToTableServer()) > 0;
                     if (ret)
                     {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                         return Result.Success();
                     }
                     else
@@ -449,6 +454,7 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                     var ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
                     if (ret)
                     {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                         return Result.Success();
                     }
                     else
@@ -478,8 +484,14 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                         : $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` IN @{nameof(TableServer.Id)};";
                     var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = ids }) > 0;
                     if (ret)
+                    {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                         return Result.Success();
-                    return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
+                    }
+                    else
+                    {
+                        return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
+                    }
                 }
                 catch (Exception e)
                 {
