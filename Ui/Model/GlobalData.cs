@@ -126,17 +126,31 @@ namespace _1RM.Model
                 var needRead = false;
                 if (force == false)
                 {
-                    needRead = _sourceService.LocalDataSource?.NeedRead(TableServer.TABLE_NAME) ?? false;
-                    foreach (var additionalSource in _sourceService.AdditionalSources)
+                    needRead |= _sourceService.LocalDataSource?.NeedRead(TableServer.TABLE_NAME) ?? false;
+                    needRead |= _sourceService.LocalDataSource?.NeedRead(TableCredential.TABLE_NAME) ?? false;
+                    if (needRead == false)
                     {
-                        if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
+                        foreach (var additionalSource in _sourceService.AdditionalSources)
                         {
-                            // if this source is not connected, we skip it
-                            continue;
-                        }
-                        if (needRead == false)
-                        {
-                            needRead |= additionalSource.Value.NeedRead(TableServer.TABLE_NAME);
+                            if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
+                            {
+                                // if this source is not connected, we skip it
+                                continue;
+                            }
+
+                            if (needRead == false)
+                            {
+                                needRead |= additionalSource.Value.NeedRead(TableServer.TABLE_NAME);
+                            }
+                            if (needRead == false)
+                            {
+                                needRead |= additionalSource.Value.NeedRead(TableCredential.TABLE_NAME);
+                            }
+                            if (needRead)
+                            {
+                                // if any additional source need read, we read all servers
+                                break;
+                            }
                         }
                     }
                 }

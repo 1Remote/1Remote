@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -10,36 +11,55 @@ using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace _1RM.View.Settings.CredentialVault
 {
     public class CredentialItem
     {
+        private readonly DataSourceBase _dataSource;
+        private readonly Credential _credential;
+
         public CredentialItem(DataSourceBase dataSource, Credential credential)
         {
-            DataSource = dataSource;
-            Credential = credential;
+            _dataSource = dataSource;
+            _credential = credential;
         }
 
-        public DataSourceBase DataSource { get; }
-        public Credential Credential { get; }
+        public DataSourceBase DataSource => _dataSource;
+
+        public Credential Credential => _credential;
     }
 
     public class CredentialVaultViewModel : NotifyPropertyChangedBase
     {
         private readonly DataSourceService _sourceService;
-        public ObservableCollection<CredentialItem> Credentials { get; } = new ObservableCollection<CredentialItem>();
-        public CredentialVaultViewModel(DataSourceService sourceService)
+
+        private ObservableCollection<CredentialItem> _credentials = new ObservableCollection<CredentialItem>();
+        public ObservableCollection<CredentialItem> Credentials
         {
-            _sourceService = sourceService;
-            var tuples = _sourceService.GetSourceCredentials(false);
-            foreach (var tuple in tuples)
-            {
-                Credentials.Add(new CredentialItem(tuple.Item1, tuple.Item2));
-            }
+            get => _credentials;
+            set => SetAndNotifyIfChanged(ref _credentials, value);
         }
 
+        public CredentialVaultViewModel(DataSourceService sourceService, GlobalData appData)
+        {
+            _sourceService = sourceService;
+            OnDataReloaded();
+            appData.OnDataReloaded += OnDataReloaded;
+        }
 
+        private void OnDataReloaded()
+        {
+            Execute.OnUIThreadSync(() =>
+            {
+                var tuples = _sourceService.GetSourceCredentials(false);
+                foreach (var tuple in tuples)
+                {
+                    Credentials.Add(new CredentialItem(tuple.Item1, tuple.Item2));
+                }
+            });
+        }
 
 
         private RelayCommand? _cmdAdd;
