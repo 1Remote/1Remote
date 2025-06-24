@@ -122,7 +122,7 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                             foreach (var protocol in relatedProtocols)
                             {
                                 protocol.InheritedCredentialName = tpv.Name;
-                                protocol.SetCredential(credential);
+                                protocol.SetCredential(credential, true);
                             }
                             ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
                         }
@@ -140,6 +140,10 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                     if (ret)
                     {
                         SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
+                        if (relatedProtocols?.Count > 0)
+                        {
+                            SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        }
                         return Result.Success();
                     }
                     return Result.Fail(info, DatabaseName, "No rows affected during update operation.");
@@ -228,6 +232,10 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                     if (ret)
                     {
                         SetTableUpdateTimestamp(TableCredential.TABLE_NAME);
+                        if (relatedProtocols?.Count > 0)
+                        {
+                            SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        }
                         return Result.Success();
                     }
                     return Result.Fail(info, DatabaseName, "No rows affected during delete operation.");

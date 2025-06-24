@@ -223,7 +223,7 @@ namespace _1RM.Service
                         return "";
                     }
 
-                    p.SetCredential(c);
+                    p.SetCredential(c, true);
                     p.DisplayName = c.Name;
                 }
             }

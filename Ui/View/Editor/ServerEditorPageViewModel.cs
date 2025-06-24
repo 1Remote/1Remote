@@ -794,6 +794,7 @@ namespace _1RM.View.Editor
                                 // add
                                 protocol.AlternateCredentials.Add(vm.New);
                             }
+                            return true; // close the dialog
                         };
                         MaskLayerController.ShowWindowWithMask(vm);
                     }

@@ -22,7 +22,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
     {
         public Model.Protocol.Base.Credential New { get; } = new Model.Protocol.Base.Credential();
         private readonly List<string>? _existedNames;
-        public Action? OnSave { get; set; }
+        public Func<bool>? OnSave { get; set; }
         public bool RequireHost = false;
         public bool RequirePort = false;
         public bool RequireUserName = false;
@@ -65,7 +65,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
             ShowHost = showHost;
             ShowUsername = showUsername;
             ShowPassword = showPassword;
-            ShowPrivateKeyPath = showPrivateKey;
+            ShowPrivateKeyInput = showPrivateKey;
 
             if (org != null)
             {
@@ -79,11 +79,11 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 }
                 if (string.IsNullOrEmpty(org.PrivateKeyPath) == false)
                 {
-                    ShowPrivateKeyPath = true;
+                    ShowPrivateKeyInput = true;
                 }
             }
 
-            if (!ShowPassword && ShowPrivateKeyPath)
+            if (!ShowPassword && ShowPrivateKeyInput)
             {
                 IsUsePrivateKey = true;
             }
@@ -102,15 +102,15 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
         public bool ShowHost { get; }
         public bool ShowUsername { get; }
         public bool ShowPassword { get; }
-        public bool ShowPrivateKeyPath { get; }
+        public bool ShowPrivateKeyInput { get; }
 
         private bool _isUsePrivateKey = false;
         public bool IsUsePrivateKey
         {
-            get => _isUsePrivateKey && ShowPrivateKeyPath;
+            get => _isUsePrivateKey && ShowPrivateKeyInput;
             set
             {
-                if (!ShowPassword && ShowPrivateKeyPath)
+                if (!ShowPassword && ShowPrivateKeyInput)
                 {
                     _isUsePrivateKey = true;
                     New.Password = "";
@@ -215,11 +215,11 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                         New.UserName = "";
                     if (!ShowPassword || _isUsePrivateKey)
                         New.Password = "";
-                    if (!ShowPrivateKeyPath || !_isUsePrivateKey)
+                    if (!ShowPrivateKeyInput || !_isUsePrivateKey)
                         New.PrivateKeyPath = "";
                     New.Trim();
-                    OnSave?.Invoke();
-                    RequestClose(true);
+                    if (OnSave?.Invoke() == true)
+                        RequestClose(true);
                 }, o => CanSave());
             }
         }
@@ -305,7 +305,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                         }
                     case nameof(PrivateKeyPath):
                         {
-                            if (ShowPrivateKeyPath && RequirePrivateKey && IsUsePrivateKey && string.IsNullOrWhiteSpace(PrivateKeyPath))
+                            if (ShowPrivateKeyInput && RequirePrivateKey && IsUsePrivateKey && string.IsNullOrWhiteSpace(PrivateKeyPath))
                                 return IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY);
                             break;
                         }

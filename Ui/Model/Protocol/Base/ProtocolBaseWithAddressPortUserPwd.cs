@@ -122,19 +122,27 @@ namespace _1RM.Model.Protocol.Base
             return c;
         }
 
-        public override void SetCredential(in Credential credential)
+        public override void SetCredential(in Credential credential, bool ignoreEmptyString)
         {
-            base.SetCredential(credential);
+            base.SetCredential(credential, ignoreEmptyString);
 
-            if (!string.IsNullOrEmpty(credential.UserName))
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.UserName))
             {
                 UserName = credential.UserName;
             }
 
-            if (!string.IsNullOrEmpty(credential.Password))
+
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.PrivateKeyPath))
+            {
+                PrivateKey = credential.PrivateKeyPath;
+                Password = "";
+            }
+            else if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.Password))
             {
                 Password = credential.Password;
+                PrivateKey = "";
             }
+            UsePrivateKeyForConnect = !string.IsNullOrEmpty(PrivateKey);
         }
 
         #endregion

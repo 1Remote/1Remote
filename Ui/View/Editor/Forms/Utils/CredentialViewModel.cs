@@ -6,10 +6,10 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View.Editor.Forms.AlternativeCredential;
-using _1RM.View.Settings.CredentialVault;
 using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace _1RM.View.Editor.Forms.Utils;
 
@@ -42,10 +42,12 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         }
 
         ShowPrivateKeyInput = protocol.ShowPrivateKeyInput();
-        if (New.UsePrivateKeyForConnect == true)
+        if (!ShowPrivateKeyInput)
         {
             New.UsePrivateKeyForConnect = false; // force to use password for connect, because private key is not supported in this form
+            New.PrivateKey = "";
         }
+        IsUsePrivateKey = New.UsePrivateKeyForConnect;
 
         _credentialsFromDatabase = new List<Credential>();
         if (protocol.InheritedCredentialName == protocol.ServerEditorDifferentOptions)
@@ -72,8 +74,24 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
             Credentials = _credentialsFromDatabase;
             _selectedCredential = selected;
         }
+
+        if (protocol.InheritedCredentialName == protocol.ServerEditorDifferentOptions
+            && protocol.DataSource == null)
+        {
+            StrBtnUseCredentialsVault = protocol.ServerEditorDifferentOptions;
+        }
+        else
+        {
+            StrBtnUseCredentialsVault = IoC.Translate("TXT: 凭据库");
+        }
     }
 
+    private string _strBtnUseCredentialsVault;
+    public string StrBtnUseCredentialsVault
+    {
+        get => _strBtnUseCredentialsVault;
+        set => SetAndNotifyIfChanged(ref _strBtnUseCredentialsVault, value);
+    }
 
 
     private List<Credential> _credentials;
@@ -100,33 +118,31 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         set
         {
             if (value == null) return;
-            if (SetAndNotifyIfChanged(ref _selectedCredential, value))
+            if (!SetAndNotifyIfChanged(ref _selectedCredential, value)) return;
+            New.InheritedCredentialName = value.Name;
+            value.DecryptToConnectLevel();
+            if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.Password))
             {
-                New.InheritedCredentialName = value.Name;
-                value.DecryptToConnectLevel();
-                if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.Password))
-                {
-                    New.UserName = value.UserName;
-                    New.Password = value.Password;
-                    New.PrivateKey = "";
-                }
-                else if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.PrivateKeyPath))
-                {
-                    New.UserName = value.UserName;
-                    New.Password = "";
-                    New.PrivateKey = value.PrivateKeyPath;
-                }
-
-                if (New.PrivateKey == New.ServerEditorDifferentOptions)
-                {
-                    New.UsePrivateKeyForConnect = null; // force to use password for connect, because private key is not supported in this form
-                }
-                else
-                {
-                    New.UsePrivateKeyForConnect = !string.IsNullOrEmpty(New.PrivateKey);
-                }
-                RaisePropertyChanged(nameof(SelectedCredentialName));
+                New.UserName = value.UserName;
+                New.Password = value.Password;
+                New.PrivateKey = "";
             }
+            else if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.PrivateKeyPath))
+            {
+                New.UserName = value.UserName;
+                New.Password = "";
+                New.PrivateKey = value.PrivateKeyPath;
+            }
+
+            if (New.PrivateKey == New.ServerEditorDifferentOptions)
+            {
+                New.UsePrivateKeyForConnect = null; // force to use password for connect, because private key is not supported in this form
+            }
+            else
+            {
+                New.UsePrivateKeyForConnect = !string.IsNullOrEmpty(New.PrivateKey);
+            }
+            RaisePropertyChanged(nameof(SelectedCredentialName));
         }
     }
 
@@ -138,6 +154,31 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
             if (_selectedCredential?.Name != value)
             {
                 SelectedCredential = Credentials.FirstOrDefault(x => x.Name == value) ?? Credentials.First();
+            }
+        }
+    }
+
+    private bool? _isUsePrivateKey = false;
+    public bool? IsUsePrivateKey
+    {
+        get
+        {
+            if (_isUsePrivateKey == null) return _isUsePrivateKey;
+            return (_isUsePrivateKey ?? false) && ShowPrivateKeyInput;
+        }
+        set
+        {
+            if (SetAndNotifyIfChanged(ref _isUsePrivateKey, value))
+            {
+                if (value == true)
+                {
+                    New.Password = "";
+                }
+                else if (value == false)
+                {
+                    New.PrivateKey = "";
+                }
+                New.UsePrivateKeyForConnect = value;
             }
         }
     }
@@ -178,10 +219,12 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                         Credentials.Add(vm.New);
                         Credentials = new List<Credential>(Credentials);
                         RaisePropertyChanged(nameof(Credentials));
+                        return true;
                     }
                     else
                     {
                         MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                        return false; // do not close the dialog
                     }
                 };
                 MaskLayerController.ShowWindowWithMask(vm);
@@ -200,11 +243,17 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
             return _cmdUseManuallyCredential ??= new RelayCommand(async (o) =>
             {
                 Credentials = _credentialsEmpty;
-            }, o => New.DataSource != null);
+                if (_manuallyCache != null)
+                {
+                    _manuallyCache.Address = "";
+                    _manuallyCache.Port = "";
+                    New.SetCredential(_manuallyCache, true);
+                }
+            });
         }
     }
 
-
+    private Credential? _manuallyCache;
     private RelayCommand? _cmdUseCredentialsVault;
     public RelayCommand CmdUseCredentialsVault
     {
@@ -219,9 +268,11 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                 }
                 if (_credentialsFromDatabase.Count != 0)
                 {
+                    _manuallyCache = New.GetCredential();
                     Credentials = _credentialsFromDatabase;
+                    IsUsePrivateKey = !string.IsNullOrEmpty(SelectedCredential?.PrivateKeyPath);
                 }
-            }, o => New.DataSource != null);
+            });
         }
     }
 }

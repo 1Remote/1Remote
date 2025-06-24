@@ -461,8 +461,7 @@ namespace _1RM.Model
                     return;
 
                 // do not reload when any selected / launcher is shown / editor view is show
-                if (mainWindowViewModel.EditorViewModel != null
-                    || listPageViewModel.VmServerList.Any(x => x.IsSelected)
+                if (listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
                     var pause = IoC.Translate("Pause");

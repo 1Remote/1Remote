@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
@@ -17,18 +18,14 @@ namespace _1RM.View.Settings.CredentialVault
 {
     public class CredentialItem
     {
-        private readonly DataSourceBase _dataSource;
-        private readonly Credential _credential;
-
         public CredentialItem(DataSourceBase dataSource, Credential credential)
         {
-            _dataSource = dataSource;
-            _credential = credential;
+            DataSource = dataSource;
+            Credential = credential;
         }
 
-        public DataSourceBase DataSource => _dataSource;
-
-        public Credential Credential => _credential;
+        public DataSourceBase DataSource { get; }
+        public Credential Credential { get; }
     }
 
     public class CredentialVaultViewModel : NotifyPropertyChangedBase
@@ -54,10 +51,7 @@ namespace _1RM.View.Settings.CredentialVault
             Execute.OnUIThreadSync(() =>
             {
                 var tuples = _sourceService.GetSourceCredentials(false);
-                foreach (var tuple in tuples)
-                {
-                    Credentials.Add(new CredentialItem(tuple.Item1, tuple.Item2));
-                }
+                Credentials = new ObservableCollection<CredentialItem>(tuples.Select(tuple => new CredentialItem(tuple.Item1, tuple.Item2)));
             });
         }
 
@@ -84,10 +78,12 @@ namespace _1RM.View.Settings.CredentialVault
                         if (ret.IsSuccess)
                         {
                             Credentials.Add(new CredentialItem(source, vm.New));
+                            return true; // close the dialog
                         }
                         else
                         {
                             MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                            return false; // do not close the dialog
                         }
                     };
                     MaskLayerController.ShowWindowWithMask(vm);
@@ -117,11 +113,19 @@ namespace _1RM.View.Settings.CredentialVault
                         };
                         vm.OnSave += () =>
                         {
-                            // TODO: 编辑后，把所有引用这个 Credential 的 Protocol 都更新，使用事务
-                            source.Database_UpdateCredential(vm.New, name);
-                            var i = Credentials.IndexOf(item);
-                            Credentials.Remove(item);
-                            Credentials.Insert(i, new CredentialItem(source, vm.New));
+                            var ret = source.Database_UpdateCredential(vm.New, name);
+                            if (ret.IsSuccess)
+                            {
+                                var i = Credentials.IndexOf(item);
+                                Credentials.Remove(item);
+                                Credentials.Insert(i, new CredentialItem(source, vm.New));
+                                return true;
+                            }
+                            else
+                            {
+                                MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                                return false; // do not close the dialog
+                            }
                         };
                         MaskLayerController.ShowWindowWithMask(vm);
                     }
