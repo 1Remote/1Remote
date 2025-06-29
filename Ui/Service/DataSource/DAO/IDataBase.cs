@@ -29,6 +29,7 @@ namespace _1RM.Service.DataSource.DAO
     public class Result
     {
         public bool IsSuccess = false;
+        public bool NeedReloadUI = false;
         public string ErrorInfo = string.Empty;
         private static readonly Result _SUCCESS = new Result() { IsSuccess = true };
         public static Result Success()

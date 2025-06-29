@@ -56,7 +56,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
         /// <param name="existedNames">current protocol's existed names, used to check if the name is already existed</param>
         /// <param name="org">the original credential, if null, it means a new credential</param>
         /// <param name="showHost"> if true, show host input and port input, otherwise hide it</param>
-        public AlternativeCredentialEditViewModel(List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true, bool showUsername = true, bool showPassword = true, bool showPrivateKey = true)
+        public AlternativeCredentialEditViewModel(List<string>? existedNames, Model.Protocol.Base.Credential? org = null, bool showHost = true, bool showUsername = true, bool showPassword = true, bool showPrivateKey = true, string title = null)
         {
             _existedNames = existedNames;
             if (org != null && _existedNames?.Contains(org.Name) == true)
@@ -97,8 +97,11 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 }
                 New = (Model.Protocol.Base.Credential)org.Clone();
             }
+
+            Title = title ?? IoC.Translate("Connection Info");
         }
 
+        public string Title { get; }
         public bool ShowHost { get; }
         public bool ShowUsername { get; }
         public bool ShowPassword { get; }

@@ -15,7 +15,6 @@ using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
-using Stylet;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM.Model
@@ -54,7 +53,7 @@ namespace _1RM.Model
 
         #region Server Data
 
-        public Action? OnDataReloaded;
+        public Action? OnReloadAll;
 
         public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
@@ -113,7 +112,7 @@ namespace _1RM.Model
         /// reload data based on `LastReadFromDataSourceMillisecondsTimestamp` and `DataSourceDataUpdateTimestamp`
         /// return true if read data
         /// </summary>
-        public bool ReloadServerList(bool force = false)
+        public bool ReloadAll(bool force = false)
         {
             try
             {
@@ -162,7 +161,7 @@ namespace _1RM.Model
                     _sourceService.GetCredentials(force);
                     LocalityConnectRecorder.ConnectTimeCleanup();
                     ReadTagsFromServers();
-                    OnDataReloaded?.Invoke();
+                    OnReloadAll?.Invoke();
                     return true;
                 }
 
@@ -212,7 +211,7 @@ namespace _1RM.Model
 
             if (needReload)
             {
-                ReloadServerList(force: true); // AddServer & needReload
+                ReloadAll(force: true); // AddServer & needReload
             }
             ReadTagsFromServers();
             IoC.Get<ServerListPageViewModel>().ClearSelection();
@@ -243,7 +242,7 @@ namespace _1RM.Model
                 {
                     if (needReload)
                     {
-                        ReloadServerList(); // UpdateServer & needReload
+                        ReloadAll(); // UpdateServer & needReload
                     }
                     else
                     {
@@ -302,7 +301,8 @@ namespace _1RM.Model
                         if (old != null)
                         {
                             old.Server = protocolServer;
-                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : ""; }
+                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
+                        }
                     }
                 }
 
@@ -310,7 +310,7 @@ namespace _1RM.Model
                 {
                     if (needReload)
                     {
-                        ReloadServerList(); // UpdateServers & needReload
+                        ReloadAll(); // UpdateServers & needReload
                     }
                     else
                     {
@@ -359,7 +359,7 @@ namespace _1RM.Model
                 // update viewmodel
                 if (isAnySuccess)
                 {
-                    ReloadServerList(true); // DeleteServers
+                    ReloadAll(true); // DeleteServers
                 }
 
                 return failMessages.Any() ? Result.Fail(string.Join("\r\n", failMessages)) : Result.Success();
@@ -376,12 +376,6 @@ namespace _1RM.Model
         }
 
         #endregion Server Data
-
-        #region Credentials
-
-        
-
-        #endregion
 
 
         public void StopTick()
@@ -538,7 +532,7 @@ namespace _1RM.Model
 
                 if (minEtc == 0)
                 {
-                    if (ReloadServerList()) // reload data in the timer
+                    if (ReloadAll()) // reload data in the timer
                     {
                         SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
                     }

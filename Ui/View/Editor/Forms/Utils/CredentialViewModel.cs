@@ -16,10 +16,11 @@ namespace _1RM.View.Editor.Forms.Utils;
 public class CredentialViewModel : NotifyPropertyChangedBaseScreen
 {
     public ProtocolBaseWithAddressPortUserPwd New { get; }
-
-    private readonly List<Credential> _credentialsFromDatabase;
-    private readonly List<Credential> _credentialsEmpty;
     public bool ShowPrivateKeyInput { get; }
+
+    private Credential? _manuallyCache;
+    private string _credentialNameCache = "";
+
     public CredentialViewModel(ProtocolBaseWithAddressPortUserPwd protocol)
     {
         New = protocol;
@@ -49,41 +50,32 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         }
         IsUsePrivateKey = New.UsePrivateKeyForConnect;
 
-        _credentialsFromDatabase = new List<Credential>();
-        if (protocol.InheritedCredentialName == protocol.ServerEditorDifferentOptions)
+        _credentialNameCache = protocol.InheritedCredentialName ?? "";
+        _manuallyCache = protocol.GetCredential();
+
+        StrBtnUseCredentialsVault = IoC.Translate("TXT: 凭据库");
+        if (string.IsNullOrEmpty(protocol.InheritedCredentialName))
+        {
+            SelectedCredential = null;
+        }
+        else if (protocol.InheritedCredentialName == protocol.ServerEditorDifferentOptions)
         {
             // bulk edit mode, show "Different Options" option
-            _credentialsFromDatabase.Add(new Credential()
+            StrBtnUseCredentialsVault = protocol.ServerEditorDifferentOptions;
+            credentials.Insert(0, new Credential()
             {
                 Name = protocol.ServerEditorDifferentOptions,
                 UserName = protocol.UserName,
                 Password = protocol.Password,
                 PrivateKeyPath = protocol.PrivateKey
             });
-        }
-        _credentialsFromDatabase.AddRange(credentials);
-        _credentialsEmpty = new List<Credential>() { new Credential() };
-        var selected = _credentialsFromDatabase.FirstOrDefault(x => x.Name == protocol.InheritedCredentialName);
-        if (selected == null)
-        {
-            Credentials = _credentialsEmpty;
-            _selectedCredential = _credentialsEmpty.First();
+            SelectedCredential = credentials.First();
         }
         else
         {
-            Credentials = _credentialsFromDatabase;
-            _selectedCredential = selected;
+            SelectedCredential = credentials.FirstOrDefault(x => x.Name == protocol.InheritedCredentialName);
         }
-
-        if (protocol.InheritedCredentialName == protocol.ServerEditorDifferentOptions
-            && protocol.DataSource == null)
-        {
-            StrBtnUseCredentialsVault = protocol.ServerEditorDifferentOptions;
-        }
-        else
-        {
-            StrBtnUseCredentialsVault = IoC.Translate("TXT: 凭据库");
-        }
+        Credentials = credentials;
     }
 
     private string _strBtnUseCredentialsVault;
@@ -94,21 +86,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
     }
 
 
-    private List<Credential> _credentials;
-    public List<Credential> Credentials
-    {
-        get => _credentials;
-        private set
-        {
-            if (SetAndNotifyIfChanged(ref _credentials, value))
-            {
-                if (_credentials.All(x => x != SelectedCredential))
-                {
-                    SelectedCredential = _credentials.FirstOrDefault();
-                }
-            }
-        }
-    }
+    public List<Credential> Credentials { get; set; }
 
 
     private Credential? _selectedCredential = null;
@@ -117,30 +95,32 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         get => _selectedCredential;
         set
         {
-            if (value == null) return;
             if (!SetAndNotifyIfChanged(ref _selectedCredential, value)) return;
-            New.InheritedCredentialName = value.Name;
-            value.DecryptToConnectLevel();
-            if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.Password))
+            New.InheritedCredentialName = value?.Name ?? "";
+            if (value != null)
             {
-                New.UserName = value.UserName;
-                New.Password = value.Password;
-                New.PrivateKey = "";
-            }
-            else if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.PrivateKeyPath))
-            {
-                New.UserName = value.UserName;
-                New.Password = "";
-                New.PrivateKey = value.PrivateKeyPath;
-            }
+                value.DecryptToConnectLevel();
+                if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.Password))
+                {
+                    New.UserName = value.UserName;
+                    New.Password = value.Password;
+                    New.PrivateKey = "";
+                }
+                else if (!string.IsNullOrEmpty(value.UserName) && !string.IsNullOrEmpty(value.PrivateKeyPath))
+                {
+                    New.UserName = value.UserName;
+                    New.Password = "";
+                    New.PrivateKey = value.PrivateKeyPath;
+                }
 
-            if (New.PrivateKey == New.ServerEditorDifferentOptions)
-            {
-                New.UsePrivateKeyForConnect = null; // force to use password for connect, because private key is not supported in this form
-            }
-            else
-            {
-                New.UsePrivateKeyForConnect = !string.IsNullOrEmpty(New.PrivateKey);
+                if (New.PrivateKey == New.ServerEditorDifferentOptions)
+                {
+                    New.UsePrivateKeyForConnect = null; // force to use password for connect, because private key is not supported in this form
+                }
+                else
+                {
+                    New.UsePrivateKeyForConnect = !string.IsNullOrEmpty(New.PrivateKey);
+                }
             }
             RaisePropertyChanged(nameof(SelectedCredentialName));
         }
@@ -205,7 +185,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                 var source = New.DataSource;
                 if (source == null) return;
                 var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Name).ToList();
-                var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false)
+                var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("TXT: 新增凭据"))
                 {
                     RequireUserName = New.ShowUserNameInput(),
                     RequirePassword = New.ShowPasswordInput(),
@@ -217,7 +197,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                     if (ret.IsSuccess)
                     {
                         Credentials.Add(vm.New);
-                        Credentials = new List<Credential>(Credentials);
+                        SelectedCredential = vm.New;
                         RaisePropertyChanged(nameof(Credentials));
                         return true;
                     }
@@ -242,9 +222,10 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         {
             return _cmdUseManuallyCredential ??= new RelayCommand(async (o) =>
             {
-                Credentials = _credentialsEmpty;
                 if (_manuallyCache != null)
                 {
+                    _credentialNameCache = SelectedCredential?.Name ?? "";
+                    SelectedCredential = null;
                     _manuallyCache.Address = "";
                     _manuallyCache.Port = "";
                     New.SetCredential(_manuallyCache, true);
@@ -253,7 +234,6 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         }
     }
 
-    private Credential? _manuallyCache;
     private RelayCommand? _cmdUseCredentialsVault;
     public RelayCommand CmdUseCredentialsVault
     {
@@ -261,16 +241,19 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         {
             return _cmdUseCredentialsVault ??= new RelayCommand(async (o) =>
             {
-                if (_credentialsFromDatabase.Count == 0)
+                if (Credentials.Count == 0)
                 {
                     // if nothing in the vault, add first
                     CmdAdd.Execute(o);
                 }
-                if (_credentialsFromDatabase.Count != 0)
+                _manuallyCache = New.GetCredential();
+                if (Credentials.Count != 0)
                 {
                     _manuallyCache = New.GetCredential();
-                    Credentials = _credentialsFromDatabase;
                     IsUsePrivateKey = !string.IsNullOrEmpty(SelectedCredential?.PrivateKeyPath);
+                    SelectedCredential = Credentials.FirstOrDefault(x => x.Name == _credentialNameCache)
+                                         ?? Credentials.FirstOrDefault(x => x.Name == New.ServerEditorDifferentOptions)
+                                         ?? Credentials.FirstOrDefault();
                 }
             });
         }

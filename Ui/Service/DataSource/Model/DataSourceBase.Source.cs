@@ -47,7 +47,10 @@ namespace _1RM.Service.DataSource.Model
         public bool NeedRead(string tableName)
         {
             if (!_lastReadTimestamp.ContainsKey(tableName) || _lastReadTimestamp[tableName] <= 0)
+            {
+                SimpleLogHelper.Debug($"Check NeedRead of [{DataSourceName}] = RAM 0 < DB any = True");
                 return true;
+            }
 
 
             if (_lastReadDataSourceStatus != null
@@ -69,11 +72,11 @@ namespace _1RM.Service.DataSource.Model
             var ret = dataBase.GetTableUpdateTimestamp(tableName);
             if (!ret.IsSuccess)
             {
+                SimpleLogHelper.Debug($"Check NeedRead of [{DataSourceName}] = RAM {_lastReadTimestamp[tableName]} < DB {ret.Result} = {_lastReadTimestamp[tableName] < ret.Result}");
                 SetStatus(false);
             }
             else
             {
-                SimpleLogHelper.Debug($"{DataSourceName}：NeedRead = {_lastReadTimestamp[tableName]} < {ret.Result} = {_lastReadTimestamp[tableName] < ret.Result}");
                 // read data source update timestamp，and compare with last read timestamp. if 
                 return _lastReadTimestamp[tableName] < ret.Result;
             }
@@ -270,6 +273,7 @@ namespace _1RM.Service.DataSource.Model
                     SetReadTimestampTo0(TableServer.TABLE_NAME);
                     SetReadTimestampTo0(TableCredential.TABLE_NAME); // because server may add by import one have credential, so we need to reload credentials too.
                     SetStatus(true);
+                    server.Id = tmp.Id;
                 }
                 return result;
             }
@@ -359,7 +363,7 @@ namespace _1RM.Service.DataSource.Model
                         break;
                     }
                 }
-                
+
                 SetStatus(true);
                 return ret;
             }
@@ -403,7 +407,7 @@ namespace _1RM.Service.DataSource.Model
         {
             if (_isWritable)
             {
-                var tmp = (Credential) credential.Clone();
+                var tmp = (Credential)credential.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 tmp.EncryptToDatabaseLevel();
                 var result = GetDataBase().AddCredential(ref tmp);
@@ -428,19 +432,24 @@ namespace _1RM.Service.DataSource.Model
         {
             if (_isWritable)
             {
-                var servers = GetServers();
-                var relatedProtocol = servers.Select(x => x.Server)
+                var servers = GetServers(true);
+                var relatedProtocols = servers.Select(x => x.Server)
                     .Where(x => (x as ProtocolBaseWithAddressPortUserPwd)?.InheritedCredentialName == credentialNameBeforeUpdate)
                     .Select(x => (ProtocolBaseWithAddressPortUserPwd)x).ToList();
 
                 var tmp = (Credential)org.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 tmp.EncryptToDatabaseLevel();
-                var ret = GetDataBase().UpdateCredential(tmp, relatedProtocol);
+                var ret = GetDataBase().UpdateCredential(tmp, relatedProtocols);
                 if (ret.IsSuccess)
                 {
                     org.DataSource = this;
                     SetStatus(true);
+                    if (relatedProtocols.Count > 0)
+                    {
+                        ClearReadTimestamp(); // reload database
+                        ret.NeedReloadUI = true;
+                    }
                 }
                 return ret;
             }
@@ -475,7 +484,7 @@ namespace _1RM.Service.DataSource.Model
             if (_isWritable)
             {
                 var enumerable = names.ToArray();
-                var servers = GetServers();
+                var servers = GetServers(true);
                 var relatedProtocols = servers.Select(x => x.Server)
                     .Where(x => enumerable.Any(name => name == (x as ProtocolBaseWithAddressPortUserPwd)?.InheritedCredentialName))
                     .Select(x => (ProtocolBaseWithAddressPortUserPwd)x).ToList();
@@ -483,6 +492,11 @@ namespace _1RM.Service.DataSource.Model
                 if (ret.IsSuccess)
                 {
                     CachedCredentials.RemoveAll(x => enumerable.Contains(x.Name));
+                    if (relatedProtocols.Count > 0)
+                    {
+                        ClearReadTimestamp(); // reload database
+                        ret.NeedReloadUI = true;
+                    }
                     SetStatus(true);
                 }
                 return ret;

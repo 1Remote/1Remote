@@ -227,7 +227,7 @@ namespace _1RM.View.ServerList
         protected override void OnViewLoaded()
         {
             ApplySort();
-            AppData.OnDataReloaded += RebuildVmServerList;
+            AppData.OnReloadAll += RebuildVmServerList;
             if (AppData.VmItemList.Count > 0)
             {
                 // this view may be loaded after the data is loaded(when MainWindow start minimized)
@@ -678,7 +678,7 @@ namespace _1RM.View.ServerList
                             var ret = source.Database_InsertServer(list);
                             if (ret.IsSuccess)
                             {
-                                AppData.ReloadServerList(true); // reload server list after import
+                                AppData.ReloadAll(true); // reload server list after import
                                 MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                             }
                             else
@@ -764,7 +764,7 @@ namespace _1RM.View.ServerList
                             var ret = source.Database_InsertServer(list);
                             if (ret.IsSuccess)
                             {
-                                AppData.ReloadServerList(true); // reload server list after import db
+                                AppData.ReloadAll(true); // reload server list after import db
                                 MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                             }
                             else
@@ -811,7 +811,7 @@ namespace _1RM.View.ServerList
                                 var ret = source.Database_InsertServer(list);
                                 if (ret.IsSuccess)
                                 {
-                                    AppData.ReloadServerList(true); // reload server list after import db
+                                    AppData.ReloadAll(true); // reload server list after import db
                                     MessageBoxHelper.Info(IoC.Translate("import_done_0_items_added", list.Count.ToString()));
                                 }
                                 else

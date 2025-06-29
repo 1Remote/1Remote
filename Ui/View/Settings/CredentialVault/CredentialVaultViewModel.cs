@@ -42,11 +42,11 @@ namespace _1RM.View.Settings.CredentialVault
         public CredentialVaultViewModel(DataSourceService sourceService, GlobalData appData)
         {
             _sourceService = sourceService;
-            OnDataReloaded();
-            appData.OnDataReloaded += OnDataReloaded;
+            InitCredentials();
+            appData.OnReloadAll += InitCredentials;
         }
 
-        private void OnDataReloaded()
+        private void InitCredentials()
         {
             Execute.OnUIThreadSync(() =>
             {
@@ -66,7 +66,7 @@ namespace _1RM.View.Settings.CredentialVault
                     var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
                     if (source == null) return;
                     var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Credential.Name).ToList();
-                    var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false)
+                    var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("TXT: 新增凭据"))
                     {
                         RequireUserName = true,
                         RequirePassword = true,
@@ -77,7 +77,14 @@ namespace _1RM.View.Settings.CredentialVault
                         var ret = source.Database_InsertCredential(vm.New);
                         if (ret.IsSuccess)
                         {
-                            Credentials.Add(new CredentialItem(source, vm.New));
+                            if (ret.NeedReloadUI)
+                            {
+                                IoC.Get<GlobalData>().ReloadAll();
+                            }
+                            else
+                            {
+                                Credentials.Add(new CredentialItem(source, vm.New));
+                            }
                             return true; // close the dialog
                         }
                         else
@@ -105,7 +112,7 @@ namespace _1RM.View.Settings.CredentialVault
                         item.Credential.DecryptToConnectLevel();
                         var name = item.Credential.Name;
                         var existedNames = Credentials.Where(x => x != item).Select(x => x.Credential.Name).ToList();
-                        var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false)
+                        var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false, title: IoC.Translate("TXT: 编辑凭据"))
                         {
                             RequireUserName = true,
                             RequirePassword = true,
@@ -116,9 +123,10 @@ namespace _1RM.View.Settings.CredentialVault
                             var ret = source.Database_UpdateCredential(vm.New, name);
                             if (ret.IsSuccess)
                             {
-                                var i = Credentials.IndexOf(item);
-                                Credentials.Remove(item);
-                                Credentials.Insert(i, new CredentialItem(source, vm.New));
+                                if (ret.NeedReloadUI)
+                                {
+                                    IoC.Get<GlobalData>().ReloadAll();
+                                }
                                 return true;
                             }
                             else
@@ -147,9 +155,20 @@ namespace _1RM.View.Settings.CredentialVault
 
                     var ret = item.DataSource.Database_DeleteCredential(new[] { item.Credential.Name });
                     if (ret.IsSuccess)
-                        Credentials.Remove(item);
+                    {
+                        if (ret.NeedReloadUI)
+                        {
+                            IoC.Get<GlobalData>().ReloadAll();
+                        }
+                        else
+                        {
+                            Credentials.Remove(item);
+                        }
+                    }
                     else
+                    {
                         MessageBoxHelper.ErrorAlert(ret.ErrorInfo);
+                    }
                 });
             }
         }

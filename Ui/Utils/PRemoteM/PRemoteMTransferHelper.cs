@@ -142,7 +142,7 @@ namespace _1RM.Utils.PRemoteM
                             var localSource = IoC.Get<DataSourceService>().LocalDataSource;
                             Debug.Assert(localSource != null);
                             localSource!.Database_InsertServer(_servers);
-                            IoC.Get<GlobalData>().ReloadServerList(true);
+                            IoC.Get<GlobalData>().ReloadAll(true);
                             if (MessageBoxHelper.Confirm($"All done! \r\n\r\nYou may want to backup and delete the old data at:\r\n`{_dbPath}`.",
                                     yesButtonText: "Show old database in explorer",
                                     noButtonText: "Continue",
