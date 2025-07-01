@@ -98,7 +98,7 @@ namespace _1RM.View.Editor.Forms.AlternativeCredential
                 New = (Model.Protocol.Base.Credential)org.Clone();
             }
 
-            Title = title ?? IoC.Translate("Connection Info");
+            Title = title ?? IoC.Translate("Connection");
         }
 
         public string Title { get; }

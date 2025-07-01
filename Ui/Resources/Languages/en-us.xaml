@@ -57,8 +57,7 @@
     <s:String x:Key="Language">Language</s:String>
     <s:String x:Key="Startup">Startup</s:String>
     <s:String x:Key="Tags">Tags</s:String>
-    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.</s:String>
-    <s:String x:Key="Icon">Icon</s:String>
+    <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Hostname">Hostname</s:String>
     <s:String x:Key="Target">Target</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -105,6 +104,8 @@
     <s:String x:Key="system_options_data_security_database">Database</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Caution: Your data will be saved unencrypted!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Processing data. Do not close the app!</s:String>
+    <s:String x:Key="system_options_data_security_error_can_not_open">Database: Permission denied for reading or the file is not a database or the file is an encrypted database!</s:String>
+    <s:String x:Key="string_database_error_permission_denied">Database: Permission denied for reading! Please check your password of db or the file occupation.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplicate</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copy hostname to clipboard</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copy username to clipboard</s:String>
@@ -123,8 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">You are editing in bulk:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Number of selected items:</s:String>
     <s:String x:Key="server_editor_group_title_common">Common</s:String>
-    <s:String x:Key="Connection Info">Connection Info</s:String>
-    <s:String x:Key="Connection Settings">Connection</s:String>
+    <s:String x:Key="Connection">Connection</s:String>
     <s:String x:Key="server_editor_group_title_display">Display</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Advantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD Gateway Server</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Clipboard</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Key Combinations</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Drives</s:String>
-    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sounds</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Disabled</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Play on local</s:String>
@@ -323,4 +323,7 @@
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Set focus to local desktop when the mouse is moved out of RDP desktop</s:String>
     <s:String x:Key="Close button behavior">Close button behavior</s:String>
     <s:String x:Key="Minimize to system tray">Minimize to system tray</s:String>
+    <s:String x:Key="Credentials">Credentials</s:String>
+    <s:String x:Key="Credentials Vault">Credentials Vault</s:String>
+    <s:String x:Key="Select credentials within the same database">Select credentials within the same database</s:String>
 </ResourceDictionary>

@@ -12,7 +12,7 @@
              d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection'}"></TextBlock>
             <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
 
             <!--<Grid Style="{StaticResource EditorRowGrid}">

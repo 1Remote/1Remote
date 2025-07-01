@@ -57,8 +57,7 @@
     <s:String x:Key="Language">語言</s:String>
     <s:String x:Key="Startup">啟動</s:String>
     <s:String x:Key="Tags">標籤</s:String>
-    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">按 Enter 新增標籤，用於將伺服器分組。透過右鍵單擊主頁上的標籤，您可以過濾或固定特定標籤。</s:String>
-    <s:String x:Key="Icon">圖示</s:String>
+    <s:String x:Key="Logo">圖示</s:String>
     <s:String x:Key="Hostname">主機名稱</s:String>
     <s:String x:Key="Target">目標</s:String>
     <s:String x:Key="Port">連接埠</s:String>
@@ -105,6 +104,8 @@
     <s:String x:Key="system_options_data_security_database">資料庫</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">注意：您的數據將以未加密的方式保存！</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">正在處理資料，請勿關閉應用程式。</s:String>
+    <s:String x:Key="system_options_data_security_error_can_not_open">資料庫：選擇的檔案不是資料庫格式，或是正在被其他應用程式占用，或者資料已被加密！</s:String>
+    <s:String x:Key="string_database_error_permission_denied">資料庫：沒有存取權限，或者正在被其他應用程式占用！</s:String>
     <s:String x:Key="server_card_operate_duplicate">建立副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">複製主機名稱或網址到剪貼簿</s:String>
     <s:String x:Key="server_card_operate_copy_username">複製使用者名稱到剪貼簿</s:String>
@@ -123,8 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">您正在批次編輯：</s:String>
     <s:String x:Key="server_editor_multi_selected_count">已選取數量：</s:String>
     <s:String x:Key="server_editor_group_title_common">一般</s:String>
-    <s:String x:Key="Connection Info">連線</s:String>
-    <s:String x:Key="Connection Settings">連線</s:String>
+    <s:String x:Key="Connection">連線</s:String>
     <s:String x:Key="server_editor_group_title_display">顯示</s:String>
     <s:String x:Key="server_editor_group_title_advantage">進階</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 閘道伺服器</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">剪貼簿</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">按鍵組合</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">本機磁碟</s:String>
-    <s:String x:Key="Drives plug in later">稍後連接的磁碟機</s:String>
+    <s:String x:Key="Drives plug in latter">稍後連接的磁碟機</s:String>
     <s:String x:Key="server_editor_advantage_sounds">音效</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">停用</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">在本機播放</s:String>
@@ -323,4 +323,7 @@
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">當滑鼠移出 RDP 桌面時將焦點設定到本機桌面</s:String>
     <s:String x:Key="Close button behavior">關閉按鈕行為</s:String>
     <s:String x:Key="Minimize to system tray">最小化系統托盤</s:String>
+    <s:String x:Key="Credentials">證書</s:String>
+    <s:String x:Key="Credentials Vault">憑證保險庫</s:String>
+    <s:String x:Key="Select credentials within the same database">在同一數據庫中選擇憑據</s:String>
 </ResourceDictionary>

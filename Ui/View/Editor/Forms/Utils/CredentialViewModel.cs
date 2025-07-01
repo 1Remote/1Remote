@@ -53,7 +53,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         _credentialNameCache = protocol.InheritedCredentialName ?? "";
         _manuallyCache = protocol.GetCredential();
 
-        StrBtnUseCredentialsVault = IoC.Translate("TXT: 凭据库");
+        StrBtnUseCredentialsVault = IoC.Translate("Credentials Vault");
         if (string.IsNullOrEmpty(protocol.InheritedCredentialName))
         {
             SelectedCredential = null;
@@ -185,7 +185,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                 var source = New.DataSource;
                 if (source == null) return;
                 var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Name).ToList();
-                var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("TXT: 新增凭据"))
+                var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("Add") + " " + IoC.Translate("Credentials"))
                 {
                     RequireUserName = New.ShowUserNameInput(),
                     RequirePassword = New.ShowPasswordInput(),

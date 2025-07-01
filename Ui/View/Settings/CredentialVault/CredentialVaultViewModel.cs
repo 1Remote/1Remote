@@ -66,7 +66,7 @@ namespace _1RM.View.Settings.CredentialVault
                     var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
                     if (source == null) return;
                     var existedNames = Credentials.Where(x => x.DataSource == source).Select(x => x.Credential.Name).ToList();
-                    var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("TXT: 新增凭据"))
+                    var vm = new AlternativeCredentialEditViewModel(existedNames, showHost: false, title: IoC.Translate("Add") + " " + IoC.Translate("Credentials"))
                     {
                         RequireUserName = true,
                         RequirePassword = true,
@@ -112,7 +112,7 @@ namespace _1RM.View.Settings.CredentialVault
                         item.Credential.DecryptToConnectLevel();
                         var name = item.Credential.Name;
                         var existedNames = Credentials.Where(x => x != item).Select(x => x.Credential.Name).ToList();
-                        var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false, title: IoC.Translate("TXT: 编辑凭据"))
+                        var vm = new AlternativeCredentialEditViewModel(existedNames, org: item.Credential, showHost: false, title: IoC.Translate("Edit") + " " + IoC.Translate("Credentials"))
                         {
                             RequireUserName = true,
                             RequirePassword = true,
