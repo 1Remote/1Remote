@@ -1,14 +1,19 @@
 ﻿using _1RM.Model.Protocol.Base;
-using Newtonsoft.Json;
+using _1RM.View.Editor.Forms.AlternativeCredential;
+using _1RM.View.Editor.Forms.Utils;
 
 namespace _1RM.View.Editor.Forms
 {
     public class ProtocolBaseWithAddressPortUserPwdFormViewModel : ProtocolBaseWithAddressPortFormViewModel
     {
         public new ProtocolBaseWithAddressPortUserPwd New { get; }
-        public ProtocolBaseWithAddressPortUserPwdFormViewModel(ProtocolBaseWithAddressPortUserPwd protocolBase) : base(protocolBase)
+        public CredentialViewModel CredentialViewModel { get; }
+
+
+        public ProtocolBaseWithAddressPortUserPwdFormViewModel(ProtocolBaseWithAddressPortUserPwd protocol) : base(protocol)
         {
-            New = protocolBase;
+            New = protocol;
+            CredentialViewModel = new CredentialViewModel(protocol);
         }
     }
 }

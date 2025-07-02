@@ -16,7 +16,7 @@ using _1RM.Utils.Tracing;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
-    public class DapperDatabase : IDatabase
+    public partial class DapperDatabase : IDatabase
     {
         public DapperDatabase(string databaseName, DatabaseType databaseType) : base(databaseName, databaseType)
         {
@@ -72,7 +72,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 return OpenConnection();
             }
         }
-        
+
 
         private Exception? _lastException = null;
         protected virtual Result OpenConnection(string actionInfo = "")
@@ -181,24 +181,26 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             try
             {
                 _dbConnection?.Execute(NormalizedSql(@$"
-CREATE TABLE IF NOT EXISTS `{Config.TABLE_NAME}` (
-    `{nameof(Config.Key)}` VARCHAR (64) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS `{TableConfig.TABLE_NAME}` (
+    `{nameof(TableConfig.Key)}` VARCHAR (64) PRIMARY KEY
                                         NOT NULL
                                         UNIQUE,
-    `{nameof(Config.Value)}` TEXT NOT NULL
+    `{nameof(TableConfig.Value)}` TEXT NOT NULL
 );
 "));
 
                 _dbConnection?.Execute(NormalizedSql(@$"
-CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
-    `{nameof(Server.Id)}`       VARCHAR (64) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS `{TableServer.TABLE_NAME}` (
+    `{nameof(TableServer.Id)}`       VARCHAR (64) PRIMARY KEY
                                              NOT NULL
                                              UNIQUE,
-    `{nameof(Server.Protocol)}` VARCHAR (32) NOT NULL,
-    `{nameof(Server.ClassVersion)}` VARCHAR (32) NOT NULL,
-    `{nameof(Server.Json)}`     TEXT         NOT NULL
+    `{nameof(TableServer.Protocol)}` VARCHAR (32) NOT NULL,
+    `{nameof(TableServer.ClassVersion)}` VARCHAR (32) NOT NULL,
+    `{nameof(TableServer.Json)}`     TEXT         NOT NULL
 );
 "));
+
+                InitPasswordVault();
                 SetEncryptionTest();
             }
             catch (Exception e)
@@ -230,32 +232,32 @@ CREATE TABLE IF NOT EXISTS `{Server.TABLE_NAME}` (
             }
         }
 
-        public override ResultSelects GetServers()
+        public override ResultSelects<ProtocolBase> GetServers()
         {
             string info = IoC.Translate("We can not select from database:");
 
             lock (this)
             {
                 var result = OpenConnection(info);
-                if (!result.IsSuccess) return ResultSelects.Fail(result.ErrorInfo);
+                if (!result.IsSuccess) return ResultSelects<ProtocolBase>.Fail(result.ErrorInfo);
                 try
                 {
-                    var ps = _dbConnection.Query<Server>(NormalizedSql($"SELECT * FROM `{Server.TABLE_NAME}`"))
+                    var ps = _dbConnection.Query<TableServer>(NormalizedSql($"SELECT * FROM `{TableServer.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
-                    return ResultSelects.Success((ps as List<ProtocolBase>)!);
+                    return ResultSelects<ProtocolBase>.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
                 {
-                    return ResultSelects.Fail(info, DatabaseName, e.Message);
+                    return ResultSelects<ProtocolBase>.Fail(info, DatabaseName, e.Message);
                 }
             }
         }
 
-        private string SqlInsert => NormalizedSql($@"INSERT INTO `{Server.TABLE_NAME}`
-(`{nameof(Server.Id)}`,`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.Json)}`)
+        private string SqlInsert => NormalizedSql($@"INSERT INTO `{TableServer.TABLE_NAME}`
+(`{nameof(TableServer.Id)}`,`{nameof(TableServer.Protocol)}`, `{nameof(TableServer.ClassVersion)}`, `{nameof(TableServer.Json)}`)
 VALUES
-(@{nameof(Server.Id)}, @{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.Json)});");
+(@{nameof(TableServer.Id)}, @{nameof(TableServer.Protocol)}, @{nameof(TableServer.ClassVersion)}, @{nameof(TableServer.Json)});");
 
         /// <summary>
         /// 插入成功后会更新 protocolBase.Id
@@ -272,11 +274,14 @@ VALUES
                 {
                     if (protocolBase.IsTmpSession())
                         protocolBase.Id = Ulid.NewUlid().ToString();
-                    var server = protocolBase.ToDbServer();
+                    var server = protocolBase.ToTableServer();
                     int affCount = _dbConnection?.Execute(SqlInsert, server) ?? 0;
                     if (affCount > 0)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
+                    {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        return Result.Success();
+                    }
+                    return Result.Fail(info, DatabaseName, "Insert failed, no rows affected.");
                 }
                 catch (Exception e)
                 {
@@ -294,19 +299,106 @@ VALUES
             lock (this)
             {
                 var result = OpenConnection(info);
-                if (!result.IsSuccess) return result;
+                if (!result.IsSuccess || _dbConnection == null) return result;
                 try
                 {
+                    var credentialsToAdd = new List<Credential>();
+                    var credentials = new List<Credential>();
+                    var cred2Servers = new Dictionary<string, List<ProtocolBaseWithAddressPortUserPwd>>();
+                    foreach (var protocolBase in protocolBases)
+                    {
+                        protocolBase.DecryptToConnectLevel();
+                        if (protocolBase is ProtocolBaseWithAddressPortUserPwd p && !string.IsNullOrEmpty(p.InheritedCredentialName))
+                        {
+                            var c = p.GetCredential();
+                            c.Address = "";
+                            c.Port = "";
+                            if (cred2Servers.ContainsKey(c.GetHash()))
+                            {
+                                cred2Servers[c.GetHash()].Add(p);
+                            }
+                            else
+                            {
+                                cred2Servers.Add(c.GetHash(), new List<ProtocolBaseWithAddressPortUserPwd>() { p });
+                            }
+                            credentials.Add(c);
+                        }
+                    }
+                    if (credentials.Count > 0)
+                    {
+                        var result1 = GetCredentials(false);
+                        if (!result1.IsSuccess) return result1;
+                        result = OpenConnection(info);
+                        if (!result.IsSuccess || _dbConnection == null) return result;
+                        var credentialsInDb = result1.Items;
+                        foreach (var credential in credentials)
+                        {
+                            var hash = credential.GetHash();
+                            // check if already exists
+                            if (credentialsInDb.Any(x => string.Equals(x.Hash, hash, StringComparison.OrdinalIgnoreCase))) continue;
+                            var name = credential.Name;
+                            // check name, append (1) or (2) or (3) if duplicate existed.
+                            {
+                                int i = 2;
+                                while (credentialsInDb.Any(x => x.Name == credential.Name))
+                                {
+                                    credential.Name = $"{name}({i})";
+                                    i++;
+                                }
+                            }
+                            if (credentialsToAdd.Any(x => string.Equals(x.GetHash(), hash, StringComparison.OrdinalIgnoreCase))) continue;
+                            // check name, append (1) or (2) or (3) if duplicate existed.
+                            {
+                                int i = 2;
+                                while (credentialsToAdd.Any(x => x.Name == credential.Name))
+                                {
+                                    credential.Name = $"{name}({i})";
+                                    i++;
+                                }
+                            }
+
+                            foreach (var ss in cred2Servers[hash])
+                            {
+                                ss.InheritedCredentialName = credential.Name;
+                            }
+                            credentialsToAdd.Add(credential);
+                        }
+                    }
+
+                    using var transaction = _dbConnection.BeginTransaction();
+
+
+                    bool ret = false;
                     var rng = new NUlid.Rng.MonotonicUlidRng();
                     foreach (var protocolBase in protocolBases)
                     {
                         if (protocolBase.IsTmpSession())
                             protocolBase.Id = Ulid.NewUlid(rng).ToString();
                     }
-                    var servers = protocolBases.Select(x => x.ToDbServer()).ToList();
-                    var affCount = _dbConnection?.Execute(SqlInsert, servers) > 0 ? protocolBases.Count() : 0;
-                    if (affCount > 0)
-                        SetDataUpdateTimestamp();
+
+                    // INSERT CREDENTIALS
+                    if (credentialsToAdd.Count > 0)
+                    {
+                        var tableCredentials = credentialsToAdd.Select(x => x.ToTableCredential()).ToList();
+                        ret = _dbConnection?.Execute(SqlInsertCredentialVault, tableCredentials) > 0;
+                        if (!ret)
+                        {
+                            transaction.Rollback();
+                            return Result.Fail(info, DatabaseName, "Insert credentials failed, no rows affected.");
+                        }
+                    }
+
+                    // INSERT SERVERS
+                    var servers = protocolBases.Select(x => x.ToTableServer()).ToList();
+                    ret = _dbConnection?.Execute(SqlInsert, servers) > 0;
+                    if (!ret)
+                    {
+                        transaction.Rollback();
+                        return Result.Fail(info, DatabaseName, "Insert servers failed, no rows affected.");
+                    }
+                    transaction.Commit();
+
+                    SetTableUpdateTimestamp(TableServer.TABLE_NAME);
                     return Result.Success();
                 }
                 catch (Exception e)
@@ -316,11 +408,11 @@ VALUES
             }
         }
 
-        private string SqlUpdate => NormalizedSql($@"UPDATE `{Server.TABLE_NAME}` SET
-`{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
-`{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
-`{nameof(Server.Json)}` = @{nameof(Server.Json)}
-WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
+        private string SqlUpdate => NormalizedSql($@"UPDATE `{TableServer.TABLE_NAME}` SET
+`{nameof(TableServer.Protocol)}` = @{nameof(TableServer.Protocol)},
+`{nameof(TableServer.ClassVersion)}` = @{nameof(TableServer.ClassVersion)},
+`{nameof(TableServer.Json)}` = @{nameof(TableServer.Json)}
+WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
         public override Result UpdateServer(ProtocolBase server)
         {
             string info = IoC.Translate("We can not update on database:");
@@ -330,16 +422,17 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var ret = _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+                    var ret = _dbConnection?.Execute(SqlUpdate, server.ToTableServer()) > 0;
                     if (ret)
                     {
-                        SetDataUpdateTimestamp();
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        return Result.Success();
                     }
                     else
                     {
                         // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                        return Result.Fail(info, DatabaseName, "Update failed, no rows affected.");
                     }
-                    return Result.Success();
                 }
                 catch (Exception e)
                 {
@@ -357,17 +450,17 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    var items = servers.Select(x => x.ToDbServer());
+                    var items = servers.Select(x => x.ToTableServer());
                     var ret = _dbConnection?.Execute(SqlUpdate, items) > 0;
                     if (ret)
                     {
-                        SetDataUpdateTimestamp();
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        return Result.Success();
                     }
                     else
                     {
-                        // TODO 如果`{nameof(Server.Id)}`= @{nameof(Server.Id)}的项目不存在时怎么办？
+                        return Result.Fail(info, DatabaseName, "Update failed, no rows affected.");
                     }
-                    return Result.Success();
                 }
                 catch (Exception e)
                 {
@@ -387,12 +480,18 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 {
                     // special case: dapper does not support IN operator for postgresql
                     var sql = DatabaseType == DatabaseType.PostgreSQL
-                        ? $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` = ANY(@{nameof(Server.Id)});"
-                        : $@"DELETE FROM `{Server.TABLE_NAME}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};";
+                        ? $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` = ANY(@{nameof(TableServer.Id)});"
+                        : $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` IN @{nameof(TableServer.Id)};";
                     var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = ids }) > 0;
                     if (ret)
-                        SetDataUpdateTimestamp();
-                    return Result.Success();
+                    {
+                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
+                        return Result.Success();
+                    }
+                    else
+                    {
+                        return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -401,12 +500,12 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
             }
         }
 
-        public override ResultString GetConfig(string key)
+        public override ResultString GetConfig(string key, bool closeInEnd = false)
         {
-            return GetConfigPrivate(key);
+            return GetConfigPrivate(key, closeInEnd);
         }
 
-        protected ResultString GetConfigPrivate(string key)
+        protected ResultString GetConfigPrivate(string key, bool closeInEnd = false)
         {
             string info = IoC.Translate("We can not read from database:");
             lock (this)
@@ -415,7 +514,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
                 if (!result.IsSuccess) return ResultString.Fail(result.ErrorInfo);
                 try
                 {
-                    var config = _dbConnection?.QueryFirstOrDefault<Config>(NormalizedSql($"SELECT * FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}"),
+                    var config = _dbConnection?.QueryFirstOrDefault<TableConfig>(NormalizedSql($"SELECT * FROM `{TableConfig.TABLE_NAME}` WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}"),
                         new { Key = key, });
                     return ResultString.Success(config?.Value);
                 }
@@ -426,16 +525,16 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
             }
         }
 
-        private string SqlInsertConfig => NormalizedSql($@"INSERT INTO `{Config.TABLE_NAME}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})");
-        private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{Config.TABLE_NAME}` SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
-        private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{Config.TABLE_NAME}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}");
+        private string SqlInsertConfig => NormalizedSql($@"INSERT INTO `{TableConfig.TABLE_NAME}` (`{nameof(TableConfig.Key)}`, `{nameof(TableConfig.Value)}`)  VALUES (@{nameof(TableConfig.Key)}, @{nameof(TableConfig.Value)})");
+        private string SqlUpdateConfig => NormalizedSql($@"UPDATE `{TableConfig.TABLE_NAME}` SET `{nameof(TableConfig.Value)}` = @{nameof(TableConfig.Value)} WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
+        private string SqlDeleteConfig => NormalizedSql($@"Delete FROM `{TableConfig.TABLE_NAME}` WHERE `{nameof(TableConfig.Key)}` = @{nameof(TableConfig.Key)}");
 
-        public override Result SetConfig(string key, string? value)
+        public override Result SetConfig(string key, string? value, bool closeInEnd = false)
         {
-            return SetConfigPrivate(key, value);
+            return SetConfigPrivate(key, value, closeInEnd);
         }
 
-        protected Result SetConfigPrivate(string key, string? value)
+        protected Result SetConfigPrivate(string key, string? value, bool closeInEnd = false)
         {
             string info = IoC.Translate("We can not update on database:");
             lock (this)
@@ -466,22 +565,22 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};");
             }
         }
 
-        public override Result SetDataUpdateTimestamp(long time = -1)
+        public override Result SetTableUpdateTimestamp(string tableName, long time = -1, bool closeInEnd = false)
         {
             lock (this)
             {
                 var timestamp = time;
                 if (time <= 0)
                     timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                return SetConfigPrivate("UpdateTimestamp", timestamp.ToString());
+                return SetConfigPrivate("UpdateTimestamp_" + tableName, timestamp.ToString());
             }
         }
 
-        public override ResultLong GetDataUpdateTimestamp()
+        public override ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = false)
         {
             lock (this)
             {
-                var val = GetConfigPrivate("UpdateTimestamp");
+                var val = GetConfigPrivate("UpdateTimestamp_" + tableName);
                 if (!val.IsSuccess) return ResultLong.Fail(val.ErrorInfo);
                 if (long.TryParse(val.Result, out var t)
                     && t > 0)

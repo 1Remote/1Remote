@@ -4,6 +4,7 @@ public static class LanguagesResources
     public static readonly string[] Files = new string[]
     {
         "en-us.xaml",
+        "it-it.xaml",
         "zh-cn.xaml",
         "cs-cz.xaml",
         "de-de.xaml",

@@ -318,7 +318,7 @@ namespace _1RM
                 Task.Factory.StartNew(() =>
                 {
                     //ConfigurationServiceObj!.LocalDataSource.GetServers(true);
-                    IoC.Get<GlobalData>().ReloadServerList(true);
+                    IoC.Get<GlobalData>().ReloadAll(true);
                     if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
                         IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
                 });

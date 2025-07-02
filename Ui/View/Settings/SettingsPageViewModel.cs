@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using _1RM.Model;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service;
 using _1RM.Utils;
-using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service.DataSource;
 using _1RM.View.Settings.DataSource;
 using _1RM.View.Settings.General;
@@ -23,6 +12,7 @@ using _1RM.View.Settings.Launcher;
 using _1RM.View.Settings.ProtocolConfig;
 using _1RM.View.Settings.Theme;
 using _1RM.Service.DataSource.DAO;
+using _1RM.View.Settings.CredentialVault;
 
 namespace _1RM.View.Settings
 {
@@ -67,6 +57,9 @@ namespace _1RM.View.Settings
                     break;
                 case EnumMainWindowPage.SettingsData:
                     SelectedViewModel = IoC.Get<DataSourceViewModel>();
+                    break;
+                case EnumMainWindowPage.SettingsCredentialVault:
+                    SelectedViewModel = IoC.Get<CredentialVaultViewModel>();
                     break;
                 case EnumMainWindowPage.SettingsLauncher:
                     SelectedViewModel = IoC.Get<LauncherSettingViewModel>();

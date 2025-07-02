@@ -10,9 +10,11 @@
              d:DataContext="{d:DesignInstance forms:ProtocolBaseWithAddressPortFormViewModel}"
              d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection'}"></TextBlock>
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
+
+        <!--<Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -28,7 +30,7 @@
                              InputScope="Number"/>
                 </Grid>
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
         <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 

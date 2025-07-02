@@ -57,8 +57,7 @@
     <s:String x:Key="Language">Язык</s:String>
     <s:String x:Key="Startup">Запуск</s:String>
     <s:String x:Key="Tags">Теги</s:String>
-    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Нажмите Enter, чтобы добавить тег, который будет использоваться для группировки серверов. Щелкнув правой кнопкой мыши теги на главной странице, вы можете отфильтровать или закрепить определенный тег.</s:String>
-    <s:String x:Key="Icon">Логотип</s:String>
+    <s:String x:Key="Logo">Логотип</s:String>
     <s:String x:Key="Hostname">Имя хоста</s:String>
     <s:String x:Key="Target">Цель</s:String>
     <s:String x:Key="Port">Порт</s:String>
@@ -105,6 +104,8 @@
     <s:String x:Key="system_options_data_security_database">База данных</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Внимание: ваши данные будут сохранены в незашифрованном виде!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Обработка данных. Не закрывайте приложение!</s:String>
+    <s:String x:Key="system_options_data_security_error_can_not_open">База данных: разрешение на чтение отклонено, либо файл не является базой данных, либо файл является зашифрованной базой данных!</s:String>
+    <s:String x:Key="string_database_error_permission_denied">База данных: доступ к чтению запрещен! Пожалуйста, проверьте свой пароль БД. Или файл может быть использован в другом приложении.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Дублировать</s:String>
     <s:String x:Key="server_card_operate_copy_address">Скопировать имя хоста в буфер обмена</s:String>
     <s:String x:Key="server_card_operate_copy_username">Скопировать имя пользователя в буфер обмена</s:String>
@@ -123,8 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">Вы редактируете массово:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Количество выбранных:</s:String>
     <s:String x:Key="server_editor_group_title_common">Общие</s:String>
-    <s:String x:Key="Connection Info">Подключение</s:String>
-    <s:String x:Key="Connection Settings">Подключение</s:String>
+    <s:String x:Key="Connection">Подключение</s:String>
     <s:String x:Key="server_editor_group_title_display">Экран</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Продвинутые</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Сервер шлюза удаленных рабочих столов</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Буфер обмена</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Комбинации клавиш</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Диски</s:String>
-    <s:String x:Key="Drives plug in later">Диски подключаются позже</s:String>
+    <s:String x:Key="Drives plug in latter">Диски подключаются позже</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Звуки</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Выключены</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Проигрывать на локальном ПК</s:String>
@@ -323,4 +323,7 @@
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Установите фокус на локальный рабочий стол, когда мышь выходит за пределы рабочего стола RDP</s:String>
     <s:String x:Key="Close button behavior">Поведение кнопки закрытия</s:String>
     <s:String x:Key="Minimize to system tray">Минимизировать системный поднос</s:String>
+    <s:String x:Key="Credentials">Реквизиты для входа</s:String>
+    <s:String x:Key="Credentials Vault">Условия хранилища</s:String>
+    <s:String x:Key="Select credentials within the same database">Выберите учетные данные в той же базе данных</s:String>
 </ResourceDictionary>

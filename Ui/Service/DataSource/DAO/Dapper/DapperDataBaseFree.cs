@@ -2,6 +2,8 @@
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Dapper;
+using Newtonsoft.Json;
+using Npgsql.Internal.Postgres;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
@@ -27,7 +29,7 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override ResultSelects GetServers()
+        public override ResultSelects<ProtocolBase> GetServers()
         {
             lock (this)
             {
@@ -102,47 +104,110 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override ResultString GetConfig(string key)
+        public override ResultString GetConfig(string key, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.GetConfig(key);
-                CloseConnection();
+                if (closeInEnd)
+                    CloseConnection();
                 return ret;
             }
         }
 
         /// <inheritdoc />
-        public override Result SetConfig(string key, string? value)
+        public override Result SetConfig(string key, string? value, bool closeInEnd = true)
         {
             lock (this)
             {
                 OpenConnection();
                 var ret = base.SetConfig(key, value);
+                if (closeInEnd)
+                    CloseConnection();
+                return ret;
+            }
+        }
+
+
+        public override Result SetTableUpdateTimestamp(string dataType, long time = -1, bool closeInEnd = true)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.SetTableUpdateTimestamp(dataType, time);
+                if (closeInEnd)
+                    CloseConnection();
+                return ret;
+            }
+        }
+
+        public override ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = true)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetTableUpdateTimestamp(tableName);
+                if (closeInEnd)
+                    CloseConnection();
+                return ret;
+            }
+        }
+
+
+
+        public override ResultSelects<Credential> GetCredentials(bool closeInEnd = true)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.GetCredentials();
+                if (closeInEnd)
+                    CloseConnection();
+                return ret;
+            }
+        }
+
+        public override Result AddCredential(ref Credential credential)
+        {
+            lock (this)
+            {
+                OpenConnection();
+                var ret = base.AddCredential(ref credential);
                 CloseConnection();
                 return ret;
             }
         }
 
 
-        public override Result SetDataUpdateTimestamp(long time = -1)
+        public override Result UpdateCredential(Credential credential, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.SetDataUpdateTimestamp(time);
+                var ret = base.UpdateCredential(credential, relatedProtocols);
                 CloseConnection();
                 return ret;
             }
         }
 
-        public override ResultLong GetDataUpdateTimestamp()
+        //public override Result UpdateCredential(IEnumerable<Credential> credentials)
+        //{
+        //    lock (this)
+        //    {
+        //        OpenConnection();
+        //        var ret = base.UpdateCredential(credentials);
+        //        CloseConnection();
+        //        return ret;
+        //    }
+        //}
+
+        public override Result DeleteCredential(IEnumerable<string> names, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null)
         {
             lock (this)
             {
                 OpenConnection();
-                var ret = base.GetDataUpdateTimestamp();
+                var ret = base.DeleteCredential(names);
                 CloseConnection();
                 return ret;
             }

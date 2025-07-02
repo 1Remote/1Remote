@@ -2,10 +2,10 @@
     <s:String x:Key="key">ja-jp</s:String>
     <s:String x:Key="language_code-ISO">ja-JP</s:String>
     <s:String x:Key="language_code-google">ja</s:String>
-    <s:String x:Key="language_name">日本語 (ja-JP)</s:String>
-    <s:String x:Key="Warning">警告</s:String>
-    <s:String x:Key="Error">エラー</s:String>
-    <s:String x:Key="Info">情報</s:String>
+    <s:String x:Key="language_name">日本語(ja-JP)</s:String>
+    <s:String x:Key="Warning">Warning</s:String>
+    <s:String x:Key="Error">Error</s:String>
+    <s:String x:Key="Info">Info</s:String>
     <s:String x:Key="OK">OK</s:String>
     <s:String x:Key="Exit">終了</s:String>
     <s:String x:Key="Close">閉じる</s:String>
@@ -57,8 +57,7 @@
     <s:String x:Key="Language">言語</s:String>
     <s:String x:Key="Startup">起動</s:String>
     <s:String x:Key="Tags">タグ</s:String>
-    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Enterキーまたは+ボタンでタグを追加します。タグはサーバーのグループ化に役立ちます。ホーム画面上の［タグ］をクリックすると、特定のタグをフィルタリングしたりピン留めすることができます。</s:String>
-    <s:String x:Key="Icon">アイコン</s:String>
+    <s:String x:Key="Logo">ロゴ</s:String>
     <s:String x:Key="Hostname">ホスト名</s:String>
     <s:String x:Key="Target">ターゲット</s:String>
     <s:String x:Key="Port">ポート番号</s:String>
@@ -96,7 +95,7 @@
     <s:String x:Key="system_options_general_title">一般</s:String>
     <s:String x:Key="Run automatically at OS startup">OS起動時に自動実行(最小化)</s:String>
     <s:String x:Key="Confirm before closing">閉じる前に確認する</s:String>
-    <s:String x:Key="Show current session icon instead of the app icon when connected">接続時にアプリのアイコンに代えて現在のセッションのアイコンを表示する</s:String>
+    <s:String x:Key="Show current session icon instead of the app icon when connected">Show current session icon instead of the app icon when connected</s:String>
     <s:String x:Key="system_options_general_log_file_path">ログファイル</s:String>
     <s:String x:Key="system_options_quick_match_providers">キーワードのマッチタイプ</s:String>
     <s:String x:Key="Launcher">ランチャー</s:String>
@@ -105,6 +104,8 @@
     <s:String x:Key="system_options_data_security_database">データベース</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">注意: データは暗号化されずに保存されます</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">データを処理しています。アプリを閉じないでください。</s:String>
+    <s:String x:Key="system_options_data_security_error_can_not_open">データベース：読み取りの許可が拒否されたり、ファイルがデータベースではないか、ファイルが暗号化されたデータベースです！</s:String>
+    <s:String x:Key="string_database_error_permission_denied">データベース：読書の許可が拒否されました！ DBのパスワードまたはファイル職業を確認してください。</s:String>
     <s:String x:Key="server_card_operate_duplicate">複製</s:String>
     <s:String x:Key="server_card_operate_copy_address">ホスト名をクリップボードにコピー</s:String>
     <s:String x:Key="server_card_operate_copy_username">ユーザー名をクリップボードにコピー</s:String>
@@ -112,9 +113,9 @@
     <s:String x:Key="confirm_to_delete">本当に削除してよろしいですか？</s:String>
     <s:String x:Key="confirm_to_delete_selected">選択されたものすべてを本当に削除してよろしいですか？</s:String>
     <s:String x:Key="import_server_dialog_title">ファイルを選択</s:String>
-    <s:String x:Key="import_from_json">インポート - json</s:String>
-    <s:String x:Key="import_from_mremoteng_csv">インポート - mRemoteNG csv</s:String>
-    <s:String x:Key="import_from_rdp_file">インポート - *.rdp</s:String>
+    <s:String x:Key="import_from_json">import json</s:String>
+    <s:String x:Key="import_from_mremoteng_csv">import mRemoteNG csv</s:String>
+    <s:String x:Key="import_from_rdp_file">import *.rdp</s:String>
     <s:String x:Key="import_from_sqlite_db">インポート - PRemoteM db</s:String>
     <s:String x:Key="import_done_0_items_added">インポートは無事に完了し、{0}個の項目を追加しました。</s:String>
     <s:String x:Key="import_failure_with_data_format_error">データ形式エラー</s:String>
@@ -123,8 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">一括編集中:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">選択項目数:</s:String>
     <s:String x:Key="server_editor_group_title_common">一般</s:String>
-    <s:String x:Key="Connection Info">接続情报</s:String>
-    <s:String x:Key="Connection Settings">コネクション</s:String>
+    <s:String x:Key="Connection">繋がり</s:String>
     <s:String x:Key="server_editor_group_title_display">ディスプレイ</s:String>
     <s:String x:Key="server_editor_group_title_advantage">高度な設定</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RDゲートウェイサーバー</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">クリップボード</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">キーの組み合わせ</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">ドライブ</s:String>
-    <s:String x:Key="Drives plug in later">後で接続したドライブ</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">リモートのオーディオ</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">出力しない</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">このコンピューターで出力する</s:String>
@@ -254,7 +254,7 @@
     <s:String x:Key="Data Source name">名前</s:String>
     <s:String x:Key="Please select a Data Source">追加先データベースを選択してください</s:String>
     <s:String x:Key="Test connection">テスト接続</s:String>
-    <s:String x:Key="Show XXX button">{0}ボタンを表示する</s:String>
+    <s:String x:Key="Show XXX button">Show `{0}` button</s:String>
     <s:String x:Key="Show recently used here">最近使用したものをここに表示する</s:String>
     <s:String x:Key="Hide recently used">最近使用したものを表示しない</s:String>
     <s:String x:Key="Leave blank to inherit the default value">空欄にしておくとデフォルト値を継承します</s:String>
@@ -264,9 +264,9 @@
     <s:String x:Key="Availability detection">利用できるかを検知</s:String>
     <s:String x:Key="Check if address is available before connect">接続前にホストをチェックする</s:String>
     <s:String x:Key="When the default host or port is unavailable the alternate addresses will be tried in sequence">デフォルトのホストが利用できないとき、代替の接続情報を順番に試します。（その際、[接続前にホストをチェック] の設定にかかわらず、各接続情報のホストが利用できるかどうかを接続前にチェックします）</s:String>
-    <s:String x:Key="support multi-address multi-account">複数アカウント対応</s:String>
-    <s:String x:Key="We are not able to connect to xxx">`{0}` に接続できません</s:String>
-    <s:String x:Key="XXX is already existed!">`{0}` は既に存在しています</s:String>
+    <s:String x:Key="support multi-address multi-account">support multi-address multi-account</s:String>
+    <s:String x:Key="We are not able to connect to xxx">We are not able to connect to `{0}`!</s:String>
+    <s:String x:Key="XXX is already existed!">`{0}` is already existed!</s:String>
     <s:String x:Key="XXX is not existed!">`{0}` is not existed!</s:String>
     <s:String x:Key="Show credentials info">接続先とユーザー名の表示</s:String>
     <s:String x:Key="Sorting">並べ替え</s:String>
@@ -296,7 +296,7 @@
     <s:String x:Key="Verification failed. Please try again.">認証できませんでした。やり直してください。</s:String>
     <s:String x:Key="Security">セキュリティ</s:String>
     <s:String x:Key="Windows credentials verification is required to view passwords">パスワードの可視化やコピーにはWindows資格情報での認証が必要</s:String>
-    <s:String x:Key="Not existed">存在していません</s:String>
+    <s:String x:Key="Not existed">Not existed</s:String>
     <s:String x:Key="Not a number">数値エラー</s:String>
     <s:String x:Key="Optional">任意</s:String>
     <s:String x:Key="Nullable">空の値を許容する</s:String>
@@ -323,4 +323,7 @@
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します</s:String>
     <s:String x:Key="Close button behavior">閉じるボタンの挙動</s:String>
     <s:String x:Key="Minimize to system tray">システムトレイに最小化</s:String>
+    <s:String x:Key="Credentials">パスワード認証</s:String>
+    <s:String x:Key="Credentials Vault">保管庫</s:String>
+    <s:String x:Key="Select credentials within the same database">同じデータベース内の資格情報を選択します</s:String>
 </ResourceDictionary>

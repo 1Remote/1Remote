@@ -193,13 +193,13 @@ namespace _1RM.Model.Protocol.Base
         }
 
         private string _selectedRunnerName = "";
-
         public string SelectedRunnerName
         {
-            get => _selectedRunnerName;
+            get => _selectedRunnerName == "Follow the global settings" ? "" : _selectedRunnerName;
             set
             {
-                if (SetAndNotifyIfChanged(ref _selectedRunnerName, value))
+                var v = value == "Follow the global settings" ? "" : value;
+                if (SetAndNotifyIfChanged(ref _selectedRunnerName, v))
                 {
                     var runner = RunnerHelper.GetRunner(IoC.Get<ProtocolConfigurationService>(), this, this.Protocol);
                     RaisePropertyChanged(nameof(SelectedRunnerIsInternalRunner));
@@ -311,6 +311,7 @@ namespace _1RM.Model.Protocol.Base
             {
                 c.AlternateCredentials = new(p.AlternateCredentials.Select(x => x.CloneMe()));
             }
+            clone.DataSource = DataSource;
             return clone;
         }
 

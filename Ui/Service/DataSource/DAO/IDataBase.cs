@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
@@ -28,7 +29,7 @@ namespace _1RM.Service.DataSource.DAO
     public class Result
     {
         public bool IsSuccess = false;
-        public bool NeedReload = false;
+        public bool NeedReloadUI = false;
         public string ErrorInfo = string.Empty;
         private static readonly Result _SUCCESS = new Result() { IsSuccess = true };
         public static Result Success()
@@ -56,25 +57,25 @@ namespace _1RM.Service.DataSource.DAO
         }
     }
 
-    public class ResultSelects : Result
+    public class ResultSelects<T> : Result
     {
-        public readonly List<ProtocolBase> ProtocolBases;
+        public readonly List<T> Items;
 
-        public ResultSelects(List<ProtocolBase> protocolBases)
+        public ResultSelects(List<T> items)
         {
-            ProtocolBases = protocolBases;
+            Items = items;
         }
-        public static ResultSelects Success(List<ProtocolBase> protocolBases)
+        public static ResultSelects<T> Success(List<T> protocolBases)
         {
-            return new ResultSelects(protocolBases) { IsSuccess = true };
+            return new ResultSelects<T>(protocolBases) { IsSuccess = true };
         }
-        public new static ResultSelects Fail(string message, string databaseName, string reason)
+        public new static ResultSelects<T> Fail(string message, string databaseName, string reason)
         {
-            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
+            return new ResultSelects<T>(null!) { IsSuccess = false, ErrorInfo = GetErrorInfo(message, databaseName, reason) };
         }
-        public new static ResultSelects Fail(string message)
+        public new static ResultSelects<T> Fail(string message)
         {
-            return new ResultSelects(null!) { IsSuccess = false, ErrorInfo = message };
+            return new ResultSelects<T>(null!) { IsSuccess = false, ErrorInfo = message };
         }
     }
 
@@ -148,7 +149,7 @@ namespace _1RM.Service.DataSource.DAO
 
         //public abstract ResultSelect GetServer(int id);
 
-        public abstract ResultSelects GetServers();
+        public abstract ResultSelects<ProtocolBase> GetServers();
 
         //public abstract ResultLong GetServerCount();
 
@@ -172,12 +173,35 @@ namespace _1RM.Service.DataSource.DAO
 
         public abstract Result DeleteServer(IEnumerable<string> ids);
 
-        public abstract ResultString GetConfig(string key);
+        #region TableCredential
 
-        public abstract Result SetConfig(string key, string? value);
+        public abstract ResultSelects<Credential> GetCredentials(bool closeInEnd = true);
+        /// <summary>
+        /// insert and return id
+        /// </summary>
+        public abstract Result AddCredential(ref Credential credential);
 
-        public abstract Result SetDataUpdateTimestamp(long time = -1);
-        public abstract ResultLong GetDataUpdateTimestamp();
+
+        /// <summary>
+        /// update credential in database by Id, and update related protocols.
+        /// </summary>
+        /// <param name="credential">the credential to update</param>
+        /// <param name="relatedProtocols">the protocols used this credential, will update the credential in these protocols</param>
+        /// <returns></returns>
+        public abstract Result UpdateCredential(Credential credential, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null);
+        //public abstract Result UpdateCredential(IEnumerable<Credential> credentials);
+
+        public abstract Result DeleteCredential(IEnumerable<string> names, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null);
+
+        #endregion
+
+
+        public abstract ResultString GetConfig(string key, bool closeInEnd = true);
+
+        public abstract Result SetConfig(string key, string? value, bool closeInEnd = true);
+
+        public abstract Result SetTableUpdateTimestamp(string tableName, long time = -1, bool closeInEnd = true);
+        public abstract ResultLong GetTableUpdateTimestamp(string tableName, bool closeInEnd = true);
 
         protected void SetEncryptionTest()
         {

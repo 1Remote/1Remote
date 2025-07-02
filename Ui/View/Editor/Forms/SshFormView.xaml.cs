@@ -17,24 +17,22 @@ namespace _1RM.View.Editor.Forms
         public SshFormView() : base()
         {
             InitializeComponent();
-            Loaded += (sender, args) =>
-            {
-                if (DataContext is SshFormViewModel { New: var ssh })
-                {
-	                bool? privateKey = false;
-                    if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
-                    {
-                        privateKey = null;
-
-                    }
-                    if (!string.IsNullOrEmpty(ssh.PrivateKey))
-                    {
-                        privateKey = true;
-
-                    }
-                    CbUsePrivateKey.IsChecked = privateKey;
-                }
-			};
+            //Loaded += (sender, args) =>
+            //{
+            //    if (DataContext is SshFormViewModel { New: var ssh })
+            //    {
+            //        bool? privateKey = false;
+            //        if (ssh.PrivateKey == ssh.ServerEditorDifferentOptions)
+            //        {
+            //            privateKey = null;
+            //        }
+            //        if (!string.IsNullOrEmpty(ssh.PrivateKey))
+            //        {
+            //            privateKey = true;
+            //        }
+            //        CbUsePrivateKey.IsChecked = privateKey;
+            //    }
+            //};
         }
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)

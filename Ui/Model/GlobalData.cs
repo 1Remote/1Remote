@@ -4,19 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Timers;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
-using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
-using Stylet;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM.Model
@@ -55,7 +53,7 @@ namespace _1RM.Model
 
         #region Server Data
 
-        public Action? OnDataReloaded;
+        public Action? OnReloadAll;
 
         public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
@@ -114,7 +112,7 @@ namespace _1RM.Model
         /// reload data based on `LastReadFromDataSourceMillisecondsTimestamp` and `DataSourceDataUpdateTimestamp`
         /// return true if read data
         /// </summary>
-        public bool ReloadServerList(bool force = false)
+        public bool ReloadAll(bool force = false)
         {
             try
             {
@@ -127,19 +125,31 @@ namespace _1RM.Model
                 var needRead = false;
                 if (force == false)
                 {
-                    needRead = _sourceService.LocalDataSource?.NeedRead() ?? false;
-                    foreach (var additionalSource in _sourceService.AdditionalSources)
+                    needRead |= _sourceService.LocalDataSource?.NeedRead(TableServer.TABLE_NAME) ?? false;
+                    needRead |= _sourceService.LocalDataSource?.NeedRead(TableCredential.TABLE_NAME) ?? false;
+                    if (needRead == false)
                     {
-                        // 断线的数据源，除非强制读取，否则都忽略，断线的数据源在 timer 里会自动重连
-                        if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
+                        foreach (var additionalSource in _sourceService.AdditionalSources)
                         {
-                            if (!force) continue;
-                            additionalSource.Value.Database_SelfCheck();
-                        }
+                            if (additionalSource.Value.Status != EnumDatabaseStatus.OK)
+                            {
+                                // if this source is not connected, we skip it
+                                continue;
+                            }
 
-                        if (needRead == false)
-                        {
-                            needRead |= additionalSource.Value.NeedRead();
+                            if (needRead == false)
+                            {
+                                needRead |= additionalSource.Value.NeedRead(TableServer.TABLE_NAME);
+                            }
+                            if (needRead == false)
+                            {
+                                needRead |= additionalSource.Value.NeedRead(TableCredential.TABLE_NAME);
+                            }
+                            if (needRead)
+                            {
+                                // if any additional source need read, we read all servers
+                                break;
+                            }
                         }
                     }
                 }
@@ -148,9 +158,10 @@ namespace _1RM.Model
                 {
                     // read from db
                     VmItemList = _sourceService.GetServers(force);
+                    _sourceService.GetCredentials(force);
                     LocalityConnectRecorder.ConnectTimeCleanup();
                     ReadTagsFromServers();
-                    OnDataReloaded?.Invoke();
+                    OnReloadAll?.Invoke();
                     return true;
                 }
 
@@ -177,7 +188,7 @@ namespace _1RM.Model
             {
                 return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
             }
-            var needReload = dataSource.NeedRead();
+            var needReload = dataSource.NeedRead(TableServer.TABLE_NAME);
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
@@ -200,13 +211,10 @@ namespace _1RM.Model
 
             if (needReload)
             {
-                ReloadServerList(force: true);
+                ReloadAll(force: true); // AddServer & needReload
             }
-            else
-            {
-                ReadTagsFromServers();
-                IoC.Get<ServerListPageViewModel>().ClearSelection();
-            }
+            ReadTagsFromServers();
+            IoC.Get<ServerListPageViewModel>().ClearSelection();
             StartTick();
             return ret;
         }
@@ -228,13 +236,13 @@ namespace _1RM.Model
                     return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
                 }
 
-                var needReload = source.NeedRead();
+                var needReload = source.NeedRead(TableServer.TABLE_NAME);
                 var ret = source.Database_UpdateServer(protocolServer);
                 if (ret.IsSuccess)
                 {
                     if (needReload)
                     {
-                        ReloadServerList();
+                        ReloadAll(); // UpdateServer & needReload
                     }
                     else
                     {
@@ -274,7 +282,7 @@ namespace _1RM.Model
                         failMessages.Add($"Can not update on DataSource({source?.DataSourceName ?? "null"}) since it is not writable.");
                         continue;
                     }
-                    needReload |= source.NeedRead();
+                    needReload |= source.NeedRead(TableServer.TABLE_NAME);
                     var tmp = source.Database_UpdateServer(groupedServer);
                     isAnySuccess = tmp.IsSuccess;
                     if (!tmp.IsSuccess)
@@ -293,7 +301,8 @@ namespace _1RM.Model
                         if (old != null)
                         {
                             old.Server = protocolServer;
-                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : ""; }
+                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
+                        }
                     }
                 }
 
@@ -301,7 +310,7 @@ namespace _1RM.Model
                 {
                     if (needReload)
                     {
-                        ReloadServerList();
+                        ReloadAll(); // UpdateServers & needReload
                     }
                     else
                     {
@@ -320,21 +329,7 @@ namespace _1RM.Model
         }
 
 
-        private void RemoveOneServerFromUI(ProtocolBase server)
-        {
-            var old = GetItemById(server.DataSource!.DataSourceName, server.Id);
-            if (old != null)
-            {
-                SimpleLogHelper.Debug($"Remote server {old.DisplayName} of `{old.DataSourceName}` removed from GlobalData");
-                VmItemList.Remove(old);
-                IoC.Get<ServerListPageViewModel>().DeleteServer(old); // invoke main list ui change
-                Execute.OnUIThread(() =>
-                {
-                    if (IoC.Get<ServerSelectionsViewModel>().VmServerList.Contains(old))
-                        IoC.Get<ServerSelectionsViewModel>().VmServerList.Remove(old); // invoke launcher ui change
-                });
-            }
-        }
+
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
             StopTick();
@@ -364,16 +359,7 @@ namespace _1RM.Model
                 // update viewmodel
                 if (isAnySuccess)
                 {
-                    if (protocolServers.Count() == 1)
-                    {
-                        RemoveOneServerFromUI(protocolServers.First());
-                        ReadTagsFromServers();
-                        IoC.Get<ServerListPageViewModel>().ClearSelection();
-                    }
-                    else
-                    {
-                        ReloadServerList(true);
-                    }
+                    ReloadAll(true); // DeleteServers
                 }
 
                 return failMessages.Any() ? Result.Fail(string.Join("\r\n", failMessages)) : Result.Success();
@@ -390,6 +376,7 @@ namespace _1RM.Model
         }
 
         #endregion Server Data
+
 
         public void StopTick()
         {
@@ -468,8 +455,7 @@ namespace _1RM.Model
                     return;
 
                 // do not reload when any selected / launcher is shown / editor view is show
-                if (mainWindowViewModel.EditorViewModel != null
-                    || listPageViewModel.VmServerList.Any(x => x.IsSelected)
+                if (listPageViewModel.VmServerList.Any(x => x.IsSelected)
                     || launcherWindowViewModel?.View?.IsVisible == true)
                 {
                     var pause = IoC.Translate("Pause");
@@ -507,11 +493,7 @@ namespace _1RM.Model
                 var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
 
 
-                var msgUpdating = IoC.Translate("Updating");
-                var msgNextUpdate = IoC.Translate("Next update check");
-                var msg = minEtc > 0 ? $"{msgNextUpdate} {GetTime(minEtc)}" : msgUpdating;
-
-
+                var msg = minEtc > 0 ? $"{IoC.Translate("Next update check")} {GetTime(minEtc)}" : IoC.Translate("Updating");
                 var msgNextReconnect = IoC.Translate("Next auto reconnect");
                 var msgReconnecting = IoC.Translate("Reconnecting");
                 foreach (var s in ds)
@@ -550,7 +532,7 @@ namespace _1RM.Model
 
                 if (minEtc == 0)
                 {
-                    if (ReloadServerList())
+                    if (ReloadAll()) // reload data in the timer
                     {
                         SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
                     }
@@ -558,6 +540,8 @@ namespace _1RM.Model
                     {
                         SimpleLogHelper.Debug("check database update - no need reload by timer " + _timer.GetHashCode());
                     }
+
+                    // TODO: reload credentials
                 }
 
                 System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;

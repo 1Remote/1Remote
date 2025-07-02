@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
-using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View;
 using Newtonsoft.Json;
@@ -59,6 +57,56 @@ namespace _1RM.Service.DataSource
             }
         }
 
+        public List<Credential> GetCredentials(bool force)
+        {
+            lock (this)
+            {
+                var ret = new List<Credential>(100);
+                if (LocalDataSource != null)
+                    ret.AddRange(LocalDataSource.GetCredentials(force));
+                foreach (var dataSource in AdditionalSources)
+                {
+                    try
+                    {
+                        var cs = dataSource.Value.GetCredentials(force);
+                        ret.AddRange(cs);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.DebugWarning(e);
+                    }
+                }
+                return ret;
+            }
+        }
+
+
+        public List<(DataSourceBase, Credential)> GetSourceCredentials(bool force)
+        {
+            lock (this)
+            {
+                var ret = new List<(DataSourceBase, Credential)>(100);
+                if (LocalDataSource != null)
+                {
+                    ret.AddRange(LocalDataSource.GetCredentials().Select(credential => (LocalDataSource, credential)).Select(dummy => ((DataSourceBase, Credential)) dummy));
+                }
+                foreach (var dataSource in AdditionalSources)
+                {
+                    try
+                    {
+                        var cs = dataSource.Value.GetCredentials(force);
+                        ret.AddRange(cs.Select(credential => (dataSource.Value, credential)).Select(dummy => ((DataSourceBase, Credential))dummy));
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.DebugWarning(e);
+                    }
+                }
+                return ret;
+            }
+        }
+
+
         public DataSourceBase? GetDataSource(string sourceId = LOCAL_DATA_SOURCE_NAME)
         {
             if (string.IsNullOrEmpty(sourceId) || sourceId == LOCAL_DATA_SOURCE_NAME)
@@ -76,7 +124,7 @@ namespace _1RM.Service.DataSource
         {
             LocalDataSource?.Database_CloseConnection();
             sqliteConfig.DataSourceName = LOCAL_DATA_SOURCE_NAME;
-            sqliteConfig.MarkAsNeedRead();
+            sqliteConfig.ClearReadTimestamp();
             if (!IoPermissionHelper.HasWritePermissionOnFile(sqliteConfig.Path))
             {
                 LocalDataSource = null;
@@ -91,19 +139,19 @@ namespace _1RM.Service.DataSource
         /// <summary>
         /// 添加并启用一个新的数据源（如果该数据源已存在，则更新），返回数据源的连接状态
         /// </summary>
-        public DatabaseStatus AddOrUpdateDataSource(DataSourceBase config, int connectTimeOutSeconds = 2, bool doReload = true)
+        public DatabaseStatus AddOrUpdateDataSource(DataSourceBase newDataSource, int connectTimeOutSeconds = 2, bool doReload = true)
         {
             try
             {
-                config.MarkAsNeedRead(); // reload database
-                if (config is SqliteSource { DataSourceName: LOCAL_DATA_SOURCE_NAME } localConfig)
+                newDataSource.ClearReadTimestamp(); // reload database
+                if (newDataSource is SqliteSource { DataSourceName: LOCAL_DATA_SOURCE_NAME } localConfig)
                 {
                     return InitLocalDataSource(localConfig);
                 }
 
                 // remove the old one
                 {
-                    var olds = AdditionalSources.Where(x => x.Value == config);
+                    var olds = AdditionalSources.Where(x => x.Value == newDataSource);
                     foreach (var pair in olds)
                     {
                         AdditionalSources.TryRemove(pair.Key, out var tmp);
@@ -111,17 +159,17 @@ namespace _1RM.Service.DataSource
                     }
 
                     {
-                        AdditionalSources.TryRemove(config.DataSourceName, out var tmp);
+                        AdditionalSources.TryRemove(newDataSource.DataSourceName, out var tmp);
                         tmp?.Database_CloseConnection();
                     }
                 }
 
 
-                config.Database_CloseConnection();
+                newDataSource.Database_CloseConnection();
                 var ret = DatabaseStatus.New(EnumDatabaseStatus.NotConnectedYet);
                 if (connectTimeOutSeconds > 0)
-                    ret = config.Database_SelfCheck(connectTimeOutSeconds);
-                AdditionalSources.AddOrUpdate(config.DataSourceName, config, (name, source) => config);
+                    ret = newDataSource.Database_SelfCheck(connectTimeOutSeconds);
+                AdditionalSources.AddOrUpdate(newDataSource.DataSourceName, newDataSource, (name, source) => newDataSource);
                 return ret;
             }
             catch (Exception e)
@@ -134,7 +182,7 @@ namespace _1RM.Service.DataSource
             finally
             {
                 if (doReload)
-                    IoC.Get<GlobalData>().ReloadServerList();
+                    IoC.Get<GlobalData>().ReloadAll(); // reload server list after adding a new data source
             }
         }
 
@@ -147,7 +195,7 @@ namespace _1RM.Service.DataSource
                 AdditionalSources[name].Database_CloseConnection();
                 if (AdditionalSources.TryRemove(name, out _))
                 {
-                    IoC.Get<GlobalData>().ReloadServerList(true);
+                    IoC.Get<GlobalData>().ReloadAll(true); // reload server list after removing a data source
                 }
             }
         }

@@ -57,8 +57,7 @@
     <s:String x:Key="Language">Jazyk</s:String>
     <s:String x:Key="Startup">Při startu</s:String>
     <s:String x:Key="Tags">Štítky</s:String>
-    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Stisknutím klávesy Enter přidáte značku, která se používá pro seskupování serverů. Kliknutím pravým tlačítkem na štítky na domovské stránce můžete filtrovat nebo připnout konkrétní štítek.</s:String>
-    <s:String x:Key="Icon">Icon</s:String>
+    <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="Hostname">Název stroje</s:String>
     <s:String x:Key="Target">Cíl</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -105,6 +104,8 @@
     <s:String x:Key="system_options_data_security_database">Databáze</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Varování: vaše data budou uložena nešifrovaná!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Zpracovávají se data. Nezavírejte aplikaci!</s:String>
+    <s:String x:Key="system_options_data_security_error_can_not_open">Databáze: odepřeno oprávnění pro čtení nebo soubor není databází, případně je šifrovaná!</s:String>
+    <s:String x:Key="string_database_error_permission_denied">Databáze: Odepřeno oprávnění pro čtení! Zkontrolujte správnost svého hesla nebo přítomnost souboru.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Zduplikovat</s:String>
     <s:String x:Key="server_card_operate_copy_address">Zkopírovat název stroje do schránky</s:String>
     <s:String x:Key="server_card_operate_copy_username">Zkopírovat uživatelské jméno do schránky</s:String>
@@ -123,8 +124,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">Hromadně upravujete:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Počet vybraných položek:</s:String>
     <s:String x:Key="server_editor_group_title_common">Společné</s:String>
-    <s:String x:Key="Connection Info">Připojení</s:String>
-    <s:String x:Key="Connection Settings">Připojení</s:String>
+    <s:String x:Key="Connection">Připojení</s:String>
     <s:String x:Key="server_editor_group_title_display">Zobrazení</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Výhoda</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Server brány vzdálených ploch</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Schránka</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Kombinace kláves</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Diskové jednotky</s:String>
-    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
+    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Zvuky</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Vypnuto</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Přehrávat lokálně</s:String>
@@ -323,4 +323,7 @@
     <s:String x:Key="Set focus to local desktop when the mouse is moved out of RDP desktop">Nastavte fokus na místní plochu, když se myš přesune mimo plochu RDP</s:String>
     <s:String x:Key="Close button behavior">Chování zavřít tlačítko</s:String>
     <s:String x:Key="Minimize to system tray">Minimalizujte zásobník systému</s:String>
+    <s:String x:Key="Credentials">Pověření</s:String>
+    <s:String x:Key="Credentials Vault">Pověřovací trezor</s:String>
+    <s:String x:Key="Select credentials within the same database">Vyberte pověření ve stejné databázi</s:String>
 </ResourceDictionary>

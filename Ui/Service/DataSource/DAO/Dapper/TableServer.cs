@@ -4,7 +4,7 @@ using _1RM.Utils;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {
-    public class Server : IDataBaseServer
+    public class TableServer : IDataBaseServer
     {
         public const string TABLE_NAME = "Servers";
 
@@ -44,11 +44,11 @@ namespace _1RM.Service.DataSource.DAO.Dapper
         }
     }
 
-    internal static class ServerHelperStatic
+    internal static class TableServerHelperStatic
     {
-        public static Server ToDbServer(this ProtocolBase s)
+        public static TableServer ToTableServer(this ProtocolBase s)
         {
-            var ret = new Server()
+            var ret = new TableServer()
             {
                 Id = s.Id,
                 ClassVersion = s.ClassVersion,

@@ -1,6 +1,6 @@
 ﻿namespace _1RM.Service.DataSource.DAO.Dapper
 {
-    public class Config
+    public class TableConfig
     {
         public const string TABLE_NAME = "Configs";
 

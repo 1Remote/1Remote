@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:_1RM.Controls"
              xmlns:forms1="clr-namespace:_1RM.View.Editor.Forms"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
@@ -11,7 +10,7 @@
              d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
 
-        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection'}"></TextBlock>
 
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
@@ -31,7 +30,19 @@
             </StackPanel>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
+
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Availability detection'}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <CheckBox Content="{DynamicResource 'Check if address is available before connect'}" 
+                              IsChecked="{Binding New.IsPingBeforeConnect}"
+                              Margin="0 5 0 0"></CheckBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <!--<Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
@@ -48,8 +59,9 @@
                 </Grid>
                 <CheckBox Margin="5 0 0 0" Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
+        <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
         <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
         <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">

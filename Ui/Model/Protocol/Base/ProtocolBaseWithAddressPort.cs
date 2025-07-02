@@ -99,14 +99,14 @@ namespace _1RM.Model.Protocol.Base
             return c;
         }
 
-        public virtual void SetCredential(in Credential credential)
+        public virtual void SetCredential(in Credential credential, bool ignoreEmptyString)
         {
-            if (!string.IsNullOrEmpty(credential.Address))
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.Address))
             {
                 Address = credential.Address;
             }
 
-            if (!string.IsNullOrEmpty(credential.Port))
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.Port))
             {
                 Port = credential.Port;
             }

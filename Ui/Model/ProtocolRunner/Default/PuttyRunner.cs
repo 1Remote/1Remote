@@ -301,7 +301,6 @@ namespace _1RM.Model.ProtocolRunner.Default
 
                 var ipv6 = ValidateIPv6(ssh.Address) ? " -6 " : "";
                 //var arg = $@" -load ""{sessionId}"" {ssh.Address} -P {ssh.Port} -l {ssh.UserName} -pw {ssh.Password} -{(int)(ssh.SshVersion ?? 2)} -cmd ""{ssh.StartupAutoCommand}"" {ipv6}";
-                // TODO: 当 cmd 指令不为空时，增加 -m "C:\path\to\commands.txt"
                 string m = GetAutoCommandFilePath(protocol);
                 if (!string.IsNullOrEmpty(m))
                 {
