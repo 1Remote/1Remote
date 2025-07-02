@@ -99,12 +99,6 @@ namespace _1RM.Model.Protocol
             return c;
         }
 
-        public override void SetCredential(in Credential credential)
-        {
-            base.SetCredential(credential);
-            PrivateKey = credential.PrivateKeyPath;
-        }
-
         public override bool ShowUserNameInput()
         {
             return true;

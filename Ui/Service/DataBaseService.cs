@@ -4,6 +4,9 @@ using _1RM.Utils;
 
 namespace _1RM.Service
 {
+    /// <summary>
+    /// TODO: make it utils
+    /// </summary>
     public static class DataService
     {
         public static void EncryptToDatabaseLevel(this ProtocolBase server)
@@ -14,7 +17,7 @@ namespace _1RM.Service
                 s.Password = UnSafeStringEncipher.EncryptOnce(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
-                    credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
+                    credential.EncryptToDatabaseLevel();
                 }
             }
             switch (server)
@@ -49,7 +52,7 @@ namespace _1RM.Service
                 s.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
-                    credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
+                    credential.DecryptToConnectLevel();
                 }
             }
             switch (server)
@@ -72,6 +75,23 @@ namespace _1RM.Service
                     }
                     break;
             }
+        }
+
+
+        public static void EncryptToDatabaseLevel(this Credential credential)
+        {
+            if (!string.IsNullOrEmpty(credential.Password))
+                credential.Password = UnSafeStringEncipher.EncryptOnce(credential.Password);
+            if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
+                credential.PrivateKeyPath = UnSafeStringEncipher.EncryptOnce(credential.PrivateKeyPath);
+        }
+
+        public static void DecryptToConnectLevel(this Credential credential)
+        {
+            if (!string.IsNullOrEmpty(credential.Password))
+                credential.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.Password);
+            if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
+                credential.PrivateKeyPath = UnSafeStringEncipher.DecryptOrReturnOriginalString(credential.PrivateKeyPath);
         }
     }
 }

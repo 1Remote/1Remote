@@ -221,7 +221,7 @@ namespace _1RM.Service
                 var swap2 = (ProtocolBaseWithAddressPort)swap.Clone();
                 swap2.DecryptToConnectLevel();
                 protocol.DisplayName = swap2.DisplayName;
-                protocol.SetCredential(swap2.GetCredential());
+                protocol.SetCredential(swap2.GetCredential(), true);
             }
 
             var newCredential = protocol.GetCredential();

@@ -136,6 +136,7 @@ Run bat after disconnected;Run bat after disconnected(e.g. run 'C:\CloseSshTunne
 Use private key;Use private key;Usa chiave privata;使用私钥连接;Použít soukromý klíč;Benutze privaten Schlüssel;utiliser la clé privée;Usar chave privada;;使用私密金鑰連線;Usar chave privada;Użyj klucza prywatnego;Использовать закрытый ключ
 Private key;Private key;Chiave privata;私钥;Soukromý klíč;Privater Schlüssel;Clé privée;Chave privada;;私密金鑰;Chave privada;Klucz prywatny;Закрытый ключ
 Open SFTP when connected;Open SFTP when connected;Apri SFTP quando connesso;同时打开 SFTP;Při připojení otevřít SFTP;Öffnen Sie SFTP beim Anschluss;Ouvrir SFTP lorsqu'il est connecté;Abra o SFTP quando conectado;;同時連線 SFTP;Abrir SFTP cando se conecte;Otwórz SFTP podczas połączenia;Открыть SFTP при подключении
+Open SFTP;Open SFTP;打开 SFTP;;;;;;SFTPを開く;;;;
 server_editor_display_full_screen_flag;Full screen remote desktop;Desktop remoto a schermo intero;全屏模式;Vzdálená plocha na celou obrazovku;Vollbild;Plein écran;Área de trabalho remota em tela cheia;;全螢幕;Pantalla completa do escritorio remoto;Tryb pełnoekranowy;Полноэкранный удаленный рабочий стол
 server_editor_display_full_screen_flag_window;Disable;Disabilita;禁用;Vypnout;Deaktivieren;Désactiver;Desativar;;停用;Deshabilitar;Dezaktywuj;Выключить
 server_editor_display_full_screen_flag_full_screen;Enable (single monitor);Abilita (singolo monitor);允许（单显示器）;Zapnout (jeden monitor);Aktivieren (Einzel-Monitor);Activer (moniteur unique);Ativar (monitor único);;啟用 (單一顯示器);Habilitar (unha soa pantalla);Aktywuj (jeden monitor);Включить (один монитор)
@@ -348,11 +349,18 @@ One option per line;One option per line;Una opzione per riga;一行一个备选�
 Use vertical lines to separate descriptions;Use vertical lines to separate descriptions(value|description);Usa le linee verticali per separare le descrizioni (valore|descrizione);用竖线隔开值和描述(值|描述);;Verwenden Sie einen senkrechten Strich (Pipe), um Beschreibungen zu trennen (Wert|Beschreibung).;;;;;;Użyj pionowych linii, aby oddzielić opisy;Используйте вертикальные линии для разделения описаний (значение|описание)
 Automatically focus on the content when selecting a tab;Automatically focus on the content when selecting a tab;Metti automaticamente a fuoco il contenuto quando si seleziona una scheda;选择 tab 后自动聚焦内容;;Automatisch Focus auf den Inhalten setzten, wenn ein Tab ausgwählt wird;;;;;;Automatyczne ustawienie focusa po wybraniu karty;Автоматически фокусироваться на содержимом при выборе вкладки
 Copy the port along with the address when copying;Copy the port along with the address when copying;Copia la porta insieme all'indirizzo quando si copia;复制地址时同时复制端口;;Beim Kopieren Adresse mit Port verwenden;;;;;;Podczas kopiowania skopiuj adres z portem;Копировать порт вместе с адресом при копировании
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
-;;;;;;;;;;;;
+Place the close button on the left side to prevent accidental touches;Place the close button on the left side to prevent accidental touches;;将关闭按钮放在左侧以防止误触;;;;;誤操作を防ぐため、閉じるボタンを左側に配置する;;;;
+Ask for password when open connect;Ask for password when open connect;;打开连接时输入密码;;;;;接続時にパスワードを要求する;;;;
+Remember the information above;Remember the information above;;记住上述信息;;;;;上記の情報を記憶する;;;;
+Quick Connect;Quick Connect;;快速连接;;;;;クイック接続;;;;
+Allow Quick Connect to save entered address information;Allow Quick Connect to save entered address information;;允许`快速连接`保存输入的地址信息;;;;;クイック接続で入力した接続情報を保存する;;;;
+Yes;Yes;;是;;;;;はい;;;;
+No;No;;否;;;;;いいえ;;;;
+Click on the icon above to change it to your own image;Click on the icon above to change it to your own image;;点击图标可选择本地图片;;;;;上のアイコンをクリックしてお持ちの画像に変更できます;;;;
+Always open in new window;Always open in new window;;总在新窗口打开;;;;;常に新しいウィンドウで開く;;;;
+Set focus to local desktop when the mouse is moved out of RDP desktop;Set focus to local desktop when the mouse is moved out of RDP desktop;;当鼠标移出RDP桌面时将焦点设定到本地桌面;;;;;RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します;;;;Установите фокус на локальный рабочий стол, когда мышь выходит за пределы рабочего стола RDP
+Close button behavior;Close button behavior;;;;;;;閉じるボタンの挙動;;;;
+Minimize to system tray;Minimize to system tray;;;;;;;システムトレイに最小化;;;;
+Credentials;Credentials;;凭据;;;;;パスワード認証;;;;
+Credentials Vault;Credentials Vault;;凭据库;;;;;保管庫;;;;
+Select credentials within the same database;Select credentials within the same database;;只能在同一个数据库中选择凭据;;;;;;;;;

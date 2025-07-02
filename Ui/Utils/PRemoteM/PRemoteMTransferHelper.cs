@@ -142,7 +142,7 @@ namespace _1RM.Utils.PRemoteM
                             var localSource = IoC.Get<DataSourceService>().LocalDataSource;
                             Debug.Assert(localSource != null);
                             localSource!.Database_InsertServer(_servers);
-                            IoC.Get<GlobalData>().ReloadServerList(true);
+                            IoC.Get<GlobalData>().ReloadAll(true);
                             if (MessageBoxHelper.Confirm($"All done! \r\n\r\nYou may want to backup and delete the old data at:\r\n`{_dbPath}`.",
                                     yesButtonText: "Show old database in explorer",
                                     noButtonText: "Continue",
@@ -184,14 +184,14 @@ namespace _1RM.Utils.PRemoteM
         {
             RSA? rsa = null;
             // check database rsa encrypt
-            var privateKeyPath = dataBase.Connection?.QueryFirstOrDefault<Config>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PrivateKeyPath", })?.Value ?? "";
+            var privateKeyPath = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PrivateKeyPath", })?.Value ?? "";
 
 
             if (!string.IsNullOrWhiteSpace(privateKeyPath)
                 && File.Exists(privateKeyPath))
             {
                 // validate encryption
-                var publicKey = dataBase.Connection?.QueryFirstOrDefault<Config>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PublicKey", })?.Value ?? "";
+                var publicKey = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PublicKey", })?.Value ?? "";
                 var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
                 if (pks != RSA.EnumRsaStatus.NoError)
                 {

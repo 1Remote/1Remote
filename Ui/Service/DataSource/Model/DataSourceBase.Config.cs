@@ -65,6 +65,9 @@ namespace _1RM.Service.DataSource.Model
         [JsonIgnore]
         public DateTime ReconnectTime = DateTime.MinValue;
         private string _reconnectInfo = "";
+        /// <summary>
+        /// to display the reconnect info in the UI, such as: Next update check in 5 seconds...
+        /// </summary>
         [JsonIgnore]
         public string ReconnectInfo
         {

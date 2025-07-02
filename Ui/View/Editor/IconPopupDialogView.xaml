@@ -26,7 +26,7 @@
             BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
             <StackPanel Margin="20 0" >
 
-                <TextBlock Text="{DynamicResource 'Icon'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
+                <TextBlock Text="{DynamicResource 'Logo'}" Margin="15" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Height="30" HorizontalAlignment="Left" Width="Auto"></TextBlock>
 
                 <Border BorderThickness="1" Width="144" Height="144"
                         Name="GridLogo"

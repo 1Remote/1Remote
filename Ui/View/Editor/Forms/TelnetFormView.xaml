@@ -11,9 +11,10 @@
     <StackPanel>
         <StackPanel>
 
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection Info'}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection'}"></TextBlock>
+            <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
 
-            <Grid Style="{StaticResource EditorRowGrid}">
+            <!--<Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -29,7 +30,7 @@
                                  ></TextBox>
                     </Grid>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
             <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 

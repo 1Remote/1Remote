@@ -12,6 +12,14 @@ namespace _1RM.Model.Protocol.Base
 
         #region Conn
 
+
+        private string _inheritedCredentialName = "";
+        public string InheritedCredentialName
+        {
+            get => _inheritedCredentialName;
+            set => SetAndNotifyIfChanged(ref _inheritedCredentialName, value);
+        }
+
         public const string MACRO_USERNAME = "%1RM_USERNAME%";
         private string _userName = "";
         [OtherName(Name = "1RM_USERNAME")]
@@ -41,7 +49,19 @@ namespace _1RM.Model.Protocol.Base
         public string Password
         {
             get => _password;
-            set => SetAndNotifyIfChanged(ref _password, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _password, value))
+                {
+                    if (!string.IsNullOrEmpty(_password) && _password != ServerEditorDifferentOptions)
+                    {
+                        _privateKey = "";
+                        RaisePropertyChanged(nameof(PrivateKey));
+                        _usePrivateKeyForConnect = false;
+                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
+                    }
+                }
+            }
         }
 
         private bool? _usePrivateKeyForConnect;
@@ -58,7 +78,19 @@ namespace _1RM.Model.Protocol.Base
         public string PrivateKey
         {
             get => _privateKey;
-            set => SetAndNotifyIfChanged(ref _privateKey, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _privateKey, value))
+                {
+                    if (!string.IsNullOrEmpty(_privateKey) && _privateKey != ServerEditorDifferentOptions)
+                    {
+                        _password = "";
+                        RaisePropertyChanged(nameof(Password));
+                        _usePrivateKeyForConnect = true;
+                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -80,27 +112,37 @@ namespace _1RM.Model.Protocol.Base
         {
             var c = new Credential()
             {
+                Name = InheritedCredentialName,
                 Address = Address,
                 Port = Port,
                 Password = Password,
                 UserName = UserName,
+                PrivateKeyPath = PrivateKey,
             };
             return c;
         }
 
-        public override void SetCredential(in Credential credential)
+        public override void SetCredential(in Credential credential, bool ignoreEmptyString)
         {
-            base.SetCredential(credential);
+            base.SetCredential(credential, ignoreEmptyString);
 
-            if (!string.IsNullOrEmpty(credential.UserName))
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.UserName))
             {
                 UserName = credential.UserName;
             }
 
-            if (!string.IsNullOrEmpty(credential.Password))
+
+            if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.PrivateKeyPath))
+            {
+                PrivateKey = credential.PrivateKeyPath;
+                Password = "";
+            }
+            else if (!ignoreEmptyString || !string.IsNullOrEmpty(credential.Password))
             {
                 Password = credential.Password;
+                PrivateKey = "";
             }
+            UsePrivateKeyForConnect = !string.IsNullOrEmpty(PrivateKey);
         }
 
         #endregion

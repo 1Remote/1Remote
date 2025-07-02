@@ -63,7 +63,7 @@ namespace _1RM.View.Host.ProtocolHosts
                     var c = await SessionControlService.GetCredential(_rdpSettings);
                     if (c != null)
                     {
-                        _rdpSettings.SetCredential(c);
+                        _rdpSettings.SetCredential(c, true);
                         _rdpSettings.DisplayName = c.Name;
                     }
                 }

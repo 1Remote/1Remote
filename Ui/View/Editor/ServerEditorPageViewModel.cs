@@ -29,10 +29,8 @@ namespace _1RM.View.Editor
     public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
         private readonly GlobalData _globalData;
-        public DataSourceBase? AddToDataSource { get; private set; } = null;
 
-        public bool IsAddMode => _serversInBuckEdit == null && Server.IsTmpSession();
-        public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
+        public bool IsBuckEdit => _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
 
 
@@ -42,7 +40,6 @@ namespace _1RM.View.Editor
             var server = new RDP
             {
                 Tags = presetTagNames?.Count == 0 ? new List<string>() : new List<string>(presetTagNames!),
-                DataSource = addToDataSource,
             };
             return new ServerEditorPageViewModel(globalData, server, addToDataSource);
         }
@@ -50,13 +47,16 @@ namespace _1RM.View.Editor
         public static ServerEditorPageViewModel Duplicate(GlobalData globalData, DataSourceBase dataSource, ProtocolBase server)
         {
             Debug.Assert(server.IsTmpSession() == false);
-            return new ServerEditorPageViewModel(globalData, server, dataSource);
+            var s = (ProtocolBase)server.Clone();
+            s.Id = "";
+            return new ServerEditorPageViewModel(globalData, s, dataSource);
         }
 
         public static ServerEditorPageViewModel Edit(GlobalData globalData, ProtocolBase server)
         {
             Debug.Assert(server.IsTmpSession() == false);
-            return new ServerEditorPageViewModel(globalData, server, null);
+            Debug.Assert(server.DataSource != null);
+            return new ServerEditorPageViewModel(globalData, server, server.DataSource);
         }
 
         public static ServerEditorPageViewModel BuckEdit(GlobalData globalData, IEnumerable<ProtocolBase> servers)
@@ -67,22 +67,20 @@ namespace _1RM.View.Editor
         /// <summary>
         /// Add or Edit or Duplicate
         /// </summary>
-        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase? addToDataSource)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase addToDataSource)
         {
             _globalData = globalData;
-            AddToDataSource = addToDataSource;
 
             server.DecryptToConnectLevel();
 
             Server = (ProtocolBase)server.Clone();
-            if (AddToDataSource != null) // Add or Duplicate mode
+            if (Server.IsTmpSession()) // Add or Duplicate mode
             {
-                Server.DataSource = AddToDataSource;
+                Server.DataSource = addToDataSource;
                 Server.Id = string.Empty; // set id to empty so that we turn into Add / Duplicate mode
             }
             else // edit mode
             {
-                AddToDataSource = Server.DataSource;
             }
             _orgServer = (ProtocolBase)Server.Clone();
             Title = "";
@@ -103,7 +101,6 @@ namespace _1RM.View.Editor
             }
 
             Debug.Assert(IsBuckEdit == false);
-            Debug.Assert(IsAddMode == (addToDataSource != null));
         }
 
 
@@ -119,11 +116,15 @@ namespace _1RM.View.Editor
         private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
         private readonly List<Credential> _sharedCredentialsInBuckEdit = new List<Credential>();
 
+
+        /// <summary>
+        /// BuckEdit
+        /// </summary>
         private ServerEditorPageViewModel(GlobalData globalData, IEnumerable<ProtocolBase> servers)
         {
-            AddToDataSource = servers.FirstOrDefault()?.DataSource;
             _globalData = globalData;
             var serverBases = servers.Select(x => x.Clone()).ToArray();
+            Debug.Assert(serverBases.Count() > 1);
             // decrypt
             for (int i = 0; i < serverBases.Length; i++)
             {
@@ -219,7 +220,7 @@ namespace _1RM.View.Editor
             if (Server is ProtocolBaseWithAddressPort protocol
                 && (_sharedTypeInBuckEdit.IsSubclassOf(typeof(ProtocolBaseWithAddressPort)) || _sharedTypeInBuckEdit == typeof(ProtocolBaseWithAddressPort)))
             {
-                var ss = servers.Select(x => (ProtocolBaseWithAddressPort)x).ToArray();
+                var ss = serverBases.Select(x => (ProtocolBaseWithAddressPort)x).ToArray();
                 bool isAllTheSameFlag = true;
                 foreach (var s in ss)
                 {
@@ -248,6 +249,7 @@ namespace _1RM.View.Editor
 
             AppArgumentsBulkInit(_serversInBuckEdit);
 
+            Server.DataSource = serverBases.All(x => x.DataSource == serverBases.First().DataSource) ? serverBases.First().DataSource : null;
             _orgServer = Server.Clone();
 
             // init ui
@@ -340,32 +342,60 @@ namespace _1RM.View.Editor
                                 var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                                 foreach (var property in properties)
                                 {
-                                    if (property.SetMethod?.IsPublic == true
-                                        && property.SetMethod.IsAbstract == false
-                                        && property.Name != nameof(ProtocolBase.Id)
-                                        && property.Name != nameof(ProtocolBase.Tags)
-                                        && property.Name != nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
-                                        && property.Name != nameof(LocalApp.ArgumentList))
+                                    if (property.SetMethod?.IsPublic != true
+                                        || property.SetMethod.IsAbstract == true
+                                        || property.Name == nameof(ProtocolBase.Id)
+                                        || property.Name == nameof(ProtocolBase.Tags)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.UserName)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.Password)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.PrivateKey)
+                                        || property.Name == nameof(ProtocolBaseWithAddressPortUserPwd.AlternateCredentials)
+                                        || property.Name == nameof(LocalApp.ArgumentList))
                                     {
-                                        if (property.PropertyType.IsGenericType
-                                            && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
-                                                || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
-                                        {
-                                            SimpleLogHelper.Warning(property.Name + " IsGenericType!");
-                                        }
-                                        var obj = property.GetValue(Server);
-                                        if (obj == null)
-                                            continue;
-                                        else if (obj.ToString() == Server.ServerEditorDifferentOptions)
-                                            continue;
-                                        else
-                                            foreach (var server in _serversInBuckEdit)
-                                            {
-                                                property.SetValue(server, obj);
-                                            }
+                                        continue;
                                     }
+
+
+                                    if (property.PropertyType.IsGenericType
+                                        && (property.PropertyType.GetGenericTypeDefinition() == typeof(List<>)
+                                            || property.PropertyType.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
+                                    {
+                                        SimpleLogHelper.Warning(property.Name + " IsGenericType!");
+                                    }
+                                    var obj = property.GetValue(Server);
+                                    if (obj == null)
+                                        continue;
+                                    else if (obj.ToString() == Server.ServerEditorDifferentOptions)
+                                        continue;
+                                    else
+                                        foreach (var server in _serversInBuckEdit)
+                                        {
+                                            property.SetValue(server, obj);
+                                        }
                                 }
 
+                                // handle credentials
+                                if (Server is ProtocolBaseWithAddressPortUserPwd sp && sp.InheritedCredentialName != sp.ServerEditorDifferentOptions)
+                                {
+                                    foreach (var server in _serversInBuckEdit)
+                                    {
+                                        if (server is not ProtocolBaseWithAddressPortUserPwd protocol) continue;
+                                        // do not overwrite the user & pass when the server is inherited from credential
+                                        if (protocol.InheritedCredentialName == sp.ServerEditorDifferentOptions && !string.IsNullOrEmpty(protocol.InheritedCredentialName)) continue;
+                                        if (sp.InheritedCredentialName != sp.ServerEditorDifferentOptions)
+                                            protocol.InheritedCredentialName = sp.InheritedCredentialName;
+                                        if (sp.UsePrivateKeyForConnect != null)
+                                            protocol.UsePrivateKeyForConnect = sp.UsePrivateKeyForConnect;
+                                        if (sp.UserName != sp.ServerEditorDifferentOptions)
+                                            protocol.UserName = sp.UserName;
+                                        if (sp.Password != sp.ServerEditorDifferentOptions)
+                                            protocol.Password = sp.Password;
+                                        if (sp.PrivateKey != sp.ServerEditorDifferentOptions)
+                                            protocol.PrivateKey = sp.PrivateKey;
+                                    }
+                                }
 
                                 // merge tags
                                 foreach (var server in _serversInBuckEdit)
@@ -436,15 +466,14 @@ namespace _1RM.View.Editor
                             else
                             {
                                 // edit
-                                if (IsAddMode == false
-                                    && Server.IsTmpSession() == false)
+                                if (Server.IsTmpSession() == false)
                                 {
                                     ret = _globalData.UpdateServer(Server);
                                 }
                                 // add
-                                else if (IsAddMode && AddToDataSource != null)
+                                else if (Server.DataSource != null)
                                 {
-                                    ret = _globalData.AddServer(Server, AddToDataSource);
+                                    ret = _globalData.AddServer(Server, Server.DataSource);
                                 }
                             }
 
@@ -750,7 +779,23 @@ namespace _1RM.View.Editor
                             }
                         }
                         existedNames = existedNames.Distinct().ToList();
-                        var vm = new AlternativeCredentialEditViewModel(protocol, existedNames, credential);
+                        var vm = AlternativeCredentialEditViewModel.NewFormProtocol(protocol, existedNames, credential);
+                        vm.OnSave += () =>
+                        {
+                            if (credential != null && protocol.AlternateCredentials.Any(x => x.Equals(credential)))
+                            {
+                                // edit
+                                var i = protocol.AlternateCredentials.IndexOf(credential);
+                                protocol.AlternateCredentials.Remove(credential);
+                                protocol.AlternateCredentials.Insert(i, vm.New);
+                            }
+                            else
+                            {
+                                // add
+                                protocol.AlternateCredentials.Add(vm.New);
+                            }
+                            return true; // close the dialog
+                        };
                         MaskLayerController.ShowWindowWithMask(vm);
                     }
                 }, o => Server is ProtocolBaseWithAddressPort);
