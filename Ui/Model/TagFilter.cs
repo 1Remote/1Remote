@@ -43,7 +43,6 @@ namespace _1RM.Model
 
 
         public bool IsPinned => LocalityTagService.IsPinned(TagName);
-
         public void RaiseIsPinned()
         {
             RaisePropertyChanged(nameof(IsPinned));
