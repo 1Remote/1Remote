@@ -29,12 +29,12 @@ public static class TagActionHelper
 
     public static void CmdTagPin(object? o)
     {
+        // o can be a Tag or a TagFilter or a string(tag name)
         var tagName = GetTagNameFromObject(o);
         var t = IoC.Get<GlobalData>().TagList.FirstOrDefault(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase));
         if (t != null)
         {
             t.IsPinned = !t.IsPinned;
-            IoC.Get<ServerListPageViewModel>().TagFilters = new List<TagFilter>(IoC.Get<ServerListPageViewModel>().TagFilters);
             if (o is TagFilter tagFilter)
             {
                 tagFilter.RaiseIsPinned();
@@ -44,6 +44,7 @@ public static class TagActionHelper
 
     public static void CmdTagDelete(object? o)
     {
+        // o can be a Tag or a TagFilter or a string(tag name)
         var tagName = GetTagNameFromObject(o);
         if (string.IsNullOrEmpty(tagName))
             return;
@@ -72,6 +73,7 @@ public static class TagActionHelper
 
     public static async void CmdTagRename(object? o)
     {
+        // o can be a Tag or a TagFilter or a string(tag name)
         try
         {
             var tagName = GetTagNameFromObject(o);

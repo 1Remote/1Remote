@@ -49,6 +49,10 @@ namespace _1RM.Model
             private set => SetAndNotifyIfChanged(ref _tagList, value);
         }
 
+        public void RaiseNotifyChanged_TagList()
+        {
+            RaisePropertyChanged(nameof(TagList));
+        }
 
 
         #region Server Data
@@ -62,7 +66,6 @@ namespace _1RM.Model
         {
             // get distinct tag from servers
             var tags = new List<Tag>();
-            var lts = LocalityTagService.TagDict;
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
             {
                 foreach (var tn in tagNames.Select(tagName => tagName.Trim().ToLower()))
@@ -71,34 +74,25 @@ namespace _1RM.Model
                     {
                         bool isPinned = false;
                         int customOrder = int.MaxValue;
-                        if (lts.ContainsKey(tn))
+                        // set isPinned and customOrder from LocalityTagService(.tags.json)
+                        var tag = LocalityTagService.GetTag(tn);
+                        if (tag != null)
                         {
-                            isPinned = lts[tn].IsPinned;
-                            customOrder = lts[tn].CustomOrder;
+                            isPinned = tag.IsPinned;
+                            customOrder = tag.CustomOrder;
                         }
-                        else if (_configurationService.PinnedTags.Contains(tn))
-                        {
-                            isPinned = true;
-                        }
-                        tags.Add(new Tag(tn, isPinned, customOrder, SaveTagChanged) { ItemsCount = 1 });
+                        tags.Add(new Tag(tn, isPinned, customOrder) { ItemsCount = 1 });
                     }
                     else
                         tags.First(x => x.Name.ToLower() == tn).ItemsCount++;
                 }
             }
 
-            TagList = new List<Tag>(tags.OrderBy(x => x.Name));
-            foreach (var viewModel in VmItemList)
+            TagList = new List<Tag>(tags.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
+            foreach (var viewModel in VmItemList.Where(viewModel => viewModel.Server.Tags.Count > 0))
             {
-                if (viewModel.Server.Tags.Count > 0)
-                    viewModel.ReLoadTags();
+                viewModel.ReLoadTags();
             }
-
-        }
-
-        private void SaveTagChanged()
-        {
-            LocalityTagService.UpdateTags(TagList);
         }
 
         public ProtocolBaseViewModel? GetItemById(string dataSourceName, string serverId)
