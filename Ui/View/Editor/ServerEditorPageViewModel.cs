@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using _1RM.Model;
+﻿using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor.Forms;
@@ -22,6 +15,14 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 using Stylet;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Credential = _1RM.Model.Protocol.Base.Credential;
 
 namespace _1RM.View.Editor
@@ -465,6 +466,14 @@ namespace _1RM.View.Editor
                             }
                             else
                             {
+                                // if is the first time a tag is added, we pin it to let user know that tags can be pinned on the header.
+                                if (LocalityTagService.IsFirstTimeUse() && Server.Tags.Count > 0)
+                                {
+                                    for (var i = 0; i < Server.Tags.Count; i++)
+                                    {
+                                        LocalityTagService.UpdateTag(new Tag(Server.Tags[i], true, i));
+                                    }
+                                }
                                 // edit
                                 if (Server.IsTmpSession() == false)
                                 {
