@@ -863,26 +863,39 @@ namespace _1RM.View.Host.ProtocolHosts
 
         #endregion WindowOnResizeEnd
 
+        private void DisposeRdpClient()
+        {
+            try
+            {
+                if (_rdpClient is { IsDisposed: false })
+                {
+                    _rdpClient.Dispose();
+                }
+                _rdpClient = null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error($"Error disposing RDP client: {e}");
+            }
+        }
 
         private void RdpClientDispose()
         {
             GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
             lock (this)
             {
-                Execute.OnUIThreadSync(() =>
+                try
                 {
-                    try
-                    {
-                        _rdpClient?.Dispose();
-                        _rdpClient = null;
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Error(e);
-                    }
-                });
+                    Execute.OnUIThread(DisposeRdpClient);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error($"Error scheduling RDP client disposal on UI thread: {e}");
+                    // 如果UI线程调度失败，直接处理
+                    DisposeRdpClient();
+                }
             }
-            SimpleLogHelper.Debug("RDP Host: _rdpClient.Dispose()");
+            SimpleLogHelper.Debug("RDP Host: _rdpClient.Disposed.");
         }
 
 
@@ -1022,9 +1035,6 @@ namespace _1RM.View.Host.ProtocolHosts
                 this.GoFullScreen();
             }
         }
-
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         public override void FocusOnMe()
         {
