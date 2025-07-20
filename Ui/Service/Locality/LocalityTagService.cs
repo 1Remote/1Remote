@@ -1,15 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using _1RM.Utils;
 using Shawn.Utils;
 using _1RM.Model;
-using System.Diagnostics;
 using _1RM.Utils.Tracing;
 
 namespace _1RM.Service.Locality
@@ -73,6 +68,11 @@ namespace _1RM.Service.Locality
             _settings.TagDict.TryRemove(tagName.ToLower(), out var ret);
             Save();
             return ret;
+        }
+
+        public static bool IsFirstTimeUse()
+        {
+            return !File.Exists(JsonPath);
         }
 
         public static void UpdateTag(Tag tag)

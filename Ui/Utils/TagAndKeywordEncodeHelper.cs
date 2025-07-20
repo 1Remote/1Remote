@@ -11,37 +11,56 @@ using VariableKeywordMatcher.Model;
 
 namespace _1RM.Utils
 {
+    /// <summary>
+    /// Provides helper methods for encoding and decoding tags and keywords, as well as matching logic for server filtering.
+    /// </summary>
     public static class TagAndKeywordEncodeHelper
     {
+        /// <summary>
+        /// Normalizes a tag name by removing '#' characters, replacing spaces with '-', trimming, and converting to lower case.
+        /// </summary>
+        /// <param name="name">The tag name to rectify.</param>
+        /// <returns>The rectified tag name.</returns>
         public static string RectifyTagName(string? name)
         {
             return name?.Replace("#", "").Replace(" ", "-").Trim().ToLower() ?? "";
         }
 
+        /// <summary>
+        /// Represents the result of decoding a keyword string, including tag filters, partial tag matches, and general keywords.
+        /// </summary>
         public class KeywordDecoded
         {
             /// <summary>
-            /// support include and exclude tag filter
+            /// List of tag filters, supporting both included and excluded tags.
             /// </summary>
             public List<TagFilter> TagFilterList = new List<TagFilter>();
 
             /// <summary>
-            /// tag name start with incomplete word from user type; 
-            /// support type #lin to list all tags who start by #lin
+            /// List of tag names that start with a partial keyword entered by the user. For example, typing '#lin' will match all tags starting with 'lin'.
             /// </summary>
             public List<string> IncludeTagsStartWithKeyWord = new List<string>();
 
             /// <summary>
-            /// keywords to matching server name address username etc..
+            /// List of keywords to match against server properties such as name, address, or username.
             /// </summary>
             public List<string> KeyWords = new List<string>();
 
+            /// <summary>
+            /// Determines whether all keyword-related lists are empty.
+            /// </summary>
+            /// <returns>True if all lists are empty; otherwise, false.</returns>
             public bool IsKeywordEmpty()
             {
-                return IncludeTagsStartWithKeyWord?.Any() != true && TagFilterList?.Any() != true && KeyWords?.Any() != true;
+                return IncludeTagsStartWithKeyWord.Any() != true && TagFilterList.Any() != true && KeyWords.Any() != true;
             }
         }
 
+        /// <summary>
+        /// Decodes a keyword string into tag filters, partial tag matches, and general keywords.
+        /// </summary>
+        /// <param name="keyword">The keyword string to decode.</param>
+        /// <returns>A <see cref="KeywordDecoded"/> object containing the parsed results.</returns>
         public static KeywordDecoded DecodeKeyword(string keyword)
         {
             var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -56,12 +75,12 @@ namespace _1RM.Utils
                     if (string.IsNullOrWhiteSpace(tagName))
                         continue;
 
-                    // 完整输入 name 的 tag
+                    // If the tag name matches a complete tag, add to filter list.
                     if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         ret.TagFilterList.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
-                    // 不完整输入 name 部分匹配的 tag, works only with included
+                    // If the tag name is incomplete, add all matching tags to the partial match list (only for included tags).
                     else if (isExcluded == false)
                     {
                         var tmp = IoC.Get<GlobalData>().TagList.Where(x => x.Name.StartsWith(tagName, StringComparison.OrdinalIgnoreCase)).Select(x => x.Name);
@@ -78,6 +97,13 @@ namespace _1RM.Utils
 
             return ret;
         }
+
+        /// <summary>
+        /// Encodes tag filters and keywords into a single keyword string.
+        /// </summary>
+        /// <param name="tagFilters">A list of tag filters to encode.</param>
+        /// <param name="keyWords">A list of keywords to encode.</param>
+        /// <returns>The encoded keyword string.</returns>
         public static string EncodeKeyword(List<TagFilter>? tagFilters = null, List<string>? keyWords = null)
         {
             StringBuilder sb = new StringBuilder();
@@ -103,12 +129,12 @@ namespace _1RM.Utils
         }
 
         /// <summary>
-        /// return item1 true if matched, item2 null if no highlight, item2 not null if highlight
+        /// Determines whether a server matches the specified decoded keywords and tag filters.
         /// </summary>
-        /// <param name="server"></param>
-        /// <param name="keywordDecoded"></param>
-        /// <param name="matchSubTitle"></param>
-        /// <returns></returns>
+        /// <param name="server">The server to match.</param>
+        /// <param name="keywordDecoded">The decoded keyword object containing filters and keywords.</param>
+        /// <param name="matchSubTitle">Whether to include the server's subtitle in the keyword match.</param>
+        /// <returns>A tuple: Item1 is true if matched, false otherwise; Item2 is a <see cref="MatchResults"/> object for highlighting, or null if no highlight.</returns>
         public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, KeywordDecoded keywordDecoded, bool matchSubTitle)
         {
             if (keywordDecoded.IsKeywordEmpty())
@@ -116,8 +142,8 @@ namespace _1RM.Utils
                 return new Tuple<bool, MatchResults?>(true, null);
             }
 
-            // check include and excluded tags
-            if (keywordDecoded.TagFilterList.Any() == true)
+            // Check included and excluded tags.
+            if (keywordDecoded.TagFilterList.Any())
             {
                 bool bTagMatched = keywordDecoded.TagFilterList.All(tagFilter => tagFilter.IsIncluded == server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)));
                 if (bTagMatched == false)
@@ -126,8 +152,8 @@ namespace _1RM.Utils
                 }
             }
 
-            // check tag name start with incomplete word from user type
-            if (keywordDecoded.IncludeTagsStartWithKeyWord.Any() == true)
+            // Check tag names that start with a partial keyword from user input.
+            if (keywordDecoded.IncludeTagsStartWithKeyWord.Any())
             {
                 bool bTagMatched = keywordDecoded.IncludeTagsStartWithKeyWord.Any(tagName => server.Tags.Any(x => String.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)));
                 if (bTagMatched == false)
@@ -136,13 +162,13 @@ namespace _1RM.Utils
                 }
             }
 
-            // no keyword
+            // If there are no keywords, return match.
             if (keywordDecoded.KeyWords.Any() != true)
             {
                 return new Tuple<bool, MatchResults?>(true, null);
             }
 
-            // match keywords
+            // Match keywords against server display name and subtitle.
             var dispName = server.DisplayName;
             var subTitle = server.SubTitle;
             if (matchSubTitle == false)
@@ -155,12 +181,26 @@ namespace _1RM.Utils
             return new Tuple<bool, MatchResults?>(false, null);
         }
 
-
+        /// <summary>
+        /// Matches a list of servers against a keyword string.
+        /// </summary>
+        /// <param name="servers">The list of servers to match.</param>
+        /// <param name="keyword">The keyword string to decode and match.</param>
+        /// <param name="matchSubTitle">Whether to include the server's subtitle in the keyword match.</param>
+        /// <returns>A list of tuples indicating match results for each server.</returns>
         public static List<Tuple<bool, MatchResults?>> MatchKeywords(List<ProtocolBase> servers, string keyword, bool matchSubTitle)
         {
             var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
             return MatchKeywords(servers, tmp, matchSubTitle);
         }
+
+        /// <summary>
+        /// Matches a list of servers against a decoded keyword object.
+        /// </summary>
+        /// <param name="servers">The list of servers to match.</param>
+        /// <param name="keywordDecoded">The decoded keyword object containing filters and keywords.</param>
+        /// <param name="matchSubTitle">Whether to include the server's subtitle in the keyword match.</param>
+        /// <returns>A list of tuples indicating match results for each server.</returns>
         public static List<Tuple<bool, MatchResults?>> MatchKeywords(List<ProtocolBase> servers, KeywordDecoded keywordDecoded, bool matchSubTitle)
         {
             if (keywordDecoded.IsKeywordEmpty() || servers.Count == 0)
@@ -182,10 +222,10 @@ namespace _1RM.Utils
                     }
                 }));
             }
-            // wait for all tasks to finish
+            // Wait for all tasks to finish.
             Task.WaitAll(tasks.ToArray());
 
-            // get the results in order
+            // Return the results in the original order.
             return results.OrderBy(x => x.Key).Select(r => r.Value).ToList();
         }
     }

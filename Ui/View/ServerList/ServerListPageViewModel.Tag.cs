@@ -57,6 +57,25 @@ namespace _1RM.View.ServerList
             }
         }
 
+        public void CalcTagFilterBarVisibility()
+        {
+            if (_tagFilters.Count == 1
+                && _tagFilters[0].IsIncluded == true
+                && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == _tagFilters[0].TagName))
+            {
+                // If the current tag is `IsIncluded` and already pinned on top, then do not display the tag selector indicator.
+                IsTagFiltersShown = false;
+            }
+            else if (_tagFilters.Count > 0)
+            {
+                IsTagFiltersShown = true;
+            }
+            else
+            {
+                IsTagFiltersShown = false;
+            }
+        }
+
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
@@ -79,22 +98,7 @@ namespace _1RM.View.ServerList
                         tagName = TAB_NONE_SELECTED;
                     }
 
-
-                    if (_tagFilters.Count == 1
-                        && _tagFilters[0].IsIncluded == true
-                        && AppData.TagList.Any(tag => tag.IsPinned && tag.Name == _tagFilters[0].TagName))
-                    {
-                        // If the current tag is `IsIncluded` and already pinned on top, then do not display the tag selector indicator.
-                        IsTagFiltersShown = false;
-                    }
-                    else if (_tagFilters.Count > 0)
-                    {
-                        IsTagFiltersShown = true;
-                    }
-                    else
-                    {
-                        IsTagFiltersShown = false;
-                    }
+                    CalcTagFilterBarVisibility();
 
                     if (SelectedTabName == tagName) return;
                     SelectedTabName = tagName;
