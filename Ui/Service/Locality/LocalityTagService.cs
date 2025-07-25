@@ -55,9 +55,12 @@ namespace _1RM.Service.Locality
             }
         }
 
-        public static Tag? GetTag(string tagName)
+        public static Tag? GetTag(string tagName, bool load = true)
         {
-            Load();
+            if (load)
+            {
+                Load();
+            }
             _settings.TagDict.TryGetValue(tagName.ToLower(), out var ret);
             return ret;
         }
@@ -103,10 +106,18 @@ namespace _1RM.Service.Locality
             }
         }
 
-        public static bool IsPinned(string key)
+        public static bool GetIsPinned(string key, bool load = false)
         {
-            Load();
+            if (load)
+                Load();
             return _settings.TagDict.TryGetValue(key.ToLower(), out var tag) && tag.IsPinned;
+        }
+
+        public static int GetCustomOrder(string key, bool load = false)
+        {
+            if (load)
+                Load();
+            return _settings.TagDict.TryGetValue(key.ToLower(), out var tag) ? tag.CustomOrder : 0;
         }
     }
 }

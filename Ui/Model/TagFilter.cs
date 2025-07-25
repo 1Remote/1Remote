@@ -42,7 +42,7 @@ namespace _1RM.Model
         public bool IsIncluded => !IsExcluded;
 
 
-        public bool IsPinned => LocalityTagService.IsPinned(TagName);
+        public bool IsPinned => LocalityTagService.GetIsPinned(TagName);
         public void RaiseIsPinned()
         {
             RaisePropertyChanged(nameof(IsPinned));

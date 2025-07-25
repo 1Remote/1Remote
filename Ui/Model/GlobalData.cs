@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Timers;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -19,18 +17,12 @@ using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
 
 namespace _1RM.Model
 {
-    public class GlobalData : NotifyPropertyChangedBase
+    public partial class GlobalData : NotifyPropertyChangedBase
     {
-        private readonly Timer _timer;
-        private bool _timerStopFlag = false;
         public GlobalData(ConfigurationService configurationService)
         {
+            InitTimer();
             _configurationService = configurationService;
-            _timer = new Timer(500)
-            {
-                AutoReset = false,
-            };
-            _timer.Elapsed += (sender, args) => TimerOnElapsed();
         }
 
         private DataSourceService? _sourceService;
@@ -42,58 +34,12 @@ namespace _1RM.Model
         }
 
 
-        private List<Tag> _tagList = new List<Tag>();
-        public List<Tag> TagList
-        {
-            get => _tagList;
-            private set => SetAndNotifyIfChanged(ref _tagList, value);
-        }
-
-        public void RaiseNotifyChanged_TagList()
-        {
-            RaisePropertyChanged(nameof(TagList));
-        }
-
-
         #region Server Data
 
         public Action? OnReloadAll;
 
         public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
-
-        public void ReadTagsFromServers()
-        {
-            // get distinct tag from servers
-            var tags = new List<Tag>();
-            foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
-            {
-                foreach (var tn in tagNames.Select(tagName => tagName.Trim().ToLower()))
-                {
-                    if (tags.All(x => !string.Equals(x.Name, tn, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        bool isPinned = false;
-                        int customOrder = int.MaxValue;
-                        // set isPinned and customOrder from LocalityTagService(.tags.json)
-                        var tag = LocalityTagService.GetTag(tn);
-                        if (tag != null)
-                        {
-                            isPinned = tag.IsPinned;
-                            customOrder = tag.CustomOrder;
-                        }
-                        tags.Add(new Tag(tn, isPinned, customOrder) { ItemsCount = 1 });
-                    }
-                    else
-                        tags.First(x => x.Name.ToLower() == tn).ItemsCount++;
-                }
-            }
-
-            TagList = new List<Tag>(tags.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
-            foreach (var viewModel in VmItemList.Where(viewModel => viewModel.Server.Tags.Count > 0))
-            {
-                viewModel.ReLoadTags();
-            }
-        }
 
         public ProtocolBaseViewModel? GetItemById(string dataSourceName, string serverId)
         {
@@ -154,7 +100,7 @@ namespace _1RM.Model
                     VmItemList = _sourceService.GetServers(force);
                     _sourceService.GetCredentials(force);
                     LocalityConnectRecorder.ConnectTimeCleanup();
-                    ReadTagsFromServers();
+                    ReloadTagsFromServers();
                     OnReloadAll?.Invoke();
                     return true;
                 }
@@ -207,7 +153,10 @@ namespace _1RM.Model
             {
                 ReloadAll(force: true); // AddServer & needReload
             }
-            ReadTagsFromServers();
+            else
+            {
+                ReloadTagsFromServers();
+            }
             IoC.Get<ServerListPageViewModel>().ClearSelection();
             StartTick();
             return ret;
@@ -247,9 +196,9 @@ namespace _1RM.Model
                             old.Server = protocolServer;
                             old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
                         }
-                        ReadTagsFromServers();
-                        IoC.Get<ServerListPageViewModel>().ClearSelection();
+                        ReloadTagsFromServers();
                     }
+                    IoC.Get<ServerListPageViewModel>().ClearSelection();
                 }
                 return ret;
             }
@@ -259,7 +208,7 @@ namespace _1RM.Model
             }
         }
 
-        public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool reloadTag = true)
+        public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers)
         {
             StopTick();
             try
@@ -308,8 +257,7 @@ namespace _1RM.Model
                     }
                     else
                     {
-                        if (reloadTag)
-                            ReadTagsFromServers();
+                        ReloadTagsFromServers();
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
                 }
@@ -372,190 +320,5 @@ namespace _1RM.Model
         #endregion Server Data
 
 
-        public void StopTick()
-        {
-            lock (this)
-            {
-                _timer.Stop();
-                _timerStopFlag = true;
-            }
-        }
-        public void StartTick()
-        {
-            CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
-            lock (this)
-            {
-                _timerStopFlag = false;
-                if (_timer.Enabled == false && _configurationService.DatabaseCheckPeriod > 0)
-                {
-                    _timer.Start();
-                }
-            }
-        }
-
-        /// <summary>
-        /// return time string like 1d 2h 3m 4s
-        /// </summary>
-        /// <param name="seconds"></param>
-        /// <returns></returns>
-        private static string GetTime(long seconds)
-        {
-            var sb = new StringBuilder();
-            if (seconds > 86400)
-            {
-                sb.Append($"{seconds / 86400}d");
-                seconds %= 86400;
-            }
-
-            if (seconds > 3600)
-            {
-                sb.Append($"{seconds / 3600}h");
-                seconds %= 3600;
-            }
-
-            if (seconds > 60)
-            {
-                sb.Append($"{seconds / 60}m");
-                seconds %= 60;
-            }
-
-            if (seconds > 0)
-            {
-                sb.Append($"{seconds}s");
-            }
-            return sb.ToString();
-        }
-
-        public DateTime CheckUpdateTime;
-        private void TimerOnElapsed()
-        {
-            try
-            {
-                if (_sourceService == null)
-                    return;
-
-                var ds = new List<DataSourceBase>();
-                if (_sourceService.LocalDataSource != null)
-                    ds.Add(_sourceService.LocalDataSource);
-                ds.AddRange(_sourceService.AdditionalSources.Values);
-
-                var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
-                var listPageViewModel = IoC.TryGet<ServerListPageViewModel>();
-                var launcherWindowViewModel = IoC.TryGet<LauncherWindowViewModel>();
-
-                if (mainWindowViewModel == null
-                   || listPageViewModel == null
-                   || launcherWindowViewModel == null)
-                    return;
-
-                // do not reload when any selected / launcher is shown / editor view is show
-                if (listPageViewModel.VmServerList.Any(x => x.IsSelected)
-                    || launcherWindowViewModel?.View?.IsVisible == true)
-                {
-                    var pause = IoC.Translate("Pause");
-                    foreach (var s in ds)
-                    {
-                        s.ReconnectInfo = pause;
-                    }
-                    return;
-                }
-
-
-                long checkUpdateEtc = 0;
-                if (CheckUpdateTime > DateTime.Now)
-                {
-                    var ts = CheckUpdateTime - DateTime.Now;
-                    checkUpdateEtc = (long)ts.TotalSeconds;
-                }
-                long minReconnectEtc = int.MaxValue;
-
-
-                var needReconnect = new List<DataSourceBase>();
-                foreach (var s in ds.Where(x => x.Status != EnumDatabaseStatus.OK))
-                {
-                    if (s.ReconnectTime > DateTime.Now)
-                    {
-                        minReconnectEtc = Math.Min((long)(s.ReconnectTime - DateTime.Now).TotalSeconds, minReconnectEtc);
-                    }
-                    else
-                    {
-                        minReconnectEtc = 0;
-                        needReconnect.Add(s);
-                    }
-                }
-
-                var minEtc = Math.Min(checkUpdateEtc, minReconnectEtc);
-
-
-                var msg = minEtc > 0 ? $"{IoC.Translate("Next update check")} {GetTime(minEtc)}" : IoC.Translate("Updating");
-                var msgNextReconnect = IoC.Translate("Next auto reconnect");
-                var msgReconnecting = IoC.Translate("Reconnecting");
-                foreach (var s in ds)
-                {
-                    if (s.Status != EnumDatabaseStatus.OK)
-                    {
-                        if (s.ReconnectTime > DateTime.Now)
-                        {
-                            var seconds = (long)(s.ReconnectTime - DateTime.Now).TotalSeconds;
-                            s.ReconnectInfo = $"{msgNextReconnect} {GetTime(seconds)}";
-                        }
-                        else
-                        {
-                            s.ReconnectInfo = msgReconnecting;
-                        }
-                    }
-                    else
-                    {
-                        s.ReconnectInfo = msg;
-                    }
-                }
-
-                if (minEtc > 0 && minReconnectEtc > 0)
-                {
-                    return;
-                }
-
-                // reconnect 
-                foreach (var dataSource in needReconnect.Where(x => x.ReconnectTime < DateTime.Now))
-                {
-                    if (dataSource.Database_SelfCheck().Status == EnumDatabaseStatus.OK)
-                    {
-                        minEtc = 0;
-                    }
-                }
-
-                if (minEtc == 0)
-                {
-                    if (ReloadAll()) // reload data in the timer
-                    {
-                        SimpleLogHelper.Debug("check database update - reload data by timer " + _timer.GetHashCode());
-                    }
-                    else
-                    {
-                        SimpleLogHelper.Debug("check database update - no need reload by timer " + _timer.GetHashCode());
-                    }
-
-                    // TODO: reload credentials
-                }
-
-                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-                CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
-            }
-            catch (Exception ex)
-            {
-                UnifyTracing.Error(ex);
-                throw;
-            }
-            finally
-            {
-                lock (this)
-                {
-                    if (_timerStopFlag == false && _configurationService.DatabaseCheckPeriod > 0)
-                    {
-                        _timer.Start();
-                    }
-                }
-            }
-        }
     }
 }

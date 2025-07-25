@@ -37,7 +37,7 @@ namespace _1RM.View.ServerList
 
         private void OnGlobalDataTagListChanged()
         {
-            HeaderTags = new BindableCollection<Tag>(AppData.TagList.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
+            HeaderTags = new BindableCollection<Tag>(AppData.TagList.Where(x => x.IsPinned).OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
 
             // 当修改了tags后，将无效的tag筛选器移除。
             var needRemove = new List<string>();
