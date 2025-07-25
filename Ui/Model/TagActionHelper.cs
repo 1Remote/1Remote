@@ -9,7 +9,6 @@ using _1RM.View;
 using _1RM.View.ServerList;
 using _1RM.View.Utils;
 using Shawn.Utils;
-using Shawn.Utils.Interface;
 
 namespace _1RM.Model;
 
@@ -66,7 +65,7 @@ public static class TagActionHelper
                 server.Tags.Remove(tagName!);
             }
         }
-        IoC.Get<GlobalData>().UpdateServer(protocolServerBases, true);
+        IoC.Get<GlobalData>().UpdateServer(protocolServerBases);
         if (IoC.Get<GlobalData>().TagList.Count == 0)
             IoC.Get<ServerListPageViewModel>().CmdShowMainTab?.Execute();
     }
@@ -139,8 +138,8 @@ public static class TagActionHelper
             IoC.Get<ServerListPageViewModel>().TagFilters = tagFilters;
             IoC.Get<MainWindowViewModel>().SetMainFilterString(tagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().MainFilterString).KeyWords);
 
-            // 4. update to db and reload tags. not tag reload
-            IoC.Get<GlobalData>().UpdateServer(protocolServerBases, false);
+            // 4. update db
+            IoC.Get<GlobalData>().UpdateServer(protocolServerBases);
         }
         catch (Exception e)
         {
