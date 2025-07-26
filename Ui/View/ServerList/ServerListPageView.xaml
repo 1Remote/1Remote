@@ -732,11 +732,11 @@
                     <TextBlock Margin="0 0 10 0" 
                                Style="{StaticResource TextBlockBase}"
                                Foreground="{DynamicResource BackgroundTextBrush}" 
-                               FontSize="24" FontWeight="Bold">Right click on a tag</TextBlock>
+                               FontSize="24" FontWeight="Bold">Right-click on a tag</TextBlock>
                     <TextBlock Margin="5 0 0 0"
                                Style="{StaticResource TextBlockBase}"
                                FontSize="22" Foreground="{DynamicResource BackgroundTextBrush}"  
-                    >and pin it here to to enable grouping function.</TextBlock>
+                    >and pin it here to enable grouping function.</TextBlock>
                 </StackPanel>
             </Border>
 

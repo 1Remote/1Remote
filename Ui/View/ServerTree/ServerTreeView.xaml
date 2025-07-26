@@ -1,0 +1,283 @@
+﻿<UserControl x:Class="_1RM.View.ServerTree.ServerTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:_1RM.View.ServerTree"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:_1RM.Controls"
+             xmlns:view="clr-namespace:_1RM.View"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance local:ServerTreeViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Focusable="True">
+    <UserControl.Resources>
+        <RoutedUICommand x:Key="CommandAdd" />
+        <RoutedUICommand x:Key="CommandConnect" />
+        <RoutedUICommand x:Key="CommandEdit" />
+        <RoutedUICommand x:Key="CommandExport" />
+        <RoutedUICommand x:Key="CommandDelete" />
+        <RoutedUICommand x:Key="CommandCancel" />
+    </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{StaticResource CommandAdd}" Executed="CommandAdd_OnExecuted" />
+        <CommandBinding Command="{StaticResource CommandConnect}" Executed="CommandConnect_OnExecuted" />
+        <CommandBinding Command="{StaticResource CommandEdit}" Executed="CommandEdit_OnExecuted" />
+        <CommandBinding Command="{StaticResource CommandExport}" Executed="CommandExport_OnExecuted" />
+        <CommandBinding Command="{StaticResource CommandDelete}" Executed="CommandDelete_OnExecuted" />
+        <CommandBinding Command="{StaticResource CommandCancel}" Executed="CommandCancel_OnExecuted" />
+    </UserControl.CommandBindings>
+    <UserControl.InputBindings>
+        <KeyBinding Key="A" Modifiers="Ctrl" Command="{StaticResource CommandAdd}" />
+        <KeyBinding Key="Return" Command="{StaticResource CommandConnect}" />
+        <KeyBinding Key="F2" Command="{StaticResource CommandEdit}" />
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{StaticResource CommandExport}" />
+        <KeyBinding Key="Delete" Command="{StaticResource CommandDelete}" />
+        <KeyBinding Key="Escape" Command="{StaticResource CommandCancel}" />
+    </UserControl.InputBindings>
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top header with add button -->
+        <Grid Grid.Row="0" VerticalAlignment="Top">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="20">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
+
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
+                <Grid MinHeight="20">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 5 0"
+                                Command="{Binding CmdAdd}"
+                                ToolTip="{DynamicResource Add}">
+                            <Grid>
+                                <Path Data="{StaticResource GeometryCross}" 
+                                      Stretch="Uniform"
+                                      Fill="{DynamicResource PrimaryTextBrush}"/>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Main tree view area -->
+        <Grid Grid.Row="1" Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
+            <TreeView x:Name="MainTreeView" Background="Transparent" BorderThickness="0" 
+                      ItemsSource="{Binding RootNodes}"
+                      SelectedItemChanged="TreeView_OnSelectedItemChanged"
+                      KeyboardNavigation.TabNavigation="Contained"
+                      KeyboardNavigation.DirectionalNavigation="Contained"
+                      Focusable="True"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
+                <TreeView.Resources>
+                    <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Fill" Color="{DynamicResource PrimaryTextColor}"/>
+                    <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Fill" Color="{DynamicResource AccentLightColor}"/>
+                    <SolidColorBrush x:Key="TreeViewItem.TreeArrow.MouseOver.Stroke" Color="{DynamicResource AccentLightColor}"/>
+                </TreeView.Resources>
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                        <Setter Property="Padding" Value="2,1"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Focusable" Value="True"/>
+                        <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="{DynamicResource AccentLightColor}" Opacity="0.3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <Grid Margin="0" Height="22">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- For tag nodes -->
+                            <Border Grid.Column="0" Grid.ColumnSpan="2"
+                                   Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
+                                   VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Width="12" Height="12" Margin="0,0,4,0"
+                                         Fill="{DynamicResource AccentMidBrush}" 
+                                         Data="M28.6 6c-1 0-1.8.9-1.8 1.8v5.4h-7.2a1.8 1.8 0 1 0 0 3.6h7.2v5.4a1.8 1.8 0 1 0 3.6 0v-5.4h7.2a1.8 1.8 0 1 0 0-3.6h-7.2V7.8c0-1-.8-1.8-1.8-1.8z"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
+                                              Foreground="{DynamicResource BackgroundTextBrush}" 
+                                              FontWeight="Bold"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- For server nodes -->
+                            <Grid Grid.Column="0" Grid.ColumnSpan="2"
+                                  Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                  VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Protocol Icon -->
+                                <Image Grid.Column="0" 
+                                      Width="16" Height="16" Margin="0,0,4,0"
+                                      Source="{Binding Server.Server.IconImg}" 
+                                      RenderOptions.BitmapScalingMode="HighQuality"
+                                      VerticalAlignment="Center"/>
+                                
+                                <!-- Server Name -->
+                                <TextBlock Grid.Column="1" 
+                                          Text="{Binding Server.DisplayName}" 
+                                          VerticalAlignment="Center"
+                                          TextTrimming="CharacterEllipsis"
+                                          ToolTip="{Binding Server.DisplayName}"/>
+                            </Grid>
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+
+            <!-- Show tooltip for how to add when tree is empty -->
+            <Border HorizontalAlignment="Right" Visibility="{Binding RootNodes.Count, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter=0}">
+                <StackPanel>
+                    <Path Fill="{DynamicResource BackgroundTextBrush}" 
+                          Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
+                          Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
+                    <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Popup when any item is selected -->
+        <Grid Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Height="Auto" MinHeight="40">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Setter Property="Margin" Value="0 0 0 -100"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAnySelected}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin" AccelerationRatio="0.9">
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-100" />
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.400" Value="0,0,0,0" />
+                                        </ThicknessAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin">
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,0" />
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-100" />
+                                        </ThicknessAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Server Information -->
+                <Grid Grid.Row="0" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Icon and Title -->
+                    <Image Grid.Column="0" 
+                           Width="24" Height="24" Margin="0,0,10,0"
+                           Source="{Binding SelectedServerViewModel.Server.IconImg}"
+                           VerticalAlignment="Center"/>
+                    
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SelectedServerViewModel.DisplayName}"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               VerticalAlignment="Center"/>
+                </Grid>
+                
+                <!-- Server Details -->
+                <Grid Grid.Row="1" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Protocol -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Protocol: " 
+                               Margin="0,0,5,0"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                    
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding SelectedServerViewModel.Server.ProtocolDisplayName}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Address -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="Address: " 
+                               Margin="0,0,5,0"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding SelectedServerViewModel.SubTitle}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

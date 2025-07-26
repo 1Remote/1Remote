@@ -2,12 +2,12 @@
 using _1RM.View.ServerList;
 using Newtonsoft.Json;
 using Shawn.Utils;
-using System;
-using System.Diagnostics;
-using System.Linq;
 
 namespace _1RM.Model
 {
+    /// <summary>
+    /// the class is used on Tags page and in the header bar of ServerListPage and ProtocolListItem
+    /// </summary>
     public class Tag : NotifyPropertyChangedBase
     {
         public Tag(string? name, bool isPinned, int customOrder)

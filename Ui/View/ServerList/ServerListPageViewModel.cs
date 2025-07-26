@@ -25,7 +25,6 @@ using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
-using _1RM.View.Settings.Launcher;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -35,16 +34,23 @@ using Stylet;
 
 namespace _1RM.View.ServerList
 {
-    public partial class ServerListPageViewModel : NotifyPropertyChangedBaseScreen
+    public partial class ServerListPageViewModel : ServerPageBase
     {
-        public DataSourceService SourceService { get; }
-        public GlobalData AppData { get; }
-        public TagsPanelViewModel TagsPanelViewModel { get; }
-        public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
 
 
         #region properties
 
+        public TagsPanelViewModel TagsPanelViewModel { get; }
+        private TagsPanelViewModel? _tagListViewModel = null;
+        public TagsPanelViewModel? TagListViewModel
+        {
+            get => _tagListViewModel;
+            set
+            {
+                SetAndNotifyIfChanged(ref this._tagListViewModel, value);
+                TagsPanelViewModel.FilterString = "";
+            }
+        }
         public bool ListPageIsCardView
         {
             get => IoC.Get<ConfigurationService>().General.ListPageIsCardView;
@@ -92,13 +98,6 @@ namespace _1RM.View.ServerList
                     RaisePropertyChanged();
                 }
             }
-        }
-
-        private ObservableCollection<Tag> _headerTags = new ObservableCollection<Tag>();
-        public ObservableCollection<Tag> HeaderTags
-        {
-            get => _headerTags;
-            set => SetAndNotifyIfChanged(ref _headerTags, value);
         }
 
 
@@ -164,38 +163,13 @@ namespace _1RM.View.ServerList
             });
         }
 
-        private TagsPanelViewModel? _tagListViewModel = null;
-        public TagsPanelViewModel? TagListViewModel
-        {
-            get => _tagListViewModel;
-            set
-            {
-                SetAndNotifyIfChanged(ref this._tagListViewModel, value);
-                TagsPanelViewModel.FilterString = "";
-            }
-        }
-
         #endregion
 
-        public ServerListPageViewModel(DataSourceService sourceService, GlobalData appData)
+        public ServerListPageViewModel(DataSourceService sourceService, GlobalData appData) : base(sourceService, appData)
         {
-            SourceService = sourceService;
-            AppData = appData;
-            TagsPanelViewModel = IoC.Get<TagsPanelViewModel>();
+            // Make sure the update do triggered the first time assign a value 
+            BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
 
-            {
-                // Make sure the update do triggered the first time assign a value 
-                BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            AppData.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(GlobalData.TagList))
-                {
-                    OnGlobalDataTagListChanged();
-                }
-            };
-            OnGlobalDataTagListChanged();
         }
 
         public double NameWidth

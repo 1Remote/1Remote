@@ -14,6 +14,7 @@ using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
 using _1RM.View.Settings.General;
+using _1RM.View.ServerTree;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 using Shawn.Utils;
 
@@ -22,6 +23,7 @@ namespace _1RM.View
     public enum EnumMainWindowPage
     {
         List,
+        TreeView,
         About,
         SettingsGeneral,
         SettingsData,
@@ -35,6 +37,7 @@ namespace _1RM.View
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
         public ServerList.ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
+        public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
         private readonly GlobalData _appData;
@@ -42,6 +45,28 @@ namespace _1RM.View
 
         #region Properties
 
+        private bool _isTreeViewActive = false;
+        public bool IsTreeViewActive
+        {
+            get => _isTreeViewActive;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _isTreeViewActive, value))
+                {
+                    RaisePropertyChanged(nameof(IsShownList));
+                    RaisePropertyChanged(nameof(IsShownTreeView));
+                    RaisePropertyChanged(nameof(ActiveServerViewModel));
+                    
+                    // When switching to TreeView, force rebuild the tree to ensure data is displayed
+                    if (value)
+                    {
+                        ServerTreeViewModel.BuildTreeView();
+                    }
+                }
+            }
+        }
+
+        public object ActiveServerViewModel => IsTreeViewActive ? (object)ServerTreeViewModel : ServerListViewModel;
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -51,6 +76,7 @@ namespace _1RM.View
             {
                 SetAndNotifyIfChanged(ref _editorViewModel, value);
                 RaisePropertyChanged(nameof(IsShownList));
+                RaisePropertyChanged(nameof(IsShownTreeView));
             }
         }
 
@@ -74,6 +100,7 @@ namespace _1RM.View
                 if (SetAndNotifyIfChanged(ref _showSetting, value))
                 {
                     RaisePropertyChanged(nameof(IsShownList));
+                    RaisePropertyChanged(nameof(IsShownTreeView));
                     if (_showSetting == true)
                         _appData.StopTick();
                     else
@@ -230,11 +257,13 @@ namespace _1RM.View
             if (clearSelection)
             {
                 ServerListViewModel.ClearSelection();
+                ServerTreeViewModel.CmdCancelSelected();
             }
         }
 
 
-        public bool IsShownList => EditorViewModel is null && ShowSetting == false;
+        public bool IsShownList => EditorViewModel is null && ShowSetting == false && !IsTreeViewActive;
+        public bool IsShownTreeView => EditorViewModel is null && ShowSetting == false && IsTreeViewActive;
 
 
         #region CMD
@@ -251,7 +280,7 @@ namespace _1RM.View
                     IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                }, o => IsShownList || IsShownTreeView);
             }
         }
 
@@ -281,6 +310,20 @@ namespace _1RM.View
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
                 }, o => IsShownList);
+            }
+        }
+
+        private RelayCommand? _cmdToggleTreeView;
+        public RelayCommand CmdToggleTreeView
+        {
+            get
+            {
+                return _cmdToggleTreeView ??= new RelayCommand((o) =>
+                {
+                    IsTreeViewActive = !IsTreeViewActive;
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => IsShownList || IsShownTreeView);
             }
         }
 
@@ -320,6 +363,11 @@ namespace _1RM.View
                 switch (goPage)
                 {
                     case EnumMainWindowPage.List:
+                        IsTreeViewActive = false;
+                        ShowList(false);
+                        break;
+                    case EnumMainWindowPage.TreeView:
+                        IsTreeViewActive = true;
                         ShowList(false);
                         break;
                     case EnumMainWindowPage.About:

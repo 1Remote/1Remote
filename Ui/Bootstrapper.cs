@@ -19,6 +19,7 @@ using _1RM.View.Settings.General;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Settings.ProtocolConfig;
 using _1RM.View.Settings.Theme;
+using _1RM.View.ServerTree;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -73,6 +74,7 @@ namespace _1RM
             builder.Bind<ProtocolRunnerSettingsPageViewModel>().ToSelf().InSingletonScope();
 
             builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerTreeViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
 
             builder.Bind<ProcessingRingViewModel>().ToSelf();
