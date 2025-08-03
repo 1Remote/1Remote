@@ -64,9 +64,13 @@ if ($isRevert) {
 }
 
 $fileLines = Get-Content $filePath
+
+# Escape special characters in the target string
+$escapedTarget = [regex]::Escape($target)
+
 $matched = 0
 foreach ($l in $fileLines) {
-    if($l -match $target) {
+    if($l -match $escapedTarget) {
         $matched = 1
         break
     }
@@ -83,7 +87,7 @@ if (!$matched) {
 }
 
 # Replace the content of the file
-(Get-Content $filePath) -Replace $target, $replacement | Set-Content $filePath
+(Get-Content $filePath) -Replace $escapedTarget, $replacement | Set-Content $filePath
 
 # Set the current directory back to the original location
 Set-Location $originalDirectory
