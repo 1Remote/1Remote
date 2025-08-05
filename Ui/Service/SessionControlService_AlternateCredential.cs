@@ -71,7 +71,6 @@ namespace _1RM.Service
         }
 #endif
 
-
         /// <summary>
         /// Find the first connectable address from the given credentials. if return null then no address is connectable.
         /// </summary>
@@ -79,11 +78,12 @@ namespace _1RM.Service
         {
             var credentials = pingCredentials.Select(x => x.CloneMe()).ToList();
             const int maxWaitSeconds = 5;
-            var cts = new CancellationTokenSource();
+            using var cts = new CancellationTokenSource();
 
             var uiPingItems = new List<PingTestItem>();
             foreach (var credential in credentials)
             {
+                // Normalize credentials - ensure all have address and port
                 credential.Address = string.IsNullOrEmpty(credential.Address) ? credentials.First().Address : credential.Address;
                 credential.Port = string.IsNullOrEmpty(credential.Port) ? credentials.First().Port : credential.Port;
                 uiPingItems.Add(new PingTestItem(credential.Name, credential.Address + ":" + credential.Port)
@@ -97,104 +97,122 @@ namespace _1RM.Service
                 Title = protocolDisplayName + ": " + IoC.Translate("Availability detection"),
                 PingTestItems = uiPingItems
             };
-
             SimpleLogHelper.Debug($"FindFirstConnectableAddressAsync in {uiPingItems.Count} address, showing dlg...");
+            await Execute.OnUIThreadAsync(() => { IoC.Get<IWindowManager>().ShowWindow(dlg); });
 
-            await Execute.OnUIThreadAsync(() =>
-            {
-                IoC.Get<IWindowManager>().ShowWindow(dlg);
-            });
-
-            var tasks = new List<Task<bool?>>();
-            // add tasks to ping each credential
+            var taskList = new List<(Task<bool?> Task, Credential Credential)>();
             for (int i = 0; i < credentials.Count; i++)
             {
-                // give each task a different sleep time to avoid all tasks start at the same time
+                // add tasks to ping each credential
                 var credential = credentials[i];
                 var pingTestItem = uiPingItems[i];
-                tasks.Add(Task.Factory.StartNew(() =>
+                var task = Task.Run(async () =>
                 {
-                    pingTestItem.Status = PingStatus.Pinging;
-                    var startTime = DateTime.UtcNow;
-                    var ret = TcpHelper.TestConnectionAsync(credential.Address, credential.Port, cts.Token, maxWaitSeconds * 1000).Result;
-                    pingTestItem.Ping = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-                    pingTestItem.Status = ret switch
+                    try
                     {
-                        null => PingStatus.Canceled,
-                        true => PingStatus.Success,
-                        _ => PingStatus.Failed
-                    };
-                    Thread.Sleep(200); // To avoid the UI closing too quickly, making it hard to see.
-                    return ret;
-                }, cts.Token));
-            }
-
-            // an extra task to update the message
-            var countingTask = Task.Factory.StartNew(() =>
-            {
-                for (int i = 0; i < maxWaitSeconds; i++)
-                {
-                    dlg.Eta = maxWaitSeconds - i;
-                    if (cts.Token.IsCancellationRequested)
-                    {
-                        break;
+                        await Execute.OnUIThreadAsync(() => pingTestItem.Status = PingStatus.Pinging);
+                        var startTime = DateTime.UtcNow;
+                        var ret = await TcpHelper.TestConnectionAsync(credential.Address, credential.Port, cts.Token, maxWaitSeconds * 1000);
+                        await Execute.OnUIThreadAsync(() =>
+                        {
+                            pingTestItem.Ping = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                            pingTestItem.Status = ret switch
+                            {
+                                null => PingStatus.Canceled,
+                                true => PingStatus.Success,
+                                _ => PingStatus.Failed
+                            };
+                        });
+                        await Task.Delay(200, cts.Token); // To avoid the UI closing too quickly, making it hard to see.
+                        return ret;
                     }
-                    Thread.Sleep(1000);
-                }
-
-                bool? ret = null;
-                return ret;
-            }, cts.Token);
-            tasks.Add(countingTask);
-
-            var delay = Task.Delay(500);
-
-            // wait for the first task with result true or all tasks completed
-            int completedTaskIndex = -1;
-            var ts = tasks.ToArray();
-            while (true)
-            {
-                if (ts.Any() == false
-                    || ts.Length == 1 && ts.FirstOrDefault() == countingTask)
-                {
-                    break;
-                }
-                var completedTask = await Task.WhenAny(ts);
-                if (completedTask.IsCanceled == false && completedTask.Result == true)
-                {
-                    completedTaskIndex = tasks.IndexOf(completedTask);
-                    SimpleLogHelper.DebugInfo($"Task{completedTaskIndex} completed first. Cancelling remaining tasks.");
-                    break;
-                }
-                ts = ts.Where(t => t != completedTask).ToArray();
+                    catch (OperationCanceledException)
+                    {
+                        await Execute.OnUIThreadAsync(() => pingTestItem.Status = PingStatus.Canceled);
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        SimpleLogHelper.Error($"Error testing connection: {ex.Message}");
+                        await Execute.OnUIThreadAsync(() => pingTestItem.Status = PingStatus.Failed);
+                        return false;
+                    }
+                }, cts.Token);
+                taskList.Add((task, credential));
             }
 
-            // cancel all tasks
-            dlg.Eta = 0;
-            if (ts.Any())
+            // start a task to update UI countdown
+            var countDownTask = Task.Run(async () =>
             {
                 try
                 {
-                    await cts.CancelAsync();
+                    for (int i = 0; i < maxWaitSeconds; i++)
+                    {
+                        await Execute.OnUIThreadAsync(() => dlg.Eta = maxWaitSeconds - i);
+                        if (cts.Token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        await Task.Delay(1000, cts.Token);
+                    }
                 }
-                catch (Exception)
+                catch (OperationCanceledException)
                 {
-                    // ignored
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error($"Error in countdown task: {e.Message}");
+                }
+            }, cts.Token);
+
+
+            Credential? successfulCredential = null;
+            try
+            {
+                var remainingTasks = taskList.Select(t => t.Task).ToList();
+                while (remainingTasks.Any())
+                {
+                    var completedTask = await Task.WhenAny(remainingTasks);
+                    remainingTasks.Remove(completedTask);
+
+                    // if success then get credential
+                    var taskInfo = taskList.FirstOrDefault(t => t.Task == completedTask);
+                    if (taskInfo != default && await taskInfo.Task == true)
+                    {
+                        successfulCredential = taskInfo.Credential;
+                        SimpleLogHelper.DebugInfo($"Task for credential {successfulCredential.Name} completed successfully. Cancelling remaining tasks.");
+                        break;
+                    }
                 }
             }
+            finally
+            {
+                await Execute.OnUIThreadAsync(() => dlg.Eta = 0);
+                cts.Cancel();
+            }
 
-            await delay;
+
+            try
+            {
+                await Task.WhenAny(countDownTask, Task.Delay(maxWaitSeconds * 1000));
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+
             if (dlg.IsCanceled)
             {
                 return null;
             }
 
             // return the first credential when ping success
-            if (completedTaskIndex >= 0 && completedTaskIndex < tasks.Count)
+            if (successfulCredential != null)
             {
                 // close the pop window
                 await Execute.OnUIThreadAsync(() => { dlg.RequestClose(); });
-                return credentials[completedTaskIndex].CloneMe();
+                return successfulCredential.CloneMe();
             }
             else
             {
@@ -206,6 +224,91 @@ namespace _1RM.Service
                     dlg.StartAutoCloseCounter();
                 });
             }
+            return null;
+        }
+
+
+        /// <summary>
+        /// Find the first connectable address from the given credentials. if return null then no address is connectable.
+        /// </summary>
+        public static async Task<Credential?> FindFirstConnectableAddressAsyncWithoutUI(IEnumerable<Credential> pingCredentials, string protocolDisplayName)
+        {
+            const int maxWaitSeconds = 5;
+            var credentials = pingCredentials.Select(x => x.CloneMe()).ToList();
+            if (!credentials.Any())
+            {
+                return null;
+            }
+
+            using var cts = new CancellationTokenSource();
+
+            // Normalize credentials - ensure all have address and port
+            foreach (var credential in credentials)
+            {
+                credential.Address = string.IsNullOrEmpty(credential.Address) ? credentials.First().Address : credential.Address;
+                credential.Port = string.IsNullOrEmpty(credential.Port) ? credentials.First().Port : credential.Port;
+            }
+
+            SimpleLogHelper.Debug($"FindFirstConnectableAddressSimpleAsync testing {credentials.Count} addresses...");
+
+            var taskList = new List<(Task<bool?> Task, Credential Credential)>();
+            for (int i = 0; i < credentials.Count; i++)
+            {
+                // add tasks to ping each credential
+                var credential = credentials[i];
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var ret = await TcpHelper.TestConnectionAsync(credential.Address, credential.Port, cts.Token, maxWaitSeconds * 1000);
+                        return ret;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        SimpleLogHelper.Debug($"Error testing connection: {ex.Message}");
+                        return false;
+                    }
+                }, cts.Token);
+                taskList.Add((task, credential));
+            }
+
+            Credential? successfulCredential = null;
+            try
+            {
+                var remainingTasks = taskList.Select(t => t.Task).ToList();
+                while (remainingTasks.Any())
+                {
+                    var completedTask = await Task.WhenAny(remainingTasks);
+                    remainingTasks.Remove(completedTask);
+
+                    // if success then get credential
+                    var taskInfo = taskList.FirstOrDefault(t => t.Task == completedTask);
+                    if (taskInfo != default && await taskInfo.Task == true)
+                    {
+                        successfulCredential = taskInfo.Credential;
+                        SimpleLogHelper.DebugInfo($"Task for credential {successfulCredential.Name} completed successfully. Cancelling remaining tasks.");
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                // Cancel all remaining tasks
+                cts.Cancel();
+            }
+
+            // Return the first credential when ping success
+            if (successfulCredential != null)
+            {
+                return successfulCredential.CloneMe();
+            }
+
+            // None of the addresses are connectable
+            SimpleLogHelper.Debug("No connectable address found");
             return null;
         }
 

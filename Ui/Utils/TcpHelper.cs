@@ -75,6 +75,9 @@ namespace _1RM.Utils
             }
         }
 
+        /// <summary>
+        /// try access the address and port, if connect success return true, cancel return null
+        /// </summary>
         public static async Task<bool?> TestConnectionAsync(string address, string portStr, CancellationToken? cancellationToken = null, int timeOutMillisecond = 0)
         {
             using var client = new TcpClient();
