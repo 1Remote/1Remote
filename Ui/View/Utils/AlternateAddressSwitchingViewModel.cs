@@ -43,6 +43,9 @@ namespace _1RM.View.Utils
         }
 
         private int _ping = 0;
+        /// <summary>
+        /// the timespan between start and end of the ping in Milliseconds
+        /// </summary>
         public int Ping
         {
             get => _ping;
