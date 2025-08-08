@@ -11,31 +11,8 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerTreeViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
-             Focusable="True">
-    <UserControl.Resources>
-        <RoutedUICommand x:Key="CommandAdd" />
-        <RoutedUICommand x:Key="CommandConnect" />
-        <RoutedUICommand x:Key="CommandEdit" />
-        <RoutedUICommand x:Key="CommandExport" />
-        <RoutedUICommand x:Key="CommandDelete" />
-        <RoutedUICommand x:Key="CommandCancel" />
-    </UserControl.Resources>
-    <UserControl.CommandBindings>
-        <CommandBinding Command="{StaticResource CommandAdd}" Executed="CommandAdd_OnExecuted" />
-        <CommandBinding Command="{StaticResource CommandConnect}" Executed="CommandConnect_OnExecuted" />
-        <CommandBinding Command="{StaticResource CommandEdit}" Executed="CommandEdit_OnExecuted" />
-        <CommandBinding Command="{StaticResource CommandExport}" Executed="CommandExport_OnExecuted" />
-        <CommandBinding Command="{StaticResource CommandDelete}" Executed="CommandDelete_OnExecuted" />
-        <CommandBinding Command="{StaticResource CommandCancel}" Executed="CommandCancel_OnExecuted" />
-    </UserControl.CommandBindings>
-    <UserControl.InputBindings>
-        <KeyBinding Key="A" Modifiers="Ctrl" Command="{StaticResource CommandAdd}" />
-        <KeyBinding Key="Return" Command="{StaticResource CommandConnect}" />
-        <KeyBinding Key="F2" Command="{StaticResource CommandEdit}" />
-        <KeyBinding Key="E" Modifiers="Ctrl" Command="{StaticResource CommandExport}" />
-        <KeyBinding Key="Delete" Command="{StaticResource CommandDelete}" />
-        <KeyBinding Key="Escape" Command="{StaticResource CommandCancel}" />
-    </UserControl.InputBindings>
+             Focusable="True"
+             PreviewKeyDown="ServerTreeView_PreviewKeyDown">
     <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -111,7 +88,81 @@
                 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <Grid Margin="0" Height="22">
+                        <Grid Margin="0" Height="22" Background="Transparent">
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <!-- For folder nodes -->
+                                    <MenuItem Header="New Server" 
+                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
+                                              Command="{Binding DataContext.CmdAddServerToNode, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
+                                              CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <Path Data="{StaticResource GeometryCross}" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="New Folder" 
+                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
+                                              Command="{Binding DataContext.CmdCreateFolder, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
+                                              CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"/>
+                                    
+                                    <!-- For server nodes -->
+                                    <MenuItem Header="Connect" 
+                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                              Command="{s:Action CmdConnectSelected}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M12 2l3.09 6.26L22 9l-5.55 5.15L18 22l-6-3.27L6 22l1.55-7.85L2 9l6.91-.74L12 2z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Edit" 
+                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                              Command="{s:Action CmdMultiEditSelected}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"/>
+                                    
+                                    <!-- Common items -->
+                                    <MenuItem Header="Rename" 
+                                              Command="{Binding DataContext.CmdRenameNode}"
+                                              CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete" 
+                                              Command="{Binding DataContext.CmdDeleteNode}"
+                                              CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                            
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
@@ -124,7 +175,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Path Width="12" Height="12" Margin="0,0,4,0"
                                          Fill="{DynamicResource AccentMidBrush}" 
-                                         Data="M28.6 6c-1 0-1.8.9-1.8 1.8v5.4h-7.2a1.8 1.8 0 1 0 0 3.6h7.2v5.4a1.8 1.8 0 1 0 3.6 0v-5.4h7.2a1.8 1.8 0 1 0 0-3.6h-7.2V7.8c0-1-.8-1.8-1.8-1.8z"/>
+                                         Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
                                               Foreground="{DynamicResource BackgroundTextBrush}" 
                                               FontWeight="Bold"/>
@@ -271,11 +322,11 @@
 
                 <!-- Action Buttons -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding DataContext.CmdCancelSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding DataContext.CmdConnectSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding DataContext.CmdMultiEditSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding DataContext.CmdDeleteSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding DataContext.CmdExportSelectedToJson}"/>
                 </StackPanel>
             </Grid>
         </Grid>

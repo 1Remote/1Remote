@@ -5,6 +5,7 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View.ServerList;
+using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
@@ -22,18 +23,16 @@ namespace _1RM.View.ServerTree
         {
             public string Name { get; private set; }
             public bool IsTag { get; private set; }
-            public Tag? Tag { get; private set; }
             public ProtocolBaseViewModel? Server { get; private set; }
             public ObservableCollection<TreeNode> Children { get; } = new ObservableCollection<TreeNode>();
             public bool IsExpanded { get; set; } = true;
             public bool IsSelected { get; set; }
 
-            // For tag nodes
-            public TreeNode(string name, Tag tag)
+            // For folder/tree nodes
+            public TreeNode(string name)
             {
                 Name = name;
-                Tag = tag;
-                IsTag = true;
+                IsTag = true; // Keep this name for compatibility, but now represents folder nodes
             }
 
             // For server nodes
@@ -42,13 +41,6 @@ namespace _1RM.View.ServerTree
                 Name = server.DisplayName;
                 Server = server;
                 IsTag = false;
-            }
-
-            // For "others" or root nodes
-            public TreeNode(string name)
-            {
-                Name = name;
-                IsTag = true;
             }
         }
 
@@ -110,15 +102,6 @@ namespace _1RM.View.ServerTree
                 }
             };
 
-            // Also observe changes to tags which could affect the tree structure
-            AppData.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(GlobalData.TagList))
-                {
-                    BuildTreeView();
-                }
-            };
-
             BuildTreeView();
         }
 
@@ -128,8 +111,8 @@ namespace _1RM.View.ServerTree
             Execute.OnUIThread(() =>
             {
                 var newRoot = new ObservableCollection<TreeNode>();
-                var tagTreeNodes = new Dictionary<string, TreeNode>();
-                var othersNode = new TreeNode("others");
+                var nodeTreePaths = new Dictionary<string, TreeNode>();
+                var othersNode = new TreeNode("root"); // TODO: 根节点名称
 
                 // Check if there are any servers to display
                 if (AppData.VmItemList.Count == 0)
@@ -138,50 +121,53 @@ namespace _1RM.View.ServerTree
                     return;
                 }
 
-                // Group servers by tags
+                // Group servers by TreeNodes
                 foreach (var server in AppData.VmItemList)
                 {
-                    if (server.Tags.Count == 0)
+                    // Don't automatically migrate tags to TreeNodes - let TreeNodes be empty initially
+                    // This ensures first-time users see all servers at root level
+                    
+                    if (server.Server.TreeNodes.Count == 0)
                     {
                         othersNode.Children.Add(new TreeNode(server));
                     }
                     else
                     {
-                        // Build path based on tags
+                        // Build path based on TreeNodes
                         TreeNode? currentNode = null;
                         string currentPath = "";
                         
-                        foreach (var tag in server.Tags)
+                        foreach (var nodeName in server.Server.TreeNodes)
                         {
                             if (string.IsNullOrEmpty(currentPath))
                             {
-                                currentPath = tag.Name;
+                                currentPath = nodeName;
                             }
                             else
                             {
-                                currentPath = $"{currentPath}->{tag.Name}";
+                                currentPath = $"{currentPath}->{nodeName}";
                             }
 
-                            if (!tagTreeNodes.TryGetValue(currentPath, out var tagNode))
+                            if (!nodeTreePaths.TryGetValue(currentPath, out var treeNode))
                             {
-                                tagNode = new TreeNode(tag.Name, tag);
-                                tagTreeNodes[currentPath] = tagNode;
+                                treeNode = new TreeNode(nodeName);
+                                nodeTreePaths[currentPath] = treeNode;
 
                                 if (currentNode == null)
                                 {
                                     // Add to root
-                                    newRoot.Add(tagNode);
+                                    newRoot.Add(treeNode);
                                 }
                                 else
                                 {
-                                    currentNode.Children.Add(tagNode);
+                                    currentNode.Children.Add(treeNode);
                                 }
                             }
 
-                            currentNode = tagNode;
+                            currentNode = treeNode;
                         }
 
-                        // Add the server to the last tag node
+                        // Add the server to the last tree node
                         if (currentNode != null)
                         {
                             currentNode.Children.Add(new TreeNode(server));
@@ -308,5 +294,286 @@ namespace _1RM.View.ServerTree
                 MessageBoxHelper.Info("Export to JSON functionality is not implemented yet.");
             }
         }
+
+        #region Context Menu Commands
+
+        // Command to create a new folder
+        private RelayCommand? _cmdCreateFolder;
+        public RelayCommand CmdCreateFolder
+        {
+            get
+            {
+                return _cmdCreateFolder ??= new RelayCommand(async (o) =>
+                {
+                    var folderName = await InputBoxViewModel.GetValue("Enter folder name:", 
+                        (input) => string.IsNullOrWhiteSpace(input) ? "Folder name cannot be empty" : "", 
+                        "New Folder", 
+                        IoC.Get<MainWindowViewModel>());
+                    
+                    if (!string.IsNullOrWhiteSpace(folderName))
+                    {
+                        CreateNewFolder(o as TreeNode, folderName);
+                    }
+                });
+            }
+        }
+
+        // Command to add a new server under selected node
+        private RelayCommand? _cmdAddServerToNode;
+        public RelayCommand CmdAddServerToNode
+        {
+            get
+            {
+                return _cmdAddServerToNode ??= new RelayCommand((o) =>
+                {
+                    List<string> treePath;
+                    if (o is TreeNode node)
+                    {
+                        // Build the tree path for the new server
+                        treePath = GetTreePath(node);
+                    }
+                    else
+                    {
+                        // Add to root
+                        treePath = new List<string>();
+                    }
+                    
+                    // Store the tree path for the new server
+                    _pendingServerTreePath = treePath;
+                    
+                    // Navigate to add server page
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(new List<string>(), null);
+                });
+            }
+        }
+
+        // Store the tree path for servers being created
+        private List<string>? _pendingServerTreePath;
+
+        // Command to rename a node
+        private RelayCommand? _cmdRenameNode;
+        public RelayCommand CmdRenameNode
+        {
+            get
+            {
+                return _cmdRenameNode ??= new RelayCommand(async (o) =>
+                {
+                    if (o is TreeNode node)
+                    {
+                        if (node.IsTag)
+                        {
+                            // Rename folder
+                            var newName = await InputBoxViewModel.GetValue("Enter new folder name:", 
+                                (input) => string.IsNullOrWhiteSpace(input) ? "Folder name cannot be empty" : "", 
+                                node.Name, 
+                                IoC.Get<MainWindowViewModel>());
+                            if (!string.IsNullOrWhiteSpace(newName) && newName != node.Name)
+                            {
+                                RenameFolder(node, newName);
+                            }
+                        }
+                        else if (node.Server != null)
+                        {
+                            // Edit server
+                            GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(node.Server.Server, true);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Command to delete a node
+        private RelayCommand? _cmdDeleteNode;
+        public RelayCommand CmdDeleteNode
+        {
+            get
+            {
+                return _cmdDeleteNode ??= new RelayCommand((o) =>
+                {
+                    if (o is TreeNode node)
+                    {
+                        if (node.IsTag)
+                        {
+                            // Delete folder and move servers to parent or root
+                            if (MessageBoxHelper.Confirm($"Delete folder '{node.Name}' and move its contents to parent folder?"))
+                            {
+                                DeleteFolder(node);
+                            }
+                        }
+                        else if (node.Server != null)
+                        {
+                            // Delete server
+                            var server = node.Server.Server;
+                            if (server.DataSource?.IsWritable == true)
+                            {
+                                if (MessageBoxHelper.Confirm(IoC.Translate("do_you_really_want_to_delete_x").Replace("{0}", server.DisplayName)))
+                                {
+                                    AppData.DeleteServer(new List<ProtocolBase> { server });
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        // Get the tree path from root to the specified node
+        private List<string> GetTreePath(TreeNode node)
+        {
+            var path = new List<string>();
+            var current = node;
+            
+            // Find the path by searching through the tree
+            FindNodePath(RootNodes, node, new List<string>(), path);
+            
+            return path;
+        }
+
+        private bool FindNodePath(ObservableCollection<TreeNode> nodes, TreeNode target, List<string> currentPath, List<string> result)
+        {
+            foreach (var node in nodes)
+            {
+                var newPath = new List<string>(currentPath);
+                if (node.IsTag)
+                {
+                    newPath.Add(node.Name);
+                }
+
+                if (node == target)
+                {
+                    result.Clear();
+                    result.AddRange(newPath);
+                    return true;
+                }
+
+                if (FindNodePath(node.Children, target, newPath, result))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Rename a folder and update all servers under it
+        private void RenameFolder(TreeNode folderNode, string newName)
+        {
+            var oldPath = GetTreePath(folderNode);
+            var newPath = new List<string>(oldPath);
+            if (newPath.Count > 0)
+            {
+                newPath[newPath.Count - 1] = newName;
+            }
+
+            // Update all servers that are under this folder
+            UpdateServersInFolder(folderNode, oldPath, newPath);
+            
+            // Rebuild the tree
+            BuildTreeView();
+        }
+
+        // Delete a folder and move its contents to parent
+        private void DeleteFolder(TreeNode folderNode)
+        {
+            var folderPath = GetTreePath(folderNode);
+            var parentPath = folderPath.Take(folderPath.Count - 1).ToList();
+
+            // Update all servers in this folder to move to parent
+            var serversToUpdate = new List<ProtocolBase>();
+            CollectServersInFolder(folderNode, serversToUpdate);
+
+            foreach (var server in serversToUpdate)
+            {
+                server.TreeNodes = new List<string>(parentPath);
+            }
+
+            if (serversToUpdate.Count > 0)
+            {
+                AppData.UpdateServer(serversToUpdate);
+            }
+
+            // Rebuild the tree
+            BuildTreeView();
+        }
+
+        // Update all servers in a folder when the folder is renamed
+        private void UpdateServersInFolder(TreeNode folderNode, List<string> oldPath, List<string> newPath)
+        {
+            var serversToUpdate = new List<ProtocolBase>();
+            CollectServersInFolder(folderNode, serversToUpdate);
+
+            foreach (var server in serversToUpdate)
+            {
+                // Update the server's tree path
+                var serverPath = new List<string>(server.TreeNodes);
+                
+                // Replace the old folder path with the new one
+                if (serverPath.Count >= oldPath.Count)
+                {
+                    bool matches = true;
+                    for (int i = 0; i < oldPath.Count; i++)
+                    {
+                        if (i >= serverPath.Count || serverPath[i] != oldPath[i])
+                        {
+                            matches = false;
+                            break;
+                        }
+                    }
+
+                    if (matches)
+                    {
+                        // Replace the old path with new path
+                        var updatedPath = new List<string>(newPath);
+                        for (int i = oldPath.Count; i < serverPath.Count; i++)
+                        {
+                            updatedPath.Add(serverPath[i]);
+                        }
+                        server.TreeNodes = updatedPath;
+                    }
+                }
+            }
+
+            if (serversToUpdate.Count > 0)
+            {
+                AppData.UpdateServer(serversToUpdate);
+            }
+        }
+
+        // Collect all servers under a folder node
+        private void CollectServersInFolder(TreeNode folderNode, List<ProtocolBase> servers)
+        {
+            foreach (var child in folderNode.Children)
+            {
+                if (child.IsTag)
+                {
+                    CollectServersInFolder(child, servers);
+                }
+                else if (child.Server != null)
+                {
+                    servers.Add(child.Server.Server);
+                }
+            }
+        }
+
+        // Create a new folder under the specified parent node
+        private void CreateNewFolder(TreeNode? parentNode, string folderName)
+        {
+            // Get the path for the new folder
+            var parentPath = parentNode != null ? GetTreePath(parentNode) : new List<string>();
+            var newFolderPath = new List<string>(parentPath) { folderName };
+
+            // For now, just rebuild the tree view
+            // The folder will appear when a server is added to it
+            // This is a placeholder for future folder creation functionality
+            MessageBoxHelper.Info($"Folder '{folderName}' will be created. Add servers to this path to make it visible.");
+            
+            // TODO: In the future, you might want to create an empty folder entry in the data source
+            // or implement a different mechanism for folder management
+        }
+
+        #endregion
     }
 }

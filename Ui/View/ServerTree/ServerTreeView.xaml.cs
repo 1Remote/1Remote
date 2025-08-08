@@ -31,54 +31,6 @@ namespace _1RM.View.ServerTree
             }
         }
 
-        private void CommandAdd_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel)
-            {
-                viewModel.CmdAdd.Execute(null);
-            }
-        }
-
-        private void CommandConnect_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel && viewModel.SelectedServerViewModel != null)
-            {
-                viewModel.CmdConnectSelected();
-            }
-        }
-
-        private void CommandEdit_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel && viewModel.SelectedServerViewModel != null)
-            {
-                viewModel.CmdMultiEditSelected();
-            }
-        }
-
-        private void CommandExport_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel && viewModel.SelectedServerViewModel != null)
-            {
-                viewModel.CmdExportSelectedToJson();
-            }
-        }
-
-        private void CommandDelete_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel && viewModel.SelectedServerViewModel != null)
-            {
-                viewModel.CmdDeleteSelected();
-            }
-        }
-
-        private void CommandCancel_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (DataContext is ServerTreeViewModel viewModel)
-            {
-                viewModel.CmdCancelSelected();
-            }
-        }
-
         private void ServerTreeView_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (DataContext is not ServerTreeViewModel viewModel)
