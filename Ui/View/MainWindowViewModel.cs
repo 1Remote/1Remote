@@ -124,7 +124,7 @@ namespace _1RM.View
         {
             base.OnViewLoaded();
 
-            GlobalEventHelper.OnGoToServerAddPage += async void (tagNames, assignDataSource) =>
+            GlobalEventHelper.OnGoToServerAddPage += async void (tagNames, _, preset) =>
             {
                 try
                 {
@@ -138,7 +138,11 @@ namespace _1RM.View
 #endif
                     if (source?.IsWritable == true)
                     {
-                        EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
+                        if (preset != null)
+                        {
+                            preset.TagNames = tagNames ?? new List<string>();
+                        }
+                        EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, preset);
                         ShowMe();
                     }
                     else
@@ -257,7 +261,7 @@ namespace _1RM.View
             if (clearSelection)
             {
                 ServerListViewModel.ClearSelection();
-                ServerTreeViewModel.CmdCancelSelected();
+                ServerTreeViewModel.CmdCancelSelected.Execute();
             }
         }
 

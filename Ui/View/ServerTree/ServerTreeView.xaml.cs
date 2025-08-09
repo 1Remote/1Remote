@@ -20,13 +20,13 @@ namespace _1RM.View.ServerTree
             if (DataContext is ServerTreeViewModel viewModel && e.NewValue is ServerTreeViewModel.TreeNode node)
             {
                 viewModel.SelectedNode = node;
-                if (!node.IsTag && node.Server != null)
+                if (!node.IsFolder && node.Server != null)
                 {
-                    viewModel.CmdServerSelected(node.Server);
+                    viewModel.SetSelectedServer(node.Server);
                 }
                 else
                 {
-                    viewModel.CmdCancelSelected();
+                    viewModel.CmdCancelSelected.Execute();
                 }
             }
         }

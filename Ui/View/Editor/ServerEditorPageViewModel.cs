@@ -29,20 +29,26 @@ namespace _1RM.View.Editor
 {
     public partial class ServerEditorPageViewModel : NotifyPropertyChangedBase
     {
+        public class ParamsServerAddPreset
+        {
+            public List<string> TreeNodes = new List<string>();
+            public List<string> TagNames = new List<string>();
+        }
+
         private readonly GlobalData _globalData;
 
         public bool IsBuckEdit => _serversInBuckEdit?.Count() > 1;
         private readonly ProtocolBase _orgServer; // to remember original protocol's options, for restore data when switching protocols
 
+        public readonly ParamsServerAddPreset? PresetParams = null; // for Add mode, to remember the preset params, such as tags, tree nodes, etc.
 
-
-        public static ServerEditorPageViewModel Add(GlobalData globalData, DataSourceBase addToDataSource, List<string>? presetTagNames = null)
+        public static ServerEditorPageViewModel Add(GlobalData globalData, DataSourceBase addToDataSource, ParamsServerAddPreset? preset)
         {
             var server = new RDP
             {
-                Tags = presetTagNames?.Count == 0 ? new List<string>() : new List<string>(presetTagNames!),
+                Tags = new List<string>(preset?.TagNames ?? new List<string>()),
             };
-            return new ServerEditorPageViewModel(globalData, server, addToDataSource);
+            return new ServerEditorPageViewModel(globalData, server, addToDataSource, preset);
         }
 
         public static ServerEditorPageViewModel Duplicate(GlobalData globalData, DataSourceBase dataSource, ProtocolBase server)
@@ -68,8 +74,9 @@ namespace _1RM.View.Editor
         /// <summary>
         /// Add or Edit or Duplicate
         /// </summary>
-        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase addToDataSource)
+        private ServerEditorPageViewModel(GlobalData globalData, ProtocolBase server, DataSourceBase addToDataSource, ParamsServerAddPreset? preset = null)
         {
+            PresetParams = preset;
             _globalData = globalData;
 
             server.DecryptToConnectLevel();
@@ -329,6 +336,7 @@ namespace _1RM.View.Editor
 
                     MaskLayerController.ShowMask(IoC.Get<ProcessingRingViewModel>(), IoC.Get<MainWindowViewModel>());
 
+
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -482,6 +490,11 @@ namespace _1RM.View.Editor
                                 // add
                                 else if (Server.DataSource != null)
                                 {
+                                    // if the server has a preset, we need to restore the tree nodes
+                                    if (PresetParams != null)
+                                    {
+                                        Server.TreeNodes = PresetParams.TreeNodes;
+                                    }
                                     ret = _globalData.AddServer(Server, Server.DataSource);
                                 }
                             }

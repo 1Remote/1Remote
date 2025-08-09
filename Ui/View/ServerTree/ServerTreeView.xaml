@@ -88,13 +88,15 @@
                 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <Grid Margin="0" Height="22" Background="Transparent">
+                        <Grid Margin="0" Height="22" Background="Transparent"
+                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
+                              >
                             <Grid.ContextMenu>
                                 <ContextMenu>
                                     <!-- For folder nodes -->
                                     <MenuItem Header="New Server" 
-                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
-                                              Command="{Binding DataContext.CmdAddServerToNode, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdAddServerToNode}" 
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="{StaticResource GeometryCross}" 
@@ -104,8 +106,8 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="New Folder" 
-                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
-                                              Command="{Binding DataContext.CmdCreateFolder, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateFolder}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" 
@@ -114,12 +116,12 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"/>
+                                    <Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"/>
                                     
                                     <!-- For server nodes -->
                                     <MenuItem Header="Connect" 
-                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                              Command="{s:Action CmdConnectSelected}">
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdConnectSelected}">
                                         <MenuItem.Icon>
                                             <Path Data="M12 2l3.09 6.26L22 9l-5.55 5.15L18 22l-6-3.27L6 22l1.55-7.85L2 9l6.91-.74L12 2z" 
                                                   Width="12" Height="12" 
@@ -128,8 +130,8 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Edit" 
-                                              Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                              Command="{s:Action CmdMultiEditSelected}">
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditSelected}">
                                         <MenuItem.Icon>
                                             <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
                                                   Width="12" Height="12" 
@@ -137,11 +139,11 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"/>
+                                    <Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"/>
                                     
                                     <!-- Common items -->
                                     <MenuItem Header="Rename" 
-                                              Command="{Binding DataContext.CmdRenameNode}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdRenameNode}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" 
@@ -151,7 +153,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Delete" 
-                                              Command="{Binding DataContext.CmdDeleteNode}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdDeleteNode}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" 
@@ -170,7 +172,7 @@
 
                             <!-- For tag nodes -->
                             <Border Grid.Column="0" Grid.ColumnSpan="2"
-                                   Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2Visible}}"
+                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                    VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Width="12" Height="12" Margin="0,0,4,0"
@@ -184,7 +186,7 @@
 
                             <!-- For server nodes -->
                             <Grid Grid.Column="0" Grid.ColumnSpan="2"
-                                  Visibility="{Binding IsTag, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                  Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                   VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -322,11 +324,11 @@
 
                 <!-- Action Buttons -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding DataContext.CmdCancelSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding DataContext.CmdConnectSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding DataContext.CmdMultiEditSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding DataContext.CmdDeleteSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding DataContext.CmdExportSelectedToJson}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"/>
+                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"/>
                 </StackPanel>
             </Grid>
         </Grid>
