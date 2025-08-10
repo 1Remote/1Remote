@@ -258,6 +258,7 @@ namespace _1RM.Model
                     else
                     {
                         ReloadTagsFromServers();
+                        // TODO: 树状列表建好后，将不再有一个全局的 ServerListPageViewModel
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
                 }
@@ -269,8 +270,6 @@ namespace _1RM.Model
                 StartTick();
             }
         }
-
-
 
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {

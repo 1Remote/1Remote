@@ -94,7 +94,7 @@
                             <Grid.ContextMenu>
                                 <ContextMenu>
                                     <!-- For folder nodes -->
-                                    <MenuItem Header="New Server" 
+                                    <MenuItem Header="TXT:New Server" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdAddServerToNode}" 
                                               CommandParameter="{Binding}">
@@ -105,7 +105,7 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="New Folder" 
+                                    <MenuItem Header="TXT:New Folder" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateFolder}"
                                               CommandParameter="{Binding}">
@@ -116,10 +116,33 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"/>
+                                    <MenuItem Header="TXT: Rename" 
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                              IsEnabled="{Binding IsRootFolder, Converter={StaticResource ConverterBoolInverse}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdEditNode}"
+                                              CommandParameter="{Binding}">
+                                        <!--<MenuItem.Icon>
+                                            <Path Data="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>-->
+                                    </MenuItem>
+                                    <MenuItem Header="TXT:Bulk edit Servers" 
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditSelected}"
+                                              CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
+                                                  Width="12" Height="12" 
+                                                  Fill="{DynamicResource PrimaryTextBrush}" 
+                                                  Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <!--<Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"/>-->
                                     
                                     <!-- For server nodes -->
-                                    <MenuItem Header="Connect" 
+                                    <MenuItem Header="TXT:Connect" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdConnectSelected}">
                                         <MenuItem.Icon>
@@ -129,9 +152,10 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="Edit" 
+                                    <MenuItem Header="TXT:Edit" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditSelected}">
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdEditNode}"
+                                              CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
                                                   Width="12" Height="12" 
@@ -139,20 +163,25 @@
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"/>
-                                    
-                                    <!-- Common items -->
-                                    <MenuItem Header="Rename" 
-                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdRenameNode}"
+                                    <MenuItem Header="TXT:Duplicate TODO" 
+                                              Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
-                                            <Path Data="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" 
+                                            <Path Data="{StaticResource GeometryCross}" 
                                                   Width="12" Height="12" 
                                                   Fill="{DynamicResource PrimaryTextBrush}" 
                                                   Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
+
+                                    <!--<Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"/>-->
+                                    
+                                    <!-- Common items -->
+                                    
+
+                                    <Separator/>
                                     <MenuItem Header="Delete" 
+                                              IsEnabled="{Binding IsRootFolder, Converter={StaticResource ConverterBoolInverse}}"
                                               Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdDeleteNode}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
@@ -170,17 +199,20 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- For tag nodes -->
+                            <!-- For folder nodes -->
                             <Border Grid.Column="0" Grid.ColumnSpan="2"
-                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                   VerticalAlignment="Center">
+                                    Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                    VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
+                                    <Path Width="12" Height="12" Margin="0,0,4,0" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                          Fill="{DynamicResource AccentMidBrush}" 
+                                          Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
                                     <Path Width="12" Height="12" Margin="0,0,4,0"
-                                         Fill="{DynamicResource AccentMidBrush}" 
-                                         Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
+                                          Fill="{DynamicResource AccentMidBrush}" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                          Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h2V7zm0 8h-2v2h2v-2z"/>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource BackgroundTextBrush}" 
-                                              FontWeight="Bold"/>
+                                               Foreground="{DynamicResource BackgroundTextBrush}" 
+                                               FontWeight="Bold"/>
                                 </StackPanel>
                             </Border>
 
@@ -195,24 +227,24 @@
                                 
                                 <!-- Protocol Icon -->
                                 <Image Grid.Column="0" 
-                                      Width="16" Height="16" Margin="0,0,4,0"
-                                      Source="{Binding Server.Server.IconImg}" 
-                                      RenderOptions.BitmapScalingMode="HighQuality"
-                                      VerticalAlignment="Center"/>
+                                       Width="16" Height="16" Margin="0,0,4,0"
+                                       Source="{Binding Server.Server.IconImg}" 
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       VerticalAlignment="Center"/>
                                 
                                 <!-- Server Name -->
                                 <TextBlock Grid.Column="1" 
-                                          Text="{Binding Server.DisplayName}" 
-                                          VerticalAlignment="Center"
-                                          TextTrimming="CharacterEllipsis"
-                                          ToolTip="{Binding Server.DisplayName}"/>
+                                           Text="{Binding Server.DisplayName}" 
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Server.DisplayName}"/>
                             </Grid>
                         </Grid>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <!-- Show tooltip for how to add when tree is empty -->
+            <!-- Show tooltip for how to add when tree is empty --><!--
             <Border HorizontalAlignment="Right" Visibility="{Binding RootNodes.Count, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter=0}">
                 <StackPanel>
                     <Path Fill="{DynamicResource BackgroundTextBrush}" 
@@ -220,7 +252,7 @@
                           Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
                     <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
                 </StackPanel>
-            </Border>
+            </Border>-->
         </Grid>
 
         <!-- Popup when any item is selected -->
