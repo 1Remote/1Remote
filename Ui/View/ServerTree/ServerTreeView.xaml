@@ -8,19 +8,25 @@
              xmlns:controls="clr-namespace:_1RM.Controls"
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerTreeViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
-             Focusable="True"
+             Focusable="True" 
              PreviewKeyDown="ServerTreeView_PreviewKeyDown">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Top header with add button -->
+        <!-- Top header with add button --><!--
         <Grid Grid.Row="0" VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="20">
                 <Border.Effect>
@@ -43,13 +49,14 @@
                     </StackPanel>
                 </Grid>
             </Border>
-        </Grid>
+        </Grid>-->
+
 
         <!-- Main tree view area -->
-        <Grid Grid.Row="1" Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
+        <Grid Grid.Row="0" Background="{DynamicResource BackgroundBrush}">
             <TreeView x:Name="MainTreeView" Background="Transparent" BorderThickness="0" 
                       ItemsSource="{Binding RootNodes}"
-                      SelectedItemChanged="TreeView_OnSelectedItemChanged"
+                      MouseMove="MainTreeView_OnMouseMove"
                       KeyboardNavigation.TabNavigation="Contained"
                       KeyboardNavigation.DirectionalNavigation="Contained"
                       Focusable="True"
@@ -65,32 +72,41 @@
                         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+                        <Setter Property="Focusable" Value="False" />
                         <Setter Property="Padding" Value="2,1"/>
                         <Setter Property="Margin" Value="0"/>
-                        <Setter Property="Focusable" Value="True"/>
                         <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
                         <Setter Property="Background" Value="Transparent"/>
                         <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
+                            <!--<Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <SolidColorBrush Color="{DynamicResource AccentLightColor}" Opacity="0.3"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
+                            </Trigger>-->
                         </Style.Triggers>
                     </Style>
                 </TreeView.ItemContainerStyle>
-                
+
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <Grid Margin="0" Height="22" Background="Transparent"
+                        <Grid Margin="0"
+                              PreviewMouseDown="MainTreeViewItem_OnPreviewMouseDown"
                               Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
-                              >
+                        >
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <!-- highlight when mouseover -->
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="{DynamicResource BackgroundTextColor}" Opacity="0.3"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
                             <Grid.ContextMenu>
                                 <ContextMenu>
                                     <!-- For folder nodes -->
@@ -130,7 +146,7 @@
                                     </MenuItem>
                                     <MenuItem Header="TXT:Bulk edit Servers" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditSelected}"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditFolderServers}"
                                               CommandParameter="{Binding}">
                                         <MenuItem.Icon>
                                             <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
@@ -140,7 +156,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <!--<Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"/>-->
-                                    
+
                                     <!-- For server nodes -->
                                     <MenuItem Header="TXT:Connect" 
                                               Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
@@ -175,9 +191,9 @@
                                     </MenuItem>
 
                                     <!--<Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"/>-->
-                                    
+
                                     <!-- Common items -->
-                                    
+
 
                                     <Separator/>
                                     <MenuItem Header="Delete" 
@@ -193,51 +209,77 @@
                                     </MenuItem>
                                 </ContextMenu>
                             </Grid.ContextMenu>
-                            
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
 
-                            <!-- For folder nodes -->
-                            <Border Grid.Column="0" Grid.ColumnSpan="2"
-                                    Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                    VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <Path Width="12" Height="12" Margin="0,0,4,0" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                          Fill="{DynamicResource AccentMidBrush}" 
-                                          Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
-                                    <Path Width="12" Height="12" Margin="0,0,4,0"
-                                          Fill="{DynamicResource AccentMidBrush}" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                          Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h2V7zm0 8h-2v2h2v-2z"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
-                                               Foreground="{DynamicResource BackgroundTextBrush}" 
-                                               FontWeight="Bold"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- For server nodes -->
-                            <Grid Grid.Column="0" Grid.ColumnSpan="2"
-                                  Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
-                                  VerticalAlignment="Center">
+                            <Grid Margin="0 3 20 3" MinWidth="200" MinHeight="20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                
-                                <!-- Protocol Icon -->
-                                <Image Grid.Column="0" 
-                                       Width="16" Height="16" Margin="0,0,4,0"
-                                       Source="{Binding Server.Server.IconImg}" 
-                                       RenderOptions.BitmapScalingMode="HighQuality"
-                                       VerticalAlignment="Center"/>
-                                
-                                <!-- Server Name -->
-                                <TextBlock Grid.Column="1" 
-                                           Text="{Binding Server.DisplayName}" 
-                                           VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis"
-                                           ToolTip="{Binding Server.DisplayName}"/>
+                                <!-- For folder nodes -->
+                                <Border Grid.Column="0" Grid.ColumnSpan="2"
+                                        Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                        VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox Grid.Column="0" Margin="10 0" 
+                                                  Width="20" Height="20" 
+                                                  HorizontalAlignment="Left" 
+                                                  IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
+                                        </CheckBox>
+                                        <Grid>
+                                            <Path Width="12" Height="12" Margin="0,0,4,0" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                                  Fill="{DynamicResource AccentMidBrush}" 
+                                                  Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
+                                            <Path Width="12" Height="12" Margin="0,0,4,0"
+                                                  Fill="{DynamicResource AccentMidBrush}" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                                  Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h2V7zm0 8h-2v2h2v-2z"/>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
+                                                   Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- For server nodes -->
+                                <Grid Grid.Column="0" Grid.ColumnSpan="2"
+                                      Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                      VerticalAlignment="Center">
+                                    <Grid.InputBindings>
+                                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Server.CmdConnServer}"></MouseBinding>
+                                    </Grid.InputBindings>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <CheckBox Grid.Column="0" Margin="10 0" 
+                                              Width="20" Height="20" 
+                                              HorizontalAlignment="Left" 
+                                              Click="ItemsCheckBox_OnClick"
+                                              IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
+                                    </CheckBox>
+
+                                    <Image Grid.Column="1" 
+                                           Width="16" Height="16" Margin="0,0,4,0"
+                                           Source="{Binding Server.Server.IconImg}" 
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           VerticalAlignment="Center"/>
+
+                                    <!-- Server Name -->
+                                    <TextBlock Grid.Column="2" 
+                                               Text="{Binding Server.DisplayName}" 
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Server.DisplayName}"/>
+                                    <TextBlock Grid.Column="3" Margin="5 0 0 0"
+                                               Text="{Binding Server.SubTitle}" 
+                                               FontSize="{DynamicResource GlobalFontSizeSubtitle}"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Server.DisplayName}"/>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </HierarchicalDataTemplate>
@@ -253,14 +295,68 @@
                     <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
                 </StackPanel>
             </Border>-->
+
+            <!-- footer: show detail of a server -->
+            <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Opacity" Value="0.9"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedServerViewModel}" Value="{x:Null}">
+                                <Setter Property="Opacity" Value="0"></Setter>
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            <Setter Property="Margin" Value="0 0 5 0"></Setter>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Text="{Binding SelectedServerViewModel.Server.DisplayName}" Style="{StaticResource TextBlockBase}" Margin="5 0"></TextBlock>
+                    <TextBlock Text="{Binding SelectedServerViewModel.Server.SubTitle}" Style="{StaticResource TextBlockBase}"></TextBlock>
+                </StackPanel>
+            </Grid>
         </Grid>
 
+
+        <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 5 0"
+                Background="Transparent"
+                attachProperty:VisionElement.BackgroundAccent="Transparent"
+                attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                Style="{StaticResource ButtonBarAccentStyle}"
+                Command="{Binding CmdAdd}"
+                ToolTip="{DynamicResource Add}">
+            <Grid Height="12" Width="12" >
+                <Path Data="{StaticResource GeometryCross}" 
+                      Stretch="Uniform" Name="Path"
+                      Height="12" Width="12" 
+                      Fill="{DynamicResource PrimaryTextBrush}">
+                    <Path.Style>
+                        <Style TargetType="Path">
+                            <Setter Property="Opacity" Value="0.5"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Opacity" Value="1"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Path.Style>
+                </Path>
+            </Grid>
+        </Button>
+
         <!-- Popup when any item is selected -->
-        <Grid Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Height="Auto" MinHeight="40">
+        <Grid Grid.Row="1" Background="{DynamicResource PrimaryMidBrush}" Height="40">
             <Grid.Style>
                 <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                    <Setter Property="Margin" Value="0 0 0 -100"></Setter>
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Setter Property="Margin" Value="0 0 0 -50"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsAnySelected}" Value="True">
                             <Setter Property="Visibility" Value="Visible"></Setter>
@@ -268,7 +364,7 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin" AccelerationRatio="0.9">
-                                            <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-100" />
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-50" />
                                             <SplineThicknessKeyFrame KeyTime="0:0:0.400" Value="0,0,0,0" />
                                         </ThicknessAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -279,7 +375,7 @@
                                     <Storyboard>
                                         <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin">
                                             <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,0" />
-                                            <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-100" />
+                                            <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-50" />
                                         </ThicknessAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -288,81 +384,20 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
 
-                <!-- Server Information -->
-                <Grid Grid.Row="0" Margin="0,0,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!-- Icon and Title -->
-                    <Image Grid.Column="0" 
-                           Width="24" Height="24" Margin="0,0,10,0"
-                           Source="{Binding SelectedServerViewModel.Server.IconImg}"
-                           VerticalAlignment="Center"/>
-                    
-                    <TextBlock Grid.Column="1"
-                               Text="{Binding SelectedServerViewModel.DisplayName}"
-                               FontSize="16" FontWeight="Bold"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               VerticalAlignment="Center"/>
-                </Grid>
-                
-                <!-- Server Details -->
-                <Grid Grid.Row="1" Margin="0,0,0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    
-                    <!-- Protocol -->
-                    <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="Protocol: " 
-                               Margin="0,0,5,0"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"/>
-                    
-                    <TextBlock Grid.Row="0" Grid.Column="1"
-                               Text="{Binding SelectedServerViewModel.Server.ProtocolDisplayName}"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               VerticalAlignment="Center"/>
-                    
-                    <!-- Address -->
-                    <TextBlock Grid.Row="1" Grid.Column="0"
-                               Text="Address: " 
-                               Margin="0,0,5,0"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"/>
-                    
-                    <TextBlock Grid.Row="1" Grid.Column="1"
-                               Text="{Binding SelectedServerViewModel.SubTitle}"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               VerticalAlignment="Center"/>
-                </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"></Button>
+                <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
+            </StackPanel>
 
-                <!-- Action Buttons -->
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"/>
-                    <Button Height="30" MinWidth="80" Margin="5,0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"/>
-                </StackPanel>
-            </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"></Button>
+                <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"></Button>
+                <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource 'Create desktop shortcut'}" Command="{Binding CmdCreateDesktopShortcut}"></Button>
+                <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"></Button>
+                <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"></Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

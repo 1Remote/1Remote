@@ -3,6 +3,7 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
 using _1RM.View.ServerList;
@@ -11,8 +12,10 @@ using Org.BouncyCastle.Asn1.X509;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
@@ -35,7 +38,38 @@ namespace _1RM.View.ServerTree
             public ProtocolBaseViewModel? Server { get; private set; }
             public ObservableCollection<TreeNode> Children { get; } = new ObservableCollection<TreeNode>();
             public bool IsExpanded { get; set; } = true;
-            public bool IsSelected { get; set; }
+
+            private bool _isSelected = true;
+            public bool IsSelected
+            {
+                get => false; // disable selection for tree nodes
+                set => _isSelected = value;
+            }
+
+
+            private bool? _isCheckboxSelected = false;
+            public bool? IsCheckboxSelected
+            {
+                get => _isCheckboxSelected;
+                set
+                {
+                    if (SetAndNotifyIfChanged(ref _isCheckboxSelected, value))
+                    {
+                        if (Server != null)
+                        {
+                            Server.IsSelected = value == true;
+                        }
+                        if (value != null)
+                        {
+                            foreach (var child in Children)
+                            {
+                                // propagate selection to children
+                                child.IsCheckboxSelected = value;
+                            }
+                        }
+                    }
+                }
+            }
 
             // For folder/tree nodes
             public TreeNode(string name, bool isRoot)
@@ -100,117 +134,95 @@ namespace _1RM.View.ServerTree
             set => SetAndNotifyIfChanged(ref _selectedServerViewModel, value);
         }
 
-        private bool _isAnySelected;
-        public bool IsAnySelected
+        public bool IsAnySelected => VmServerList.Any(x => x.IsSelected == true);
+        public int SelectedCount => VmServerList.Count(x => x.IsSelected);
+        public bool? IsSelectedAll
         {
-            get => _isAnySelected;
-            set => SetAndNotifyIfChanged(ref _isAnySelected, value);
-        }
-
-        private int _selectedCount;
-        public int SelectedCount
-        {
-            get => _selectedCount;
-            set => SetAndNotifyIfChanged(ref _selectedCount, value);
-        }
-
-        public ServerTreeViewModel(DataSourceService sourceService, GlobalData appData)
-            : base(sourceService, appData)
-        {
-            // Observe changes to the server list
-            AppData.PropertyChanged += (sender, args) =>
+            get
             {
-                if (args.PropertyName == nameof(GlobalData.VmItemList))
-                {
-                    BuildTreeView();
-                }
-            };
-
-            BuildTreeView();
-        }
-
-        public void BuildTreeView()
-        {
-            // Make sure this runs on UI thread
-            Execute.OnUIThread(() =>
+                var items = VmServerList.Where(x => x.IsVisible);
+                if (items.All(x => x.IsSelected))
+                    return true;
+                if (items.Any(x => x.IsSelected))
+                    return null;
+                return false;
+            }
+            set
             {
-                var newRoot = new ObservableCollection<TreeNode>();
-                var nodeTreePaths = new Dictionary<string, TreeNode>();
-
-                // Add a root node for each data source
+                if (value == false)
                 {
-                    var rootNode = new TreeNode(IoC.Get<DataSourceService>().LocalDataSource!.Name, true);
-                    newRoot.Add(rootNode);
-                    nodeTreePaths[rootNode.Name] = rootNode;
-                }
-                foreach (var dataSource in IoC.Get<DataSourceService>().AdditionalSources)
-                {
-                    var rootNode = new TreeNode(dataSource.Value.DataSourceName, true);
-                    newRoot.Add(rootNode);
-                    nodeTreePaths[rootNode.Name] = rootNode;
-                }
-
-                // Check if there are any servers to display
-                if (AppData.VmItemList.Count == 0)
-                {
-                    RootNodes = newRoot;
-                    return;
-                }
-
-                // Group servers by TreeNodes
-                foreach (var server in AppData.VmItemList)
-                {
-                    // This ensures first-time users see all servers at root level
-                    var treeNodes = new List<string> {server.DataSourceName};
-                    treeNodes.AddRange(server.Server.TreeNodes);
-                    // Build path based on TreeNodes
-                    TreeNode? currentNode = null;
-                    string currentPath = "";
-                    for (var i = 0; i < treeNodes.Count; i++)
+                    foreach (var vmServerCard in VmServerList)
                     {
-                        var nodeName = treeNodes[i];
-                        currentPath = string.IsNullOrEmpty(currentPath) ? nodeName : $"{currentPath}->{nodeName}";
-                        if (!nodeTreePaths.TryGetValue(currentPath, out var treeNode))
-                        {
-                            treeNode = new TreeNode(nodeName, i == 0);
-                            nodeTreePaths[currentPath] = treeNode;
-                            if (currentNode == null)
-                            {
-                                // Add to root
-                                newRoot.Add(treeNode);
-                            }
-                            else
-                            {
-                                currentNode.Children.Add(treeNode);
-                            }
-                        }
-
-                        currentNode = treeNode;
-                    }
-
-                    // Add the server to the last tree node
-                    if (currentNode != null)
-                    {
-                        currentNode.Children.Add(new TreeNode(server));
+                        vmServerCard.IsSelected = false;
                     }
                 }
+                else
+                {
+                    foreach (var protocolBaseViewModel in VmServerList)
+                    {
+                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
+                    }
+                }
+                RaisePropertyChanged();
+            }
+        }
 
-                // Sort the nodes
-                SortNodes(newRoot);
 
-                // Update the UI
-                RootNodes = newRoot;
 
-                // Log some information for debugging
-                SimpleLogHelper.Debug($"TreeView rebuilt with {newRoot.Count} root nodes and {AppData.VmItemList.Count} servers");
-            });
+
+        public ServerTreeViewModel(DataSourceService sourceService, GlobalData appData) : base(sourceService, appData)
+        {
+        }
+
+
+        protected override void OnViewLoaded()
+        {
+            AppData.OnReloadAll += BuildView;
+            if (AppData.VmItemList.Count > 0)
+            {
+                // this view may be loaded after the data is loaded(when MainWindow start minimized)
+                // so we need to rebuild the list here
+                BuildView();
+            }
         }
 
         private void SortNodes(ObservableCollection<TreeNode> nodes)
         {
-            var sorted = nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Name).ToList();
+            var orderBy = IoC.Get<MainWindowViewModel>().ServerOrderBy;
+            var sorted = nodes.OrderBy(n => !n.IsFolder);
+            switch (orderBy)
+            {
+                case EnumServerOrderBy.IdAsc:
+                    sorted = sorted.ThenBy(n => n.Server?.Server?.Id ?? "");
+                    break;
+                case EnumServerOrderBy.ProtocolAsc:
+                    sorted = sorted.ThenBy(n => n.Server?.Server?.Protocol ?? string.Empty);
+                    break;
+                case EnumServerOrderBy.ProtocolDesc:
+                    sorted = sorted.ThenByDescending(n => n.Server?.Server?.Protocol ?? string.Empty);
+                    break;
+                case EnumServerOrderBy.NameAsc:
+                    sorted = sorted.ThenBy(n => n.Name);
+                    break;
+                case EnumServerOrderBy.NameDesc:
+                    sorted = sorted.ThenByDescending(n => n.Name);
+                    break;
+                case EnumServerOrderBy.AddressAsc:
+                    sorted = sorted.ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty);
+                    break;
+                case EnumServerOrderBy.AddressDesc:
+                    sorted = sorted.ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty);
+                    break;
+                case EnumServerOrderBy.Custom:
+                    sorted = sorted.ThenBy(n => n.Server?.CustomOrder ?? int.MaxValue);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var sortedNodes = sorted.ToList();
             nodes.Clear();
-            foreach (var node in sorted)
+            foreach (var node in sortedNodes)
             {
                 nodes.Add(node);
                 if (node.Children.Count > 0)
@@ -236,116 +248,33 @@ namespace _1RM.View.ServerTree
         }
 
         // Command for when a server is selected in the tree
-        public void SetSelectedServer(ProtocolBaseViewModel server)
+        public void SetSelectedServer(ProtocolBaseViewModel? server)
         {
+            SimpleLogHelper.Debug($"SelectedServerViewModel = {server?.DisplayName ?? "null"}");
             SelectedServerViewModel = server;
-            IsAnySelected = true;
-            SelectedCount = 1;
-        }
-
-        private RelayCommand? _CmdCancelSelected;
-        // Command to cancel selection
-        public RelayCommand CmdCancelSelected
-        {
-            get
-            {
-                return _CmdCancelSelected ??= new RelayCommand((o) =>
-                {
-                    SelectedNode = null;
-                    SelectedServerViewModel = null;
-                    IsAnySelected = false;
-                    SelectedCount = 0;
-                });
-            }
-        }
-
-        // Command to connect to selected server
-        private RelayCommand? _cmdConnectSelected;
-        public RelayCommand CmdConnectSelected
-        {
-            get
-            {
-                return _cmdConnectSelected ??= new RelayCommand((o) =>
-                {
-                    if (SelectedServerViewModel != null)
-                    {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(SelectedServerViewModel.Server, fromView: "ServerTreeView");
-                    }
-                });
-            }
         }
 
         // Command to edit selected server
-        private RelayCommand? _cmdMultiEditSelected;
-        public RelayCommand CmdMultiEditSelected
+        private RelayCommand? _cmdMultiEditFolderServers;
+        public RelayCommand CmdMultiEditFolderServers
         {
             get
             {
-                return _cmdMultiEditSelected ??= new RelayCommand((o) =>
+                return _cmdMultiEditFolderServers ??= new RelayCommand((o) =>
                 {
-                    if (SelectedServerViewModel != null)
+                    if (o is TreeNode node)
                     {
-                        GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(SelectedServerViewModel.Server, true);
-                    }
-                });
-            }
-        }
-
-        // Command to create desktop shortcut for selected server
-        private RelayCommand? _cmdCreateDesktopShortcut;
-        public RelayCommand CmdCreateDesktopShortcut
-        {
-            get
-            {
-                return _cmdCreateDesktopShortcut ??= new RelayCommand((o) =>
-                {
-                    // Desktop shortcut functionality not implemented yet
-                    if (SelectedServerViewModel?.Server != null)
-                    {
-                        MessageBoxHelper.Info("Create desktop shortcut functionality is not implemented yet.");
-                    }
-                });
-            }
-        }
-
-        // Command to delete selected server
-        private RelayCommand? _cmdDeleteSelected;
-        public RelayCommand CmdDeleteSelected
-        {
-            get
-            {
-                return _cmdDeleteSelected ??= new RelayCommand((o) =>
-                {
-                    if (SelectedServerViewModel != null)
-                    {
-                        var server = SelectedServerViewModel.Server;
-                        if (server.DataSource?.IsWritable == true)
+                        if (!node.IsFolder)
                         {
-                            if (MessageBoxHelper.Confirm(IoC.Translate("do_you_really_want_to_delete_x")
-                                    .Replace("{0}", server.DisplayName)))
-                            {
-                                // Use the App's DeleteServer method
-                                AppData.DeleteServer(new List<ProtocolBase> { server });
-                                CmdCancelSelected.Execute();
-                            }
+                            if (node.Server?.Server == null) return;
+                            GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(node.Server.Server, true);
                         }
-                    }
-                });
-            }
-        }
-
-        // Command to export selected server to JSON
-        private RelayCommand? _cmdExportSelectedToJson;
-        public RelayCommand CmdExportSelectedToJson
-        {
-            get
-            {
-                return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
-                {
-                    if (SelectedServerViewModel != null)
-                    {
-                        // Export functionality not implemented yet
-                        MessageBoxHelper.Info("TXT: Export to JSON functionality is not implemented yet.");
+                        else if (node.IsFolder)
+                        {
+                            var serversToEdit = new List<ProtocolBase>();
+                            CollectServersInFolder(node, serversToEdit);
+                            GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(serversToEdit);
+                        }
                     }
                 });
             }
@@ -399,7 +328,7 @@ namespace _1RM.View.ServerTree
                     {
                         if (!node.IsFolder)
                         {
-                            if(node.Server?.Server == null) return;
+                            if (node.Server?.Server == null) return;
                             GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(node.Server.Server, true);
                         }
                         else if (node.IsFolder)
@@ -423,7 +352,7 @@ namespace _1RM.View.ServerTree
                             {
                                 node.Name = newName;
                                 UpdateServerTreeNodes(node);
-                                BuildTreeView();
+                                BuildView();
                             }
                         }
                         else if (node.Server != null)
@@ -505,7 +434,7 @@ namespace _1RM.View.ServerTree
         #region Helper Methods
 
         // Get the tree path from root to the specified node, the first node is a dummy node representing the data source
-        private List<string> GetTreePath(TreeNode node, bool includeFirstNode)
+        public List<string> GetTreePath(TreeNode node, bool includeFirstNode)
         {
             var path = new List<string>();
             // Find the path by searching through the tree
@@ -517,6 +446,12 @@ namespace _1RM.View.ServerTree
             }
             return path;
         }
+
+        public TreeNode? FindParent(TreeNode target)
+        {
+            return FindParent(null, RootNodes, target);
+        }
+
 
         private static TreeNode? FindParent(TreeNode? root, IEnumerable<TreeNode> children, TreeNode target)
         {
@@ -568,7 +503,7 @@ namespace _1RM.View.ServerTree
             CollectServersInFolder(folderNode, serversToDelete);
             AppData.DeleteServer(serversToDelete);
             // Rebuild the tree
-            BuildTreeView();
+            BuildView();
         }
 
         // Update all servers in a folder when the folder is renamed
@@ -631,5 +566,109 @@ namespace _1RM.View.ServerTree
         }
 
         #endregion
+
+        public sealed override void BuildView()
+        {
+            // Make sure this runs on UI thread
+            Execute.OnUIThread(() =>
+            {
+                var newRoot = new ObservableCollection<TreeNode>();
+                var nodeTreePaths = new Dictionary<string, TreeNode>();
+
+                // Add a root node for each data source
+                {
+                    var rootNode = new TreeNode(IoC.Get<DataSourceService>().LocalDataSource!.Name, true);
+                    newRoot.Add(rootNode);
+                    nodeTreePaths[rootNode.Name] = rootNode;
+                }
+                foreach (var dataSource in IoC.Get<DataSourceService>().AdditionalSources)
+                {
+                    var rootNode = new TreeNode(dataSource.Value.DataSourceName, true);
+                    newRoot.Add(rootNode);
+                    nodeTreePaths[rootNode.Name] = rootNode;
+                }
+
+                VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
+
+                // Check if there are any servers to display
+                if (VmServerList.Count == 0)
+                {
+                    RootNodes = newRoot;
+                    return;
+                }
+
+
+                foreach (var vs in VmServerList)
+                {
+                    vs.IsSelected = false;
+                    vs.PropertyChanged -= VmServerPropertyChanged;
+                    vs.PropertyChanged += VmServerPropertyChanged;
+                }
+                VmServerList.CollectionChanged += (s, e) =>
+                {
+                    RaisePropertyChanged(nameof(IsAnySelected));
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                    RaisePropertyChanged(nameof(SelectedCount));
+                };
+
+                // Group servers by TreeNodes
+                foreach (var server in VmServerList)
+                {
+                    // This ensures first-time users see all servers at root level
+                    var treeNodes = new List<string> { server.DataSourceName };
+                    treeNodes.AddRange(server.Server.TreeNodes);
+                    // Build path based on TreeNodes
+                    TreeNode? currentNode = null;
+                    string currentPath = "";
+                    for (var i = 0; i < treeNodes.Count; i++)
+                    {
+                        var nodeName = treeNodes[i];
+                        currentPath = string.IsNullOrEmpty(currentPath) ? nodeName : $"{currentPath}->{nodeName}";
+                        if (!nodeTreePaths.TryGetValue(currentPath, out var treeNode))
+                        {
+                            treeNode = new TreeNode(nodeName, i == 0);
+                            nodeTreePaths[currentPath] = treeNode;
+                            if (currentNode == null)
+                            {
+                                // Add to root
+                                newRoot.Add(treeNode);
+                            }
+                            else
+                            {
+                                currentNode.Children.Add(treeNode);
+                            }
+                        }
+
+                        currentNode = treeNode;
+                    }
+
+                    // Add the server to the last tree node
+                    if (currentNode != null)
+                    {
+                        currentNode.Children.Add(new TreeNode(server));
+                    }
+                }
+
+                // Sort the nodes
+                SortNodes(newRoot);
+
+                // Update the UI
+                RootNodes = newRoot;
+
+                // Log some information for debugging
+                SimpleLogHelper.Debug($"TreeView rebuilt with {newRoot.Count} root nodes and {AppData.VmItemList.Count} servers");
+            });
+        }
+
+
+        private void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
+            {
+                RaisePropertyChanged(nameof(IsAnySelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            }
+        }
     }
 }

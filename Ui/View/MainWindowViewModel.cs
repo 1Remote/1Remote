@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using _1RM.Model;
-using _1RM.Service.DataSource.DAO;
+﻿using _1RM.Model;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
+using _1RM.View.ServerTree;
 using _1RM.View.Settings;
+using _1RM.View.Settings.General;
 using _1RM.View.Utils;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using _1RM.View.Settings.General;
-using _1RM.View.ServerTree;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
-using Shawn.Utils;
 
 namespace _1RM.View
 {
@@ -60,7 +61,7 @@ namespace _1RM.View
                     // When switching to TreeView, force rebuild the tree to ensure data is displayed
                     if (value)
                     {
-                        ServerTreeViewModel.BuildTreeView();
+                        ServerTreeViewModel.BuildView();
                     }
                 }
             }
@@ -105,6 +106,19 @@ namespace _1RM.View
                         _appData.StopTick();
                     else
                         _appData.StartTick();
+                }
+            }
+        }
+
+        public EnumServerOrderBy ServerOrderBy
+        {
+            get => LocalityListViewService.ServerOrderByGet();
+            set
+            {
+                if (value != LocalityListViewService.ServerOrderByGet())
+                {
+                    LocalityListViewService.ServerOrderBySet(value);
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -341,7 +355,7 @@ namespace _1RM.View
                     ServerListViewModel.CmdReOrder.Execute(o);
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                });
             }
         }
 
