@@ -197,7 +197,7 @@ namespace _1RM.View.ServerList
             }
         }
 
-
+        [Obsolete]
         public void AppendServer(ProtocolBaseViewModel viewModel)
         {
             Execute.OnUIThreadSync(() =>

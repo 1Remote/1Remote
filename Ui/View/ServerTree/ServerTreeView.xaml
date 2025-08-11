@@ -4,11 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:_1RM.View.ServerTree"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:controls="clr-namespace:_1RM.Controls"
-             xmlns:view="clr-namespace:_1RM.View"
-             xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ServerTreeViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -17,6 +12,17 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="SelectedCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=GridNode,Path=IsMouseOver}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                    </DataTrigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -26,7 +32,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Top header with add button --><!--
+        <!-- Top header with add button -->
+        <!--
         <Grid Grid.Row="0" VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="20">
                 <Border.Effect>
@@ -82,6 +89,14 @@
                         <EventSetter Event="DragOver" Handler="TreeViewItem_OnDragOver"/>
                         <EventSetter Event="Drop" Handler="TreeViewItem_OnDrop"/>
                         <Style.Triggers>
+                            <!-- Add bottom margin for folder items to create spacing -->
+                            <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                <Setter Property="Margin" Value="0,0,0,12"/>
+                            </DataTrigger>
+                            <!-- Add extra spacing for root folders -->
+                            <DataTrigger Binding="{Binding IsRootFolder}" Value="True">
+                                <Setter Property="Margin" Value="0,0,0,16"/>
+                            </DataTrigger>
                             <!--<Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
@@ -93,6 +108,7 @@
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <Grid Margin="0"
+                              Name="GridNode" 
                               PreviewMouseDown="MainTreeViewItem_OnPreviewMouseDown"
                               Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
                         >
@@ -219,12 +235,15 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+
+                                <!--<Border BorderThickness="1 0 0 0" BorderBrush=""></Border>-->
+                                
                                 <!-- For folder nodes -->
                                 <Border Grid.Column="0" Grid.ColumnSpan="2"
                                         Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                         VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Grid.Column="0" Margin="10 0" 
+                                        <CheckBox Margin="10 0" 
                                                   Width="20" Height="20" 
                                                   HorizontalAlignment="Left" 
                                                   Click="ItemsCheckBox_OnClick"
@@ -248,6 +267,7 @@
 
                                 <!-- For server nodes -->
                                 <Grid Grid.Column="0" Grid.ColumnSpan="2"
+                                      Background="Transparent" 
                                       Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                       VerticalAlignment="Center">
                                     <Grid.InputBindings>
@@ -256,8 +276,6 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
 
@@ -265,13 +283,13 @@
                                               Width="20" Height="20" 
                                               HorizontalAlignment="Left" 
                                               Click="ItemsCheckBox_OnClick"
+                                              Style="{StaticResource SelectedCheckBoxStyle}"
                                               IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
                                     </CheckBox>
 
                                     <Grid Grid.Column="1" Background="Transparent" 
                                           PreviewMouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
-                                          PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
-                                    >
+                                          PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
@@ -305,16 +323,6 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <!-- Show tooltip for how to add when tree is empty --><!--
-            <Border HorizontalAlignment="Right" Visibility="{Binding RootNodes.Count, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter=0}">
-                <StackPanel>
-                    <Path Fill="{DynamicResource BackgroundTextBrush}" 
-                          Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
-                          Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                    <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
-                </StackPanel>
-            </Border>-->
-
             <!-- footer: show detail of a server -->
             <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">
                 <Grid.Style>
@@ -344,31 +352,68 @@
         </Grid>
 
 
-        <Button Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 5 0"
-                Background="Transparent"
-                attachProperty:VisionElement.BackgroundAccent="Transparent"
-                attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                Style="{StaticResource ButtonBarAccentStyle}"
-                Command="{Binding CmdAdd}"
-                ToolTip="{DynamicResource Add}">
-            <Grid Height="12" Width="12" >
-                <Path Data="{StaticResource GeometryCross}" 
-                      Stretch="Uniform" Name="Path"
-                      Height="12" Width="12" 
-                      Fill="{DynamicResource PrimaryTextBrush}">
-                    <Path.Style>
-                        <Style TargetType="Path">
-                            <Setter Property="Opacity" Value="0.5"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=IsMouseOver}" Value="True">
-                                    <Setter Property="Opacity" Value="1"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Path.Style>
-                </Path>
-            </Grid>
-        </Button>
+
+        <!-- Show tooltip for how to add when tree is empty -->
+        <Border Grid.Row="0" HorizontalAlignment="Right" Visibility="{Binding RootNodes.Count, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter=0}">
+            <StackPanel>
+                <Path Fill="{DynamicResource BackgroundTextBrush}" 
+                      Margin="25 20 25 5" Width="50" HorizontalAlignment="Right"
+                      Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
+                <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right">Add new session</TextBlock>
+            </StackPanel>
+        </Border>
+        <Grid Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 5 0">
+            <CheckBox Name="CbPopForInExport" Width="25" Height="25">
+                <CheckBox.Template>
+                    <ControlTemplate>
+                        <Border Name="BG" Background="Transparent">
+                            <Grid Margin="1" VerticalAlignment="Center">
+                                <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                      Stretch="Uniform" Name="Path"
+                                      Margin="5" Fill="{DynamicResource PrimaryTextBrush}"></Path>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
+                                <Setter TargetName="Path" Property="Margin" Value="2"></Setter>
+                                <Setter TargetName="Path" Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            </Trigger>
+                            <Trigger Property="CheckBox.IsChecked" Value="True">
+                                <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
+                                <Setter TargetName="Path" Property="Fill" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </CheckBox.Template>
+            </CheckBox>
+
+            <Popup IsOpen="{Binding ElementName=CbPopForInExport, Path=IsChecked}"
+                   StaysOpen="False"
+                   AllowsTransparency="True"
+                   PlacementTarget="{Binding ElementName=CbPopForInExport}">
+                <Border CornerRadius="5" Background="{DynamicResource PrimaryDarkBrush}">
+                    <StackPanel Orientation="Vertical">
+                        <MenuItem Header="{DynamicResource Add}" Command="{Binding CmdAdd}">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeometryCross}"
+                                      Stretch="Uniform"
+                                      Margin="2" Fill="{DynamicResource PrimaryTextBrush}"></Path>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource SeparatorBaseStyle}"/>
+                        <MenuItem Header="{DynamicResource import_from_json}" Command="{Binding CmdImportFromJson}">
+                            <MenuItem.Icon>
+                                <Path UseLayoutRounding="True" Data="{StaticResource GeometryCopy}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{DynamicResource import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></MenuItem>
+                        <MenuItem Header="{DynamicResource import_from_rdp_file}" Command="{Binding CmdImportFromRdp}"></MenuItem>
+                        <MenuItem Header="{DynamicResource import_from_sqlite_db}" Command="{Binding CmdImportFromDatabase}"></MenuItem>
+                    </StackPanel>
+                </Border>
+            </Popup>
+        </Grid>
 
         <!-- Popup when any item is selected -->
         <Grid Grid.Row="1" Background="{DynamicResource PrimaryMidBrush}" Height="40">

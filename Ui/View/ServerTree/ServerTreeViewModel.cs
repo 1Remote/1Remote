@@ -35,7 +35,17 @@ namespace _1RM.View.ServerTree
             public bool IsFolder { get; private set; }
             public ProtocolBaseViewModel? Server { get; private set; }
             public ObservableCollection<TreeNode> Children { get; } = new ObservableCollection<TreeNode>();
-            public bool IsExpanded { get; set; } = true;
+
+            private bool _isExpanded = true;
+            public bool IsExpanded
+            {
+                get => _isExpanded;
+                set
+                {
+                    // TODO: 展开状态存储到本地缓存
+                    _isExpanded = value;
+                }
+            }
 
             private bool _isSelected = true;
             public bool IsSelected
@@ -46,6 +56,7 @@ namespace _1RM.View.ServerTree
 
 
             private bool? _isCheckboxSelected = false;
+
             public bool? IsCheckboxSelected
             {
                 get => _isCheckboxSelected;
@@ -205,7 +216,7 @@ namespace _1RM.View.ServerTree
                     sorted = sorted.ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty);
                     break;
                 case EnumServerOrderBy.AddressDesc:
-                    sorted = sorted.ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty);
+                    sorted = sorted.ThenByDescending(n => n.Server?.Server?.SubTitle ?? string.Empty);
                     break;
                 case EnumServerOrderBy.Custom:
                     sorted = sorted.ThenBy(n => n.Server?.CustomOrder ?? int.MaxValue);
@@ -234,7 +245,7 @@ namespace _1RM.View.ServerTree
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (View is ServerListPageView view)
+                    if (View is ServerTreeView view)
                         view.CbPopForInExport.IsChecked = false;
                     GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where<TagFilter>(x => x.IsIncluded == true).Select(x => x.TagName).ToList(), o as DataSourceBase);
                 });
@@ -395,7 +406,7 @@ namespace _1RM.View.ServerTree
             {
                 return _cmdAddServerToNode ??= new RelayCommand((o) =>
                 {
-                    List<string> treePath = []; // Add to roo by default
+                    List<string> treePath = []; // Add to root by default
                     if (o is TreeNode node)
                     {
                         // Build the tree path for the new server
@@ -706,10 +717,10 @@ namespace _1RM.View.ServerTree
                     allServersOrder[idx] = i + 1; // Assign new order starting from 1
                 }
                 // Then, update the custom order for the servers in the folder
-                for (int i = 0; i < serverViewModels.Count; i++)
-                {
-                    var idx = allServers.IndexOf(serverViewModels[i]);
-                    if (idx == -1) continue;
+                    for (int i = 0; i < serverViewModels.Count; i++)
+                    {
+                        var idx = allServers.IndexOf(serverViewModels[i]);
+                        if (idx == -1) continue;
                     allServersOrder[idx] = i + 1; // Assign new order starting from 1
                 }
                 // Save the complete ordered list
@@ -865,6 +876,8 @@ namespace _1RM.View.ServerTree
 
                 // Sort the nodes
                 SortNodes(newRoot);
+
+                // TODO: 从本地缓存读取各个节点的展开状态
 
                 // Update the UI
                 RootNodes = newRoot;

@@ -128,36 +128,11 @@ namespace _1RM.Model
             {
                 return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
             }
-            var needReload = dataSource.NeedRead(TableServer.TABLE_NAME);
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
-                var @new = new ProtocolBaseViewModel(protocolServer);
-                @new.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? protocolServer?.DataSource?.DataSourceName ?? "" : "";
-                if (needReload == false)
-                {
-                    VmItemList.Add(@new);
-                    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
-                    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-                    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
-                        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
-                    {
-                        // if is additional database and need to set up group by database name!
-                        IoC.Get<ServerListPageViewModel>().ApplySort();
-                    }
-                    IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource(true);
-                }
-            }
-
-            if (needReload)
-            {
                 ReloadAll(force: true); // AddServer & needReload
             }
-            else
-            {
-                ReloadTagsFromServers();
-            }
-            IoC.Get<ServerListPageViewModel>().ClearSelection();
             StartTick();
             return ret;
         }

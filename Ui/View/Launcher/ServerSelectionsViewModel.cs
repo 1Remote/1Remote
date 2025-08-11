@@ -170,7 +170,7 @@ namespace _1RM.View.Launcher
             set => SetAndNotifyIfChanged(ref _tagFilters, value);
         }
 
-
+        [Obsolete]
         public void AppendServer(ProtocolBaseViewModel viewModel)
         {
             Execute.OnUIThread(() =>
