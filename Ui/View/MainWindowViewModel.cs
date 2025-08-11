@@ -37,7 +37,7 @@ namespace _1RM.View
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
-        public ServerList.ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
+        public ServerList.ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
         public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
@@ -57,7 +57,7 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(IsShownList));
                     RaisePropertyChanged(nameof(IsShownTreeView));
                     RaisePropertyChanged(nameof(ActiveServerViewModel));
-                    
+
                     // When switching to TreeView, force rebuild the tree to ensure data is displayed
                     if (value)
                     {
@@ -119,6 +119,48 @@ namespace _1RM.View
                 {
                     LocalityListViewService.ServerOrderBySet(value);
                     RaisePropertyChanged();
+                }
+            }
+        }
+
+        public void SetServerOrderBy(object? o)
+        {
+            var newOrderBy = EnumServerOrderBy.IdAsc;
+            if (int.TryParse(o?.ToString(), out var ot)
+                && ot is >= (int)EnumServerOrderBy.IdAsc and <= (int)EnumServerOrderBy.Custom)
+            {
+                newOrderBy = (EnumServerOrderBy)ot;
+            }
+            else if (o is EnumServerOrderBy x)
+            {
+                newOrderBy = x;
+            }
+
+            if (newOrderBy is EnumServerOrderBy.IdAsc or EnumServerOrderBy.Custom)
+            {
+                ServerOrderBy = newOrderBy;
+            }
+            else
+            {
+                try
+                {
+                    // cancel order
+                    if (ServerOrderBy == newOrderBy + 1)
+                    {
+                        newOrderBy = EnumServerOrderBy.IdAsc;
+                    }
+                    else if (ServerOrderBy == newOrderBy)
+                    {
+                        newOrderBy += 1;
+                    }
+                }
+                catch
+                {
+                    newOrderBy = EnumServerOrderBy.IdAsc;
+                }
+                finally
+                {
+                    ServerOrderBy = newOrderBy;
                 }
             }
         }
@@ -352,7 +394,9 @@ namespace _1RM.View
             {
                 return _cmdReOrder ??= new RelayCommand((o) =>
                 {
-                    ServerListViewModel.CmdReOrder.Execute(o);
+                    SetServerOrderBy(o);
+                    ServerListViewModel?.ApplySort();
+                    ServerTreeViewModel?.ApplySort();
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
                 });

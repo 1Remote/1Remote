@@ -77,6 +77,10 @@
                         <Setter Property="Margin" Value="0"/>
                         <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
                         <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="AllowDrop" Value="True"/>
+                        <EventSetter Event="PreviewMouseMove" Handler="TreeViewItem_OnPreviewMouseMove"/>
+                        <EventSetter Event="DragOver" Handler="TreeViewItem_OnDragOver"/>
+                        <EventSetter Event="Drop" Handler="TreeViewItem_OnDrop"/>
                         <Style.Triggers>
                             <!--<Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
@@ -223,15 +227,18 @@
                                         <CheckBox Grid.Column="0" Margin="10 0" 
                                                   Width="20" Height="20" 
                                                   HorizontalAlignment="Left" 
+                                                  Click="ItemsCheckBox_OnClick"
                                                   IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
                                         </CheckBox>
-                                        <Grid>
-                                            <Path Width="12" Height="12" Margin="0,0,4,0" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                        <Grid Width="16" Height="16" Margin="0,0,4,0">
+                                            <Path Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                                   Fill="{DynamicResource AccentMidBrush}" 
-                                                  Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
-                                            <Path Width="12" Height="12" Margin="0,0,4,0"
-                                                  Fill="{DynamicResource AccentMidBrush}" Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                                  Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h2V7zm0 8h-2v2h2v-2z"/>
+                                                  Stretch="Uniform"
+                                                  Data="{StaticResource GeometryFolder}"/>
+                                            <Path Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2Visible}}"
+                                                  Fill="{DynamicResource AccentMidBrush}"
+                                                  Stretch="Uniform"
+                                                  Data="{DynamicResource GeometryDatabase}"/>
                                         </Grid>
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" 
                                                    Foreground="{DynamicResource BackgroundTextBrush}" 
@@ -261,24 +268,36 @@
                                               IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
                                     </CheckBox>
 
-                                    <Image Grid.Column="1" 
-                                           Width="16" Height="16" Margin="0,0,4,0"
-                                           Source="{Binding Server.Server.IconImg}" 
-                                           RenderOptions.BitmapScalingMode="HighQuality"
-                                           VerticalAlignment="Center"/>
+                                    <Grid Grid.Column="1" Background="Transparent" 
+                                          PreviewMouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
+                                          PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
+                                    >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <!-- Server Name -->
-                                    <TextBlock Grid.Column="2" 
-                                               Text="{Binding Server.DisplayName}" 
-                                               VerticalAlignment="Center"
-                                               TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Server.DisplayName}"/>
-                                    <TextBlock Grid.Column="3" Margin="5 0 0 0"
-                                               Text="{Binding Server.SubTitle}" 
-                                               FontSize="{DynamicResource GlobalFontSizeSubtitle}"
-                                               VerticalAlignment="Center"
-                                               TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Server.DisplayName}"/>
+                                        <Image Grid.Column="0" 
+                                               Width="16" Height="16" Margin="0,0,4,0"
+                                               Source="{Binding Server.Server.IconImg}" 
+                                               RenderOptions.BitmapScalingMode="HighQuality"
+                                               VerticalAlignment="Center"/>
+
+                                        <!-- Server Name -->
+                                        <TextBlock Grid.Column="1" 
+                                                   Text="{Binding Server.DisplayName}" 
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding Server.DisplayName}"/>
+                                        <TextBlock Grid.Column="2" Margin="5 0 0 0"
+                                                   Text="{Binding Server.SubTitle}" 
+                                                   FontSize="{DynamicResource GlobalFontSizeSmall}"
+                                                   Opacity="0.5"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding Server.DisplayName}"/>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>

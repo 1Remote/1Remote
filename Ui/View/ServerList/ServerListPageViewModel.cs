@@ -187,7 +187,8 @@ namespace _1RM.View.ServerList
         protected override void OnViewLoaded()
         {
             ApplySort();
-            AppData.OnReloadAll += BuildView;
+            IoC.Get<GlobalData>().OnReloadAll -= BuildView;
+            IoC.Get<GlobalData>().OnReloadAll += BuildView;
             if (AppData.VmItemList.Count > 0)
             {
                 // this view may be loaded after the data is loaded(when MainWindow start minimized)
@@ -316,6 +317,19 @@ namespace _1RM.View.ServerList
                     ApplySort();
                     RefreshCollectionViewSource(true);
                 });
+            }
+        }
+
+        public override void ClearSelection()
+        {
+            foreach (var item in VmServerList)
+            {
+                item.IsSelected = false;
+            }
+
+            if (this.View is ServerListPageView view)
+            {
+                view.RefreshHeaderCheckBox();
             }
         }
 
@@ -514,45 +528,7 @@ namespace _1RM.View.ServerList
                     if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds < 200)
                         return;
                     _lastCmdReOrder = DateTime.Now;
-
-                    var newOrderBy = EnumServerOrderBy.IdAsc;
-                    if (int.TryParse(o?.ToString() ?? "0", out var ot)
-                        && ot is >= (int)EnumServerOrderBy.IdAsc and <= (int)EnumServerOrderBy.Custom)
-                    {
-                        newOrderBy = (EnumServerOrderBy)ot;
-                    }
-                    else if (o is EnumServerOrderBy x)
-                    {
-                        newOrderBy = x;
-                    }
-
-                    if (newOrderBy is EnumServerOrderBy.IdAsc or EnumServerOrderBy.Custom)
-                    {
-                        IoC.Get<MainWindowViewModel>().ServerOrderBy = newOrderBy;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // cancel order
-                            if (IoC.Get<MainWindowViewModel>().ServerOrderBy == newOrderBy + 1)
-                            {
-                                newOrderBy = EnumServerOrderBy.IdAsc;
-                            }
-                            else if (IoC.Get<MainWindowViewModel>().ServerOrderBy == newOrderBy)
-                            {
-                                newOrderBy += 1;
-                            }
-                        }
-                        catch
-                        {
-                            newOrderBy = EnumServerOrderBy.IdAsc;
-                        }
-                        finally
-                        {
-                            IoC.Get<MainWindowViewModel>().ServerOrderBy = newOrderBy;
-                        }
-                    }
+                    IoC.Get<MainWindowViewModel>().SetServerOrderBy(o);
                     ApplySort();
                 });
             }

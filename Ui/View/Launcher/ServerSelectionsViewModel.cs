@@ -35,6 +35,7 @@ namespace _1RM.View.Launcher
                 view.TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
 
+                IoC.Get<GlobalData>().OnReloadAll -= RebuildVmServerList;
                 IoC.Get<GlobalData>().OnReloadAll += RebuildVmServerList;
                 RebuildVmServerList();
             }

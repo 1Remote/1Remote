@@ -12,11 +12,13 @@ using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
 using _1RM.View.Editor;
+using _1RM.View.ServerTree;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using System;
 using System.Collections.Generic;
@@ -26,8 +28,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.ServerList
 {
@@ -58,21 +58,8 @@ namespace _1RM.View.ServerList
 
 
 
-
         public ObservableCollection<ProtocolBaseViewModel> VmServerList { get; set; } = new ObservableCollection<ProtocolBaseViewModel>();
-        public void ClearSelection()
-        {
-            foreach (var item in VmServerList)
-            {
-                item.IsSelected = false;
-            }
-
-            if (this.View is ServerListPageView view)
-            {
-                view.RefreshHeaderCheckBox();
-            }
-        }
-
+        public abstract void ClearSelection();
 
         private RelayCommand? _cmdCancelSelected;
         public RelayCommand CmdCancelSelected

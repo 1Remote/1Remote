@@ -102,13 +102,28 @@ namespace _1RM.Service.Locality
             Save();
         }
 
+        public static void ServerCustomOrderSave(List<ProtocolBaseViewModel> servers, List<int> orders)
+        {
+            if (servers.Count <= 1) return;
+            if (servers.Count != orders.Count) return;
+            Load();
+            _settings.ServerCustomOrder.Clear();
+            for (var i = 0; i < servers.Count; i++)
+            {
+                var server = servers[i];
+                _settings.ServerCustomOrder.Add(server.Id, orders[i]);
+                ++i;
+            }
+            Save();
+        }
+
 
 
 
         public static int GroupedOrderGet(string dataSourceName)
         {
             Load();
-            return _settings.GroupedOrder.ContainsKey(dataSourceName) ? _settings.GroupedOrder[dataSourceName] : int.MaxValue;
+            return _settings.GroupedOrder.GetValueOrDefault(dataSourceName, int.MaxValue);
         }
 
         public static void GroupedOrderSave(IEnumerable<string> dataSourceNames)

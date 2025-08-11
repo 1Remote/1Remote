@@ -4,6 +4,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using _1RM.Utils;
+using _1RM.View;
+using _1RM.Model;
+using _1RM.Service.Locality;
+using Stylet;
 
 namespace _1RM.View.ServerTree
 {
@@ -18,11 +23,154 @@ namespace _1RM.View.ServerTree
             this.Loaded += (sender, args) => MainTreeView.Focus();
         }
 
+        #region Drag and Drop Support
+
+        private TreeViewItem? _draggedItem = null;
+        private ServerTreeViewModel.TreeNode? _draggedNode = null;
+
+
+        private void TreeViewItemGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is UIElement uie)
+            {
+                _draggedItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
+            }
+        }
+
+        private void TreeViewItemGrid_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _draggedItem = null;
+            _draggedNode = null;
+        }
+
+
+
+        private TreeViewItem? _lastTreeViewItem = null;
+        private void TreeViewItem_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (sender is not TreeViewItem treeViewItem) return;
+            if (_draggedItem == null) return;
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                _draggedItem = null;
+                _draggedNode = null;
+                return;
+            }
+            if (treeViewItem.DataContext is ServerTreeViewModel.TreeNode { IsFolder: false, Server: not null } node)
+            {
+                // Only start drag for server items (not folders)
+                _draggedNode = node;
+                var dataObj = new DataObject();
+                dataObj.SetData("DraggedTreeNode", node);
+                dataObj.SetData("DraggedTreeViewItem", treeViewItem);
+                DragDrop.DoDragDrop(treeViewItem, dataObj, DragDropEffects.Move);
+            }
+        }
+
+        private void TreeViewItem_OnDragOver(object sender, DragEventArgs e)
+        {
+            if (_draggedItem == null || _draggedNode == null) return;
+            if (sender is TreeViewItem { DataContext: ServerTreeViewModel.TreeNode targetNode } treeViewItem)
+            {
+                if (e.Data.GetData("DraggedTreeNode") is ServerTreeViewModel.TreeNode draggedNode)
+                {
+                    if (DataContext is ServerTreeViewModel viewModel && viewModel.CanMoveNode(draggedNode, targetNode))
+                    {
+                        e.Effects = DragDropEffects.Move;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
+                }
+                else
+                {
+                    e.Effects = DragDropEffects.None;
+                }
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void TreeViewItem_OnDrop(object sender, DragEventArgs e)
+        {
+            if (_draggedItem == null || _draggedNode == null) return;
+            try
+            {
+                if (sender is TreeViewItem targetTreeViewItem &&
+                    targetTreeViewItem.DataContext is ServerTreeViewModel.TreeNode targetNode &&
+                    e.Data.GetData("DraggedTreeNode") is ServerTreeViewModel.TreeNode draggedNode &&
+                    DataContext is ServerTreeViewModel viewModel)
+                {
+                    if (viewModel.CanMoveNode(draggedNode, targetNode))
+                    {
+
+                        if (!draggedNode.IsFolder)
+                        {
+                            // move server to folder first
+                            viewModel.MoveServerToFolder(draggedNode, targetNode);
+                            // reorder servers in folder
+                            if (IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
+                            {
+                                if (targetNode.IsFolder)
+                                {
+                                    // put draggedNode at the end of the folder
+
+                                }
+                                else
+                                {
+                                    // Determine insert position based on mouse position
+                                    var mousePosition = e.GetPosition(targetTreeViewItem);
+                                    bool insertBefore = mousePosition.Y < targetTreeViewItem.ActualHeight / 2;
+                                    viewModel.ReorderServersInSameFolder(draggedNode, targetNode, insertBefore);
+                                }
+                            }
+                        }
+
+
+                        //// Check if this is a same-level reordering (custom order)
+                        //if (!draggedNode.IsFolder && !targetNode.IsFolder &&
+                        //    IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
+                        //{
+                        //    // Determine insert position based on mouse position
+                        //    var mousePosition = e.GetPosition(targetTreeViewItem);
+                        //    bool insertBefore = mousePosition.Y < targetTreeViewItem.ActualHeight / 2;
+
+                        //    success = viewModel.ReorderServersInSameFolder(draggedNode, targetNode, insertBefore);
+
+                        //    if (success)
+                        //    {
+                        //        SimpleLogHelper.Debug($"Successfully reordered server '{draggedNode.Name}' relative to '{targetNode.Name}'");
+                        //    }
+                        //}
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                SimpleLogHelper.Warning($"Error during drag and drop: {ex.Message}");
+                MessageBoxHelper.ErrorAlert($"Error moving server: {ex.Message}");
+            }
+            finally
+            {
+                // Clear drag state
+                _draggedItem = null;
+                _draggedNode = null;
+            }
+
+            e.Handled = true;
+        }
+
+        #endregion
+
         private void ServerTreeView_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (DataContext is not ServerTreeViewModel viewModel)
                 return;
-            
+
             // Don't handle key events when a TextBox has focus
             if (Keyboard.FocusedElement is TextBox)
                 return;
@@ -40,23 +188,25 @@ namespace _1RM.View.ServerTree
             }
         }
 
+        #region Show info when mouse move over tree view item
         private UIElement? _lastElement = null;
         private void MainTreeView_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (DataContext is not ServerTreeViewModel viewModel) return;
             if (e.OriginalSource is UIElement uie)
             {
-                if(_lastElement == uie) return;
+                if (_lastElement == uie) return;
                 _lastElement = uie;
                 var ti = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
                 if (ti?.DataContext is ServerTreeViewModel.TreeNode td)
                 {
-                    viewModel.SetSelectedServer(td.Server);
+                    viewModel.SelectedServerViewModel = td.Server;
                     return;
                 }
             }
-            viewModel.SetSelectedServer(null);
+            viewModel.SelectedServerViewModel = null;
         }
+        #endregion
 
 
 
@@ -67,66 +217,45 @@ namespace _1RM.View.ServerTree
             if (e.ClickCount != 1 || sender is not DependencyObject obj) return;
             // shift or ctrl + mouse button down to select item
             var treeViewItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(obj);
-            if (treeViewItem?.DataContext is ServerTreeViewModel.TreeNode vm)
+            if (treeViewItem?.DataContext is ServerTreeViewModel.TreeNode mouseDownNode)
             {
                 if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 {
-                    vm.IsCheckboxSelected = !vm.IsCheckboxSelected;
+                    mouseDownNode.IsCheckboxSelected = !mouseDownNode.IsCheckboxSelected;
+                    _shiftSelectStartItem = null;
                 }
                 else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    if (_shiftSelectStartItem != null)
+                    _shiftSelectStartItem ??= mouseDownNode;
+                    var startNode = _shiftSelectStartItem;
+                    var endNode = mouseDownNode;
+                    var currentTreeNodes = viewModel.GetChildrenNodes();
+                    int startIdx = currentTreeNodes.IndexOf(startNode);
+                    int endIdx = currentTreeNodes.IndexOf(endNode);
+                    if (startIdx < 0 || endIdx < 0)
                     {
-                        var path1 = viewModel.GetTreePath(_shiftSelectStartItem, true);
-                        var path2 = viewModel.GetTreePath(vm, true);
-                        if (path1.Count != path2.Count)
-                        {
-                            return;
-                        }
-                        for (int i = 0; i < path1.Count; i++)
-                        {
-                            if (path1[i] != path2[i])
-                            {
-                                return;
-                            }
-                        }
-
-                        // Select all items between _shiftSelectStartItem and vm
-                        var parentNode = viewModel.FindParent(_shiftSelectStartItem);
-                        if (parentNode == null)
-                        {
-                            _shiftSelectStartItem = null;
-                            return;
-                        }
-
-                        
-                        int startIdx = parentNode.Children.IndexOf(_shiftSelectStartItem);
-                        int endIdx = parentNode.Children.IndexOf(vm);
-                        if (startIdx < 0 || endIdx < 0)
-                        {
-                            _shiftSelectStartItem = null;
-                            return;
-                        }
-
-                        if (startIdx > endIdx)
-                            (startIdx, endIdx) = (endIdx, startIdx);
-                        for (int i = 0; i < parentNode.Children.Count; i++)
-                        {
-                            if (i >= startIdx && i <= endIdx)
-                            {
-                                parentNode.Children[i].IsCheckboxSelected = true;
-                            }
-                            else
-                            {
-                                parentNode.Children[i].IsCheckboxSelected = false;
-                            }
-                        }
-                        e.Handled = true;
+                        return;
                     }
+                    if (startIdx > endIdx)
+                        (startIdx, endIdx) = (endIdx, startIdx);
+                    for (int i = 0; i < currentTreeNodes.Count; i++)
+                    {
+                        if (i >= startIdx && i <= endIdx)
+                        {
+                            currentTreeNodes[i].IsCheckboxSelected = true;
+                        }
+                        else
+                        {
+                            currentTreeNodes[i].IsCheckboxSelected = false;
+                        }
+                    }
+                    SyncCheckboxSelected(currentTreeNodes[startIdx]);
+                    SyncCheckboxSelected(currentTreeNodes[endIdx]);
+                    e.Handled = true;
                 }
                 else
                 {
-                    _shiftSelectStartItem = vm;
+                    _shiftSelectStartItem = mouseDownNode;
                 }
             }
         }
@@ -155,7 +284,7 @@ namespace _1RM.View.ServerTree
                     td = parentNode;
                     continue;
                 }
-                else if (parentNode.Children.Any(x => x.IsCheckboxSelected == true) && parentNode.IsCheckboxSelected != null)
+                else if (parentNode.Children.Any(x => x.IsCheckboxSelected == true) && parentNode.Children.Any(x => x.IsCheckboxSelected != true) && parentNode.IsCheckboxSelected != null)
                 {
                     parentNode.IsCheckboxSelected = null;
                     td = parentNode;
