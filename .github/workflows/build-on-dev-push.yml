@@ -3,7 +3,6 @@ name: Build/Publish on push
 on:
   push:
     branches:
-      - "*dev*"
       - "*master*"
       - "*main*"
     tags:
