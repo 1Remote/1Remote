@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 
 namespace _1RM.View.ServerTree
 {
@@ -36,14 +37,25 @@ namespace _1RM.View.ServerTree
             public ProtocolBaseViewModel? Server { get; private set; }
             public ObservableCollection<TreeNode> Children { get; } = new ObservableCollection<TreeNode>();
 
-            private bool _isExpanded = true;
+            /// <summary>
+            /// The full path to this node in the tree (e.g., "LocalDataSource->Folder1->SubFolder")
+            /// </summary>
+            public string FullPath { get; private set; } = "";
+
+            internal bool _isExpanded = true; // Make internal so the parent class can access it
             public bool IsExpanded
             {
                 get => _isExpanded;
                 set
                 {
-                    // TODO: 展开状态存储到本地缓存
-                    _isExpanded = value;
+                    if (SetAndNotifyIfChanged(ref _isExpanded, value))
+                    {
+                        // Save expansion state to local cache when node expansion changes
+                        if (IsFolder && !string.IsNullOrEmpty(FullPath))
+                        {
+                            LocalityTreeViewService.SetTreeNodeExpansionState(FullPath, value);
+                        }
+                    }
                 }
             }
 
@@ -81,11 +93,16 @@ namespace _1RM.View.ServerTree
             }
 
             // For folder/tree nodes
-            public TreeNode(string name, bool isRoot)
+            public TreeNode(string name, bool isRoot, string fullPath = "")
             {
                 _name = name;
                 IsFolder = true;
                 IsRootFolder = isRoot;
+                FullPath = fullPath;
+                
+                // Note: Expansion state will be loaded and applied in BuildView's LoadAndRebuildTreeNodeExpansionStates method
+                // to avoid multiple file reads. Default to expanded state here.
+                _isExpanded = true;
             }
 
             // For server nodes
@@ -95,6 +112,7 @@ namespace _1RM.View.ServerTree
                 Server = server;
                 IsFolder = false;
                 IsRootFolder = false;
+                FullPath = ""; // Server nodes don't need full path for expansion state
             }
 
             public List<string> GetFolderNames()
@@ -175,9 +193,6 @@ namespace _1RM.View.ServerTree
                 RaisePropertyChanged();
             }
         }
-
-
-
 
         public ServerTreeViewModel(DataSourceService sourceService, GlobalData appData) : base(sourceService, appData)
         {
@@ -803,15 +818,17 @@ namespace _1RM.View.ServerTree
 
                 // Add a root node for each data source
                 {
-                    var rootNode = new TreeNode(IoC.Get<DataSourceService>().LocalDataSource!.Name, true);
+                    var rootName = IoC.Get<DataSourceService>().LocalDataSource!.Name;
+                    var rootNode = new TreeNode(rootName, true, rootName);
                     newRoot.Add(rootNode);
-                    nodeTreePaths[rootNode.Name] = rootNode;
+                    nodeTreePaths[rootName] = rootNode;
                 }
                 foreach (var dataSource in IoC.Get<DataSourceService>().AdditionalSources)
                 {
-                    var rootNode = new TreeNode(dataSource.Value.DataSourceName, true);
+                    var rootName = dataSource.Value.DataSourceName;
+                    var rootNode = new TreeNode(rootName, true, rootName);
                     newRoot.Add(rootNode);
-                    nodeTreePaths[rootNode.Name] = rootNode;
+                    nodeTreePaths[rootName] = rootNode;
                 }
 
                 VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
@@ -851,7 +868,7 @@ namespace _1RM.View.ServerTree
                         currentPath = string.IsNullOrEmpty(currentPath) ? nodeName : $"{currentPath}->{nodeName}";
                         if (!nodeTreePaths.TryGetValue(currentPath, out var treeNode))
                         {
-                            treeNode = new TreeNode(nodeName, i == 0);
+                            treeNode = new TreeNode(nodeName, i == 0, currentPath);
                             nodeTreePaths[currentPath] = treeNode;
                             if (currentNode == null)
                             {
@@ -877,7 +894,8 @@ namespace _1RM.View.ServerTree
                 // Sort the nodes
                 SortNodes(newRoot);
 
-                // TODO: 从本地缓存读取各个节点的展开状态
+                // Load tree node expansion states from local cache and rebuild cache with current nodes
+                LoadAndRebuildTreeNodeExpansionStates(newRoot);
 
                 // Update the UI
                 RootNodes = newRoot;
@@ -889,6 +907,74 @@ namespace _1RM.View.ServerTree
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
             });
+        }
+
+        /// <summary>
+        /// Load tree node expansion states from local cache (read only once) and rebuild the cache with current valid nodes
+        /// </summary>
+        /// <param name="nodes">The collection of tree nodes to process</param>
+        private void LoadAndRebuildTreeNodeExpansionStates(ObservableCollection<TreeNode> nodes)
+        {
+            // Read all cached expansion states once
+            var cachedStates = LocalityTreeViewService.GetAllTreeNodeExpansionStates();
+            var currentValidStates = new Dictionary<string, bool>();
+
+            // Recursively apply cached states and collect current valid folder paths
+            ApplyExpansionStatesRecursively(nodes, cachedStates, currentValidStates);
+
+            // Rebuild the cache with only current valid states
+            RebuildExpansionStateCache(currentValidStates);
+        }
+
+        /// <summary>
+        /// Recursively apply expansion states to tree nodes and collect current valid folder paths
+        /// </summary>
+        /// <param name="nodes">The collection of tree nodes to process</param>
+        /// <param name="cachedStates">All cached expansion states (read once)</param>
+        /// <param name="currentValidStates">Dictionary to collect current valid folder paths and their states</param>
+        private void ApplyExpansionStatesRecursively(ObservableCollection<TreeNode> nodes, 
+            Dictionary<string, bool> cachedStates, 
+            Dictionary<string, bool> currentValidStates)
+        {
+            foreach (var node in nodes)
+            {
+                if (node.IsFolder && !string.IsNullOrEmpty(node.FullPath))
+                {
+                    // Get cached expansion state or default to true
+                    var savedExpansionState = cachedStates.GetValueOrDefault(node.FullPath, true);
+                    
+                    // Apply the state without triggering save
+                    node._isExpanded = savedExpansionState;
+                    node.RaisePropertyChanged(nameof(TreeNode.IsExpanded));
+
+                    // Add to current valid states
+                    currentValidStates[node.FullPath] = savedExpansionState;
+                }
+
+                // Recursively process child nodes
+                if (node.Children.Count > 0)
+                {
+                    ApplyExpansionStatesRecursively(node.Children, cachedStates, currentValidStates);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Rebuild the expansion state cache with only current valid folder paths
+        /// </summary>
+        /// <param name="currentValidStates">Dictionary of current valid folder paths and their states</param>
+        private void RebuildExpansionStateCache(Dictionary<string, bool> currentValidStates)
+        {
+            // Clear existing cache
+            LocalityTreeViewService.ClearAllTreeNodeExpansionStates();
+
+            // Save only current valid states
+            foreach (var kvp in currentValidStates)
+            {
+                LocalityTreeViewService.SetTreeNodeExpansionState(kvp.Key, kvp.Value);
+            }
+
+            SimpleLogHelper.Debug($"TreeView expansion states cache rebuilt with {currentValidStates.Count} valid entries");
         }
 
         public override void ClearSelection()
