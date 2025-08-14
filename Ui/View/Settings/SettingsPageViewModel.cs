@@ -44,7 +44,7 @@ namespace _1RM.View.Settings
 
         public void ShowPage(EnumMainWindowPage page)
         {
-            if (page == EnumMainWindowPage.List
+            if (page == EnumMainWindowPage.ListView
                 || page == EnumMainWindowPage.About
                 || CurrentPage == page)
                 return;

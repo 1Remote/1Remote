@@ -160,27 +160,21 @@ namespace _1RM.View.ServerList
 
         public double NameWidth
         {
-            get => LocalityListViewService.ServerListNameWidthGet();
+            get => LocalityListViewService.Settings.ServerListNameWidth;
             set
             {
-                if (Math.Abs(value - LocalityListViewService.ServerListNameWidthGet()) > 0.001)
-                {
-                    LocalityListViewService.ServerListNameWidthSet(value);
-                    RaisePropertyChanged();
-                }
+                LocalityListViewService.ServerListNameWidthSet(value);
+                RaisePropertyChanged();
             }
         }
 
         public double NoteWidth
         {
-            get => LocalityListViewService.ServerListNoteWidthGet();
+            get => LocalityListViewService.Settings.ServerListNoteWidth;
             set
             {
-                if (Math.Abs(value - LocalityListViewService.ServerListNoteWidthGet()) > 0.001)
-                {
-                    LocalityListViewService.ServerListNoteWidthSet(value);
-                    RaisePropertyChanged();
-                }
+                LocalityListViewService.ServerListNoteWidthSet(value);
+                RaisePropertyChanged();
             }
         }
 

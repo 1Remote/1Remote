@@ -34,6 +34,17 @@ namespace _1RM.View.ServerTree
             if (sender is UIElement uie)
             {
                 _draggedItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
+                if (_draggedItem?.DataContext is ServerTreeViewModel.TreeNode node)
+                {
+                    // Don't allow dragging root folders
+                    if (node.IsRootFolder) return;
+
+                    _draggedNode = node;
+                    var dataObj = new DataObject();
+                    dataObj.SetData("DraggedTreeNode", node);
+                    dataObj.SetData("DraggedTreeViewItem", _draggedItem);
+                    DragDrop.DoDragDrop(_draggedItem, dataObj, DragDropEffects.Move);
+                }
             }
         }
 
@@ -45,7 +56,6 @@ namespace _1RM.View.ServerTree
 
 
 
-        private TreeViewItem? _lastTreeViewItem = null;
         private void TreeViewItem_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (sender is not TreeViewItem treeViewItem) return;
@@ -55,15 +65,6 @@ namespace _1RM.View.ServerTree
                 _draggedItem = null;
                 _draggedNode = null;
                 return;
-            }
-            if (treeViewItem.DataContext is ServerTreeViewModel.TreeNode { IsFolder: false, Server: not null } node)
-            {
-                // Only start drag for server items (not folders)
-                _draggedNode = node;
-                var dataObj = new DataObject();
-                dataObj.SetData("DraggedTreeNode", node);
-                dataObj.SetData("DraggedTreeViewItem", treeViewItem);
-                DragDrop.DoDragDrop(treeViewItem, dataObj, DragDropEffects.Move);
             }
         }
 
@@ -107,52 +108,55 @@ namespace _1RM.View.ServerTree
                 {
                     if (viewModel.CanMoveNode(draggedNode, targetNode))
                     {
+                        bool success = false;
 
-                        if (!draggedNode.IsFolder)
+                        if (draggedNode.IsFolder)
                         {
-                            // move server to folder first
-                            viewModel.MoveServerToFolder(draggedNode, targetNode);
-                            // reorder servers in folder
-                            if (IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
+                            // Move folder to target location
+                            success = viewModel.MoveFolder(draggedNode, targetNode);
+                            if (success)
+                            {
+                                SimpleLogHelper.Debug($"Successfully moved folder '{draggedNode.Name}' to '{targetNode.Name}'");
+                            }
+                        }
+                        else if (!draggedNode.IsFolder)
+                        {
+                            // Move server to folder first
+                            success = viewModel.MoveServerToFolder(draggedNode, targetNode);
+                            
+                            // For custom ordering, also handle reordering within the same folder
+                            if (success && IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
                             {
                                 if (targetNode.IsFolder)
                                 {
-                                    // put draggedNode at the end of the folder
-
+                                    // Server moved to folder - put at end, no reordering needed
                                 }
                                 else
                                 {
-                                    // Determine insert position based on mouse position
+                                    // Determine insert position based on mouse position for server-to-server drops
                                     var mousePosition = e.GetPosition(targetTreeViewItem);
                                     bool insertBefore = mousePosition.Y < targetTreeViewItem.ActualHeight / 2;
                                     viewModel.ReorderServersInSameFolder(draggedNode, targetNode, insertBefore);
                                 }
                             }
+                            
+                            if (success)
+                            {
+                                SimpleLogHelper.Debug($"Successfully moved server '{draggedNode.Name}' to '{targetNode.Name}'");
+                            }
                         }
 
-
-                        //// Check if this is a same-level reordering (custom order)
-                        //if (!draggedNode.IsFolder && !targetNode.IsFolder &&
-                        //    IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
-                        //{
-                        //    // Determine insert position based on mouse position
-                        //    var mousePosition = e.GetPosition(targetTreeViewItem);
-                        //    bool insertBefore = mousePosition.Y < targetTreeViewItem.ActualHeight / 2;
-
-                        //    success = viewModel.ReorderServersInSameFolder(draggedNode, targetNode, insertBefore);
-
-                        //    if (success)
-                        //    {
-                        //        SimpleLogHelper.Debug($"Successfully reordered server '{draggedNode.Name}' relative to '{targetNode.Name}'");
-                        //    }
-                        //}
+                        if (!success)
+                        {
+                            SimpleLogHelper.Warning($"Failed to move '{draggedNode.Name}' to '{targetNode.Name}'");
+                        }
                     }
                 }
             }
             catch (System.Exception ex)
             {
                 SimpleLogHelper.Warning($"Error during drag and drop: {ex.Message}");
-                MessageBoxHelper.ErrorAlert($"Error moving server: {ex.Message}");
+                MessageBoxHelper.ErrorAlert($"Error moving item: {ex.Message}");
             }
             finally
             {

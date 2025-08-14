@@ -30,7 +30,7 @@ namespace _1RM.View
         /// <summary>
         /// Order in Main window list view
         /// </summary>
-        public int CustomOrder => LocalityListViewService.ServerCustomOrderGet(Id);
+        public int CustomOrder = 0;// => LocalityListViewService.ServerCustomOrderGet(Id);
 
         public double KeywordMark = double.MinValue;
 

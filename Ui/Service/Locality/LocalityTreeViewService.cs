@@ -1,18 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using _1RM.Utils.Tracing;
+using _1RM.View.ServerTree;
+using Newtonsoft.Json;
 using Shawn.Utils;
-using _1RM.Service.DataSource;
-using _1RM.Utils.Tracing;
-using _1RM.View;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 
 namespace _1RM.Service.Locality
 {
     public class LocalityTreeViewSettings
     {
+        public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
+        public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
+        public Dictionary<string, int> TreeNodeOrder = new Dictionary<string, int>();
         /// <summary>
         /// Dictionary to store tree node expansion states
         /// Key: full path string of the tree folder node (e.g., "LocalDataSource->Folder1->SubFolder")
@@ -24,121 +25,119 @@ namespace _1RM.Service.Locality
     public static class LocalityTreeViewService
     {
         public static string JsonPath => Path.Combine(AppPathHelper.Instance.LocalityDirPath, ".tree_view.json");
-        private static LocalityTreeViewSettings _settings = new LocalityTreeViewSettings();
 
-        private static bool _isLoaded = false;
-        private static void Load()
+        private static LocalityTreeViewSettings? _settings;
+        public static LocalityTreeViewSettings Settings
         {
-            lock (_settings)
+            get
             {
-                if (_isLoaded) return;
-                _isLoaded = true;
-                try
+                if (_settings == null)
                 {
-                    var tmp = JsonConvert.DeserializeObject<LocalityTreeViewSettings>(File.ReadAllText(JsonPath));
-                    tmp ??= new LocalityTreeViewSettings();
-                    _settings = tmp;
+                    Load();
                 }
-                catch
-                {
-                    _settings = new LocalityTreeViewSettings();
-                }
+                return _settings!;
             }
+            private set => _settings = value;
         }
 
-        public static bool CanSave { get; private set; } = true;
-        private static void Save()
-        {
-            if (!CanSave) return;
-            lock (_settings)
-            {
-                if (!CanSave) return;
-                CanSave = false;
-                AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
-                RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(_settings, Formatting.Indented), Encoding.UTF8); },
-                    actionOnError: exception => UnifyTracing.Error(exception));
-                CanSave = true;
-            }
-        }
 
-        /// <summary>
-        /// Get the expansion state of a tree node by its full path
-        /// </summary>
-        /// <param name="nodePath">Full path of the tree node (e.g., "LocalDataSource->Folder1->SubFolder")</param>
-        /// <returns>True if expanded, false if collapsed. Default is true for new nodes.</returns>
-        public static bool GetTreeNodeExpansionState(string nodePath)
+        public static void Load()
         {
-            Load();
-            return _settings.TreeNodeExpansionStates.GetValueOrDefault(nodePath, true);
-        }
-
-        /// <summary>
-        /// Set the expansion state of a tree node by its full path
-        /// </summary>
-        /// <param name="nodePath">Full path of the tree node (e.g., "LocalDataSource->Folder1->SubFolder")</param>
-        /// <param name="isExpanded">Whether the node is expanded</param>
-        public static void SetTreeNodeExpansionState(string nodePath, bool isExpanded)
-        {
-            Load();
+            if (!File.Exists(JsonPath))
+                _settings = new LocalityTreeViewSettings();
             try
             {
-                if (_settings.TreeNodeExpansionStates.ContainsKey(nodePath))
-                    _settings.TreeNodeExpansionStates[nodePath] = isExpanded;
-                else
-                    _settings.TreeNodeExpansionStates.Add(nodePath, isExpanded);
+                var tmp = JsonConvert.DeserializeObject<LocalityTreeViewSettings>(File.ReadAllText(JsonPath));
+                tmp ??= new LocalityTreeViewSettings();
+                _settings = tmp;
+            }
+            catch
+            {
+                _settings = new LocalityTreeViewSettings();
+            }
+        }
 
-                // Clean up outdated entries - remove entries for non-existent data sources
-                var ds = IoC.TryGet<DataSourceService>();
-                if (ds != null)
+        public static void Save()
+        {
+            AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
+            RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Settings, Formatting.Indented), Encoding.UTF8); }, actionOnError: exception => UnifyTracing.Error(exception));
+        }
+
+        public static void ServerOrderBySet(EnumServerOrderBy value)
+        {
+            if (Settings.ServerOrderBy == value) return;
+            Settings.ServerOrderBy = value;
+            Save();
+        }
+
+        public static void SaveExpansionStates(ObservableCollection<ServerTreeViewModel.TreeNode> roots)
+        {
+            var currentValidStates = new Dictionary<string, bool>();
+            // Recursively apply cached states and collect current valid folder paths
+            {
+                var stack = new Stack<ServerTreeViewModel.TreeNode>();
+                foreach (var node in roots)
                 {
-                    var validDataSourceNames = new HashSet<string>();
-                    if (ds.LocalDataSource != null)
-                        validDataSourceNames.Add(ds.LocalDataSource.Name);
-                    foreach (var additionalSource in ds.AdditionalSources)
-                        validDataSourceNames.Add(additionalSource.Value.DataSourceName);
-
-                    var keysToRemove = new List<string>();
-                    foreach (var key in _settings.TreeNodeExpansionStates.Keys)
+                    stack.Push(node);
+                }
+                while (stack.Count > 0)
+                {
+                    var currentNode = stack.Pop();
+                    if (currentNode.IsFolder && !string.IsNullOrEmpty(currentNode.FullPath))
                     {
-                        var rootName = key.Split(new[] { "->" }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-                        if (rootName != null && !validDataSourceNames.Contains(rootName))
-                        {
-                            keysToRemove.Add(key);
-                        }
+                        currentValidStates[currentNode.FullPath] = currentNode.IsExpanded;
                     }
-
-                    foreach (var key in keysToRemove)
+                    // Push all child nodes onto the stack (in reverse order to maintain original traversal order)
+                    if (currentNode.Children.Count > 0)
                     {
-                        _settings.TreeNodeExpansionStates.Remove(key);
+                        for (int i = currentNode.Children.Count - 1; i >= 0; i--)
+                        {
+                            stack.Push(currentNode.Children[i]);
+                        }
                     }
                 }
             }
-            catch (Exception e)
+            // Rebuild the cache
+            Settings.TreeNodeExpansionStates = currentValidStates;
+            Save();
+        }
+
+
+        public static void LoadExpansionStates(ObservableCollection<ServerTreeViewModel.TreeNode> roots)
+        {
+            var cachedStates = Settings.TreeNodeExpansionStates;
+            var currentValidStates = new Dictionary<string, bool>();
+            // Recursively apply cached states and collect current valid folder paths
+            var stack = new Stack<ServerTreeViewModel.TreeNode>();
+            foreach (var node in roots)
             {
-                UnifyTracing.Error(e);
-                _settings.TreeNodeExpansionStates = new Dictionary<string, bool>();
+                stack.Push(node);
             }
-            Save();
-        }
+            while (stack.Count > 0)
+            {
+                var currentNode = stack.Pop();
+                if (currentNode.IsFolder && !string.IsNullOrEmpty(currentNode.FullPath))
+                {
+                    // Get cached expansion state or default to true
+                    var savedExpansionState = cachedStates.GetValueOrDefault(currentNode.FullPath, true);
+                    // Apply the state without triggering save
+                    currentNode._isExpanded = savedExpansionState;
+                    currentNode.RaisePropertyChanged(nameof(ServerTreeViewModel.TreeNode.IsExpanded));
+                    currentValidStates[currentNode.FullPath] = currentNode.IsExpanded;
+                }
 
-        /// <summary>
-        /// Clear all tree node expansion states
-        /// </summary>
-        public static void ClearAllTreeNodeExpansionStates()
-        {
-            Load();
-            _settings.TreeNodeExpansionStates.Clear();
+                // Push all child nodes onto the stack (in reverse order to maintain original traversal order)
+                if (currentNode.Children.Count > 0)
+                {
+                    for (int i = currentNode.Children.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push(currentNode.Children[i]);
+                    }
+                }
+            }
+            // Rebuild the cache
+            Settings.TreeNodeExpansionStates = currentValidStates;
             Save();
-        }
-
-        /// <summary>
-        /// Get all stored tree node expansion states
-        /// </summary>
-        /// <returns>Dictionary of all stored expansion states</returns>
-        public static Dictionary<string, bool> GetAllTreeNodeExpansionStates()
-        {
-            Load();
-            return new Dictionary<string, bool>(_settings.TreeNodeExpansionStates);
         }
     }
 }

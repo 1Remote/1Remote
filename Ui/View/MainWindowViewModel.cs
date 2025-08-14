@@ -21,9 +21,17 @@ using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View
 {
+    public enum EnumServerViewStatus
+    {
+        Card,
+        List,
+        Tree,
+    }
+
     public enum EnumMainWindowPage
     {
-        List,
+        CardView,
+        ListView,
         TreeView,
         About,
         SettingsGeneral,
@@ -46,28 +54,34 @@ namespace _1RM.View
 
         #region Properties
 
-        private bool _isTreeViewActive = false;
-        public bool IsTreeViewActive
+        private EnumServerViewStatus _currentView;
+        public EnumServerViewStatus CurrentView
         {
-            get => _isTreeViewActive;
+            get => _currentView;
             set
             {
-                if (SetAndNotifyIfChanged(ref _isTreeViewActive, value))
+                if (SetAndNotifyIfChanged(ref _currentView, value))
                 {
+                    IoC.Get<ConfigurationService>().General.ServerViewStatus = value;
+                    RaisePropertyChanged(nameof(CurrentView));
                     RaisePropertyChanged(nameof(IsShownList));
-                    RaisePropertyChanged(nameof(IsShownTreeView));
-                    RaisePropertyChanged(nameof(ActiveServerViewModel));
 
                     // When switching to TreeView, force rebuild the tree to ensure data is displayed
-                    if (value)
+                    if (value == EnumServerViewStatus.Tree)
                     {
                         ServerTreeViewModel.BuildView();
+                        ActiveServerViewModel = ServerTreeViewModel;
                     }
+                    else
+                    {
+                        ActiveServerViewModel = ServerListViewModel;
+                    }
+                    RaisePropertyChanged(nameof(ActiveServerViewModel));
                 }
             }
         }
 
-        public object ActiveServerViewModel => IsTreeViewActive ? (object)ServerTreeViewModel : ServerListViewModel;
+        public object ActiveServerViewModel { get; set; }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -77,7 +91,6 @@ namespace _1RM.View
             {
                 SetAndNotifyIfChanged(ref _editorViewModel, value);
                 RaisePropertyChanged(nameof(IsShownList));
-                RaisePropertyChanged(nameof(IsShownTreeView));
             }
         }
 
@@ -101,7 +114,6 @@ namespace _1RM.View
                 if (SetAndNotifyIfChanged(ref _showSetting, value))
                 {
                     RaisePropertyChanged(nameof(IsShownList));
-                    RaisePropertyChanged(nameof(IsShownTreeView));
                     if (_showSetting == true)
                         _appData.StopTick();
                     else
@@ -112,14 +124,18 @@ namespace _1RM.View
 
         public EnumServerOrderBy ServerOrderBy
         {
-            get => LocalityListViewService.ServerOrderByGet();
+            get => CurrentView == EnumServerViewStatus.Tree ? LocalityTreeViewService.Settings.ServerOrderBy : LocalityListViewService.Settings.ServerOrderBy;
             set
             {
-                if (value != LocalityListViewService.ServerOrderByGet())
+                if (CurrentView == EnumServerViewStatus.Tree)
+                {
+                    LocalityTreeViewService.ServerOrderBySet(value);
+                }
+                else
                 {
                     LocalityListViewService.ServerOrderBySet(value);
-                    RaisePropertyChanged();
                 }
+                RaisePropertyChanged();
             }
         }
 
@@ -184,7 +200,7 @@ namespace _1RM.View
             {
                 try
                 {
-                    var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
+                    var source = preset?.DataSource ?? await DataSourceSelectorViewModel.SelectDataSourceAsync();
 #if !DEBUG
                     // use this to test the error message
                     if (source == null)
@@ -203,7 +219,7 @@ namespace _1RM.View
                     }
                     else
                     {
-                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        MessageBoxHelper.ErrorAlert($"Debug: Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
                     }
                 }
                 catch (Exception e)
@@ -322,8 +338,7 @@ namespace _1RM.View
         }
 
 
-        public bool IsShownList => EditorViewModel is null && ShowSetting == false && !IsTreeViewActive;
-        public bool IsShownTreeView => EditorViewModel is null && ShowSetting == false && IsTreeViewActive;
+        public bool IsShownList => EditorViewModel is null && ShowSetting == false;
 
 
         #region CMD
@@ -340,7 +355,7 @@ namespace _1RM.View
                     IoC.Get<GeneralSettingViewModel>().AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList || IsShownTreeView);
+                }, o => IsShownList);
             }
         }
 
@@ -359,17 +374,36 @@ namespace _1RM.View
         }
 
 
-        private RelayCommand? _cmdToggleCardList;
-        public RelayCommand CmdToggleCardList
+        private RelayCommand? _cmdToggleCardView;
+        public RelayCommand CmdToggleCardView
         {
             get
             {
-                return _cmdToggleCardList ??= new RelayCommand((o) =>
+                return _cmdToggleCardView ??= new RelayCommand((o) =>
                 {
+                    CurrentView = EnumServerViewStatus.Card;
                     this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
+                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = true;
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                }, o => CurrentView != EnumServerViewStatus.Card);
+            }
+        }
+
+
+        private RelayCommand? _cmdToggleListView;
+        public RelayCommand CmdToggleListView
+        {
+            get
+            {
+                return _cmdToggleListView ??= new RelayCommand((o) =>
+                {
+                    CurrentView = EnumServerViewStatus.List;
+                    this.ServerListViewModel.ListPageIsCardView = false;
+                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = false;
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                }, o => CurrentView != EnumServerViewStatus.List);
             }
         }
 
@@ -380,10 +414,10 @@ namespace _1RM.View
             {
                 return _cmdToggleTreeView ??= new RelayCommand((o) =>
                 {
-                    IsTreeViewActive = !IsTreeViewActive;
+                    CurrentView = EnumServerViewStatus.Tree;
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList || IsShownTreeView);
+                }, o => CurrentView != EnumServerViewStatus.Tree);
             }
         }
 
@@ -424,12 +458,17 @@ namespace _1RM.View
             {
                 switch (goPage)
                 {
-                    case EnumMainWindowPage.List:
-                        IsTreeViewActive = false;
+                    case EnumMainWindowPage.CardView:
+                        CurrentView = EnumServerViewStatus.List;
+                        //LocalityListViewService.ServerOrderBySet();
+                        ShowList(false);
+                        break;
+                    case EnumMainWindowPage.ListView:
+                        CurrentView = EnumServerViewStatus.List;
                         ShowList(false);
                         break;
                     case EnumMainWindowPage.TreeView:
-                        IsTreeViewActive = true;
+                        CurrentView = EnumServerViewStatus.Tree;
                         ShowList(false);
                         break;
                     case EnumMainWindowPage.About:

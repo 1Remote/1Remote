@@ -82,9 +82,8 @@
                         <Setter Property="Focusable" Value="False" />
                         <Setter Property="Padding" Value="2,1"/>
                         <Setter Property="Margin" Value="0"/>
-                        <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
-                        <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="AllowDrop" Value="True"/>
+                        <!--<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>-->
                         <EventSetter Event="PreviewMouseMove" Handler="TreeViewItem_OnPreviewMouseMove"/>
                         <EventSetter Event="DragOver" Handler="TreeViewItem_OnDragOver"/>
                         <EventSetter Event="Drop" Handler="TreeViewItem_OnDrop"/>
@@ -97,14 +96,32 @@
                             <DataTrigger Binding="{Binding IsRootFolder}" Value="True">
                                 <Setter Property="Margin" Value="0,0,0,16"/>
                             </DataTrigger>
-                            <!--<Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
-                            </Trigger>-->
                         </Style.Triggers>
                     </Style>
                 </TreeView.ItemContainerStyle>
 
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <!-- For folder nodes -->
+                        <MenuItem Header="TXT:New Server" Command="{Binding CmdAddServerToNode}">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeometryCross}" 
+                                      Width="12" Height="12" 
+                                      Fill="{DynamicResource PrimaryTextBrush}" 
+                                      Stretch="Uniform"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="TXT:New Folder" 
+                                  Command="{Binding CmdCreateFolder}">
+                            <MenuItem.Icon>
+                                <Path Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" 
+                                      Width="12" Height="12" 
+                                      Fill="{DynamicResource PrimaryTextBrush}" 
+                                      Stretch="Uniform"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <Grid Margin="0"
@@ -241,12 +258,16 @@
                                 <!-- For folder nodes -->
                                 <Border Grid.Column="0" Grid.ColumnSpan="2"
                                         Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
-                                        VerticalAlignment="Center">
+                                        VerticalAlignment="Center"
+                                        PreviewMouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
+                                        >
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Margin="10 0" 
+                                        <CheckBox Margin="3 0 0 0" 
                                                   Width="20" Height="20" 
                                                   HorizontalAlignment="Left" 
                                                   Click="ItemsCheckBox_OnClick"
+                                                  Style="{StaticResource SelectedCheckBoxStyle}"
                                                   IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
                                         </CheckBox>
                                         <Grid Width="16" Height="16" Margin="0,0,4,0">
@@ -279,7 +300,7 @@
                                     </Grid.ColumnDefinitions>
 
 
-                                    <CheckBox Grid.Column="0" Margin="10 0" 
+                                    <CheckBox Grid.Column="0" Margin="3 0 0 0" 
                                               Width="20" Height="20" 
                                               HorizontalAlignment="Left" 
                                               Click="ItemsCheckBox_OnClick"

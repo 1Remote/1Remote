@@ -248,6 +248,7 @@ namespace _1RM.Model
 
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
+            if (!protocolServers.Any()) return Result.Fail("No servers to delete.");
             StopTick();
             try
             {

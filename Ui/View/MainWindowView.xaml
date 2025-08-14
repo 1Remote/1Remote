@@ -123,35 +123,6 @@
                     </TextBox>
                 </Grid>
 
-                <!-- Toggle View Button (List/Tree) -->
-                <Button Width="45" Height="35" VerticalAlignment="Top"
-                        Command="{Binding CmdToggleTreeView}"
-                        Style="{StaticResource ButtonBarPrimaryStyle}"
-                        ToolTip="{DynamicResource 'Toggle List/Tree View'}">
-                    <Grid>
-                        <Path Width="16" Height="16"
-                              StrokeThickness="0.5"
-                              Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                              Stretch="Uniform"
-                              Visibility="{Binding IsTreeViewActive, Converter={StaticResource ConverterBool2Visible}}">
-                            <Path.Data>
-                                M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zM8 1a2 2 0 0 0-2 2H3a1 1 0 0 0-1 1v1H1v3a1 1 0 0 0 1 1h.756L2 14.979a1 1 0 0 0 .242.718.999.999 0 0 0 .71.303h9.995a1 1 0 0 0 .954-1.017l-.243-9.977A1 1 0 0 0 15 7v-3h-1V4a1 1 0 0 0-1-1h-3a2 2 0 0 0-2-2zm0 1c.37 0 .684.23.871.582A.981.981 0 0 1 9 3H7c0-.37.235-.681.589-.87.137-.071.28-.13.441-.13z
-                            </Path.Data>
-                        </Path>
-                        <Path Width="16" Height="16"
-                              StrokeThickness="0.5"
-                              Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
-                              Stretch="Uniform"
-                              Visibility="{Binding IsTreeViewActive, Converter={StaticResource ConverterBool2VisibleInv}}">
-                            <Path.Data>
-                                M14.378 10.48H1.372A1.49 1.49 0 0 1 0 9.103V3.727c0-.768.628-1.376 1.372-1.376h13.006c.744 0 1.372.608 1.372 1.375v5.377c0 .768-.628 1.376-1.372 1.376zm0-9.104H1.372C.628 1.376 0 .768 0 0v-5.376c0-.768.628-1.376 1.372-1.376h13.006c.744 0 1.372.608 1.372 1.376V0c0 .768-.628 1.376-1.372 1.376zm0 18.208H1.372C.628 19.584 0 18.976 0 18.208v-5.376c0-.768.628-1.376 1.372-1.376h13.006c.744 0 1.372.608 1.372 1.376v5.376c0 .768-.628 1.376-1.372 1.376z
-                            </Path.Data>
-                        </Path>
-                    </Grid>
-                </Button>
-
                 <Grid Width="45" Height="35" Margin="0" VerticalAlignment="Top">
                     <CheckBox Name="CbPopForMenu" Width="45" Height="35" VerticalAlignment="Top" Margin="0">
                         <CheckBox.Template>
@@ -207,13 +178,17 @@
                                     <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="TXT: Toggle Tree/List View" Command="{Binding CmdToggleTreeView}">
+                            <MenuItem Header="TXT: Toggle Card" Command="{Binding CmdToggleCardView}"></MenuItem>
+                            <MenuItem Header="TXT: Toggle List" Command="{Binding CmdToggleListView}">
                                 <MenuItem.Icon>
                                     <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="{DynamicResource 'Toggle Cards/List'}" Command="{Binding CmdToggleCardList}" 
-                                      Visibility="{Binding IsShownList, Converter={StaticResource ConverterBool2Visible}}"></MenuItem>
+                            <MenuItem Header="TXT: Toggle Tree" Command="{Binding CmdToggleTreeView}">
+                                <MenuItem.Icon>
+                                    <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="{DynamicResource Sorting}">
                                 <MenuItem.Resources>
                                     <Style TargetType="Path" x:Key="HeaderPathStyle">
@@ -522,35 +497,10 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                
-                <!-- List View - only visible when IsTreeViewActive is false -->
-                <ContentControl s:View.Model="{Binding ServerListViewModel}">
-                    <ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsTreeViewActive}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
-                </ContentControl>
-                
-                <!-- Tree View - only visible when IsTreeViewActive is true -->
-                <ContentControl s:View.Model="{Binding ServerTreeViewModel}">
-                    <ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsTreeViewActive}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
-                </ContentControl>
-                
+
+                <ContentControl s:View.Model="{Binding ActiveServerViewModel}"/>
+
+
                 <ContentControl s:View.Model="{Binding SettingViewModel}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">

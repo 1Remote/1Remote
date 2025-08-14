@@ -31,6 +31,7 @@ namespace _1RM.View.Editor
     {
         public class ParamsServerAddPreset
         {
+            public DataSourceBase? DataSource = null;
             public List<string> TreeNodes = new List<string>();
             public List<string> TagNames = new List<string>();
         }

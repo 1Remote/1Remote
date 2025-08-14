@@ -214,7 +214,7 @@ namespace _1RM.View.ServerList
                 {
                     // drag ListBoxItem
                     if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
-                        && LocalityListViewService.ServerOrderByGet() == EnumServerOrderBy.Custom
+                        && LocalityListViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom
                         && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
                     {
                         var dataObj = new DataObject();
@@ -274,7 +274,7 @@ namespace _1RM.View.ServerList
                 }
 
                 // item move
-                if (LocalityListViewService.ServerOrderByGet() == EnumServerOrderBy.Custom
+                if (LocalityListViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom
                     && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMovedProtocol } listBoxItem
                     && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target } targetListBoxItem
                     && toBeMovedProtocol != target)
