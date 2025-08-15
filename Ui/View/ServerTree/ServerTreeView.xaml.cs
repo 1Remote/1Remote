@@ -31,21 +31,16 @@ namespace _1RM.View.ServerTree
 
         private void TreeViewItemGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is UIElement uie)
-            {
-                _draggedItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
-                if (_draggedItem?.DataContext is ServerTreeViewModel.TreeNode node)
-                {
-                    // Don't allow dragging root folders
-                    if (node.IsRootFolder) return;
-
-                    _draggedNode = node;
-                    var dataObj = new DataObject();
-                    dataObj.SetData("DraggedTreeNode", node);
-                    dataObj.SetData("DraggedTreeViewItem", _draggedItem);
-                    DragDrop.DoDragDrop(_draggedItem, dataObj, DragDropEffects.Move);
-                }
-            }
+            if (sender is not UIElement uie) return;
+            _draggedItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
+            if (_draggedItem?.DataContext is not ServerTreeViewModel.TreeNode node) return;
+            // Don't allow dragging root folders
+            if (node.IsRootFolder) return;
+            _draggedNode = node;
+            var dataObj = new DataObject();
+            dataObj.SetData("DraggedTreeNode", node);
+            dataObj.SetData("DraggedTreeViewItem", _draggedItem);
+            DragDrop.DoDragDrop(_draggedItem, dataObj, DragDropEffects.Move);
         }
 
         private void TreeViewItemGrid_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -58,13 +53,11 @@ namespace _1RM.View.ServerTree
 
         private void TreeViewItem_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (sender is not TreeViewItem treeViewItem) return;
             if (_draggedItem == null) return;
             if (e.LeftButton != MouseButtonState.Pressed)
             {
                 _draggedItem = null;
                 _draggedNode = null;
-                return;
             }
         }
 
@@ -113,7 +106,7 @@ namespace _1RM.View.ServerTree
                         if (draggedNode.IsFolder)
                         {
                             // Move folder to target location
-                            success = viewModel.MoveFolder(draggedNode, targetNode);
+                            success = viewModel.FolderMoveToFolder(draggedNode, targetNode);
                             if (success)
                             {
                                 SimpleLogHelper.Debug($"Successfully moved folder '{draggedNode.Name}' to '{targetNode.Name}'");
@@ -215,10 +208,11 @@ namespace _1RM.View.ServerTree
 
 
         private ServerTreeViewModel.TreeNode? _shiftSelectStartItem = null;
-        private void MainTreeViewItem_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void MainTreeViewItem_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is not ServerTreeViewModel viewModel) return;
             if (e.ClickCount != 1 || sender is not DependencyObject obj) return;
+            if (null != MyVisualTreeHelper.VisualUpwardSearch<CheckBox>(obj)) return;
             // shift or ctrl + mouse button down to select item
             var treeViewItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(obj);
             if (treeViewItem?.DataContext is ServerTreeViewModel.TreeNode mouseDownNode)
@@ -233,7 +227,7 @@ namespace _1RM.View.ServerTree
                     _shiftSelectStartItem ??= mouseDownNode;
                     var startNode = _shiftSelectStartItem;
                     var endNode = mouseDownNode;
-                    var currentTreeNodes = viewModel.GetChildrenNodes();
+                    var currentTreeNodes = viewModel.GetAllChildrenNodes();
                     int startIdx = currentTreeNodes.IndexOf(startNode);
                     int endIdx = currentTreeNodes.IndexOf(endNode);
                     if (startIdx < 0 || endIdx < 0)

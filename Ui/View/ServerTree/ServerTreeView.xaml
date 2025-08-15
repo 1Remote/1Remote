@@ -21,6 +21,9 @@
                     <Trigger Property="IsChecked" Value="True">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                     </Trigger>
+                    <Trigger Property="IsChecked" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                    </Trigger>
                 </Style.Triggers>
             </Style>
         </ResourceDictionary>
@@ -126,7 +129,7 @@
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <Grid Margin="0"
                               Name="GridNode" 
-                              PreviewMouseDown="MainTreeViewItem_OnPreviewMouseDown"
+                              MouseDown="MainTreeViewItem_OnMouseDown"
                               Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=local:ServerTreeView} }"
                         >
                             <Grid.Style>
@@ -247,7 +250,11 @@
                                 </ContextMenu>
                             </Grid.ContextMenu>
 
-                            <Grid Margin="0 3 20 3" MinWidth="200" MinHeight="20">
+                            <Grid Margin="0 3 20 3" MinWidth="200" MinHeight="20"
+                                  Background="Transparent"
+                                  MouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
+                                  PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
+                                  >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -259,8 +266,6 @@
                                 <Border Grid.Column="0" Grid.ColumnSpan="2"
                                         Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                         VerticalAlignment="Center"
-                                        PreviewMouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
-                                        PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
                                         >
                                     <StackPanel Orientation="Horizontal">
                                         <CheckBox Margin="3 0 0 0" 
@@ -308,9 +313,7 @@
                                               IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
                                     </CheckBox>
 
-                                    <Grid Grid.Column="1" Background="Transparent" 
-                                          PreviewMouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
-                                          PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp">
+                                    <Grid Grid.Column="1" Background="Transparent">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
