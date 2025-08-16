@@ -115,7 +115,7 @@ namespace _1RM.View.ServerTree
                         else if (!draggedNode.IsFolder)
                         {
                             // Move server to folder first
-                            success = viewModel.MoveServerToFolder(draggedNode, targetNode);
+                            success = viewModel.ServerMoveToFolder(draggedNode, targetNode);
                             
                             // For custom ordering, also handle reordering within the same folder
                             if (success && IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
@@ -227,7 +227,7 @@ namespace _1RM.View.ServerTree
                     _shiftSelectStartItem ??= mouseDownNode;
                     var startNode = _shiftSelectStartItem;
                     var endNode = mouseDownNode;
-                    var currentTreeNodes = viewModel.GetAllChildrenNodes();
+                    var currentTreeNodes = viewModel.RootNodes.SelectMany(x => x.GetChildNodes(true)).ToList();
                     int startIdx = currentTreeNodes.IndexOf(startNode);
                     int endIdx = currentTreeNodes.IndexOf(endNode);
                     if (startIdx < 0 || endIdx < 0)
@@ -274,7 +274,7 @@ namespace _1RM.View.ServerTree
             while (true)
             {
                 if (DataContext is not ServerTreeViewModel viewModel) return;
-                var parentNode = viewModel.FindParent(td);
+                var parentNode = td.ParentNode;
                 if (parentNode == null) return;
                 if (parentNode.Children.All(x => x.IsCheckboxSelected == true) && parentNode.IsCheckboxSelected != true)
                 {
@@ -282,7 +282,7 @@ namespace _1RM.View.ServerTree
                     td = parentNode;
                     continue;
                 }
-                else if (parentNode.Children.Any(x => x.IsCheckboxSelected == true) && parentNode.Children.Any(x => x.IsCheckboxSelected != true) && parentNode.IsCheckboxSelected != null)
+                else if (parentNode.Children.Any(x => x.IsCheckboxSelected != false) && parentNode.IsCheckboxSelected != null)
                 {
                     parentNode.IsCheckboxSelected = null;
                     td = parentNode;

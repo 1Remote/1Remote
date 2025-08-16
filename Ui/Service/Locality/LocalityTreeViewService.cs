@@ -12,8 +12,7 @@ namespace _1RM.Service.Locality
     public class LocalityTreeViewSettings
     {
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
-        public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
-        public Dictionary<string, int> TreeNodeOrder = new Dictionary<string, int>();
+        public Dictionary<string, int> CustomOrder = new Dictionary<string, int>();
         /// <summary>
         /// Dictionary to store tree node expansion states
         /// Key: full path string of the tree folder node (e.g., "LocalDataSource->Folder1->SubFolder")

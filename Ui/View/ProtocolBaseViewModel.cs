@@ -94,7 +94,7 @@ namespace _1RM.View
             get => _server;
             set
             {
-                //if (_server != value)
+                if (_server != value)
                 {
                     _server = value;
                     _server.Tags = _server.Tags.Select(x => x.ToLower()).ToList();

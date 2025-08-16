@@ -139,48 +139,7 @@ namespace _1RM.Model
 
         public Result UpdateServer(ProtocolBase protocolServer)
         {
-            StopTick();
-            string info = IoC.Translate("We can not update on database:");
-            try
-            {
-                Debug.Assert(protocolServer.IsTmpSession() == false);
-                var source = protocolServer.DataSource;
-                if (source == null)
-                {
-                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is not initialized yet");
-                }
-                else if (source.IsWritable == false)
-                {
-                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
-                }
-
-                var needReload = source.NeedRead(TableServer.TABLE_NAME);
-                var ret = source.Database_UpdateServer(protocolServer);
-                if (ret.IsSuccess)
-                {
-                    if (needReload)
-                    {
-                        ReloadAll(); // UpdateServer & needReload
-                    }
-                    else
-                    {
-                        // invoke main list ui change & invoke launcher ui change
-                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                        if (old != null)
-                        {
-                            old.Server = protocolServer;
-                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
-                        }
-                        ReloadTagsFromServers();
-                    }
-                    IoC.Get<ServerListPageViewModel>().ClearSelection();
-                }
-                return ret;
-            }
-            finally
-            {
-                StartTick();
-            }
+            return UpdateServer([protocolServer]);
         }
 
         public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers)

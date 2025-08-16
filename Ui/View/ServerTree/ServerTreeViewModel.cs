@@ -18,13 +18,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Xml.Linq;
 
 namespace _1RM.View.ServerTree
 {
     public class ServerTreeViewModel : ServerPageBase
     {
+        public const string FullPathSeparator = "]=+=+=+=>[";
+        public const string FolderNodePrefix = "%$Node$%:";
         public class TreeNode : NotifyPropertyChangedBase
         {
             private string _name;
@@ -130,7 +134,6 @@ namespace _1RM.View.ServerTree
                 UpdateParent(parentNode);
             }
 
-            public const string FullPathSeparator = "->Tree->";
             public void UpdateParent(TreeNode? parentNode)
             {
                 if (IsRootFolder)
@@ -146,6 +149,23 @@ namespace _1RM.View.ServerTree
                 ParentNode = parentNode;
             }
 
+            public void AddChild(TreeNode child, bool sort)
+            {
+                if (!IsFolder) throw new InvalidOperationException("Cannot add child to a non-folder node.");
+                if (child.ParentNode != this)
+                {
+                    child.ParentNode?.Children.Remove(child);
+                    child.UpdateParent(this);
+                }
+                if (!Children.Contains(child))
+                    Children.Add(child);
+                if (sort)
+                {
+                    SortNodes(Children, false);
+                }
+            }
+
+
             // For server nodes
             public TreeNode(ProtocolBaseViewModel server, TreeNode parentNode)
             {
@@ -160,21 +180,92 @@ namespace _1RM.View.ServerTree
             {
                 return Children.Where(x => x.IsFolder == true).Select(x => x.Name).ToList();
             }
-            public List<TreeNode> GetChildNodeFolder()
+            public List<TreeNode> GetChildNodes(bool includingSubFolder, bool needFolderNode = true, bool needItemNode = true)
             {
-                return Children.Where(x => x.IsFolder == true).ToList();
+                var list = new List<TreeNode>();
+                var foldersToUpdate = new Queue<TreeNode>();
+                foldersToUpdate.Enqueue(this);
+                while (foldersToUpdate.Count > 0)
+                {
+                    var currentFolder = foldersToUpdate.Dequeue();
+                    foreach (var child in currentFolder.Children)
+                    {
+                        if (child.IsFolder && needFolderNode || !child.IsFolder && needItemNode)
+                            list.Add(child);
+                        if (child.IsFolder && includingSubFolder)
+                            foldersToUpdate.Enqueue(child);
+                    }
+                }
+                return list;
             }
-            public List<TreeNode> GetChildNodeItems()
+
+            /// <summary>
+            /// Find all parent nodes of a target node in the tree. if the target is a root node, return an empty list.
+            /// </summary>
+            public List<TreeNode> GetParents(bool includeRootNode = true, bool includedMyselfIamFolder = false)
             {
-                return Children.Where(x => x.IsFolder != true).ToList();
+                var list = new List<TreeNode>();
+                if (includedMyselfIamFolder && IsFolder)
+                {
+                    list.Add(this);
+                }
+                TreeNode? current = this;
+                while (true)
+                {
+                    if (current?.ParentNode != null)
+                    {
+                        current = current.ParentNode;
+                        if (!includeRootNode && current.IsRootFolder)
+                        {
+                            // If we don't include the root node, stop here
+                            break;
+                        }
+                        list.Add(current);
+                        if (current.IsRootFolder)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                list.Reverse();
+                return list;
+            }
+
+            public TreeNode? GetDataBaseNode()
+            {
+                TreeNode? current = this;
+                while (true)
+                {
+                    if (current == null || current.IsRootFolder == true)
+                    {
+                        break;
+                    }
+                    current = current.ParentNode;
+                }
+                return current;
             }
         }
 
+        private TreeNode _rootNode = new TreeNode("", null);
         private ObservableCollection<TreeNode> _rootNodes = new ObservableCollection<TreeNode>();
         public ObservableCollection<TreeNode> RootNodes
         {
             get => _rootNodes;
-            set => SetAndNotifyIfChanged(ref _rootNodes, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _rootNodes, value))
+                {
+                    _rootNode = new TreeNode("", null);
+                    foreach (var node in value)
+                    {
+                        _rootNode.AddChild(node, false);
+                    }
+                }
+            }
         }
 
         private TreeNode? _selectedNode;
@@ -247,7 +338,7 @@ namespace _1RM.View.ServerTree
             }
         }
 
-        private void SortNodes(ObservableCollection<TreeNode> nodes, bool includeSubFolder = true)
+        private static void SortNodes(ObservableCollection<TreeNode> nodes, bool includeSubFolder = true)
         {
             if (nodes.Count <= 1)
             {
@@ -381,9 +472,7 @@ namespace _1RM.View.ServerTree
                     folderName = folderName?.Trim();
                     if (!string.IsNullOrWhiteSpace(folderName))
                     {
-                        var newFolder = new TreeNode(folderName, parentNode);
-                        parentNode.Children.Add(newFolder);
-                        SortNodes(parentNode.Children);
+                        parentNode.AddChild(new TreeNode(folderName, parentNode), true);
                         LocalityTreeViewService.SaveExpansionStates(RootNodes);
                     }
                 });
@@ -425,9 +514,8 @@ namespace _1RM.View.ServerTree
                             if (!string.IsNullOrWhiteSpace(newName) && newName != node.Name)
                             {
                                 node.Name = newName;
-                                UpdateServerTreeNodes(node);
-                                LocalityTreeViewService.SaveExpansionStates(RootNodes); // to remove old name cache
-                                BuildView();
+                                LocalityTreeViewService.SaveExpansionStates(RootNodes);
+                                UpdateDbServerTreeNodes(node);
                             }
                         }
                         else if (node.Server != null)
@@ -494,7 +582,7 @@ namespace _1RM.View.ServerTree
                     if (o is TreeNode node)
                     {
                         // Build the tree path for the new server
-                        var parents = FindParents(node, includeFirstNode: true, includedTargetIfIsFolder: true);
+                        var parents = node.GetParents(includedMyselfIamFolder: true);
                         if (!string.IsNullOrEmpty(parents?.First().Name))
                         {
                             var dataSourceName = parents.First().Name;
@@ -546,43 +634,43 @@ namespace _1RM.View.ServerTree
         }
 
 
-        /// <summary>
-        /// Find all parent nodes of a target node in the tree. if the target is a root node, return an empty list.
-        /// </summary>
-        public List<TreeNode> FindParents(TreeNode target, bool includeFirstNode = true, bool includedTargetIfIsFolder = false)
-        {
-            var list = new List<TreeNode>();
-            if (includedTargetIfIsFolder && target.IsFolder)
-            {
-                list.Add(target);
-            }
-            TreeNode? current = target;
-            while (true)
-            {
-                if (current?.ParentNode != null)
-                {
-                    current = current.ParentNode;
-                    if (!includeFirstNode && current.IsRootFolder)
-                    {
-                        // If we don't include the root node, stop here
-                        break;
-                    }
-                    list.Add(current);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            list.Reverse();
-            return list;
-        }
+        ///// <summary>
+        ///// Find all parent nodes of a target node in the tree. if the target is a root node, return an empty list.
+        ///// </summary>
+        //public List<TreeNode> GetParents(TreeNode target, bool includeRootNode = true, bool includedMyselfIamFolder = false)
+        //{
+        //    var list = new List<TreeNode>();
+        //    if (includedMyselfIamFolder && target.IsFolder)
+        //    {
+        //        list.Add(target);
+        //    }
+        //    TreeNode? current = target;
+        //    while (true)
+        //    {
+        //        if (current?.ParentNode != null)
+        //        {
+        //            current = current.ParentNode;
+        //            if (!includeRootNode && current.IsRootFolder)
+        //            {
+        //                // If we don't include the root node, stop here
+        //                break;
+        //            }
+        //            list.Add(current);
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //    }
+        //    list.Reverse();
+        //    return list;
+        //}
 
 
 
 
         // Update all servers in a folder when the folder is renamed (iterative implementation)
-        private void UpdateServerTreeNodes(TreeNode folderNode)
+        private void UpdateDbServerTreeNodes(TreeNode folderNode)
         {
             if (folderNode.IsFolder == false) return;
 
@@ -590,16 +678,16 @@ namespace _1RM.View.ServerTree
             var foldersToProcess = new Stack<TreeNode>();
             foldersToProcess.Push(folderNode);
 
-            var dataDict = new Dictionary<DataSourceBase, List<ProtocolBase>>();
+            var serversToUpdate = new List<ProtocolBase>();
             while (foldersToProcess.Count > 0)
             {
                 var currentFolder = foldersToProcess.Pop();
-                var serverNodes = currentFolder.GetChildNodeItems();
+                var serverNodes = currentFolder.GetChildNodes(false, needFolderNode: false);
                 if (serverNodes.Count > 0)
                 {
                     // update the servers in this folder
-                    var parents = FindParents(currentFolder, includeFirstNode: false, includedTargetIfIsFolder: true);
-                    var folderPath = parents == null ? [] : parents.Select(x => x.Name).ToList();
+                    var parents = currentFolder.GetParents(includeRootNode: false, includedMyselfIamFolder: true);
+                    var folderPath = parents.Select(x => x.Name).ToList();
                     var dataSource = currentFolder.Children.FirstOrDefault(x => x.IsFolder == false)?.Server?.Server?.DataSource;
                     if (dataSource?.IsWritable == true)
                     {
@@ -608,10 +696,7 @@ namespace _1RM.View.ServerTree
                         {
                             server.TreeNodes = new List<string>(folderPath);
                         }
-                        if (dataDict.ContainsKey(dataSource))
-                            dataDict[dataSource].AddRange(servers);
-                        else
-                            dataDict[dataSource] = new List<ProtocolBase>(servers);
+                        serversToUpdate.AddRange(servers);
                     }
                 }
                 // Push all child folders onto the stack for processing
@@ -623,10 +708,7 @@ namespace _1RM.View.ServerTree
                     }
                 }
             }
-            foreach (var kv in dataDict.Where(kv => kv.Key.IsWritable != false))
-            {
-                kv.Key.Database_UpdateServer(kv.Value);
-            }
+            IoC.Get<GlobalData>().UpdateServer(serversToUpdate);
         }
 
         /// <summary>
@@ -665,66 +747,55 @@ namespace _1RM.View.ServerTree
         /// Move a folder node to a target folder node within the same root database
         /// </summary>
         /// <param name="folderNode">The folder node to move (IsFolder=True)</param>
-        /// <param name="targetNode">The target node (IsFolder=True or IsFolder=False)</param>
+        /// <param name="targetFolder">The target node (IsFolder=True or IsFolder=False)</param>
         /// <returns>True if the move was successful, false otherwise</returns>
-        public bool FolderMoveToFolder(TreeNode folderNode, TreeNode targetNode)
+        public bool FolderMoveToFolder(TreeNode folderNode, TreeNode? targetFolder)
         {
             // Cannot move to self
-            if (folderNode == targetNode)
+            if (folderNode == targetFolder)
                 return false;
             if (!folderNode.IsFolder || folderNode.IsRootFolder)
                 return false;
+            if (targetFolder?.IsFolder == false)
+            {
+                targetFolder = targetFolder.ParentNode;
+            }
+            if (targetFolder?.IsFolder != true) return false;
+
+            // TODO check db read-only state
 
             // Cannot move a folder into one of its own descendants
-            if (IsDescendantOf(targetNode, folderNode))
+            if (IsDescendantOf(targetFolder, folderNode))
                 return false;
 
 
-            // Determine target folder and root
-            TreeNode targetRoot = targetNode;
-            TreeNode targetFolder = targetNode;
-            var targetPaths = new List<TreeNode>();
-
-            if (targetNode.IsRootFolder == true)
+            var targetRoot = targetFolder;
+            if (targetFolder.IsRootFolder == true)
             {
-                targetRoot = targetNode;
-                targetFolder = targetNode;
-                targetPaths = [targetNode];
+                // do nothing
             }
-            else if (targetNode.IsFolder == true)
+            else if (targetFolder.IsFolder == true)
             {
-                var tmp = FindParents(targetNode);
+                var tmp = targetFolder.GetParents();
                 if (tmp.Count == 0) return false;
-                targetPaths = tmp;
-                targetRoot = targetPaths[0];
-                targetPaths.Add(targetNode);
-                targetFolder = targetNode;
-            }
-            else if (targetNode is { IsFolder: false, Server: not null })
-            {
-                var tmp = FindParents(targetNode);
-                if (tmp.Count == 0) return false;
-                targetFolder = tmp.Last();
-                targetPaths = tmp;
-                targetRoot = targetPaths[0];
-                targetPaths.RemoveAt(0); // remove the root node from the path
+                targetRoot = tmp[0];
             }
             else
             {
-                SimpleLogHelper.Warning($"unhandled targetNode type: {targetNode.Name}: IsFolder={targetNode.IsFolder}, IsRootFolder={targetNode.IsRootFolder}, Server={targetNode.Server?.DisplayName ?? "null"}");
+                SimpleLogHelper.Warning($"unhandled targetNode type: {targetFolder.Name}: IsFolder={targetFolder.IsFolder}, IsRootFolder={targetFolder.IsRootFolder}, Server={targetFolder.Server?.DisplayName ?? "null"}");
                 return false;
             }
 
-            
-            var sourcePaths = FindParents(folderNode);
-            if (sourcePaths.Count == 0) return false;
-            if (sourcePaths.First() != targetRoot) return false; // Only allow moving within the same data source
-            if (sourcePaths.Last() == targetFolder) return false; // Don't move if already in target location
 
+            {
+                var sourcePaths = folderNode.GetParents();
+                if (sourcePaths.Count == 0) return false;
+                if (sourcePaths.First() != targetRoot) return false; // Only allow moving within the same data source
+                if (sourcePaths.Last() == targetFolder) return false; // Don't move if already in target location
+            }
 
             try
             {
-                var oldParent = folderNode.ParentNode;
                 if (targetFolder.Children.Any(x => x.IsFolder && x.Name == folderNode.Name))
                 {
                     // A folder with the same name already exists in the target location, merge instead
@@ -732,14 +803,13 @@ namespace _1RM.View.ServerTree
                     // Collect all servers in the folder to be moved
                     foreach (var child in folderNode.Children)
                     {
-                        existingFolder.Children.Add(child);
+                        existingFolder.AddChild(child, false);
                     }
                 }
                 else
                 {
-                    targetFolder.Children.Add(folderNode);
+                    targetFolder.AddChild(folderNode, false);
                 }
-                oldParent?.Children.Remove(folderNode);
 
                 // Update all Node in the moved folder and its subfolders
                 {
@@ -765,7 +835,7 @@ namespace _1RM.View.ServerTree
                     var foldersToUpdate = new Queue<TreeNode>();
                     var foldersToUpdatePaths = new Queue<List<string>>();
                     foldersToUpdate.Enqueue(folderNode);
-                    foldersToUpdatePaths.Enqueue(FindParents(folderNode, includeFirstNode: false, includedTargetIfIsFolder: true)?.Select(x => x.Name).ToList() ?? new List<string>());
+                    foldersToUpdatePaths.Enqueue(folderNode.GetParents(includeRootNode: false, includedMyselfIamFolder: true).Select(x => x.Name).ToList());
                     while (foldersToUpdate.Count > 0)
                     {
                         var currentFolder = foldersToUpdate.Dequeue();
@@ -785,14 +855,11 @@ namespace _1RM.View.ServerTree
                     }
                     if (serversToUpdate.Count > 0)
                     {
-                        var dataSource = serversToUpdate.First().DataSource;
-                        if (dataSource?.IsWritable == true)
-                        {
-                            dataSource.Database_UpdateServer(serversToUpdate);
-                        }
+                        IoC.Get<GlobalData>().UpdateServer(serversToUpdate);
                     }
                 }
                 SortNodes(targetFolder.Children, false);
+                IoC.Get<GlobalData>().ReloadAll();
                 return true;
             }
             catch (Exception ex)
@@ -802,93 +869,72 @@ namespace _1RM.View.ServerTree
             }
         }
 
-        /// <summary>
-        /// Check if a node is a descendant of another node
-        /// </summary>
-        /// <param name="potentialDescendant">The node that might be a descendant</param>
-        /// <param name="ancestor">The potential ancestor node</param>
-        /// <returns>True if potentialDescendant is a descendant of ancestor</returns>
-        private bool IsDescendantOf(TreeNode potentialDescendant, TreeNode ancestor)
-        {
-            var parentPaths = FindParents(potentialDescendant);
-            return parentPaths?.Contains(ancestor) == true;
-        }
 
         /// <summary>
         /// Move a server node to a target folder node within the same root database
         /// </summary>
         /// <param name="serverNode">The server node to move (IsFolder=False)</param>
-        /// <param name="targetNode">The target node (IsFolder=True or IsFolder=False)</param>
+        /// <param name="targetFolder">The target node (IsFolder=True or IsFolder=False)</param>
         /// <returns>True if the move was successful, false otherwise</returns>
-        public bool MoveServerToFolder(TreeNode serverNode, TreeNode targetNode)
+        public bool ServerMoveToFolder(TreeNode serverNode, TreeNode? targetFolder)
         {
             // Cannot move to self
-            if (serverNode == targetNode)
+            if (serverNode == targetFolder)
                 return false;
             if (serverNode.IsFolder || serverNode.Server?.Server == null)
-                return false;
+                return false; 
+            if (targetFolder?.IsFolder == false)
+            {
+                targetFolder = targetFolder.ParentNode;
+            }
+            if (targetFolder?.IsFolder != true) return false;
 
             var server = serverNode.Server.Server;
             var dataSource = server.DataSource;
             if (dataSource?.IsWritable != true)
                 return false;
 
-            var targetRoot = targetNode;
-            var targetFolder = targetNode;
+
+
+            var targetRoot = targetFolder;
             var targetPaths = new List<TreeNode>();
-            if (targetNode.IsRootFolder == true)
+            if (targetFolder.IsRootFolder == true)
             {
                 // do nothing
             }
-            else if (targetNode.IsFolder == true)
+            else if (targetFolder.IsFolder == true)
             {
-                var tmp = FindParents(targetNode)!;
+                var tmp = targetFolder.GetParents();
                 if (tmp.Count == 0) return false;
+                targetRoot = tmp[0];
                 targetPaths = tmp;
-                targetRoot = targetPaths[0];
                 targetPaths.RemoveAt(0); // remove the root node from the path
-                targetPaths.Add(targetNode);
-                targetFolder = targetNode; // the target node is the folder itself
-            }
-            else if (targetNode is { IsFolder: false, Server: not null })
-            {
-                var tmp = FindParents(targetNode)!;
-                if (tmp.Count == 0) return false;
-                targetFolder = tmp.Last();
-                targetPaths = tmp;
-                targetRoot = targetPaths[0];
-                targetPaths.RemoveAt(0); // remove the root node from the path
+                targetPaths.Add(targetFolder);
             }
             else
             {
-                SimpleLogHelper.Warning($"unhandled targetNode type: {targetNode.Name}: IsFolder={targetNode.IsFolder}, IsRootFolder={targetNode.IsRootFolder}, Server={targetNode.Server?.DisplayName ?? "null"}");
+                SimpleLogHelper.Warning($"unhandled targetNode type: {targetFolder.Name}: IsFolder={targetFolder.IsFolder}, IsRootFolder={targetFolder.IsRootFolder}, Server={targetFolder.Server?.DisplayName ?? "null"}");
                 return false;
             }
 
 
 
-            var sourcePaths = FindParents(serverNode);
+            var sourcePaths = serverNode.GetParents();
             if (sourcePaths.Count == 0) return false; // cannot find source path
-            // Only allow moving within the same data source
             if (sourcePaths.FirstOrDefault() != targetRoot) return false;   // not in the same root data source
-            var sourceParent = sourcePaths.Last();
-            sourcePaths.RemoveAt(0); // remove the root node from the path
-            if (sourcePaths.LastOrDefault() == targetPaths.LastOrDefault()) return true;   // already in the target folder
+            if (sourcePaths.LastOrDefault() == targetFolder) return true;   // already in the target folder
 
-            // Get the new tree path for the server
-            List<string> newTreePath = (from t in targetPaths where !t.IsRootFolder select t.Name).ToList();
+
+            sourcePaths.RemoveAt(0); // remove the root node from the path
 
             // Update the server's TreeNodes property
             try
             {
-                // Update the server's tree path
-                server.TreeNodes = new List<string>(newTreePath);
-                dataSource.Database_UpdateServer(new List<ProtocolBase> { server });
                 // Remove from source parent and add to target folder
-                sourceParent.Children.Remove(serverNode);
-                targetFolder.Children.Add(serverNode);
-                if (IoC.Get<MainWindowViewModel>().ServerOrderBy != EnumServerOrderBy.Custom)
-                    SortNodes(targetFolder.Children);
+                targetFolder.AddChild(serverNode, true);
+                // Update the server's TreeNodes
+                server.TreeNodes = new List<string>((from t in targetPaths where !t.IsRootFolder select t.Name).ToList());
+                IoC.Get<GlobalData>().UpdateServer(server);
                 return true;
             }
             catch (Exception ex)
@@ -898,26 +944,35 @@ namespace _1RM.View.ServerTree
             }
         }
 
+
+
         /// <summary>
-        /// Reorder servers within the same parent folder for custom ordering
+        /// Check if a node is a descendant of another node
         /// </summary>
-        /// <param name="sourceNode">The server node being moved</param>
-        /// <param name="targetNode">The target server node or position</param>
-        /// <param name="insertBefore">Whether to insert before or after the target</param>
-        /// <returns>True if the reorder was successful, false otherwise</returns>
+        /// <param name="potentialDescendant">The node that might be a descendant</param>
+        /// <param name="ancestor">The potential ancestor node</param>
+        /// <returns>True if potentialDescendant is a descendant of ancestor</returns>
+        private bool IsDescendantOf(TreeNode potentialDescendant, TreeNode ancestor)
+        {
+            var parentPaths = potentialDescendant.GetParents();
+            return parentPaths?.Contains(ancestor) == true;
+        }
+
+        /// <summary>
+        /// Move sourceNode to the front or back of targetNode in the same folder
+        /// </summary>
         public bool ReorderServersInSameFolder(TreeNode sourceNode, TreeNode targetNode, bool insertBefore = true)
         {
+            if (sourceNode == targetNode) return true;
             if (IoC.Get<MainWindowViewModel>().ServerOrderBy != EnumServerOrderBy.Custom) return false; // Must be custom ordering
-            if (sourceNode.Server?.Server == null || targetNode.Server?.Server == null) return false;
-
+            var sourceParents = sourceNode.GetParents();
+            var targetParents = sourceNode.GetParents();
+            if (sourceParents.Count != targetParents.Count) return false; // Must be in the same parent folder
+            if (sourceParents.LastOrDefault() != targetParents.LastOrDefault()) return false; // Must be in the same parent folder
 
             try
             {
-                var sourceParent = FindParent(sourceNode);
-                if (sourceParent == null) return false; // Cannot find parent
-                if (sourceParent.Children.IndexOf(targetNode) < 0) return false; // Must be in the same parent folder
-
-                // Get all server nodes in the same folder
+                var parents
                 var siblingServers = sourceParent.Children.Where(x => !x.IsFolder && x.Server != null).ToList() ?? new List<TreeNode>();
 
                 if (siblingServers.Count < 2)
@@ -950,6 +1005,7 @@ namespace _1RM.View.ServerTree
                 var serverViewModels = siblingServers.Select(x => x.Server!).ToList();
                 UpdateCustomOrder(serverViewModels);
                 LocalityTreeViewService.SaveExpansionStates(RootNodes);
+                SortNodes(sourceParent.Children, false);
                 return true;
             }
             catch (Exception ex)
@@ -962,66 +1018,42 @@ namespace _1RM.View.ServerTree
         /// <summary>
         /// Update custom order for a list of server view models within the same folder
         /// </summary>
-        private void UpdateCustomOrder(List<ProtocolBaseViewModel> serverViewModels)
+        private void UpdateCustomOrder(List<TreeNode> updatedNodes)
         {
             if (IoC.Get<MainWindowViewModel>().ServerOrderBy != EnumServerOrderBy.Custom) return; // Must be custom ordering
             try
             {
-                if (serverViewModels.Count <= 1)
+                if (updatedNodes.Count <= 1)
                     return;
+                LocalityTreeViewService.Settings.CustomNodeOrder.Clear();
                 // Get current custom order mapping for all servers
                 var allServers = AppData.VmItemList.ToList();
                 // to dict
-                var allServersOrder = allServers.ToDictionary(x => x.Id, x => 0); // Initialize with 0 order
-                // first, update the current tree view order
-                var currentTreeViewList = GetChildrenServers();
+                var allNodeOrder = allServers.ToDictionary(x => x.Id, x => 0); // Initialize with 0 order
+                // first, update the current tree node order
+                var currentTreeViewList = RootNodes.SelectMany(x => x.GetChildNodes(true)).ToList();
                 for (int i = 0; i < currentTreeViewList.Count; i++)
                 {
-                    allServersOrder[currentTreeViewList[i].Id] = i + 1; // Assign new order starting from 1
+                    currentTreeViewList[i].CustomOrder = i + 1; // Assign new custom order starting from 1
+                    var id = currentTreeViewList[i].Server?.Id ?? FolderNodePrefix + currentTreeViewList[i].Name;
+                    if (!string.IsNullOrEmpty(id))
+                        allNodeOrder[id] = i + 1; // Assign new order starting from 1
                 }
                 // Then, update the custom order for the servers in the folder
-                for (int i = 0; i < serverViewModels.Count; i++)
+                for (int i = 0; i < updatedNodes.Count; i++)
                 {
-                    allServersOrder[serverViewModels[i].Id] = i + 1; // Assign new order starting from 1
+                    updatedNodes[i].CustomOrder = i + 1;
+                    var id = updatedNodes[i].Server?.Id ?? FolderNodePrefix + updatedNodes[i].Name;
+                    allNodeOrder[id] = i + 1;
                 }
                 // Save the complete ordered list
-                LocalityTreeViewService.Settings.ServerCustomOrder = allServersOrder;
+                LocalityTreeViewService.Settings.CustomNodeOrder = allNodeOrder;
                 LocalityTreeViewService.Save();
             }
             catch (Exception ex)
             {
                 SimpleLogHelper.Warning($"Failed to update custom order: {ex.Message}");
             }
-        }
-
-
-        public List<ProtocolBaseViewModel> GetChildrenServers(TreeNode? root = null)
-        {
-            var list = new List<ProtocolBaseViewModel>();
-            var children = root?.Children ?? RootNodes;
-            var folders = children.Where(x => x.IsFolder);
-            foreach (var rootChild in folders)
-            {
-                list.AddRange(GetChildrenServers(rootChild));
-            }
-            list.AddRange(children.Where(x => x.IsFolder == false && x.Server != null).Select(x => x.Server)!);
-            return list;
-        }
-
-        public List<TreeNode> GetAllChildrenNodes(TreeNode? root = null)
-        {
-            // TODO CHECK
-            var list = new List<TreeNode>();
-            if (root != null)
-                list.Add(root);
-            var children = root?.Children ?? RootNodes;
-            var folders = children.Where(x => x.IsFolder);
-            foreach (var rootChild in folders)
-            {
-                list.AddRange(GetAllChildrenNodes(rootChild));
-            }
-            list.AddRange(children.Where(x => x.IsFolder == false));
-            return list;
         }
 
         /// <summary>
@@ -1035,32 +1067,48 @@ namespace _1RM.View.ServerTree
             // Cannot move to self
             if (sourceNode == targetNode)
                 return false;
-
             // Cannot move root folders
             if (sourceNode.IsRootFolder)
                 return false;
 
             // Check data source write permissions for servers
-            if (sourceNode.Server?.Server != null)
+            if (sourceNode.Server?.Server != null || targetNode.Server?.Server != null)
             {
-                var server = sourceNode.Server.Server;
+                var server = sourceNode.Server?.Server ?? targetNode.Server!.Server;
                 var dataSource = server.DataSource;
                 if (dataSource?.IsWritable != true)
+                {
+                    SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", data source is not writable.");
                     return false;
+                }
             }
 
             // For folder moves, prevent moving into descendants
             if (sourceNode.IsFolder && IsDescendantOf(targetNode, sourceNode))
+            {
+                SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target is a descendant of source.");
                 return false;
+            }
 
 
             // Must be within the same data source
-            var sourcePaths = FindParents(sourceNode);
-            var targetPaths = FindParents(targetNode);
+            var sourcePaths = sourceNode.GetParents();
+            var targetPaths = targetNode.GetParents();
 
             // prevent moving into parent folder
-            if (targetNode.IsFolder && targetNode == sourcePaths.LastOrDefault()) return false;
-            if (!targetNode.IsFolder && targetPaths.LastOrDefault() == sourcePaths.LastOrDefault()) return false;
+            if (targetNode.IsFolder && targetNode == sourcePaths.LastOrDefault())
+            {
+                SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target is the same as source parent.");
+                return false;
+            }
+            if (LocalityTreeViewService.Settings.ServerOrderBy != EnumServerOrderBy.Custom)
+            {
+                if (!targetNode.IsFolder && targetPaths.LastOrDefault() == sourcePaths.LastOrDefault())
+                {
+                    SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target parent is the same as source parent.");
+                    return false;
+                }
+            }
 
             // Get source and target roots
             var sourceRoot = sourcePaths.FirstOrDefault();
@@ -1126,7 +1174,7 @@ namespace _1RM.View.ServerTree
                     // Add the server to the last tree node
                     if (currentNode != null)
                     {
-                        currentNode.Children.Add(new TreeNode(server, currentNode));
+                        currentNode.AddChild(new TreeNode(server, currentNode), false);
                     }
                 }
 
@@ -1180,11 +1228,11 @@ namespace _1RM.View.ServerTree
         {
             // Set custom order for each node based on server ID
             {
-                var orders = LocalityTreeViewService.Settings.ServerCustomOrder;
-                foreach (var node in roots)
+                var orders = LocalityTreeViewService.Settings.CustomNodeOrder;
+                var nodes = roots.SelectMany(x => x.GetChildNodes(true)).ToList();
+                foreach (var node in nodes)
                 {
                     if (string.IsNullOrEmpty(node.Server?.Id)) continue; // Skip nodes without a server ID
-                    // Set custom order if available
                     node.CustomOrder = orders.GetValueOrDefault(node.Server.Id, int.MaxValue);
                 }
             }
@@ -1197,8 +1245,8 @@ namespace _1RM.View.ServerTree
         {
             if (VmServerList.Any(x => x.IsSelected))
             {
-                var currentTreeNodes = GetAllChildrenNodes();
-                foreach (var item in currentTreeNodes)
+                var nodes = RootNodes.SelectMany(x => x.GetChildNodes(true)).ToList();
+                foreach (var item in nodes)
                 {
                     item.IsCheckboxSelected = false;
                 }
