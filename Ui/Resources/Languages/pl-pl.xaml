@@ -57,7 +57,8 @@
     <s:String x:Key="Language">Język</s:String>
     <s:String x:Key="Startup">Uruchomienie</s:String>
     <s:String x:Key="Tags">Tagi</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Naciśnij ENTER, aby dodać znacznik, który służy do grupowania serwerów. Klikając prawym przyciskiem myszy znaczniki na stronie głównej, możesz filtrować lub przypiąć określony znacznik.</s:String>
+    <s:String x:Key="Icon">Ikona</s:String>
     <s:String x:Key="Hostname">Nazwa hosta</s:String>
     <s:String x:Key="Target">Cel</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -104,8 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Baza danych</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Uwaga: Twoje dane nie będą kodowane!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Przetwarzanie danych. Nie zamykaj aplikacji!</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">Baza danych: Odmowa dostępu do odczytu lub plik nie jest bazą danych lub plik jest zaszyfrowany!</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Baza danych: odmowa dostępu do odczytu! Sprawdź hasło pliku albo czy plik jest w użyciu.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplikuj</s:String>
     <s:String x:Key="server_card_operate_copy_address">Kopiuj nazwę hosta do schowka</s:String>
     <s:String x:Key="server_card_operate_copy_username">Kopiuj nazwę użytkownika do schowka</s:String>
@@ -124,7 +123,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Edytujesz masowo:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Ilość zaznaczonych wpisów:</s:String>
     <s:String x:Key="server_editor_group_title_common">Wszystkie</s:String>
-    <s:String x:Key="Connection">Połączenie</s:String>
+    <s:String x:Key="Connection Info">Informacje o połączeniu</s:String>
+    <s:String x:Key="Connection Settings">Połączenie</s:String>
     <s:String x:Key="server_editor_group_title_display">Wyświetl</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Zaawansowany</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serwer bramy RD</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Schowek</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Kombinacje klawiszy</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Dyski</s:String>
-    <s:String x:Key="Drives plug in latter">Dyski podłączone później</s:String>
+    <s:String x:Key="Drives plug in later">Dyski podłączone później</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Dźwięk</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Dezaktywowane</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Słuchaj na lokalnym</s:String>

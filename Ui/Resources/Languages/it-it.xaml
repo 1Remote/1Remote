@@ -57,7 +57,8 @@
     <s:String x:Key="Language">Lingua</s:String>
     <s:String x:Key="Startup">Avvio</s:String>
     <s:String x:Key="Tags">Tag</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Premere Invio per aggiungere un tag, che viene utilizzato per raggruppare i server. Facendo clic con il pulsante destro del mouse sui tag sulla homepage, è possibile filtrare o applicare un tag specifico.</s:String>
+    <s:String x:Key="Icon">Icona</s:String>
     <s:String x:Key="Hostname">Nome host</s:String>
     <s:String x:Key="Target">Destinazione</s:String>
     <s:String x:Key="Port">Porta</s:String>
@@ -104,8 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Database</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Attenzione: i tuoi dati verranno salvati non crittografati !</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Elaborazione dati. Non chiudere l'applicazione !</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">Database: Permesso negato per la lettura o il file non è un database o il file è un database crittografato</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Database: Permesso negato per la lettura. Controlla la password del database o l'occupazione del file.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplica</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copia il nome host negli appunti</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copia il nome utente negli appunti</s:String>
@@ -124,7 +123,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Stai modificando in blocco:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Numero di elementi selezionati:</s:String>
     <s:String x:Key="server_editor_group_title_common">Comune</s:String>
-    <s:String x:Key="Connection">Connessione</s:String>
+    <s:String x:Key="Connection Info">Informazioni di connessione</s:String>
+    <s:String x:Key="Connection Settings">Connessione</s:String>
     <s:String x:Key="server_editor_group_title_display">Schermo</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Avanzate</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Server Gateway Desktop remoto</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Appunti</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinazioni di tasti</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Unità</s:String>
-    <s:String x:Key="Drives plug in latter">Unità collegate successivamente</s:String>
+    <s:String x:Key="Drives plug in later">Unità collegate successivamente</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Suoni</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Disabilitato</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Riproduci in locale</s:String>
