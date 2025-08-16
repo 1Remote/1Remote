@@ -29,37 +29,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource PrimaryMidBrush}">
+    <Grid Background="{DynamicResource PrimaryMidBrush}" PreviewMouseMove="MasterGrid_OnPreviewMouseMove"
+          AllowDrop="True" DragOver="TreeViewItem_OnDragOver" Drop="TreeViewItem_OnDrop">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <!-- Top header with add button -->
-        <!--
-        <Grid Grid.Row="0" VerticalAlignment="Top">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="20">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
-                </Border.Effect>
-            </Border>
-
-            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
-                <Grid MinHeight="20">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 5 0"
-                                Command="{Binding CmdAdd}"
-                                ToolTip="{DynamicResource Add}">
-                            <Grid>
-                                <Path Data="{StaticResource GeometryCross}" 
-                                      Stretch="Uniform"
-                                      Fill="{DynamicResource PrimaryTextBrush}"/>
-                            </Grid>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Grid>-->
 
 
         <!-- Main tree view area -->
@@ -87,7 +62,6 @@
                         <Setter Property="Margin" Value="0"/>
                         <Setter Property="AllowDrop" Value="True"/>
                         <!--<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>-->
-                        <EventSetter Event="PreviewMouseMove" Handler="TreeViewItem_OnPreviewMouseMove"/>
                         <EventSetter Event="DragOver" Handler="TreeViewItem_OnDragOver"/>
                         <EventSetter Event="Drop" Handler="TreeViewItem_OnDrop"/>
                         <Style.Triggers>
@@ -252,9 +226,7 @@
 
                             <Grid Margin="0 3 20 3" MinWidth="200" MinHeight="20"
                                   Background="Transparent"
-                                  MouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown"
-                                  PreviewMouseLeftButtonUp="TreeViewItemGrid_OnMouseLeftButtonUp"
-                                  >
+                                  MouseLeftButtonDown="TreeViewItemGrid_OnMouseLeftButtonDown">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>

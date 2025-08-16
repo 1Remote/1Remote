@@ -1,14 +1,15 @@
-﻿using System.Linq;
+﻿using _1RM.Model;
+using _1RM.Service.Locality;
+using _1RM.Utils;
+using _1RM.View;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using Stylet;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Shawn.Utils;
-using Shawn.Utils.Wpf;
-using _1RM.Utils;
-using _1RM.View;
-using _1RM.Model;
-using _1RM.Service.Locality;
-using Stylet;
+using ToolGood.Words.Pinyin.internals;
 
 namespace _1RM.View.ServerTree
 {
@@ -26,8 +27,23 @@ namespace _1RM.View.ServerTree
         #region Drag and Drop Support
 
         private TreeViewItem? _draggedItem = null;
+        private Cursor? _draggedCursor = null;
         private ServerTreeViewModel.TreeNode? _draggedNode = null;
 
+        private void MasterGrid_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_draggedItem == null)
+            {
+                _draggedCursor = null;
+                Mouse.OverrideCursor = null;
+                return;
+            }
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                _draggedItem = null;
+                _draggedNode = null;
+            }
+        }
 
         private void TreeViewItemGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -37,33 +53,42 @@ namespace _1RM.View.ServerTree
             // Don't allow dragging root folders
             if (node.IsRootFolder) return;
             _draggedNode = node;
+            _draggedItem.GiveFeedback += DragSource_GiveFeedback;
             var dataObj = new DataObject();
             dataObj.SetData("DraggedTreeNode", node);
             dataObj.SetData("DraggedTreeViewItem", _draggedItem);
             DragDrop.DoDragDrop(_draggedItem, dataObj, DragDropEffects.Move);
         }
 
-        private void TreeViewItemGrid_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void DragSource_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
-            _draggedItem = null;
-            _draggedNode = null;
-        }
-
-
-
-        private void TreeViewItem_OnPreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (_draggedItem == null) return;
-            if (e.LeftButton != MouseButtonState.Pressed)
+            // 禁用默认光标
+            if (_draggedCursor == null)
             {
-                _draggedItem = null;
-                _draggedNode = null;
+                e.UseDefaultCursors = true;
+                Mouse.OverrideCursor = null;
+            }
+            else
+            {
+                e.UseDefaultCursors = false;
+                Mouse.OverrideCursor = _draggedCursor;
+                //Mouse.SetCursor(_draggedCursor);
+                e.Handled = true;
             }
         }
+
+
+
 
         private void TreeViewItem_OnDragOver(object sender, DragEventArgs e)
         {
             if (_draggedItem == null || _draggedNode == null) return;
+            if (sender is not TreeViewItem)
+            {
+                _draggedCursor = Cursors.Arrow;
+                return;
+            }
+            e.Handled = true;
             if (sender is TreeViewItem { DataContext: ServerTreeViewModel.TreeNode targetNode } treeViewItem)
             {
                 if (e.Data.GetData("DraggedTreeNode") is ServerTreeViewModel.TreeNode draggedNode)
@@ -71,78 +96,85 @@ namespace _1RM.View.ServerTree
                     if (DataContext is ServerTreeViewModel viewModel && viewModel.CanMoveNode(draggedNode, targetNode))
                     {
                         e.Effects = DragDropEffects.Move;
-                    }
-                    else
-                    {
-                        e.Effects = DragDropEffects.None;
+                        // Set cursor based on drag operation type
+                        SetDragOverCursor(e, treeViewItem, draggedNode, targetNode);
+                        return;
                     }
                 }
-                else
+            }
+            _draggedCursor = null;
+            Mouse.OverrideCursor = null;
+            e.Effects = DragDropEffects.None;
+        }
+
+        /// <summary>
+        /// Set appropriate cursor based on the drag operation that will be performed
+        /// </summary>
+        private void SetDragOverCursor(DragEventArgs e, TreeViewItem targetTreeViewItem, ServerTreeViewModel.TreeNode draggedNode, ServerTreeViewModel.TreeNode targetNode)
+        {
+            var element = targetTreeViewItem.FindElementByName("GridNode");
+            if (element == null) return;
+            double elementActualHeight = element.ActualHeight;
+            //SimpleLogHelper.Debug($"targetTreeViewItem.ActualHeight = {targetTreeViewItem.ActualHeight} => {elementActualHeight}");
+            Cursor? draggedCursor = null;
+            if (targetNode.IsFolder)
+            {
+                var mousePosition = e.GetPosition(element);
+                var relativeY = mousePosition.Y / elementActualHeight;
+                draggedCursor = relativeY switch
                 {
-                    e.Effects = DragDropEffects.None;
-                }
+                    < 1.0 / 3.0 => Cursors.ScrollN,
+                    <= 2.0 / 3.0 => Cursors.AppStarting,
+                    _ => Cursors.ScrollS,
+                };
             }
             else
             {
-                e.Effects = DragDropEffects.None;
+                var mousePosition = e.GetPosition(targetTreeViewItem);
+                draggedCursor = mousePosition.Y < elementActualHeight / 2 ? Cursors.ScrollN : Cursors.ScrollS; // Reorder before or after
             }
-            e.Handled = true;
+            if (draggedCursor == Cursors.AppStarting && draggedNode.ParentNode == targetNode)
+                draggedCursor = Cursors.No;
+            _draggedCursor = draggedCursor;
         }
 
         private void TreeViewItem_OnDrop(object sender, DragEventArgs e)
         {
             if (_draggedItem == null || _draggedNode == null) return;
+            if (sender is not TreeViewItem)
+            {
+                _draggedItem = null;
+                _draggedNode = null;
+                _draggedCursor = null;
+                Mouse.OverrideCursor = null;
+                return;
+            }
+            e.Handled = true;
             try
             {
-                if (sender is TreeViewItem targetTreeViewItem &&
-                    targetTreeViewItem.DataContext is ServerTreeViewModel.TreeNode targetNode &&
-                    e.Data.GetData("DraggedTreeNode") is ServerTreeViewModel.TreeNode draggedNode &&
-                    DataContext is ServerTreeViewModel viewModel)
+                if (sender is TreeViewItem { DataContext: ServerTreeViewModel.TreeNode targetNode } targetTreeViewItem &&
+                    e.Data.GetData("DraggedTreeNode") is ServerTreeViewModel.TreeNode draggedNode && DataContext is ServerTreeViewModel viewModel)
                 {
-                    if (viewModel.CanMoveNode(draggedNode, targetNode))
+                    if (!viewModel.CanMoveNode(draggedNode, targetNode)) return;
+                    if (_draggedCursor == Cursors.AppStarting || _draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS)
                     {
-                        bool success = false;
-
+                        var movTarget = targetNode;
+                        if (_draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS) // the case move child to front of back of its parent folder
+                        {
+                            movTarget = targetNode.IsFolder ? targetNode.ParentNode! : targetNode;
+                        }
                         if (draggedNode.IsFolder)
-                        {
-                            // Move folder to target location
-                            success = viewModel.FolderMoveToFolder(draggedNode, targetNode);
-                            if (success)
-                            {
-                                SimpleLogHelper.Debug($"Successfully moved folder '{draggedNode.Name}' to '{targetNode.Name}'");
-                            }
-                        }
-                        else if (!draggedNode.IsFolder)
-                        {
-                            // Move server to folder first
-                            success = viewModel.ServerMoveToFolder(draggedNode, targetNode);
-                            
-                            // For custom ordering, also handle reordering within the same folder
-                            if (success && IoC.Get<MainWindowViewModel>().ServerOrderBy == EnumServerOrderBy.Custom)
-                            {
-                                if (targetNode.IsFolder)
-                                {
-                                    // Server moved to folder - put at end, no reordering needed
-                                }
-                                else
-                                {
-                                    // Determine insert position based on mouse position for server-to-server drops
-                                    var mousePosition = e.GetPosition(targetTreeViewItem);
-                                    bool insertBefore = mousePosition.Y < targetTreeViewItem.ActualHeight / 2;
-                                    viewModel.ReorderServersInSameFolder(draggedNode, targetNode, insertBefore);
-                                }
-                            }
-                            
-                            if (success)
-                            {
-                                SimpleLogHelper.Debug($"Successfully moved server '{draggedNode.Name}' to '{targetNode.Name}'");
-                            }
-                        }
-
-                        if (!success)
-                        {
-                            SimpleLogHelper.Warning($"Failed to move '{draggedNode.Name}' to '{targetNode.Name}'");
-                        }
+                            viewModel.FolderMoveToFolder(draggedNode, movTarget);
+                        else
+                            viewModel.ServerMoveToFolder(draggedNode, movTarget);
+                    }
+                    if (_draggedCursor == Cursors.ScrollN)
+                    {
+                        viewModel.NodeMoveToReorderInSameFolder(draggedNode, targetNode, insertBefore: true);
+                    }
+                    else if (_draggedCursor == Cursors.ScrollS)
+                    {
+                        viewModel.NodeMoveToReorderInSameFolder(draggedNode, targetNode, insertBefore: false);
                     }
                 }
             }
@@ -156,9 +188,10 @@ namespace _1RM.View.ServerTree
                 // Clear drag state
                 _draggedItem = null;
                 _draggedNode = null;
+                // Reset cursor when drag operation completes
+                _draggedCursor = null;
+                Mouse.OverrideCursor = null;
             }
-
-            e.Handled = true;
         }
 
         #endregion
