@@ -57,7 +57,8 @@
     <s:String x:Key="Language">Lingua</s:String>
     <s:String x:Key="Startup">Comezo</s:String>
     <s:String x:Key="Tags">Etiquetas</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Pulse Enter para engadir unha etiqueta, que se usa para agrupar servidores. Facendo clic co botón dereito das etiquetas da páxina de inicio, pode filtrar ou pintar unha etiqueta específica.</s:String>
+    <s:String x:Key="Icon">Icona</s:String>
     <s:String x:Key="Hostname">Nome do host</s:String>
     <s:String x:Key="Target">Destiño</s:String>
     <s:String x:Key="Port">Porto</s:String>
@@ -104,8 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Base de datos</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Atención: os teus datos gardaranse sen cifrar.</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Procesando datos. Non peches a aplicación!</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">Base de datos: Permiso denegado para ler o arquivo ou o arquivo non é una base de datos ou o arquivo está encriptado</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Base de datos: Permiso denegado para ler! Por favor, comproba a chave de paso da base de datos</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplicar</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copiar o nome do host ao portapapeis</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copiar o nome do usuario ao portapapeis</s:String>
@@ -124,7 +123,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Estás a editar en bloque:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Número de obxectos escollidos:</s:String>
     <s:String x:Key="server_editor_group_title_common">Común</s:String>
-    <s:String x:Key="Connection">Conexión</s:String>
+    <s:String x:Key="Connection Info">Conexión</s:String>
+    <s:String x:Key="Connection Settings">Conexión</s:String>
     <s:String x:Key="server_editor_group_title_display">Pantalla</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Ventaxa</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Porta en enlace do servidor RD</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Portapapeis</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combiacións de teclas</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Unidades</s:String>
-    <s:String x:Key="Drives plug in latter">Conectar unidades máis tarde</s:String>
+    <s:String x:Key="Drives plug in later">Conectar unidades máis tarde</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Deshabilitado</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Soar en local</s:String>
