@@ -57,7 +57,8 @@
     <s:String x:Key="Language">语言</s:String>
     <s:String x:Key="Startup">启动</s:String>
     <s:String x:Key="Tags">标签</s:String>
-    <s:String x:Key="Logo">图标</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">按下回车键添加一个标签，标签用于服务器分组。通过鼠标右键点击主页中的标签可签筛选或固定某个标签。</s:String>
+    <s:String x:Key="Icon">图标</s:String>
     <s:String x:Key="Hostname">地址</s:String>
     <s:String x:Key="Target">目标</s:String>
     <s:String x:Key="Port">端口</s:String>
@@ -104,8 +105,6 @@
     <s:String x:Key="system_options_data_security_database">数据库</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">导出数据将以明文显示，请妥善保管！</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">数据处理中，请勿关闭程序。</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">数据库：所选文件已被占用或不是数据库或该数据库已被加密！</s:String>
-    <s:String x:Key="string_database_error_permission_denied">数据库：没有足够的权限读取，或数据库已被占用！</s:String>
     <s:String x:Key="server_card_operate_duplicate">创建副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">复制地址到剪贴板</s:String>
     <s:String x:Key="server_card_operate_copy_username">复制用户名到剪贴板</s:String>
@@ -124,7 +123,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">你正在批量编辑:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">选中数量：</s:String>
     <s:String x:Key="server_editor_group_title_common">常规</s:String>
-    <s:String x:Key="Connection">连接</s:String>
+    <s:String x:Key="Connection Info">连接参数</s:String>
+    <s:String x:Key="Connection Settings">连接</s:String>
     <s:String x:Key="server_editor_group_title_display">显示</s:String>
     <s:String x:Key="server_editor_group_title_advantage">高级</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 网关服务器</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">剪贴板</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">组合键</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">本地磁盘</s:String>
-    <s:String x:Key="Drives plug in latter">稍后插入的U盘</s:String>
+    <s:String x:Key="Drives plug in later">稍后插入的U盘</s:String>
     <s:String x:Key="server_editor_advantage_sounds">声音</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">禁用</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">在本地播放</s:String>
