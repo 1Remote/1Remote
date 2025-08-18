@@ -57,7 +57,8 @@
     <s:String x:Key="Language">Langue</s:String>
     <s:String x:Key="Startup">Commencez</s:String>
     <s:String x:Key="Tags">Mots clés</s:String>
-    <s:String x:Key="Logo">Logo</s:String>
+    <s:String x:Key="Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.">Appuyez sur Entrée pour ajouter une balise, qui est utilisée pour le regroupement des serveurs. En cliquant avec le bouton droit sur les balises sur la page d'accueil, vous pouvez filtrer ou épingler une balise spécifique.</s:String>
+    <s:String x:Key="Icon">Icône</s:String>
     <s:String x:Key="Hostname">Nom d'hôte</s:String>
     <s:String x:Key="Target">Cibler</s:String>
     <s:String x:Key="Port">Port</s:String>
@@ -104,8 +105,6 @@
     <s:String x:Key="system_options_data_security_database">Base de données</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Mise en garde : vos données seront enregistrées non cryptées !</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Traitement des données, ne fermez pas l'application.</s:String>
-    <s:String x:Key="system_options_data_security_error_can_not_open">Base de données : autorisation de lecture refusée ou le fichier n'est pas une base de données ou le fichier est une base de données cryptée !</s:String>
-    <s:String x:Key="string_database_error_permission_denied">Base de données : autorisation de lecture refusée! Veuillez vérifier le mot de passe du fichier.</s:String>
     <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copier nom d'hôte dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copier le nom d'utilisateur dans le presse-papiers</s:String>
@@ -124,7 +123,8 @@
     <s:String x:Key="server_editor_bulk_editing_title">Vous modifiez en masse :</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Nombre d'éléments sélectionnés:</s:String>
     <s:String x:Key="server_editor_group_title_common">Commun</s:String>
-    <s:String x:Key="Connection">Connexion</s:String>
+    <s:String x:Key="Connection Info">Informations sur la connexion</s:String>
+    <s:String x:Key="Connection Settings">Connexion</s:String>
     <s:String x:Key="server_editor_group_title_display">Affichage</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Avantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serveur de passerelle RD</s:String>
@@ -163,7 +163,7 @@
     <s:String x:Key="server_editor_advantage_clipboard">Presse-papiers</s:String>
     <s:String x:Key="server_editor_advantage_key_combinations">Combinaisons de clés</s:String>
     <s:String x:Key="server_editor_advantage_disk_drives">Disques durs</s:String>
-    <s:String x:Key="Drives plug in latter">Drives plug in latter</s:String>
+    <s:String x:Key="Drives plug in later">Drives plug in later</s:String>
     <s:String x:Key="server_editor_advantage_sounds">Sons</s:String>
     <s:String x:Key="server_editor_advantage_sounds_disabled">Désactivée</s:String>
     <s:String x:Key="server_editor_advantage_sounds_on_local">Jouez en local</s:String>
