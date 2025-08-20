@@ -27,7 +27,7 @@ using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.
 
 namespace _1RM.View.ServerTree
 {
-    public class ServerTreeViewModel : ServerPageBase
+    public partial class ServerTreeViewModel : ServerPageBase
     {
         public const string FullPathSeparator = " ]=+=+=+=>[ ";
         public const string FolderNodePrefix = "%$TreeNode$%:";
@@ -929,7 +929,7 @@ namespace _1RM.View.ServerTree
 
         #endregion
 
-        public sealed override void BuildView()
+        public sealed override void  BuildView()
         {
             // Make sure this runs on UI thread
             Execute.OnUIThread(() =>
@@ -966,6 +966,7 @@ namespace _1RM.View.ServerTree
                 // add servers to TreeNodes
                 foreach (var server in VmServerList)
                 {
+                    if(IsServerVisible.ContainsKey(server) && IsServerVisible[server] == false) continue;
                     TreeNode? currentNode = null;
                     // This ensures first-time users see all servers at root level
                     currentNode = TreeNode.VirtualRoot.Children.FirstOrDefault(x => x.Name == server.DataSourceName);
@@ -1010,6 +1011,29 @@ namespace _1RM.View.ServerTree
 
                 // Sort the nodes
                 SortNodes(TreeNode.VirtualRoot.Children);
+
+                if (!string.IsNullOrEmpty(_lastKeyword))
+                {
+                    // search mode
+                    // remove all empty folders
+                    var folders = TreeNode.VirtualRoot.GetChildNodes(true, true, false)
+                        .Where(x => x.Children.Count == 0 || x.Children.All(x => x.IsFolder)).ToList();
+                    while (folders.Count > 0)
+                    {
+                        var empty = folders.Where(x => x.Children.Count == 0).ToList();
+                        if (empty.Count == 0) break;
+                        foreach (var folder in empty)
+                        {
+                            folder.ParentNode?.Children.Remove(folder);
+                            folders.Remove(folder);
+                        }
+                    }
+                    // expand all folders
+                    foreach (var folder in TreeNode.VirtualRoot.GetChildNodes(true, true, false))
+                    {
+                        folder.IsExpanded = true;
+                    }
+                }
 
                 // Update the UI
                 RootNodes = TreeNode.VirtualRoot.Children;

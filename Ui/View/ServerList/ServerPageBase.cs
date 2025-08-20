@@ -11,6 +11,7 @@ using _1RM.Utils;
 using _1RM.Utils.mRemoteNG;
 using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
+using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
 using _1RM.View.ServerTree;
 using _1RM.View.Settings.Launcher;
@@ -513,5 +514,69 @@ namespace _1RM.View.ServerList
         }
 
         #endregion
+
+
+
+        // ReSharper disable once InconsistentNaming
+        protected string _lastKeyword = string.Empty;
+        public Dictionary<ProtocolBaseViewModel, bool> IsServerVisible = new Dictionary<ProtocolBaseViewModel, bool>();
+        public virtual void CalcServerVisibleAndRefresh(bool force = false)
+        {
+            var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
+            if (this.View is not ServerTreeView)
+            {
+                return;
+            }
+
+            if (_lastKeyword != filter || force)
+            {
+                lock (this)
+                {
+                    List<ProtocolBaseViewModel> servers;
+                    if (filter.StartsWith(_lastKeyword))
+                    {
+                        // calc only visible servers when filter is appended
+                        servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
+                        foreach (var protocolBaseViewModel in IoC.Get<GlobalData>().VmItemList)
+                        {
+                            if (!servers.Contains(protocolBaseViewModel))
+                                servers.Add(protocolBaseViewModel);
+                        }
+                    }
+                    else
+                    {
+                        servers = IoC.Get<GlobalData>().VmItemList;
+                        IsServerVisible.Clear();
+                    }
+
+                    _lastKeyword = filter;
+
+                    var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
+                    TagFilters = tmp.TagFilterList;
+                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, true);
+                    for (int i = 0; i < servers.Count; i++)
+                    {
+                        var vm = servers[i];
+                        if (i < 0 || i >= matchResults.Count)
+                        {
+                            // we get error report here that i is out of range, so we add this check 2024.10.31 https://appcenter.ms/users/VShawn/apps/1Remote-1/crashes/errors/859400306/overview
+                            UnifyTracing.Error(new Exception($"MatchKeywords: i({i}) is out of range(0-{matchResults.Count})"), new Dictionary<string, string>()
+                            {
+                                { "filter", filter },
+                                { "servers.Count", servers.Count.ToString() },
+                            });
+                            continue;
+                        }
+                        else
+                        {
+                            if (IsServerVisible.ContainsKey(vm))
+                                IsServerVisible[vm] = matchResults[i].Item1;
+                            else
+                                IsServerVisible.Add(vm, matchResults[i].Item1);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

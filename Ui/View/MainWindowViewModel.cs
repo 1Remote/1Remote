@@ -6,6 +6,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
+using _1RM.View.ServerList;
 using _1RM.View.ServerTree;
 using _1RM.View.Settings;
 using _1RM.View.Settings.General;
@@ -81,7 +82,7 @@ namespace _1RM.View
             }
         }
 
-        public object ActiveServerViewModel { get; set; }
+        public ServerPageBase ActiveServerViewModel { get; set; }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -563,11 +564,9 @@ namespace _1RM.View
                 {
                     _debounceDispatcher.Debounce(IoC.Get<GlobalData>().VmItemList.Count > 100 ? 200 : 100, (obj) =>
                     {
-                        if (_mainFilterString == MainFilterString)
-                        {
-                            // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                            ServerListViewModel.RefreshCollectionViewSource();
-                        }
+                        if (_mainFilterString != MainFilterString) return;
+                        // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
+                        ActiveServerViewModel?.CalcServerVisibleAndRefresh();
                     });
                 }
             }

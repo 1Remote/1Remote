@@ -313,7 +313,7 @@ namespace _1RM.View.ServerList
                             items.Insert(targetIdx, toBeMovedProtocol);
                         }
                         LocalityListViewService.ServerCustomOrderSave(items);
-                        IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+                        IoC.Get<ServerListPageViewModel>().CalcServerVisibleAndRefresh();
 #if DEBUG
                         SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
 #endif
@@ -374,7 +374,7 @@ namespace _1RM.View.ServerList
                                     groups.Insert(targetIdx, toBeMovedGroupItem);
                                 }
                                 LocalityListViewService.GroupedOrderSave(groups.Select(x => x.Name.ToString() ?? "").Where(x => string.IsNullOrEmpty(x) == false).ToArray());
-                                IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource();
+                                IoC.Get<ServerListPageViewModel>().CalcServerVisibleAndRefresh();
 #if DEBUG
                                 SimpleLogHelper.Debug($"groups After Drop:" + string.Join(", ", groups.Select(x => x.Name.ToString())));
 #endif

@@ -304,13 +304,13 @@
                                                    VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"
                                                    ToolTip="{Binding Server.DisplayName}"/>
-                                        <TextBlock Grid.Column="2" Margin="5 0 0 0"
+                                        <!--<TextBlock Grid.Column="2" Margin="5 0 0 0"
                                                    Text="{Binding Server.SubTitle}" 
                                                    FontSize="{DynamicResource GlobalFontSizeSmall}"
                                                    Opacity="0.5"
                                                    VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"
-                                                   ToolTip="{Binding Server.DisplayName}"/>
+                                                   ToolTip="{Binding Server.DisplayName}"/>-->
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -334,6 +334,14 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
+                <TextBlock Margin="5 0 10 0" 
+                           Style="{StaticResource TextBlockBase}"
+                           Text="{Binding SelectedServerViewModel.Server.ProtocolDisplayName}"
+                           FontSize="{DynamicResource GlobalFontSizeSubtitle}" FontWeight="Bold"
+                           Opacity="0.6"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center">
+                </TextBlock>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel.Resources>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
