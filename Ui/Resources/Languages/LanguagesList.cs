@@ -14,6 +14,7 @@ public static class LanguagesResources
         "zh-tw.xaml",
         "gl-es.xaml",
         "pl-pl.xaml",
-        "ru-ru.xaml"
+        "ru-ru.xaml",
+        "pt-pt.xaml"
     };
 }
