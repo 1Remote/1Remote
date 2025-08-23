@@ -19,7 +19,6 @@ using _1RM.View.Settings.General;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Settings.ProtocolConfig;
 using _1RM.View.Settings.Theme;
-using _1RM.View.ServerTree;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -28,6 +27,7 @@ using Stylet;
 using StyletIoC;
 using MessageBoxViewModel = _1RM.View.Utils.MessageBoxViewModel;
 using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
+using ServerTreeViewModel = _1RM.View.ServerView.ServerTree.ServerTreeViewModel;
 
 namespace _1RM
 {

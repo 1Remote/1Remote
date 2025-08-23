@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
@@ -11,23 +17,10 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO.Packaging;
-using System.Linq;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Xml.Linq;
-using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
-namespace _1RM.View.ServerTree
+namespace _1RM.View.ServerView.ServerTree
 {
-    public partial class ServerTreeViewModel : ServerPageBase
+    public partial class ServerTreeViewModel : ServerPageViewModelBase
     {
         public const string FullPathSeparator = " ]=+=+=+=>[ ";
         public const string FolderNodePrefix = "%$TreeNode$%:";
@@ -142,7 +135,7 @@ namespace _1RM.View.ServerTree
                 node.SetParent(parentNode);
                 return node;
             }
-            public static TreeNode NewServer( ProtocolBaseViewModel server, TreeNode parentNode)
+            public static TreeNode NewServer(ProtocolBaseViewModel server, TreeNode parentNode)
             {
                 var node = new TreeNode
                 {
@@ -376,25 +369,25 @@ namespace _1RM.View.ServerTree
             switch (orderBy)
             {
                 case EnumServerOrderBy.IdAsc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.Id ?? "").ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.Id ?? "").ToList();
                     break;
                 case EnumServerOrderBy.ProtocolAsc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.Protocol ?? string.Empty).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.Protocol ?? string.Empty).ToList();
                     break;
                 case EnumServerOrderBy.ProtocolDesc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Server?.Server?.Protocol ?? string.Empty).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Server?.Server?.Protocol ?? string.Empty).ToList();
                     break;
                 case EnumServerOrderBy.NameAsc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Name).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Name).ToList();
                     break;
                 case EnumServerOrderBy.NameDesc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Name).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Name).ToList();
                     break;
                 case EnumServerOrderBy.AddressAsc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenBy(n => n.Server?.Server?.SubTitle ?? string.Empty).ToList();
                     break;
                 case EnumServerOrderBy.AddressDesc:
-                    sorted =  nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Server?.Server?.SubTitle ?? string.Empty).ToList();
+                    sorted = nodes.OrderBy(n => !n.IsFolder).ThenByDescending(n => n.Server?.Server?.SubTitle ?? string.Empty).ToList();
                     break;
                 case EnumServerOrderBy.Custom:
                     sorted = nodes.OrderBy(n => n.CustomOrder).ToList();
@@ -411,21 +404,6 @@ namespace _1RM.View.ServerTree
                 {
                     SortNodes(node.Children);
                 }
-            }
-        }
-
-        // Command to add a new server
-        private RelayCommand? _cmdAdd;
-        public RelayCommand CmdAdd
-        {
-            get
-            {
-                return _cmdAdd ??= new RelayCommand((o) =>
-                {
-                    if (View is ServerTreeView view)
-                        view.CbPopForInExport.IsChecked = false;
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where<TagFilter>(x => x.IsIncluded == true).Select(x => x.TagName).ToList(), o as DataSourceBase);
-                });
             }
         }
 
@@ -446,7 +424,7 @@ namespace _1RM.View.ServerTree
                         }
                         else if (node.IsFolder)
                         {
-                            CollectServersInFolder(node, out var serversToEdit);
+                            var serversToEdit = node.GetChildNodes(includingSubFolder: true, needFolderNode: false, needItemNode: true).Select(n => n.Server?.Server).Where(s => s != null).ToList() as List<ProtocolBase>;
                             GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(serversToEdit);
                         }
                     }
@@ -553,7 +531,7 @@ namespace _1RM.View.ServerTree
                             // Delete folder and move servers to parent or root
                             if (MessageBoxHelper.Confirm($"TXT: Delete folder '{node.Name}' and move its contents to parent folder?"))
                             {
-                                CollectServersInFolder(node, out var serversToDelete);
+                                var serversToDelete = node.GetChildNodes(includingSubFolder: true, needFolderNode: false, needItemNode: true).Select(n => n.Server?.Server).Where(s => s != null).ToList() as List<ProtocolBase>;
                                 node.ParentNode?.Children.Remove(node);
                                 LocalityTreeViewService.SaveExpansionStates(RootNodes); // to remove old name cache
                                 if (serversToDelete.Any())
@@ -587,7 +565,7 @@ namespace _1RM.View.ServerTree
             {
                 return _cmdAddServerToNode ??= new RelayCommand((o) =>
                 {
-                    List<string> treePath = []; // Add to root by default
+                    List<string> treePath = new List<string>(); // Add to root by default
                     DataSourceBase? dataSource = null;
                     if (o is TreeNode node)
                     {
@@ -600,7 +578,7 @@ namespace _1RM.View.ServerTree
                         }
                         // remove the root node from the path if it exists
                         parents = parents?.Where(x => !x.IsRootFolder).ToList();
-                        treePath = parents == null ? [] : parents.Select(x => x.Name).ToList();
+                        treePath = parents == null ? new List<string>() : parents.Select(x => x.Name).ToList();
                     }
                     // Navigate to add server page
                     GlobalEventHelper.OnGoToServerAddPage?.Invoke(preset: new ServerEditorPageViewModel.ParamsServerAddPreset()
@@ -617,7 +595,7 @@ namespace _1RM.View.ServerTree
 
         #region Helper Methods
 
-        
+
         // Update all servers' TreeNode in the folderNode by current folder structure.
         private void UpdateDbServerTreeNodesByCurrentTreeStructure(TreeNode sourceNode)
         {
@@ -650,92 +628,10 @@ namespace _1RM.View.ServerTree
             }
         }
 
-        /// <summary>
-        /// Collect all servers under a folder node (iterative implementation)
-        /// </summary>
-        [Obsolete]
-        private void CollectServersInFolder(TreeNode folderNode, out List<ProtocolBase> servers)
-        {
-            servers = new List<ProtocolBase>();
-            // Use a stack to replace recursion for depth-first traversal
-            var nodesToProcess = new Stack<TreeNode>();
-            nodesToProcess.Push(folderNode);
-            while (nodesToProcess.Count > 0)
-            {
-                var currentNode = nodesToProcess.Pop();
-                foreach (var child in currentNode.Children)
-                {
-                    if (child.IsFolder)
-                    {
-                        // Push folder nodes onto the stack for further processing
-                        nodesToProcess.Push(child);
-                    }
-                    else if (child.Server != null)
-                    {
-                        // Directly add server nodes to the collection
-                        servers.Add(child.Server.Server);
-                    }
-                }
-            }
-        }
-
         #endregion
 
         #region Drag and Drop Support
 
-        /// <summary>
-        /// Check if a move operation would be valid (same data source, no circular moves)
-        /// </summary>
-        /// <param name="sourceNode">The node being dragged</param>
-        /// <param name="targetNode">The target node</param>
-        /// <returns>True if the move would be valid</returns>
-        public bool CanMoveNode(TreeNode sourceNode, TreeNode targetNode)
-        {
-            // Cannot move to self
-            if (sourceNode == targetNode) return false;
-            // Check data source write permissions for servers
-            {
-                if (sourceNode.Server?.Server != null || targetNode.Server?.Server != null)
-                {
-                    var server = sourceNode.Server?.Server ?? targetNode.Server!.Server;
-                    var dataSource = server.DataSource;
-                    if (dataSource?.IsWritable != true)
-                    {
-                        SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", data source is not writable.");
-                        return false;
-                    }
-                }
-                else if (sourceNode.IsFolder)
-                {
-                    var dbNode = sourceNode.GetDataBaseNode();
-                    var dataSource = IoC.Get<DataSourceService>().GetDataSource(dbNode?.Name ?? "");
-                    if (dataSource?.IsWritable != true) return false;
-                }
-            }
-            //// prevent moving into parent folder
-            //if (targetNode.IsFolder && targetNode == sourceNode.ParentNode)
-            //{
-            //    SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target is the same as source parent.");
-            //    return false;
-            //}
-            if (LocalityTreeViewService.Settings.ServerOrderBy != EnumServerOrderBy.Custom)
-            {
-                if (!targetNode.IsFolder && targetNode.ParentNode == sourceNode.ParentNode)
-                {
-                    SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target parent is the same as source parent.");
-                    return false;
-                }
-            }
-            // for folder moves, prevent moving into descendants
-            if (sourceNode.IsFolder && sourceNode.FindDescendant(targetNode))
-            {
-                SimpleLogHelper.Debug("Can not move node: " + sourceNode.Name + ", target is a descendant of source.");
-                return false;
-            }
-            // Only allow moving within the same data source
-            if (targetNode.GetDataBaseNode() != sourceNode.GetDataBaseNode()) return false;
-            return true;
-        }
 
 
         /// <summary>
@@ -929,7 +825,7 @@ namespace _1RM.View.ServerTree
 
         #endregion
 
-        public sealed override void  BuildView()
+        public sealed override void BuildView()
         {
             // Make sure this runs on UI thread
             Execute.OnUIThread(() =>
@@ -966,7 +862,7 @@ namespace _1RM.View.ServerTree
                 // add servers to TreeNodes
                 foreach (var server in VmServerList)
                 {
-                    if(IsServerVisible.ContainsKey(server) && IsServerVisible[server] == false) continue;
+                    if (IsServerVisible.ContainsKey(server) && IsServerVisible[server] == false) continue;
                     TreeNode? currentNode = null;
                     // This ensures first-time users see all servers at root level
                     currentNode = TreeNode.VirtualRoot.Children.FirstOrDefault(x => x.Name == server.DataSourceName);

@@ -1,56 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using _1RM.Model;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
-using _1RM.Resources.Icons;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
-using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
-using _1RM.Utils.mRemoteNG;
-using _1RM.Utils.PRemoteM;
-using _1RM.Utils.RdpFile;
 using _1RM.Utils.Tracing;
-using _1RM.View.Editor;
-using _1RM.View.Utils;
-using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 
 namespace _1RM.View.ServerList
 {
-    public partial class ServerListPageViewModel : ServerPageBase
+    public partial class ServerListPageViewModel : ServerPageViewModelBase
     {
 
 
         #region properties
-
-        public TagsPanelViewModel TagsPanelViewModel { get; }
-        private TagsPanelViewModel? _tagListViewModel = null;
-        public TagsPanelViewModel? TagListViewModel
-        {
-            get => _tagListViewModel;
-            set
-            {
-                SetAndNotifyIfChanged(ref this._tagListViewModel, value);
-                TagsPanelViewModel.FilterString = "";
-            }
-        }
         public bool ListPageIsCardView
         {
             get => IoC.Get<ConfigurationService>().General.ListPageIsCardView;
@@ -433,15 +406,13 @@ namespace _1RM.View.ServerList
             }
         }
 
-        public sealed override void CalcServerVisibleAndRefresh(bool force = false)
+        public sealed override void CalcServerVisibleAndRefresh(bool force = false, bool matchSubTitle = true)
         {
-            base.CalcServerVisibleAndRefresh(force);
+            base.CalcServerVisibleAndRefresh(force, matchSubTitle);
             Execute.OnUIThread(() =>
             {
-                // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
                 if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
                     CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource).Refresh();
-                // invoke ServerListPageView.cs => ServerListItemSource_OnFilter
             });
         }
 

@@ -13,7 +13,6 @@ using _1RM.Utils.PRemoteM;
 using _1RM.Utils.RdpFile;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
-using _1RM.View.ServerTree;
 using _1RM.View.Settings.Launcher;
 using _1RM.View.Utils;
 using Newtonsoft.Json;
@@ -32,9 +31,9 @@ using System.Threading.Tasks;
 
 namespace _1RM.View.ServerList
 {
-    public abstract partial class ServerPageBase : NotifyPropertyChangedBaseScreen
+    public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {
-        protected ServerPageBase(DataSourceService sourceService, GlobalData appData)
+        protected ServerPageViewModelBase(DataSourceService sourceService, GlobalData appData)
         {
             SourceService = sourceService;
             AppData = appData;
@@ -520,14 +519,9 @@ namespace _1RM.View.ServerList
         // ReSharper disable once InconsistentNaming
         protected string _lastKeyword = string.Empty;
         public Dictionary<ProtocolBaseViewModel, bool> IsServerVisible = new Dictionary<ProtocolBaseViewModel, bool>();
-        public virtual void CalcServerVisibleAndRefresh(bool force = false)
+        public virtual void CalcServerVisibleAndRefresh(bool force = false, bool matchSubTitle = true)
         {
             var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
-            if (this.View is not ServerTreeView)
-            {
-                return;
-            }
-
             if (_lastKeyword != filter || force)
             {
                 lock (this)
@@ -553,7 +547,7 @@ namespace _1RM.View.ServerList
 
                     var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
                     TagFilters = tmp.TagFilterList;
-                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, true);
+                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, matchSubTitle);
                     for (int i = 0; i < servers.Count; i++)
                     {
                         var vm = servers[i];

@@ -1,11 +1,11 @@
 ﻿using _1RM.Utils.Tracing;
-using _1RM.View.ServerTree;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using ServerTreeViewModel = _1RM.View.ServerView.ServerTree.ServerTreeViewModel;
 
 namespace _1RM.Service.Locality
 {

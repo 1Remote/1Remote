@@ -7,7 +7,6 @@ using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
 using _1RM.View.ServerList;
-using _1RM.View.ServerTree;
 using _1RM.View.Settings;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
@@ -18,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using ServerTreeViewModel = _1RM.View.ServerView.ServerTree.ServerTreeViewModel;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View
@@ -82,7 +82,7 @@ namespace _1RM.View
             }
         }
 
-        public ServerPageBase ActiveServerViewModel { get; set; }
+        public ServerPageViewModelBase ActiveServerViewModel { get; set; }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel

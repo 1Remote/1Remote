@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace _1RM.View.ServerList
 {
-    public abstract partial class ServerPageBase : NotifyPropertyChangedBaseScreen
+    public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {
         public TagsPanelViewModel TagsPanelViewModel { get; }
 
