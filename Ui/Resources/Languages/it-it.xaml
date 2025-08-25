@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">Credenziali</s:String>
     <s:String x:Key="Credentials Vault">Credenziali Vault</s:String>
     <s:String x:Key="Select credentials within the same database">Seleziona le credenziali all'interno dello stesso database</s:String>
+    <s:String x:Key="Reset main window location">Ripristina la posizione della finestra principale</s:String>
 </ResourceDictionary>
