@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">證書</s:String>
     <s:String x:Key="Credentials Vault">憑證保險庫</s:String>
     <s:String x:Key="Select credentials within the same database">在同一數據庫中選擇憑據</s:String>
+    <s:String x:Key="Reset main window location">重置主窗口位置</s:String>
 </ResourceDictionary>

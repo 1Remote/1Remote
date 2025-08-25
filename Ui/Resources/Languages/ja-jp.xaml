@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">パスワード認証</s:String>
     <s:String x:Key="Credentials Vault">保管庫</s:String>
     <s:String x:Key="Select credentials within the same database">同じデータベース内の資格情報を選択します</s:String>
+    <s:String x:Key="Reset main window location">メインウィンドウの位置をリセット</s:String>
 </ResourceDictionary>
