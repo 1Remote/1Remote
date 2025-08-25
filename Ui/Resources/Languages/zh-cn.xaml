@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">凭据</s:String>
     <s:String x:Key="Credentials Vault">凭据库</s:String>
     <s:String x:Key="Select credentials within the same database">只能在同一个数据库中选择凭据</s:String>
+    <s:String x:Key="Reset main window location">重置主窗口位置</s:String>
 </ResourceDictionary>

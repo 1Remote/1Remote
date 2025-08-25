@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">Anmeldeinformationen</s:String>
     <s:String x:Key="Credentials Vault">Anmeldeinformationen Tresor</s:String>
     <s:String x:Key="Select credentials within the same database">Wählen Sie Anmeldeinformationen in derselben Datenbank aus</s:String>
+    <s:String x:Key="Reset main window location">Hauptfensterstandort zurücksetzen</s:String>
 </ResourceDictionary>
