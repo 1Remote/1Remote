@@ -59,7 +59,11 @@ namespace _1RM.View
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             // Restore or reset window location
-            if (double.IsNaN(localityService.MainWindowTop) || double.IsNaN(localityService.MainWindowLeft))
+            if (double.IsNaN(localityService.MainWindowTop) || double.IsNaN(localityService.MainWindowLeft)
+                || localityService.MainWindowTop < SystemParameters.VirtualScreenTop
+                || localityService.MainWindowTop + this.Height > SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight
+                || localityService.MainWindowLeft < SystemParameters.VirtualScreenLeft
+                || localityService.MainWindowLeft + this.Width > SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth)
             {
                 ResetLocation();
             }
