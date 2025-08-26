@@ -1,0 +1,332 @@
+key;cs-cz
+language_code-ISO;cs-CZ
+language_code-google;cs
+language_name;čeština (cs-CZ)
+Warning;varování
+Error;chyba
+Info;informace
+OK;OK
+Exit;Ukončit
+Close;Zavřít
+Add;Přidat
+Edit;Upravit
+Save;Uložit
+Save as...;Uložit jako…
+Back;Zpět
+Delete;Smazat
+Cancel;Storno
+Select;Vybrat
+Explore to...;Prozkoumat v…
+Previous;Předchozí
+Next;Další
+Done;Hotovo
+Reset;Resetovat
+Import;Import
+Export;Export
+Name;Název
+File Name;Název souboru
+Test;Test
+Reconnect;Znovu připojit
+Dismiss;Zahodit
+Lock;Zamknout
+Always on top;Vždy na vrchu
+Close all;Zavřít vše
+Rename;Přejmenovat
+Connect;Připojit
+Connect (New window);Připojit (nové okno)
+Note;Poznámka
+Share;Sdílet
+Copy;Zkopírovat
+Enabled;Zapnuto
+Helper;Pomocné
+Preview;Náhled
+Theme;Vzhled
+Color;Barva
+Color1;Barva1
+Color2;Barva2
+Background;Pozadí
+Normal;Normální
+Lighter;Světlejší
+Darker;Tmavší
+Font;Písmo
+Font size;Velikost písma
+Themes;Motivy vzhledu
+Options;Předvolby
+About;O aplikaci
+Language;Jazyk
+Startup;Při startu
+Tags;Štítky
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Stisknutím klávesy ENTER přidáte značku, která se používá pro seskupení serverů. Klepnutím pravým tlačítkem myši na značky na domovské stránce můžete filtrovat nebo připnout konkrétní značku.
+Icon;Icon
+Hostname;Název stroje
+Target;Cíl
+Port;Port
+User;Uživatel
+Password;Heslo
+Selected;Vybráno
+Custom;Uživatelsky určené
+All;Vše
+Protocol;Protokol
+Cameras;Kamery
+Upload;nahrát
+filter_mainwindow;Klíčová slova nebo „#“ + název štítku
+Search (Ctrl+F);Hledat (Ctrl + F)
+hotkey_already_registered;Klávesová zkratka už je zaregistrována (pro něco jiného?)
+hotkey_registered_fail;Klávesovou zkratku se nepodařilo zaregistrovat
+string_permission_denied;Oprávnění odepřeno
+file_transmit_host_list_header_last_update;Naposledy zaktualizováno
+Type;Typ
+file_transmit_host_list_header_size;Velikost
+file_transmit_host_message_preview_over_size;Tato položka má přes 1 MB – opravdu ji chcete otevírat?
+file_transmit_host_message_files_download_to;Vyberte složku do které uložit
+file_transmit_host_message_files_download_to_dir;Použít tuto složku
+file_transmit_host_message_select_files_to_upload;Vyberte soubory k nahrání
+file_transmit_host_command_refresh;Načíst znovu (F5)
+file_transmit_host_command_create_folder;Vytvořit složku
+file_transmit_host_command_upload;Nahrát (Ctrl + V)
+file_transmit_host_command_select_files_upload;Vyberte soubory k nahrání
+file_transmit_host_command_select_folder_upload;Vyberte složku k nahrání
+file_transmit_host_command_delete;Smazat (Del)
+file_transmit_host_command_save_to;Uložit do… (Ctrl + S)
+file_transmit_host_warning_same_names_title;Nahradit nebo zrušit
+file_transmit_host_warning_same_names;Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?
+host_reconecting_info;Opětovné připojování…
+Toggle Cards/List;Přepnout mezi kartami/seznamem
+system_options_general_title;Obecné
+Run automatically at OS startup;Spouštět automaticky při přihlášení do systému(minimized)
+Confirm before closing;Zavírat až po potvrzení
+Show current session icon instead of the app icon when connected;Show current session icon instead of the app icon when connected
+system_options_general_log_file_path;Soubor se záznamem událostí
+system_options_quick_match_providers;Hledání shod s klíčovými slovy
+Launcher;Spouštěč
+system_options_quick_launcher_enable;Zapnout spouštěč
+system_options_quick_launcher_hotkey;Klávesová zkratka
+system_options_data_security_database;Databáze
+Caution: Your data will be saved unencrypted!;Varování: vaše data budou uložena nešifrovaná!
+system_options_data_security_info_data_processing;Zpracovávají se data. Nezavírejte aplikaci!
+server_card_operate_duplicate;Zduplikovat
+server_card_operate_copy_address;Zkopírovat název stroje do schránky
+server_card_operate_copy_username;Zkopírovat uživatelské jméno do schránky
+server_card_operate_copy_password;Zkopírovat heslo do schránky
+confirm_to_delete;Opravdu chcete smazat?
+confirm_to_delete_selected;Opravdu chcete vše vybrané smazat?
+import_server_dialog_title;Vyberte soubor
+import_from_json;import json
+import_from_mremoteng_csv;import mRemoteNG csv
+import_from_rdp_file;import *.rdp
+import_from_sqlite_db;import PRemoteM db
+import_done_0_items_added;Úspěšně naimportováno, {0} položek přidáno.
+import_failure_with_data_format_error;Chyba ve formátu dat!
+server_editor_different_options;<různé předvolby>
+server_editor_bulk_editing;Hromadné upravování
+server_editor_bulk_editing_title;Hromadně upravujete:
+server_editor_multi_selected_count;Počet vybraných položek:
+server_editor_group_title_common;Společné
+Connection Info;Připojení
+Connection Settings;Připojení
+server_editor_group_title_display;Zobrazení
+server_editor_group_title_advantage;Výhoda
+server_editor_group_title_gateway;Server brány vzdálených ploch
+server_editor_tags_tag;Je možné zadat vícero, oddělovaných „,“ (čárkou)
+Script before connect;Skript před připojením
+Hide script window;Skrýt okno skriptu (nedoporučuje se, pokud skript trvá dlouho)
+Script after disconnected;Skript po odpojení
+Run bat before connect;Spusťte bat před připojením (např. spusťte 'C:\OpenSshTunneling.bat')
+Run bat after disconnected;Spustit bat po odpojení (např. spustit 'C:\CloseSshTunneling.bat')
+Use private key;Použít soukromý klíč
+Private key;Soukromý klíč
+Open SFTP when connected;Při připojení otevřít SFTP
+Open SFTP;Otevřete SFTP
+server_editor_display_full_screen_flag;Vzdálená plocha na celou obrazovku
+server_editor_display_full_screen_flag_window;Vypnout
+server_editor_display_full_screen_flag_full_screen;Zapnout (jeden monitor)
+server_editor_display_full_screen_flag_all_screens;Zapnout (více monitorů)
+Display the connection bar when use the full screen;Ukazovat lištu připojení v režimu na celou obrazovku
+Pin the connection bar by default;Připnout lištu připojení ve výchozím nastavení
+New session always use full screen;Nová relace bude vždy na celou obrazovku
+New session use full screen if the last session is full screen;Nová relace bude na celou obrazovku pokud ta předchozí také byla
+Resolution;Rozlišení
+Fit to window;Přizpůsobit oknu (podporovaný server: Windows Server 2012 R2 a novější)
+Custom resolution (stretch);Uživatelsky určené rozlišení (roztáhnout)
+Custom resolution (fixed);Uživatelsky určené rozlišení (napevno)
+Full-screen resolution (stretch);Rozlišení v režimu celé obrazovky (roztáhnout)
+Full-screen resolution (fixed);Rozlišení v režimu celé obrazovky (napevno)
+Scale;Měřítko
+server_editor_display_rdp_performance;Kvalita/výkon
+server_editor_display_rdp_performance_auto;Automaticky (usouzeno na základě rychlosti připojení)
+server_editor_display_rdp_performance_high;Vysoká (32bit barvy a plná podpora vizuálních funkcí)
+server_editor_display_rdp_performance_middle;Střední (16bit barvy a pouze vyhlazování písma a kompozitor desktopu)
+server_editor_display_rdp_performance_low;Nízká (8bit barvy bez vizuálních funkcí)
+server_editor_advantage_admin;Pro správu serveru
+server_editor_advantage_resources;Prostředky
+server_editor_advantage_clipboard;Schránka
+server_editor_advantage_key_combinations;Kombinace kláves
+server_editor_advantage_disk_drives;Diskové jednotky
+Drives plug in later;Drives plug in later
+server_editor_advantage_sounds;Zvuky
+server_editor_advantage_sounds_disabled;Vypnuto
+server_editor_advantage_sounds_on_local;Přehrávat lokálně
+server_editor_advantage_sounds_on_remote;Přehrávat na protějšku
+server_editor_advantage_sound_quality;Kvalita zvuku
+server_editor_advantage_sound_quality_dynamic;Dynamický
+server_editor_advantage_sound_quality_medium;Střední
+server_editor_advantage_sound_quality_high;Vysoký
+server_editor_advantage_audio_capture;Zachytávání zvuku
+server_editor_advantage_ports;Porty
+server_editor_advantage_printers;Tiskárny
+server_editor_advantage_smart_cards;Čipové karty
+server_editor_advantage_ssh_version;Verze SSH
+server_editor_advantage_ssh_startup_auto_command;Automaticky spouštěný příkaz
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;Použijte externí nastavení vybráním popisu umístění souboru s relací pro KiTTY
+server_editor_advantage_sftp_startup_path;Startovní umístění
+server_editor_gateway_mode;Připojení
+server_editor_gateway_mode_automatically_detect;Automaticky zjistit nastavení serveru brány ke vzdáleným plochám
+server_editor_gateway_mode_use_these;Použít následující nastavení pro server brány ke vzdáleným plochám
+server_editor_gateway_mode_do_not_use;Nepoužívat server brány ke vzdáleným plochám
+server_editor_gateway_server_host_name;Název stroje
+server_editor_gateway_logon_method;Způsob přihlašování
+server_editor_gateway_logon_method_psw;Heslo
+server_editor_gateway_logon_method_smart_card;Čipová karta
+server_editor_gateway_bypass_gateway_for_local_address;Přemostit server brány ke vzdáleným plochám v případě přístupu na místní adresu
+How to select the specified monitors;Jak vybrat zadané monitory
+mstsc.exe mode;režim využívající mstsc.exe
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;V tomto režimu bude RDP relace spuštěna jako „mstsc.exe xxxx.rdp“ v příkazovém řádku a je možné zadat více parametrů.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;Pozn.: Tento režim bude automaticky zapnut pokud je na vašem počítači přítomno dva a více monitorů s různým měřítkem zobrazení a vybrali jste režim na celou obrazovku.
+Additional settings;Další nastavení
+Preview rdp file;Náhled rdp souboru
+Check monitor number;Zkontrolovat počet monitorů
+server_editor_remote_app_name;Název aplikace
+server_editor_remote_app_name_tag;Název aplikace (např. ahoj)
+server_editor_remote_app_fullname;Popis umístění aplikace
+server_editor_remote_app_fullname_tag;Úplný popis umístění spustitelného souboru na serveru (např. C:\Aplikace\ahoj.exe)
+about_page_how_to_use;Jak používat
+about_page_feedback;Podněty vývojářům
+guidance_introduce;1Remote umožňuje navazovat relace na vzdálené stroje – kdykoli a odkudkoli.
+guidance_feature_launcher_key;zavolat spouštěč prostřednictvím
+guidance_feature_launcher_select;vybrat položku prostřednictvím
+guidance_feature_launcher_connect;připojit prostřednictvím
+guidance_feature_launcher_menu;nabídka prostřednictvím
+guidance_feature_tab_demo;Přesouvatelné, odtrhovatelné a ukotvitelné vzdálené relace pro RDP, SSH, VNC, sFTP …
+guidance_feature_start_setting1;Než začnete používat, potvrďte několik nastavení.
+guidance_feature_start_setting2;Tato nastavení je možné změnit kdykoli později v Předvolbách.
+Portable mode;Přenosný režim
+Profile is saved where executable is located;Profil je ukládán do stejného umístění, ve kterém se nachází aplikace
+Install for current windows account;Nainstalovat pro stávající účet ve Windows
+Profile is saved in your Windows AppData folder;Profil je ukládán do složky AppData ve vašem účtu
+word_oops;Jejda…
+error_report_unexpected_error_occurred;Došlo k neočekávané chybě. Informace o chybě viz níže:
+error_report_to_clipboard;Zkopírovat do schránky
+error_report_please_help_us_improve;Prosíme pomozte nám 1Remote vylepšit nahlášením této chyby.
+error_report_how_help_us_improve;Stačí jen zkopírovat tuto chybovou hlášku a zvolit způsob jejíh nahlášení.
+error_report_send_by_email;Poslat e-mailem e-mail
+error_report_send_by_github;Poslat prostřednictvím portálu GitHub
+logo_selector_open_file_dialog_title;vyberte obrázek
+Default;Výchozí
+Exe path;Popis umístění spustitelného souboru
+Cmd parameter;parametry pro příkaz
+New runner name;Název pro nový spouštěč
+Can not be empty!;Je třeba vyplnit!
+Hosting;Hostování
+Hosting this exe in 1Remote tab view?;Hostovat tento spustitelný soubor v 1Remote panelu windowView?
+Caution: some exe can not be hosted in 1Remote.;Upozornění: hostování některých spustitelných souborů pomocí 1Remote nefunguje – je třeba si vyzkoušet.
+Show environment variables;Zobrazit proměnné prostředí
+Add environment variables;Přidat proměnné prostředí
+write permissions alert;"
+Chybí oprávnění pro zápis do složky „{0}“!
+Vyzkoušejte:
+1. spustit coby správce
+2. upravit práva na souboru a/nebo složce
+3. přesunout 1Remote do jiné složky"
+Follow system;Stejně jako v systému (podporovaný server: Windows Server 2012 R2 a novější)
+tag_tooltips;Kliknutí levým tlačítkem: nastavit tento štítek jako filter{0}Ctrl + kliknutí levým tlačítkem: přidat tento štítek do seznamu zahrnutých {0}Alt + kliknutí levým tlačítkem: přidat tento štítek do seznamu vynechaných
+Are you sure you want to close the connection?;Opravdu chcete spojení zavřít?
+Hi there,;Zdravím,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;Doufám, že vám tato aplikace bude užitečná. Pokud chcete mou práci podpořit, můžete mi koupit kafe nebo napsat pozitivní recenzi. Díky!
+Give suggestions;Podělit se o nápady
+Buy a coffee;Koupit kafe
+Give nice review;Napsat kladnou recenzi
+Do not show this again in current version;Ve stávající verzi znovu nezobrazovat
+User profile;Profil uživatele
+Selected runner;Vybraný spouštěč
+Login with password;Přihlásit se heslem
+Login with ssh private key;Přihlásit se pomocí soukromého ssh klíče
+Supports the Putty-key only;Podporuje pouze Putty-klíč
+Supports the OpenSSH format key only with the internal SFTP client.;Vestavěný SFTP klient podporuje klíče v OpenSSH formátu.
+Supports the OpenSSH format key and Putty-key with WinSCP.;Podporuje klíč v OpenSSH formátu a Putty-klíč s WinSCP.
+Environment variables;Proměnné prostředí
+Before runner start the environment variables will be set;Před startem spouštěče budou nastaveny proměnné prostředí
+Data Source name;Data Source name
+Please select a Data Source;Please select a Data Source
+Test connection;Test connection
+Show XXX button;Show `{0}` button
+Show recently used here;Zobrazit nedávno použité zde
+Hide recently used;Skrýt nedávno použité
+Leave blank to inherit the default value;Chcete-li zdědit výchozí hodnotu, ponechte prázdné
+Alternative;Alternativní
+with alternative;s alternativou
+Automatic address switching;Automatické přepínání adres
+Availability detection;Detekce dostupnosti
+Check if address is available before connect;Před připojením zkontrolujte, zda je adresa dostupná
+When the default host or port is unavailable the alternate addresses will be tried in sequence;Pokud není výchozí hostitel nebo port k dispozici, budou postupně vyzkoušeny alternativní adresy
+support multi-address multi-account;support multi-address multi-account
+We are not able to connect to xxx;We are not able to connect to `{0}`!
+XXX is already existed!;`{0}` is already existed!
+XXX is not existed!;`{0}` is not existed!
+Show credentials info;Zobrazit informace o přihlašovacích údajích
+Sorting;Řazení
+Sort by drag;Seřadit přetažením
+We can not connect database:;Nemůžeme připojit databázi:
+We can not create tables on database:;Nemůžeme vytvářet tabulky v databázi:
+We can not insert into database:;Nemůžeme vložit do databáze:
+We can not update on database:;Nemůžeme aktualizovat databázi:
+We can not read from database:;Nemůžeme číst z databáze:
+We can not select from database:;Nemůžeme vybrat z databáze:
+We can not delete from database:;Nemůžeme odstranit z databáze:
+because:;protože:
+Pause;Pauza
+Updating;Aktualizace
+Reconnecting;Opětovné připojení
+Next update check;Další kontrola aktualizace
+Next auto reconnect;Další automatické opětovné připojení
+Pin;Kolík
+Unpin;cloudová pláž
+This is your list of tags. Right click for a context menu to pin them on header.;Toto je váš seznam značek. Kliknutím pravým tlačítkem zobrazíte kontextovou nabídku a připnete je do záhlaví.
+Create desktop shortcut;Vytvořit zástupce na ploše
+Success;Úspěch
+Failed;Nepodařilo se
+Please complete the windows credentials verification;Dokončete prosím ověření přihlašovacích údajů systému Windows
+Enter your credentials;Zadejte své přihlašovací údaje
+Before proceeding with sensitive operations, we need to make sure it is you.;Než přistoupíme k citlivým operacím, musíme se ujistit, že jste to vy.
+Verification failed. Please try again.;Ověření se nezdařilo. Prosím zkuste to znovu.
+Security;Security
+Windows credentials verification is required to view passwords;K zobrazení hesel je vyžadováno ověření přihlašovacích údajů systému Windows
+Not existed;Not existed
+Not a number;Ne číslo
+Optional;Volitelný
+Nullable;S možností nulování
+Selections;Výběry
+Const value;Konstantní hodnota
+Description;Popis
+Prefix;Předpona
+append blank after prefix;za předponu připojit prázdné místo
+append blank after value;za hodnotu připojit prázdné místo
+Do you want to replace the current parameter list with preset value?;Chcete nahradit aktuální seznam parametrů přednastavenou hodnotou?
+One option per line;Jedna možnost na řádek
+Use vertical lines to separate descriptions;K oddělení popisů použijte svislé čáry (hodnota|popis)
+Automatically focus on the content when selecting a tab;Při výběru karty se automaticky zaměří na obsah
+Copy the port along with the address when copying;Při kopírování zkopírujte port spolu s adresou
+Place the close button on the left side to prevent accidental touches;Umístěte zavírací tlačítko na levou stranu, abyste zabránili náhodným dotykům
+Ask for password when open connect;Při otevření připojení požádat o heslo
+Remember the information above;Pamatujte na výše uvedené informace
+Quick Connect;Rychlé připojení
+Allow Quick Connect to save entered address information;Povolte rychlému připojení uložit zadané informace o adrese
+Yes;Yes
+No;No
+Click on the icon above to change it to your own image;Kliknutím na ikonu výše ji změníte na svůj vlastní obrázek
+Always open in new window;Vždy otevřít v novém okně
+Set focus to local desktop when the mouse is moved out of RDP desktop;Nastavte fokus na místní plochu, když se myš přesune mimo plochu RDP
+Close button behavior;Chování zavřít tlačítko
+Minimize to system tray;Minimalizujte zásobník systému
+Credentials;Pověření
+Credentials Vault;Pověřovací trezor
+Select credentials within the same database;Vyberte pověření ve stejné databázi

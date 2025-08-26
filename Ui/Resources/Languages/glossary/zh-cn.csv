@@ -1,0 +1,331 @@
+key;zh-cn
+language_code-ISO;zh-CN
+language_code-google;zh-CN
+language_name;简体中文 (zh-CN)
+Warning;警告
+Error;错误
+Info;提示
+OK;确定
+Exit;退出
+Close;关闭
+Add;添加
+Edit;编辑
+Save;保存
+Save as...;保存到...
+Back;返回
+Delete;删除
+Cancel;取消
+Select;选择
+Explore to...;定位到...
+Previous;上一页
+Next;下一页
+Done;完成
+Reset;重置
+Import;导入
+Export;导出
+Name;名称
+File Name;文件名
+Test;测试
+Reconnect;重新连接
+Dismiss;关闭
+Lock;锁定
+Always on top;置顶
+Close all;全部关闭
+Rename;重命名
+Connect;连接
+Connect (New window);连接 (新窗口)
+Note;Note
+Share;分享
+Copy;复制
+Enabled;启用
+Helper;助手
+Preview;预览
+Theme;主题
+Color;颜色
+Color1;主色
+Color2;副色
+Background;背景色
+Normal;常规
+Lighter;亮色
+Darker;暗色
+Font;字体
+Font size;字体大小
+Themes;主题
+Options;设置
+About;关于
+Language;语言
+Startup;启动
+Tags;标签
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;按下回车键添加一个标签，标签用于服务器分组。通过鼠标右键点击主页中的标签可签筛选或固定某个标签。
+Icon;图标
+Hostname;地址
+Target;目标
+Port;端口
+User;用户名
+Password;密码
+Selected;选中
+Custom;定制
+All;全部
+Protocol;协议
+Cameras;摄像头
+Upload;上传
+filter_mainwindow;输入关键词或 '#' + 标签名或Tab键
+Search (Ctrl+F);搜索 (Ctrl + F)
+hotkey_already_registered;快捷键已被占用
+hotkey_registered_fail;快捷键注册失败
+string_permission_denied;无操作权限
+file_transmit_host_list_header_last_update;修改时间
+Type;类型
+file_transmit_host_list_header_size;大小
+file_transmit_host_message_preview_over_size;文件超过 1 MB，确定要打开吗?
+file_transmit_host_message_files_download_to;将文件下载到所选文件夹
+file_transmit_host_message_files_download_to_dir;选择该文件夹
+file_transmit_host_message_select_files_to_upload;请选择要上传的文件
+file_transmit_host_command_refresh;刷新(F5)
+file_transmit_host_command_create_folder;新建文件夹
+file_transmit_host_command_upload;上传(Ctrl + V)
+file_transmit_host_command_select_files_upload;选择文件上传
+file_transmit_host_command_select_folder_upload;选择文件夹上传
+file_transmit_host_command_delete;删除(Del)
+file_transmit_host_command_save_to;保存到...(Ctrl + S)
+file_transmit_host_warning_same_names_title;替换或跳过
+file_transmit_host_warning_same_names;目标包含{0}个同名文件，需要替换吗？
+host_reconecting_info;正尝试重新连接...
+Toggle Cards/List;切换卡片/列表
+system_options_general_title;常规
+Run automatically at OS startup;开机自启动(最小化)
+Confirm before closing;关闭远程会话前弹窗确认
+Show current session icon instead of the app icon when connected;远程桌面开启后显示当前会话的图标
+system_options_general_log_file_path;日志文件
+system_options_quick_match_providers;关键词匹配器
+Launcher;启动器
+system_options_quick_launcher_enable;启用
+system_options_quick_launcher_hotkey;快捷键
+system_options_data_security_database;数据库
+Caution: Your data will be saved unencrypted!;导出数据将以明文显示，请妥善保管！
+system_options_data_security_info_data_processing;数据处理中，请勿关闭程序。
+server_card_operate_duplicate;创建副本
+server_card_operate_copy_address;复制地址到剪贴板
+server_card_operate_copy_username;复制用户名到剪贴板
+server_card_operate_copy_password;复制密码到剪贴板
+confirm_to_delete;确认要删除吗？
+confirm_to_delete_selected;确认要删除所选全部项目吗？
+import_server_dialog_title;选择导入文件
+import_from_json;导入 json
+import_from_mremoteng_csv;导入 mRemoteNG csv
+import_from_rdp_file;导入 .rdp
+import_from_sqlite_db;导入 PRemoteM 数据库
+import_done_0_items_added;已导入{0}条记录.
+import_failure_with_data_format_error;导入0条，输入的数据文件格式有误!
+server_editor_different_options;<不同的值>
+server_editor_bulk_editing;批量编辑
+server_editor_bulk_editing_title;你正在批量编辑:
+server_editor_multi_selected_count;选中数量：
+server_editor_group_title_common;常规
+Connection Info;连接参数
+Connection Settings;连接
+server_editor_group_title_display;显示
+server_editor_group_title_advantage;高级
+server_editor_group_title_gateway;RD 网关服务器
+server_editor_tags_tag;可以输入多个，用 ',' 分隔
+Script before connect;会话连接前运行脚本
+Hide script window;隐藏脚本运行窗口（长耗时脚本不推荐勾选）
+Script after disconnected;会话关闭后运行脚本
+Run bat before connect;连接前运行脚本（如:运行'C:\OpenSshTunneling.bat'）
+Run bat after disconnected;关闭会话后运行脚本（如:运行'C:\CloseSshTunneling.bat'）
+Use private key;使用私钥连接
+Private key;私钥
+Open SFTP when connected;同时打开 SFTP
+Open SFTP;打开 SFTP
+server_editor_display_full_screen_flag;全屏模式
+server_editor_display_full_screen_flag_window;禁用
+server_editor_display_full_screen_flag_full_screen;允许（单显示器）
+server_editor_display_full_screen_flag_all_screens;允许（所有显示器）
+Display the connection bar when use the full screen;全屏时显示连接栏
+Pin the connection bar by default;默认固定连接栏
+New session always use full screen;启动会话时永远进入全屏模式
+New session use full screen if the last session is full screen;启动会话时根据上次会话决定是否进入全屏模式
+Resolution;分辨率
+Fit to window;适应窗口大小(服务器要求Windows Server 2012 R2及以上)
+Custom resolution (stretch);自定义分辨率 (拉伸)
+Custom resolution (fixed);自定义分辨率 (固定)
+Full-screen resolution (stretch);屏幕分辨率 (拉伸)
+Full-screen resolution (fixed);屏幕分辨率 (固定)
+Scale;缩放
+server_editor_display_rdp_performance;桌面体验
+server_editor_display_rdp_performance_auto;自动（根据网速）
+server_editor_display_rdp_performance_high;高（32位色彩与所有特性）
+server_editor_display_rdp_performance_middle;中（16位色彩与字体平滑、桌面合成）
+server_editor_display_rdp_performance_low;低（8位色彩无任何显示增强）
+server_editor_advantage_admin;连接到会话以管理服务器
+server_editor_advantage_resources;共享到远程桌面
+server_editor_advantage_clipboard;剪贴板
+server_editor_advantage_key_combinations;组合键
+server_editor_advantage_disk_drives;本地磁盘
+Drives plug in later;稍后插入的U盘
+server_editor_advantage_sounds;声音
+server_editor_advantage_sounds_disabled;禁用
+server_editor_advantage_sounds_on_local;在本地播放
+server_editor_advantage_sounds_on_remote;在远程播放
+server_editor_advantage_sound_quality;音频质量
+server_editor_advantage_sound_quality_dynamic;动态
+server_editor_advantage_sound_quality_medium;中
+server_editor_advantage_sound_quality_high;高
+server_editor_advantage_audio_capture;录音
+server_editor_advantage_ports;端口
+server_editor_advantage_printers;打印机
+server_editor_advantage_smart_cards;智能卡
+server_editor_advantage_ssh_version;SSH Version
+server_editor_advantage_ssh_startup_auto_command;自动命令
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置
+server_editor_advantage_sftp_startup_path;启动位置
+server_editor_gateway_mode;连接设置
+server_editor_gateway_mode_automatically_detect;自动检测RD网关服务器设置
+server_editor_gateway_mode_use_these;使用下列RD网关服务器设置
+server_editor_gateway_mode_do_not_use;不使用RD网关服务器
+server_editor_gateway_server_host_name;服务器地址
+server_editor_gateway_logon_method;登录方法
+server_editor_gateway_logon_method_psw;账号密码
+server_editor_gateway_logon_method_smart_card;智能卡
+server_editor_gateway_bypass_gateway_for_local_address;不对本地地址使用RD网关
+How to select the specified monitors;如何选择指定的显示器
+mstsc.exe mode;mstsc.exe 模式
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用
+Additional settings;额外指令
+Preview rdp file;预览RDP文件
+Check monitor number;查看显示器编号
+server_editor_remote_app_name;程序名称
+server_editor_remote_app_name_tag;程序名称的名称（如 hello.exe）
+server_editor_remote_app_fullname;服务端路径
+server_editor_remote_app_fullname_tag;被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）
+about_page_how_to_use;帮助
+about_page_feedback;提意见/需求
+guidance_introduce;1Remote 为您管理远程会话，帮您通过启动器快速打开远程桌面
+guidance_feature_launcher_key;快速呼出启动器
+guidance_feature_launcher_select;选择项目
+guidance_feature_launcher_connect;启动会话
+guidance_feature_launcher_menu;弹出菜单
+guidance_feature_tab_demo;可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体
+guidance_feature_start_setting1;开始使用前请确认一些配置
+guidance_feature_start_setting2;这些配置稍后同样可以在设置界面中修改
+Portable mode;便携模式
+Profile is saved where executable is located;配置文件保存在可执行文件所在文件夹
+Install for current windows account;为当前 Windows 用户配置
+Profile is saved in your Windows AppData folder;配置文件保存在 Windows AppData 文件夹
+word_oops;哎哟喂...
+error_report_unexpected_error_occurred;程序发生了一些未知错误，详细信息如下：
+error_report_to_clipboard;保存到剪贴板
+error_report_please_help_us_improve;请通过反馈这个错误来帮助我们改进 1Remote。
+error_report_how_help_us_improve;只需要复制错误信息，下列任意方式都可进行错误反馈！（QQ群也行:168542318）
+error_report_send_by_email;通过邮件
+error_report_send_by_github;通过GitHub
+logo_selector_open_file_dialog_title;选择图片
+Default;默认
+Exe path;Exe 路径
+Cmd parameter;命令行参数
+New runner name;新增 runner 名
+Can not be empty!;不能为空！
+Hosting;集成
+Hosting this exe in 1Remote tab view?;将该 exe 集成到 1Remote 的 tab 视图中?
+Caution: some exe can not be hosted in 1Remote.;警告: 某些应用程序无法被集成到 1Remote 中，请自行测试。
+Show environment variables;显示环境变量
+Add environment variables;添加环境变量
+write permissions alert;"我们没有路径 `{0}` 的写入权限！
+请尝试用以下方法修复问题：
+1. 使用管理员权限运行程序
+2. 修改路径的权限设置 
+3. 将 1Remote 移动到其他目录"
+Follow system;跟随系统(服务器要求Windows Server 2012 R2及以上)
+tag_tooltips;鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Alt + 鼠标左键 : 将该标签添加到排除列表
+Are you sure you want to close the connection?;确定要关闭连接么？
+Hi there,;你好呀！
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;希望你觉得这个 APP 还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评，如果有任何改进建议欢迎通过 Github 反馈（QQ群也行:168542318）。谢啦！
+Give suggestions;提点意见
+Buy a coffee;买杯咖啡
+Give nice review;给个好评
+Do not show this again in current version;当前版本不再显示
+User profile;用户配置
+Selected runner;指定Runner
+Login with password;通过密码登录
+Login with ssh private key;通过私钥登录
+Supports the Putty-key only;仅支持 putty key
+Supports the OpenSSH format key only with the internal SFTP client.;内置客户端仅支持 OpenSSH 格式私钥
+Supports the OpenSSH format key and Putty-key with WinSCP.;WinSCP 可支持 Putty 和 OpenSSH 两种格式私钥
+Environment variables;环境变量
+Before runner start the environment variables will be set;环境变量将在启动前写入Runner
+Data Source name;数据源名称
+Please select a Data Source;请选择一个数据源
+Test connection;测试连接
+Show XXX button;显示 `{0}` 按钮
+Show recently used here;在此显示最近使用的会话
+Hide recently used;隐藏最近使用的会话
+Leave blank to inherit the default value;留空以继承默认值
+Alternative;备选
+with alternative;使用备选凭证
+Automatic address switching;自动切换地址
+Availability detection;地址可用性检测
+Check if address is available before connect;连接前检测地址是否可用
+When the default host or port is unavailable the alternate addresses will be tried in sequence;当默认的地址不可用时，将自动依次尝试备选地址
+support multi-address multi-account;支持多地址、多账号
+We are not able to connect to xxx;无法连接到`{0}`!
+XXX is already existed!;`{0}`已经存在！
+XXX is not existed!;`{0}` 不存在！
+Show credentials info;显示账号信息
+Sorting;排序
+Sort by drag;自定义拖拽排序
+We can not connect database:;无法连接到数据库
+We can not create tables on database:;无法创建数据表：
+We can not insert into database:;无法插入数据：
+We can not update on database:;无法更新数据：
+We can not read from database:;无法读取数据：
+We can not select from database:;无法查询数据：
+We can not delete from database:;无法删除数据：
+because:;原因是:
+Pause;暂停
+Updating;正在更新
+Reconnecting;正在重连
+Next update check;下次更新检查
+Next auto reconnect;下次自动重连
+Pin;固定
+Unpin;取消固定
+This is your list of tags. Right click for a context menu to pin them on header.;这是您的标签列表。右键单击上下文菜单将其固定在标题上。
+Create desktop shortcut;创建桌面快捷方式
+Success;成功
+Failed;失败
+Please complete the windows credentials verification;请完成Windows凭据验证
+Enter your credentials;输入凭据
+Before proceeding with sensitive operations, we need to make sure it is you.;在进行敏感操作之前，我们需要确认是您本人。
+Verification failed. Please try again.;验证失败，请重试。
+Security;安全设置
+Windows credentials verification is required to view passwords;查看密码前要求验证Windows凭据
+Not existed;不存在
+Not a number;不是数值
+Optional;可选的
+Nullable;可为空
+Selections;备选项
+Const value;固定值
+Description;描述
+Prefix;前缀
+append blank after prefix;在前缀后添加空格
+append blank after value;在值后添加空格
+Do you want to replace the current parameter list with preset value?;是否将当前参数列表替换为预设值？
+One option per line;一行一个备选项
+Use vertical lines to separate descriptions;用竖线隔开值和描述(值|描述)
+Automatically focus on the content when selecting a tab;选择 tab 后自动聚焦内容
+Copy the port along with the address when copying;复制地址时同时复制端口
+Place the close button on the left side to prevent accidental touches;将关闭按钮放在左侧以防止误触
+Ask for password when open connect;打开连接时输入密码
+Remember the information above;记住上述信息
+Quick Connect;快速连接
+Allow Quick Connect to save entered address information;允许`快速连接`保存输入的地址信息
+Yes;是
+No;否
+Click on the icon above to change it to your own image;点击图标可选择本地图片
+Always open in new window;总在新窗口打开
+Set focus to local desktop when the mouse is moved out of RDP desktop;当鼠标移出RDP桌面时将焦点设定到本地桌面
+Close button behavior;关闭按钮行为
+Minimize to system tray;最小化系统托盘
+Credentials;凭据
+Credentials Vault;凭据库
+Select credentials within the same database;只能在同一个数据库中选择凭据

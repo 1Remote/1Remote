@@ -3,18 +3,18 @@ public static class LanguagesResources
 {
     public static readonly string[] Files = new string[]
     {
-        "en-us.xaml",
-        "it-it.xaml",
-        "zh-cn.xaml",
         "cs-cz.xaml",
         "de-de.xaml",
+        "en-us.xaml",
         "fr-fr.xaml",
-        "pt-br.xaml",
-        "ja-jp.xaml",
-        "zh-tw.xaml",
         "gl-es.xaml",
+        "it-it.xaml",
+        "ja-jp.xaml",
         "pl-pl.xaml",
+        "pt-br.xaml",
+        "pt-pt.xaml",
         "ru-ru.xaml",
-        "pt-pt.xaml"
+        "zh-cn.xaml",
+        "zh-tw.xaml"
     };
 }
