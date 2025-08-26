@@ -1,171 +1,260 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Enhanced Language Manager with Google Translate support
+"""
+
+import code
 import csv
-import math
 import os
-from os import path
-import copy
+import sys
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
 
 Special_Marks_in_XAML_Content = ["&", "<", ">", "\r", "\n"]
-# Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "&#13;", "&#10;"]
 Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "\\r", "\\n"]
 Forbidden_Characters_in_XAML_Key = ['"', "'", *Special_Marks_in_XAML_Content]
 Forbidden_Characters_in_XAML_Key_Values = ['&quot;', '&apos;', *Special_Characters_in_XAML_Content]
-
-
-def Special_Marks_to_Characters_in_XAML(string: str) -> str:
-    for i in range(len(Special_Marks_in_XAML_Content)):
-        string = string.replace(Special_Characters_in_XAML_Content[i], Special_Marks_in_XAML_Content[i])
-    return string
-
 
 def Characters_to_Special_Marks_in_XAML(string: str) -> str:
     for i in range(len(Special_Marks_in_XAML_Content)):
         string = string.replace(Special_Marks_in_XAML_Content[i], Special_Characters_in_XAML_Content[i])
     return string
 
-
 def Forbidden_Characters_in_XAML_Key_convert(string: str) -> str:
     for i in range(len(Forbidden_Characters_in_XAML_Key)):
         string = string.replace(Forbidden_Characters_in_XAML_Key[i], Forbidden_Characters_in_XAML_Key_Values[i])
     return string
 
+def load_language_csv(csv_path):
+    """Load a single language CSV file"""
+    with open(csv_path, mode='r', encoding='utf-8') as f:
+        reader = csv.reader(f, delimiter=";")
+        lines = list(reader)
 
-class glossary:
-    def __init__(self):
-        self.keys = []
-        self.english_words = []
-        self.columns = []
-        self.ROW_TITLE = 0
-        self.ROW_LANG_CODE_ISO = 1
-        self.ROW_LANG_CODE_GOOGLE = 2
-        self.ROW_LANG_NAME = 3
+    if len(lines) < 4:
+        raise ValueError(f"Invalid language file format: {csv_path}")
 
-    def load_csv(self, csv_file_name: str, encoding: str = 'utf-8'):
-        lines = []  # [[key, english_word, a, b, c, d], [key1, w1, ...], ...]
-        with open(csv_file_name, mode='r', encoding=encoding)as f:
-            reader = csv.reader(f, delimiter=";")
-            for row in reader:
-                if len(row) > 0:
-                    lines.append(row)
-        key_column_index = 0
-        en_column_index = 1
-        self.keys = [Forbidden_Characters_in_XAML_Key_convert(line[key_column_index]) for line in lines]
-        self.english_words = [Special_Marks_to_Characters_in_XAML(line[en_column_index]) for line in lines]
-        for col in range(len(lines[0])):
-            if col == key_column_index or col == en_column_index:
-                continue
-            self.columns.append([Special_Marks_to_Characters_in_XAML(line[col]) if len(line) > col else '' for line in lines])
+    lang_data = {
+        'key': lines[0][1] if len(lines[0]) > 1 else "",
+        'language_code-ISO': lines[1][1] if len(lines[1]) > 1 else "",
+        'language_code-google': lines[2][1] if len(lines[2]) > 1 else "",
+        'language_name': lines[3][1] if len(lines[3]) > 1 else "",
+        'translations': {}
+    }
 
-    def save_csv(self, csv_file_name: str, encoding: str = 'utf-8'):
-        lines = []
-        for row in range(len(self.keys)):
-            line = [column[row] for column in self.columns]
-            lines.append([self.keys[row], self.english_words[row], *line])
-        with open(csv_file_name, 'w', encoding=encoding, newline='') as f:
+    # Extract translations
+    for i in range(4, len(lines)):
+        if len(lines[i]) >= 2:
+            key = lines[i][0]
+            translation = lines[i][1]
+            lang_data['translations'][key] = translation
+
+    return lang_data
+
+def save_language_csv(csv_path, lang_data):
+    """Save language data to CSV file"""
+    with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f, delimiter=";", lineterminator='\n')
+
+        # Write header rows
+        writer.writerow(['key', lang_data['key']])
+        writer.writerow(['language_code-ISO', lang_data['language_code-ISO']])
+        writer.writerow(['language_code-google', lang_data['language_code-google']])
+        writer.writerow(['language_name', lang_data['language_name']])
+
+        # Write translations
+        for key, translation in lang_data['translations'].items():
+            writer.writerow([key, translation])
+
+def load_translation_cache(lang_code):
+    """Load translation cache for a specific language"""
+    cache_file = f"glossary_translated_by_google/{lang_code}_translated_by_google.csv"
+    cache = {}
+
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file, mode='r', encoding='utf-8') as f:
+                reader = csv.reader(f, delimiter=";")
+                lines = list(reader)
+
+                # Skip header rows and process translations
+                for i in range(4, len(lines)):
+                    if len(lines[i]) >= 2:
+                        key = lines[i][0]
+                        translation = lines[i][1]
+                        if translation:  # Only store non-empty translations
+                            cache[key] = translation
+        except Exception as e:
+            print(f"Warning: Could not load translation cache {cache_file}: {e}")
+
+    return cache
+
+def save_translation_cache(lang_code, iso_code, google_code, language_name, cache):
+    """Save translation cache for a specific language"""
+    os.makedirs("glossary_translated_by_google", exist_ok=True)
+    cache_file = f"glossary_translated_by_google/{lang_code}_translated_by_google.csv"
+
+    try:
+        with open(cache_file, 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f, delimiter=";", lineterminator='\n')
-            writer.writerows(lines)
 
-    def do_translate(self, translator: Translator):
-        for column in self.columns:
-            print('processing ', column[0])
-            for row in range(len(column)):
-                if row <= self.ROW_LANG_NAME:
-                    continue
-                # 没有内容时才进行翻译
-                if column[row] == '':
-                    txt = translator.translate(Special_Marks_to_Characters_in_XAML(self.english_words[row]), dest=column[self.ROW_LANG_CODE_GOOGLE]).text
-                    print('translating to [', column[0], ']: ', self.english_words[row], ' ---> ', txt)
-                    column[row] = txt
+            # Write header rows
+            writer.writerow(['key', lang_code])
+            writer.writerow(['language_code-ISO', iso_code])
+            writer.writerow(['language_code-google', google_code])
+            writer.writerow(['language_name', language_name])
 
-    def merge_columns(self, src):
-        self_languages = [column[self.ROW_TITLE] for column in self.columns]
-        src_languages = [column[self.ROW_TITLE] for column in src.columns]
-        for src_col in range(len(src.columns)):
-            if src_languages[src_col] not in self_languages:
-                continue
-            self_col = self_languages.index(src_languages[src_col])
-            for src_row in range(len(src.columns[src_col])):
-                if src.columns[src_col][src_row] == '':
-                    continue
-                if src.keys[src_row] not in self.keys:
-                    continue
-                self_row = self.keys.index(src.keys[src_row])
-                if self.columns[self_col][self_row] == '':
-                    self.columns[self_col][self_row] = src.columns[src_col][src_row]
+            # Write translations
+            for key, translation in cache.items():
+                writer.writerow([key, translation])
 
-    def clear_content_rows(self):
-        for column in self.columns:
-            for row in range(len(column)):
-                if row > self.ROW_LANG_NAME:
-                    column[row] = ""
+        print(f"Saved translation cache: {cache_file}")
+    except Exception as e:
+        print(f"Error saving translation cache {cache_file}: {e}")
 
-    def save_to_xaml(self, encoding: str = 'utf-8'):
-        langs = [self.english_words, *self.columns]
-        file_list = []
-        for lang in langs:
-            code = lang[self.ROW_LANG_CODE_ISO]
-            name = lang[self.ROW_LANG_NAME]
-            xaml_file_name = (code + '.xaml').lower()
-            with open(xaml_file_name, 'w', encoding=encoding, newline='') as f:
-                f.write('<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">\r\n')
-                if "language_name" not in self.keys:
-                    f.write('    <s:String x:Key="language_name">' + name + '</s:String>\r\n')
-                for row in range(len(self.keys)):
-                    f.write('    <s:String x:Key="' + self.keys[row] + '">' + Characters_to_Special_Marks_in_XAML(lang[row]) + '</s:String>\r\n')
-                f.write('</ResourceDictionary>')
-            file_list.append(xaml_file_name)
-            pass
+def translate_text(translator, text, target_lang_code):
+    """Translate text using Google Translate API"""
+    try:
+        result = translator.translate(text, dest=target_lang_code)
+        return result.text
+    except:
+        # If failed, you can add proxy configuration here if needed
+        # For now, just return None
+        return None
 
-        with open("LanguagesList.cs", 'w', encoding=encoding, newline='\r\n') as f:
-            f.write('''
-public static class LanguagesResources
-{
-    public static readonly string[] Files = new string[]
-    {
-#REPLACEMENT#
-    };
-}
-'''.replace('#REPLACEMENT#', '        "' + '",\n        "'.join(file_list) + '"'))
-
-    def clone(self):
-        return copy.deepcopy(self)
-
-
-if __name__ == '__main__':
-
-    CSV_FILE_NAME = 'glossary.csv'
-    CSV_FILE_NAME = os.path.basename(CSV_FILE_NAME).split('.')[0]
-
-    g = glossary()
-    g.load_csv(CSV_FILE_NAME + '.csv')
-    # make a backup
-    if os.path.exists(CSV_FILE_NAME + '_backup.csv'):
-        os.remove(CSV_FILE_NAME + '_backup.csv')
-    os.rename(CSV_FILE_NAME + '.csv', CSV_FILE_NAME + '_backup.csv')
-    g.save_csv(CSV_FILE_NAME + '.csv')
-
+def generate_xaml_files():
     http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
     proxies = {'http': http_proxy, 'https': http_proxy}
     translator = Translator(proxies=proxies)
-    # print(translator.translate('hi\r\nsun rise', dest='de').text
 
-    if path.exists("glossary_for_PRemoteM.csv"):
-        prm = glossary()
-        prm.load_csv("glossary_for_PRemoteM.csv")
-        g.merge_columns(prm)
-        g.save_csv(CSV_FILE_NAME + '.csv')
+    """Generate XAML files from CSV files in glossary directory with auto-translation"""
+    print("Enhanced Language Manager - Generating XAML files...")
+    print("=" * 50)
 
+    glossary_dir = 'glossary'
+    if not os.path.exists(glossary_dir):
+        print(f"Error: {glossary_dir} directory not found!")
+        return
 
-    # translate
-    t = g.clone()
-    if path.exists(CSV_FILE_NAME + '_translated_by_google.csv'):
-        google_translated = glossary()
-        google_translated.load_csv(CSV_FILE_NAME + '_translated_by_google.csv')
-        t.merge_columns(google_translated)
-    t.do_translate(translator)
-    t.save_csv(CSV_FILE_NAME + '_translated_by_google.csv')
-    g.merge_columns(t)
-    g.save_to_xaml()
+    # Load English as reference
+    english_file = os.path.join(glossary_dir, 'en-us.csv')
+    if not os.path.exists(english_file):
+        print(f"Error: English template not found: {english_file}")
+        return
 
-    # save xaml
+    english_data = load_language_csv(english_file)
+
+    csv_files = [f for f in os.listdir(glossary_dir) if f.endswith('.csv')]
+    if not csv_files:
+        print(f"Error: No CSV files found in {glossary_dir}!")
+        return
+
+    file_list = []
+
+    for csv_file in csv_files:
+        lang_code = csv_file[:-4]  # Remove .csv extension
+        csv_path = os.path.join(glossary_dir, csv_file)
+
+        try:
+            # Load language data
+            lang_data = load_language_csv(csv_path)
+            print(f"Processing: {lang_code} ({lang_data['language_name']})")
+
+            # Load translation cache
+            translation_cache = load_translation_cache(lang_code)
+            cache_updated = False
+            lang_updated = False
+            # Check for missing keys (use English as reference)
+            for key, english_text in english_data['translations'].items():
+                if key not in lang_data['translations']:
+                    # Missing key, add it (empty translation to be filled manually)
+                    lang_data['translations'][key] = ""
+                    lang_updated = True
+                    print(f"  Added missing key: {key}")
+
+            # Create a copy for XAML generation that includes cached/translated content
+            xaml_data = lang_data.copy()
+            xaml_data['translations'] = lang_data['translations'].copy()            # Process empty translations for XAML generation
+            if lang_code != 'en-us':  # Skip English itself
+                for key, translation in xaml_data['translations'].items():
+                    if not translation:  # Empty translation
+                        # First check cache
+                        if key in translation_cache:
+                            xaml_data['translations'][key] = translation_cache[key]
+                            print(f"  Used cached translation for {key}: {translation_cache[key]}")
+
+                        # If still empty and we have English text, try Google Translate
+                        elif key in english_data['translations'] and english_data['translations'][key]:
+                            english_text = english_data['translations'][key]
+                            xaml_data['translations'][key] = english_text
+                            translated = translate_text(translator, english_text, lang_data['language_code-google'])
+                            if translated:
+                                # Store in memory for XAML generation but don't save to CSV
+                                xaml_data['translations'][key] = translated
+                                translation_cache[key] = translated
+                                cache_updated = True
+                                print(f"  Translated {key}: {english_text} -> {translated}")
+                                print(f"    (Translation stored in cache only, not in CSV)")
+
+            # Save updated language file if changed
+            if lang_updated:
+                save_language_csv(csv_path, lang_data)
+                print(f"  Updated language file: {csv_path}")
+            # Save updated cache if changed
+            if cache_updated:
+                save_translation_cache(
+                    lang_data['key'],
+                    lang_data['language_code-ISO'],
+                    lang_data['language_code-google'],
+                    lang_data['language_name'],
+                    translation_cache
+                )
+
+            # Generate XAML file
+            xaml_file_name = (lang_code + '.xaml').lower()
+
+            with open(xaml_file_name, 'w', encoding='utf-8', newline='') as f:
+                f.write('<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">\r\n')
+                # Add language_name if not in translations
+                key = xaml_data['key']
+                code_iso = xaml_data['language_code-ISO']
+                code_google = xaml_data['language_code-google']
+                language_name = xaml_data['language_name']
+                # write language codes
+                f.write(f'    <s:String x:Key="key">{key}</s:String>\r\n')
+                f.write(f'    <s:String x:Key="language_code-ISO">{code_iso}</s:String>\r\n')
+                f.write(f'    <s:String x:Key="language_code-google">{code_google}</s:String>\r\n')
+                f.write(f'    <s:String x:Key="language_name">{language_name}</s:String>\r\n')
+                # Write all translations (including cached/translated ones)
+                for key, translation in xaml_data['translations'].items():
+                    safe_key = Forbidden_Characters_in_XAML_Key_convert(key)
+                    safe_translation = Characters_to_Special_Marks_in_XAML(translation)
+                    f.write(f'    <s:String x:Key="{safe_key}">{safe_translation}</s:String>\r\n')
+                f.write('</ResourceDictionary>')
+
+            file_list.append(xaml_file_name)
+            print(f"Generated: {xaml_file_name}")
+
+        except Exception as e:
+            print(f"Error processing {csv_file}: {e}")
+
+    # Generate LanguagesList.cs
+    if file_list:
+        with open("LanguagesList.cs", 'w', encoding='utf-8', newline='\r\n') as f:
+            files_str = '",\n        "'.join(file_list)
+            f.write(f'''
+public static class LanguagesResources
+{{
+    public static readonly string[] Files = new string[]
+    {{
+        "{files_str}"
+    }};
+}}
+''')
+        print("Generated: LanguagesList.cs")
+
+    print(f"\nCompleted! Generated {len(file_list)} XAML files.")
+
+if __name__ == '__main__':
+    generate_xaml_files()

@@ -1,0 +1,333 @@
+key;ja-jp
+language_code-ISO;ja-JP
+language_code-google;ja
+language_name;日本語 (ja-JP)
+Warning;警告
+Error;エラー
+Info;情報
+OK;OK
+Exit;終了
+Close;閉じる
+Add;追加
+Edit;編集
+Save;保存
+Save as...;名前を付けて保存...
+Back;戻る
+Delete;削除
+Cancel;キャンセル
+Select;選択
+Explore to...;参照
+Previous;前へ
+Next;次へ
+Done;完了
+Reset;リセット
+Import;参照
+Export;エクスポート
+Name;名前
+File Name;ファイル名
+Test;テスト
+Reconnect;再接続
+Dismiss;閉じる
+Lock;ロック
+Always on top;常に手前に表示
+Close all;すべて閉じる
+Rename;名前の変更
+Connect;接続
+Connect (New window);接続 (新しいウィンドウ)
+Note;メモ
+Share;共有
+Copy;コピー
+Enabled;有効
+Helper;ヘルパー
+Preview;プレビュー
+Theme;テーマ
+Color;色
+Color1;色1
+Color2;色2
+Background;背景
+Normal;通常
+Lighter;明るめ
+Darker;暗め
+Font;フォント
+Font size;フォントサイズ
+Themes;テーマ
+Options;オプション
+About;1Remoteについて
+Language;言語
+Startup;起動
+Tags;タグ
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Enterキーまたは+ボタンでタグを追加します。タグはサーバーのグループ化に役立ちます。ホーム画面上の［タグ］をクリックすると、特定のタグをフィルタリングしたりピン留めすることができます。
+Icon;アイコン
+Hostname;ホスト名
+Target;ターゲット
+Port;ポート番号
+User;ユーザー名
+Password;パスワード
+Selected;選択済み
+Custom;カスタム
+All;すべて
+Protocol;プロトコル
+Cameras;カメラ
+Upload;アップロード
+filter_mainwindow;キーワード または '#' + タグ名 または Tabキー
+Search (Ctrl+F);検索 (Ctrl + F)
+hotkey_already_registered;このホットキーの組み合わせは既に使用されています
+hotkey_registered_fail;ホットキーの登録に失敗しました
+string_permission_denied;アクセス拒否
+file_transmit_host_list_header_last_update;更新日時
+Type;種類
+file_transmit_host_list_header_size;サイズ
+file_transmit_host_message_preview_over_size;このアイテムは1MBを超えていますが、本当に開いてもよろしいですか？
+file_transmit_host_message_files_download_to;保存先フォルダーを選択
+file_transmit_host_message_files_download_to_dir;＜保存先フォルダーを開いてください＞
+file_transmit_host_message_select_files_to_upload;アップロードするファイルの選択
+file_transmit_host_command_refresh;更新 (F5)
+file_transmit_host_command_create_folder;フォルダーを作成
+file_transmit_host_command_upload;コピーしたファイルやフォルダーをアップロード (Ctrl + V)
+file_transmit_host_command_select_files_upload;ファイルをアップロード...
+file_transmit_host_command_select_folder_upload;フォルダーをアップロード...
+file_transmit_host_command_delete;削除 (Del)
+file_transmit_host_command_save_to;ダウンロードして保存... (Ctrl + S)
+file_transmit_host_warning_same_names_title;置き換え または中止
+file_transmit_host_warning_same_names;保存先フォルダーには同じ名前のファイルが {0} 個存在します。置き換えてもよろしいですか？
+host_reconecting_info;再接続中...
+Toggle Cards/List;カードビュー/リストビュー切り替え
+system_options_general_title;一般
+Run automatically at OS startup;OS起動時に自動実行(最小化)
+Confirm before closing;閉じる前に確認する
+Show current session icon instead of the app icon when connected;接続時にアプリのアイコンに代えて現在のセッションのアイコンを表示する
+system_options_general_log_file_path;ログファイル
+system_options_quick_match_providers;キーワードのマッチタイプ
+Launcher;ランチャー
+system_options_quick_launcher_enable;ランチャーを有効にする
+system_options_quick_launcher_hotkey;ホットキー
+system_options_data_security_database;データベース
+Caution: Your data will be saved unencrypted!;注意: データは暗号化されずに保存されます
+system_options_data_security_info_data_processing;データを処理しています。アプリを閉じないでください。
+server_card_operate_duplicate;複製
+server_card_operate_copy_address;ホスト名をクリップボードにコピー
+server_card_operate_copy_username;ユーザー名をクリップボードにコピー
+server_card_operate_copy_password;パスワードをクリップボードにコピー
+confirm_to_delete;本当に削除してよろしいですか？
+confirm_to_delete_selected;選択されたものすべてを本当に削除してよろしいですか？
+import_server_dialog_title;ファイルを選択
+import_from_json;インポート - json
+import_from_mremoteng_csv;インポート - mRemoteNG csv
+import_from_rdp_file;インポート - *.rdp
+import_from_sqlite_db;インポート - PRemoteM db
+import_done_0_items_added;インポートは無事に完了し、{0}個の項目を追加しました。
+import_failure_with_data_format_error;データ形式エラー
+server_editor_different_options;＜一括編集中の各項目の設定を保持＞
+server_editor_bulk_editing;一括編集
+server_editor_bulk_editing_title;一括編集中:
+server_editor_multi_selected_count;選択項目数:
+server_editor_group_title_common;一般
+Connection Info;接続情报
+Connection Settings;コネクション
+server_editor_group_title_display;ディスプレイ
+server_editor_group_title_advantage;高度な設定
+server_editor_group_title_gateway;RDゲートウェイサーバー
+server_editor_tags_tag;「,」で区切って複数入力できます
+Script before connect;接続前スクリプト
+Hide script window;"スクリプトウィンドウを表示しない
+(時間のかかるスクリプトにはお勧めしません)"
+Script after disconnected;切断後スクリプト
+Run bat before connect;接続前に実行するbat (例: C:\OpenSshTunneling.bat)
+Run bat after disconnected;切断後に実行するbat (例: C:\CloseSshTunneling.bat)
+Use private key;鍵認証を使用する
+Private key;秘密鍵
+Open SFTP when connected;接続時にSFTPも開く
+Open SFTP;SFTPを開く
+server_editor_display_full_screen_flag;フルスクリーンリモートデスクトップ
+server_editor_display_full_screen_flag_window;無効
+server_editor_display_full_screen_flag_full_screen;有効 (単一のモニター)
+server_editor_display_full_screen_flag_all_screens;有効 (すべてのモニター)
+Display the connection bar when use the full screen;フルスクリーン使用時に接続バーを表示
+Pin the connection bar by default;デフォルトで接続バーを固定
+New session always use full screen;新しいセッションは常にフルスクリーンを使用する
+New session use full screen if the last session is full screen;新しいセッションは、前回のセッションがフルスクリーンの場合、フルスクリーンを使用する
+Resolution;解像度
+Fit to window;ウィンドウに合わせる (対応サーバー: Windows Server 2012 R2 以降)
+Custom resolution (stretch);カスタム解像度 (ストレッチ)
+Custom resolution (fixed);カスタム解像度 (固定)
+Full-screen resolution (stretch);フルスクリーン解像度 (ストレッチ)
+Full-screen resolution (fixed);フルスクリーン解像度 (固定)
+Scale;表示スケール
+server_editor_display_rdp_performance;パフォーマンス
+server_editor_display_rdp_performance_auto;自動 (接続速度に応じて判断)
+server_editor_display_rdp_performance_high;高 (32ビットカラー、すべての視覚機能が有効)
+server_editor_display_rdp_performance_middle;中 (16ビットカラー、フォントスムージングとデスクトップコンポジションが有効)
+server_editor_display_rdp_performance_low;低 (8ビットカラー、有効な視覚機能なし)
+server_editor_advantage_admin;サーバーの管理用
+server_editor_advantage_resources;リソース
+server_editor_advantage_clipboard;クリップボード
+server_editor_advantage_key_combinations;キーの組み合わせ
+server_editor_advantage_disk_drives;ドライブ
+Drives plug in later;後で接続したドライブ
+server_editor_advantage_sounds;リモートのオーディオ
+server_editor_advantage_sounds_disabled;出力しない
+server_editor_advantage_sounds_on_local;このコンピューターで出力する
+server_editor_advantage_sounds_on_remote;リモートコンピューターで出力する
+server_editor_advantage_sound_quality;オーディオの品質
+server_editor_advantage_sound_quality_dynamic;ダイナミック
+server_editor_advantage_sound_quality_medium;中
+server_editor_advantage_sound_quality_high;高
+server_editor_advantage_audio_capture;オーディオキャプチャー
+server_editor_advantage_ports;ポート
+server_editor_advantage_printers;プリンター
+server_editor_advantage_smart_cards;ICカード
+server_editor_advantage_ssh_version;SSHバージョン
+server_editor_advantage_ssh_startup_auto_command;自動コマンド
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;KiTTYのセッションファイルのパス
+server_editor_advantage_sftp_startup_path;開始パス
+server_editor_gateway_mode;接続設定
+server_editor_gateway_mode_automatically_detect;自動的にRDゲートウェイサーバーの設定を検出する
+server_editor_gateway_mode_use_these;次のRDゲートウェイサーバー設定を使用する
+server_editor_gateway_mode_do_not_use;RDゲートウェイサーバーを使用しない
+server_editor_gateway_server_host_name;サーバー名
+server_editor_gateway_logon_method;ログオン方法
+server_editor_gateway_logon_method_psw;パスワード
+server_editor_gateway_logon_method_smart_card;ICカード
+server_editor_gateway_bypass_gateway_for_local_address;ローカル アドレスの RD ゲートウェイ サーバーをバイパスする
+How to select the specified monitors;どのようにモニターを使用するかを指定します
+mstsc.exe mode;mstsc.exe モード
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;このモードでは、1Remoteのウィンドウの代わりに、より多くのカスタムパラメーターを利用可能な 'mstsc.exe xxxx.rdp' という方法でRDPセッションを実行します。
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;注: PC上に異なる表示スケーリングのモニターが2台以上あり、フルスクリーンモードを選択した場合には、このモードが自動的に有効になります。
+Additional settings;追加の設定
+Preview rdp file;rdpファイルをプレビュー
+Check monitor number;モニターの情報
+server_editor_remote_app_name;アプリ名
+server_editor_remote_app_name_tag;アプリの名前 (例: hello)
+server_editor_remote_app_fullname;アプリのパス
+server_editor_remote_app_fullname_tag;リモートコンピューター上のフルパス (例: C:\Apps\hello.exe)
+about_page_how_to_use;使い方
+about_page_feedback;フィードバック
+guidance_introduce;1Remoteで、いつでもどこでもリモートセッションを開くことができます。
+guidance_feature_launcher_key;ランチャーを呼び出すホットキー
+guidance_feature_launcher_select;選択
+guidance_feature_launcher_connect;接続
+guidance_feature_launcher_menu;メニューを表示
+guidance_feature_tab_demo;ドッキング／分離、ドラッグが可能な、RDP, SSH, VNC, sFTP... のリモートセッション
+guidance_feature_start_setting1;始める前にいくつかの設定を確定してください。
+guidance_feature_start_setting2;これらの設定はいつでも[オプション]で変更できます。
+Portable mode;ポータブルモード
+Profile is saved where executable is located;プロファイルは実行ファイルの場所に保存されます
+Install for current windows account;現在のWindowsユーザーアカウント用にインストール
+Profile is saved in your Windows AppData folder;プロファイルはユーザーのAppDataフォルダーに保存されます
+word_oops;おっと…
+error_report_unexpected_error_occurred;予期しないエラーが発生しました。エラー情報は以下のとおりです。
+error_report_to_clipboard;クリップボードにコピー
+error_report_please_help_us_improve;このエラーを報告して 1Remote の改善にご協力ください。
+error_report_how_help_us_improve;エラー情報をコピーし、報告方法を選ぶだけです。
+error_report_send_by_email;電子メールで送信
+error_report_send_by_github;GitHubで送信
+logo_selector_open_file_dialog_title;画像の選択
+Default;デフォルト
+Exe path;Exe パス
+Cmd parameter;引数
+New runner name;追加するランナーの名前
+Can not be empty!;記入が必要です
+Hosting;ホスティング
+Hosting this exe in 1Remote tab view?;このexeを1Remoteのウィンドウでホストする
+Caution: some exe can not be hosted in 1Remote.;注意: exeによっては1Remoteのウィンドウでホストできないかもしれません。ご自身でテストしてください。
+Show environment variables;環境変数を表示する
+Add environment variables;環境変数を追加
+write permissions alert;"ディレクトリ `{0}` への書き込みが許可されていません
+以下をお試しください:
+1. 管理者として実行する
+2. ディレクトリまたはアクセス許可を変更する
+3. 1Remoteを別のフォルダーに移動する"
+Follow system;システムに従う (対応サーバー: Windows Server 2012 R2 以降)
+tag_tooltips;"クリック : このタグを持つアイテムのみを表示{0}Ctrl + クリック : このタグを持つことをリスト条件に加える{0}Alt + クリック : このタグを持たないことをリスト条件に加える
+"
+Are you sure you want to close the connection?;本当に接続を閉じてよろしいですか？
+Hi there,;こんにちは！
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;このアプリがお役に立つことを願っています。もし私の仕事を応援してくださるなら、コーヒーをおごっていただくか、素敵なレビューをしてください。ありがとう！
+Give suggestions;提案をする
+Buy a coffee;コーヒーをおごる
+Give nice review;レビューを書く
+Do not show this again in current version;現バージョンではもうこれを表示しない
+User profile;ユーザープロファイル
+Selected runner;ランナー選択
+Login with password;パスワードでログイン
+Login with ssh private key;SSH鍵認証でログイン
+Supports the Putty-key only;Puttyキーにのみ対応
+Supports the OpenSSH format key only with the internal SFTP client.;ビルトインSFTPクライアントはOpenSSH形式のキーにのみ対応します。
+Supports the OpenSSH format key and Putty-key with WinSCP.;WinSCPはOpenSSH形式のキーとPuttyキーに対応します。
+Environment variables;環境変数
+Before runner start the environment variables will be set;ランナー起動時に設定されます
+Data Source name;名前
+Please select a Data Source;追加先データベースを選択してください
+Test connection;テスト接続
+Show XXX button;{0}ボタンを表示する
+Show recently used here;最近使用したものをここに表示する
+Hide recently used;最近使用したものを表示しない
+Leave blank to inherit the default value;空欄にしておくとデフォルト値を継承します
+Alternative;代替
+with alternative;(代替の接続情報を使用)
+Automatic address switching;自動で代替の接続情報を利用する
+Availability detection;利用できるかを検知
+Check if address is available before connect;接続前にホストをチェックする
+When the default host or port is unavailable the alternate addresses will be tried in sequence;デフォルトのホストが利用できないとき、代替の接続情報を順番に試します。（その際、[接続前にホストをチェック] の設定にかかわらず、各接続情報のホストが利用できるかどうかを接続前にチェックします）
+support multi-address multi-account;複数アカウント対応
+We are not able to connect to xxx;`{0}` に接続できません
+XXX is already existed!;`{0}` は既に存在しています
+XXX is not existed!;`{0}` is not existed!
+Show credentials info;接続先とユーザー名の表示
+Sorting;並べ替え
+Sort by drag;ドラッグで並べ替え
+We can not connect database:;データベースに接続できません
+We can not create tables on database:;データベースにテーブルを作成できません: 
+We can not insert into database:;データベースに項目を追加できません
+We can not update on database:;データベースを更新できません
+We can not read from database:;データベースからの読み出しができません
+We can not select from database:;データベースから項目を抽出できません
+We can not delete from database:;データベースから項目を削除できません
+because:;原因:
+Pause;中断
+Updating;更新中
+Reconnecting;再接続中
+Next update check;次の更新まで
+Next auto reconnect;次の再接続まで
+Pin;ピン留めする
+Unpin;ピン留めを外す
+This is your list of tags. Right click for a context menu to pin them on header.;以下はタグのリストです。右クリックのコンテキストメニューでヘッダーにピン留めすることができます。
+Create desktop shortcut;デスクトップにショートカットを作成
+Success;成功しました
+Failed;失敗しました
+Please complete the windows credentials verification;Windows資格情報の認証を履行してください
+Enter your credentials;資格情報を入力してください
+Before proceeding with sensitive operations, we need to make sure it is you.;機密情報に関わる操作には、本人確認のための認証が必要です。
+Verification failed. Please try again.;認証できませんでした。やり直してください。
+Security;セキュリティ
+Windows credentials verification is required to view passwords;パスワードの可視化やコピーにはWindows資格情報での認証が必要
+Not existed;存在していません
+Not a number;数値エラー
+Optional;任意
+Nullable;空の値を許容する
+Selections;選択肢
+Const value;固定値
+Description;説明
+Prefix;プレフィックス
+append blank after prefix;プレフィックスの後に空白を追加する
+append blank after value;値の後に空白を追加する
+Do you want to replace the current parameter list with preset value?;引数リストをこのプログラムのプリセット値に置き換えますか？
+One option per line;1行に1項目
+Use vertical lines to separate descriptions;'|' で値とラベルを区切ります (値|ラベル)
+Automatically focus on the content when selecting a tab;タブを選択するとコンテンツに自動的にフォーカスします
+Copy the port along with the address when copying;［ホスト名をクリップボードにコピー］ではポート番号も付加する
+Place the close button on the left side to prevent accidental touches;誤操作を防ぐため、閉じるボタンを左側に配置する
+Ask for password when open connect;接続時にパスワードを要求する
+Remember the information above;上記の情報を記憶する
+Quick Connect;クイック接続
+Allow Quick Connect to save entered address information;クイック接続で入力した接続情報を保存する
+Yes;はい
+No;いいえ
+Click on the icon above to change it to your own image;上のアイコンをクリックしてお持ちの画像に変更できます
+Always open in new window;常に新しいウィンドウで開く
+Set focus to local desktop when the mouse is moved out of RDP desktop;RDPデスクトップからマウスが移動されたときに、フォーカスをローカルデスクトップに設定します
+Close button behavior;閉じるボタンの挙動
+Minimize to system tray;システムトレイに最小化
+Credentials;パスワード認証
+Credentials Vault;保管庫
+Select credentials within the same database;同じデータベース内の資格情報を選択します

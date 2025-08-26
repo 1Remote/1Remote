@@ -1,0 +1,331 @@
+key;en-us
+language_code-ISO;en-US
+language_code-google;en
+language_name;English (en-US)
+Warning;Warning
+Error;Error
+Info;Info
+OK;OK
+Exit;Exit
+Close;Close
+Add;Add
+Edit;Edit
+Save;Save
+Save as...;Save as...
+Back;Back
+Delete;Delete
+Cancel;Cancel
+Select;Select
+Explore to...;Explore to...
+Previous;Previous
+Next;Next
+Done;Done
+Reset;Reset
+Import;Import
+Export;Export
+Name;Name
+File Name;File Name
+Test;Test
+Reconnect;Reconnect
+Dismiss;Dismiss
+Lock;Lock
+Always on top;Always on top
+Close all;Close all
+Rename;Rename
+Connect;Connect
+Connect (New window);Connect (New window)
+Note;Note
+Share;Share
+Copy;Copy
+Enabled;Enabled
+Helper;Helper
+Preview;Preview
+Theme;Theme
+Color;Color
+Color1;Color1
+Color2;Color2
+Background;Background
+Normal;Normal
+Lighter;Lighter
+Darker;Darker
+Font;Font
+Font size;Font size
+Themes;Themes
+Options;Options
+About;About
+Language;Language
+Startup;Startup
+Tags;Tags
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.
+Icon;Icon
+Hostname;Hostname
+Target;Target
+Port;Port
+User;User
+Password;Password
+Selected;Selected
+Custom;Custom
+All;All
+Protocol;Protocol
+Cameras;Cameras
+Upload;Upload
+filter_mainwindow;Keywords or '#' + tag name or 'Tab' key
+Search (Ctrl+F);Search (Ctrl + F)
+hotkey_already_registered;Hot key already been registered
+hotkey_registered_fail;Failed to register the hot key
+string_permission_denied;Permission denied
+file_transmit_host_list_header_last_update;Last update
+Type;Type
+file_transmit_host_list_header_size;Size
+file_transmit_host_message_preview_over_size;This item is over 1 MB, are you sure you want to open it?
+file_transmit_host_message_files_download_to;Please select a folder to save to
+file_transmit_host_message_files_download_to_dir;Use this folder
+file_transmit_host_message_select_files_to_upload;Please select files to upload
+file_transmit_host_command_refresh;Refresh (F5)
+file_transmit_host_command_create_folder;Create a folder
+file_transmit_host_command_upload;Upload (Ctrl + V)
+file_transmit_host_command_select_files_upload;Select files to upload
+file_transmit_host_command_select_folder_upload;Select a folder to upload
+file_transmit_host_command_delete;Delete (Del)
+file_transmit_host_command_save_to;Save to... (Ctrl + S)
+file_transmit_host_warning_same_names_title;Replace or cancel
+file_transmit_host_warning_same_names;The destination has {0} file(s) with the same name(s). Do you want to continue?
+host_reconecting_info;Reconnecting...
+Toggle Cards/List;Toggle Cards/List
+system_options_general_title;General
+Run automatically at OS startup;Run automatically at OS startup(minimized)
+Confirm before closing;Confirm before closing
+Show current session icon instead of the app icon when connected;Show current session icon instead of the app icon when connected
+system_options_general_log_file_path;Log file
+system_options_quick_match_providers;Keyword-Matchers
+Launcher;Launcher
+system_options_quick_launcher_enable;Enable the launcher
+system_options_quick_launcher_hotkey;Hot key
+system_options_data_security_database;Database
+Caution: Your data will be saved unencrypted!;Caution: Your data will be saved unencrypted!
+system_options_data_security_info_data_processing;Processing data. Do not close the app!
+server_card_operate_duplicate;Duplicate
+server_card_operate_copy_address;Copy hostname to clipboard
+server_card_operate_copy_username;Copy username to clipboard
+server_card_operate_copy_password;Copy password to clipboard
+confirm_to_delete;Are you sure you want to delete?
+confirm_to_delete_selected;Are you sure you want to delete all selected?
+import_server_dialog_title;Select a file
+import_from_json;import json
+import_from_mremoteng_csv;import mRemoteNG csv
+import_from_rdp_file;import *.rdp
+import_from_sqlite_db;import PRemoteM db
+import_done_0_items_added;Imported successfully, {0} item(s) added.
+import_failure_with_data_format_error;Error data format!
+server_editor_different_options;<different options>
+server_editor_bulk_editing;Bulk editing
+server_editor_bulk_editing_title;You are editing in bulk:
+server_editor_multi_selected_count;Number of selected items:
+server_editor_group_title_common;Common
+Connection Info;Connection Info
+Connection Settings;Connection
+server_editor_group_title_display;Display
+server_editor_group_title_advantage;Advantage
+server_editor_group_title_gateway;RD Gateway Server
+server_editor_tags_tag;Can enter multiple, separated by ','
+Script before connect;Script before connect
+Hide script window;Hide script window(not recommended for script take long time)
+Script after disconnected;Script after disconnected
+Run bat before connect;Run bat before connect(e.g. run 'C:\OpenSshTunneling.bat')
+Run bat after disconnected;Run bat after disconnected(e.g. run 'C:\CloseSshTunneling.bat')
+Use private key;Use private key
+Private key;Private key
+Open SFTP when connected;Open SFTP when connected
+Open SFTP;Open SFTP
+server_editor_display_full_screen_flag;Full screen remote desktop
+server_editor_display_full_screen_flag_window;Disable
+server_editor_display_full_screen_flag_full_screen;Enable (single monitor)
+server_editor_display_full_screen_flag_all_screens;Enable (multi monitors)
+Display the connection bar when use the full screen;Display the connection bar when use the full screen
+Pin the connection bar by default;Pin the connection bar by default
+New session always use full screen;New session always use full screen
+New session use full screen if the last session is full screen;New session use full screen if the last session is full screen
+Resolution;Resolution
+Fit to window;Fit to window(Supported server: Windows Server 2012 R2 and above)
+Custom resolution (stretch);Custom resolution (stretch)
+Custom resolution (fixed);Custom resolution (fixed)
+Full-screen resolution (stretch);Full-screen resolution (stretch)
+Full-screen resolution (fixed);Full-screen resolution (fixed)
+Scale;Scale
+server_editor_display_rdp_performance;Performance
+server_editor_display_rdp_performance_auto;Auto (judged based on connection speed)
+server_editor_display_rdp_performance_high;High (32bit color with full feature support)
+server_editor_display_rdp_performance_middle;Middle (16bit color with only font smoothing and desktop composition)
+server_editor_display_rdp_performance_low;Low (8bit color with no feature support)
+server_editor_advantage_admin;For administering a server
+server_editor_advantage_resources;Resources
+server_editor_advantage_clipboard;Clipboard
+server_editor_advantage_key_combinations;Key Combinations
+server_editor_advantage_disk_drives;Drives
+Drives plug in later;Drives plug in later
+server_editor_advantage_sounds;Sounds
+server_editor_advantage_sounds_disabled;Disabled
+server_editor_advantage_sounds_on_local;Play on local
+server_editor_advantage_sounds_on_remote;Play on remote
+server_editor_advantage_sound_quality;Sound Quality
+server_editor_advantage_sound_quality_dynamic;Dynamic
+server_editor_advantage_sound_quality_medium;Medium
+server_editor_advantage_sound_quality_high;High
+server_editor_advantage_audio_capture;Audio Capture
+server_editor_advantage_ports;Ports
+server_editor_advantage_printers;Printers
+server_editor_advantage_smart_cards;Smart Cards
+server_editor_advantage_ssh_version;SSH Version
+server_editor_advantage_ssh_startup_auto_command;Auto command
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;Use external configuration by selecting a session file path for KiTTY
+server_editor_advantage_sftp_startup_path;Startup path
+server_editor_gateway_mode;Connection
+server_editor_gateway_mode_automatically_detect;Automatically detect RD Gateway Server settings
+server_editor_gateway_mode_use_these;Use the following RD Gateway Server settings
+server_editor_gateway_mode_do_not_use;Do not use RD Gateway Server
+server_editor_gateway_server_host_name;Host Name
+server_editor_gateway_logon_method;Logon Method
+server_editor_gateway_logon_method_psw;Password
+server_editor_gateway_logon_method_smart_card;Smart Card
+server_editor_gateway_bypass_gateway_for_local_address;Bypass RD Gateway Server for local address
+How to select the specified monitors;How to select the specified monitors
+mstsc.exe mode;mstsc.exe mode
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.
+Additional settings;Additional settings
+Preview rdp file;Preview rdp file
+Check monitor number;Check monitor number
+server_editor_remote_app_name;App Name
+server_editor_remote_app_name_tag;Name of the app (e.g. hello)
+server_editor_remote_app_fullname;App Path
+server_editor_remote_app_fullname_tag;Full exe path on the server (e.g. C:\Apps\hello.exe)
+about_page_how_to_use;How to use
+about_page_feedback;Feedback
+guidance_introduce;1Remote allows you to open a remote session at any time and anywhere.
+guidance_feature_launcher_key;call the launcher by
+guidance_feature_launcher_select;select item by
+guidance_feature_launcher_connect;connect by
+guidance_feature_launcher_menu;menu by
+guidance_feature_tab_demo;Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...
+guidance_feature_start_setting1;Please confirm some settings before first use.
+guidance_feature_start_setting2;You are able to change this setting later in Options.
+Portable mode;Portable mode
+Profile is saved where executable is located;Profile is saved where executable is located
+Install for current windows account;Install for current windows account
+Profile is saved in your Windows AppData folder;Profile is saved in your Windows AppData folder
+word_oops;Oops...
+error_report_unexpected_error_occurred;Unexpected error occurred. Error info is shown below:
+error_report_to_clipboard;Copy to clipboard
+error_report_please_help_us_improve;Please help us improve 1Remote by reporting this error.
+error_report_how_help_us_improve;Simply copy the error message and choose a way to report it.
+error_report_send_by_email;Send by e-mail
+error_report_send_by_github;Send by GitHub
+logo_selector_open_file_dialog_title;select a picture
+Default;Default
+Exe path;Exe path
+Cmd parameter;CMD parameter
+New runner name;New runner name
+Can not be empty!;Can not be empty!
+Hosting;Hosting
+Hosting this exe in 1Remote tab view?;Hosting this exe in 1Remote tab windowView?
+Caution: some exe can not be hosted in 1Remote.;Caution: some exe can not be hosted by 1Remote, please test by your self.
+Show environment variables;Show environment variables
+Add environment variables;Add environment variables
+write permissions alert;"We don't have write permissions for the `{0}` directory!
+Please try:
+1. run as administrator
+2. change directory or file permissions 
+3. move 1Remote to another folder"
+Follow system;Follow system(Supported server: Windows Server 2012 R2 and above)
+tag_tooltips;click : set this tag as filter{0}Ctrl + click : add this tag to the include list {0}Alt + click : add this tag to the exclude list
+Are you sure you want to close the connection?;Are you sure you want to close the connection?
+Hi there,;Hi there,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!
+Give suggestions;Give suggestions
+Buy a coffee;Buy a coffee
+Give nice review;Give nice review
+Do not show this again in current version;Do not show this again in current version
+User profile;User profile
+Selected runner;Selected runner
+Login with password;Login with password
+Login with ssh private key;Login with ssh private key
+Supports the Putty-key only;Supports the Putty-key only
+Supports the OpenSSH format key only with the internal SFTP client.;Supports the OpenSSH format key only with the internal SFTP client.
+Supports the OpenSSH format key and Putty-key with WinSCP.;Supports the OpenSSH format key and Putty-key with WinSCP.
+Environment variables;Environment variables
+Before runner start the environment variables will be set;Befor runner start the environment variables will be set
+Data Source name;Data Source name
+Please select a Data Source;Please select a Data Source
+Test connection;Test connection
+Show XXX button;Show `{0}` button
+Show recently used here;Show recently used here
+Hide recently used;Hide recently used
+Leave blank to inherit the default value;Leave blank to inherit the default value
+Alternative;Alternative
+with alternative;with alternative
+Automatic address switching;Automatic address switching
+Availability detection;Availability detection
+Check if address is available before connect;Check if address is available before connect
+When the default host or port is unavailable the alternate addresses will be tried in sequence;When the default host or port is unavailable the alternate addresses will be tried in sequence
+support multi-address multi-account;support multi-address multi-account
+We are not able to connect to xxx;We are not able to connect to `{0}`!
+XXX is already existed!;`{0}` is already existed!
+XXX is not existed!;`{0}` is not existed!
+Show credentials info;Show credentials info
+Sorting;Sorting
+Sort by drag;Sort by drag
+We can not connect database:;We can not connect database:
+We can not create tables on database:;We can not create tables on database:
+We can not insert into database:;We can not insert into database:
+We can not update on database:;We can not update on database:
+We can not read from database:;We can not read from database:
+We can not select from database:;We can not select from database:
+We can not delete from database:;We can not delete from database:
+because:;because:
+Pause;Pause
+Updating;Updating
+Reconnecting;Reconnecting
+Next update check;Next update check
+Next auto reconnect;Next auto reconnect
+Pin;Pin
+Unpin;Unpin
+This is your list of tags. Right click for a context menu to pin them on header.;This is your list of tags. Right click for a context menu to pin them on header.
+Create desktop shortcut;Create desktop shortcut
+Success;Success
+Failed;Failed
+Please complete the windows credentials verification;Please complete the windows credentials verification
+Enter your credentials;Enter your credentials
+Before proceeding with sensitive operations, we need to make sure it is you.;Before proceeding with sensitive operations, we need to make sure it is you.
+Verification failed. Please try again.;Verification failed. Please try again.
+Security;Security
+Windows credentials verification is required to view passwords;Windows credentials verification is required to view passwords
+Not existed;Not existed
+Not a number;Not a number
+Optional;Optional
+Nullable;Nullable
+Selections;Selections
+Const value;Const value
+Description;Description
+Prefix;Prefix
+append blank after prefix;append blank after prefix
+append blank after value;append blank after value
+Do you want to replace the current parameter list with preset value?;Do you want to replace the current parameter list with preset value?
+One option per line;One option per line
+Use vertical lines to separate descriptions;Use vertical lines to separate descriptions(value|description)
+Automatically focus on the content when selecting a tab;Automatically focus on the content when selecting a tab
+Copy the port along with the address when copying;Copy the port along with the address when copying
+Place the close button on the left side to prevent accidental touches;Place the close button on the left side to prevent accidental touches
+Ask for password when open connect;Ask for password when open connect
+Remember the information above;Remember the information above
+Quick Connect;Quick Connect
+Allow Quick Connect to save entered address information;Allow Quick Connect to save entered address information
+Yes;Yes
+No;No
+Click on the icon above to change it to your own image;Click on the icon above to change it to your own image
+Always open in new window;Always open in new window
+Set focus to local desktop when the mouse is moved out of RDP desktop;Set focus to local desktop when the mouse is moved out of RDP desktop
+Close button behavior;Close button behavior
+Minimize to system tray;Minimize to system tray
+Credentials;Credentials
+Credentials Vault;Credentials Vault
+Select credentials within the same database;Select credentials within the same database
