@@ -329,3 +329,4 @@ Minimize to system tray;最小化系统托盘
 Credentials;凭据
 Credentials Vault;凭据库
 Select credentials within the same database;只能在同一个数据库中选择凭据
+Reset main window location;
