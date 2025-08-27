@@ -23,6 +23,7 @@ using Stylet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -39,14 +40,30 @@ namespace _1RM.View.ServerList
             AppData = appData;
             TagsPanelViewModel = IoC.Get<TagsPanelViewModel>();
 
-            AppData.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(GlobalData.TagList))
-                {
-                    OnGlobalDataTagListChanged();
-                }
-            };
+            AppData.PropertyChanged += AppDataOnPropertyChanged;
             OnGlobalDataTagListChanged();
+            SimpleLogHelper.Debug($"[{this.GetHashCode()}] {this.GetType().Name} is created");
+        }
+
+        ~ServerPageViewModelBase()
+        {
+            Close();
+            SimpleLogHelper.Debug($"[{this.GetHashCode()}] {this.GetType().Name} is finalized");
+        }
+
+        public virtual void Close()
+        {
+            // todo: unsubscribe event in the sub class
+            AppData.PropertyChanged -= AppDataOnPropertyChanged;
+        }
+
+
+        private void AppDataOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GlobalData.TagList))
+            {
+                OnGlobalDataTagListChanged();
+            }
         }
 
         public DataSourceService SourceService { get; }
@@ -54,12 +71,13 @@ namespace _1RM.View.ServerList
         public LauncherSettingViewModel LauncherSettingViewModel => IoC.Get<LauncherSettingViewModel>();
 
         public abstract void BuildView();
+        public abstract void ClearSelection();
+        public abstract void ApplySort();
 
 
 
 
         public ObservableCollection<ProtocolBaseViewModel> VmServerList { get; set; } = new ObservableCollection<ProtocolBaseViewModel>();
-        public abstract void ClearSelection();
 
         private RelayCommand? _cmdCancelSelected;
         public RelayCommand CmdCancelSelected

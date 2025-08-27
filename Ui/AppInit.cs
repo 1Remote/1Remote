@@ -340,7 +340,7 @@ namespace _1RM
                     {
                         var kys = new Dictionary<string, string>
                         {
-                            { $"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}" },
+                            { $"App start with - ServerViewStatus", $"{ConfigurationServiceObj.General.ServerViewStatus}" },
                             { $"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}" },
                             { $"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}" },
                             { $"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}" },

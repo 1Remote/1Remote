@@ -46,8 +46,8 @@ namespace _1RM.View
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
-        public ServerList.ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
-        public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
+        //public ServerList.ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
+        //public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
         private readonly GlobalData _appData;
@@ -56,7 +56,7 @@ namespace _1RM.View
         #region Properties
 
         private EnumServerViewStatus _currentView;
-        public EnumServerViewStatus CurrentView
+        protected EnumServerViewStatus CurrentView
         {
             get => _currentView;
             set
@@ -64,21 +64,29 @@ namespace _1RM.View
                 if (SetAndNotifyIfChanged(ref _currentView, value))
                 {
                     IoC.Get<ConfigurationService>().General.ServerViewStatus = value;
-                    RaisePropertyChanged(nameof(CurrentView));
-                    RaisePropertyChanged(nameof(IsShownList));
-
                     // When switching to TreeView, force rebuild the tree to ensure data is displayed
                     if (value == EnumServerViewStatus.Tree)
                     {
-                        ServerTreeViewModel.BuildView();
-                        ActiveServerViewModel = ServerTreeViewModel;
+                        // TODO: Optimize this logic later by new a better way
+                        //ActiveServerViewModel = new ServerTreeViewModel(IoC.Get<DataSourceService>(), IoC.Get<GlobalData>());
+                        ActiveServerViewModel = IoC.Get<ServerTreeViewModel>();
                     }
                     else
                     {
-                        ActiveServerViewModel = ServerListViewModel;
+                        //ActiveServerViewModel = new ServerListPageViewModel(IoC.Get<DataSourceService>(), IoC.Get<GlobalData>());
+                        ActiveServerViewModel = IoC.Get<ServerListPageViewModel>();
+                    }
+                    if (ActiveServerViewModel is ServerListPageViewModel slvm)
+                    {
+                        slvm.ListPageIsCardViewRaisePropertyChanged();
                     }
                     RaisePropertyChanged(nameof(ActiveServerViewModel));
                 }
+                Execute.OnUIThread(() =>
+                {
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                });
             }
         }
 
@@ -333,8 +341,8 @@ namespace _1RM.View
             ShowSetting = false;
             if (clearSelection)
             {
-                ServerListViewModel.ClearSelection();
-                ServerTreeViewModel.CmdCancelSelected.Execute();
+                ActiveServerViewModel.ClearSelection();
+                ActiveServerViewModel.CmdCancelSelected.Execute();
             }
         }
 
@@ -383,10 +391,6 @@ namespace _1RM.View
                 return _cmdToggleCardView ??= new RelayCommand((o) =>
                 {
                     CurrentView = EnumServerViewStatus.Card;
-                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = true;
-                    if (this.View is MainWindowView v)
-                        v.PopupMenu.IsOpen = false;
                 }, o => CurrentView != EnumServerViewStatus.Card);
             }
         }
@@ -400,10 +404,6 @@ namespace _1RM.View
                 return _cmdToggleListView ??= new RelayCommand((o) =>
                 {
                     CurrentView = EnumServerViewStatus.List;
-                    this.ServerListViewModel.ListPageIsCardView = false;
-                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = false;
-                    if (this.View is MainWindowView v)
-                        v.PopupMenu.IsOpen = false;
                 }, o => CurrentView != EnumServerViewStatus.List);
             }
         }
@@ -416,8 +416,6 @@ namespace _1RM.View
                 return _cmdToggleTreeView ??= new RelayCommand((o) =>
                 {
                     CurrentView = EnumServerViewStatus.Tree;
-                    if (this.View is MainWindowView v)
-                        v.PopupMenu.IsOpen = false;
                 }, o => CurrentView != EnumServerViewStatus.Tree);
             }
         }
@@ -430,8 +428,7 @@ namespace _1RM.View
                 return _cmdReOrder ??= new RelayCommand((o) =>
                 {
                     SetServerOrderBy(o);
-                    ServerListViewModel?.ApplySort();
-                    ServerTreeViewModel?.ApplySort();
+                    ActiveServerViewModel.ApplySort();
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
                 });
@@ -460,8 +457,7 @@ namespace _1RM.View
                 switch (goPage)
                 {
                     case EnumMainWindowPage.CardView:
-                        CurrentView = EnumServerViewStatus.List;
-                        //LocalityListViewService.ServerOrderBySet();
+                        CurrentView = EnumServerViewStatus.Card;
                         ShowList(false);
                         break;
                     case EnumMainWindowPage.ListView:

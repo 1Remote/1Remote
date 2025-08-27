@@ -192,21 +192,5 @@ namespace _1RM.View.Settings
                 });
             }
         }
-
-
-
-
-
-        public bool ListPageIsCardView
-        {
-            get => _configurationService.General.ListPageIsCardView;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _configurationService.General.ListPageIsCardView, value))
-                {
-                    _configurationService.Save();
-                }
-            }
-        }
     }
 }

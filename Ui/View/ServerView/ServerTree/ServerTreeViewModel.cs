@@ -935,7 +935,7 @@ namespace _1RM.View.ServerView.ServerTree
                 RootNodes = TreeNode.VirtualRoot.Children;
 
                 // Log some information for debugging
-                SimpleLogHelper.Debug($"TreeView rebuilt with {TreeNode.VirtualRoot.Children.Count} root nodes and {AppData.VmItemList.Count} servers");
+                SimpleLogHelper.Debug($"[{this.GetHashCode()}] TreeView rebuilt with {TreeNode.VirtualRoot.Children.Count} root nodes and {AppData.VmItemList.Count} servers");
 
                 RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
@@ -975,7 +975,7 @@ namespace _1RM.View.ServerView.ServerTree
             }
         }
 
-        public void ApplySort()
+        public override void ApplySort()
         {
             SortNodes(RootNodes);
             //BuildView();

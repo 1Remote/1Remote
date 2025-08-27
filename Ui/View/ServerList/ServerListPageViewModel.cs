@@ -24,23 +24,11 @@ namespace _1RM.View.ServerList
 
 
         #region properties
-        public bool ListPageIsCardView
+        public bool ListPageIsCardView => IoC.Get<ConfigurationService>().General.ServerViewStatus == EnumServerViewStatus.Card;
+
+        public void ListPageIsCardViewRaisePropertyChanged()
         {
-            get => IoC.Get<ConfigurationService>().General.ListPageIsCardView;
-            set
-            {
-                if (IoC.Get<ConfigurationService>().General.ListPageIsCardView != value)
-                {
-                    IoC.Get<ConfigurationService>().General.ListPageIsCardView = value;
-                    IoC.Get<ConfigurationService>().Save();
-                    RaisePropertyChanged();
-                }
-                if (value == true)
-                {
-                    _briefNoteVisibility = Visibility.Visible;
-                    BriefNoteVisibility = Visibility.Collapsed;
-                }
-            }
+            RaisePropertyChanged(nameof(ListPageIsCardView));
         }
 
         private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
@@ -283,6 +271,8 @@ namespace _1RM.View.ServerList
                     RaisePropertyChanged(nameof(VmServerList));
                     ApplySort();
                     CalcServerVisibleAndRefresh(true);
+
+                    SimpleLogHelper.Debug($"[{this.GetHashCode()}] ListView rebuilt with {AppData.VmItemList.Count} servers");
                 });
             }
         }
@@ -318,7 +308,7 @@ namespace _1RM.View.ServerList
             set => SetAndNotifyIfChanged(ref this._serverOrderBy, value);
         }
 
-        public void ApplySort()
+        public override void ApplySort()
         {
             var orderBy = IoC.Get<MainWindowViewModel>().ServerOrderBy;
             ServerOrderBy = orderBy;
