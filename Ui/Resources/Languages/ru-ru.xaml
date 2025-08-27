@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">Реквизиты для входа</s:String>
     <s:String x:Key="Credentials Vault">Условия хранилища</s:String>
     <s:String x:Key="Select credentials within the same database">Выберите учетные данные в той же базе данных</s:String>
+    <s:String x:Key="Reset main window location">Сбросить местоположение главного окна</s:String>
 </ResourceDictionary>

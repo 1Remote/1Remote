@@ -35,6 +35,8 @@ namespace _1RM.Service.Locality
 
     internal class LocalitySettings
     {
+        public double MainWindowTop = double.NaN;
+        public double MainWindowLeft = double.NaN;
         public double MainWindowWidth = 800;
         public double MainWindowHeight = 530;
         public WindowState MainWindowState = WindowState.Normal;
@@ -86,6 +88,32 @@ namespace _1RM.Service.Locality
             }
         }
 
+
+        public double MainWindowTop
+        {
+            get => _localitySettings.MainWindowTop;
+            set
+            {
+                if (double.IsNaN(_localitySettings.MainWindowTop) || Math.Abs(_localitySettings.MainWindowTop - value) > 0.001)
+                {
+                    _localitySettings.MainWindowTop = value;
+                    Save();
+                }
+            }
+        }
+
+        public double MainWindowLeft
+        {
+            get => _localitySettings.MainWindowLeft;
+            set
+            {
+                if (double.IsNaN(_localitySettings.MainWindowLeft) || Math.Abs(_localitySettings.MainWindowLeft - value) > 0.001)
+                {
+                    _localitySettings.MainWindowLeft = value;
+                    Save();
+                }
+            }
+        }
 
         public double MainWindowWidth
         {

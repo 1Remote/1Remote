@@ -105,6 +105,11 @@ namespace _1RM.Service
                     TaskTrayDispose();
                     App.Close();
                 };
+                var resetMainWindowLocation = new System.Windows.Forms.ToolStripMenuItem(IoC.Translate("Reset main window location"));
+                resetMainWindowLocation.Click += (sender, args) =>
+                {
+                    IoC.Get<MainWindowView>().ResetLocation();
+                };
 
                 _taskTrayIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
 
@@ -163,6 +168,7 @@ namespace _1RM.Service
                 }
 
                 //_taskTrayIcon.ContextMenuStrip.Items.Add(linkHowToUse);
+                _taskTrayIcon.ContextMenuStrip.Items.Add(resetMainWindowLocation);
                 _taskTrayIcon.ContextMenuStrip.Items.Add(linkFeedback);
                 _taskTrayIcon.ContextMenuStrip.Items.Add(about);
                 _taskTrayIcon.ContextMenuStrip.Items.Add(exit);

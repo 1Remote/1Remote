@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">Credentials</s:String>
     <s:String x:Key="Credentials Vault">Credentials Vault</s:String>
     <s:String x:Key="Select credentials within the same database">Select credentials within the same database</s:String>
+    <s:String x:Key="Reset main window location">Reset main window location</s:String>
 </ResourceDictionary>

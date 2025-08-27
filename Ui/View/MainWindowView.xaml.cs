@@ -31,12 +31,6 @@ namespace _1RM.View
             this.Width = localityService.MainWindowWidth;
             this.Height = localityService.MainWindowHeight;
             this.WindowState = localityService.MainWindowState;
-            // check the current screen size
-            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
-            if (this.Width > screenEx.VirtualWorkingArea.Width)
-                this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
-            if (this.Height > screenEx.VirtualWorkingArea.Height)
-                this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
 
             this.SizeChanged += (sender, args) =>
             {
@@ -49,6 +43,13 @@ namespace _1RM.View
                 }
             };
 
+            this.LocationChanged += (sender, args) =>
+            {
+                localityService.MainWindowTop = this.Top;
+                localityService.MainWindowLeft = this.Left;
+                SimpleLogHelper.Debug($"Main window move to: top = {this.Top}, left = {this.Left}");
+            };
+
             this.StateChanged += (sender, args) =>
             {
                 localityService.MainWindowState = this.WindowState;
@@ -57,11 +58,20 @@ namespace _1RM.View
             WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
-            // Startup Location
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
-
+            // Restore or reset window location
+            if (double.IsNaN(localityService.MainWindowTop) || double.IsNaN(localityService.MainWindowLeft)
+                || localityService.MainWindowTop < SystemParameters.VirtualScreenTop
+                || localityService.MainWindowTop + this.Height > SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight
+                || localityService.MainWindowLeft < SystemParameters.VirtualScreenLeft
+                || localityService.MainWindowLeft + this.Width > SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth)
+            {
+                ResetLocation();
+            }
+            else
+            {
+                this.Top = localityService.MainWindowTop;
+                this.Left = localityService.MainWindowLeft;
+            }
 
             BtnClose.Click += (sender, args) =>
             {
@@ -94,6 +104,21 @@ namespace _1RM.View
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+        }
+
+        public void ResetLocation()
+        {
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+            // Check the current screen size
+            this.WindowState = WindowState.Normal;
+            if (this.Width > screenEx.VirtualWorkingArea.Width)
+                this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
+            if (this.Height > screenEx.VirtualWorkingArea.Height)
+                this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
+            // Place the window in the center of the current screen
+            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
         }
 
         protected override void OnClosing(CancelEventArgs e)
