@@ -554,7 +554,14 @@
                                     </Grid>
 
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="2 0">
-                                        <ProgressBar Height="20" Value="{Binding TransmittedPercentage, Mode=OneWay}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#1789C6" BorderBrush="Gray"></ProgressBar>
+                                        <ProgressBar Height="20" Value="{Binding TransmittedPercentage, Mode=OneWay}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#1789C6" BorderBrush="Gray"
+                                                     ToolTipService.InitialShowDelay="0">
+                                            <ProgressBar.ToolTip>
+                                                <ToolTip HorizontalOffset="10" VerticalOffset="-50" Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource DefaultBorderBrush}">
+                                                    <TextBlock Text="{Binding TimeRemaining, Mode=OneWay}"></TextBlock>
+                                                </ToolTip>
+                                            </ProgressBar.ToolTip>
+                                        </ProgressBar>
                                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding TransmittedPercentage, Mode=OneWay,StringFormat='\{0\}%'}" Foreground="White"></TextBlock>
                                         <TextBlock HorizontalAlignment="Right" Margin="8 0" FontSize="{DynamicResource GlobalFontSizeSmall}" VerticalAlignment="Center" Text="{Binding TransmitSpeed, Mode=OneWay}" Foreground="White"></TextBlock>
                                     </Grid>
