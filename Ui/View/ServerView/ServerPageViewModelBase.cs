@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
     public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {

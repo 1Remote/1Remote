@@ -1,6 +1,6 @@
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 
-namespace _1RM.View.ServerView.ServerTree
+namespace _1RM.View.ServerView.Tree
 {
     public partial class ServerTreeViewModel : ServerPageViewModelBase
     {

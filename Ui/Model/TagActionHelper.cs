@@ -6,7 +6,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using _1RM.View.Utils;
 using Shawn.Utils;
 

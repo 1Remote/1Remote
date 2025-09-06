@@ -1,8 +1,5 @@
 ﻿using _1RM.Model;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
-using _1RM.View.Settings.Launcher;
 using Shawn.Utils.Wpf;
 using Stylet;
 using System.Collections.Generic;
@@ -10,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
     public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {

@@ -17,7 +17,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
     public partial class ServerListPageViewModel : ServerPageViewModelBase
     {

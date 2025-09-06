@@ -1,5 +1,5 @@
 ﻿using _1RM.Service.Locality;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using Newtonsoft.Json;
 using Shawn.Utils;
 

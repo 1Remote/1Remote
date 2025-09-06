@@ -13,7 +13,7 @@ using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
-using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
+using ServerListPageViewModel = _1RM.View.ServerView.ServerListPageViewModel;
 
 namespace _1RM.Model
 {

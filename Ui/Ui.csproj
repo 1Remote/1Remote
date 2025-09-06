@@ -376,10 +376,10 @@
         <Page Update="Controls\LogoSelector.xaml">
             <SubType>Designer</SubType>
         </Page>
-        <Page Update="Controls\ServerCardItem.xaml">
+        <Page Update="View\ServerView\List\ServerCardItem.xaml">
             <SubType>Designer</SubType>
         </Page>
-        <Page Update="Controls\ServerLineItem.xaml">
+        <Page Update="View\ServerView\List\ServerLineItem.xaml">
             <SubType>Designer</SubType>
         </Page>
         <Page Update="Controls\TagsEditor.xaml">

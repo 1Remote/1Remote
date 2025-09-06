@@ -6,7 +6,7 @@ using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using _1RM.View.Settings;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using ServerTreeViewModel = _1RM.View.ServerView.ServerTree.ServerTreeViewModel;
+using ServerTreeViewModel = _1RM.View.ServerView.Tree.ServerTreeViewModel;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
 
 namespace _1RM.View
@@ -46,7 +46,7 @@ namespace _1RM.View
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
-        //public ServerList.ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
+        //public ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         //public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
@@ -570,9 +570,9 @@ namespace _1RM.View
 
         public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
         {
-            if (tags?.Count == 1 && tags.First().TagName is ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME)
+            if (tags?.Count == 1 && tags.First().TagName is ServerPageViewModelBase.TAB_TAGS_LIST_NAME)
             {
-                _mainFilterString = ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME;
+                _mainFilterString = ServerPageViewModelBase.TAB_TAGS_LIST_NAME;
                 RaisePropertyChanged(nameof(MainFilterString));
             }
             else

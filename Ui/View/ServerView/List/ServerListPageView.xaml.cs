@@ -19,9 +19,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
-    public partial class ServerListPageView
+    public partial class ServerListPageView : ServerViewBase
     {
         public ServerListPageView()
         {

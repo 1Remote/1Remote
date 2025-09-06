@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using _1RM.Controls.NoteDisplay;
-using _1RM.Model;
-using _1RM.Service.Locality;
-using _1RM.Utils.Tracing;
-using _1RM.View.ServerList;
-using Shawn.Utils;
-using Shawn.Utils.Wpf;
 
-namespace _1RM.View.ServerView.ServerTree
+namespace _1RM.View.ServerView.Tree
 {
     /// <summary>
     /// ServerTreeView.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerTreeView : UserControl
+    public partial class ServerTreeView
     {
         private void TagList_PreviewMouseMoveEvent(object sender, MouseEventArgs e)
         {

@@ -8,7 +8,7 @@ using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils.Tracing;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 

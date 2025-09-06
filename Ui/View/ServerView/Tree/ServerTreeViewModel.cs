@@ -12,13 +12,12 @@ using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.View.Editor;
-using _1RM.View.ServerList;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
 
-namespace _1RM.View.ServerView.ServerTree
+namespace _1RM.View.ServerView.Tree
 {
     public partial class ServerTreeViewModel : ServerPageViewModelBase
     {

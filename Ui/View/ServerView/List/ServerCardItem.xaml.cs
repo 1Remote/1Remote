@@ -1,26 +1,27 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.View;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using Shawn.Utils;
 
 namespace _1RM.Controls
 {
-    /// <summary>
-    /// Interaction logic for ServerLineItem.xaml
-    /// </summary>
-    public partial class ServerLineItem : UserControl
+    public partial class ServerCardItem : UserControl
     {
         public static readonly DependencyProperty ProtocolServerViewModelProperty =
-            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerLineItem),
-                new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
+            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerCardItem),
+                new PropertyMetadata(null, new PropertyChangedCallback(OnServerDataChanged)));
 
-        private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var value = (ProtocolBaseViewModel)e.NewValue;
-            ((ServerLineItem)d).DataContext = value;
+            ((ServerCardItem)d).DataContext = value;
+            if (value?.HoverNoteDisplayControl != null)
+            {
+                value.HoverNoteDisplayControl.IsBriefNoteShown = false;
+            }
         }
 
         public ProtocolBaseViewModel? ProtocolBaseViewModel
@@ -29,8 +30,7 @@ namespace _1RM.Controls
             set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
-
-        public ServerLineItem()
+        public ServerCardItem()
         {
             InitializeComponent();
             PopupCardSettingMenu.Closed += (sender, args) =>
@@ -57,15 +57,6 @@ namespace _1RM.Controls
         private void ItemsCheckBox_OnClick(object sender, RoutedEventArgs e)
         {
             ServerListPageView.ItemsCheckBox_OnClick_Static(sender, e);
-        }
-
-        private void UIElement_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            // stop right click edit 
-            if (e.ChangedButton == MouseButton.Right)
-            {
-                e.Handled = true;
-            }
         }
     }
 }

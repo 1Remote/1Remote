@@ -2,7 +2,7 @@
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils.Tracing;
 using _1RM.View;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using Shawn.Utils;
 using System;
 using System.Collections.Generic;

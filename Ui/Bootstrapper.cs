@@ -26,8 +26,8 @@ using Shawn.Utils.Wpf;
 using Stylet;
 using StyletIoC;
 using MessageBoxViewModel = _1RM.View.Utils.MessageBoxViewModel;
-using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
-using ServerTreeViewModel = _1RM.View.ServerView.ServerTree.ServerTreeViewModel;
+using ServerListPageViewModel = _1RM.View.ServerView.ServerListPageViewModel;
+using ServerTreeViewModel = _1RM.View.ServerView.Tree.ServerTreeViewModel;
 
 namespace _1RM
 {

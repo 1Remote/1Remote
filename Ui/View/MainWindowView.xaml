@@ -114,9 +114,6 @@
                                             <Setter Property="IsEnabled" Value="True"></Setter>
                                         </MultiDataTrigger.Setters>
                                     </MultiDataTrigger>
-                                    <DataTrigger Binding="{Binding ServerListViewModel.TagListViewModel}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBox.Style>
