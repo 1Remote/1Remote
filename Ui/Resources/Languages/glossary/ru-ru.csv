@@ -1,0 +1,332 @@
+key;ru-ru
+language_code-ISO;ru-RU
+language_code-google;ru
+language_name;Русский(ru-RU)
+Warning;Предупреждение
+Error;Ошибка
+Info;Информация
+OK;OK
+Exit;Выход
+Close;Закрыть
+Add;Добавить
+Edit;Редактировать
+Save;Сохранить
+Save as...;Сохранить как...
+Back;Назад
+Delete;Удалить
+Cancel;Отмена
+Select;Выбирать
+Explore to...;Исследуйте, чтобы...
+Previous;Предыдущий
+Next;Следующий
+Done;Выполнено
+Reset;Перезагрузить
+Import;Импорт
+Export;Экспорт
+Name;Имя
+File Name;Имя файла
+Test;Тест
+Reconnect;Восстановить соединение
+Dismiss;Отклонить
+Lock;Замок
+Always on top;Always on top
+Close all;Закрыть все
+Rename;Переименовать
+Connect;Подключиться
+Connect (New window);Подключиться (новое окно)
+Note;Примечание
+Share;Поделиться
+Copy;Копировать
+Enabled;Включено
+Helper;Помощник
+Preview;Предварительный просмотр
+Theme;Тема
+Color;Цвет
+Color1;Цвет1
+Color2;Цвет2
+Background;Фон
+Normal;Нормальный
+Lighter;Светлее
+Darker;Темнее
+Font;Шрифт
+Font size;Размер шрифта
+Themes;Темы
+Options;Параметры
+About;О программе
+Language;Язык
+Startup;Запуск
+Tags;Теги
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Нажмите Enter, чтобы добавить тег, который используется для группировки серверов. Щелкнув правой кнопкой мыши по тегам на домашней странице, вы можете отфильтровать или закрепить определенный тег.
+Icon;Логотип
+Hostname;Имя хоста
+Target;Цель
+Port;Порт
+User;Пользователь
+Password;Пароль
+Selected;Выбрано
+Custom;Пользовательский
+All;Все
+Protocol;Протокол
+Cameras;Камеры
+Upload;Загрузить
+filter_mainwindow;Ключевые слова или «#» + имя тега или клавиша «Tab»
+Search (Ctrl+F);Поиск (Ctrl + F)
+hotkey_already_registered;Горячая клавиша уже зарегистрирована
+hotkey_registered_fail;Не удалось зарегистрировать горячую клавишу
+string_permission_denied;Доступ запрещен
+file_transmit_host_list_header_last_update;Последнее обновление
+Type;Тип
+file_transmit_host_list_header_size;Размер
+file_transmit_host_message_preview_over_size;Размер этого объекта превышает 1 МБ. Вы уверены, что хотите его открыть?
+file_transmit_host_message_files_download_to;Пожалуйста, выберите папку для сохранения
+file_transmit_host_message_files_download_to_dir;Используйте эту папку
+file_transmit_host_message_select_files_to_upload;Пожалуйста, выберите файлы для загрузки
+file_transmit_host_command_refresh;Обновить (F5)
+file_transmit_host_command_create_folder;Создать папку
+file_transmit_host_command_upload;Загрузить (Ctrl + V)
+file_transmit_host_command_select_files_upload;Выберите файлы для загрузки
+file_transmit_host_command_select_folder_upload;Выберите папку для загрузки
+file_transmit_host_command_delete;Удалить (Del)
+file_transmit_host_command_save_to;Сохранить в... (Ctrl + S)
+file_transmit_host_warning_same_names_title;Заменить или отменить
+file_transmit_host_warning_same_names;В пункте назначения есть {0} файлов с такими же именами. Вы хотите продолжить?
+host_reconecting_info;Повторное подключение...
+Toggle Cards/List;Переключить вид: карты/список
+system_options_general_title;Общий
+Run automatically at OS startup;Запускаться автоматически при запуске ОС (в свернутом виде)
+Confirm before closing;Подтверждать перед закрытие
+Show current session icon instead of the app icon when connected;Показывать значок текущего сеанса вместо значка приложения при подключении
+system_options_general_log_file_path;Лог
+system_options_quick_match_providers;Сопоставления ключевых слов
+Launcher;Лаунчер
+system_options_quick_launcher_enable;Включить лаунчер
+system_options_quick_launcher_hotkey;Горячая клавиша
+system_options_data_security_database;База данных
+Caution: Your data will be saved unencrypted!;Внимание: ваши данные будут сохранены в незашифрованном виде!
+system_options_data_security_info_data_processing;Обработка данных. Не закрывайте приложение!
+server_card_operate_duplicate;Дублировать
+server_card_operate_copy_address;Скопировать имя хоста в буфер обмена
+server_card_operate_copy_username;Скопировать имя пользователя в буфер обмена
+server_card_operate_copy_password;Скопировать пароль в буфер обмена
+confirm_to_delete;Вы уверены, что хотите удалить?
+confirm_to_delete_selected;Вы уверены, что хотите удалить все выбранное?
+import_server_dialog_title;Выберите файл
+import_from_json;импортировать JSON
+import_from_mremoteng_csv;импортировать mRemoteNG csv
+import_from_rdp_file;импортировать *.rdp
+import_from_sqlite_db;импортировать базу данных PRemoteM
+import_done_0_items_added;Импортировано успешно, добавлено {0} элементов.
+import_failure_with_data_format_error;Ошибка формата данных!
+server_editor_different_options;<разные варианты>
+server_editor_bulk_editing;Массовое редактирование
+server_editor_bulk_editing_title;Вы редактируете массово:
+server_editor_multi_selected_count;Количество выбранных:
+server_editor_group_title_common;Общие
+Connection Info;Подключение
+Connection Settings;Подключение
+server_editor_group_title_display;Экран
+server_editor_group_title_advantage;Продвинутые
+server_editor_group_title_gateway;Сервер шлюза удаленных рабочих столов
+server_editor_tags_tag;Можно ввести несколько, разделив их ','
+Script before connect;Скрипт перед подключением
+Hide script window;Скрыть окно скрипта (не рекомендуется для скриптов, которые занимают много времени)
+Script after disconnected;Скрипт после отключения
+Run bat before connect;Запустить bat перед подключением (например, запустите «C:\OpenSshTunneling.bat»)
+Run bat after disconnected;Запустить bat после отключения (например, запустите «C:\CloseSshTunneling.bat»)
+Use private key;Использовать закрытый ключ
+Private key;Закрытый ключ
+Open SFTP when connected;Открыть SFTP при подключении
+Open SFTP;Открыть SFTP
+server_editor_display_full_screen_flag;Полноэкранный удаленный рабочий стол
+server_editor_display_full_screen_flag_window;Выключить
+server_editor_display_full_screen_flag_full_screen;Включить (один монитор)
+server_editor_display_full_screen_flag_all_screens;Включить (несколько мониторов)
+Display the connection bar when use the full screen;Отображать панель подключения при использовании полноэкранного режима
+Pin the connection bar by default;Закрепить панель подключения по умолчанию
+New session always use full screen;Новый сеанс всегда использует полноэкранный режим
+New session use full screen if the last session is full screen;Новый сеанс использует полноэкранный режим, если последний сеанс был полноэкранным
+Resolution;Разрешение
+Fit to window;По размеру окна (поддерживается Windows Server 2012 R2 и более поздние версии)
+Custom resolution (stretch);Пользовательское разрешение (растянуть)
+Custom resolution (fixed);Пользовательское разрешение (фиксированное)
+Full-screen resolution (stretch);Полноэкранное разрешение (растянуть)
+Full-screen resolution (fixed);Полноэкранное разрешение (фиксированное)
+Scale;Масштаб
+server_editor_display_rdp_performance;Производительность
+server_editor_display_rdp_performance_auto;Авто (оценивается по скорости соединения)
+server_editor_display_rdp_performance_high;Высокая (32-битный цвет с полной поддержкой функций)
+server_editor_display_rdp_performance_middle;Средняя (16-битный цвет, только сглаживание шрифта и композиция рабочего стола)
+server_editor_display_rdp_performance_low;Низкая (8-битный цвет без поддержки функций)
+server_editor_advantage_admin;Для администрирования сервера
+server_editor_advantage_resources;Ресурсы
+server_editor_advantage_clipboard;Буфер обмена
+server_editor_advantage_key_combinations;Комбинации клавиш
+server_editor_advantage_disk_drives;Диски
+Drives plug in later;Диски подключаются позже
+server_editor_advantage_sounds;Звуки
+server_editor_advantage_sounds_disabled;Выключены
+server_editor_advantage_sounds_on_local;Проигрывать на локальном ПК
+server_editor_advantage_sounds_on_remote;Проигрывать на удалённом ПК
+server_editor_advantage_sound_quality;Качество звука
+server_editor_advantage_sound_quality_dynamic;Динамическое
+server_editor_advantage_sound_quality_medium;Среднее
+server_editor_advantage_sound_quality_high;Высокое
+server_editor_advantage_audio_capture;Захват звука
+server_editor_advantage_ports;Порты
+server_editor_advantage_printers;Принтеры
+server_editor_advantage_smart_cards;Смарт-карты
+server_editor_advantage_ssh_version;Версия SSH
+server_editor_advantage_ssh_startup_auto_command;Автоматическая команда
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;Используйте внешнюю конфигурацию, выбрав путь к файлу сеанса для KiTTY
+server_editor_advantage_sftp_startup_path;Путь при запуске
+server_editor_gateway_mode;Подключение
+server_editor_gateway_mode_automatically_detect;Автоматическое определение настроек сервера шлюза удаленных рабочих столов
+server_editor_gateway_mode_use_these;Используйте следующие настройки сервера шлюза удаленных рабочих столов
+server_editor_gateway_mode_do_not_use;Не используйте сервер шлюза удаленных рабочих столов
+server_editor_gateway_server_host_name;Имя хоста
+server_editor_gateway_logon_method;Метод входа в систему
+server_editor_gateway_logon_method_psw;Пароль
+server_editor_gateway_logon_method_smart_card;Смарт-карта
+server_editor_gateway_bypass_gateway_for_local_address;Обход сервера шлюза удаленных рабочих столов для локального адреса
+How to select the specified monitors;Как выбрать указанные мониторы
+mstsc.exe mode;Режим mstsc.exe
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;В этом режиме RDP запускает сеанс в формате «mstsc.exe xxxx.rdp» в командной строке. Это может предлагать больше настраиваемых параметров.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;Примечание: Этот режим будет автоматически включен, если на вашем компьютере установлено более 2 мониторов с разным масштабированием изображения и вы выбрали полноэкранный режим.
+Additional settings;Дополнительные настройки
+Preview rdp file;Предварительный просмотр файла rdp
+Check monitor number;Проверьте номер монитора
+server_editor_remote_app_name;Имя приложения
+server_editor_remote_app_name_tag;Название приложения (например, привет)
+server_editor_remote_app_fullname;Путь к приложению
+server_editor_remote_app_fullname_tag;Полный путь exe на сервере (например, C:\Apps\hello.exe)
+about_page_how_to_use;Как использовать
+about_page_feedback;Обратная связь
+guidance_introduce;1Remote позволяет открыть удаленный сеанс в любое время и в любом месте.
+guidance_feature_launcher_key;вызвать лаунчер через
+guidance_feature_launcher_select;выбрать элемент по
+guidance_feature_launcher_connect;подключиться через
+guidance_feature_launcher_menu;меню от
+guidance_feature_tab_demo;Перетаскиваемый, разрываемый и закрепляемый удаленный сеанс для RDP, SSH, VNC, sFTP...
+guidance_feature_start_setting1;Пожалуйста, подтвердите некоторые настройки перед первым использованием.
+guidance_feature_start_setting2;Вы сможете изменить этот параметр позже в настройках.
+Portable mode;Портативный режим
+Profile is saved where executable is located;Профиль сохраняется там, где находится исполняемый файл
+Install for current windows account;Установить для текущей учетной записи Windows
+Profile is saved in your Windows AppData folder;Профиль сохраняется в папке Windows AppData
+word_oops;Упс...
+error_report_unexpected_error_occurred;Произошла непредвиденная ошибка. Информация об ошибке показана ниже:
+error_report_to_clipboard;Скопировать в буфер обмена
+error_report_please_help_us_improve;Пожалуйста, помогите нам улучшить 1Remote, сообщив об этой ошибке.
+error_report_how_help_us_improve;Просто скопируйте сообщение об ошибке и выберите способ сообщить о нем.
+error_report_send_by_email;Послать по электронной почте
+error_report_send_by_github;Отправить через GitHub
+logo_selector_open_file_dialog_title;выберите картинку
+Default;По умолчанию
+Exe path;Путь к Exe
+Cmd parameter;Параметр командной строки
+New runner name;Название нового триггера
+Can not be empty!;Не может быть пустым!
+Hosting;Размещение
+Hosting this exe in 1Remote tab view?;Разместить этот exe-файл на вкладке 1Remote windowView?
+Caution: some exe can not be hosted in 1Remote.;Внимание: некоторые exe-файлы не могут быть размещены на 1Remote, пожалуйста, проверьте файл сами.
+Show environment variables;Показать переменные среды
+Add environment variables;Добавьте переменные среды
+write permissions alert;"У нас нет прав на запись в каталог `{0}`!
+Пожалуйста попробуйте:
+1. запустить от имени администратора
+2. изменить права доступа к каталогу или файлу
+3. переместите 1Remote в другую папку"
+Follow system;Как системе (поддерживается Windows Server 2012 R2 и выше)
+tag_tooltips;щелчок : установить этот тег в качестве фильтра{0}Ctrl + щелчок : добавить этот тег в список включения {0}Alt + щелчок : добавить этот тег в список исключений
+Are you sure you want to close the connection?;Вы уверены, что хотите закрыть соединение?
+Hi there,;Всем привет,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;Я надеюсь, что вы найдете это приложение полезным. Если вы хотите поддержать мою работу, вы можете купить мне кофе или оставить хороший отзыв. Спасибо!
+Give suggestions;Высказать предложения
+Buy a coffee;Купить кофе
+Give nice review;Напишите хороший отзыв
+Do not show this again in current version;Не показывать это снова в текущей версии
+User profile;Профиль пользователя
+Selected runner;Выбранный триггер
+Login with password;Войти с паролем
+Login with ssh private key;Войти с закрытым ключом ssh
+Supports the Putty-key only;Поддерживается только ключ Putty
+Supports the OpenSSH format key only with the internal SFTP client.;Поддерживается ключ формата OpenSSH, только с внутренним SFTP-клиентом.
+Supports the OpenSSH format key and Putty-key with WinSCP.;Поддерживает ключ формата OpenSSH и ключ Putty с WinSCP.
+Environment variables;Переменные среды
+Before runner start the environment variables will be set;Перед запуском триггера будут установлены переменные среды.
+Data Source name;Имя источника данных
+Please select a Data Source;Пожалуйста, выберите источник данных
+Test connection;Проверить подключение
+Show XXX button;Показать кнопку `{0}`
+Show recently used here;Показать недавно использованные
+Hide recently used;Скрыть недавно использованные
+Leave blank to inherit the default value;Оставьте поле пустым, чтобы наследовать значение по умолчанию.
+Alternative;Альтернатива
+with alternative;с альтернативой
+Automatic address switching;Автоматическое переключение адреса
+Availability detection;Обнаружение доступности
+Check if address is available before connect;Перед подключением проверить, доступен ли адрес
+When the default host or port is unavailable the alternate addresses will be tried in sequence;Если хост или порт по умолчанию недоступен, будут последовательно проверены альтернативные адреса.
+support multi-address multi-account;поддержка нескольких адресов и нескольких учетных записей
+We are not able to connect to xxx;Невозможно подключиться к `{0}`!
+XXX is already existed!;`{0}` уже существует!
+XXX is not existed!;`{0}` не существует!
+Show credentials info;Показать учетные данные
+Sorting;Сортировка
+Sort by drag;Сортировать перетаскиванием
+We can not connect database:;Невозможно подключить базу данных:
+We can not create tables on database:;Невозможно создать таблицы в базе данных:
+We can not insert into database:;Невозможно вставить в базу данных:
+We can not update on database:;Невозможно обновить базу данных:
+We can not read from database:;Невозможно прочитать из базы данных:
+We can not select from database:;Невозможно сделать выборку из базы данных:
+We can not delete from database:;Невозможно удалить из базы данных:
+because:;потому что:
+Pause;Пауза
+Updating;Обновление
+Reconnecting;Повторное подключение
+Next update check;Следующая проверка обновлений
+Next auto reconnect;Следующее автоматическое переподключение
+Pin;Прикрепить
+Unpin;Открепить
+This is your list of tags. Right click for a context menu to pin them on header.;Это ваш список тегов. Щелкните правой кнопкой мыши, чтобы открыть контекстное меню, чтобы закрепить их в заголовке.
+Create desktop shortcut;Создать ярлык на рабочем столе
+Success;Успешно
+Failed;Неуспешно
+Please complete the windows credentials verification;Пожалуйста, завершите проверку учетных данных Windows.
+Enter your credentials;Введите свои учетные данные
+Before proceeding with sensitive operations, we need to make sure it is you.;Прежде чем приступить к конфиденциальным операциям, нам необходимо убедиться, что это именно вы.
+Verification failed. Please try again.;Проверка не удалась. Пожалуйста, попробуйте еще раз.
+Security;Безопасность
+Windows credentials verification is required to view passwords;Для просмотра паролей требуется проверка учетных данных Windows.
+Not existed;Не существовало
+Not a number;Не число
+Optional;Необязательный
+Nullable;Обнуляемый
+Selections;Выбор
+Const value;Константное значение
+Description;Описание
+Prefix;Префикс
+append blank after prefix;добавить пробел после префикса
+append blank after value;добавить пробел после значения
+Do you want to replace the current parameter list with preset value?;Хотите заменить текущий список параметров заданным значением?
+One option per line;Один вариант в строке
+Use vertical lines to separate descriptions;Используйте вертикальные линии для разделения описаний (значение|описание)
+Automatically focus on the content when selecting a tab;Автоматически фокусироваться на содержимом при выборе вкладки
+Copy the port along with the address when copying;Копировать порт вместе с адресом при копировании
+Place the close button on the left side to prevent accidental touches;Разместите кнопку закрытия слева, чтобы предотвратить случайные нажатия.
+Ask for password when open connect;Запросить пароль при открытии подключения
+Remember the information above;Помните информацию выше
+Quick Connect;Быстрое подключение
+Allow Quick Connect to save entered address information;Разрешить Quick Connect сохранять введенную информацию об адресе
+Yes;Yes
+No;No
+Click on the icon above to change it to your own image;Нажмите на значок выше, чтобы изменить его на свое собственное изображение.
+Always open in new window;Всегда открывать в новом окне
+Set focus to local desktop when the mouse is moved out of RDP desktop;Установите фокус на локальный рабочий стол, когда мышь выходит за пределы рабочего стола RDP
+Close button behavior;Поведение кнопки закрытия
+Minimize to system tray;Минимизировать системный поднос
+Credentials;Реквизиты для входа
+Credentials Vault;Условия хранилища
+Select credentials within the same database;Выберите учетные данные в той же базе данных
+Reset main window location;

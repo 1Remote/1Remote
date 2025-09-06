@@ -133,6 +133,10 @@ namespace _1RM.View.Host.ProtocolHosts
                 const int disconnectReasonRemoteByUser = 2;   // Remote disconnection by user (via 'Disconnect', 'Signout', 'Shutdown' and 'Reboot'). This is not an error code.
                 const int disconnectReasonByServer = 3;       // Remote disconnection by server. This will be returned when switching to another connection. This is not an error code.
 
+                string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
+                ExtendedDisconnectReasonCode? excode = _rdpClient?.ExtendedDisconnectReason;
+                SimpleLogHelper.Debug($"RDP({_rdpSettings.DisplayName}) Disconnected with code {e.discReason}({reason}) ex:{excode}");
+
                 switch (e.discReason)
                 {
                     case disconnectReasonRemoteByUser:
@@ -147,8 +151,6 @@ namespace _1RM.View.Host.ProtocolHosts
                         // In this case, we will attempt to reconnect in order to switch to an alternate host.
                     default:
                         // A communication breakdown occurred by unplugging, invalidating, going to sleep or crashing, etc.
-                        string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
-                        ExtendedDisconnectReasonCode? excode = _rdpClient?.ExtendedDisconnectReason;
                         SimpleLogHelper.Warning($"RDP({_rdpSettings.DisplayName}) exit with error code {e.discReason}({reason}) ex:{excode}");
                         // We try reconnecting.
                         RdpHost.Visibility = Visibility.Collapsed;

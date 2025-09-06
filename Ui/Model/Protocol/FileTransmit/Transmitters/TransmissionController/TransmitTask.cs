@@ -142,6 +142,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 if (_transmitTaskStatus == ETransmitTaskStatus.Transmitted)
                     TransmittedByteLength = TotalByteLength;
                 RaisePropertyChanged(nameof(TransmitSpeed));
+                RaisePropertyChanged(nameof(TimeRemaining));
             }
         }
 
@@ -222,13 +223,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         /// </summary>
         private readonly ConcurrentQueue<Tuple<DateTime, ulong>> _transmittedDataLength = new ConcurrentQueue<Tuple<DateTime, ulong>>();
 
-        public string TransmitSpeed
+        private double TransmittedBytesPerSec
         {
             get
             {
-                if (TransmitTaskStatus != ETransmitTaskStatus.Transmitting)
-                    return "";
-
                 var now = DateTime.Now;
                 const int secondRange = 5;
 
@@ -247,9 +245,20 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 }
 
                 // get speed
-                double ss = totalBytes / (double)secondRange;
+                return totalBytes / (double)secondRange;
+            }
+        }
+
+        public string TransmitSpeed
+        {
+            get
+            {
+                if (TransmitTaskStatus != ETransmitTaskStatus.Transmitting)
+                    return "";
+
+                var ss = TransmittedBytesPerSec;
                 if (ss < 1024)
-                    return ss + " Bytes/s";
+                    return ss.ToString("F2") + " Bytes/s";
                 else if (ss < 1024 * 1024)
                     return (ss / 1024.0).ToString("F2") + " KB/s";
                 else if (ss < (long)1024 * 1024 * 1024)
@@ -257,6 +266,31 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 else if (ss < (long)1024 * 1024 * 1024 * 1024)
                     return (ss / 1024.0 / 1024 / 1024).ToString("F2") + " GB/s";
                 return "";
+            }
+        }
+
+        public string TimeRemaining
+        {
+            get
+            {
+                if (TransmitTaskStatus != ETransmitTaskStatus.Transmitting)
+                    return "";
+
+                int es = (int)Math.Ceiling((TotalByteLength - TransmittedByteLength) / TransmittedBytesPerSec);
+                int seconds = es % 60;
+                string toDisplay = seconds.ToString("D") + "s";
+                es /= 60;
+                if (es > 0)
+                {
+                    int minutes = es % 60;
+                    toDisplay = minutes.ToString("D") + "m " + toDisplay;
+                    es /= 60;
+                    if (es > 0)
+                    {
+                        toDisplay = es.ToString("D") + "h " + toDisplay;
+                    }
+                }
+                return toDisplay;
             }
         }
 
@@ -560,6 +594,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                         TransmittedByteLength += add;
                         _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
                         RaisePropertyChanged(nameof(TransmitSpeed));
+                        RaisePropertyChanged(nameof(TimeRemaining));
                         SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
                     }
                 }

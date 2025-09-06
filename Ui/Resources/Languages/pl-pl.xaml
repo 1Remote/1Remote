@@ -326,4 +326,5 @@
     <s:String x:Key="Credentials">Referencje</s:String>
     <s:String x:Key="Credentials Vault">Wpłacenie poświadczeń</s:String>
     <s:String x:Key="Select credentials within the same database">Wybierz poświadczenia w tej samej bazie danych</s:String>
+    <s:String x:Key="Reset main window location">Zresetuj lokalizację okna głównego</s:String>
 </ResourceDictionary>

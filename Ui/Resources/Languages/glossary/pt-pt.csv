@@ -1,0 +1,336 @@
+key;pt-pt
+language_code-ISO;pt-PT
+language_code-google;pt
+language_name;Português (pt-PT)
+Warning;Aviso
+Error;Erro
+Info;Informação
+OK;OK
+Exit;Sair
+Close;Fechar
+Add;Adicionar
+Edit;Editar
+Save;Guardar
+Save as...;Guardar como...
+Back;Voltar
+Delete;Eliminar
+Cancel;Cancelar
+Select;Selecionar
+Explore to...;Explorar para...
+Previous;Anterior
+Next;Seguinte
+Done;Concluído
+Reset;Repor
+Import;Importar
+Export;Exportar
+Name;Nome
+File Name;Nome do ficheiro
+Test;Testar
+Reconnect;Ligar de novo
+Dismiss;Ignorar
+Lock;Bloquear
+Always on top;Sempre visível
+Close all;Fechar tudo
+Rename;Renomear
+Connect;Ligar
+Connect (New window);Ligar (Nova janela)
+Note;Nota
+Share;Partilhar
+Copy;Copiar
+Enabled;Ativado
+Helper;Assistente
+Preview;Pré-visualização
+Theme;Tema
+Color;Cor
+Color1;Cor 1
+Color2;Cor 2
+Background;Fundo
+Normal;Normal
+Lighter;Mais claro
+Darker;Mais escuro
+Font;Fonte
+Font size;Tamanho da fonte
+Themes;Temas
+Options;Opções
+About;Sobre
+Language;Idioma
+Startup;Arranque
+Tags;Etiquetas
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Prima Enter para adicionar uma etiqueta, usada para agrupar servidores. Ao clicar com o botão direito nas etiquetas na página inicial, pode filtrar ou fixar uma etiqueta específica.
+Icon;Ícone
+Hostname;Nome do host
+Target;Destino
+Port;Porta
+User;Utilizador
+Password;Palavra-passe
+Selected;Selecionado
+Custom;Personalização
+All;Todos
+Protocol;Protocolo
+Cameras;Câmaras
+Upload;Carregar
+filter_mainwindow;Palavras-chave ou '#' + nome da etiqueta ou tecla 'Tab'
+Search (Ctrl+F);Procurar (Ctrl + F)
+hotkey_already_registered;Tecla de atalho já registada
+hotkey_registered_fail;Falha ao registar a tecla de atalho
+string_permission_denied;Permissão negada
+file_transmit_host_list_header_last_update;Última atualização
+Type;Tipo
+file_transmit_host_list_header_size;Tamanho
+file_transmit_host_message_preview_over_size;Este item tem mais de 1 MB. Tem a certeza de que pretende abri-lo?
+file_transmit_host_message_files_download_to;Selecione uma pasta para guardar
+file_transmit_host_message_files_download_to_dir;Utilizar esta pasta
+file_transmit_host_message_select_files_to_upload;Selecione os ficheiros a carregar
+file_transmit_host_command_refresh;Atualizar (F5)
+file_transmit_host_command_create_folder;Criar uma pasta
+file_transmit_host_command_upload;Carregar (Ctrl + V)
+file_transmit_host_command_select_files_upload;Selecionar ficheiros para carregar
+file_transmit_host_command_select_folder_upload;Selecionar uma pasta para carregar
+file_transmit_host_command_delete;Eliminar (Del)
+file_transmit_host_command_save_to;Guardar em... (Ctrl + S)
+file_transmit_host_warning_same_names_title;Substituir ou cancelar
+file_transmit_host_warning_same_names;O destino tem {0} ficheiro(s) com o(s) mesmo(s) nome(s). Deseja continuar?
+host_reconecting_info;A ligar de novo...
+Toggle Cards/List;Alternar Cartões/Lista
+system_options_general_title;Geral
+Run automatically at OS startup;Executar automaticamente no arranque do sistema operativo (minimizado)
+Confirm before closing;Confirmar antes de fechar
+Show current session icon instead of the app icon when connected;Mostrar o ícone da sessão atual em vez do ícone da aplicação quando ligado
+system_options_general_log_file_path;Ficheiro de registo
+system_options_quick_match_providers;Correspondência por palavras-chave
+Launcher;Iniciador
+system_options_quick_launcher_enable;Ativar o iniciador
+system_options_quick_launcher_hotkey;Tecla de atalho
+system_options_data_security_database;Base de dados
+Caution: Your data will be saved unencrypted!;Atenção: Os seus dados serão guardados sem encriptação!
+system_options_data_security_info_data_processing;A processar dados. Não feche a aplicação!
+server_card_operate_duplicate;Duplicar
+server_card_operate_copy_address;Copiar nome do host para a área de transferência
+server_card_operate_copy_username;Copiar nome de utilizador para a área de transferência
+server_card_operate_copy_password;Copiar palavra-passe para a área de transferência
+confirm_to_delete;Tem a certeza de que pretende eliminar?
+confirm_to_delete_selected;Tem a certeza de que pretende eliminar todos os selecionados?
+import_server_dialog_title;Selecionar um ficheiro
+import_from_json;importar JSON
+import_from_mremoteng_csv;importar CSV do mRemoteNG
+import_from_rdp_file;importar *.rdp
+import_from_sqlite_db;importar base de dados do PRemoteM
+import_done_0_items_added;Importação concluída com sucesso, {0} item(ns) adicionado(s).
+import_failure_with_data_format_error;Formato de dados inválido!
+server_editor_different_options;<opções diferentes>
+server_editor_bulk_editing;Edição em massa
+server_editor_bulk_editing_title;Está a editar em massa:
+server_editor_multi_selected_count;Número de itens selecionados:
+server_editor_group_title_common;Comum
+Connection Info;Informações da ligação
+Connection Settings;Ligação
+server_editor_group_title_display;Ecrã
+server_editor_group_title_advantage;Vantagem
+server_editor_group_title_gateway;Servidor de gateway RD
+server_editor_tags_tag;Pode introduzir vários, separados por ','
+Script before connect;Script antes de ligar
+Hide script window;Ocultar janela de script (não recomendado para scripts de longa duração)
+Script after disconnected;Script após fecho da ligação
+Run bat before connect;Executar bat antes de ligar (ex: executar 'C:\OpenSshTunneling.bat')
+Run bat after disconnected;Executar bat após fecho da ligação (ex: executar 'C:\CloseSshTunneling.bat')
+Use private key;Usar chave privada
+Private key;Chave privada
+Open SFTP when connected;Abrir SFTP ao conectar
+Open SFTP;Abrir SFTP
+server_editor_display_full_screen_flag;Ambiente de trabalho remoto em ecrã completo
+server_editor_display_full_screen_flag_window;Desativar
+server_editor_display_full_screen_flag_full_screen;Ativar (monitor único)
+server_editor_display_full_screen_flag_all_screens;Ativar (vários monitores)
+Display the connection bar when use the full screen;Mostrar a barra de ligação em ecrã completo
+Pin the connection bar by default;Fixar a barra de ligação por defeito
+New session always use full screen;Nova sessão usa sempre ecrã completo
+New session use full screen if the last session is full screen;Nova sessão usa ecrã completo se a última também usou
+Resolution;Resolução
+Fit to window;Ajustar à janela (servidores suportados: Windows Server 2012 R2 e superior)
+Custom resolution (stretch);Resolução personalizada (esticada)
+Custom resolution (fixed);Resolução personalizada (fixa)
+Full-screen resolution (stretch);Resolução em ecrã completo (esticada)
+Full-screen resolution (fixed);Resolução em ecrã completo (fixa)
+Scale;Escala
+server_editor_display_rdp_performance;Desempenho
+server_editor_display_rdp_performance_auto;Automático (baseado na velocidade da ligação)
+server_editor_display_rdp_performance_high;Elevado (cores 32bit com todas as funcionalidades)
+server_editor_display_rdp_performance_middle;Médio (cores 16bit com suavização de fontes e composição do ambiente)
+server_editor_display_rdp_performance_low;Baixo (cores 8bit sem suporte a funcionalidades)
+server_editor_advantage_admin;Para administração de servidor
+server_editor_advantage_resources;Recursos
+server_editor_advantage_clipboard;Área de transferência
+server_editor_advantage_key_combinations;Combinações de teclas
+server_editor_advantage_disk_drives;Unidades
+Drives plug in later;Unidades conectadas mais tarde
+server_editor_advantage_sounds;Sons
+server_editor_advantage_sounds_disabled;Desativado
+server_editor_advantage_sounds_on_local;Reproduzir localmente
+server_editor_advantage_sounds_on_remote;Reproduzir remotamente
+server_editor_advantage_sound_quality;Qualidade de som
+server_editor_advantage_sound_quality_dynamic;Dinâmico
+server_editor_advantage_sound_quality_medium;Médio
+server_editor_advantage_sound_quality_high;Elevado
+server_editor_advantage_audio_capture;Captura de áudio
+server_editor_advantage_ports;Portas
+server_editor_advantage_printers;Impressoras
+server_editor_advantage_smart_cards;Cartões inteligentes
+server_editor_advantage_ssh_version;Versão SSH
+server_editor_advantage_ssh_startup_auto_command;Comando automático
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;Usar configuração externa selecionando caminho do ficheiro de sessão para KiTTY
+server_editor_advantage_sftp_startup_path;Caminho de arranque
+server_editor_gateway_mode;Ligação
+server_editor_gateway_mode_automatically_detect;Detetar automaticamente definições do servidor RD Gateway
+server_editor_gateway_mode_use_these;Usar as seguintes definições do servidor RD Gateway
+server_editor_gateway_mode_do_not_use;Não usar servidor RD Gateway
+server_editor_gateway_server_host_name;Nome do host
+server_editor_gateway_logon_method;Método de início de sessão
+server_editor_gateway_logon_method_psw;Palavra-passe
+server_editor_gateway_logon_method_smart_card;Cartão inteligente
+server_editor_gateway_bypass_gateway_for_local_address;Ignorar servidor RD Gateway para endereços locais
+How to select the specified monitors;Como selecionar os monitores específicos
+mstsc.exe mode;Modo mstsc.exe
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;Neste modo, o RDP inicia a sessão como 'mstsc.exe xxxx.rdp' via CMD, permitindo mais parâmetros personalizados.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;Nota: Este modo é ativado automaticamente se houver 2 ou mais monitores com escalas diferentes e for selecionado o modo de ecrã completo.
+Additional settings;Definições adicionais
+Preview rdp file;Pré-visualizar ficheiro rdp
+Check monitor number;Verificar número de monitor
+server_editor_remote_app_name;Nome da aplicação
+server_editor_remote_app_name_tag;Nome da aplicação (ex: hello)
+server_editor_remote_app_fullname;Caminho da aplicação
+server_editor_remote_app_fullname_tag;Caminho completo do exe no servidor (ex: C:\Apps\hello.exe)
+about_page_how_to_use;Como usar
+about_page_feedback;Feedback
+guidance_introduce;O 1Remote permite-lhe iniciar uma sessão remota em qualquer altura e em qualquer lugar.
+guidance_feature_launcher_key;chamar o iniciador por
+guidance_feature_launcher_select;selecionar item por
+guidance_feature_launcher_connect;ligar por
+guidance_feature_launcher_menu;menu por
+guidance_feature_tab_demo;Sessão remota arrastável, destacável e acoplável para RDP, SSH, VNC, sFTP...
+guidance_feature_start_setting1;Por favor confirme algumas definições antes da primeira utilização.
+guidance_feature_start_setting2;Pode alterar esta definição mais tarde nas Opções.
+Portable mode;Modo portátil
+Profile is saved where executable is located;O perfil é guardado no local do executável
+Install for current windows account;Instalar para a conta de utilizador atual do Windows
+Profile is saved in your Windows AppData folder;O perfil é guardado na pasta AppData do Windows
+word_oops;Ups...
+error_report_unexpected_error_occurred;Ocorreu um erro inesperado. Informação do erro abaixo:
+error_report_to_clipboard;Copiar para a área de transferência
+error_report_please_help_us_improve;Ajude-nos a melhorar o 1Remote reportando este erro.
+error_report_how_help_us_improve;Basta copiar a mensagem de erro e escolher como reportar.
+error_report_send_by_email;Enviar por e-mail
+error_report_send_by_github;Enviar via GitHub
+logo_selector_open_file_dialog_title;selecionar uma imagem
+Default;Predefinição
+Exe path;Caminho do exe
+Cmd parameter;Parâmetro CMD
+New runner name;Novo nome do executor
+Can not be empty!;Não pode estar vazio!
+Hosting;Alojamento
+Hosting this exe in 1Remote tab view?;Alojar este exe numa aba do 1Remote?
+Caution: some exe can not be hosted in 1Remote.;Atenção: alguns exe não podem ser alojados no 1Remote. Teste previamente.
+Show environment variables;Mostrar variáveis de ambiente
+Add environment variables;Adicionar variáveis de ambiente
+write permissions alert;"Não temos permissões de escrita para a diretoria {0}!
+Tente o seguinte:
+1. Execute como administrador
+
+2. Altere as permissões da diretoria ou ficheiro
+
+3. Mova o 1Remote para outra pasta"
+Follow system;Seguir o sistema (servidores suportados: Windows Server 2012 R2 e superior)
+tag_tooltips;"clique : definir esta etiqueta como filtro {0}
+Ctrl + clique : adicionar esta etiqueta à lista de inclusão {0}
+Alt + clique : adicionar esta etiqueta à lista de exclusão"
+Are you sure you want to close the connection?;Tem a certeza de que pretende fechar a ligação?
+Hi there,;Olá,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;Espero que esta aplicação lhe seja útil. Se quiser apoiar o meu trabalho, pode oferecer-me um café ou deixar uma avaliação positiva. Obrigado!
+Give suggestions;Dar sugestões
+Buy a coffee;Oferecer um café
+Give nice review;Dar uma avaliação positiva
+Do not show this again in current version;Não mostrar novamente nesta versão
+User profile;Perfil do utilizador
+Selected runner;Executor selecionado
+Login with password;Iniciar sessão com palavra-passe
+Login with ssh private key;Iniciar sessão com chave privada SSH
+Supports the Putty-key only;Suporta apenas chave do Putty
+Supports the OpenSSH format key only with the internal SFTP client.;Suporta apenas chave no formato OpenSSH com o cliente SFTP interno
+Supports the OpenSSH format key and Putty-key with WinSCP.;Suporta chave no formato OpenSSH e chave Putty com o WinSCP
+Environment variables;Variáveis de ambiente
+Before runner start the environment variables will be set;Antes de iniciar o executor, as variáveis de ambiente serão definidas
+Data Source name;Nome da fonte de dados
+Please select a Data Source;Selecione uma fonte de dados
+Test connection;Testar ligação
+Show XXX button;Mostrar botão {0}
+Show recently used here;Mostrar utilizados recentemente aqui
+Hide recently used;Ocultar utilizados recentemente
+Leave blank to inherit the default value;Deixe em branco para herdar o valor predefinido
+Alternative;Alternativa
+with alternative;com alternativa
+Automatic address switching;Mudança automática de endereço
+Availability detection;Deteção de disponibilidade
+Check if address is available before connect;Verificar se o endereço está disponível antes de ligar
+When the default host or port is unavailable the alternate addresses will be tried in sequence;Quando o host ou porta predefinidos estiverem indisponíveis, os endereços alternativos serão tentados em sequência
+support multi-address multi-account;suporte para múltiplos endereços e múltiplas contas
+We are not able to connect to xxx;Não foi possível ligar a {0}!
+XXX is already existed!;{0} já existe!
+XXX is not existed!;{0} não existe!
+Show credentials info;Mostrar informação de credenciais
+Sorting;Ordenação
+Sort by drag;Ordenar por arrastar
+We can not connect database:;Não foi possível ligar à base de dados:
+We can not create tables on database:;Não foi possível criar tabelas na base de dados:
+We can not insert into database:;Não foi possível inserir na base de dados:
+We can not update on database:;Não foi possível atualizar na base de dados:
+We can not read from database:;Não foi possível ler da base de dados:
+We can not select from database:;Não foi possível selecionar da base de dados:
+We can not delete from database:;Não foi possível eliminar da base de dados:
+because:;porque:
+Pause;Pausa
+Updating;A atualizar
+Reconnecting;A ligar novamente
+Next update check;Próxima verificação de atualização
+Next auto reconnect;Próxima religação automática
+Pin;Fixar
+Unpin;Desafixar
+This is your list of tags. Right click for a context menu to pin them on header.;Esta é a sua lista de etiquetas. Clique com o botão direito para aceder ao menu de contexto e fixá-las no cabeçalho.
+Create desktop shortcut;Criar atalho no ambiente de trabalho
+Success;Sucesso
+Failed;Falha
+Please complete the windows credentials verification;Por favor conclua a verificação de credenciais do Windows
+Enter your credentials;Introduza as suas credenciais
+Before proceeding with sensitive operations, we need to make sure it is you.;Antes de proceder com operações sensíveis, precisamos de confirmar a sua identidade.
+Verification failed. Please try again.;Falha na verificação. Tente novamente.
+Security;Segurança
+Windows credentials verification is required to view passwords;Verificação de credenciais do Windows é necessária para ver palavras-passe
+Not existed;Não existente
+Not a number;Não é um número
+Optional;Opcional
+Nullable;Pode ser nulo
+Selections;Seleções
+Const value;Valor constante
+Description;Descrição
+Prefix;Prefixo
+append blank after prefix;acrescentar espaço após o prefixo
+append blank after value;acrescentar espaço após o valor
+Do you want to replace the current parameter list with preset value?;Deseja substituir a lista atual de parâmetros pelos valores predefinidos?
+One option per line;Uma opção por linha
+Use vertical lines to separate descriptions;Use barras verticais para separar descrições (valor|descrição)
+Automatically focus on the content when selecting a tab;Focar automaticamente no conteúdo ao selecionar um separador
+Copy the port along with the address when copying;Copiar a porta juntamente com o endereço ao copiar
+Place the close button on the left side to prevent accidental touches;Colocar botão de fechar do lado esquerdo para evitar toques acidentais
+Ask for password when open connect;Pedir palavra-passe ao abrir ligação
+Remember the information above;Lembrar a informação acima
+Quick Connect;Ligação Rápida
+Allow Quick Connect to save entered address information;Permitir que a Ligação Rápida guarde as informações introduzidas
+Yes;Sim
+No;Não
+Click on the icon above to change it to your own image;Clique no ícone acima para alterar para a sua imagem
+Always open in new window;Abrir sempre numa nova janela
+Set focus to local desktop when the mouse is moved out of RDP desktop;Focar no ambiente de trabalho local quando o rato sai da área RDP
+Close button behavior;Comportamento do botão fechar
+Minimize to system tray;Minimizar para a área de notificação
+Credentials;Credenciais
+Credentials Vault;Cofre de credenciais
+Select credentials within the same database;Selecionar credenciais dentro da mesma base de dados
+Reset main window location;
