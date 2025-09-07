@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">＜保存先フォルダーを開いてください＞</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">アップロードするファイルの選択</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">更新 (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">フォルダーを作成</s:String>
+    <s:String x:Key="Create a folder">フォルダーを作成</s:String>
     <s:String x:Key="file_transmit_host_command_upload">コピーしたファイルやフォルダーをアップロード (Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">ファイルをアップロード...</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">フォルダーをアップロード...</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">データベース</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">注意: データは暗号化されずに保存されます</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">データを処理しています。アプリを閉じないでください。</s:String>
-    <s:String x:Key="server_card_operate_duplicate">複製</s:String>
+    <s:String x:Key="Duplicate">複製</s:String>
     <s:String x:Key="server_card_operate_copy_address">ホスト名をクリップボードにコピー</s:String>
     <s:String x:Key="server_card_operate_copy_username">ユーザー名をクリップボードにコピー</s:String>
     <s:String x:Key="server_card_operate_copy_password">パスワードをクリップボードにコピー</s:String>
@@ -327,4 +327,10 @@
     <s:String x:Key="Credentials Vault">保管庫</s:String>
     <s:String x:Key="Select credentials within the same database">同じデータベース内の資格情報を選択します</s:String>
     <s:String x:Key="Reset main window location">メインウィンドウの位置をリセット</s:String>
+    <s:String x:Key="New server">新しいサーバー</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">フォルダー `{0}` を削除し、その内容を親フォルダーに移動しますか？</s:String>
+    <s:String x:Key="ListViewMode">表示</s:String>
+    <s:String x:Key="ListViewMode_List">リスト</s:String>
+    <s:String x:Key="ListViewMode_Card">カード</s:String>
+    <s:String x:Key="ListViewMode_Tree">ツリー</s:String>
 </ResourceDictionary>

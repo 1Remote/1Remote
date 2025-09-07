@@ -328,7 +328,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("Create a folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
@@ -16,6 +10,13 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows;
 
 namespace _1RM.View.ServerView.Tree
 {
@@ -448,11 +449,11 @@ namespace _1RM.View.ServerView.Tree
                     }
                     if (parentNode == null) return;
 
-                    var folderName = await InputBoxViewModel.GetValue("TXT: Enter folder name:",
+                    var folderName = await InputBoxViewModel.GetValue(IoC.Translate("Name"),
                         (input) =>
                         {
                             if (parentNode.GetFolderNames().Any(x => x == input.Trim())) return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, input);
-                            return string.IsNullOrWhiteSpace(input) ? "TXT: Folder name cannot be empty" : "";
+                            return string.IsNullOrWhiteSpace(input) ? IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY) : "";
                         },
                         "New Folder",
                         IoC.Get<MainWindowViewModel>());
@@ -487,11 +488,11 @@ namespace _1RM.View.ServerView.Tree
                             if (node.ParentNode == null) return;
                             // Rename folder
                             var oldName = node.Name;
-                            var newName = await InputBoxViewModel.GetValue("TXT: Enter new folder name:",
+                            var newName = await InputBoxViewModel.GetValue(IoC.Translate("Name"),
                                 (input) =>
                                 {
                                     if (node.ParentNode.GetFolderNames().Any(x => x != oldName && x == input.Trim())) return IoC.Translate(LanguageService.XXX_IS_ALREADY_EXISTED, input);
-                                    return string.IsNullOrWhiteSpace(input) ? "TXT: Folder name cannot be empty" : "";
+                                    return string.IsNullOrWhiteSpace(input) ? IoC.Translate(LanguageService.CAN_NOT_BE_EMPTY) : "";
                                 },
                                 node.Name,
                                 IoC.Get<MainWindowViewModel>());
@@ -516,6 +517,22 @@ namespace _1RM.View.ServerView.Tree
         }
 
         // Command to delete a node
+        private RelayCommand? _cmdDuplicateNode;
+        public RelayCommand CmdDuplicateNode
+        {
+            get
+            {
+                return _cmdDuplicateNode ??= new RelayCommand((o) =>
+                {
+                    if (o is TreeNode { Server.Server: not null } node)
+                    {
+                        GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: node.Server.Server, showAnimation: false);
+                    }
+                });
+            }
+        }
+
+        // Command to delete a node
         private RelayCommand? _cmdDeleteNode;
         public RelayCommand CmdDeleteNode
         {
@@ -528,7 +545,7 @@ namespace _1RM.View.ServerView.Tree
                         if (node.IsFolder)
                         {
                             // Delete folder and move servers to parent or root
-                            if (MessageBoxHelper.Confirm($"TXT: Delete folder '{node.Name}' and move its contents to parent folder?"))
+                            if (MessageBoxHelper.Confirm(IoC.Translate("Delete folder XXXX and move its contents to parent folder", node.Name)))
                             {
                                 var serversToDelete = node.GetChildNodes(includingSubFolder: true, needFolderNode: false, needItemNode: true).Select(n => n.Server?.Server).Where(s => s != null).ToList() as List<ProtocolBase>;
                                 node.ParentNode?.Children.Remove(node);
@@ -545,7 +562,7 @@ namespace _1RM.View.ServerView.Tree
                             var server = node.Server.Server;
                             if (server.DataSource?.IsWritable == true)
                             {
-                                if (MessageBoxHelper.Confirm(IoC.Translate("do_you_really_want_to_delete_x").Replace("{0}", server.DisplayName)))
+                                if (MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete")))
                                 {
                                     AppData.DeleteServer(new List<ProtocolBase> { server });
                                 }

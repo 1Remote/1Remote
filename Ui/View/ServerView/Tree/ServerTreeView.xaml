@@ -194,7 +194,7 @@
                     <TreeView.ContextMenu>
                         <ContextMenu>
                             <!-- For folder nodes -->
-                            <MenuItem Header="TXT:New Server" Command="{Binding CmdAddServerToNode}">
+                            <MenuItem Header="{DynamicResource 'New server'}" Command="{Binding CmdAddServerToNode}">
                                 <MenuItem.Icon>
                                     <Path Data="{StaticResource GeometryCross}" 
                                           Width="12" Height="12" 
@@ -202,7 +202,7 @@
                                           Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="TXT:New Folder" 
+                            <MenuItem Header="{DynamicResource 'Create a folder'}" 
                                       Command="{Binding CmdCreateFolder}">
                                 <MenuItem.Icon>
                                     <Path Data="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" 
@@ -238,7 +238,7 @@
                                 <Grid.ContextMenu>
                                     <ContextMenu>
                                         <!-- For folder nodes -->
-                                        <MenuItem Header="TXT:New Server" 
+                                        <MenuItem Header="{DynamicResource 'New server'}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdAddServerToNode}" 
                                                   CommandParameter="{Binding}">
@@ -249,7 +249,7 @@
                                                       Stretch="Uniform"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="TXT:New Folder" 
+                                        <MenuItem Header="{DynamicResource 'Create a folder'}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdCreateFolder}"
                                                   CommandParameter="{Binding}">
@@ -260,7 +260,7 @@
                                                       Stretch="Uniform"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="TXT: Rename" 
+                                        <MenuItem Header="{DynamicResource Rename}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                                   IsEnabled="{Binding IsRootFolder, Converter={StaticResource ConverterBoolInverse}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdEditNode}"
@@ -272,7 +272,7 @@
                                                       Stretch="Uniform"/>
                                             </MenuItem.Icon>-->
                                         </MenuItem>
-                                        <MenuItem Header="TXT:Bulk edit Servers" 
+                                        <MenuItem Header="{DynamicResource Edit}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdMultiEditFolderServers}"
                                                   CommandParameter="{Binding}">
@@ -286,7 +286,7 @@
                                         <!--<Separator Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2Visible}}"/>-->
 
                                         <!-- For server nodes -->
-                                        <MenuItem Header="TXT:Connect" 
+                                        <MenuItem Header="{DynamicResource Connect}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdConnectSelected}">
                                             <MenuItem.Icon>
@@ -296,7 +296,7 @@
                                                       Stretch="Uniform"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="TXT:Edit" 
+                                        <MenuItem Header="{DynamicResource Edit}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
                                                   Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdEditNode}"
                                                   CommandParameter="{Binding}">
@@ -307,8 +307,10 @@
                                                       Stretch="Uniform"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="TXT:Duplicate TODO" 
+                                        <!-- todo: Duplicate 有错误 -->
+                                        <MenuItem Header="{DynamicResource Duplicate}" 
                                                   Visibility="{Binding IsFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
+                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdDuplicateNode}"
                                                   CommandParameter="{Binding}">
                                             <MenuItem.Icon>
                                                 <Path Data="{StaticResource GeometryCross}" 

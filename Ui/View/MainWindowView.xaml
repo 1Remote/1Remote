@@ -175,16 +175,58 @@
                                     <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="TXT: Toggle Card" Command="{Binding CmdToggleCardView}"></MenuItem>
-                            <MenuItem Header="TXT: Toggle List" Command="{Binding CmdToggleListView}">
-                                <MenuItem.Icon>
-                                    <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="TXT: Toggle Tree" Command="{Binding CmdToggleTreeView}">
-                                <MenuItem.Icon>
-                                    <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometrySetting}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
-                                </MenuItem.Icon>
+
+                            <MenuItem Header="{DynamicResource ListViewMode}">
+                                <MenuItem.Resources>
+                                </MenuItem.Resources>
+                                <MenuItem Header="{DynamicResource ListViewMode_Card}" Command="{Binding CmdToggleCardView}">
+                                    <MenuItem.Icon>
+                                        <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CurrentView}" Value="Card">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="{DynamicResource ListViewMode_List}" Command="{Binding CmdToggleListView}">
+                                    <MenuItem.Icon>
+                                        <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CurrentView}" Value="List">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="{DynamicResource ListViewMode_Tree}" Command="{Binding CmdToggleTreeView}">
+                                    <MenuItem.Icon>
+                                        <Path Width="10" Height="10" UseLayoutRounding="True" Data="{StaticResource GeometryHook}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CurrentView}" Value="Tree">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </MenuItem.Icon>
+                                </MenuItem>
                             </MenuItem>
                             <MenuItem Header="{DynamicResource Sorting}">
                                 <MenuItem.Resources>

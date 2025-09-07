@@ -56,7 +56,7 @@ namespace _1RM.View
         #region Properties
 
         private EnumServerViewStatus _currentView;
-        protected EnumServerViewStatus CurrentView
+        public EnumServerViewStatus CurrentView
         {
             get => _currentView;
             set
