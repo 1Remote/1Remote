@@ -389,7 +389,6 @@ namespace _1RM
                 {
                     mvm.OnMainWindowViewLoaded += () =>
                     {
-                        mvm.ShowMe(goPage: EnumMainWindowPage.TreeView);
                         if (_isNewUser)
                         {
                             // import form PRemoteM db

@@ -59,8 +59,7 @@ namespace _1RM.View.ServerView.Tree
 
         private void DragSource_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
-            // 禁用默认光标
-            if (_draggedCursor == null)
+            if (_draggedCursor == null || _draggedCursor == Cursors.Hand)
             {
                 e.UseDefaultCursors = true;
                 Mouse.OverrideCursor = null;
@@ -69,7 +68,6 @@ namespace _1RM.View.ServerView.Tree
             {
                 e.UseDefaultCursors = false;
                 Mouse.OverrideCursor = _draggedCursor;
-                //Mouse.SetCursor(_draggedCursor);
                 e.Handled = true;
             }
         }

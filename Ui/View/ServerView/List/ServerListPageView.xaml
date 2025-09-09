@@ -121,7 +121,7 @@
                 </Setter>
 
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding ListPageIsCardView}" Value="True">
+                    <DataTrigger Binding="{Binding CurrentViewInListPage}" Value="{x:Static view:EnumServerViewStatus.Card}">
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
                                 <ItemsPanelTemplate>
@@ -271,7 +271,7 @@
                                 <DataTrigger Binding="{Binding IsAddToolTipShow}" Value="True">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ListPageIsCardView}" Value="True">
+                                <DataTrigger Binding="{Binding CurrentViewInListPage}" Value="{x:Static view:EnumServerViewStatus.Card}">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -416,9 +416,7 @@
                                             attachProperty:VisionElement.OpacityAccent="0.9"
                                             Command="{Binding CmdShowNoteField}"
                                             Style="{StaticResource ButtonBarPrimaryStyle}"
-                                            Visibility="{Binding BriefNoteVisibility, 
-                                                        Converter={StaticResource ConverterEqual2Collapsed}, 
-                                                        ConverterParameter={x:Static Visibility.Visible}}"
+                                            Visibility="{Binding BriefNoteVisibility, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Static Visibility.Visible}}"
                                             >
                                         <Grid Width="18">
                                             <Path Data="M8.533333 192c0-25.6 17.066667-42.666667 34.133334-42.666667h490.666666c21.333333 0 34.133333 17.066667 34.133334 42.666667 0 21.333333-17.066667 42.666667-34.133334 42.666667h-490.666666c-21.333333 0-34.133333-21.333333-34.133334-42.666667z m550.4 213.333333c0 25.6-21.333333 42.666667-46.933333 42.666667h-465.066667c-25.6 0-46.933333-17.066667-46.933333-42.666667 0-21.333333 21.333333-42.666667 46.933333-42.666666h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666666z m-507.733333 256c-25.6 0-46.933333-17.066667-46.933333-42.666666s21.333333-42.666667 46.933333-42.666667h465.066667c25.6 0 46.933333 17.066667 46.933333 42.666667 0 21.333333-21.333333 42.666667-46.933333 42.666666h-465.066667z m507.733333 170.666667c0 25.6-21.333333 42.666667-51.2 42.666667h-452.266666c-29.866667 0-51.2-17.066667-51.2-42.666667s21.333333-42.666667 51.2-42.666667h452.266666c29.866667 0 51.2 17.066667 51.2 42.666667z m140.8-85.333333l221.866667-238.933334-221.866667-238.933333c-17.066667-17.066667-17.066667-51.2 0-68.266667 17.066667-17.066667 46.933333-17.066667 64 0l251.733334 273.066667c17.066667 17.066667 17.066667 51.2 0 68.266667l-251.733334 273.066666c-17.066667 17.066667-46.933333 17.066667-64 0-17.066667-17.066667-17.066667-46.933333 0-68.266666z"
@@ -467,7 +465,7 @@
 
                 <ListBox Name="LvServerCards"
                          HorizontalContentAlignment="Stretch"
-                         SelectedItem="{Binding SelectedServerViewModelListItem}"
+                         SelectedItem="{Binding SelectedServerViewModel}"
                          ItemsSource="{Binding Source={StaticResource ServerListItemSource}}"
                          BorderThickness="0" Background="Transparent"
                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -678,7 +676,7 @@
                         <Style TargetType="Grid">
                             <Setter Property="Opacity" Value="0.9"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding SelectedServerViewModel}" Value="{x:Null}">
                                     <Setter Property="Opacity" Value="0"></Setter>
                                 </DataTrigger>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -694,8 +692,8 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}" Style="{StaticResource TextBlockBase}" Margin="5 0"></TextBlock>
-                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.SubTitle}" Style="{StaticResource TextBlockBase}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModel.Server.DisplayName}" Style="{StaticResource TextBlockBase}" Margin="5 0"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModel.Server.SubTitle}" Style="{StaticResource TextBlockBase}"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>

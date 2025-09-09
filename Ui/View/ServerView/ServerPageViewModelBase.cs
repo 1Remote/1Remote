@@ -29,11 +29,55 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace _1RM.View.ServerView
 {
     public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {
+        public bool IsAnySelected => VmServerList.Any(x => x.IsSelected == true);
+        public int SelectedCount => VmServerList.Count(x => x.IsSelected);
+        public bool? IsSelectedAll
+        {
+            get
+            {
+                var items = VmServerList.Where(x => x.IsVisible);
+                if (items.All(x => x.IsSelected))
+                    return true;
+                if (items.Any(x => x.IsSelected))
+                    return null;
+                return false;
+            }
+            set
+            {
+                if (value == false)
+                {
+                    foreach (var vmServerCard in VmServerList)
+                    {
+                        vmServerCard.IsSelected = false;
+                    }
+                }
+                else
+                {
+                    foreach (var protocolBaseViewModel in VmServerList)
+                    {
+                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
+                    }
+                }
+                RaisePropertyChanged();
+            }
+        }
+
+
+
+        private ProtocolBaseViewModel? _selectedServerViewModel;
+        public ProtocolBaseViewModel? SelectedServerViewModel
+        {
+            get => _selectedServerViewModel;
+            set => SetAndNotifyIfChanged(ref _selectedServerViewModel, value);
+        }
+
+
         protected ServerPageViewModelBase(DataSourceService sourceService, GlobalData appData)
         {
             SourceService = sourceService;
@@ -47,14 +91,30 @@ namespace _1RM.View.ServerView
 
         ~ServerPageViewModelBase()
         {
-            Close();
-            SimpleLogHelper.Debug($"[{this.GetHashCode()}] {this.GetType().Name} is finalized");
+            Release();
         }
 
-        public virtual void Close()
+        protected override void OnViewLoaded()
         {
-            // todo: unsubscribe event in the sub class
+            base.OnViewLoaded();
+            IoC.Get<GlobalData>().OnReloadAll += BuildView;
+            if (AppData.VmItemList.Count > 0)
+            {
+                // this view may be loaded after the data is loaded(when MainWindow start minimized)
+                // so we need to rebuild the list here
+                BuildView();
+            }
+        }
+
+        public virtual void Release()
+        {
+            // unsubscribe events
             AppData.PropertyChanged -= AppDataOnPropertyChanged;
+            IoC.Get<GlobalData>().OnReloadAll -= BuildView;
+            foreach (var vs in VmServerList)
+            {
+                vs.PropertyChanged -= VmServerPropertyChanged;
+            }
         }
 
 
@@ -73,8 +133,15 @@ namespace _1RM.View.ServerView
         public abstract void BuildView();
         public abstract void ClearSelection();
         public abstract void ApplySort();
-
-
+        protected void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
+            {
+                RaisePropertyChanged(nameof(IsAnySelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            }
+        }
 
 
         public ObservableCollection<ProtocolBaseViewModel> VmServerList { get; set; } = new ObservableCollection<ProtocolBaseViewModel>();

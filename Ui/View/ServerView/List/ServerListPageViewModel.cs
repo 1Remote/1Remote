@@ -21,65 +21,20 @@ namespace _1RM.View.ServerView
 {
     public partial class ServerListPageViewModel : ServerPageViewModelBase
     {
-
-
         #region properties
-        public bool ListPageIsCardView => IoC.Get<ConfigurationService>().General.ServerViewStatus == EnumServerViewStatus.Card;
-
-        public void ListPageIsCardViewRaisePropertyChanged()
+        private EnumServerViewStatus _currentViewInListPage;
+        public EnumServerViewStatus CurrentViewInListPage
         {
-            RaisePropertyChanged(nameof(ListPageIsCardView));
+            get => _currentViewInListPage;
+            set => SetAndNotifyIfChanged(ref _currentViewInListPage, value);
         }
-
-        private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
-        public ProtocolBaseViewModel? SelectedServerViewModelListItem
-        {
-            get => _selectedServerViewModelListItem;
-            set => SetAndNotifyIfChanged(ref _selectedServerViewModelListItem, value);
-        }
-
+        
         private bool _isAddToolTipShow = false;
         public bool IsAddToolTipShow
         {
             get => _isAddToolTipShow;
             set => SetAndNotifyIfChanged(ref _isAddToolTipShow, value);
         }
-
-        public int SelectedCount => VmServerList.Count(x => x.IsSelected);
-
-
-        public bool? IsSelectedAll
-        {
-            get
-            {
-                var items = VmServerList.Where(x => x.IsVisible);
-                if (items.All(x => x.IsSelected))
-                    return true;
-                if (items.Any(x => x.IsSelected))
-                    return null;
-                return false;
-            }
-            set
-            {
-                if (value == false)
-                {
-                    foreach (var vmServerCard in VmServerList)
-                    {
-                        vmServerCard.IsSelected = false;
-                    }
-                }
-                else
-                {
-                    foreach (var protocolBaseViewModel in VmServerList)
-                    {
-                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
-                    }
-                }
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool IsAnySelected => VmServerList.Any(x => x.IsSelected == true);
 
 
 
@@ -116,7 +71,6 @@ namespace _1RM.View.ServerView
         {
             // Make sure the update do triggered the first time assign a value 
             BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
-
         }
 
         public double NameWidth
@@ -142,26 +96,7 @@ namespace _1RM.View.ServerView
         protected override void OnViewLoaded()
         {
             ApplySort();
-            IoC.Get<GlobalData>().OnReloadAll -= BuildView;
-            IoC.Get<GlobalData>().OnReloadAll += BuildView;
-            if (AppData.VmItemList.Count > 0)
-            {
-                // this view may be loaded after the data is loaded(when MainWindow start minimized)
-                // so we need to rebuild the list here
-                BuildView();
-            }
-        }
-
-        [Obsolete]
-        public void AppendServer(ProtocolBaseViewModel viewModel)
-        {
-            Execute.OnUIThreadSync(() =>
-            {
-                viewModel.PropertyChanged -= VmServerPropertyChanged;
-                viewModel.PropertyChanged += VmServerPropertyChanged;
-                VmServerList.Add(viewModel);
-                VmServerListDummyNode();
-            });
+            base.OnViewLoaded();
         }
 
         public void DeleteServer(string id)
@@ -248,7 +183,7 @@ namespace _1RM.View.ServerView
                         // !!! VmItemList should order by CustomOrder by default
                         list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id)
                         );
-                    SelectedServerViewModelListItem = null;
+                    SelectedServerViewModel = null;
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;
@@ -287,16 +222,6 @@ namespace _1RM.View.ServerView
             if (this.View is ServerListPageView view)
             {
                 view.RefreshHeaderCheckBox();
-            }
-        }
-
-        private void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
-            {
-                RaisePropertyChanged(nameof(IsAnySelected));
-                RaisePropertyChanged(nameof(IsSelectedAll));
-                RaisePropertyChanged(nameof(SelectedCount));
             }
         }
 

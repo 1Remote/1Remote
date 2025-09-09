@@ -40,8 +40,6 @@ namespace _1RM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-        [Obsolete]
-        public bool ListPageIsCardView = false;
         public EnumServerViewStatus ServerViewStatus = EnumServerViewStatus.List;
         public enum EnumCloseButtonBehavior
         {

@@ -61,24 +61,29 @@ namespace _1RM.View
             get => _currentView;
             set
             {
-                if (SetAndNotifyIfChanged(ref _currentView, value))
+                if (SetAndNotifyIfChanged(ref _currentView, value) || ActiveServerViewModel == null)
                 {
                     IoC.Get<ConfigurationService>().General.ServerViewStatus = value;
+                    IoC.Get<ConfigurationService>().Save();
                     // When switching to TreeView, force rebuild the tree to ensure data is displayed
-                    if (value == EnumServerViewStatus.Tree)
+                    ActiveServerViewModel?.Release();
+                    switch (value)
                     {
-                        // TODO: Optimize this logic later by new a better way
-                        //ActiveServerViewModel = new ServerTreeViewModel(IoC.Get<DataSourceService>(), IoC.Get<GlobalData>());
-                        ActiveServerViewModel = IoC.Get<ServerTreeViewModel>();
-                    }
-                    else
-                    {
-                        //ActiveServerViewModel = new ServerListPageViewModel(IoC.Get<DataSourceService>(), IoC.Get<GlobalData>());
-                        ActiveServerViewModel = IoC.Get<ServerListPageViewModel>();
-                    }
-                    if (ActiveServerViewModel is ServerListPageViewModel slvm)
-                    {
-                        slvm.ListPageIsCardViewRaisePropertyChanged();
+                        case EnumServerViewStatus.Card:
+                        case EnumServerViewStatus.List:
+                            {
+                                var vm = IoC.Get<ServerListPageViewModel>();
+                                ActiveServerViewModel = vm;
+                                vm.CurrentViewInListPage = value;
+                                break;
+                            }
+                        case EnumServerViewStatus.Tree:
+                            {
+                                ActiveServerViewModel = IoC.Get<ServerTreeViewModel>();
+                                break;
+                            }
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(value), value, null);
                     }
                     RaisePropertyChanged(nameof(ActiveServerViewModel));
                 }
@@ -90,7 +95,7 @@ namespace _1RM.View
             }
         }
 
-        public ServerPageViewModelBase ActiveServerViewModel { get; set; }
+        public ServerPageViewModelBase? ActiveServerViewModel { get; set; }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -102,17 +107,6 @@ namespace _1RM.View
                 RaisePropertyChanged(nameof(IsShownList));
             }
         }
-
-        //private bool _showAbout = false;
-        //public bool ShowAbout
-        //{
-        //    get => _showAbout;
-        //    set
-        //    {
-        //        SetAndNotifyIfChanged(ref _showAbout, value);
-        //        RaisePropertyChanged(nameof(IsShownList));
-        //    }
-        //}
 
         private bool _showSetting = false;
         public bool ShowSetting
@@ -197,7 +191,7 @@ namespace _1RM.View
             _appData = appData;
             SourceService = sourceService;
             ConfigurationService = configurationService;
-            ShowList(false);
+            CurrentView = IoC.Get<ConfigurationService>().General.ServerViewStatus;
         }
 
         public Action? OnMainWindowViewLoaded = null;

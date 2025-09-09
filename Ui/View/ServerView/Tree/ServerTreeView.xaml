@@ -420,13 +420,13 @@
                                                        VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis"
                                                        ToolTip="{Binding Server.DisplayName}"/>
-                                            <!--<TextBlock Grid.Column="2" Margin="5 0 0 0"
-                                                       Text="{Binding Server.SubTitle}" 
-                                                       FontSize="{DynamicResource GlobalFontSizeSmall}"
-                                                       Opacity="0.5"
-                                                       VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       ToolTip="{Binding Server.DisplayName}"/>-->
+
+                                            <!--brief note -->
+                                            <ContentControl Grid.Column="2" 
+                                                            Margin="0 0 10 0"
+                                                            VerticalAlignment="Center"
+                                                            Visibility="{Binding Server.HoverNoteDisplayControl, Converter={StaticResource ConverterEqual2Collapsed}, ConverterParameter={x:Null}}"
+                                                            Content="{Binding Server.HoverNoteDisplayControl}"></ContentControl>
                                         </Grid>
                                     </Grid>
                                 </Grid>

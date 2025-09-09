@@ -170,19 +170,6 @@ namespace _1RM.View.Launcher
             set => SetAndNotifyIfChanged(ref _tagFilters, value);
         }
 
-        [Obsolete]
-        public void AppendServer(ProtocolBaseViewModel viewModel)
-        {
-            Execute.OnUIThread(() =>
-            {
-                viewModel.PropertyChanged -= OnLastConnectTimeChanged;
-                viewModel.PropertyChanged += OnLastConnectTimeChanged;
-                viewModel.LauncherMainTitleViewModel?.UnHighLightAll();
-                viewModel.LauncherSubTitleViewModel?.UnHighLightAll();
-                VmServerList.Add(viewModel);
-            });
-        }
-
         public void RebuildVmServerList()
         {
             if (this.View is not ServerSelectionsView view) return;

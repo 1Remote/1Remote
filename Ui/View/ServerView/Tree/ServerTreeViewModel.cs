@@ -24,6 +24,8 @@ namespace _1RM.View.ServerView.Tree
     {
         public const string FullPathSeparator = " ]=+=+=+=>[ ";
         public const string FolderNodePrefix = "%$TreeNode$%:";
+
+        #region Properties
         public class TreeNode : NotifyPropertyChangedBase
         {
             private string _name = "";
@@ -293,67 +295,16 @@ namespace _1RM.View.ServerView.Tree
             set
             {
                 SetAndNotifyIfChanged(ref _selectedNode, value);
-                if (value?.Server != null)
-                {
-                    SelectedServerViewModel = value.Server;
-                }
-                else
-                {
-                    SelectedServerViewModel = null;
-                }
+                SelectedServerViewModel = value?.Server;
             }
         }
 
-        private ProtocolBaseViewModel? _selectedServerViewModel;
-        public ProtocolBaseViewModel? SelectedServerViewModel
-        {
-            get => _selectedServerViewModel;
-            set => SetAndNotifyIfChanged(ref _selectedServerViewModel, value);
-        }
 
-        public bool IsAnySelected => VmServerList.Any(x => x.IsSelected == true);
-        public int SelectedCount => VmServerList.Count(x => x.IsSelected);
-        public bool? IsSelectedAll
-        {
-            get
-            {
-                var items = VmServerList.Where(x => x.IsVisible);
-                if (items.All(x => x.IsSelected))
-                    return true;
-                if (items.Any(x => x.IsSelected))
-                    return null;
-                return false;
-            }
-            set
-            {
-                if (value == false)
-                {
-                    foreach (var vmServerCard in VmServerList)
-                    {
-                        vmServerCard.IsSelected = false;
-                    }
-                }
-                else
-                {
-                    foreach (var protocolBaseViewModel in VmServerList)
-                    {
-                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
-                    }
-                }
-                RaisePropertyChanged();
-            }
-        }
-
+        #endregion
+        
+        // ReSharper disable once ConvertToPrimaryConstructor
         public ServerTreeViewModel(DataSourceService sourceService, GlobalData appData) : base(sourceService, appData)
         {
-            IoC.Get<GlobalData>().OnReloadAll -= BuildView;
-            IoC.Get<GlobalData>().OnReloadAll += BuildView;
-            if (AppData.VmItemList.Count > 0)
-            {
-                // this view may be loaded after the data is loaded(when MainWindow start minimized)
-                // so we need to rebuild the list here
-                BuildView();
-            }
         }
 
         private static void SortNodes(ObservableCollection<TreeNode> nodes, bool includeSubFolder = true)
@@ -995,16 +946,6 @@ namespace _1RM.View.ServerView.Tree
         {
             SortNodes(RootNodes);
             //BuildView();
-        }
-
-        private void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
-            {
-                RaisePropertyChanged(nameof(IsAnySelected));
-                RaisePropertyChanged(nameof(IsSelectedAll));
-                RaisePropertyChanged(nameof(SelectedCount));
-            }
         }
     }
 }
