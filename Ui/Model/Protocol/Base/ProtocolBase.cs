@@ -123,6 +123,25 @@ namespace _1RM.Model.Protocol.Base
             }
         }
 
+        /// <summary>
+        /// Tree hierarchy nodes for the server. 
+        /// Stores the path from root to this server, e.g., for "A->B->C->Server1", TreeNodes=[A,B,C]
+        /// </summary>
+        // ReSharper disable once ArrangeObjectCreationWhenTypeEvident
+        private List<string> _treeNodes = new List<string>();
+        public List<string> TreeNodes
+        {
+            get => _treeNodes;
+            set
+            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (value == null)
+                    SetAndNotifyIfChanged(ref _treeNodes, new List<string>());
+                else
+                    SetAndNotifyIfChanged(ref _treeNodes, value.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList());
+            }
+        }
+
         private string _iconBase64 = "";
         public string IconBase64
         {
@@ -306,6 +325,7 @@ namespace _1RM.Model.Protocol.Base
             var clone = (ProtocolBase)this.MemberwiseClone();
             Debug.Assert(clone != null);
             clone!.Tags = new List<string>(this.Tags);
+            clone.TreeNodes = new List<string>(this.TreeNodes);
             if (this is ProtocolBaseWithAddressPortUserPwd p
                 && clone is ProtocolBaseWithAddressPortUserPwd c)
             {
@@ -462,6 +482,18 @@ namespace _1RM.Model.Protocol.Base
         public virtual string GetHelpUrl()
         {
             return "";
+        }
+
+        /// <summary>
+        /// Migrate tags to TreeNodes for existing servers that don't have TreeNodes set.
+        /// This method copies the Tags to TreeNodes for backwards compatibility.
+        /// </summary>
+        public void MigrateTagsToTreeNodes()
+        {
+            if (Tags.Count > 0 && TreeNodes.Count == 0)
+            {
+                TreeNodes = new List<string>(Tags);
+            }
         }
     }
 }

@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;将文件下载到所选文件夹
 file_transmit_host_message_files_download_to_dir;选择该文件夹
 file_transmit_host_message_select_files_to_upload;请选择要上传的文件
 file_transmit_host_command_refresh;刷新(F5)
-file_transmit_host_command_create_folder;新建文件夹
+Create a folder;新建文件夹
 file_transmit_host_command_upload;上传(Ctrl + V)
 file_transmit_host_command_select_files_upload;选择文件上传
 file_transmit_host_command_select_folder_upload;选择文件夹上传
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;快捷键
 system_options_data_security_database;数据库
 Caution: Your data will be saved unencrypted!;导出数据将以明文显示，请妥善保管！
 system_options_data_security_info_data_processing;数据处理中，请勿关闭程序。
-server_card_operate_duplicate;创建副本
+Duplicate;创建副本
 server_card_operate_copy_address;复制地址到剪贴板
 server_card_operate_copy_username;复制用户名到剪贴板
 server_card_operate_copy_password;复制密码到剪贴板
@@ -329,4 +329,10 @@ Minimize to system tray;最小化系统托盘
 Credentials;凭据
 Credentials Vault;凭据库
 Select credentials within the same database;只能在同一个数据库中选择凭据
-Reset main window location;
+Reset main window location;重置主窗口位置
+New server;新建服务器
+Delete folder XXXX and move its contents to parent folder;删除文件夹 `{0}` 并将其内容移动到父文件夹？
+ListViewMode;视图
+ListViewMode_List;列表
+ListViewMode_Card;卡片
+ListViewMode_Tree;树形

@@ -13,7 +13,7 @@ using _1RM.Service.DataSource;
 using _1RM.Utils;
 using _1RM.Utils.PRemoteM;
 using _1RM.Service.DataSource.DAO;
-using _1RM.View.ServerList;
+using _1RM.View.ServerView;
 using _1RM.View.Settings.General;
 using _1RM.View.Utils;
 using System.Collections.Generic;
@@ -340,7 +340,7 @@ namespace _1RM
                     {
                         var kys = new Dictionary<string, string>
                         {
-                            { $"App start with - ListPageIsCardView", $"{ConfigurationServiceObj.General.ListPageIsCardView}" },
+                            { $"App start with - ServerViewStatus", $"{ConfigurationServiceObj.General.ServerViewStatus}" },
                             { $"App start with - ConfirmBeforeClosingSession", $"{ConfigurationServiceObj.General.ConfirmBeforeClosingSession}" },
                             { $"App start with - LauncherEnabled", $"{ConfigurationServiceObj.Launcher.LauncherEnabled}" },
                             { $"App start with - Theme", $"{ConfigurationServiceObj.Theme.ThemeName}" },
@@ -389,7 +389,6 @@ namespace _1RM
                 {
                     mvm.OnMainWindowViewLoaded += () =>
                     {
-                        mvm.ShowMe(goPage: EnumMainWindowPage.List);
                         if (_isNewUser)
                         {
                             // import form PRemoteM db

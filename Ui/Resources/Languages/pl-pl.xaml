@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Użyj tego folderu</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Wybierz pliki do wysłania</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Odśwież (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Utwórz folder</s:String>
+    <s:String x:Key="Create a folder">Utwórz folder</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Wyślij (CTRL + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Wybierz pliki do wysłania</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Wybierz folder do wysłania</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Baza danych</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Uwaga: Twoje dane nie będą kodowane!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Przetwarzanie danych. Nie zamykaj aplikacji!</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Duplikuj</s:String>
+    <s:String x:Key="Duplicate">Duplikuj</s:String>
     <s:String x:Key="server_card_operate_copy_address">Kopiuj nazwę hosta do schowka</s:String>
     <s:String x:Key="server_card_operate_copy_username">Kopiuj nazwę użytkownika do schowka</s:String>
     <s:String x:Key="server_card_operate_copy_password">Kopiuj hasło do schowka</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Referencje</s:String>
     <s:String x:Key="Credentials Vault">Wpłacenie poświadczeń</s:String>
     <s:String x:Key="Select credentials within the same database">Wybierz poświadczenia w tej samej bazie danych</s:String>
-    <s:String x:Key="Reset main window location">Zresetuj lokalizację okna głównego</s:String>
+    <s:String x:Key="Reset main window location">Resetuj lokalizację głównego okna</s:String>
+    <s:String x:Key="New server">Nowy serwer</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Usuń folder `{0}` i przenieść jego zawartość do folderu nadrzędnego?</s:String>
+    <s:String x:Key="ListViewMode">Widok</s:String>
+    <s:String x:Key="ListViewMode_List">Lista</s:String>
+    <s:String x:Key="ListViewMode_Card">Karta</s:String>
+    <s:String x:Key="ListViewMode_Tree">Drzewo</s:String>
 </ResourceDictionary>

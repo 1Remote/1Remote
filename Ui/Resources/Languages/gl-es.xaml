@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Usar este cartafol</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Por favor, escolle os arquivos a enviar</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Actualizar (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Crear un cartafol</s:String>
+    <s:String x:Key="Create a folder">Crear un cartafol</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Enviar (Ctrl+V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Escolle os arquivos para enviar</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Escolle un cartafol para enviar</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Base de datos</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Atención: os teus datos gardaranse sen cifrar.</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Procesando datos. Non peches a aplicación!</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Duplicar</s:String>
+    <s:String x:Key="Duplicate">Duplicar</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copiar o nome do host ao portapapeis</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copiar o nome do usuario ao portapapeis</s:String>
     <s:String x:Key="server_card_operate_copy_password">Copiar a chave de paso ao portapapeis</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Credenciais</s:String>
     <s:String x:Key="Credentials Vault">Vault de credenciais</s:String>
     <s:String x:Key="Select credentials within the same database">Seleccione credenciais dentro da mesma base de datos</s:String>
-    <s:String x:Key="Reset main window location">Restablecer a localización da xanela principal</s:String>
+    <s:String x:Key="Reset main window location">Restablecer la ubicación de la ventana principal</s:String>
+    <s:String x:Key="New server">Nuevo servidor</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Eliminar o cartafol `{0}` e mover o seu contido ao cartafol pai?</s:String>
+    <s:String x:Key="ListViewMode">View</s:String>
+    <s:String x:Key="ListViewMode_List">List</s:String>
+    <s:String x:Key="ListViewMode_Card">Card</s:String>
+    <s:String x:Key="ListViewMode_Tree">Tree</s:String>
 </ResourceDictionary>

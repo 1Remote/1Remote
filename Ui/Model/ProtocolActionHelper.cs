@@ -65,14 +65,10 @@ public static class ProtocolActionHelper
             {
                 actions.Add(new ProtocolAction(IoC.Translate("Edit"), () =>
                 {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server: server, showAnimation: false);
                 }));
-                actions.Add(new ProtocolAction(IoC.Translate("server_card_operate_duplicate"), () =>
+                actions.Add(new ProtocolAction(IoC.Translate("Duplicate"), () =>
                 {
-                    if (GlobalEventHelper.OnRequestGoToServerEditPage == null)
-                        IoC.Get<MainWindowViewModel>()?.ShowMe();
                     GlobalEventHelper.OnRequestGoToServerDuplicatePage?.Invoke(server: server, showAnimation: false);
                 }));
                 if (!forTabHeader)

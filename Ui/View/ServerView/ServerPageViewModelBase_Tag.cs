@@ -1,21 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Input;
-using _1RM.Controls;
-using _1RM.Model;
-using _1RM.Model.Protocol.Base;
+﻿using _1RM.Model;
 using _1RM.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
-    public partial class ServerListPageViewModel
+    public abstract partial class ServerPageViewModelBase : NotifyPropertyChangedBaseScreen
     {
+        public TagsPanelViewModel TagsPanelViewModel { get; }
+
+        private TagsPanelViewModel? _tagListViewModel = null;
+        public TagsPanelViewModel? TagListViewModel
+        {
+            get => _tagListViewModel;
+            set
+            {
+                SetAndNotifyIfChanged(ref this._tagListViewModel, value);
+                TagsPanelViewModel.FilterString = "";
+            }
+        }
+
+        private ObservableCollection<Tag> _headerTags = new ObservableCollection<Tag>();
+        public ObservableCollection<Tag> HeaderTags
+        {
+            get => _headerTags;
+            set => SetAndNotifyIfChanged(ref _headerTags, value);
+        }
+
+
         public const string TAB_ALL_NAME = "";
         public const string TAB_TAGS_LIST_NAME = "tags_selector_for_list@#@1__()!";
         public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
@@ -26,10 +42,10 @@ namespace _1RM.View.ServerList
         /// a value indicating whether to display the `tag filters indicator bar`.
         /// </summary>
         public bool IsTagFiltersShown
-		{
-			get => _isTagFiltersShown;
-			set => SetAndNotifyIfChanged(ref _isTagFiltersShown, value);
-		}
+        {
+            get => _isTagFiltersShown;
+            set => SetAndNotifyIfChanged(ref _isTagFiltersShown, value);
+        }
 
         private string _selectedTabName = TAB_ALL_NAME;
         public string SelectedTabName { get => _selectedTabName; private set => SetAndNotifyIfChanged(ref _selectedTabName, value); }
@@ -182,7 +198,7 @@ namespace _1RM.View.ServerList
             {
                 return _cmdShowMainTab ??= new RelayCommand((o) =>
                 {
-                    if(TagFilters.Any()) TagFilters = new List<TagFilter>();
+                    if (TagFilters.Any()) TagFilters = new List<TagFilter>();
                     TagListViewModel = null;
                     SelectedTabName = TAB_ALL_NAME;
                     IoC.Get<MainWindowViewModel>().SetMainFilterString(null, null);

@@ -29,6 +29,17 @@ namespace _1RM.Service.DataSource
         public SqliteSource? LocalDataSource { get; private set; } = null;
 
         public readonly ConcurrentDictionary<string, DataSourceBase> AdditionalSources = new ConcurrentDictionary<string, DataSourceBase>();
+        public List<DataSourceBase> AllSources
+        {
+            get
+            {
+                var ret = new List<DataSourceBase>(AdditionalSources.Count + 1);
+                if (LocalDataSource != null)
+                    ret.Add(LocalDataSource);
+                ret.AddRange(AdditionalSources.Values);
+                return ret;
+            }
+        }
 
         public List<ProtocolBaseViewModel> GetServers(bool force)
         {

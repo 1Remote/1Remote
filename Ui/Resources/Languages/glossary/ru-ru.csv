@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Пожалуйста, выбери�
 file_transmit_host_message_files_download_to_dir;Используйте эту папку
 file_transmit_host_message_select_files_to_upload;Пожалуйста, выберите файлы для загрузки
 file_transmit_host_command_refresh;Обновить (F5)
-file_transmit_host_command_create_folder;Создать папку
+Create a folder;Создать папку
 file_transmit_host_command_upload;Загрузить (Ctrl + V)
 file_transmit_host_command_select_files_upload;Выберите файлы для загрузки
 file_transmit_host_command_select_folder_upload;Выберите папку для загрузки
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;Горячая клавиша
 system_options_data_security_database;База данных
 Caution: Your data will be saved unencrypted!;Внимание: ваши данные будут сохранены в незашифрованном виде!
 system_options_data_security_info_data_processing;Обработка данных. Не закрывайте приложение!
-server_card_operate_duplicate;Дублировать
+Duplicate;Дублировать
 server_card_operate_copy_address;Скопировать имя хоста в буфер обмена
 server_card_operate_copy_username;Скопировать имя пользователя в буфер обмена
 server_card_operate_copy_password;Скопировать пароль в буфер обмена
@@ -329,4 +329,10 @@ Minimize to system tray;Минимизировать системный подн
 Credentials;Реквизиты для входа
 Credentials Vault;Условия хранилища
 Select credentials within the same database;Выберите учетные данные в той же базе данных
-Reset main window location;
+Reset main window location;Сбросить расположение основного окна
+New server;Новый сервер
+Delete folder XXXX and move its contents to parent folder;
+ListViewMode;View
+ListViewMode_List;List
+ListViewMode_Card;Card
+ListViewMode_Tree;Tree

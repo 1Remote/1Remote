@@ -13,7 +13,7 @@ using _1RM.Utils.Tracing;
 using _1RM.View;
 using _1RM.View.Launcher;
 using Shawn.Utils;
-using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
+using ServerListPageViewModel = _1RM.View.ServerView.ServerListPageViewModel;
 
 namespace _1RM.Model
 {
@@ -128,84 +128,18 @@ namespace _1RM.Model
             {
                 return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
             }
-            var needReload = dataSource.NeedRead(TableServer.TABLE_NAME);
             var ret = dataSource.Database_InsertServer(protocolServer);
             if (ret.IsSuccess)
             {
-                var @new = new ProtocolBaseViewModel(protocolServer);
-                @new.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? protocolServer?.DataSource?.DataSourceName ?? "" : "";
-                if (needReload == false)
-                {
-                    VmItemList.Add(@new);
-                    IoC.Get<ServerListPageViewModel>()?.AppendServer(@new); // invoke main list ui change
-                    IoC.Get<ServerSelectionsViewModel>()?.AppendServer(@new); // invoke launcher ui change
-                    if (dataSource != IoC.Get<DataSourceService>().LocalDataSource
-                        && IoC.Get<DataSourceService>().AdditionalSources.Select(x => x.Value.CachedProtocols.Count).Sum() <= 1)
-                    {
-                        // if is additional database and need to set up group by database name!
-                        IoC.Get<ServerListPageViewModel>().ApplySort();
-                    }
-                    IoC.Get<ServerListPageViewModel>().RefreshCollectionViewSource(true);
-                }
-            }
-
-            if (needReload)
-            {
                 ReloadAll(force: true); // AddServer & needReload
             }
-            else
-            {
-                ReloadTagsFromServers();
-            }
-            IoC.Get<ServerListPageViewModel>().ClearSelection();
             StartTick();
             return ret;
         }
 
         public Result UpdateServer(ProtocolBase protocolServer)
         {
-            StopTick();
-            string info = IoC.Translate("We can not update on database:");
-            try
-            {
-                Debug.Assert(protocolServer.IsTmpSession() == false);
-                var source = protocolServer.DataSource;
-                if (source == null)
-                {
-                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is not initialized yet");
-                }
-                else if (source.IsWritable == false)
-                {
-                    return Result.Fail(info, protocolServer.DataSource, $"`{protocolServer.DataSource}` is readonly for you");
-                }
-
-                var needReload = source.NeedRead(TableServer.TABLE_NAME);
-                var ret = source.Database_UpdateServer(protocolServer);
-                if (ret.IsSuccess)
-                {
-                    if (needReload)
-                    {
-                        ReloadAll(); // UpdateServer & needReload
-                    }
-                    else
-                    {
-                        // invoke main list ui change & invoke launcher ui change
-                        var old = GetItemById(source.DataSourceName, protocolServer.Id);
-                        if (old != null)
-                        {
-                            old.Server = protocolServer;
-                            old.DataSourceNameForLauncher = _sourceService?.AdditionalSources.Any() == true ? old.DataSourceName : "";
-                        }
-                        ReloadTagsFromServers();
-                    }
-                    IoC.Get<ServerListPageViewModel>().ClearSelection();
-                }
-                return ret;
-            }
-            finally
-            {
-                StartTick();
-            }
+            return UpdateServer([protocolServer]);
         }
 
         public Result UpdateServer(IEnumerable<ProtocolBase> protocolServers)
@@ -258,6 +192,7 @@ namespace _1RM.Model
                     else
                     {
                         ReloadTagsFromServers();
+                        // TODO: 树状列表建好后，将不再有一个全局的 ServerListPageViewModel
                         IoC.Get<ServerListPageViewModel>().ClearSelection();
                     }
                 }
@@ -270,10 +205,9 @@ namespace _1RM.Model
             }
         }
 
-
-
         public Result DeleteServer(IEnumerable<ProtocolBase> protocolServers)
         {
+            if (!protocolServers.Any()) return Result.Fail("No servers to delete.");
             StopTick();
             try
             {

@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Используйте эту папку</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Пожалуйста, выберите файлы для загрузки</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Обновить (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Создать папку</s:String>
+    <s:String x:Key="Create a folder">Создать папку</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Загрузить (Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Выберите файлы для загрузки</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Выберите папку для загрузки</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">База данных</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Внимание: ваши данные будут сохранены в незашифрованном виде!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Обработка данных. Не закрывайте приложение!</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Дублировать</s:String>
+    <s:String x:Key="Duplicate">Дублировать</s:String>
     <s:String x:Key="server_card_operate_copy_address">Скопировать имя хоста в буфер обмена</s:String>
     <s:String x:Key="server_card_operate_copy_username">Скопировать имя пользователя в буфер обмена</s:String>
     <s:String x:Key="server_card_operate_copy_password">Скопировать пароль в буфер обмена</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Реквизиты для входа</s:String>
     <s:String x:Key="Credentials Vault">Условия хранилища</s:String>
     <s:String x:Key="Select credentials within the same database">Выберите учетные данные в той же базе данных</s:String>
-    <s:String x:Key="Reset main window location">Сбросить местоположение главного окна</s:String>
+    <s:String x:Key="Reset main window location">Сбросить расположение основного окна</s:String>
+    <s:String x:Key="New server">Новый сервер</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Удалить папку `{0}` и переместить его содержимое в родительскую папку?</s:String>
+    <s:String x:Key="ListViewMode">View</s:String>
+    <s:String x:Key="ListViewMode_List">List</s:String>
+    <s:String x:Key="ListViewMode_Card">Card</s:String>
+    <s:String x:Key="ListViewMode_Tree">Tree</s:String>
 </ResourceDictionary>

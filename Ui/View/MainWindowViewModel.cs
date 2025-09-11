@@ -1,27 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using _1RM.Model;
-using _1RM.Service.DataSource.DAO;
+﻿using _1RM.Model;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.Locality;
 using _1RM.Utils;
 using _1RM.Utils.Tracing;
 using _1RM.View.Editor;
+using _1RM.View.ServerView;
 using _1RM.View.Settings;
+using _1RM.View.Settings.General;
 using _1RM.View.Utils;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Stylet;
-using _1RM.View.Settings.General;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using ServerTreeViewModel = _1RM.View.ServerView.Tree.ServerTreeViewModel;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
-using Shawn.Utils;
 
 namespace _1RM.View
 {
+    public enum EnumServerViewStatus
+    {
+        Card,
+        List,
+        Tree,
+    }
+
     public enum EnumMainWindowPage
     {
-        List,
+        CardView,
+        ListView,
+        TreeView,
         About,
         SettingsGeneral,
         SettingsData,
@@ -34,7 +46,8 @@ namespace _1RM.View
     {
         public DataSourceService SourceService { get; }
         public ConfigurationService ConfigurationService { get; }
-        public ServerList.ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerList.ServerListPageViewModel>();
+        //public ServerListPageViewModel? ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
+        //public ServerTreeViewModel ServerTreeViewModel { get; } = IoC.Get<ServerTreeViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
         private readonly GlobalData _appData;
@@ -42,6 +55,47 @@ namespace _1RM.View
 
         #region Properties
 
+        private EnumServerViewStatus _currentView;
+        public EnumServerViewStatus CurrentView
+        {
+            get => _currentView;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _currentView, value) || ActiveServerViewModel == null)
+                {
+                    IoC.Get<ConfigurationService>().General.ServerViewStatus = value;
+                    IoC.Get<ConfigurationService>().Save();
+                    // When switching to TreeView, force rebuild the tree to ensure data is displayed
+                    ActiveServerViewModel?.Release();
+                    switch (value)
+                    {
+                        case EnumServerViewStatus.Card:
+                        case EnumServerViewStatus.List:
+                            {
+                                var vm = IoC.Get<ServerListPageViewModel>();
+                                ActiveServerViewModel = vm;
+                                vm.CurrentViewInListPage = value;
+                                break;
+                            }
+                        case EnumServerViewStatus.Tree:
+                            {
+                                ActiveServerViewModel = IoC.Get<ServerTreeViewModel>();
+                                break;
+                            }
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                    }
+                    RaisePropertyChanged(nameof(ActiveServerViewModel));
+                }
+                Execute.OnUIThread(() =>
+                {
+                    if (this.View is MainWindowView v)
+                        v.PopupMenu.IsOpen = false;
+                });
+            }
+        }
+
+        public ServerPageViewModelBase? ActiveServerViewModel { get; set; }
 
         private ServerEditorPageViewModel? _editorViewModel = null;
         public ServerEditorPageViewModel? EditorViewModel
@@ -53,17 +107,6 @@ namespace _1RM.View
                 RaisePropertyChanged(nameof(IsShownList));
             }
         }
-
-        //private bool _showAbout = false;
-        //public bool ShowAbout
-        //{
-        //    get => _showAbout;
-        //    set
-        //    {
-        //        SetAndNotifyIfChanged(ref _showAbout, value);
-        //        RaisePropertyChanged(nameof(IsShownList));
-        //    }
-        //}
 
         private bool _showSetting = false;
         public bool ShowSetting
@@ -82,6 +125,65 @@ namespace _1RM.View
             }
         }
 
+        public EnumServerOrderBy ServerOrderBy
+        {
+            get => CurrentView == EnumServerViewStatus.Tree ? LocalityTreeViewService.Settings.ServerOrderBy : LocalityListViewService.Settings.ServerOrderBy;
+            set
+            {
+                if (CurrentView == EnumServerViewStatus.Tree)
+                {
+                    LocalityTreeViewService.ServerOrderBySet(value);
+                }
+                else
+                {
+                    LocalityListViewService.ServerOrderBySet(value);
+                }
+                RaisePropertyChanged();
+            }
+        }
+
+        public void SetServerOrderBy(object? o)
+        {
+            var newOrderBy = EnumServerOrderBy.IdAsc;
+            if (int.TryParse(o?.ToString(), out var ot)
+                && ot is >= (int)EnumServerOrderBy.IdAsc and <= (int)EnumServerOrderBy.Custom)
+            {
+                newOrderBy = (EnumServerOrderBy)ot;
+            }
+            else if (o is EnumServerOrderBy x)
+            {
+                newOrderBy = x;
+            }
+
+            if (newOrderBy is EnumServerOrderBy.IdAsc or EnumServerOrderBy.Custom)
+            {
+                ServerOrderBy = newOrderBy;
+            }
+            else
+            {
+                try
+                {
+                    // cancel order
+                    if (ServerOrderBy == newOrderBy + 1)
+                    {
+                        newOrderBy = EnumServerOrderBy.IdAsc;
+                    }
+                    else if (ServerOrderBy == newOrderBy)
+                    {
+                        newOrderBy += 1;
+                    }
+                }
+                catch
+                {
+                    newOrderBy = EnumServerOrderBy.IdAsc;
+                }
+                finally
+                {
+                    ServerOrderBy = newOrderBy;
+                }
+            }
+        }
+
         #endregion Properties
 
         public MainWindowViewModel(GlobalData appData, DataSourceService sourceService, ConfigurationService configurationService)
@@ -89,7 +191,7 @@ namespace _1RM.View
             _appData = appData;
             SourceService = sourceService;
             ConfigurationService = configurationService;
-            ShowList(false);
+            CurrentView = IoC.Get<ConfigurationService>().General.ServerViewStatus;
         }
 
         public Action? OnMainWindowViewLoaded = null;
@@ -97,11 +199,11 @@ namespace _1RM.View
         {
             base.OnViewLoaded();
 
-            GlobalEventHelper.OnGoToServerAddPage += async void (tagNames, assignDataSource) =>
+            GlobalEventHelper.OnGoToServerAddPage += async void (tagNames, _, preset) =>
             {
                 try
                 {
-                    var source = await DataSourceSelectorViewModel.SelectDataSourceAsync();
+                    var source = preset?.DataSource ?? await DataSourceSelectorViewModel.SelectDataSourceAsync();
 #if !DEBUG
                     // use this to test the error message
                     if (source == null)
@@ -111,12 +213,16 @@ namespace _1RM.View
 #endif
                     if (source?.IsWritable == true)
                     {
-                        EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!));
+                        if (preset != null)
+                        {
+                            preset.TagNames = tagNames ?? new List<string>();
+                        }
+                        EditorViewModel = ServerEditorPageViewModel.Add(_appData, source, preset);
                         ShowMe();
                     }
                     else
                     {
-                        MessageBoxHelper.ErrorAlert($"Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
+                        MessageBoxHelper.ErrorAlert($"Debug: Can not add server to DataSource ({source?.DataSourceName ?? "null"}) since it is not writable.");
                     }
                 }
                 catch (Exception e)
@@ -229,7 +335,8 @@ namespace _1RM.View
             ShowSetting = false;
             if (clearSelection)
             {
-                ServerListViewModel.ClearSelection();
+                ActiveServerViewModel.ClearSelection();
+                ActiveServerViewModel.CmdCancelSelected.Execute();
             }
         }
 
@@ -270,17 +377,40 @@ namespace _1RM.View
         }
 
 
-        private RelayCommand? _cmdToggleCardList;
-        public RelayCommand CmdToggleCardList
+        private RelayCommand? _cmdToggleCardView;
+        public RelayCommand CmdToggleCardView
         {
             get
             {
-                return _cmdToggleCardList ??= new RelayCommand((o) =>
+                return _cmdToggleCardView ??= new RelayCommand((o) =>
                 {
-                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    if (this.View is MainWindowView v)
-                        v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                    CurrentView = EnumServerViewStatus.Card;
+                }, o => CurrentView != EnumServerViewStatus.Card);
+            }
+        }
+
+
+        private RelayCommand? _cmdToggleListView;
+        public RelayCommand CmdToggleListView
+        {
+            get
+            {
+                return _cmdToggleListView ??= new RelayCommand((o) =>
+                {
+                    CurrentView = EnumServerViewStatus.List;
+                }, o => CurrentView != EnumServerViewStatus.List);
+            }
+        }
+
+        private RelayCommand? _cmdToggleTreeView;
+        public RelayCommand CmdToggleTreeView
+        {
+            get
+            {
+                return _cmdToggleTreeView ??= new RelayCommand((o) =>
+                {
+                    CurrentView = EnumServerViewStatus.Tree;
+                }, o => CurrentView != EnumServerViewStatus.Tree);
             }
         }
 
@@ -291,10 +421,11 @@ namespace _1RM.View
             {
                 return _cmdReOrder ??= new RelayCommand((o) =>
                 {
-                    ServerListViewModel.CmdReOrder.Execute(o);
+                    SetServerOrderBy(o);
+                    ActiveServerViewModel.ApplySort();
                     if (this.View is MainWindowView v)
                         v.PopupMenu.IsOpen = false;
-                }, o => IsShownList);
+                });
             }
         }
 
@@ -319,7 +450,16 @@ namespace _1RM.View
             {
                 switch (goPage)
                 {
-                    case EnumMainWindowPage.List:
+                    case EnumMainWindowPage.CardView:
+                        CurrentView = EnumServerViewStatus.Card;
+                        ShowList(false);
+                        break;
+                    case EnumMainWindowPage.ListView:
+                        CurrentView = EnumServerViewStatus.List;
+                        ShowList(false);
+                        break;
+                    case EnumMainWindowPage.TreeView:
+                        CurrentView = EnumServerViewStatus.Tree;
                         ShowList(false);
                         break;
                     case EnumMainWindowPage.About:
@@ -414,11 +554,9 @@ namespace _1RM.View
                 {
                     _debounceDispatcher.Debounce(IoC.Get<GlobalData>().VmItemList.Count > 100 ? 200 : 100, (obj) =>
                     {
-                        if (_mainFilterString == MainFilterString)
-                        {
-                            // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
-                            ServerListViewModel.RefreshCollectionViewSource();
-                        }
+                        if (_mainFilterString != MainFilterString) return;
+                        // MainFilterString changed -> refresh view source -> calc visible in `ServerListItemSource_OnFilter`
+                        ActiveServerViewModel?.CalcServerVisibleAndRefresh();
                     });
                 }
             }
@@ -426,9 +564,9 @@ namespace _1RM.View
 
         public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
         {
-            if (tags?.Count == 1 && tags.First().TagName is ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME)
+            if (tags?.Count == 1 && tags.First().TagName is ServerPageViewModelBase.TAB_TAGS_LIST_NAME)
             {
-                _mainFilterString = ServerList.ServerListPageViewModel.TAB_TAGS_LIST_NAME;
+                _mainFilterString = ServerPageViewModelBase.TAB_TAGS_LIST_NAME;
                 RaisePropertyChanged(nameof(MainFilterString));
             }
             else

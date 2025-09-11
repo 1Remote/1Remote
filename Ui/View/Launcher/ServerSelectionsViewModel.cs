@@ -35,6 +35,7 @@ namespace _1RM.View.Launcher
                 view.TbKeyWord.Focus();
                 CalcNoteFieldVisibility();
 
+                IoC.Get<GlobalData>().OnReloadAll -= RebuildVmServerList;
                 IoC.Get<GlobalData>().OnReloadAll += RebuildVmServerList;
                 RebuildVmServerList();
             }
@@ -167,19 +168,6 @@ namespace _1RM.View.Launcher
         {
             get => _tagFilters;
             set => SetAndNotifyIfChanged(ref _tagFilters, value);
-        }
-
-
-        public void AppendServer(ProtocolBaseViewModel viewModel)
-        {
-            Execute.OnUIThread(() =>
-            {
-                viewModel.PropertyChanged -= OnLastConnectTimeChanged;
-                viewModel.PropertyChanged += OnLastConnectTimeChanged;
-                viewModel.LauncherMainTitleViewModel?.UnHighLightAll();
-                viewModel.LauncherSubTitleViewModel?.UnHighLightAll();
-                VmServerList.Add(viewModel);
-            });
         }
 
         public void RebuildVmServerList()

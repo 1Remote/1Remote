@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Den Ordner verwenden</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Bitte die Dateien zum Hochladen auswählen</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Aktualisieren (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Ordner erstellen</s:String>
+    <s:String x:Key="Create a folder">Ordner erstellen</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Upload (STRG + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Dateien zum Hochladen auswählen</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Ordner zum Hochladen auswählen</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Datenbank</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Achtung: Ihre Daten werden unverschlüsselt gespeichert</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Datenverarbeitung, Programm bitte nicht schließen.</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Duplizieren</s:String>
+    <s:String x:Key="Duplicate">Duplizieren</s:String>
     <s:String x:Key="server_card_operate_copy_address">Hostname in die Zwischenablage kopieren</s:String>
     <s:String x:Key="server_card_operate_copy_username">Benutzername in die Zwischenablage kopieren</s:String>
     <s:String x:Key="server_card_operate_copy_password">Passwort in die Zwischenablage kopieren</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Anmeldeinformationen</s:String>
     <s:String x:Key="Credentials Vault">Anmeldeinformationen Tresor</s:String>
     <s:String x:Key="Select credentials within the same database">Wählen Sie Anmeldeinformationen in derselben Datenbank aus</s:String>
-    <s:String x:Key="Reset main window location">Hauptfensterstandort zurücksetzen</s:String>
+    <s:String x:Key="Reset main window location">Zurücksetzen der Position des Hauptfensters</s:String>
+    <s:String x:Key="New server">Neuer Server</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Ordner löschen `{0}` und verschieben Sie seinen Inhalt in den übergeordneten Ordner?</s:String>
+    <s:String x:Key="ListViewMode">Ansicht</s:String>
+    <s:String x:Key="ListViewMode_List">Liste</s:String>
+    <s:String x:Key="ListViewMode_Card">Karte</s:String>
+    <s:String x:Key="ListViewMode_Tree">Baum</s:String>
 </ResourceDictionary>

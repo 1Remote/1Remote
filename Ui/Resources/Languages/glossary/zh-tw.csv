@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;將檔案下載到選擇的資料�
 file_transmit_host_message_files_download_to_dir;使用此資料夾
 file_transmit_host_message_select_files_to_upload;請選擇要上傳的檔案
 file_transmit_host_command_refresh;重新整理 (F5)
-file_transmit_host_command_create_folder;新增資料夾
+Create a folder;新增資料夾
 file_transmit_host_command_upload;上傳 (Ctrl + V)
 file_transmit_host_command_select_files_upload;上傳檔案
 file_transmit_host_command_select_folder_upload;上傳資料夾
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;快捷鍵
 system_options_data_security_database;資料庫
 Caution: Your data will be saved unencrypted!;注意：您的數據將以未加密的方式保存！
 system_options_data_security_info_data_processing;正在處理資料，請勿關閉應用程式。
-server_card_operate_duplicate;建立副本
+Duplicate;建立副本
 server_card_operate_copy_address;複製主機名稱或網址到剪貼簿
 server_card_operate_copy_username;複製使用者名稱到剪貼簿
 server_card_operate_copy_password;複製密碼到剪貼簿
@@ -329,4 +329,10 @@ Minimize to system tray;最小化系統托盤
 Credentials;證書
 Credentials Vault;憑證保險庫
 Select credentials within the same database;在同一數據庫中選擇憑據
-Reset main window location;
+Reset main window location;重置主窗口位置
+New server;新建伺服器
+Delete folder XXXX and move its contents to parent folder;刪除文件夾 `{0}` 並將其內容移動到父文件夾？
+ListViewMode;視圖
+ListViewMode_List;列表
+ListViewMode_Card;卡片
+ListViewMode_Tree;樹形

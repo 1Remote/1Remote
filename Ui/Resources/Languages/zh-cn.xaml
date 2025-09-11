@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">选择该文件夹</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">请选择要上传的文件</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">刷新(F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">新建文件夹</s:String>
+    <s:String x:Key="Create a folder">新建文件夹</s:String>
     <s:String x:Key="file_transmit_host_command_upload">上传(Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">选择文件上传</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">选择文件夹上传</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">数据库</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">导出数据将以明文显示，请妥善保管！</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">数据处理中，请勿关闭程序。</s:String>
-    <s:String x:Key="server_card_operate_duplicate">创建副本</s:String>
+    <s:String x:Key="Duplicate">创建副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">复制地址到剪贴板</s:String>
     <s:String x:Key="server_card_operate_copy_username">复制用户名到剪贴板</s:String>
     <s:String x:Key="server_card_operate_copy_password">复制密码到剪贴板</s:String>
@@ -327,4 +327,10 @@
     <s:String x:Key="Credentials Vault">凭据库</s:String>
     <s:String x:Key="Select credentials within the same database">只能在同一个数据库中选择凭据</s:String>
     <s:String x:Key="Reset main window location">重置主窗口位置</s:String>
+    <s:String x:Key="New server">新建服务器</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">删除文件夹 `{0}` 并将其内容移动到父文件夹？</s:String>
+    <s:String x:Key="ListViewMode">视图</s:String>
+    <s:String x:Key="ListViewMode_List">列表</s:String>
+    <s:String x:Key="ListViewMode_Card">卡片</s:String>
+    <s:String x:Key="ListViewMode_Tree">树形</s:String>
 </ResourceDictionary>

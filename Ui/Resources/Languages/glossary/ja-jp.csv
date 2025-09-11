@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;保存先フォルダーを選択
 file_transmit_host_message_files_download_to_dir;＜保存先フォルダーを開いてください＞
 file_transmit_host_message_select_files_to_upload;アップロードするファイルの選択
 file_transmit_host_command_refresh;更新 (F5)
-file_transmit_host_command_create_folder;フォルダーを作成
+Create a folder;フォルダーを作成
 file_transmit_host_command_upload;コピーしたファイルやフォルダーをアップロード (Ctrl + V)
 file_transmit_host_command_select_files_upload;ファイルをアップロード...
 file_transmit_host_command_select_folder_upload;フォルダーをアップロード...
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;ホットキー
 system_options_data_security_database;データベース
 Caution: Your data will be saved unencrypted!;注意: データは暗号化されずに保存されます
 system_options_data_security_info_data_processing;データを処理しています。アプリを閉じないでください。
-server_card_operate_duplicate;複製
+Duplicate;複製
 server_card_operate_copy_address;ホスト名をクリップボードにコピー
 server_card_operate_copy_username;ユーザー名をクリップボードにコピー
 server_card_operate_copy_password;パスワードをクリップボードにコピー
@@ -332,3 +332,9 @@ Credentials;パスワード認証
 Credentials Vault;保管庫
 Select credentials within the same database;同じデータベース内の資格情報を選択します
 Reset main window location;メインウィンドウの位置をリセット
+New server;新しいサーバー
+Delete folder XXXX and move its contents to parent folder;フォルダー `{0}` を削除し、その内容を親フォルダーに移動しますか？
+ListViewMode;表示
+ListViewMode_List;リスト
+ListViewMode_Card;カード
+ListViewMode_Tree;ツリー

@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Použít tuto složku</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Vyberte soubory k nahrání</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Načíst znovu (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Vytvořit složku</s:String>
+    <s:String x:Key="Create a folder">Vytvořit složku</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Nahrát (Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Vyberte soubory k nahrání</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Vyberte složku k nahrání</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Databáze</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Varování: vaše data budou uložena nešifrovaná!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Zpracovávají se data. Nezavírejte aplikaci!</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Zduplikovat</s:String>
+    <s:String x:Key="Duplicate">Zduplikovat</s:String>
     <s:String x:Key="server_card_operate_copy_address">Zkopírovat název stroje do schránky</s:String>
     <s:String x:Key="server_card_operate_copy_username">Zkopírovat uživatelské jméno do schránky</s:String>
     <s:String x:Key="server_card_operate_copy_password">Zkopírovat heslo do schránky</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Pověření</s:String>
     <s:String x:Key="Credentials Vault">Pověřovací trezor</s:String>
     <s:String x:Key="Select credentials within the same database">Vyberte pověření ve stejné databázi</s:String>
-    <s:String x:Key="Reset main window location">Resetujte umístění hlavního okna</s:String>
+    <s:String x:Key="Reset main window location">Resetovat umístění hlavního okna</s:String>
+    <s:String x:Key="New server">Nový server</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Smazat složku `{0}` a přesunout jeho obsah do složky nadřazení?</s:String>
+    <s:String x:Key="ListViewMode">Zobrazení</s:String>
+    <s:String x:Key="ListViewMode_List">Seznam</s:String>
+    <s:String x:Key="ListViewMode_Card">Karta</s:String>
+    <s:String x:Key="ListViewMode_Tree">Strom</s:String>
 </ResourceDictionary>

@@ -306,30 +306,7 @@ namespace _1RM.Service.DataSource.Model
 
         public Result Database_UpdateServer(ProtocolBase org)
         {
-            if (_isWritable)
-            {
-                Debug.Assert(org.IsTmpSession() == false);
-                var tmp = (ProtocolBase)org.Clone();
-                tmp.SetNotifyPropertyChangedEnabled(false);
-                tmp.EncryptToDatabaseLevel();
-                var ret = GetDataBase().UpdateServer(tmp);
-                if (ret.IsSuccess)
-                {
-                    var old = CachedProtocols.FirstOrDefault(x => x.Id == org.Id);
-                    if (old != null)
-                    {
-                        old.Server = org;
-                    }
-                    else
-                    {
-                        // cached data not equal to db data, refresh caches.
-                        SetReadTimestampTo0(TableServer.TABLE_NAME);
-                    }
-                    SetStatus(true);
-                }
-                return ret;
-            }
-            return Result.Success();
+            return Database_UpdateServer([org]);
         }
 
         public Result Database_UpdateServer(IEnumerable<ProtocolBase> servers)
@@ -344,10 +321,11 @@ namespace _1RM.Service.DataSource.Model
                     tmp.EncryptToDatabaseLevel();
                     cloneList.Add(tmp);
                 }
-
                 var ret = GetDataBase().UpdateServer(cloneList);
-                if (!ret.IsSuccess) return ret;
-
+                if (!ret.IsSuccess)
+                {
+                    return ret;
+                }
 
                 // update viewmodel
                 foreach (var protocolServer in servers)
@@ -355,7 +333,10 @@ namespace _1RM.Service.DataSource.Model
                     var old = CachedProtocols.FirstOrDefault(x => x.Id == protocolServer.Id);
                     if (old != null)
                     {
-                        old.Server = protocolServer;
+                        if (old.Server != protocolServer)
+                        {
+                            old.Server = protocolServer;
+                        }
                     }
                     else
                     {
@@ -363,7 +344,7 @@ namespace _1RM.Service.DataSource.Model
                         break;
                     }
                 }
-
+                SetReadTimestamp(TableServer.TABLE_NAME);
                 SetStatus(true);
                 return ret;
             }
