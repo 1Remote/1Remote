@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
     /// <summary>
     /// TagsPanelView.xaml 的交互逻辑

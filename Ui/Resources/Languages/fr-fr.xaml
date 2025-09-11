@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Utiliser ce dossier</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Veuillez sélectionner les fichiers à télécharger</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Actualiser (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Créer le dossier</s:String>
+    <s:String x:Key="Create a folder">Créer le dossier</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Télécharger (Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Sélectionnez les fichiers à télécharger</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Sélectionnez le dossier à télécharger</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Base de données</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Mise en garde : vos données seront enregistrées non cryptées !</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Traitement des données, ne fermez pas l'application.</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>
+    <s:String x:Key="Duplicate">Dupliquer</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copier nom d'hôte dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copier le nom d'utilisateur dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_password">Copier le mot de passe dans le presse-papiers</s:String>
@@ -327,4 +327,10 @@
     <s:String x:Key="Credentials Vault">Vault des informations d'identification</s:String>
     <s:String x:Key="Select credentials within the same database">Sélectionnez des informations d'identification dans la même base de données</s:String>
     <s:String x:Key="Reset main window location">Réinitialiser l'emplacement de la fenêtre principale</s:String>
+    <s:String x:Key="New server">Nouveau serveur</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Supprimer le dossier `{0}` et déplacer son contenu vers le dossier parent?</s:String>
+    <s:String x:Key="ListViewMode">View</s:String>
+    <s:String x:Key="ListViewMode_List">List</s:String>
+    <s:String x:Key="ListViewMode_Card">Card</s:String>
+    <s:String x:Key="ListViewMode_Tree">Tree</s:String>
 </ResourceDictionary>

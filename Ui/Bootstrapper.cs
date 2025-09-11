@@ -26,7 +26,8 @@ using Shawn.Utils.Wpf;
 using Stylet;
 using StyletIoC;
 using MessageBoxViewModel = _1RM.View.Utils.MessageBoxViewModel;
-using ServerListPageViewModel = _1RM.View.ServerList.ServerListPageViewModel;
+using ServerListPageViewModel = _1RM.View.ServerView.ServerListPageViewModel;
+using ServerTreeViewModel = _1RM.View.ServerView.Tree.ServerTreeViewModel;
 
 namespace _1RM
 {
@@ -73,6 +74,7 @@ namespace _1RM
             builder.Bind<ProtocolRunnerSettingsPageViewModel>().ToSelf().InSingletonScope();
 
             builder.Bind<ServerListPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerTreeViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
 
             builder.Bind<ProcessingRingViewModel>().ToSelf();

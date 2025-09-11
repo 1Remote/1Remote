@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Veuillez sélectionner un dossier p
 file_transmit_host_message_files_download_to_dir;Utiliser ce dossier
 file_transmit_host_message_select_files_to_upload;Veuillez sélectionner les fichiers à télécharger
 file_transmit_host_command_refresh;Actualiser (F5)
-file_transmit_host_command_create_folder;Créer le dossier
+Create a folder;Créer le dossier
 file_transmit_host_command_upload;Télécharger (Ctrl + V)
 file_transmit_host_command_select_files_upload;Sélectionnez les fichiers à télécharger
 file_transmit_host_command_select_folder_upload;Sélectionnez le dossier à télécharger
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;Raccourci clavier
 system_options_data_security_database;Base de données
 Caution: Your data will be saved unencrypted!;Mise en garde : vos données seront enregistrées non cryptées !
 system_options_data_security_info_data_processing;Traitement des données, ne fermez pas l'application.
-server_card_operate_duplicate;Dupliquer
+Duplicate;Dupliquer
 server_card_operate_copy_address;Copier nom d'hôte dans le presse-papiers
 server_card_operate_copy_username;Copier le nom d'utilisateur dans le presse-papiers
 server_card_operate_copy_password;Copier le mot de passe dans le presse-papiers
@@ -329,4 +329,10 @@ Minimize to system tray;Minimiser dans le plateau système
 Credentials;Informations d'identification
 Credentials Vault;Vault des informations d'identification
 Select credentials within the same database;Sélectionnez des informations d'identification dans la même base de données
-Reset main window location;
+Reset main window location;Réinitialiser l'emplacement de la fenêtre principale
+New server;Nouveau serveur
+Delete folder XXXX and move its contents to parent folder;
+ListViewMode;View
+ListViewMode_List;List
+ListViewMode_Card;Card
+ListViewMode_Tree;Tree

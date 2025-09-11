@@ -6,7 +6,7 @@
              xmlns:view="clr-namespace:_1RM.View"
              xmlns:model="clr-namespace:_1RM.Model"
              xmlns:dao="clr-namespace:_1RM.Service.DataSource.DAO"
-             xmlns:serverList="clr-namespace:_1RM.View.ServerList"
+             xmlns:serverList="clr-namespace:_1RM.View.ServerView"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="800">

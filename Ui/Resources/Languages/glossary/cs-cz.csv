@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Vyberte složku do které uložit
 file_transmit_host_message_files_download_to_dir;Použít tuto složku
 file_transmit_host_message_select_files_to_upload;Vyberte soubory k nahrání
 file_transmit_host_command_refresh;Načíst znovu (F5)
-file_transmit_host_command_create_folder;Vytvořit složku
+Create a folder;Vytvořit složku
 file_transmit_host_command_upload;Nahrát (Ctrl + V)
 file_transmit_host_command_select_files_upload;Vyberte soubory k nahrání
 file_transmit_host_command_select_folder_upload;Vyberte složku k nahrání
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;Klávesová zkratka
 system_options_data_security_database;Databáze
 Caution: Your data will be saved unencrypted!;Varování: vaše data budou uložena nešifrovaná!
 system_options_data_security_info_data_processing;Zpracovávají se data. Nezavírejte aplikaci!
-server_card_operate_duplicate;Zduplikovat
+Duplicate;Zduplikovat
 server_card_operate_copy_address;Zkopírovat název stroje do schránky
 server_card_operate_copy_username;Zkopírovat uživatelské jméno do schránky
 server_card_operate_copy_password;Zkopírovat heslo do schránky
@@ -330,4 +330,10 @@ Minimize to system tray;Minimalizujte zásobník systému
 Credentials;Pověření
 Credentials Vault;Pověřovací trezor
 Select credentials within the same database;Vyberte pověření ve stejné databázi
-Reset main window location;
+Reset main window location;Resetovat umístění hlavního okna
+New server;Nový server
+Delete folder XXXX and move its contents to parent folder;
+ListViewMode;Zobrazení
+ListViewMode_List;Seznam
+ListViewMode_Card;Karta
+ListViewMode_Tree;Strom

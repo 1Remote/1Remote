@@ -43,7 +43,8 @@ namespace _1RM.View.Settings.CredentialVault
         {
             _sourceService = sourceService;
             InitCredentials();
-            appData.OnReloadAll += InitCredentials;
+            IoC.Get<GlobalData>().OnReloadAll -= InitCredentials;
+            IoC.Get<GlobalData>().OnReloadAll += InitCredentials;
         }
 
         private void InitCredentials()

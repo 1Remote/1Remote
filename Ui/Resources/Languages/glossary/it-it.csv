@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Seleziona una cartella in cui salva
 file_transmit_host_message_files_download_to_dir;Usa questa cartella
 file_transmit_host_message_select_files_to_upload;Seleziona i file da caricare
 file_transmit_host_command_refresh;Aggiorna (F5)
-file_transmit_host_command_create_folder;Crea una cartella
+Create a folder;Crea una cartella
 file_transmit_host_command_upload;Carica (Ctrl V)
 file_transmit_host_command_select_files_upload;Seleziona i file da caricare
 file_transmit_host_command_select_folder_upload;Seleziona una cartella da caricare
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;Tasto di scelta rapida
 system_options_data_security_database;Database
 Caution: Your data will be saved unencrypted!;Attenzione: i tuoi dati verranno salvati non crittografati !
 system_options_data_security_info_data_processing;Elaborazione dati. Non chiudere l'applicazione !
-server_card_operate_duplicate;Duplica
+Duplicate;Duplica
 server_card_operate_copy_address;Copia il nome host negli appunti
 server_card_operate_copy_username;Copia il nome utente negli appunti
 server_card_operate_copy_password;Copia la password negli appunti
@@ -329,4 +329,10 @@ Minimize to system tray;Ridurre al minimo il vassoio di sistema
 Credentials;Credenziali
 Credentials Vault;Credenziali Vault
 Select credentials within the same database;Seleziona le credenziali all'interno dello stesso database
-Reset main window location;
+Reset main window location;Resetta la posizione della finestra principale
+New server;Nuovo server
+Delete folder XXXX and move its contents to parent folder;
+ListViewMode;View
+ListViewMode_List;List
+ListViewMode_Card;Card
+ListViewMode_Tree;Tree

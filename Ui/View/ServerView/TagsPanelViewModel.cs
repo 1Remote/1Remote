@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using _1RM.Controls;
+﻿using System.Windows.Data;
 using _1RM.Model;
-using _1RM.Model.Protocol.Base;
-using _1RM.Service;
-using _1RM.Service.Locality;
 using _1RM.Utils;
-using _1RM.View.Utils;
-using Shawn.Utils;
-using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Stylet;
 
-namespace _1RM.View.ServerList
+namespace _1RM.View.ServerView
 {
     public class TagsPanelViewModel : NotifyPropertyChangedBaseScreen
     {

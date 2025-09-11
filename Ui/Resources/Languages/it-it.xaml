@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Usa questa cartella</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Seleziona i file da caricare</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Aggiorna (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Crea una cartella</s:String>
+    <s:String x:Key="Create a folder">Crea una cartella</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Carica (Ctrl V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Seleziona i file da caricare</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Seleziona una cartella da caricare</s:String>
@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_database">Database</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Attenzione: i tuoi dati verranno salvati non crittografati !</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Elaborazione dati. Non chiudere l'applicazione !</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Duplica</s:String>
+    <s:String x:Key="Duplicate">Duplica</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copia il nome host negli appunti</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copia il nome utente negli appunti</s:String>
     <s:String x:Key="server_card_operate_copy_password">Copia la password negli appunti</s:String>
@@ -326,5 +326,11 @@
     <s:String x:Key="Credentials">Credenziali</s:String>
     <s:String x:Key="Credentials Vault">Credenziali Vault</s:String>
     <s:String x:Key="Select credentials within the same database">Seleziona le credenziali all'interno dello stesso database</s:String>
-    <s:String x:Key="Reset main window location">Ripristina la posizione della finestra principale</s:String>
+    <s:String x:Key="Reset main window location">Resetta la posizione della finestra principale</s:String>
+    <s:String x:Key="New server">Nuovo server</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Elimina la cartella `{0}` e spostare il suo contenuto nella cartella principale?</s:String>
+    <s:String x:Key="ListViewMode">View</s:String>
+    <s:String x:Key="ListViewMode_List">List</s:String>
+    <s:String x:Key="ListViewMode_Card">Card</s:String>
+    <s:String x:Key="ListViewMode_Tree">Tree</s:String>
 </ResourceDictionary>

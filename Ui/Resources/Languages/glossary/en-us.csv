@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Please select a folder to save to
 file_transmit_host_message_files_download_to_dir;Use this folder
 file_transmit_host_message_select_files_to_upload;Please select files to upload
 file_transmit_host_command_refresh;Refresh (F5)
-file_transmit_host_command_create_folder;Create a folder
+Create a folder;Create a folder
 file_transmit_host_command_upload;Upload (Ctrl + V)
 file_transmit_host_command_select_files_upload;Select files to upload
 file_transmit_host_command_select_folder_upload;Select a folder to upload
@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Save to... (Ctrl + S)
 file_transmit_host_warning_same_names_title;Replace or cancel
 file_transmit_host_warning_same_names;The destination has {0} file(s) with the same name(s). Do you want to continue?
 host_reconecting_info;Reconnecting...
-Toggle Cards/List;Toggle Cards/List
 system_options_general_title;General
 Run automatically at OS startup;Run automatically at OS startup(minimized)
 Confirm before closing;Confirm before closing
@@ -104,7 +103,7 @@ system_options_quick_launcher_hotkey;Hot key
 system_options_data_security_database;Database
 Caution: Your data will be saved unencrypted!;Caution: Your data will be saved unencrypted!
 system_options_data_security_info_data_processing;Processing data. Do not close the app!
-server_card_operate_duplicate;Duplicate
+Duplicate;Duplicate
 server_card_operate_copy_address;Copy hostname to clipboard
 server_card_operate_copy_username;Copy username to clipboard
 server_card_operate_copy_password;Copy password to clipboard
@@ -330,3 +329,9 @@ Credentials;Credentials
 Credentials Vault;Credentials Vault
 Select credentials within the same database;Select credentials within the same database
 Reset main window location;Reset main window location
+New server;New server
+Delete folder XXXX and move its contents to parent folder;Delete folder `{0}` and move its contents to parent folder?
+ListViewMode;View
+ListViewMode_List;List
+ListViewMode_Card;Card
+ListViewMode_Tree;Tree

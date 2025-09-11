@@ -6,6 +6,7 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.Model;
 using _1RM.View;
+using _1RM.View.Editor;
 
 namespace _1RM.Model
 {
@@ -21,11 +22,12 @@ namespace _1RM.Model
         public delegate void OnRequestServersConnectDelegate(IEnumerable<ProtocolBase> server, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "");
         public static OnRequestServersConnectDelegate? OnRequestServersConnect { get; set; } = null;
 
+
         /// <summary>
         /// Go to server edit by server id, if id == 0 goto add page
         /// </summary>
         /// <param name="presetTagNames">preset tag names</param>
-        public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, DataSourceBase? assignDataSource = null);
+        public delegate void OnGoToServerAddPageDelegate(List<string>? presetTagNames = null, DataSourceBase? assignDataSource = null, ServerEditorPageViewModel.ParamsServerAddPreset? preset = null);
         public static OnGoToServerAddPageDelegate? OnGoToServerAddPage { get; set; } = null;
 
         public delegate void OnRequestGoToServerDuplicatePageDelegate(ProtocolBase server, bool showAnimation = true);

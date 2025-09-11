@@ -44,7 +44,7 @@ namespace _1RM.View.Settings
 
         public void ShowPage(EnumMainWindowPage page)
         {
-            if (page == EnumMainWindowPage.List
+            if (page == EnumMainWindowPage.ListView
                 || page == EnumMainWindowPage.About
                 || CurrentPage == page)
                 return;
@@ -190,22 +190,6 @@ namespace _1RM.View.Settings
                         ShowPage(page);
                     }
                 });
-            }
-        }
-
-
-
-
-
-        public bool ListPageIsCardView
-        {
-            get => _configurationService.General.ListPageIsCardView;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _configurationService.General.ListPageIsCardView, value))
-                {
-                    _configurationService.Save();
-                }
             }
         }
     }

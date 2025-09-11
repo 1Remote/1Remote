@@ -1,4 +1,13 @@
-﻿using System;
+﻿using _1RM.Model;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.Model;
+using _1RM.Utils;
+using _1RM.Utils.Tracing;
+using _1RM.View;
+using Newtonsoft.Json;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -6,17 +15,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using _1RM.Model;
-using Newtonsoft.Json;
-using _1RM.Service.DataSource;
-using _1RM.Service.DataSource.Model;
-using _1RM.Utils;
-using Shawn.Utils;
-using Shawn.Utils.Wpf;
+using System.Windows.Media;
 using VariableKeywordMatcher.Provider.DirectMatch;
 using SetSelfStartingHelper = _1RM.Utils.SetSelfStartingHelper;
-using System.Windows.Media;
-using _1RM.Utils.Tracing;
 
 namespace _1RM.Service
 {
@@ -39,7 +40,7 @@ namespace _1RM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-        public bool ListPageIsCardView = false;
+        public EnumServerViewStatus ServerViewStatus = EnumServerViewStatus.List;
         public enum EnumCloseButtonBehavior
         {
             Exit,

@@ -82,7 +82,7 @@ file_transmit_host_message_files_download_to;Bitte wählen Sie den Speicherpfad 
 file_transmit_host_message_files_download_to_dir;Den Ordner verwenden
 file_transmit_host_message_select_files_to_upload;Bitte die Dateien zum Hochladen auswählen
 file_transmit_host_command_refresh;Aktualisieren (F5)
-file_transmit_host_command_create_folder;Ordner erstellen
+Create a folder;Ordner erstellen
 file_transmit_host_command_upload;Upload (STRG + V)
 file_transmit_host_command_select_files_upload;Dateien zum Hochladen auswählen
 file_transmit_host_command_select_folder_upload;Ordner zum Hochladen auswählen
@@ -104,7 +104,7 @@ system_options_quick_launcher_hotkey;Hotkey
 system_options_data_security_database;Datenbank
 Caution: Your data will be saved unencrypted!;Achtung: Ihre Daten werden unverschlüsselt gespeichert
 system_options_data_security_info_data_processing;Datenverarbeitung, Programm bitte nicht schließen.
-server_card_operate_duplicate;Duplizieren
+Duplicate;Duplizieren
 server_card_operate_copy_address;Hostname in die Zwischenablage kopieren
 server_card_operate_copy_username;Benutzername in die Zwischenablage kopieren
 server_card_operate_copy_password;Passwort in die Zwischenablage kopieren
@@ -329,4 +329,10 @@ Minimize to system tray;Minimieren
 Credentials;Anmeldeinformationen
 Credentials Vault;Anmeldeinformationen Tresor
 Select credentials within the same database;Wählen Sie Anmeldeinformationen in derselben Datenbank aus
-Reset main window location;
+Reset main window location;Zurücksetzen der Position des Hauptfensters
+New server;Neuer Server
+Delete folder XXXX and move its contents to parent folder;
+ListViewMode;Ansicht
+ListViewMode_List;Liste
+ListViewMode_Card;Karte
+ListViewMode_Tree;Baum

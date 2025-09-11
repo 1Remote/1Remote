@@ -140,13 +140,13 @@ namespace _1RM.View
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
             if (Vm.IsShownList)
             {
-                if (Vm.ServerListViewModel.TagListViewModel == null)
+                if (Vm.ActiveServerViewModel.TagListViewModel == null)
                 {
                     Vm.MainFilterIsFocused = true;
                 }
                 else
                 {
-                    Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                    Vm.ActiveServerViewModel.TagsPanelViewModel.FilterIsFocused = true;
                 }
             }
         }
@@ -167,15 +167,15 @@ namespace _1RM.View
                 }
                 else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && vm.IsShownList)
                 {
-                    if (Vm.ServerListViewModel.TagListViewModel == null)
+                    if (Vm.ActiveServerViewModel.TagListViewModel == null)
                     {
                         Vm.MainFilterIsFocused = true;
                         Vm.MainFilterIsFocused = true;
                     }
                     else
                     {
-                        Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
-                        Vm.ServerListViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                        Vm.ActiveServerViewModel.TagsPanelViewModel.FilterIsFocused = true;
+                        Vm.ActiveServerViewModel.TagsPanelViewModel.FilterIsFocused = true;
                     }
                 }
             }
@@ -192,7 +192,7 @@ namespace _1RM.View
 
         private void MainFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            // When press Esc, clear all of the search keywords, but keep selected tags;
+            // When press Esc, clear all the search keywords, but keep selected tags;
             if (e.Key != Key.Escape || sender is TextBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
             Vm.SetMainFilterString(s.KeyWords.Count == 0 ? null : s.TagFilterList, null);

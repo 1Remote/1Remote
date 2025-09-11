@@ -83,7 +83,7 @@
     <s:String x:Key="file_transmit_host_message_files_download_to_dir">Use this folder</s:String>
     <s:String x:Key="file_transmit_host_message_select_files_to_upload">Please select files to upload</s:String>
     <s:String x:Key="file_transmit_host_command_refresh">Refresh (F5)</s:String>
-    <s:String x:Key="file_transmit_host_command_create_folder">Create a folder</s:String>
+    <s:String x:Key="Create a folder">Create a folder</s:String>
     <s:String x:Key="file_transmit_host_command_upload">Upload (Ctrl + V)</s:String>
     <s:String x:Key="file_transmit_host_command_select_files_upload">Select files to upload</s:String>
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Select a folder to upload</s:String>
@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Replace or cancel</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">The destination has {0} file(s) with the same name(s). Do you want to continue?</s:String>
     <s:String x:Key="host_reconecting_info">Reconnecting...</s:String>
-    <s:String x:Key="Toggle Cards/List">Toggle Cards/List</s:String>
     <s:String x:Key="system_options_general_title">General</s:String>
     <s:String x:Key="Run automatically at OS startup">Run automatically at OS startup(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirm before closing</s:String>
@@ -105,7 +104,7 @@
     <s:String x:Key="system_options_data_security_database">Database</s:String>
     <s:String x:Key="Caution: Your data will be saved unencrypted!">Caution: Your data will be saved unencrypted!</s:String>
     <s:String x:Key="system_options_data_security_info_data_processing">Processing data. Do not close the app!</s:String>
-    <s:String x:Key="server_card_operate_duplicate">Duplicate</s:String>
+    <s:String x:Key="Duplicate">Duplicate</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copy hostname to clipboard</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copy username to clipboard</s:String>
     <s:String x:Key="server_card_operate_copy_password">Copy password to clipboard</s:String>
@@ -327,4 +326,10 @@
     <s:String x:Key="Credentials Vault">Credentials Vault</s:String>
     <s:String x:Key="Select credentials within the same database">Select credentials within the same database</s:String>
     <s:String x:Key="Reset main window location">Reset main window location</s:String>
+    <s:String x:Key="New server">New server</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
+    <s:String x:Key="ListViewMode">View</s:String>
+    <s:String x:Key="ListViewMode_List">List</s:String>
+    <s:String x:Key="ListViewMode_Card">Card</s:String>
+    <s:String x:Key="ListViewMode_Tree">Tree</s:String>
 </ResourceDictionary>
