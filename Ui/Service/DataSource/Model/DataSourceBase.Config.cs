@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
 using _1RM.View;
-using com.github.xiangyuecn.rsacsharp;
 using JsonKnownTypes;
 using Newtonsoft.Json;
 using Shawn.Utils;
