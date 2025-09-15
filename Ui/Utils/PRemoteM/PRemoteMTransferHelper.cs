@@ -13,7 +13,6 @@ using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
 using _1RM.View;
 using _1RM.View.Utils;
-using com.github.xiangyuecn.rsacsharp;
 using Dapper;
 using Newtonsoft.Json;
 using Shawn.Utils;
@@ -175,36 +174,8 @@ namespace _1RM.Utils.PRemoteM
             _servers.Clear();
         }
 
-        private static string DecryptOrReturnOriginalString(RSA? ras, string originalString)
-        {
-            return ras?.DecodeOrNull(originalString) ?? originalString;
-        }
-
         public static List<ProtocolBase>? GetServers(DapperDatabase dataBase)
         {
-            RSA? rsa = null;
-            // check database rsa encrypt
-            var privateKeyPath = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PrivateKeyPath", })?.Value ?? "";
-
-
-            if (!string.IsNullOrWhiteSpace(privateKeyPath)
-                && File.Exists(privateKeyPath))
-            {
-                // validate encryption
-                var publicKey = dataBase.Connection?.QueryFirstOrDefault<TableConfig>($"SELECT * FROM `Config` WHERE `Key` = @Key", new { Key = "RSA_PublicKey", })?.Value ?? "";
-                var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
-                if (pks != RSA.EnumRsaStatus.NoError)
-                {
-                    return null;
-                }
-
-                rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-            }
-            else
-            {
-                rsa = null;
-            }
-
             var ret = new List<ProtocolBase>();
             // read from PRemoteM db
             var dbServers = dataBase.Connection?.Query<PRemoteMServer>($"SELECT * FROM `Server`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
@@ -213,40 +184,6 @@ namespace _1RM.Utils.PRemoteM
             foreach (var server in dbServers.Where(server => server is { }))
             {
                 if (server == null) continue;
-                if (rsa != null)
-                {
-                    // DecryptToRamLevel
-                    server.DisplayName = DecryptOrReturnOriginalString(rsa, server.DisplayName);
-                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
-                    {
-                        var p = (ProtocolBaseWithAddressPort)server;
-                        p.Address = DecryptOrReturnOriginalString(rsa, p.Address);
-                        p.Port = DecryptOrReturnOriginalString(rsa, p.Port);
-                    }
-
-                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-                    {
-                        var p = (ProtocolBaseWithAddressPortUserPwd)server;
-                        p.UserName = DecryptOrReturnOriginalString(rsa, p.UserName);
-                    }
-
-                    // DecryptToConnectLevel
-                    if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
-                    {
-                        var s = (ProtocolBaseWithAddressPortUserPwd)server;
-                        s.Password = DecryptOrReturnOriginalString(rsa, s.Password);
-                    }
-                    switch (server)
-                    {
-                        case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                            ssh.PrivateKey = DecryptOrReturnOriginalString(rsa, ssh.PrivateKey);
-                            break;
-
-                        case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                            rdp.GatewayPassword = DecryptOrReturnOriginalString(rsa, rdp.GatewayPassword);
-                            break;
-                    }
-                }
                 ret.Add(server);
             }
             return ret;
