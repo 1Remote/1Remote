@@ -495,7 +495,17 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             if (_exeHandles.Count > 0)
                 return _exeHandles.Last();
-            return _process?.MainWindowHandle ?? IntPtr.Zero;
+            
+            try
+            {
+                return _process?.MainWindowHandle ?? IntPtr.Zero;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error($"Error when _process?.MainWindowHandle: {e}");
+                // Process has exited or been disposed
+                return IntPtr.Zero;
+            }
         }
 
         public Action? RunBeforeConnect { get; set; }

@@ -74,10 +74,19 @@ namespace _1RM.View.Host
         /// </summary>
         private void RunForIntegrate()
         {
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
+            IntPtr hWnd;
+            try
+            {
+                if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
+                    return;
+                hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning($"Failed to get host hwnd: {ex.Message}");
                 return;
-
-            var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+            }
+            
             if (hWnd == IntPtr.Zero) return;
 
             var nowActivatedWindowHandle = GetForegroundWindow();
