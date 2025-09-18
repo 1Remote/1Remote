@@ -146,6 +146,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         base.OnClosed?.Invoke(base.ConnectionId);
                         break;
 
+
                     case disconnectReasonLocalNotError:
                         // Maybe the user has cancelled the RdpClient's attempt to reconnect.
                         // In this case, we will attempt to reconnect in order to switch to an alternate host.

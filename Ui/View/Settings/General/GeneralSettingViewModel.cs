@@ -38,6 +38,18 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        public bool DoNotCheckNewVersion
+        {
+            get => _configurationService.General.DoNotCheckNewVersion;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.DoNotCheckNewVersion, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
         private bool _appStartAutomatically = false;
         public bool AppStartAutomatically
         {

@@ -333,4 +333,5 @@
     <s:String x:Key="ListViewMode_List">列表</s:String>
     <s:String x:Key="ListViewMode_Card">卡片</s:String>
     <s:String x:Key="ListViewMode_Tree">樹形</s:String>
+    <s:String x:Key="Do not check for new version">不要檢查新版本</s:String>
 </ResourceDictionary>
