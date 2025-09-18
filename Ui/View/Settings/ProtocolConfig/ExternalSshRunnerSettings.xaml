@@ -279,7 +279,7 @@
 
                                     <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
                                                                Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
-                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
+                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettingsBase}}}"
                                                                Tag="Value e.g. %1RM_USERNAME%"
                                                                ToolTip="Value e.g. %1RM_USERNAME%"/>
 
@@ -288,7 +288,7 @@
                                             Style="{StaticResource ButtonBarTransparentStyle}"
                                             HorizontalAlignment="Right"
                                             Opacity="0.8"
-                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}" 
+                                            Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettingsBase}}}" 
                                             CommandParameter="{Binding }"
                                             Margin="0 0 10 0">
                                         <Grid Height="10" Width="8">
@@ -309,6 +309,117 @@
                             Style="{StaticResource ButtonBarTransparentStyle}"
                             HorizontalAlignment="Left"
                             Command="{Binding CmdAddEnvironmentVariable}">
+                        <Grid Height="15" Width="15">
+                            <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  StrokeThickness="2" Stretch="Uniform" />
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+
+
+
+            <Grid Style="{StaticResource GridOneRow}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                    <ColumnDefinition Width="290"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Special Characters"></TextBlock>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock TextWrapping="Wrap"
+                               HorizontalAlignment="Left"
+                               Width="290"
+                               Margin="0"
+                               FontSize="{DynamicResource GlobalFontSizeSmall}"
+                               Text="Sometime special characters (like @ in username, see example below) have to be encoded using %XX syntax" 
+                               Opacity="0.8"></TextBlock>
+                        <TextBlock VerticalAlignment="Center" Margin="2 0">
+                            <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/runner/" TextDecorations="{x:Null}" 
+                                       controls1:HyperlinkHelper.IsOpenExternal="True">
+                                (?)
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding ExternalRunner.SpecialCharacters}"
+                             BorderThickness="0" Background="Transparent">
+                        <ListBox.Style>
+                            <Style TargetType="{x:Type ListBox}">
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="ItemContainerStyle">
+                                    <Setter.Value>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListBoxItem">
+                                                        <Grid Margin="3">
+                                                            <Border x:Name="GridContainer"></Border>
+                                                            <ContentPresenter x:Name="ContentPresenter"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.Style>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="360" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                                        <ColumnDefinition Width="20"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBox Grid.Column="0" Margin="2" 
+                                             Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" 
+                                             Tag="Key e.g. User"
+                                             ToolTip="Key e.g. User"/>
+
+
+                                    <TextBox Grid.Column="1" Margin="2" 
+                                             Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
+                                             Tag="@"
+                                             ToolTip="%40"/>
+
+                                    <Button Grid.Column="2" Width="10" Height="10"
+                                            ToolTip="{DynamicResource 'Delete'}"
+                                            Style="{StaticResource ButtonBarTransparentStyle}"
+                                            HorizontalAlignment="Right"
+                                            Opacity="0.8"
+                                            Command="{Binding DataContext.CmdDelSpecialCharacter, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettingsBase}}}" 
+                                            CommandParameter="{Binding }"
+                                            Margin="0 0 10 0">
+                                        <Grid Height="10" Width="8">
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  StrokeThickness="2" Stretch="Uniform" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Button Width="20" Height="20" 
+                            Margin="20 0 20 0"
+                            ToolTip="{DynamicResource 'Add'}"
+                            Style="{StaticResource ButtonBarTransparentStyle}"
+                            HorizontalAlignment="Left"
+                            Command="{Binding CmdAddSpecialCharacter}">
                         <Grid Height="15" Width="15">
                             <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"

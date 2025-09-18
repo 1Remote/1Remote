@@ -125,6 +125,12 @@ namespace _1RM.Model.ProtocolRunner
                 {
                     environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocol, kv.Value.Replace("%SSH_PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%")));
                 }
+
+
+                // Percent-encoding, some password may contain special characters, SFTP\XFTP need to encode them.
+                // see: https://github.com/1Remote/1Remote/issues/673
+                // ref: https://winscp.net/eng/docs/session_url#special
+                er.ApplySpecialCharacters(protocol);
             }
             else if (runner is InternalExeRunner ir)
             {
@@ -152,30 +158,6 @@ namespace _1RM.Model.ProtocolRunner
                     new Dictionary<string, string>());
             }
             exePath = tmp.Item2;
-
-
-            // prepare args
-            if (protocol is ProtocolBaseWithAddressPortUserPwd withAddressPortUserPwd)
-            {
-                // Percent-encoding, some password may contain special characters, SFTP\XFTP need to encode them.
-                // see: https://github.com/1Remote/1Remote/issues/673
-                // ref: https://winscp.net/eng/docs/session_url#special
-                var specialCharacters = new Dictionary<string, string>
-                {
-                    {"%", "%25" },
-                    {";", "%3B" },
-                    {":", "%3A" },
-                    {" ", "%20" },
-                    {"#", "%23" },
-                    {"+", "%2B" },
-                    {"/", "%2F" },
-                    //{"@", "%40" },
-                };
-                foreach (var kv in specialCharacters)
-                {
-                    withAddressPortUserPwd.Password = withAddressPortUserPwd.Password.Replace(kv.Key, kv.Value);
-                }
-            }
             exeArguments = OtherNameAttributeExtensions.Replace(protocol, exeArguments);
             return new Tuple<bool, string, string, Dictionary<string, string>>(true, exePath, exeArguments, environmentVariables);
         }

@@ -14,7 +14,7 @@ namespace _1RM.Model
 {
     public partial class GlobalData : NotifyPropertyChangedBase
     {
-        private readonly Timer _timer = new Timer(500);
+        private readonly Timer _timer = new Timer(1000);
         private bool _timerStopFlag = false;
 
         private void InitTimer()
@@ -85,11 +85,6 @@ namespace _1RM.Model
                 if (_sourceService == null)
                     return;
 
-                var ds = new List<DataSourceBase>();
-                if (_sourceService.LocalDataSource != null)
-                    ds.Add(_sourceService.LocalDataSource);
-                ds.AddRange(_sourceService.AdditionalSources.Values);
-
                 var mainWindowViewModel = IoC.TryGet<MainWindowViewModel>();
                 var listPageViewModel = IoC.TryGet<ServerListPageViewModel>();
                 var launcherWindowViewModel = IoC.TryGet<LauncherWindowViewModel>();
@@ -98,6 +93,11 @@ namespace _1RM.Model
                    || listPageViewModel == null
                    || launcherWindowViewModel == null)
                     return;
+
+                var ds = new List<DataSourceBase>();
+                if (_sourceService.LocalDataSource != null)
+                    ds.Add(_sourceService.LocalDataSource);
+                ds.AddRange(_sourceService.AdditionalSources.Values);
 
                 // do not reload when any selected / launcher is shown / editor view is show
                 if (listPageViewModel.VmServerList.Any(x => x.IsSelected)
