@@ -212,6 +212,40 @@ public class ExternalRunnerSettingsViewModel
     }
 
 
+    private RelayCommand? _cmdAddSpecialCharacter;
+    public RelayCommand CmdAddSpecialCharacter
+    {
+        get
+        {
+            return _cmdAddSpecialCharacter ??= new RelayCommand((o) =>
+            {
+                ExternalRunner.SpecialCharacters.Add(new ExternalRunner.ObservableKvp<string, string>("", ""));
+            });
+        }
+    }
+
+
+    private RelayCommand? _cmdDelSpecialCharacter;
+    public RelayCommand CmdDelSpecialCharacter
+    {
+        get
+        {
+            return _cmdDelSpecialCharacter ??= new RelayCommand((o) =>
+            {
+                if (o is ExternalRunner.ObservableKvp<string, string> item
+                    && ExternalRunner.SpecialCharacters.Contains(item)
+                    && ((item.Key == "" && item.Value == "")
+                        || true == MessageBoxHelper.Confirm(IoC.Translate("confirm_to_delete"), ownerViewModel: IoC.Get<MainWindowViewModel>()))
+                   )
+                {
+                    ExternalRunner.SpecialCharacters.Remove(item);
+                    IoC.Get<ProtocolConfigurationService>().Save();
+                }
+            });
+        }
+    }
+
+
     private RelayCommand? _cmdCopyJsonAndShare;
     public RelayCommand CmdCopyJsonAndShare
     {

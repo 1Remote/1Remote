@@ -437,7 +437,7 @@
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding New.EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding New.EnableSmartCardsAndWinHello}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding New.EnableDiskDrives}"></CheckBox>
-                        <CheckBox Content="{DynamicResource 'Drives plug in latter'}" IsChecked="{Binding New.EnableRedirectDrivesPlugIn}"></CheckBox>
+                        <CheckBox Content="{DynamicResource 'Drives plug in later'}" IsChecked="{Binding New.EnableRedirectDrivesPlugIn}"></CheckBox>
                         <CheckBox Content="{DynamicResource Cameras}" IsChecked="{Binding New.EnableRedirectCameras}"></CheckBox>
                     </UniformGrid>
                 </StackPanel>
