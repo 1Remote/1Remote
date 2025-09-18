@@ -333,4 +333,5 @@
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
+    <s:String x:Key="Do not check for new version">Не проверяйте новую версию</s:String>
 </ResourceDictionary>

@@ -16,14 +16,17 @@ namespace _1RM.View
     public class AboutPageViewModel : PopupBase
     {
         private readonly Timer _checkUpdateTimer;
+        private readonly VersionHelper _checker;
 
         public AboutPageViewModel()
         {
-            var checker = new VersionHelper(AppVersion.VersionData,
+            if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+                return;
+            _checker = new VersionHelper(AppVersion.VersionData,
                 AppVersion.UpdateCheckUrls,
                 AppVersion.UpdatePublishUrls,
                 customCheckMethod: CustomCheckMethod);
-            checker.OnNewVersionRelease += OnNewVersionRelease;
+            _checker.OnNewVersionRelease += OnNewVersionRelease;
             _checkUpdateTimer = new Timer()
             {
                 Interval = 1000 * 10, // first time check,  eta 10s
@@ -31,11 +34,14 @@ namespace _1RM.View
             };
             _checkUpdateTimer.Elapsed += (sender, args) =>
             {
+                if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+                    return;
                 SimpleLogHelper.Debug("Check update.");
                 _checkUpdateTimer.Interval = 1000 * 3600; // next time check,  eta 3600s
-                checker.CheckUpdateAsync();
+                _checker.CheckUpdateAsync();
             };
-            checker.CheckUpdateAsync();
+            if (!IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+                _checker.CheckUpdateAsync();
         }
 
         private static VersionHelper.CheckUpdateResult CustomCheckMethod(string html, string publishUrl, VersionHelper.Version currentVersion, VersionHelper.Version? ignoreVersion)
@@ -98,6 +104,11 @@ namespace _1RM.View
         {
             get => _isBreakingNewVersion;
             set => SetAndNotifyIfChanged(ref _isBreakingNewVersion, value);
+        }
+
+        public void CheckUpdateAsync()
+        {
+            _checker.CheckUpdateAsync();
         }
 
         private void OnNewVersionRelease(VersionHelper.CheckUpdateResult result)

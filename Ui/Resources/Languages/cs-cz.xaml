@@ -333,4 +333,5 @@
     <s:String x:Key="ListViewMode_List">Seznam</s:String>
     <s:String x:Key="ListViewMode_Card">Karta</s:String>
     <s:String x:Key="ListViewMode_Tree">Strom</s:String>
+    <s:String x:Key="Do not check for new version">Nekontrolujte novou verzi</s:String>
 </ResourceDictionary>
