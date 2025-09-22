@@ -30,7 +30,7 @@
                             <ControlTemplate TargetType="DataGridColumnHeader">
                                 <Grid Height="35">
                                     <TextBlock Text="{TemplateBinding  Content}" 
-                                               FontSize="18" FontWeight="Bold"
+                                               FontSize="{DynamicResource GlobalFontSizeTitle}" FontWeight="Bold"
                                                Foreground="{DynamicResource BackgroundTextBrush}"
                                                VerticalAlignment="Center" 
                                                HorizontalAlignment="Left" 

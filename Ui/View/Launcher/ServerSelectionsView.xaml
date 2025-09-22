@@ -20,8 +20,8 @@
             <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                 <VisualBrush.Visual>
                     <Grid VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
-                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeTitle}" />
+                        <TextBlock Style="{StaticResource TextBlockBase}" FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="{DynamicResource GlobalFontSizeTitle}" />
                     </Grid>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -317,7 +317,7 @@
                         <Grid Grid.Row="0" Grid.Column="0">
                             <TextBlock Style="{StaticResource TextBlockBase}"
                                        TextTrimming="CharacterEllipsis"
-                                       FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}"
+                                       FontSize="{DynamicResource GlobalFontSizeTitle}" Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Center"
                                        Text="{Binding SelectedItem.Server.DisplayName}"></TextBlock>
                         </Grid>
@@ -325,7 +325,7 @@
                         <Grid Grid.Row="1" Grid.Column="0" Opacity="0.6">
                             <TextBlock Style="{StaticResource TextBlockBase}"
                                        TextTrimming="CharacterEllipsis"
-                                       FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}"
+                                       FontSize="{DynamicResource GlobalFontSizeBody}" Foreground="{DynamicResource PrimaryTextBrush}"
                                        VerticalAlignment="Top"
                                        Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                         </Grid>
@@ -333,7 +333,7 @@
                         <TextBlock Style="{StaticResource TextBlockBase}"
                                    Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
-                                   FontSize="18" FontWeight="Bold"
+                                   FontSize="{DynamicResource GlobalFontSizeTitle}" FontWeight="Bold"
                                    Foreground="{DynamicResource PrimaryMidBrush}"
                                    Opacity="0.4"
                                    HorizontalAlignment="Right"
@@ -342,7 +342,7 @@
                         <TextBlock Style="{StaticResource TextBlockBase}"
                                    Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
-                                   FontSize="18" FontWeight="Bold"
+                                   FontSize="{DynamicResource GlobalFontSizeTitle}" FontWeight="Bold"
                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                    Opacity="0.2"
                                    HorizontalAlignment="Right"
