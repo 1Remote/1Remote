@@ -256,7 +256,7 @@
 
                 <Grid Name="GridNameBar" Grid.Row="1" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
                     <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
-                        <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis"
+                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource GlobalFontSizeBody}" TextTrimming="CharacterEllipsis"
                                    Style="{StaticResource TextNameStyle}"
                                    Text="{Binding Server.DisplayName, Mode=OneWay}">
                         </TextBlock>

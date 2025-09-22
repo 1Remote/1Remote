@@ -214,10 +214,10 @@
         <StackPanel Margin="180 0 0 0">
 
             <StackPanel Orientation="Horizontal" Height="{StaticResource AppArgumentHeight}" Margin="{StaticResource AppArgumentMargin}">
-                <TextBlock Text="{DynamicResource Name}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                <TextBlock Text="{DynamicResource Prefix}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                <TextBlock Text="Value" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthValue}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 30 0"/>
-                <TextBlock Text="{DynamicResource Preview}" FontWeight="Bold" FontSize="14" Width="{StaticResource WidthPreview}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{DynamicResource Name}" FontWeight="Bold" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Width="{StaticResource WidthName}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="{DynamicResource Prefix}" FontWeight="Bold" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Width="{StaticResource WidthKey}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
+                <TextBlock Text="Value" FontWeight="Bold" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Width="{StaticResource WidthValue}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 30 0"/>
+                <TextBlock Text="{DynamicResource Preview}" FontWeight="Bold" FontSize="{DynamicResource GlobalFontSizeSubtitle}" Width="{StaticResource WidthPreview}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0 0 10 0"/>
             </StackPanel>
 
             <ItemsControl HorizontalAlignment="Stretch" 

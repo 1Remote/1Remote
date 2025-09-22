@@ -35,7 +35,7 @@
                     <Grid>
                         <TextBlock Text="{DynamicResource Note}" 
                                    Style="{StaticResource TextBlockBase}"
-                                   FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   FontSize="{DynamicResource GlobalFontSizeTitle}" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

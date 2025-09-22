@@ -525,7 +525,7 @@
 
                                                                     <TextBlock FontWeight="Bold" 
                                                                                Style="{StaticResource TextBlockBase}"
-                                                                               FontSize="16"
+                                                                               FontSize="{DynamicResource GlobalFontSizeSubtitle}"
                                                                                Text="{Binding Path=Name}" 
                                                                                Margin="0,0,0,0"/>
 
@@ -632,7 +632,7 @@
 
 
                                                                     <!--Show reconnect info if lost connect-->
-                                                                    <TextBlock FontSize="12" Margin="5 0 0 0" 
+                                                                    <TextBlock FontSize="{DynamicResource GlobalFontSizeBody}" Margin="5 0 0 0" 
                                                                                Foreground="{DynamicResource PrimaryTextBrush}"
                                                                                Opacity="0.5"
                                                                                VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name.ReconnectInfo}">
