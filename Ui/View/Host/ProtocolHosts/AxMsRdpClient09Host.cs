@@ -159,7 +159,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         {
                             // show the message to user, and let user decide what to do next.
                             // potential reasons: 
-                            // exDiscReasonServerIdleTimeout: user leave and on input for a long time without disconnect or log off, and server set a timeout to drop the session.
+                            // exDiscReasonServerIdleTimeout: user leave and no input for a long time without disconnect or log off, and server set a timeout to drop the session.
                             // exDiscReasonReplacedByOtherConnection: another user (maybe the same user) logon to the server, and the server drop this session.
                             RdpHost.Visibility = Visibility.Collapsed;
                             TbMessageTitle.Visibility = Visibility.Collapsed;
