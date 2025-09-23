@@ -472,8 +472,8 @@ exec $SHELL # to keep putty alive
                 puttyOption.Set(EnumConfigKey.SerialSpeed, serial.GetBitRate());
                 puttyOption.Set(EnumConfigKey.SerialDataBits, serial.DataBits);
                 puttyOption.Set(EnumConfigKey.SerialStopHalfbits, serial.StopBits);
-                puttyOption.Set(EnumConfigKey.SerialParity, serial.Parity);
-                puttyOption.Set(EnumConfigKey.SerialFlowControl, serial.FlowControl);
+                puttyOption.Set(EnumConfigKey.SerialParity, serial.ParityCollection.ToList().IndexOf(serial.Parity) >= 0 ? serial.ParityCollection.ToList().IndexOf(serial.Parity) : 0);
+                puttyOption.Set(EnumConfigKey.SerialFlowControl, serial.FlowControlCollection.ToList().IndexOf(serial.FlowControl) >= 0 ? serial.FlowControlCollection.ToList().IndexOf(serial.FlowControl) : 1);
             }
 
             // set theme
@@ -492,7 +492,7 @@ exec $SHELL # to keep putty alive
                 }
                 catch (Exception)
                 {
-                    SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                    SimpleLogHelper.Error($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
                 }
             }
 
