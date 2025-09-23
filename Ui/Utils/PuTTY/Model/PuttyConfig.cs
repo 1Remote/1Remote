@@ -1,10 +1,10 @@
-﻿using System;
+﻿using _1RM.Service;
+using Microsoft.Win32;
+using Shawn.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using _1RM.Service;
-using Microsoft.Win32;
-using Shawn.Utils;
 
 namespace _1RM.Utils.PuTTY.Model
 {
@@ -348,7 +348,14 @@ namespace _1RM.Utils.PuTTY.Model
             {
                 foreach (var item in Options)
                 {
-                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                    try
+                    {
+                        regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e, $"Putty config error: can't set up key(value)=> {item.Key}({item.ValueKind})");
+                    }
                 }
             }
             else

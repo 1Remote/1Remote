@@ -99,6 +99,11 @@ namespace _1RM.Model.Protocol
         }
 
         public string[] ParityCollection => new[] { "NONE", "ODD", "EVEN", "MARK", "SPACE" };
+        //    None	0	No parity check occurs.
+        //    Odd 1	Sets the parity bit so that the count of bits set is an odd number.
+        //    Even	2	Sets the parity bit so that the count of bits set is an even number.
+        //    Mark	3	Leaves the parity bit set to 1.
+        //    Space   4	Leaves the parity bit set to 0.
         private string _parity = "NONE";
         public string Parity
         {
@@ -116,7 +121,13 @@ namespace _1RM.Model.Protocol
         }
 
 
-        public string[] FlowControlCollection => new[] { "NONE", "XON/XOFF", "RTS/CTS", "DSR/DTR" };
+        public string[] FlowControlCollection =>
+        [
+            "NONE",
+            "XON/XOFF", // 1
+            "RTS/CTS", // 2
+            "DSR/DTR"  // 3
+        ];
         private string _flowControl = "XON/XOFF";
         public string FlowControl
         {
