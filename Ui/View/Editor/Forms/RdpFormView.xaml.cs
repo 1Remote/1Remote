@@ -59,40 +59,53 @@ namespace _1RM.View.Editor.Forms
         public RdpFormView()
         {
             InitializeComponent();
-            TextBoxRdpFileAdditionalSettings.TextArea.TextEntered += OnTextEntered_TextBoxRdpFileAdditionalSettings;
-            TextBoxRdpFileAdditionalSettings.GotFocus += (sender, args) =>
-            {
-                if (TextBoxRdpFileAdditionalSettings.Text == "")
-                {
-                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
-                }
-            };
-            TextBoxRdpFileAdditionalSettings.TextChanged += (sender, args) =>
-            {
-                if (TextBoxRdpFileAdditionalSettings.Text == "")
-                {
-                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
-                }
-            };
+            
+            // Optimize event handler registration by caching delegates
+            var rdpFileTextEnteredHandler = new System.Windows.Input.TextCompositionEventHandler(OnTextEntered_TextBoxRdpFileAdditionalSettings);
+            var rdpControlTextEnteredHandler = new System.Windows.Input.TextCompositionEventHandler(OnTextEntered_TextBoxRdpControlAdditionalSettings);
+            
+            // RDP File Settings TextBox
+            TextBoxRdpFileAdditionalSettings.TextArea.TextEntered += rdpFileTextEnteredHandler;
+            TextBoxRdpFileAdditionalSettings.GotFocus += RdpFileTextBox_GotFocus;
+            TextBoxRdpFileAdditionalSettings.TextChanged += RdpFileTextBox_TextChanged;
 
+            // RDP Control Settings TextBox  
+            TextBoxRdpControlAdditionalSettings.TextArea.TextEntered += rdpControlTextEnteredHandler;
+            TextBoxRdpControlAdditionalSettings.GotFocus += RdpControlTextBox_GotFocus;
+            TextBoxRdpControlAdditionalSettings.TextChanged += RdpControlTextBox_TextChanged;
+        }
 
-
-
-            TextBoxRdpControlAdditionalSettings.TextArea.TextEntered += OnTextEntered_TextBoxRdpControlAdditionalSettings;
-            TextBoxRdpControlAdditionalSettings.GotFocus += (sender, args) =>
+        // Extract event handlers to named methods to reduce lambda allocation overhead
+        private void RdpFileTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(TextBoxRdpFileAdditionalSettings.Text))
             {
-                if (TextBoxRdpControlAdditionalSettings.Text == "")
-                {
-                    ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
-                }
-            };
-            TextBoxRdpControlAdditionalSettings.TextChanged += (sender, args) =>
+                ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
+            }
+        }
+
+        private void RdpFileTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(TextBoxRdpFileAdditionalSettings.Text))
             {
-                if (TextBoxRdpControlAdditionalSettings.Text == "")
-                {
-                    ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
-                }
-            };
+                ShowCompletionWindow(RdpFileSettingCompletionData.Settings, TextBoxRdpFileAdditionalSettings.TextArea);
+            }
+        }
+
+        private void RdpControlTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(TextBoxRdpControlAdditionalSettings.Text))
+            {
+                ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
+            }
+        }
+
+        private void RdpControlTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(TextBoxRdpControlAdditionalSettings.Text))
+            {
+                ShowCompletionWindow(RDP.GetRdpControlAdditionalSettingKeys(), TextBoxRdpControlAdditionalSettings.TextArea);
+            }
         }
 
 
