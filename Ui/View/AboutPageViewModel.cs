@@ -27,21 +27,35 @@ namespace _1RM.View
                 AppVersion.UpdatePublishUrls,
                 customCheckMethod: CustomCheckMethod);
             _checker.OnNewVersionRelease += OnNewVersionRelease;
+            // Optimize timer configuration to reduce resource usage
             _checkUpdateTimer = new Timer()
             {
-                Interval = 1000 * 10, // first time check,  eta 10s
-                AutoReset = true,
+                Interval = 1000 * 30, // Increase first check delay from 10s to 30s to reduce startup overhead
+                AutoReset = false, // Disable auto-reset initially to prevent unnecessary ticks
             };
             _checkUpdateTimer.Elapsed += (sender, args) =>
             {
                 if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+                {
+                    _checkUpdateTimer.Stop(); // Stop timer if checking is disabled
                     return;
+                }
                 SimpleLogHelper.Debug("Check update.");
-                _checkUpdateTimer.Interval = 1000 * 3600; // next time check,  eta 3600s
+                
+                // Re-configure timer for next check with longer interval
+                _checkUpdateTimer.Interval = 1000 * 3600 * 6; // Increase interval from 1 hour to 6 hours to reduce frequency
+                _checkUpdateTimer.AutoReset = true;
+                _checkUpdateTimer.Start();
+                
                 _checker.CheckUpdateAsync();
             };
+            
+            // Only start timer and check for updates if not disabled
             if (!IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+            {
+                _checkUpdateTimer.Start();
                 _checker.CheckUpdateAsync();
+            }
         }
 
         private static VersionHelper.CheckUpdateResult CustomCheckMethod(string html, string publishUrl, VersionHelper.Version currentVersion, VersionHelper.Version? ignoreVersion)

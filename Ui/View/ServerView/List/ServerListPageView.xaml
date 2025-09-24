@@ -109,6 +109,8 @@
                                                     ScrollUnit="Pixel"
                                                     VirtualizationMode="Recycling"
                                                     CacheLengthUnit="Item"
+                                                    CacheLength="10,20"
+                                                    IsItemsHost="True"
                                                     Margin="0 0 0 30"/>
                         </ItemsPanelTemplate>
                     </Setter.Value>
@@ -472,6 +474,10 @@
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                          VirtualizingPanel.ScrollUnit="Pixel"
+                         VirtualizingPanel.VirtualizationMode="Recycling"
+                         VirtualizingPanel.CacheLengthUnit="Item"
+                         VirtualizingPanel.CacheLength="5,10"
+                         ScrollViewer.CanContentScroll="True"
                          Style="{StaticResource ServerListStyle}">
 
                     <ListBox.GroupStyle>

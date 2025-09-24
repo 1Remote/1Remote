@@ -127,47 +127,62 @@ namespace _1RM.View.ServerView
 
         public void VmServerListDummyNode()
         {
-            Execute.OnUIThreadSync(() =>
-            {
-                if (SourceService.LocalDataSource != null)
-                {
-                    if (VmServerList.All(x => x.DataSource != SourceService.LocalDataSource))
-                    {
-                        VmServerList.Add(new ProtocolBaseViewModelDummy(SourceService.LocalDataSource!));
-                        SimpleLogHelper.Debug($"Add dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
-                    }
-                    else if (VmServerList.Any(x => x.DataSource == SourceService.LocalDataSource && x is not ProtocolBaseViewModelDummy)
-                             && VmServerList.FirstOrDefault(x => x.DataSource == SourceService.LocalDataSource && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
-                    {
-                        VmServerList.Remove(dummy);
-                        SimpleLogHelper.Debug($"Remove dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
-                    }
-                }
-                foreach (var source in SourceService.AdditionalSources)
-                {
-                    if (VmServerList.All(x => x.DataSource != source.Value))
-                    {
-                        VmServerList.Add(new ProtocolBaseViewModelDummy(source.Value));
-                        SimpleLogHelper.Debug($"Add dummy server for `{source.Value.DataSourceName}`");
-                    }
-                    else if (VmServerList.Any(x => x.DataSource == source.Value && x is not ProtocolBaseViewModelDummy)
-                             && VmServerList.FirstOrDefault(x => x.DataSource == source.Value && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
-                    {
-                        VmServerList.Remove(dummy);
-                        SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
-                    }
-                }
+            // Optimize by reducing UI thread operations and batching changes
+            var dummiesNeedToAdd = new List<ProtocolBaseViewModelDummy>();
+            var dummiesNeedToRemove = new List<ProtocolBaseViewModelDummy>();
+            bool shouldShowTooltip = false;
 
-                if (VmServerList.Any(x => x is not ProtocolBaseViewModelDummy)
-                    || IoC.Get<ConfigurationService>().AdditionalDataSource.Any())
+            // Collect all changes first before executing on UI thread
+            if (SourceService.LocalDataSource != null)
+            {
+                if (VmServerList.All(x => x.DataSource != SourceService.LocalDataSource))
                 {
-                    IsAddToolTipShow = false;
+                    dummiesNeedToAdd.Add(new ProtocolBaseViewModelDummy(SourceService.LocalDataSource!));
+                    SimpleLogHelper.Debug($"Add dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
                 }
-                else
+                else if (VmServerList.Any(x => x.DataSource == SourceService.LocalDataSource && x is not ProtocolBaseViewModelDummy)
+                         && VmServerList.FirstOrDefault(x => x.DataSource == SourceService.LocalDataSource && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
                 {
-                    IsAddToolTipShow = true;
+                    dummiesNeedToRemove.Add(dummy);
+                    SimpleLogHelper.Debug($"Remove dummy server for `{SourceService.LocalDataSource.DataSourceName}`");
                 }
-            });
+            }
+
+            foreach (var source in SourceService.AdditionalSources)
+            {
+                if (VmServerList.All(x => x.DataSource != source.Value))
+                {
+                    dummiesNeedToAdd.Add(new ProtocolBaseViewModelDummy(source.Value));
+                    SimpleLogHelper.Debug($"Add dummy server for `{source.Value.DataSourceName}`");
+                }
+                else if (VmServerList.Any(x => x.DataSource == source.Value && x is not ProtocolBaseViewModelDummy)
+                         && VmServerList.FirstOrDefault(x => x.DataSource == source.Value && x is ProtocolBaseViewModelDummy) is ProtocolBaseViewModelDummy dummy)
+                {
+                    dummiesNeedToRemove.Add(dummy);
+                    SimpleLogHelper.Debug($"Remove dummy server for `{source.Value.DataSourceName}`");
+                }
+            }
+
+            shouldShowTooltip = !VmServerList.Any(x => x is not ProtocolBaseViewModelDummy) 
+                               && !IoC.Get<ConfigurationService>().AdditionalDataSource.Any();
+
+            // Apply all changes in a single UI thread operation
+            if (dummiesNeedToAdd.Any() || dummiesNeedToRemove.Any() || IsAddToolTipShow != shouldShowTooltip)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    foreach (var dummy in dummiesNeedToRemove)
+                    {
+                        VmServerList.Remove(dummy);
+                    }
+                    foreach (var dummy in dummiesNeedToAdd)
+                    {
+                        VmServerList.Add(dummy);
+                    }
+                    IsAddToolTipShow = shouldShowTooltip;
+                });
+            }
+            
             ApplySort();
         }
 
@@ -321,13 +336,34 @@ namespace _1RM.View.ServerView
             }
         }
 
+        private bool _isRefreshScheduled = false;
+        private readonly object _refreshLock = new object();
+
         public sealed override void CalcServerVisibleAndRefresh(bool force = false, bool matchSubTitle = true)
         {
             base.CalcServerVisibleAndRefresh(force, matchSubTitle);
+            
+            // Debounce UI refresh to avoid excessive CollectionView.Refresh() calls
+            lock (_refreshLock)
+            {
+                if (_isRefreshScheduled) return;
+                _isRefreshScheduled = true;
+            }
+
             Execute.OnUIThread(() =>
             {
-                if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
-                    CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource).Refresh();
+                try
+                {
+                    if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                        CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource).Refresh();
+                }
+                finally
+                {
+                    lock (_refreshLock)
+                    {
+                        _isRefreshScheduled = false;
+                    }
+                }
             });
         }
 
