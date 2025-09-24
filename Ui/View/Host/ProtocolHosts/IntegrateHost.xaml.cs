@@ -436,9 +436,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
             SimpleLogHelper.Debug($"{nameof(IntegrateHost)}: Start process {exeFullName}");
 
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async () =>
             {
-                Thread.Sleep(10 * 1000);
+                await Task.Delay(10 * 1000);
                 RunAfterConnected?.Invoke();
             });
 

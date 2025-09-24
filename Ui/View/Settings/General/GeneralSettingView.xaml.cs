@@ -18,14 +18,24 @@ namespace _1RM.View.Settings.General
         public GeneralSettingView()
         {
             InitializeComponent();
-            Task.Factory.StartNew(async () =>
+            _ = InitializeAsync(); // Fire and forget async initialization
+        }
+
+        private async Task InitializeAsync()
+        {
+            try
             {
                 var b = await SecondaryVerificationHelper.GetEnabled();
                 Execute.OnUIThread(() =>
                 {
                     CbRequireWindowsPasswordBeforeSensitiveOperation.IsChecked = b;
                 });
-            });
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't crash the UI
+                SimpleLogHelper.Error($"Error initializing GeneralSettingView: {ex}");
+            }
         }
 
         private async void CbRequireWindowsPasswordBeforeSensitiveOperation_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
