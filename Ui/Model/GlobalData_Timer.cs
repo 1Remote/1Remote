@@ -14,8 +14,9 @@ namespace _1RM.Model
 {
     public partial class GlobalData : NotifyPropertyChangedBase
     {
-        private readonly Timer _timer = new Timer(1000);
+        private readonly Timer _timer = new Timer(5000); // Reduced frequency from 1000ms to 5000ms for better performance
         private bool _timerStopFlag = false;
+        private DateTime _lastTimerExecution = DateTime.MinValue;
 
         private void InitTimer()
         {
@@ -82,6 +83,11 @@ namespace _1RM.Model
         {
             try
             {
+                // Throttle timer execution to prevent excessive processing
+                if (DateTime.Now.Subtract(_lastTimerExecution).TotalSeconds < 4)
+                    return;
+                
+                _lastTimerExecution = DateTime.Now;
                 if (_sourceService == null)
                     return;
 
@@ -189,7 +195,7 @@ namespace _1RM.Model
                     // TODO: reload credentials
                 }
 
-                System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+                // Removed forced MinWorkingSet assignment - let .NET handle memory management automatically
                 CheckUpdateTime = DateTime.Now.AddSeconds(_configurationService.DatabaseCheckPeriod);
             }
             catch (Exception ex)

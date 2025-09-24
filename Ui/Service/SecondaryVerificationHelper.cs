@@ -6,6 +6,7 @@ using _1RM.Utils.WindowsSdk;
 using _1RM.Utils.WindowsApi.Credential;
 using _1RM.Utils.WindowsSdk.PasswordVaultManager;
 using Microsoft.Win32;
+using Shawn.Utils;
 
 namespace _1RM.Service
 {
@@ -106,13 +107,18 @@ namespace _1RM.Service
         }
 
 
-        public static void VerifyAsyncUiCallBack(Action<bool?> callBack, bool defaultReturn = false, bool returnUntilOkOrCancel = true)
+        public static async void VerifyAsyncUiCallBack(Action<bool?> callBack, bool defaultReturn = false, bool returnUntilOkOrCancel = true)
         {
-            Task.Factory.StartNew(async () =>
+            try
             {
                 bool? result = await VerifyAsyncUi(defaultReturn, returnUntilOkOrCancel);
                 callBack.Invoke(result);
-            });
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Error($"Error in VerifyAsyncUiCallBack: {ex}");
+                callBack.Invoke(defaultReturn);
+            }
         }
 
 

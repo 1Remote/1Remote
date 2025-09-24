@@ -66,7 +66,7 @@
                 <!--drop end event-->
             </Style>
 
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel" x:Shared="False">
                 <Grid Visibility="{Binding IsVisible, Converter={StaticResource ConverterBool2Visible}}"
                       Height="164" Width="165">
                     <Grid.InputBindings>
@@ -79,7 +79,7 @@
             </DataTemplate>
 
 
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:ProtocolBaseViewModel">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:ProtocolBaseViewModel" x:Shared="False">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -472,6 +472,7 @@
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                          VirtualizingPanel.ScrollUnit="Pixel"
+                         VirtualizingPanel.VirtualizationMode="Recycling"
                          Style="{StaticResource ServerListStyle}">
 
                     <ListBox.GroupStyle>

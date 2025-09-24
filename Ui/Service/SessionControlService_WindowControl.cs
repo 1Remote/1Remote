@@ -172,14 +172,18 @@ namespace _1RM.Service
                         ret.Show();
                         _lastTabToken = ret.Token;
 
-                        int loopCount = 0;
-                        while (ret.IsLoaded == false)
+                        // Wait for window to load asynchronously without blocking UI thread
+                        Task.Run(async () =>
                         {
-                            ++loopCount;
-                            Thread.Sleep(100);
-                            if (loopCount > 50)
-                                break;
-                        }
+                            int loopCount = 0;
+                            while (ret.IsLoaded == false)
+                            {
+                                ++loopCount;
+                                await Task.Delay(100);
+                                if (loopCount > 50)
+                                    break;
+                            }
+                        });
                     });
                 }
                 Debug.Assert(ret != null);
