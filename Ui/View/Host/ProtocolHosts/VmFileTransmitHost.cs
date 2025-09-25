@@ -22,6 +22,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using ListView = System.Windows.Controls.ListView;

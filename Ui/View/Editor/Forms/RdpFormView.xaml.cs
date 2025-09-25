@@ -84,7 +84,7 @@ namespace _1RM.View.Editor.Forms
             }
         }
 
-        private void RdpFileTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void RdpFileTextBox_TextChanged(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(TextBoxRdpFileAdditionalSettings.Text))
             {
@@ -100,7 +100,7 @@ namespace _1RM.View.Editor.Forms
             }
         }
 
-        private void RdpControlTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void RdpControlTextBox_TextChanged(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(TextBoxRdpControlAdditionalSettings.Text))
             {
