@@ -46,6 +46,7 @@ namespace _1RM.View.Settings.General
                 if (SetAndNotifyIfChanged(ref _configurationService.General.DoNotCheckNewVersion, value))
                 {
                     _configurationService.Save();
+                    IoC.Get<AboutPageViewModel>().StartVersionCheckTimer();
                 }
             }
         }
