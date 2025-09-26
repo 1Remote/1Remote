@@ -15,47 +15,47 @@ namespace _1RM.View
 {
     public class AboutPageViewModel : PopupBase
     {
-        private readonly Timer _checkUpdateTimer;
-        private readonly VersionHelper _checker;
+        private Timer? _checkUpdateTimer;
+        private VersionHelper? _checker;
 
         public AboutPageViewModel()
         {
+            StartVersionCheckTimer();
+        }
+
+        public void StartVersionCheckTimer()
+        {
             if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
                 return;
-            _checker = new VersionHelper(AppVersion.VersionData,
-                AppVersion.UpdateCheckUrls,
-                AppVersion.UpdatePublishUrls,
-                customCheckMethod: CustomCheckMethod);
-            _checker.OnNewVersionRelease += OnNewVersionRelease;
-            // Optimize timer configuration to reduce resource usage
-            _checkUpdateTimer = new Timer()
+
+            if (_checker == null)
             {
-                Interval = 1000 * 30, // Increase first check delay from 10s to 30s to reduce startup overhead
-                AutoReset = false, // Disable auto-reset initially to prevent unnecessary ticks
-            };
-            _checkUpdateTimer.Elapsed += (sender, args) =>
-            {
-                if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
-                {
-                    _checkUpdateTimer.Stop(); // Stop timer if checking is disabled
-                    return;
-                }
-                SimpleLogHelper.Debug("Check update.");
-                
-                // Re-configure timer for next check with longer interval
-                _checkUpdateTimer.Interval = 1000 * 3600 * 6; // Increase interval from 1 hour to 6 hours to reduce frequency
-                _checkUpdateTimer.AutoReset = true;
-                _checkUpdateTimer.Start();
-                
-                _checker.CheckUpdateAsync();
-            };
-            
-            // Only start timer and check for updates if not disabled
-            if (!IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
-            {
-                _checkUpdateTimer.Start();
-                _checker.CheckUpdateAsync();
+                _checker = new VersionHelper(AppVersion.VersionData,
+                    AppVersion.UpdateCheckUrls,
+                    AppVersion.UpdatePublishUrls,
+                    customCheckMethod: CustomCheckMethod);
+                _checker.OnNewVersionRelease += OnNewVersionRelease;
             }
+            if (_checkUpdateTimer == null)
+            {
+                _checkUpdateTimer = new Timer()
+                {
+                    Interval = 1000 * 60 * 60,
+                    AutoReset = true,
+                };
+                _checkUpdateTimer.Elapsed += (sender, args) =>
+                {
+                    if (IoC.Get<ConfigurationService>().General.DoNotCheckNewVersion)
+                    {
+                        _checkUpdateTimer.Stop(); // Stop timer if checking is disabled
+                        return;
+                    }
+                    _checker.CheckUpdateAsync();
+                };
+            }
+            _checker.CheckUpdateAsync();
+            _checkUpdateTimer.Stop();
+            _checkUpdateTimer.Start();
         }
 
         private static VersionHelper.CheckUpdateResult CustomCheckMethod(string html, string publishUrl, VersionHelper.Version currentVersion, VersionHelper.Version? ignoreVersion)
@@ -66,25 +66,25 @@ namespace _1RM.View
 
             var patterns = new List<string>()
             {
-	            @".?1remote-([\d|\.]*.*)-net",
-	            @".?latest\sversion:\s*([\d|.]*)",
+                @".?1remote-([\d|\.]*.*)-net",
+                @".?latest\sversion:\s*([\d|.]*)",
             };
             foreach (var pattern in patterns)
-			{
-				var mc = Regex.Matches(html, pattern, RegexOptions.IgnoreCase);
-				if (mc.Count <= 0) continue;
-				var versionString = mc[0].Groups[1].Value;
-				var releasedVersion = VersionHelper.Version.FromString(versionString);
-				if (ignoreVersion is not null)
-				{
-					if (releasedVersion <= ignoreVersion)
-					{
-						return VersionHelper.CheckUpdateResult.False();
-					}
-				}
-				if (releasedVersion > currentVersion)
-					return new VersionHelper.CheckUpdateResult(true, versionString, publishUrl, versionString.FirstOrDefault() == '!' || versionString.LastOrDefault() == '!');
-			}
+            {
+                var mc = Regex.Matches(html, pattern, RegexOptions.IgnoreCase);
+                if (mc.Count <= 0) continue;
+                var versionString = mc[0].Groups[1].Value;
+                var releasedVersion = VersionHelper.Version.FromString(versionString);
+                if (ignoreVersion is not null)
+                {
+                    if (releasedVersion <= ignoreVersion)
+                    {
+                        return VersionHelper.CheckUpdateResult.False();
+                    }
+                }
+                if (releasedVersion > currentVersion)
+                    return new VersionHelper.CheckUpdateResult(true, versionString, publishUrl, versionString.FirstOrDefault() == '!' || versionString.LastOrDefault() == '!');
+            }
             return VersionHelper.CheckUpdateResult.False();
         }
 
