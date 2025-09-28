@@ -604,56 +604,72 @@ namespace _1RM.View.ServerView
         // ReSharper disable once InconsistentNaming
         protected string _lastKeyword = string.Empty;
         public Dictionary<ProtocolBaseViewModel, bool> IsServerVisible = new Dictionary<ProtocolBaseViewModel, bool>();
+        private readonly object _calcLock = new object(); // Add lock for thread safety
+        
         public virtual void CalcServerVisibleAndRefresh(bool force = false, bool matchSubTitle = true)
         {
             var filter = IoC.Get<MainWindowViewModel>().MainFilterString.Trim();
-            if (_lastKeyword != filter || force)
+            
+            // Early return if nothing changed and not forced
+            if (_lastKeyword == filter && !force)
+                return;
+                
+            lock (_calcLock) // Use dedicated lock instead of 'this' for better performance
             {
-                lock (this)
+                // Double-check pattern after acquiring lock
+                if (_lastKeyword == filter && !force)
+                    return;
+                    
+                List<ProtocolBaseViewModel> servers;
+                
+                // Optimize server list collection
+                if (filter.StartsWith(_lastKeyword) && !string.IsNullOrEmpty(_lastKeyword))
                 {
-                    List<ProtocolBaseViewModel> servers;
-                    if (filter.StartsWith(_lastKeyword))
-                    {
-                        // calc only visible servers when filter is appended
-                        servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
-                        foreach (var protocolBaseViewModel in IoC.Get<GlobalData>().VmItemList)
-                        {
-                            if (!servers.Contains(protocolBaseViewModel))
-                                servers.Add(protocolBaseViewModel);
-                        }
-                    }
-                    else
-                    {
-                        servers = IoC.Get<GlobalData>().VmItemList;
-                        IsServerVisible.Clear();
-                    }
+                    // Incremental filtering: only process previously visible servers for better performance
+                    servers = IsServerVisible.Where(x => x.Value == true).Select(x => x.Key).ToList();
+                    var newServers = IoC.Get<GlobalData>().VmItemList.Except(servers);
+                    servers.AddRange(newServers);
+                }
+                else
+                {
+                    servers = IoC.Get<GlobalData>().VmItemList;
+                    IsServerVisible.Clear();
+                }
 
-                    _lastKeyword = filter;
+                _lastKeyword = filter;
 
-                    var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
-                    TagFilters = tmp.TagFilterList;
-                    var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(servers.Select(x => x.Server).ToList(), tmp, matchSubTitle);
-                    for (int i = 0; i < servers.Count; i++)
+                var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filter);
+                TagFilters = tmp.TagFilterList;
+                
+                // Batch process match results to reduce iterations
+                var serverList = servers.Select(x => x.Server).ToList();
+                var matchResults = TagAndKeywordEncodeHelper.MatchKeywords(serverList, tmp, matchSubTitle);
+                
+                // Process results in batch to minimize dictionary operations
+                var visibilityUpdates = new Dictionary<ProtocolBaseViewModel, bool>(servers.Count);
+                
+                for (int i = 0; i < servers.Count && i < matchResults.Count; i++)
+                {
+                    var vm = servers[i];
+                    var isVisible = matchResults[i].Item1;
+                    visibilityUpdates[vm] = isVisible;
+                }
+
+                // Apply all visibility updates at once
+                foreach (var update in visibilityUpdates)
+                {
+                    IsServerVisible[update.Key] = update.Value;
+                }
+                
+                // Handle edge case where counts don't match
+                if (servers.Count != matchResults.Count)
+                {
+                    UnifyTracing.Error(new Exception($"MatchKeywords: servers.Count({servers.Count}) != matchResults.Count({matchResults.Count})"), new Dictionary<string, string>()
                     {
-                        var vm = servers[i];
-                        if (i < 0 || i >= matchResults.Count)
-                        {
-                            // we get error report here that i is out of range, so we add this check 2024.10.31 https://appcenter.ms/users/VShawn/apps/1Remote-1/crashes/errors/859400306/overview
-                            UnifyTracing.Error(new Exception($"MatchKeywords: i({i}) is out of range(0-{matchResults.Count})"), new Dictionary<string, string>()
-                            {
-                                { "filter", filter },
-                                { "servers.Count", servers.Count.ToString() },
-                            });
-                            continue;
-                        }
-                        else
-                        {
-                            if (IsServerVisible.ContainsKey(vm))
-                                IsServerVisible[vm] = matchResults[i].Item1;
-                            else
-                                IsServerVisible.Add(vm, matchResults[i].Item1);
-                        }
-                    }
+                        { "filter", filter },
+                        { "servers.Count", servers.Count.ToString() },
+                        { "matchResults.Count", matchResults.Count.ToString() },
+                    });
                 }
             }
         }

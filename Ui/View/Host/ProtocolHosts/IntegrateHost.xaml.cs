@@ -351,16 +351,58 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void Dispose()
         {
-            Execute.OnUIThread(() =>
+            // Optimize dispose pattern to avoid UI thread blocking
+            if (_disposed) return;
+            _disposed = true;
+
+            // Stop and dispose timer first to prevent further operations
+            _timer?.Stop();
+            _timer?.Dispose();
+            _timer = null;
+
+            // Handle process cleanup
+            if (_process != null)
+            {
+                try
+                {
+                    _process.Exited -= ProcessOnExited;
+                    if (!_process.HasExited)
+                    {
+                        _process.Kill();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SimpleLogHelper.Debug($"Error disposing process: {ex.Message}");
+                }
+                finally
+                {
+                    _process?.Dispose();
+                    _process = null;
+                }
+            }
+
+            // UI cleanup should be done on UI thread if needed
+            if (System.Windows.Application.Current?.Dispatcher?.CheckAccess() == false)
+            {
+                Execute.OnUIThread(() =>
+                {
+                    CloseIntegrate();
+                    _panel?.Dispose();
+                    FormsHost?.Dispose();
+                });
+            }
+            else
             {
                 CloseIntegrate();
-                _timer?.Dispose();
-                _process?.Dispose();
-                _panel.Dispose();
+                _panel?.Dispose();
                 FormsHost?.Dispose();
-                GC.SuppressFinalize(this);
-            });
+            }
+            
+            GC.SuppressFinalize(this);
         }
+
+        private volatile bool _disposed = false;
 
         private void CloseIntegrate()
         {

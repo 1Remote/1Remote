@@ -22,6 +22,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using ListView = System.Windows.Controls.ListView;
@@ -190,17 +191,21 @@ namespace _1RM.View.Host.ProtocolHosts
         /// <summary>
         /// mode = 1 go preview, mode = 2 go following
         /// will not remember pathHistory when mode != 0
+        /// Optimized version to reduce UI blocking and improve performance
         /// </summary>
         /// <param name="path"></param>
         /// <param name="mode"></param>
         /// <param name="showIoMessage"></param>
         private void ShowFolder(string path, int mode = 0, bool showIoMessage = true)
         {
-            var t = new Task(async () =>
+            // Use ThreadPool instead of creating new Task for better performance
+            ThreadPool.QueueUserWorkItem(async _ =>
             {
-                GridLoadingVisibility = Visibility.Visible;
                 try
                 {
+                    // Update UI on UI thread asynchronously
+                    Execute.OnUIThread(() => GridLoadingVisibility = Visibility.Visible);
+                    
                     //SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) START");
                     if (string.IsNullOrWhiteSpace(path))
                         path = "/";
@@ -216,6 +221,9 @@ namespace _1RM.View.Host.ProtocolHosts
                     }
 
                     ObservableCollection<RemoteItem>? remoteItemInfos = null;
+                    string? errorMessage = null;
+                    int messageLevel = IoMessageLevelNormal;
+                    
                     try
                     {
                         if (await Trans.Exists(path))
@@ -226,60 +234,75 @@ namespace _1RM.View.Host.ProtocolHosts
                         }
                         else
                         {
-                            IoMessageLevel = IoMessageLevelError;
-                            IoMessage = $"ls {path}: Not exists";
+                            messageLevel = IoMessageLevelError;
+                            errorMessage = $"ls {path}: Not exists";
                         }
                     }
                     catch (Exception e)
                     {
-                        IoMessageLevel = IoMessageLevelError;
-                        IoMessage = $"ls {CurrentPath}: " + e.Message;
+                        messageLevel = IoMessageLevelError;
+                        errorMessage = $"ls {CurrentPath}: " + e.Message;
                     }
-                    finally
+                    
+                    // Batch all UI updates together to minimize UI thread operations
+                    Execute.OnUIThread(() =>
                     {
-                        if (remoteItemInfos != null)
+                        try
                         {
-                            RemoteItems = remoteItemInfos;
-                            //SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
-                            MakeRemoteItemsOrderBy();
-
-                            if (path != CurrentPath)
+                            if (remoteItemInfos != null)
                             {
-                                if (mode == 0
-                                    && (_pathHistoryPrevious.Count == 0 || _pathHistoryPrevious.Peek() != CurrentPath))
+                                RemoteItems = remoteItemInfos;
+                                //SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
+                                MakeRemoteItemsOrderBy();
+
+                                if (path != CurrentPath)
                                 {
-                                    _pathHistoryPrevious.Push(CurrentPath);
-                                    if (_pathHistoryFollowing.Count > 0 &&
-                                        _pathHistoryFollowing.Peek() != path)
-                                        _pathHistoryFollowing.Clear();
+                                    if (mode == 0
+                                        && (_pathHistoryPrevious.Count == 0 || _pathHistoryPrevious.Peek() != CurrentPath))
+                                    {
+                                        _pathHistoryPrevious.Push(CurrentPath);
+                                        if (_pathHistoryFollowing.Count > 0 &&
+                                            _pathHistoryFollowing.Peek() != path)
+                                            _pathHistoryFollowing.Clear();
+                                    }
+
+                                    CurrentPath = path;
                                 }
 
-                                CurrentPath = path;
+                                CmdGoToPathParentEnable = CurrentPath != "/" && CurrentPath != "";
+                                CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
+                                CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
+
+                                if (showIoMessage)
+                                {
+                                    IoMessageLevel = IoMessageLevelNormal;
+                                    IoMessage = $"ls {CurrentPath}";
+                                }
                             }
-
-                            if (CurrentPath != "/" && CurrentPath != "")
-                                CmdGoToPathParentEnable = true;
-                            else
-                                CmdGoToPathParentEnable = false;
-
-                            CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
-                            CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
-
-                            if (showIoMessage)
+                            else if (errorMessage != null)
                             {
-                                IoMessageLevel = IoMessageLevelNormal;
-                                IoMessage = $"ls {CurrentPath}";
+                                IoMessageLevel = messageLevel;
+                                IoMessage = errorMessage;
                             }
                         }
-                    }
+                        finally
+                        {
+                            GridLoadingVisibility = Visibility.Collapsed;
+                        }
+                    });
                 }
-                finally
+                catch (Exception ex)
                 {
-                    GridLoadingVisibility = Visibility.Collapsed;
+                    // Ensure UI is updated even if error occurs
+                    Execute.OnUIThread(() =>
+                    {
+                        GridLoadingVisibility = Visibility.Collapsed;
+                        IoMessageLevel = IoMessageLevelError;
+                        IoMessage = $"ShowFolder error: {ex.Message}";
+                    });
                 }
                 //SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) END");
             });
-            t.Start();
         }
 
         private async void DeleteSelectedItems()
