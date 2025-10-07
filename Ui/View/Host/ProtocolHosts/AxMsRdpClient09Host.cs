@@ -141,6 +141,11 @@ namespace _1RM.View.Host.ProtocolHosts
                 switch (e.discReason)
                 {
                     case disconnectReasonRemoteByUser:
+                        // we can close the window immediately in the case of disconnectReasonRemoteByUser. No further case analysis is needed.
+                        RdpClientDispose();
+                        base.OnClosed?.Invoke(base.ConnectionId);
+                        break;
+
                     case disconnectReasonByServer:
                         // https://learn.microsoft.com/en-us/windows/win32/termserv/extendeddisconnectreasoncode
                         if (   _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff              // log out from win2012 by user
