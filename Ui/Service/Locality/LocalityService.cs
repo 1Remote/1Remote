@@ -78,7 +78,7 @@ namespace _1RM.Service.Locality
             _localitySettings = new LocalitySettings();
             try
             {
-                var tmp = JsonConvert.DeserializeObject<LocalitySettings>(File.ReadAllText(JsonPath));
+                var tmp = JsonConvert.DeserializeObject<LocalitySettings>(File.ReadAllText(JsonPath, Encoding.UTF8));
                 if (tmp != null)
                     _localitySettings = tmp;
             }

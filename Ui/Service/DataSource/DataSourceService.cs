@@ -216,7 +216,7 @@ namespace _1RM.Service.DataSource
             var ads = new List<DataSourceBase>();
             if (File.Exists(path))
             {
-                var tmp = JsonConvert.DeserializeObject<List<DataSourceBase>>(File.ReadAllText(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath));
+                var tmp = JsonConvert.DeserializeObject<List<DataSourceBase>>(File.ReadAllText(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, Encoding.UTF8));
                 if (tmp != null)
                     ads = tmp;
             }

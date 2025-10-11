@@ -37,7 +37,7 @@ namespace _1RM.Service.Locality
                 _isLoaded = true;
                 try
                 {
-                    var tmp = JsonConvert.DeserializeObject<LocalityConnectRecorderSettings>(File.ReadAllText(JsonPath));
+                    var tmp = JsonConvert.DeserializeObject<LocalityConnectRecorderSettings>(File.ReadAllText(JsonPath, Encoding.UTF8));
                     if (tmp != null)
                         _settings = tmp;
                 }

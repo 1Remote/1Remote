@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using _1RM.Model;
@@ -62,7 +63,7 @@ namespace _1RM.Utils.PRemoteM
                                     string profileJsonPath = Path.Combine(basePath, appName + ".json");
                                     if (File.Exists(profileJsonPath))
                                     {
-                                        var tmp = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(profileJsonPath));
+                                        var tmp = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(profileJsonPath, Encoding.UTF8));
                                         if (tmp != null)
                                         {
                                             string dbPath = (tmp["Database"]["SqliteDatabasePath"]).ToString();

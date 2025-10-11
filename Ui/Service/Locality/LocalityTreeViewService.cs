@@ -46,7 +46,7 @@ namespace _1RM.Service.Locality
                 _settings = new LocalityTreeViewSettings();
             try
             {
-                var tmp = JsonConvert.DeserializeObject<LocalityTreeViewSettings>(File.ReadAllText(JsonPath));
+                var tmp = JsonConvert.DeserializeObject<LocalityTreeViewSettings>(File.ReadAllText(JsonPath, Encoding.UTF8));
                 tmp ??= new LocalityTreeViewSettings();
                 _settings = tmp;
             }

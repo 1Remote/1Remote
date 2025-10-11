@@ -184,7 +184,7 @@ namespace _1RM.Service
         public List<string> PinnedTags { get; set; } = new List<string>();
         public static Configuration? Load(string path)
         {
-            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+            var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path, Encoding.UTF8));
             tmp?.RegulateTheme();
             return tmp;
         }

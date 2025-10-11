@@ -29,7 +29,7 @@ namespace _1RM.Service.Locality
                 _isLoaded = true;
                 try
                 {
-                    var tmp = JsonConvert.DeserializeObject<LocalityTagSettings>(File.ReadAllText(JsonPath));
+                    var tmp = JsonConvert.DeserializeObject<LocalityTagSettings>(File.ReadAllText(JsonPath, Encoding.UTF8));
                     tmp ??= new LocalityTagSettings();
                     _settings = tmp;
                 }

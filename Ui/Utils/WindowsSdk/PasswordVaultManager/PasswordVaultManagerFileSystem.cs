@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace _1RM.Utils.WindowsSdk.PasswordVaultManager
@@ -21,7 +22,7 @@ namespace _1RM.Utils.WindowsSdk.PasswordVaultManager
                 var passwordFile = Path.Combine(_localFolder, key, "token");
                 if (File.Exists(passwordFile))
                 {
-                    var encrypted = File.ReadAllText(passwordFile);
+                    var encrypted = File.ReadAllText(passwordFile, Encoding.UTF8);
                     var password = DataProtectionForLocal.Unprotect(encrypted).Result;
                     return password;
                 }
