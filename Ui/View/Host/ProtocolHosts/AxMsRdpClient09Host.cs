@@ -122,6 +122,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
             lock (this)
             {
+                if (_rdpClient == null) return;
                 var flagHasConnected = this._flagHasConnected;
                 _flagHasConnected = false;
 
@@ -133,19 +134,46 @@ namespace _1RM.View.Host.ProtocolHosts
                 const int disconnectReasonRemoteByUser = 2;   // Remote disconnection by user (via 'Disconnect', 'Signout', 'Shutdown' and 'Reboot'). This is not an error code.
                 const int disconnectReasonByServer = 3;       // Remote disconnection by server. This will be returned when switching to another connection. This is not an error code.
 
-                string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
-                ExtendedDisconnectReasonCode? excode = _rdpClient?.ExtendedDisconnectReason;
+                string reason = _rdpClient.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
+                ExtendedDisconnectReasonCode excode = _rdpClient.ExtendedDisconnectReason;
                 SimpleLogHelper.Debug($"RDP({_rdpSettings.DisplayName}) Disconnected with code {e.discReason}({reason}) ex:{excode}");
 
                 switch (e.discReason)
                 {
                     case disconnectReasonRemoteByUser:
-                    case disconnectReasonByServer:
-                        // Terminate the session.
+                        // we can close the window immediately in the case of disconnectReasonRemoteByUser. No further case analysis is needed.
                         RdpClientDispose();
                         base.OnClosed?.Invoke(base.ConnectionId);
                         break;
 
+                    case disconnectReasonByServer:
+                        // https://learn.microsoft.com/en-us/windows/win32/termserv/extendeddisconnectreasoncode
+                        if (   _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff              // log out from win2012 by user
+                            || _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect          // An application initiated the disconnection.
+                            || _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonNoInfo                          // log out from win2008 by user
+                            || _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser                    // log out from win10 by user
+                            || _rdpClient.ExtendedDisconnectReason == ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 by user
+                            )
+                        {
+                            // Terminate the session without notifying the user. Because the disconnection is initiated by the user.
+                            RdpClientDispose();
+                            base.OnClosed?.Invoke(base.ConnectionId);
+                            break;
+                        }
+                        else
+                        {
+                            // show the message to user, and let user decide what to do next.
+                            // potential reasons: 
+                            // exDiscReasonServerIdleTimeout: user leave and no input for a long time without disconnect or log off, and server set a timeout to drop the session.
+                            // exDiscReasonReplacedByOtherConnection: another user (maybe the same user) logon to the server, and the server drop this session.
+                            RdpHost.Visibility = Visibility.Collapsed;
+                            TbMessageTitle.Visibility = Visibility.Collapsed;
+                            BtnReconn.Visibility = Visibility.Visible;
+                            TbMessage.Text = reason;
+                            ParentWindowSetToWindow();
+                            this.ParentWindow?.FlashIfNotActive();
+                            break;
+                        }
 
                     case disconnectReasonLocalNotError:
                         // Maybe the user has cancelled the RdpClient's attempt to reconnect.
@@ -178,7 +206,7 @@ namespace _1RM.View.Host.ProtocolHosts
                         }
                         this.ParentWindow?.FlashIfNotActive();
                         break;
-                 }
+                }
             }
         }
 
