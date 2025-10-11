@@ -78,20 +78,8 @@ namespace _1RM.Service.Locality
             foreach (var server in servers)
             {
                 Settings.ServerCustomOrder.Add(server.Id, i);
+                server.CustomOrder = i;
                 ++i;
-            }
-            Save();
-        }
-
-        public static void ServerCustomOrderSave(List<ProtocolBaseViewModel> servers, List<int> orders)
-        {
-            if (servers.Count <= 1) return;
-            if (servers.Count != orders.Count) return;
-            Settings.ServerCustomOrder.Clear();
-            for (var i = 0; i < servers.Count; i++)
-            {
-                var server = servers[i];
-                Settings.ServerCustomOrder.Add(server.Id, orders[i]);
             }
             Save();
         }
