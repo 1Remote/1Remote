@@ -1,5 +1,4 @@
-﻿
-using _1RM.Controls.NoteDisplay;
+﻿using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;

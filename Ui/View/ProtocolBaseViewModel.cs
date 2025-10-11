@@ -30,7 +30,12 @@ namespace _1RM.View
         /// <summary>
         /// Order in Main window list view
         /// </summary>
-        public int CustomOrder = 0;// => LocalityListViewService.ServerCustomOrderGet(Id);
+        private int _customOrder = 0;
+        public int CustomOrder
+        {
+            get => _customOrder;
+            set => SetAndNotifyIfChanged(ref _customOrder, value);
+        }
 
         public double KeywordMark = double.MinValue;
 
@@ -129,6 +134,9 @@ namespace _1RM.View
         {
             Server = psb;
             _server = psb;
+            
+            // 初始化 CustomOrder
+            CustomOrder = LocalityListViewService.Settings.ServerCustomOrder.GetValueOrDefault(psb.Id, 0);
 
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
