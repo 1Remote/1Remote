@@ -47,8 +47,7 @@ namespace _1RM.View.ServerView.Tree
             if (sender is not UIElement uie) return;
             _draggedItem = MyVisualTreeHelper.VisualUpwardSearch<TreeViewItem>(uie);
             if (_draggedItem?.DataContext is not ServerView.Tree.ServerTreeViewModel.TreeNode node) return;
-            // Don't allow dragging root folders
-            if (node.IsRootFolder) return;
+            // Allow dragging all nodes including root folders for reordering
             _draggedNode = node;
             _draggedItem.GiveFeedback += DragSource_GiveFeedback;
             var dataObj = new DataObject();
@@ -115,12 +114,42 @@ namespace _1RM.View.ServerView.Tree
             Cursor? draggedCursor = null;
             try
             {
-                if (draggedNode == targetNode
-                    || targetNode.GetDataBaseNode() != draggedNode.GetDataBaseNode())
+                if (draggedNode == targetNode)
                 {
                     draggedCursor = Cursors.No;
                     return;
                 }
+
+                // Handle root folder to root folder reordering
+                if (draggedNode.IsRootFolder)
+                {
+                    if (targetNode.IsRootFolder)
+                    {
+                        if (LocalityTreeViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom)
+                        {
+                            var mousePosition = e.GetPosition(element);
+                            draggedCursor = mousePosition.Y < elementActualHeight / 2
+                                ? Cursors.ScrollN
+                                : Cursors.ScrollS;
+                        }
+                        else
+                        {
+                            draggedCursor = Cursors.No; // Root folder reordering only allowed in custom order mode
+                        }
+                    }
+                    else
+                    {
+                        draggedCursor = Cursors.No;
+                    }
+                    return;
+                }
+                // Don't allow dragging non-root nodes into root folders (existing restriction)
+                else if (targetNode.GetDataBaseNode() != draggedNode.GetDataBaseNode())
+                {
+                    draggedCursor = Cursors.No;
+                    return;
+                }
+
                 // for folder moves, prevent moving into descendants
                 if (draggedNode.IsFolder && draggedNode.FindDescendant(targetNode))
                 {
@@ -131,6 +160,7 @@ namespace _1RM.View.ServerView.Tree
 
                 if (LocalityTreeViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom)
                 {
+                    // allow reordering by drag
                     if (targetNode.IsFolder)
                     {
                         if (targetNode.IsRootFolder)
@@ -155,6 +185,7 @@ namespace _1RM.View.ServerView.Tree
                 }
                 else
                 {
+                    // In non-custom order modes, only allow moving into folders
                     if (!targetNode.IsFolder && targetNode.ParentNode == draggedNode.ParentNode)
                     {
                         SimpleLogHelper.Debug("Can not move node: " + draggedNode.Name + ", target server's parent is the same as source parent.");
@@ -198,7 +229,14 @@ namespace _1RM.View.ServerView.Tree
                 if (sender is TreeViewItem { DataContext: ServerView.Tree.ServerTreeViewModel.TreeNode targetNode } targetTreeViewItem &&
                     e.Data.GetData("DraggedTreeNode") is ServerView.Tree.ServerTreeViewModel.TreeNode draggedNode && DataContext is ServerView.Tree.ServerTreeViewModel viewModel)
                 {
-                    if (_draggedCursor == Cursors.Hand || _draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS)
+                    // Handle root folder reordering
+                    if (draggedNode.IsRootFolder && targetNode.IsRootFolder && 
+                        (_draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS))
+                    {
+                        viewModel.RootFolderReorder(draggedNode, targetNode, insertBefore: _draggedCursor == Cursors.ScrollN);
+                    }
+                    // Handle regular folder/server moves
+                    else if (_draggedCursor == Cursors.Hand || _draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS)
                     {
                         var movTarget = targetNode;
                         if (_draggedCursor == Cursors.ScrollN || _draggedCursor == Cursors.ScrollS) // the case move child to front of back of its parent folder
@@ -210,11 +248,11 @@ namespace _1RM.View.ServerView.Tree
                         else
                             viewModel.ServerMoveToFolder(draggedNode, movTarget);
                     }
-                    if (_draggedCursor == Cursors.ScrollN)
+                    if (_draggedCursor == Cursors.ScrollN && !draggedNode.IsRootFolder)
                     {
                         viewModel.NodeMoveToReorderInSameFolder(draggedNode, targetNode, insertBefore: true);
                     }
-                    else if (_draggedCursor == Cursors.ScrollS)
+                    else if (_draggedCursor == Cursors.ScrollS && !draggedNode.IsRootFolder)
                     {
                         viewModel.NodeMoveToReorderInSameFolder(draggedNode, targetNode, insertBefore: false);
                     }

@@ -599,7 +599,66 @@ namespace _1RM.View.ServerView.Tree
 
         #region Drag and Drop Support
 
+        /// <summary>
+        /// Reorder root folders (databases)
+        /// </summary>
+        /// <param name="sourceNode">The root folder to move</param>
+        /// <param name="targetNode">The target root folder</param>
+        /// <param name="insertBefore">Whether to insert before or after the target</param>
+        /// <returns>True if the reorder was successful, false otherwise</returns>
+        public bool RootFolderReorder(TreeNode sourceNode, TreeNode targetNode, bool insertBefore = true)
+        {
+            if (sourceNode == targetNode) return true;
+            if (!sourceNode.IsRootFolder || !targetNode.IsRootFolder) return false;
+            if (IoC.Get<MainWindowViewModel>().ServerOrderBy != EnumServerOrderBy.Custom) return false; // Must be custom ordering
+            
+            var virtualRootChildren = TreeNode.VirtualRoot.Children.ToList();
+            if (virtualRootChildren.Count < 2) return true; // Nothing to reorder
+            
+            try
+            {
+                // Remove source from current position
+                var sourceIndex = virtualRootChildren.IndexOf(sourceNode);
+                var targetIndex = virtualRootChildren.IndexOf(targetNode);
+                
+                if (sourceIndex - targetIndex == 1 && insertBefore == false) return true;
+                if (targetIndex - sourceIndex == 1 && insertBefore == true) return true;
+                if (sourceIndex < 0 || targetIndex < 0) return false;
 
+                // Remove source and adjust target index if source was before target
+                virtualRootChildren.RemoveAt(sourceIndex);
+                if (sourceIndex < targetIndex)
+                    targetIndex--;
+
+                // Insert at new position
+                var insertIndex = insertBefore ? targetIndex : targetIndex + 1;
+                if (insertIndex > virtualRootChildren.Count)
+                    insertIndex = virtualRootChildren.Count;
+
+                virtualRootChildren.Insert(insertIndex, sourceNode);
+
+                // Update the VirtualRoot's Children collection
+                TreeNode.VirtualRoot.Children.Clear();
+                foreach (var node in virtualRootChildren)
+                {
+                    TreeNode.VirtualRoot.Children.Add(node);
+                }
+
+                // Update custom order values for all root folders
+                UpdateCustomOrder(virtualRootChildren);
+                
+                // Save expansion states and sort
+                LocalityTreeViewService.SaveExpansionStates(RootNodes);
+                SortNodes(TreeNode.VirtualRoot.Children, false);
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning($"Failed to reorder root folder {sourceNode.Name}: {ex.Message}");
+                return false;
+            }
+        }
 
         /// <summary>
         /// Move a folder node to a target folder node within the same root database
