@@ -45,8 +45,8 @@ namespace _1RM.View.Host
                 _myHandle = new WindowInteropHelper(this).Handle;
                 Keyboard.Focus(this);
 
-                var _myHwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
-                _myHwndSource.AddHook(new HwndSourceHook(AdditionalWndProc));
+                var myHwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
+                myHwndSource?.AddHook(new HwndSourceHook(AdditionalWndProc));
 
                 // remember window size when size changed
                 SizeChanged += (_, _) =>
@@ -230,10 +230,6 @@ namespace _1RM.View.Host
                 double border2 = withoutBorderColor ? tabContentBorderWithOutColor.Top + tabContentBorderWithOutColor.Bottom : tabContentBorderWithColor.Top + tabContentBorderWithColor.Bottom;
                 size.Width = actualWidth - border1;
                 size.Height = actualHeight - TITLE_BAR_HEIGHT - border2;
-                //if (this.WindowState == WindowState.Maximized)
-                //{
-                //    size.Height -= 3;
-                //}
             });
             return size;
         }

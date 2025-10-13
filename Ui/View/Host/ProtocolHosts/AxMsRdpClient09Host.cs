@@ -168,6 +168,7 @@ namespace _1RM.View.Host.ProtocolHosts
                             // exDiscReasonReplacedByOtherConnection: another user (maybe the same user) logon to the server, and the server drop this session.
                             RdpHost.Visibility = Visibility.Collapsed;
                             TbMessageTitle.Visibility = Visibility.Collapsed;
+                            GridMessageBox.Visibility = Visibility.Visible;
                             BtnReconn.Visibility = Visibility.Visible;
                             TbMessage.Text = reason;
                             ParentWindowSetToWindow();

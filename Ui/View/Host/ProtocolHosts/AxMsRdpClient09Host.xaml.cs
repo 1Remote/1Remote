@@ -164,7 +164,10 @@ namespace _1RM.View.Host.ProtocolHosts
                 // 全屏模式下客户端机器发生了屏幕分辨率改变，则将RDP还原到窗口模式（仿照 MSTSC 的逻辑）
                 if (_rdpClient?.FullScreen == true)
                 {
-                    _rdpClient.FullScreen = false;
+                    Execute.OnUIThread(() =>
+                    {
+                        _rdpClient.FullScreen = false;
+                    });
                 }
             }
         }
