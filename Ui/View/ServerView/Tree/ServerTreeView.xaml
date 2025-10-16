@@ -360,8 +360,16 @@
                                                       Width="20" Height="20" 
                                                       HorizontalAlignment="Left" 
                                                       Click="ItemsCheckBox_OnClick"
-                                                      Style="{StaticResource SelectedCheckBoxStyle}"
                                                       IsChecked="{Binding IsCheckboxSelected, UpdateSourceTrigger=PropertyChanged}">
+                                                <CheckBox.Style>
+                                                    <Style TargetType="CheckBox" BasedOn="{StaticResource SelectedCheckBoxStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Children.Count}" Value="0">
+                                                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </CheckBox.Style>
                                             </CheckBox>
                                             <Grid Width="16" Height="16" Margin="0,0,4,0">
                                                 <Path Visibility="{Binding IsRootFolder, Converter={StaticResource ConverterBool2VisibleInv}}"
