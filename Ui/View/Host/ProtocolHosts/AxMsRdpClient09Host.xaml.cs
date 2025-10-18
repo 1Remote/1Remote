@@ -40,6 +40,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
     internal class AxMsRdpClient9NotSafeForScriptingEx : AxMSTSCLib.AxMsRdpClient9NotSafeForScripting
     {
+        [DllImport("user32.dll")]
+        internal static extern int SetForegroundWindow(IntPtr hwnd);
+
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             // Fix for the missing focus issue on the rdp client component
@@ -783,6 +786,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override IntPtr GetHostHwnd()
         {
+            if (_rdpClient is { IsHandleCreated: true })
+            {
+                return _rdpClient.Handle;
+            }
             return IntPtr.Zero;
         }
 
@@ -1050,12 +1057,18 @@ namespace _1RM.View.Host.ProtocolHosts
                 RdpHost.Focus();
                 if (_rdpClient is { } rdp)
                 {
-                    // try to fix https://github.com/1Remote/1Remote/issues/530, but failed
-                    rdp.Focus();
-                    //rdp.Show();
-                    //rdp.Update();
-                    //rdp.Refresh();
-                    //rdp.BringToFront();
+                    // Fix for https://github.com/1Remote/1Remote/issues/530
+                    // Use Win32 API to set foreground window, similar to IntegrateHost
+                    var hwnd = GetHostHwnd();
+                    if (hwnd != IntPtr.Zero)
+                    {
+                        AxMsRdpClient9NotSafeForScriptingEx.SetForegroundWindow(hwnd);
+                    }
+                    else
+                    {
+                        // Fallback to regular focus if handle is not available
+                        rdp.Focus();
+                    }
                 }
             });
         }
