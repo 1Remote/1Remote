@@ -131,6 +131,16 @@ namespace _1RM
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
+            // Check if this is a transient GDI+ error from WindowsFormsHost
+            // These errors are common in Windows 11 24H2 during window switching and can be safely ignored
+            // See: https://github.com/1Remote/1Remote/issues/924
+            if (IsTransientGdiError(e.Exception))
+            {
+                SimpleLogHelper.Warning($"Transient GDI+ error suppressed: {e.Exception.Message}");
+                e.Handled = true;
+                return;
+            }
+
             if (!App.ExitingFlag)
                 lock (this)
                 {
@@ -154,6 +164,37 @@ namespace _1RM
                     });
                 }
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// Checks if the exception is a transient GDI+ error that can be safely ignored.
+        /// These errors typically occur during rapid window switching or painting operations
+        /// in WindowsFormsHost controls on Windows 11 24H2.
+        /// </summary>
+        private static bool IsTransientGdiError(Exception ex)
+        {
+            // Check for System.Runtime.InteropServices.ExternalException with GDI+ error code
+            if (ex is System.Runtime.InteropServices.ExternalException externalEx)
+            {
+                // HRESULT 0x80004005 is E_FAIL, commonly used for GDI+ errors
+                // The specific error message "A generic error occurred in GDI+." indicates a transient painting issue
+                if (externalEx.ErrorCode == unchecked((int)0x80004005) && 
+                    (ex.Message?.Contains("GDI+", StringComparison.OrdinalIgnoreCase) == true ||
+                     ex.Message?.Contains("generic error", StringComparison.OrdinalIgnoreCase) == true))
+                {
+                    // Additionally check if the stack trace involves painting operations in WindowsFormsHost
+                    var stackTrace = ex.StackTrace ?? "";
+                    if (stackTrace.Contains("PaintBackground", StringComparison.Ordinal) ||
+                        stackTrace.Contains("WinFormsAdapter", StringComparison.Ordinal) ||
+                        stackTrace.Contains("Graphics.FillRectangle", StringComparison.Ordinal) ||
+                        stackTrace.Contains("Graphics.CheckErrorStatus", StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
