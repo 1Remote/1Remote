@@ -288,9 +288,9 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 _rdpClient.AdvancedSettings6.ConnectionBarShowPinButton = true;
                 _rdpClient.AdvancedSettings6.PinConnectionBar = _rdpSettings.IsPinTheConnectionBarByDefault == true;
+                _rdpClient.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
+                _rdpClient.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             }
-            _rdpClient.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
-            _rdpClient.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdpClient.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
         }
 
