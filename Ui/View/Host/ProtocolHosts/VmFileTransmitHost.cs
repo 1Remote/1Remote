@@ -864,9 +864,17 @@ namespace _1RM.View.Host.ProtocolHosts
                         if (Trans?.IsConnected() != true)
                             return;
 
+                        var ownerWindow = Application.Current?.Windows.OfType<System.Windows.Window>().FirstOrDefault(x => x.IsActive)
+                                          ?? Application.Current?.MainWindow;
                         var fbd = new FolderBrowserDialog();
                         fbd.ShowNewFolderButton = false;
-                        if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        var result = fbd.ShowDialog(ownerWindow != null ? new Wpf32Window(ownerWindow) : null);
+                        if (ownerWindow != null && ownerWindow.IsLoaded)
+                        {
+                            ownerWindow.Activate();
+                            ownerWindow.Focus();
+                        }
+                        if (result == System.Windows.Forms.DialogResult.OK)
                         {
                             DoUpload(new List<string>() { fbd.SelectedPath });
                         }
@@ -1181,5 +1189,18 @@ namespace _1RM.View.Host.ProtocolHosts
             set => SetAndNotifyIfChanged(ref _transmitTasks, value);
         }
         #endregion
+    }
+
+    /// <summary>
+    /// Helper class to wrap WPF Window for use with Windows Forms dialogs
+    /// </summary>
+    internal class Wpf32Window : System.Windows.Forms.IWin32Window
+    {
+        public IntPtr Handle { get; private set; }
+
+        public Wpf32Window(System.Windows.Window window)
+        {
+            Handle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
+        }
     }
 }
