@@ -1,4 +1,4 @@
-# Solution for Issue #951: Pop-up Window Causing Main Window to be Hidden
+# Solution for Issue #951: Popup Window Causing Main Window to be Hidden
 
 ## Problem Description
 When opening a file selection dialog from a popup window in 1Remote, after closing the dialog, the main window would move to the bottom layer (z-order) instead of staying on top. This created a poor user experience as users had to manually bring the main window back to focus.
@@ -105,7 +105,7 @@ var path = SelectFileHelper.OpenFile(
 ```
 
 ### Import Statement Updates
-Updated 29 files to use the new wrapper:
+Updated 29 files to use the new wrapper (note: some files have multiple call sites, totaling 28 distinct call sites):
 
 **Before:**
 ```csharp
@@ -148,7 +148,7 @@ To verify the fix works correctly:
 
 ## Technical Notes
 
-- The solution wraps the original `Shawn.Utils.Wpf.FileSystem.SelectFileHelper` rather than forking it
+- The solution reimplements the file dialog functionality with proper owner window handling, providing an alternative to the original `Shawn.Utils.Wpf.FileSystem.SelectFileHelper`
 - The `OpenInExplorer` and `OpenInExplorerAndSelect` methods are pass-through to the original implementation
 - Error handling is maintained (try-catch blocks)
 - Null safety is preserved throughout
