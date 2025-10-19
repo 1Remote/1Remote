@@ -165,7 +165,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
 
     public void ButtonSelectPrivateKey_OnClick(object sender, RoutedEventArgs e)
     {
-        var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+        var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, owner: View as Window);
         if (path == null) return;
         New.PrivateKey = path;
         New.Password = "";

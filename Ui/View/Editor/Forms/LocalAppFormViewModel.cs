@@ -405,7 +405,7 @@ namespace _1RM.View.Editor.Forms
                         initPath = Environment.CurrentDirectory;
                     }
 
-                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, owner: View as Window);
                     if (path == null) return;
                     ExePath = path;
                     ResSetArguments();

@@ -102,7 +102,8 @@ namespace _1RM.View.Settings.DataSource
                     var newPath = SelectFileHelper.OpenFile(
                         initialDirectory: string.IsNullOrWhiteSpace(Path) == false && File.Exists(Path) ? new FileInfo(Path).DirectoryName : "",
                         filter: "SqliteSource Database|*.db",
-                        checkFileExists: false);
+                        checkFileExists: false,
+                        owner: View as Window);
                     if (newPath == null) return;
                     var oldPath = Path;
                     if (string.Equals(newPath, oldPath, StringComparison.CurrentCultureIgnoreCase))

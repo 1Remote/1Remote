@@ -56,7 +56,7 @@ namespace _1RM.View.Editor
             {
                 return _cmdSelectImage ??= new RelayCommand((o) =>
                 {
-                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*", owner: View as Window);
                     if (path != null)
                     {
                         BitmapSource? img = null;
