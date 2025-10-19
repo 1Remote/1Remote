@@ -71,6 +71,8 @@ namespace _1RM.View.Host.ProtocolHosts
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login
         private DateTime _lastLoginTime = DateTime.MinValue;
 
+        private readonly object _rdpClientDisposeLock = new object();
+
 
         public static AxMsRdpClient09Host Create(RDP rdp, int width = 0, int height = 0)
         {
@@ -159,7 +161,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void OnScreenResolutionChanged()
         {
-            lock (this)
+            lock (_rdpClientDisposeLock)
             {
                 // 全屏模式下客户端机器发生了屏幕分辨率改变，则将RDP还原到窗口模式（仿照 MSTSC 的逻辑）
                 if (_rdpClient?.FullScreen == true)
@@ -233,7 +235,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void CreateRdpClient()
         {
-            lock (this)
+            lock (_rdpClientDisposeLock)
             {
                 _rdpClient = new AxMsRdpClient9NotSafeForScriptingEx();
 
@@ -868,35 +870,37 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void DisposeRdpClient()
         {
-            try
+            lock (_rdpClientDisposeLock)
             {
-                if (_rdpClient is { IsDisposed: false })
+                try
                 {
-                    _rdpClient.Dispose();
+                    if (_rdpClient is { IsDisposed: false })
+                    {
+                        _rdpClient.Dispose();
+                    }
+                    _rdpClient = null;
                 }
-                _rdpClient = null;
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error($"Error disposing RDP client: {e}");
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error($"Error disposing RDP client: {e}");
+                }
             }
         }
 
         private void RdpClientDispose()
         {
             GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
-            lock (this)
+            try
             {
-                try
-                {
-                    Execute.OnUIThread(DisposeRdpClient);
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error($"Error scheduling RDP client disposal on UI thread: {e}");
-                    // 如果UI线程调度失败，直接处理
-                    DisposeRdpClient();
-                }
+                // Use synchronous disposal to ensure the RDP client is fully disposed before continuing
+                // This prevents race conditions where the client might be accessed or disposed multiple times
+                Execute.OnUIThreadSync(DisposeRdpClient);
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error($"Error scheduling RDP client disposal on UI thread: {e}");
+                // 如果UI线程调度失败，直接处理
+                DisposeRdpClient();
             }
             SimpleLogHelper.Debug("RDP Host: _rdpClient.Disposed.");
         }
