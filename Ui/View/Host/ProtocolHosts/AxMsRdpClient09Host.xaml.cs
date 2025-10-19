@@ -114,14 +114,22 @@ namespace _1RM.View.Host.ProtocolHosts
                     var nw = (uint)(_rdpClient?.Width ?? 0);
                     var nh = (uint)(_rdpClient?.Height ?? 0);
                     // tip: the control default width is 288
-                    if (_rdpClient?.DesktopWidth > nw
-                        || _rdpClient?.DesktopHeight > nh)
+                    // Check if the control size is valid (not the default small size)
+                    // and if it differs from the desktop size
+                    if (nw > 288 && nh > 200 && (_rdpClient?.DesktopWidth != nw || _rdpClient?.DesktopHeight != nh))
                     {
-                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer start run... {_rdpClient?.DesktopWidth}, {nw}, {_rdpClient?.DesktopHeight}, {nh}");
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer start run... DesktopSize = {_rdpClient?.DesktopWidth}x{_rdpClient?.DesktopHeight}, ControlSize = {nw}x{nh}");
                         ReSizeRdpToControlSize();
+                    }
+                    else if (nw <= 288 || nh <= 200)
+                    {
+                        // Control size not properly set yet, keep retrying
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer waiting for proper control size... ControlSize = {nw}x{nh}");
                     }
                     else
                     {
+                        // Sizes match, no need to resize
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer: sizes match, stopping. DesktopSize = {_rdpClient?.DesktopWidth}x{_rdpClient?.DesktopHeight}, ControlSize = {nw}x{nh}");
                         _lastLoginTime = DateTime.MinValue;
                     }
                 }
@@ -904,7 +912,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
 
-        private static bool _isReSizeRdpToControlSizeRunning = false;
+        private bool _isReSizeRdpToControlSizeRunning = false;
         /// <summary>
         /// set remote resolution to _rdpClient size if is AutoResize
         /// if focus == false, then set size only if new size != old size
