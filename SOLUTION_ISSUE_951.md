@@ -11,7 +11,7 @@ The issue was in the `Shawn.Utils.Wpf.FileSystem.SelectFileHelper` class, which 
 if (dlg.ShowDialog() != true) return null;
 ```
 
-When `ShowDialog()` is called without an owner parameter in WPF, the dialog doesn't establish a proper parent-child window relationship. This causes Windows' window manager to lose track of which window should be active after the dialog closes, especially when the dialog is opened from a popup/child window.
+When `ShowDialog()` is called without an owner parameter in WPF, the dialog doesn't establish a proper parent-child window relationship. This causes Windows' window manager to lose track of which window should be active after the dialog closes, especially when the dialog is opened from a popup or child window.
 
 ## Solution Approach
 Since `Shawn.Utils` is an external git submodule that we don't control directly, we created a wrapper class in the main 1Remote repository that:
