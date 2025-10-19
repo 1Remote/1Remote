@@ -379,7 +379,7 @@ namespace _1RM.Controls
 
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
-            var path = SelectFileHelper.OpenFile(title: IoC.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*");
+            var path = SelectFileHelper.OpenFile(title: IoC.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp;*.ico;*.exe|all files|*.*", owner: Window.GetWindow(this));
             if (path != null)
             {
                 if (path.EndsWith(".exe", true, null))

@@ -39,7 +39,7 @@ namespace _1RM.View.Editor.Forms
         {
             if (DataContext is SshFormViewModel { New: var ssh })
             {
-                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, owner: Window.GetWindow(this));
                 if (path == null) return;
                 ssh.PrivateKey = path;
             }
@@ -62,7 +62,7 @@ namespace _1RM.View.Editor.Forms
         {
             if (DataContext is SshFormViewModel vm)
             {
-                var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
+                var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*", owner: Window.GetWindow(this));
                 if (path == null) return;
                 if (File.Exists(path) && KittyConfig.Read(path)?.Count > 0)
                 {

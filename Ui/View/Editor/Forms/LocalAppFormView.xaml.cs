@@ -15,7 +15,7 @@ namespace _1RM.View.Editor.Forms
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+            var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, owner: Window.GetWindow(this));
             if (path == null) return;
             if (DataContext is LocalApp app)
                 app.PrivateKey = path;

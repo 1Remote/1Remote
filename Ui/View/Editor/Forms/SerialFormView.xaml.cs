@@ -20,7 +20,7 @@ namespace _1RM.View.Editor.Forms
         {
             if (DataContext is SerialFormViewModel vm)
             {
-                var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
+                var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*", owner: Window.GetWindow(this));
                 if (path == null) return;
                 if (File.Exists(path) && KittyConfig.Read(path)?.Count > 0)
                 {

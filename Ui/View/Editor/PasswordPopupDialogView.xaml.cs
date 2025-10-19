@@ -55,7 +55,7 @@ namespace _1RM.View.Editor
         {
             if (DataContext is PasswordPopupDialogViewModel vm)
             {
-                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, selectedFileName: vm.PrivateKey);
+                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory, selectedFileName: vm.PrivateKey, owner: Window.GetWindow(this));
                 if (path == null) return;
                 vm.PrivateKey = path;
             }
