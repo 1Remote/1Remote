@@ -41,7 +41,15 @@ namespace _1RM.View.Host.ProtocolHosts
     internal class AxMsRdpClient9NotSafeForScriptingEx : AxMSTSCLib.AxMsRdpClient9NotSafeForScripting
     {
         [DllImport("user32.dll")]
-        internal static extern int SetForegroundWindow(IntPtr hwnd);
+        internal static extern bool SetForegroundWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SetFocus(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
+        internal const uint GW_CHILD = 5;
 
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
@@ -1050,24 +1058,36 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             Execute.OnUIThread(() =>
             {
-                // Kill logical focus
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RdpHost), null);
-                Keyboard.ClearFocus();
-                this.Focus();
-                RdpHost.Focus();
                 if (_rdpClient is { } rdp)
                 {
                     // Fix for https://github.com/1Remote/1Remote/issues/530
-                    // Use Win32 API to set foreground window, similar to IntegrateHost
+                    // RDP ActiveX control needs special focus handling
+                    
+                    // First, ensure the WindowsFormsHost has focus
+                    RdpHost.Focus();
+                    
+                    // Then set focus to the RDP control itself
+                    rdp.Focus();
+                    
+                    // Finally, use Win32 APIs to ensure keyboard focus
                     var hwnd = GetHostHwnd();
                     if (hwnd != IntPtr.Zero)
                     {
+                        // Try to find and focus the child window (RDP rendering window)
+                        var childHwnd = AxMsRdpClient9NotSafeForScriptingEx.GetWindow(hwnd, AxMsRdpClient9NotSafeForScriptingEx.GW_CHILD);
+                        if (childHwnd != IntPtr.Zero)
+                        {
+                            // Focus the child window which handles input
+                            AxMsRdpClient9NotSafeForScriptingEx.SetFocus(childHwnd);
+                        }
+                        else
+                        {
+                            // Fallback to focusing the main control
+                            AxMsRdpClient9NotSafeForScriptingEx.SetFocus(hwnd);
+                        }
+                        
+                        // Also set foreground window
                         AxMsRdpClient9NotSafeForScriptingEx.SetForegroundWindow(hwnd);
-                    }
-                    else
-                    {
-                        // Fallback to regular focus if handle is not available
-                        rdp.Focus();
                     }
                 }
             });
