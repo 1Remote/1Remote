@@ -868,17 +868,20 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void DisposeRdpClient()
         {
-            try
+            lock (this)
             {
-                if (_rdpClient is { IsDisposed: false })
+                try
                 {
-                    _rdpClient.Dispose();
+                    if (_rdpClient is { IsDisposed: false })
+                    {
+                        _rdpClient.Dispose();
+                    }
+                    _rdpClient = null;
                 }
-                _rdpClient = null;
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error($"Error disposing RDP client: {e}");
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error($"Error disposing RDP client: {e}");
+                }
             }
         }
 
@@ -889,7 +892,9 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 try
                 {
-                    Execute.OnUIThread(DisposeRdpClient);
+                    // Use synchronous disposal to ensure the RDP client is fully disposed before continuing
+                    // This prevents race conditions where the client might be accessed or disposed multiple times
+                    Execute.OnUIThreadSync(DisposeRdpClient);
                 }
                 catch (Exception e)
                 {
