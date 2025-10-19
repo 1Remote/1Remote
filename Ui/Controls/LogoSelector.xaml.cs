@@ -13,7 +13,6 @@ using _1RM.Utils;
 using Microsoft.Win32;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
-using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.Controls

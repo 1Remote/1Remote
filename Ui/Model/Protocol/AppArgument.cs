@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Model.Protocol;
 

@@ -12,7 +12,6 @@ using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 using Stylet;
 using System;

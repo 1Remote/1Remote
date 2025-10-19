@@ -18,7 +18,6 @@ using _1RM.View.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using System;
 using System.Collections.Generic;

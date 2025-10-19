@@ -11,7 +11,6 @@ using System.Windows.Media.Animation;
 using _1RM.Utils;
 using Microsoft.AppCenter.Crashes;
 using Shawn.Utils.Wpf.Controls;
-using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using System.Collections.Generic;

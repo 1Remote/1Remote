@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using _1RM.Model.Protocol;
 using Shawn.Utils;
-using Shawn.Utils.Wpf.FileSystem;
+using _1RM.Utils;
 
 namespace _1RM.View.Editor.Forms
 {

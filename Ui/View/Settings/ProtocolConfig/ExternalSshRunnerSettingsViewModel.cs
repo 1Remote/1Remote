@@ -8,7 +8,6 @@ using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
-using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service;
 
 namespace _1RM.View.Settings.ProtocolConfig;

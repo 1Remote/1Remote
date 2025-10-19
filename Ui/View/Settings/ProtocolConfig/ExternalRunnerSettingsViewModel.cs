@@ -10,7 +10,6 @@ using _1RM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
-using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using System.Windows.Shapes;

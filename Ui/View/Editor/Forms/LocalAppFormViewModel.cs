@@ -12,7 +12,6 @@ using _1RM.Service;
 using _1RM.Utils;
 using Newtonsoft.Json;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms
 {

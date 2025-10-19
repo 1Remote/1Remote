@@ -6,7 +6,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
+using _1RM.Utils;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace _1RM.View.Editor

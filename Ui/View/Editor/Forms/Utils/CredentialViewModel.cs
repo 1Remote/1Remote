@@ -8,7 +8,6 @@ using _1RM.Utils;
 using _1RM.View.Editor.Forms.AlternativeCredential;
 using _1RM.View.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace _1RM.View.Editor.Forms.Utils;

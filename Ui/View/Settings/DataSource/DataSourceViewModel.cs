@@ -11,7 +11,6 @@ using _1RM.View.Utils;
 using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Settings.DataSource
 {

@@ -6,7 +6,6 @@ using Shawn.Utils.Wpf;
 using System.Windows.Media.Imaging;
 using _1RM.Resources.Icons;
 using _1RM.View.Utils.MaskAndPop;
-using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
 namespace _1RM.View.Editor

@@ -12,7 +12,6 @@ using _1RM.View.Utils.MaskAndPop;
 using Newtonsoft.Json;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Settings.DataSource
 {

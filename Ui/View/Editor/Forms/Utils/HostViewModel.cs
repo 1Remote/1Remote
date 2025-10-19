@@ -6,7 +6,6 @@ using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Utils;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.View.Editor.Forms.Utils;
 

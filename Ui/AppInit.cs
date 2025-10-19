@@ -8,7 +8,6 @@ using _1RM.Service;
 using _1RM.View;
 using _1RM.View.Guidance;
 using Shawn.Utils;
-using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service.DataSource;
 using _1RM.Utils;
 using _1RM.Utils.PRemoteM;

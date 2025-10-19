@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Utils;
 using _1RM.View.Guidance;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Service
 {

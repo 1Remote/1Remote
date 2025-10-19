@@ -10,7 +10,6 @@ using _1RM.Service;
 using _1RM.Utils;
 using _1RM.View;
 using Shawn.Utils.Interface;
-using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Model;
 
