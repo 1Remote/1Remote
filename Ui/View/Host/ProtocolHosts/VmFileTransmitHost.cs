@@ -21,12 +21,14 @@ using Dapper;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using ListView = System.Windows.Controls.ListView;
 using ListViewItem = System.Windows.Controls.ListViewItem;
 using MessageBox = System.Windows.MessageBox;
+using SelectFileHelper = _1RM.Utils.SelectFileHelper;
 
 namespace _1RM.View.Host.ProtocolHosts
 {

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using _1RM.Utils.PuTTY.Model;
 using _1RM.Utils.PuTTY.Model;
 using _1RM.Utils.Tracing;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM
 {
