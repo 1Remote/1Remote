@@ -133,8 +133,12 @@ namespace _1RM.Utils.RdpFile
         [RdpConfName("allow font smoothing:i:")]
         public int AllowFontSmoothing { get; set; } = 0;
 
+        /// <summary>
+        /// Desktop composition is always enabled on Windows 8 and later
+        /// ref: https://learn.microsoft.com/en-us/windows/win32/dwm/wm-dwmcompositionchanged
+        /// </summary>
         [RdpConfName("allow desktop composition:i:")]
-        public int AllowDesktopComposition { get; set; } = 0;
+        public int AllowDesktopComposition { get; set; } = 1;
 
         [RdpConfName("disable full window drag:i:")]
         public int DisableFullWindowDrag { get; set; } = 1;

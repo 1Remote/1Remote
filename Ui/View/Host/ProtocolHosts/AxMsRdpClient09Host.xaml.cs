@@ -596,6 +596,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;
+            
+            // Desktop composition is always enabled on Windows 8 and later
+            // ref: https://learn.microsoft.com/en-us/windows/win32/dwm/wm-dwmcompositionchanged
+            nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+            
             if (_rdpSettings.DisplayPerformance != EDisplayPerformance.Auto)
             {
                 // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings7-networkconnectiontype
@@ -629,14 +634,12 @@ namespace _1RM.View.Host.ProtocolHosts
                         nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
                         nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
                         nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                        nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
 
                         break;
 
                     case EDisplayPerformance.High:
                         _rdpClient.ColorDepth = 32;
                         nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                        nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
                         break;
                 }
             }

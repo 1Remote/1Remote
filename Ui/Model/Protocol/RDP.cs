@@ -773,12 +773,14 @@ namespace _1RM.Model.Protocol
             }
 
             rdpConfig.NetworkAutodetect = 0;
+            // Desktop composition is always enabled on Windows 8 and later
+            // ref: https://learn.microsoft.com/en-us/windows/win32/dwm/wm-dwmcompositionchanged
+            rdpConfig.AllowDesktopComposition = 1;
             switch (this.DisplayPerformance)
             {
                 case EDisplayPerformance.Low:
                     rdpConfig.ConnectionType = 1;
                     rdpConfig.SessionBpp = 8;
-                    rdpConfig.AllowDesktopComposition = 0;
                     rdpConfig.AllowFontSmoothing = 0;
                     rdpConfig.DisableFullWindowDrag = 1;
                     rdpConfig.DisableThemes = 1;
@@ -790,7 +792,6 @@ namespace _1RM.Model.Protocol
                 case EDisplayPerformance.Middle:
                     rdpConfig.SessionBpp = 16;
                     rdpConfig.ConnectionType = 3;
-                    rdpConfig.AllowDesktopComposition = 1;
                     rdpConfig.AllowFontSmoothing = 1;
                     rdpConfig.DisableFullWindowDrag = 1;
                     rdpConfig.DisableThemes = 1;
@@ -802,7 +803,6 @@ namespace _1RM.Model.Protocol
                 case EDisplayPerformance.High:
                     rdpConfig.SessionBpp = 32;
                     rdpConfig.ConnectionType = 7;
-                    rdpConfig.AllowDesktopComposition = 1;
                     rdpConfig.AllowFontSmoothing = 1;
                     rdpConfig.DisableFullWindowDrag = 0;
                     rdpConfig.DisableThemes = 0;
