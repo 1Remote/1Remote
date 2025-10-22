@@ -490,18 +490,25 @@ namespace _1RM.View.Host.ProtocolHosts
             _timer = new Timer { Interval = 100, AutoReset = false };
             _timer.Elapsed += (sender, args) =>
             {
-                _process.Refresh();
                 if (_process == null)
                 {
                     return;
                 }
-                else if (_process.MainWindowHandle != IntPtr.Zero
-                    && _exeHandles.Add(_process.MainWindowHandle) != false)
-                {
-                    SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");
-                    SetExeWindowStyle();
-                }
 
+                try
+                {
+                    _process.Refresh();
+                    if (_process.MainWindowHandle != IntPtr.Zero
+                        && _exeHandles.Add(_process.MainWindowHandle) != false)
+                    {
+                        SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");
+                        SetExeWindowStyle();
+                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning($"Error in timer callback: {e.Message}");
+                }
                 if (DateTime.Now > endTime && _exeHandles.Count > 0)
                     return;
                 _timer?.Start();
