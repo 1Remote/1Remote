@@ -67,6 +67,15 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private bool _flagHasConnected = false;
 
+        /// <summary>
+        /// Minimum width to consider the RDP control properly initialized (default width is 288)
+        /// </summary>
+        private const uint MIN_VALID_CONTROL_WIDTH = 288;
+        
+        /// <summary>
+        /// Minimum height to consider the RDP control properly initialized
+        /// </summary>
+        private const uint MIN_VALID_CONTROL_HEIGHT = 200;
 
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login
         private DateTime _lastLoginTime = DateTime.MinValue;
@@ -115,15 +124,22 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     var nw = (uint)(_rdpClient?.Width ?? 0);
                     var nh = (uint)(_rdpClient?.Height ?? 0);
-                    // tip: the control default width is 288
-                    if (_rdpClient?.DesktopWidth > nw
-                        || _rdpClient?.DesktopHeight > nh)
+                    // Check if the control size is valid (not the default small size)
+                    // and if it differs from the desktop size
+                    if (nw > MIN_VALID_CONTROL_WIDTH && nh > MIN_VALID_CONTROL_HEIGHT && (_rdpClient?.DesktopWidth != nw || _rdpClient?.DesktopHeight != nh))
                     {
-                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer start run... {_rdpClient?.DesktopWidth}, {nw}, {_rdpClient?.DesktopHeight}, {nh}");
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer start run... DesktopSize = {_rdpClient?.DesktopWidth}x{_rdpClient?.DesktopHeight}, ControlSize = {nw}x{nh}");
                         ReSizeRdpToControlSize();
+                    }
+                    else if (nw <= MIN_VALID_CONTROL_WIDTH || nh <= MIN_VALID_CONTROL_HEIGHT)
+                    {
+                        // Control size not properly set yet, keep retrying
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer waiting for proper control size... ControlSize = {nw}x{nh}");
                     }
                     else
                     {
+                        // Sizes match, no need to resize
+                        SimpleLogHelper.DebugInfo($@"_loginResizeTimer: sizes match, stopping. DesktopSize = {_rdpClient?.DesktopWidth}x{_rdpClient?.DesktopHeight}, ControlSize = {nw}x{nh}");
                         _lastLoginTime = DateTime.MinValue;
                     }
                 }
@@ -908,7 +924,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
 
-        private static bool _isReSizeRdpToControlSizeRunning = false;
+        private bool _isReSizeRdpToControlSizeRunning = false;
         /// <summary>
         /// set remote resolution to _rdpClient size if is AutoResize
         /// if focus == false, then set size only if new size != old size
