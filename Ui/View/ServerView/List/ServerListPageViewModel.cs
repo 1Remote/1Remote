@@ -223,7 +223,6 @@ namespace _1RM.View.ServerView
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;
-                        vs.PropertyChanged -= VmServerPropertyChanged;
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
 
