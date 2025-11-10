@@ -40,6 +40,15 @@ namespace _1RM.Model
                 }
             }
 
+            // Add pinned tags that are not currently used by any server
+            foreach (var savedTag in LocalityTagService.TagDict.Values)
+            {
+                if (savedTag.IsPinned && tags.All(x => !string.Equals(x.Name, savedTag.Name, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    tags.Add(new Tag(savedTag.Name, savedTag.IsPinned, savedTag.CustomOrder) { ItemsCount = 0 });
+                }
+            }
+
             TagList = new List<Tag>(tags.OrderBy(x => x.CustomOrder).ThenBy(x => x.Name));
             foreach (var viewModel in VmItemList.Where(viewModel => viewModel.Server.Tags.Count > 0))
             {
