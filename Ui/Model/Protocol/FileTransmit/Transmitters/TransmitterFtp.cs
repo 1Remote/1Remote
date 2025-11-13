@@ -1,10 +1,12 @@
-﻿using System;
+﻿using FluentFTP;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentFTP;
+using FluentFTP.Client.BaseClient;
 
 namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 {
@@ -233,10 +235,19 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             _ftp = null;
         }
 
+        private void OnValidateCertificate(BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            // add logic to test if certificate is valid here
+            e.Accept = true;
+        }
+
         private async Task InitClient()
         {
             _ftp?.Dispose();
             _ftp = new AsyncFtpClient(Hostname, new System.Net.NetworkCredential(Username, Password), Port);
+            _ftp.Config.EncryptionMode = FtpEncryptionMode.Explicit;
+            _ftp.Config.SslProtocols = SslProtocols.Tls12;
+            _ftp.ValidateCertificate += new FtpSslValidation(OnValidateCertificate);
             _ftp.Config.Noop = true;
             await _ftp.AutoConnect();
             if (!_ftp.IsConnected)
