@@ -115,7 +115,7 @@ namespace _1RM.View.Host.ProtocolHosts
         #region event handler
 
         private int _retryCount = 0;
-        private const int MAX_RETRY_COUNT = 20;
+        private const int MAX_RETRY_COUNT = 5;
         private void OnRdpClientDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
