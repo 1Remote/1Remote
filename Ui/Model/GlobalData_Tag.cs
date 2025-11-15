@@ -18,6 +18,15 @@ namespace _1RM.Model
 
 
         /// <summary>
+        /// Notify observers that the TagList has changed without replacing the list itself.
+        /// This is useful when individual tag properties change (like IsPinned) and we need to update UI bindings.
+        /// </summary>
+        public void RaiseTagListChanged()
+        {
+            RaisePropertyChanged(nameof(TagList));
+        }
+
+        /// <summary>
         /// Reload tags from servers, this will read all servers and update the TagList.
         /// </summary>
         public void ReloadTagsFromServers()

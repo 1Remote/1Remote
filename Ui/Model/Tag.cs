@@ -54,6 +54,7 @@ namespace _1RM.Model
                     }
                     LocalityTagService.UpdateTags(IoC.Get<GlobalData>().TagList);       // save pinned state and order to .tags.json
                     IoC.Get<ServerListPageViewModel>().CalcTagFilterBarVisibility();    // update tag filter bar visibility
+                    IoC.Get<GlobalData>().RaiseTagListChanged();                        // notify observers that TagList has changed to update UI bindings
                 }
             }
         }
