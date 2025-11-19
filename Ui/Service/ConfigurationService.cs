@@ -88,6 +88,19 @@ namespace _1RM.Service
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow = false;
+
+        /// <summary>
+        /// DateTime format for file transmit host
+        /// 0 = yyyy-MM-dd HH:mm:ss (24H)
+        /// 1 = yyyy-MM-dd hh:mm:ss tt (12H)
+        /// 2 = HH:mm:ss yyyy-MM-dd (Time first, 24H)
+        /// 3 = hh:mm:ss tt yyyy-MM-dd (Time first, 12H)
+        /// 4 = MM/dd/yyyy HH:mm:ss (24H)
+        /// 5 = MM/dd/yyyy hh:mm:ss tt (12H)
+        /// </summary>
+        [DefaultValue(0)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int FileTransmitDateTimeFormat = 0;
     }
 
     public class LauncherConfig

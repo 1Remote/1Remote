@@ -89,6 +89,13 @@
     <s:String x:Key="file_transmit_host_command_select_folder_upload">上傳資料夾</s:String>
     <s:String x:Key="file_transmit_host_command_delete">刪除 (Del)</s:String>
     <s:String x:Key="file_transmit_host_command_save_to">儲存到... (Ctrl + S)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format">時間格式</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_0">yyyy-MM-dd HH:mm:ss (24小時制)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_1">yyyy-MM-dd hh:mm:ss tt (12小時制)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_2">HH:mm:ss yyyy-MM-dd (時間在前，24小時制)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_3">hh:mm:ss tt yyyy-MM-dd (時間在前，12小時制)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_4">MM/dd/yyyy HH:mm:ss (24小時制)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format_5">MM/dd/yyyy hh:mm:ss tt (12小時制)</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names_title">取代或略過</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">目標位置已有 {0} 個相同名稱的檔案，要以這些檔案取代嗎？</s:String>
     <s:String x:Key="host_reconecting_info">正在重試連線...</s:String>

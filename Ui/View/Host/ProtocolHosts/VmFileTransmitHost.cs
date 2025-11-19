@@ -367,6 +367,51 @@ namespace _1RM.View.Host.ProtocolHosts
                 };
                 aMenu.Items.Add(menu);
             }
+            
+            // Add DateTime format selection submenu
+            {
+                var configService = IoC.TryGet<ConfigurationService>();
+                if (configService != null)
+                {
+                    var dateTimeFormatMenu = new System.Windows.Controls.MenuItem 
+                    { 
+                        Header = IoC.Translate("file_transmit_host_datetime_format") 
+                    };
+                    
+                    var currentFormat = configService.General.FileTransmitDateTimeFormat;
+                    
+                    var formats = new[]
+                    {
+                        new { Index = 0, Key = "file_transmit_host_datetime_format_0" },
+                        new { Index = 1, Key = "file_transmit_host_datetime_format_1" },
+                        new { Index = 2, Key = "file_transmit_host_datetime_format_2" },
+                        new { Index = 3, Key = "file_transmit_host_datetime_format_3" },
+                        new { Index = 4, Key = "file_transmit_host_datetime_format_4" },
+                        new { Index = 5, Key = "file_transmit_host_datetime_format_5" }
+                    };
+                    
+                    foreach (var format in formats)
+                    {
+                        var formatMenuItem = new System.Windows.Controls.MenuItem
+                        {
+                            Header = IoC.Translate(format.Key),
+                            IsCheckable = true,
+                            IsChecked = currentFormat == format.Index
+                        };
+                        var formatIndex = format.Index;
+                        formatMenuItem.Click += (o, a) =>
+                        {
+                            configService.General.FileTransmitDateTimeFormat = formatIndex;
+                            configService.Save();
+                            // Refresh the view to update the date/time display
+                            CmdGoToPathCurrent.Execute();
+                        };
+                        dateTimeFormatMenu.Items.Add(formatMenuItem);
+                    }
+                    
+                    aMenu.Items.Add(dateTimeFormatMenu);
+                }
+            }
 
             var curSelectedItem = MyVisualTreeHelper.GetItemOnPosition(p, e.GetPosition(p));
             if (curSelectedItem == null)
