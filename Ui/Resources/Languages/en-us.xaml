@@ -90,12 +90,6 @@
     <s:String x:Key="file_transmit_host_command_delete">Delete (Del)</s:String>
     <s:String x:Key="file_transmit_host_command_save_to">Save to... (Ctrl + S)</s:String>
     <s:String x:Key="file_transmit_host_datetime_format">DateTime Format</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_0">yyyy-MM-dd HH:mm:ss (24H)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_1">yyyy-MM-dd hh:mm:ss tt (12H)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_2">HH:mm:ss yyyy-MM-dd (Time first, 24H)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_3">hh:mm:ss tt yyyy-MM-dd (Time first, 12H)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_4">MM/dd/yyyy HH:mm:ss (24H)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_5">MM/dd/yyyy hh:mm:ss tt (12H)</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names_title">Replace or cancel</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">The destination has {0} file(s) with the same name(s). Do you want to continue?</s:String>
     <s:String x:Key="host_reconecting_info">Reconnecting...</s:String>

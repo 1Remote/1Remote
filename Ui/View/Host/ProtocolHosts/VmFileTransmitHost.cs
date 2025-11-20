@@ -380,21 +380,24 @@ namespace _1RM.View.Host.ProtocolHosts
                     
                     var currentFormat = configService.General.FileTransmitDateTimeFormat;
                     
+                    // Use example DateTime constant for demonstration
+                    var exampleDate = new DateTime(1979, 1, 1, 23, 59, 59);
+                    
                     var formats = new[]
                     {
-                        new { Index = 0, Key = "file_transmit_host_datetime_format_0" },
-                        new { Index = 1, Key = "file_transmit_host_datetime_format_1" },
-                        new { Index = 2, Key = "file_transmit_host_datetime_format_2" },
-                        new { Index = 3, Key = "file_transmit_host_datetime_format_3" },
-                        new { Index = 4, Key = "file_transmit_host_datetime_format_4" },
-                        new { Index = 5, Key = "file_transmit_host_datetime_format_5" }
+                        new { Index = 0, Example = exampleDate.ToString("yyyy-MM-dd HH:mm:ss") },
+                        new { Index = 1, Example = exampleDate.ToString("yyyy-MM-dd hh:mm:ss tt") },
+                        new { Index = 2, Example = exampleDate.ToString("HH:mm:ss yyyy-MM-dd") },
+                        new { Index = 3, Example = exampleDate.ToString("hh:mm:ss tt yyyy-MM-dd") },
+                        new { Index = 4, Example = exampleDate.ToString("MM/dd/yyyy HH:mm:ss") },
+                        new { Index = 5, Example = exampleDate.ToString("MM/dd/yyyy hh:mm:ss tt") }
                     };
                     
                     foreach (var format in formats)
                     {
                         var formatMenuItem = new System.Windows.Controls.MenuItem
                         {
-                            Header = IoC.Translate(format.Key),
+                            Header = format.Example,
                             IsCheckable = true,
                             IsChecked = currentFormat == format.Index
                         };

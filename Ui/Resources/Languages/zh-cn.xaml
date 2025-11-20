@@ -90,12 +90,6 @@
     <s:String x:Key="file_transmit_host_command_delete">删除(Del)</s:String>
     <s:String x:Key="file_transmit_host_command_save_to">保存到...(Ctrl + S)</s:String>
     <s:String x:Key="file_transmit_host_datetime_format">时间格式</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_0">yyyy-MM-dd HH:mm:ss (24小时制)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_1">yyyy-MM-dd hh:mm:ss tt (12小时制)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_2">HH:mm:ss yyyy-MM-dd (时间在前，24小时制)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_3">hh:mm:ss tt yyyy-MM-dd (时间在前，12小时制)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_4">MM/dd/yyyy HH:mm:ss (24小时制)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format_5">MM/dd/yyyy hh:mm:ss tt (12小时制)</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names_title">替换或跳过</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">目标包含{0}个同名文件，需要替换吗？</s:String>
     <s:String x:Key="host_reconecting_info">正尝试重新连接...</s:String>
