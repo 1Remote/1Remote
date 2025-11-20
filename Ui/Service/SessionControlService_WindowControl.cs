@@ -170,6 +170,7 @@ namespace _1RM.Service
                         ret = new TabWindowView();
                         AddTab(ret);
                         ret.Show();
+                        ret.ShowInTaskbar = true;
                         _lastTabToken = ret.Token;
 
                         int loopCount = 0;

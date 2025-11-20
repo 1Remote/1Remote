@@ -168,6 +168,7 @@ namespace _1RM.Service
                     if (tab == null) return;
                     if (tab.IsClosing) return;
                     tab.Show();
+                    tab.ShowInTaskbar = true;
 
                     var host = runner.GetHost(protocol, tab);
                     // get display area size for host

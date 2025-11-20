@@ -158,6 +158,7 @@ namespace _1RM.Service
                         if (win.IsClosing != false) return;
                         win.WindowState = win.WindowState == WindowState.Minimized ? WindowState.Normal : win.WindowState;
                         win.Show();
+                        win.ShowInTaskbar = true;
                         win.Activate();
                     });
 
