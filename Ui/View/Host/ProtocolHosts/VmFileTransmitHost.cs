@@ -367,6 +367,54 @@ namespace _1RM.View.Host.ProtocolHosts
                 };
                 aMenu.Items.Add(menu);
             }
+            
+            // Add DateTime format selection submenu
+            {
+                var configService = IoC.TryGet<ConfigurationService>();
+                if (configService != null)
+                {
+                    var dateTimeFormatMenu = new System.Windows.Controls.MenuItem 
+                    { 
+                        Header = IoC.Translate("file_transmit_host_datetime_format") 
+                    };
+                    
+                    var currentFormat = configService.General.FileTransmitDateTimeFormat;
+                    
+                    // Use example DateTime constant for demonstration
+                    var exampleDate = new DateTime(1979, 1, 1, 23, 59, 59);
+                    
+                    var formats = new[]
+                    {
+                        new { Index = 0, Example = exampleDate.ToString("yyyy-MM-dd HH:mm:ss") },
+                        new { Index = 1, Example = exampleDate.ToString("yyyy-MM-dd hh:mm:ss tt") },
+                        new { Index = 2, Example = exampleDate.ToString("HH:mm:ss yyyy-MM-dd") },
+                        new { Index = 3, Example = exampleDate.ToString("hh:mm:ss tt yyyy-MM-dd") },
+                        new { Index = 4, Example = exampleDate.ToString("MM/dd/yyyy HH:mm:ss") },
+                        new { Index = 5, Example = exampleDate.ToString("MM/dd/yyyy hh:mm:ss tt") }
+                    };
+                    
+                    foreach (var format in formats)
+                    {
+                        var formatMenuItem = new System.Windows.Controls.MenuItem
+                        {
+                            Header = format.Example,
+                            IsCheckable = true,
+                            IsChecked = currentFormat == format.Index
+                        };
+                        var formatIndex = format.Index;
+                        formatMenuItem.Click += (o, a) =>
+                        {
+                            configService.General.FileTransmitDateTimeFormat = formatIndex;
+                            configService.Save();
+                            // Refresh the view to update the date/time display
+                            CmdGoToPathCurrent.Execute();
+                        };
+                        dateTimeFormatMenu.Items.Add(formatMenuItem);
+                    }
+                    
+                    aMenu.Items.Add(dateTimeFormatMenu);
+                }
+            }
 
             var curSelectedItem = MyVisualTreeHelper.GetItemOnPosition(p, e.GetPosition(p));
             if (curSelectedItem == null)
@@ -954,6 +1002,7 @@ namespace _1RM.View.Host.ProtocolHosts
                                 }
                                 else
                                 {
+                                    dst = dst.Replace("/", "\\");
                                     SelectFileHelper.OpenInExplorerAndSelect(dst);
                                 }
                             }
