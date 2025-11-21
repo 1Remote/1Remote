@@ -153,9 +153,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             get
             {
-                var dst = Items?.FirstOrDefault()?.DstPath;
                 if (TransmissionType == ETransmissionType.HostToServer)
                 {
+                    var dst = Items?.FirstOrDefault()?.DstPath;
                     if (dst != null
                         && !string.IsNullOrWhiteSpace(dst)
                         && dst.LastIndexOf("/", StringComparison.Ordinal) > 0)
@@ -166,12 +166,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 }
                 else
                 {
-                    if (!string.IsNullOrWhiteSpace(dst))
-                    {
-                        var di = new DirectoryInfo(dst);
-                        return di?.Parent?.FullName;
-                    }
-                    return null;
+                    return Items?.FirstOrDefault()?.DstPath ?? _destinationDirectoryPath;
                 }
             }
         }

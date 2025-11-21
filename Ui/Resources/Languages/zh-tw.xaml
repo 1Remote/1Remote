@@ -89,6 +89,7 @@
     <s:String x:Key="file_transmit_host_command_select_folder_upload">上傳資料夾</s:String>
     <s:String x:Key="file_transmit_host_command_delete">刪除 (Del)</s:String>
     <s:String x:Key="file_transmit_host_command_save_to">儲存到... (Ctrl + S)</s:String>
+    <s:String x:Key="file_transmit_host_datetime_format">時間格式</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names_title">取代或略過</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">目標位置已有 {0} 個相同名稱的檔案，要以這些檔案取代嗎？</s:String>
     <s:String x:Key="host_reconecting_info">正在重試連線...</s:String>
