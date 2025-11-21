@@ -305,6 +305,13 @@ namespace _1RM.View.ServerView.Tree
         // ReSharper disable once ConvertToPrimaryConstructor
         public ServerTreeViewModel(DataSourceService sourceService, GlobalData appData) : base(sourceService, appData)
         {
+            // Register CollectionChanged handler once to update selection-related properties
+            VmServerList.CollectionChanged += (s, e) =>
+            {
+                RaisePropertyChanged(nameof(IsAnySelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            };
         }
 
         private static void SortNodes(ObservableCollection<TreeNode> nodes, bool includeSubFolder = true)
@@ -798,7 +805,20 @@ namespace _1RM.View.ServerView.Tree
             Execute.OnUIThread(() =>
             {
                 TreeNode.VirtualRoot.Children.Clear();
-                VmServerList = new ObservableCollection<ProtocolBaseViewModel>(AppData.VmItemList);
+                
+                // Unsubscribe from existing items
+                foreach (var vs in VmServerList)
+                {
+                    vs.PropertyChanged -= VmServerPropertyChanged;
+                }
+                
+                // Clear and repopulate the existing collection instead of replacing it
+                // This prevents race conditions with virtualization during layout operations
+                VmServerList.Clear();
+                foreach (var item in AppData.VmItemList)
+                {
+                    VmServerList.Add(item);
+                }
 
                 // Check if there are any servers to display
                 if (VmServerList.Count == 0)
@@ -810,15 +830,8 @@ namespace _1RM.View.ServerView.Tree
                 foreach (var vs in VmServerList)
                 {
                     vs.IsSelected = false;
-                    vs.PropertyChanged -= VmServerPropertyChanged;
                     vs.PropertyChanged += VmServerPropertyChanged;
                 }
-                VmServerList.CollectionChanged += (s, e) =>
-                {
-                    RaisePropertyChanged(nameof(IsAnySelected));
-                    RaisePropertyChanged(nameof(IsSelectedAll));
-                    RaisePropertyChanged(nameof(SelectedCount));
-                };
 
                 // add data sources to TreeNodes
                 foreach (var ds in IoC.Get<DataSourceService>().AllSources)
