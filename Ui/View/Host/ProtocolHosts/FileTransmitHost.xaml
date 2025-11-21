@@ -413,7 +413,7 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="transmitters:RemoteItem">
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Background="Transparent"
+                                            <!--<Button Background="Transparent"
                                                     Foreground="{DynamicResource PrimaryTextBrush}"
                                                     ToolTip="{DynamicResource Save}"
                                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=protocolHosts1:FileTransmitHost}, Path=DataContext.CmdDownloadToLastDir}"
@@ -424,7 +424,7 @@
                                                 <Path Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                                                       Margin="3"
                                                       Stretch="Uniform" Data="M877.49 381.468H668.638V68.191H355.36v313.277H146.51l365.489 365.49 365.49-365.49zM146.51 851.383v104.425h730.98V851.383H146.51z" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Button>
+                                            </Button>-->
                                             <Button Background="Transparent"
                                                     Foreground="{DynamicResource PrimaryTextBrush}"
                                                     ToolTip="{DynamicResource 'Save as...'}"
@@ -435,7 +435,7 @@
                                                     Width="18" Height="18">
                                                 <Path Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                                                       Margin="3"
-                                                      Stretch="Uniform" Data="M791.458909 180.968727H180.968727v661.061818h661.061818V220.858182L329.146182 733.742545 283.927273 688.523636 791.458909 180.968727zM906.007273 500.829091v405.178182H116.992V116.992h405.178182v64h127.930182v-64H906.007273v255.906909h-64v127.930182h64z" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                      Stretch="Uniform" Data="M877.49 381.468H668.638V68.191H355.36v313.277H146.51l365.489 365.49 365.49-365.49zM146.51 851.383v104.425h730.98V851.383H146.51z" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Button>
                                         </StackPanel>
                                     </DataTemplate>
@@ -457,16 +457,6 @@
                           MaxHeight="120"
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                           BorderThickness="0">
-                    <ListView.InputBindings>
-                        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
-                        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
-                        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
-                        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
-                        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
-                        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
-                        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
-                        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
-                    </ListView.InputBindings>
                     <ListView.Resources>
                         <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewAccentStyle}">
                         </Style>

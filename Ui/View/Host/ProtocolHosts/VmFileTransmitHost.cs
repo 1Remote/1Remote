@@ -1002,6 +1002,7 @@ namespace _1RM.View.Host.ProtocolHosts
                                 }
                                 else
                                 {
+                                    dst = dst.Replace("/", "\\");
                                     SelectFileHelper.OpenInExplorerAndSelect(dst);
                                 }
                             }
