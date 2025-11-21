@@ -72,6 +72,14 @@ namespace _1RM.View.ServerView
         {
             // Make sure the update do triggered the first time assign a value 
             BriefNoteVisibility = IoC.Get<ConfigurationService>().General.ShowNoteFieldInListView ? Visibility.Visible : Visibility.Collapsed;
+            
+            // Register CollectionChanged handler once to update selection-related properties
+            VmServerList.CollectionChanged += (s, e) =>
+            {
+                RaisePropertyChanged(nameof(IsAnySelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            };
         }
 
         public double NameWidth
@@ -194,24 +202,29 @@ namespace _1RM.View.ServerView
                 var list = AppData.VmItemList.ToList();
                 Execute.OnUIThread(() =>
                 {
-                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(
-                        // in order to implement the `custom` order 
-                        // !!! VmItemList should order by CustomOrder by default
-                        list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id)
-                        );
+                    // Unsubscribe from existing items
+                    foreach (var vs in VmServerList)
+                    {
+                        vs.PropertyChanged -= VmServerPropertyChanged;
+                    }
+
+                    // Prepare new list with proper ordering
+                    var newList = list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id).ToList();
+                    
+                    // Clear and repopulate the existing collection instead of replacing it
+                    // This prevents race conditions with VirtualizingWrapPanel during layout operations
+                    VmServerList.Clear();
+                    foreach (var item in newList)
+                    {
+                        VmServerList.Add(item);
+                    }
+
                     SelectedServerViewModel = null;
                     foreach (var vs in VmServerList)
                     {
                         vs.IsSelected = false;
-                        vs.PropertyChanged -= VmServerPropertyChanged;
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
-                    VmServerList.CollectionChanged += (s, e) =>
-                    {
-                        RaisePropertyChanged(nameof(IsAnySelected));
-                        RaisePropertyChanged(nameof(IsSelectedAll));
-                        RaisePropertyChanged(nameof(SelectedCount));
-                    };
 
                     RaisePropertyChanged(nameof(IsAnySelected));
                     RaisePropertyChanged(nameof(IsSelectedAll));
@@ -219,7 +232,6 @@ namespace _1RM.View.ServerView
                     UpdateNote();
 
                     VmServerListDummyNode();
-                    RaisePropertyChanged(nameof(VmServerList));
                     ApplySort();
                     CalcServerVisibleAndRefresh(true);
 
