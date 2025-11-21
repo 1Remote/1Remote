@@ -481,9 +481,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                             return;
                         if (item.IsDirectory)
                         {
-                            var bk = TransmitTaskStatus;
                             await AddServerDirectory(item);
-                            TransmitTaskStatus = bk;
                         }
                         else
                         {
