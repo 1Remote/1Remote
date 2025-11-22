@@ -421,11 +421,11 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 && TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
             {
                 TransmitTaskStatus = ETransmitTaskStatus.Scanning;
-                await Task.Factory.StartNew(async () =>
+                await Task.Run(async () =>
                 {
                     try
                     {
-                        ScanTransmitItems();
+                        await ScanTransmitItems();
 
                         if (await CheckExistedFiles(remoteItems))
                         {
@@ -451,7 +451,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         /// <summary>
         /// scan all files to be transmitted init by class constructor
         /// </summary>
-        private void ScanTransmitItems()
+        private async Task ScanTransmitItems()
         {
             Debug.Assert(_trans != null);
             TransmitTaskStatus = ETransmitTaskStatus.Scanning;
@@ -481,9 +481,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                             return;
                         if (item.IsDirectory)
                         {
-                            var bk = TransmitTaskStatus;
-                            AddServerDirectory(item);
-                            TransmitTaskStatus = bk;
+                            await AddServerDirectory(item);
                         }
                         else
                         {
