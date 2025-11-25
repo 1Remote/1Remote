@@ -108,6 +108,21 @@ namespace _1RM.View.ServerView
             base.OnViewLoaded();
         }
 
+        /// <summary>
+        /// Gets a deferred refresh disposable for the CollectionViewSource if the view is available.
+        /// This prevents VirtualizingWrapPanel from measuring during collection changes.
+        /// </summary>
+        /// <returns>An IDisposable that should be disposed after collection modifications are complete, or null if the view is not available.</returns>
+        private IDisposable? GetDeferredRefresh()
+        {
+            if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+            {
+                var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
+                return cvs?.DeferRefresh();
+            }
+            return null;
+        }
+
         public void DeleteServer(string id)
         {
             var viewModel = VmServerList.FirstOrDefault(x => x.Id == id);
@@ -121,15 +136,8 @@ namespace _1RM.View.ServerView
             Execute.OnUIThreadSync(() =>
             {
                 // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
-                IDisposable? deferRefresh = null;
-                try
+                using (GetDeferredRefresh())
                 {
-                    if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
-                    {
-                        var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
-                        deferRefresh = cvs?.DeferRefresh();
-                    }
-
                     viewModel.PropertyChanged -= VmServerPropertyChanged;
                     if (VmServerList.Contains(viewModel))
                     {
@@ -140,10 +148,6 @@ namespace _1RM.View.ServerView
                     {
                         SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list, but not found in list");
                     }
-                }
-                finally
-                {
-                    deferRefresh?.Dispose();
                 }
                 VmServerListDummyNode();
             });
@@ -197,15 +201,8 @@ namespace _1RM.View.ServerView
                 {
                     // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
                     // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
-                    IDisposable? deferRefresh = null;
-                    try
+                    using (GetDeferredRefresh())
                     {
-                        if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
-                        {
-                            var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
-                            deferRefresh = cvs?.DeferRefresh();
-                        }
-
                         foreach (var dummy in dummiesNeedToRemove)
                         {
                             VmServerList.Remove(dummy);
@@ -215,10 +212,6 @@ namespace _1RM.View.ServerView
                             VmServerList.Add(dummy);
                         }
                         IsAddToolTipShow = shouldShowTooltip;
-                    }
-                    finally
-                    {
-                        deferRefresh?.Dispose();
                     }
                 });
             }
@@ -244,15 +237,8 @@ namespace _1RM.View.ServerView
                     
                     // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
                     // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
-                    IDisposable? deferRefresh = null;
-                    try
+                    using (GetDeferredRefresh())
                     {
-                        if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
-                        {
-                            var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
-                            deferRefresh = cvs?.DeferRefresh();
-                        }
-
                         // Clear and repopulate the existing collection instead of replacing it
                         // This prevents race conditions with VirtualizingWrapPanel during layout operations
                         VmServerList.Clear();
@@ -267,10 +253,6 @@ namespace _1RM.View.ServerView
                             vs.IsSelected = false;
                             vs.PropertyChanged += VmServerPropertyChanged;
                         }
-                    }
-                    finally
-                    {
-                        deferRefresh?.Dispose();
                     }
 
                     RaisePropertyChanged(nameof(IsAnySelected));
