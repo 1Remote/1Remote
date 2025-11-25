@@ -120,15 +120,30 @@ namespace _1RM.View.ServerView
         {
             Execute.OnUIThreadSync(() =>
             {
-                viewModel.PropertyChanged -= VmServerPropertyChanged;
-                if (VmServerList.Contains(viewModel))
+                // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
+                IDisposable? deferRefresh = null;
+                try
                 {
-                    VmServerList.Remove(viewModel);
-                    SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list");
+                    if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                    {
+                        var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
+                        deferRefresh = cvs?.DeferRefresh();
+                    }
+
+                    viewModel.PropertyChanged -= VmServerPropertyChanged;
+                    if (VmServerList.Contains(viewModel))
+                    {
+                        VmServerList.Remove(viewModel);
+                        SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list");
+                    }
+                    else
+                    {
+                        SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list, but not found in list");
+                    }
                 }
-                else
+                finally
                 {
-                    SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list, but not found in list");
+                    deferRefresh?.Dispose();
                 }
                 VmServerListDummyNode();
             });
@@ -175,20 +190,36 @@ namespace _1RM.View.ServerView
             shouldShowTooltip = !VmServerList.Any(x => x is not ProtocolBaseViewModelDummy) 
                                && !IoC.Get<ConfigurationService>().AdditionalDataSource.Any();
 
-            // Apply all changes in a single UI thread operation
+            // Apply all changes in a single UI thread operation with deferred refresh
             if (dummiesNeedToAdd.Any() || dummiesNeedToRemove.Any() || IsAddToolTipShow != shouldShowTooltip)
             {
                 Execute.OnUIThreadSync(() =>
                 {
-                    foreach (var dummy in dummiesNeedToRemove)
+                    // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
+                    // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
+                    IDisposable? deferRefresh = null;
+                    try
                     {
-                        VmServerList.Remove(dummy);
+                        if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                        {
+                            var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
+                            deferRefresh = cvs?.DeferRefresh();
+                        }
+
+                        foreach (var dummy in dummiesNeedToRemove)
+                        {
+                            VmServerList.Remove(dummy);
+                        }
+                        foreach (var dummy in dummiesNeedToAdd)
+                        {
+                            VmServerList.Add(dummy);
+                        }
+                        IsAddToolTipShow = shouldShowTooltip;
                     }
-                    foreach (var dummy in dummiesNeedToAdd)
+                    finally
                     {
-                        VmServerList.Add(dummy);
+                        deferRefresh?.Dispose();
                     }
-                    IsAddToolTipShow = shouldShowTooltip;
                 });
             }
             
@@ -211,19 +242,35 @@ namespace _1RM.View.ServerView
                     // Prepare new list with proper ordering
                     var newList = list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id).ToList();
                     
-                    // Clear and repopulate the existing collection instead of replacing it
-                    // This prevents race conditions with VirtualizingWrapPanel during layout operations
-                    VmServerList.Clear();
-                    foreach (var item in newList)
+                    // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
+                    // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
+                    IDisposable? deferRefresh = null;
+                    try
                     {
-                        VmServerList.Add(item);
-                    }
+                        if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                        {
+                            var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
+                            deferRefresh = cvs?.DeferRefresh();
+                        }
 
-                    SelectedServerViewModel = null;
-                    foreach (var vs in VmServerList)
+                        // Clear and repopulate the existing collection instead of replacing it
+                        // This prevents race conditions with VirtualizingWrapPanel during layout operations
+                        VmServerList.Clear();
+                        foreach (var item in newList)
+                        {
+                            VmServerList.Add(item);
+                        }
+
+                        SelectedServerViewModel = null;
+                        foreach (var vs in VmServerList)
+                        {
+                            vs.IsSelected = false;
+                            vs.PropertyChanged += VmServerPropertyChanged;
+                        }
+                    }
+                    finally
                     {
-                        vs.IsSelected = false;
-                        vs.PropertyChanged += VmServerPropertyChanged;
+                        deferRefresh?.Dispose();
                     }
 
                     RaisePropertyChanged(nameof(IsAnySelected));
