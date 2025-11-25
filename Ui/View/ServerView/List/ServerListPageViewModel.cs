@@ -108,21 +108,6 @@ namespace _1RM.View.ServerView
             base.OnViewLoaded();
         }
 
-        /// <summary>
-        /// Gets a deferred refresh disposable for the CollectionViewSource if the view is available.
-        /// This prevents VirtualizingWrapPanel from measuring during collection changes.
-        /// </summary>
-        /// <returns>An IDisposable that should be disposed after collection modifications are complete, or null if the view is not available.</returns>
-        private IDisposable? GetDeferredRefresh()
-        {
-            if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
-            {
-                var cvs = CollectionViewSource.GetDefaultView(view.LvServerCards.ItemsSource);
-                return cvs?.DeferRefresh();
-            }
-            return null;
-        }
-
         public void DeleteServer(string id)
         {
             var viewModel = VmServerList.FirstOrDefault(x => x.Id == id);
@@ -135,8 +120,18 @@ namespace _1RM.View.ServerView
         {
             Execute.OnUIThreadSync(() =>
             {
-                // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
-                using (GetDeferredRefresh())
+                // Temporarily detach the ListBox from its ItemsSource to prevent VirtualizingWrapPanel
+                // from trying to measure items while the collection is being modified.
+                object? originalSource = null;
+                bool wasDetached = false;
+                if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                {
+                    originalSource = view.LvServerCards.ItemsSource;
+                    view.LvServerCards.ItemsSource = null;
+                    wasDetached = true;
+                }
+                
+                try
                 {
                     viewModel.PropertyChanged -= VmServerPropertyChanged;
                     if (VmServerList.Contains(viewModel))
@@ -147,6 +142,14 @@ namespace _1RM.View.ServerView
                     else
                     {
                         SimpleLogHelper.Debug($"Remote server {viewModel.DisplayName} of `{viewModel.DataSourceName}` removed from list, but not found in list");
+                    }
+                }
+                finally
+                {
+                    // Reattach the ItemsSource after all changes are complete
+                    if (wasDetached && this.View is ServerListPageView v)
+                    {
+                        v.LvServerCards.ItemsSource = originalSource;
                     }
                 }
                 VmServerListDummyNode();
@@ -194,14 +197,23 @@ namespace _1RM.View.ServerView
             shouldShowTooltip = !VmServerList.Any(x => x is not ProtocolBaseViewModelDummy) 
                                && !IoC.Get<ConfigurationService>().AdditionalDataSource.Any();
 
-            // Apply all changes in a single UI thread operation with deferred refresh
+            // Apply all changes in a single UI thread operation
             if (dummiesNeedToAdd.Any() || dummiesNeedToRemove.Any() || IsAddToolTipShow != shouldShowTooltip)
             {
                 Execute.OnUIThreadSync(() =>
                 {
-                    // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
-                    // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
-                    using (GetDeferredRefresh())
+                    // Temporarily detach the ListBox from its ItemsSource to prevent VirtualizingWrapPanel
+                    // from trying to measure items while the collection is being modified.
+                    object? originalSource = null;
+                    bool wasDetached = false;
+                    if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
+                    {
+                        originalSource = view.LvServerCards.ItemsSource;
+                        view.LvServerCards.ItemsSource = null;
+                        wasDetached = true;
+                    }
+                    
+                    try
                     {
                         foreach (var dummy in dummiesNeedToRemove)
                         {
@@ -212,6 +224,14 @@ namespace _1RM.View.ServerView
                             VmServerList.Add(dummy);
                         }
                         IsAddToolTipShow = shouldShowTooltip;
+                    }
+                    finally
+                    {
+                        // Reattach the ItemsSource after all changes are complete
+                        if (wasDetached && this.View is ServerListPageView v)
+                        {
+                            v.LvServerCards.ItemsSource = originalSource;
+                        }
                     }
                 });
             }
@@ -235,12 +255,21 @@ namespace _1RM.View.ServerView
                     // Prepare new list with proper ordering
                     var newList = list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id).ToList();
                     
-                    // Defer refresh to prevent VirtualizingWrapPanel from measuring during collection changes
-                    // This fixes the race condition that causes ArgumentOutOfRangeException in Card View
-                    using (GetDeferredRefresh())
+                    // Temporarily detach the ListBox from its ItemsSource to prevent VirtualizingWrapPanel 
+                    // from trying to measure items while the collection is being modified.
+                    // This fixes the ArgumentOutOfRangeException crash in Card View during auto-startup.
+                    object? originalSource = null;
+                    bool wasDetached = false;
+                    if (this.View is ServerListPageView view && view.LvServerCards.ItemsSource != null)
                     {
-                        // Clear and repopulate the existing collection instead of replacing it
-                        // This prevents race conditions with VirtualizingWrapPanel during layout operations
+                        originalSource = view.LvServerCards.ItemsSource;
+                        view.LvServerCards.ItemsSource = null;
+                        wasDetached = true;
+                    }
+                    
+                    try
+                    {
+                        // Clear and repopulate the existing collection
                         VmServerList.Clear();
                         foreach (var item in newList)
                         {
@@ -252,6 +281,14 @@ namespace _1RM.View.ServerView
                         {
                             vs.IsSelected = false;
                             vs.PropertyChanged += VmServerPropertyChanged;
+                        }
+                    }
+                    finally
+                    {
+                        // Reattach the ItemsSource after all changes are complete
+                        if (wasDetached && this.View is ServerListPageView v)
+                        {
+                            v.LvServerCards.ItemsSource = originalSource;
                         }
                     }
 
