@@ -116,6 +116,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private int _retryCount = 0;
         private const int MAX_RETRY_COUNT = 5;
+        /// <summary>
+        /// Delay in milliseconds before unpinning the connection bar after fullscreen transition.
+        /// This allows the fullscreen transition to complete before changing the pin state.
+        /// </summary>
+        private const int CONNECTION_BAR_UNPIN_DELAY_MS = 500;
         private void OnRdpClientDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
@@ -293,6 +298,37 @@ namespace _1RM.View.Host.ProtocolHosts
             });
 
             SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ceilingWidth}({width}), H = {ceilingHeight}({height}), while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
+
+            // Refresh the connection bar state to ensure it's properly displayed in fullscreen mode.
+            // This fixes an issue where the connection bar might disappear and not reappear on some systems.
+            // By re-setting the PinConnectionBar property, we ensure the bar state is properly initialized.
+            if (_rdpSettings.IsFullScreenWithConnectionBar == true)
+            {
+                _rdpClient!.AdvancedSettings6.PinConnectionBar = true;
+                if (_rdpSettings.IsPinTheConnectionBarByDefault != true)
+                {
+                    // If user doesn't want the bar pinned, we need to unpin it after a short delay
+                    // to allow the fullscreen transition to complete first
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(CONNECTION_BAR_UNPIN_DELAY_MS);
+                        Execute.OnUIThread(() =>
+                        {
+                            try
+                            {
+                                if (_rdpClient?.FullScreen == true)
+                                {
+                                    _rdpClient.AdvancedSettings6.PinConnectionBar = false;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                SimpleLogHelper.Warning($"Failed to unpin connection bar: {ex.Message}");
+                            }
+                        });
+                    });
+                }
+            }
 
             // WARNING!: EnableFullAllScreens do not need a SetRdpResolution
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
