@@ -89,7 +89,6 @@
     <s:String x:Key="file_transmit_host_command_select_folder_upload">Select a folder to upload</s:String>
     <s:String x:Key="file_transmit_host_command_delete">Delete (Del)</s:String>
     <s:String x:Key="file_transmit_host_command_save_to">Save to... (Ctrl + S)</s:String>
-    <s:String x:Key="file_transmit_host_datetime_format">DateTime Format</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names_title">Replace or cancel</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">The destination has {0} file(s) with the same name(s). Do you want to continue?</s:String>
     <s:String x:Key="host_reconecting_info">Reconnecting...</s:String>
