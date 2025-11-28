@@ -6,6 +6,7 @@ public static class LanguagesResources
         "cs-cz.xaml",
         "de-de.xaml",
         "en-us.xaml",
+        "es-ar.xaml",
         "fr-fr.xaml",
         "gl-es.xaml",
         "it-it.xaml",
