@@ -120,6 +120,8 @@ namespace _1RM.View.Host
                 this.Activated += (_, _) =>
                 {
                     this.StopFlashingWindow();
+                    // Ensure taskbar icon is visible when window is activated (fixes Win11 issue where taskbar icon disappears when window loses focus)
+                    this.ShowInTaskbar = true;
                 };
 
                 if (IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
