@@ -455,6 +455,14 @@ namespace _1RM.View.Host.ProtocolHosts
             else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>((DependencyObject)e.OriginalSource) is ListViewItem item)
             {
                 {
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("Rename") };
+                    menu.Click += (o, a) =>
+                    {
+                        CmdBeginRenaming.Execute();
+                    };
+                    aMenu.Items.Add(menu);
+                }
+                {
                     var menu = new System.Windows.Controls.MenuItem { Header = IoC.Translate("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
