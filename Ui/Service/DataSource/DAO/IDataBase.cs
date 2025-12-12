@@ -225,16 +225,17 @@ namespace _1RM.Service.DataSource.DAO
         public static string GetSqliteConnectionString(string dbPath)
         {
             // Handle UNC paths (e.g., \\server\share\path\file.db) by converting to file URI format
-            // SQLite requires UNC paths to be specified as file URIs with four slashes
-            // See: https://www.sqlite.org/uri.html
-            var dataSource = dbPath;
+            // System.Data.SQLite requires UNC paths to be specified as file URIs with URI=true parameter
+            // See: https://www.sqlite.org/uri.html and System.Data.SQLite documentation
             if (dbPath.StartsWith(@"\\"))
             {
                 // Convert UNC path to file URI format: \\server\share\path -> file:////server/share/path
                 // UNC path starts with \\ which becomes // after replace, so we add file:// prefix to get file:////
-                dataSource = "file://" + dbPath.Replace('\\', '/');
+                var dataSource = "file://" + dbPath.Replace('\\', '/');
+                // URI=true is required to enable URI filename interpretation in System.Data.SQLite
+                return $"Data Source={dataSource};URI=true;Pooling=true;Min Pool Size=1";
             }
-            return $"Data Source={dataSource}; Pooling=true;Min Pool Size=1";
+            return $"Data Source={dbPath};Pooling=true;Min Pool Size=1";
         }
 
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
