@@ -167,7 +167,7 @@
         <PackageReference Include="1Remote.Security" Version="1.1.0" />
         <PackageReference Include="1Remote.VncSharpCore" Version="1.2.1" />
         <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
-        <PackageReference Include="Dapper" Version="2.0.123" />
+        <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="FluentFTP" Version="51.0.0" />
         <PackageReference Include="JsonKnownTypes" Version="0.5.4" />
         <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
