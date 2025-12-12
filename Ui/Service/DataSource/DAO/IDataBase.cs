@@ -224,7 +224,17 @@ namespace _1RM.Service.DataSource.DAO
     {
         public static string GetSqliteConnectionString(string dbPath)
         {
-            return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
+            //return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
+            // SQLite requires UNC paths to be specified as file URIs with four slashes
+            // See: https://www.sqlite.org/uri.html
+            var dataSource = dbPath;
+            if (dbPath.StartsWith(@"\\"))
+            {
+                // https://note.dokeep.jp/post/csharp-sqlite-unc-path/
+                // Convert UNC path to file URI format: \\server\share\path -> \\\\server\share\path
+                dataSource = "\\\\\\\\" + dataSource.Trim('\\');
+            }
+            return $"Data Source={dataSource}; Pooling=true;Min Pool Size=1";
         }
 
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
