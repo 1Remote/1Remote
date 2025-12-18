@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Guardar em... (Ctrl + S)
 file_transmit_host_warning_same_names_title;Substituir ou cancelar
 file_transmit_host_warning_same_names;O destino tem {0} ficheiro(s) com o(s) mesmo(s) nome(s). Deseja continuar?
 host_reconecting_info;A ligar de novo...
-Toggle Cards/List;Alternar Cartões/Lista
 system_options_general_title;Geral
 Run automatically at OS startup;Executar automaticamente no arranque do sistema operativo (minimizado)
 Confirm before closing;Confirmar antes de fechar
@@ -125,7 +124,7 @@ server_editor_group_title_common;Comum
 Connection Info;Informações da ligação
 Connection Settings;Ligação
 server_editor_group_title_display;Ecrã
-server_editor_group_title_advantage;Vantagem
+server_editor_group_title_advantage;Configurações avançadas
 server_editor_group_title_gateway;Servidor de gateway RD
 server_editor_tags_tag;Pode introduzir vários, separados por ','
 Script before connect;Script antes de ligar

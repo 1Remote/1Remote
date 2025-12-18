@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Austauschen oder abbrechen</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?</s:String>
     <s:String x:Key="host_reconecting_info">Wiederverbinden...</s:String>
-    <s:String x:Key="Toggle Cards/List">Kacheln/Liste anzeigen</s:String>
     <s:String x:Key="system_options_general_title">Allgemein</s:String>
     <s:String x:Key="Run automatically at OS startup">Mit dem Betriebssystem starten (minimiert)</s:String>
     <s:String x:Key="Confirm before closing">Bestätigen Sie vor dem Schließen</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Verbindung</s:String>
     <s:String x:Key="Connection Settings">Verbindung</s:String>
     <s:String x:Key="server_editor_group_title_display">Anzeige</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Erweitert</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Erweiterte Einstellungen</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Remotedesktop-Gatewayserver</s:String>
     <s:String x:Key="server_editor_tags_tag">Mehrere durch „,“ getrennte möglich</s:String>
     <s:String x:Key="Script before connect">Skript vor Verbindungsaufbau</s:String>
@@ -328,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Wählen Sie Anmeldeinformationen in derselben Datenbank aus</s:String>
     <s:String x:Key="Reset main window location">Zurücksetzen der Position des Hauptfensters</s:String>
     <s:String x:Key="New server">Neuer Server</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Ordner löschen `{0}` und verschieben Sie seinen Inhalt in den übergeordneten Ordner?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
     <s:String x:Key="ListViewMode">Ansicht</s:String>
     <s:String x:Key="ListViewMode_List">Liste</s:String>
     <s:String x:Key="ListViewMode_Card">Karte</s:String>
     <s:String x:Key="ListViewMode_Tree">Baum</s:String>
-    <s:String x:Key="Do not check for new version">Überprüfen Sie nicht nach einer neuen Version</s:String>
+    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
 </ResourceDictionary>

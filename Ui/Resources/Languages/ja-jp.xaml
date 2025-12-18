@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">置き換え または中止</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">保存先フォルダーには同じ名前のファイルが {0} 個存在します。置き換えてもよろしいですか？</s:String>
     <s:String x:Key="host_reconecting_info">再接続中...</s:String>
-    <s:String x:Key="Toggle Cards/List">カードビュー/リストビュー切り替え</s:String>
     <s:String x:Key="system_options_general_title">一般</s:String>
     <s:String x:Key="Run automatically at OS startup">OS起動時に自動実行(最小化)</s:String>
     <s:String x:Key="Confirm before closing">閉じる前に確認する</s:String>
@@ -333,5 +332,5 @@
     <s:String x:Key="ListViewMode_List">リスト</s:String>
     <s:String x:Key="ListViewMode_Card">カード</s:String>
     <s:String x:Key="ListViewMode_Tree">ツリー</s:String>
-    <s:String x:Key="Do not check for new version">新しいバージョンをチェックしないでください</s:String>
+    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
 </ResourceDictionary>

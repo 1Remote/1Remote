@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;ダウンロードして保存... (Ctrl + S)
 file_transmit_host_warning_same_names_title;置き換え または中止
 file_transmit_host_warning_same_names;保存先フォルダーには同じ名前のファイルが {0} 個存在します。置き換えてもよろしいですか？
 host_reconecting_info;再接続中...
-Toggle Cards/List;カードビュー/リストビュー切り替え
 system_options_general_title;一般
 Run automatically at OS startup;OS起動時に自動実行(最小化)
 Confirm before closing;閉じる前に確認する

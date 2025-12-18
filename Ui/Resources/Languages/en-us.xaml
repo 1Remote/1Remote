@@ -125,7 +125,7 @@
     <s:String x:Key="Connection Info">Connection Info</s:String>
     <s:String x:Key="Connection Settings">Connection</s:String>
     <s:String x:Key="server_editor_group_title_display">Display</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Advantage</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Advanced Settings</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD Gateway Server</s:String>
     <s:String x:Key="server_editor_tags_tag">Can enter multiple, separated by ','</s:String>
     <s:String x:Key="Script before connect">Script before connect</s:String>

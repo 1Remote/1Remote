@@ -259,7 +259,7 @@
 
 
         <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'mstsc.exe mode'}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'mstsc.exe mode'}" Width="500"></TextBlock>
 
 
             <Grid Style="{StaticResource EditorRowGrid}">
@@ -375,7 +375,7 @@
 
 
         <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}" Width="500"></TextBlock>
 
 
             <Grid Style="{StaticResource EditorRowGrid}">
@@ -450,7 +450,7 @@
                 <forms:ConverterEGatewayLogonMethod x:Key="ConverterEGatewayLogonMethod" />
             </StackPanel.Resources>
 
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_gateway}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_gateway}" Width="500"></TextBlock>
 
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">

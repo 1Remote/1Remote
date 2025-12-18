@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">替换或跳过</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">目标包含{0}个同名文件，需要替换吗？</s:String>
     <s:String x:Key="host_reconecting_info">正尝试重新连接...</s:String>
-    <s:String x:Key="Toggle Cards/List">切换卡片/列表</s:String>
     <s:String x:Key="system_options_general_title">常规</s:String>
     <s:String x:Key="Run automatically at OS startup">开机自启动(最小化)</s:String>
     <s:String x:Key="Confirm before closing">关闭远程会话前弹窗确认</s:String>
@@ -333,5 +332,5 @@
     <s:String x:Key="ListViewMode_List">列表</s:String>
     <s:String x:Key="ListViewMode_Card">卡片</s:String>
     <s:String x:Key="ListViewMode_Tree">树形</s:String>
-    <s:String x:Key="Do not check for new version">不要检查新版本</s:String>
+    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
 </ResourceDictionary>

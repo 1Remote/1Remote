@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Sostituisci o annulla</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">La destinazione contiene {0} file con lo stesso nome. Vuoi continuare?</s:String>
     <s:String x:Key="host_reconecting_info">Riconnessione...</s:String>
-    <s:String x:Key="Toggle Cards/List">Attiva/disattiva Schede/Elenco</s:String>
     <s:String x:Key="system_options_general_title">Generale</s:String>
     <s:String x:Key="Run automatically at OS startup">Esegui automaticamente all'avvio del sistema operativo (ridotto a icona)</s:String>
     <s:String x:Key="Confirm before closing">Chiedi conferma prima di chiudere</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Informazioni di connessione</s:String>
     <s:String x:Key="Connection Settings">Connessione</s:String>
     <s:String x:Key="server_editor_group_title_display">Schermo</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Avanzate</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Impostazioni avanzate</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Server Gateway Desktop remoto</s:String>
     <s:String x:Key="server_editor_tags_tag">Può contenere più elementi, separati da ','</s:String>
     <s:String x:Key="Script before connect">Script prima della connessione</s:String>
@@ -328,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Seleziona le credenziali all'interno dello stesso database</s:String>
     <s:String x:Key="Reset main window location">Resetta la posizione della finestra principale</s:String>
     <s:String x:Key="New server">Nuovo server</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Elimina la cartella `{0}` e spostare il suo contenuto nella cartella principale?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
-    <s:String x:Key="Do not check for new version">Non controllare la nuova versione</s:String>
+    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
 </ResourceDictionary>

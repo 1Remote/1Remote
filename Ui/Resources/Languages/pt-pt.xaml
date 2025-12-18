@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Substituir ou cancelar</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">O destino tem {0} ficheiro(s) com o(s) mesmo(s) nome(s). Deseja continuar?</s:String>
     <s:String x:Key="host_reconecting_info">A ligar de novo...</s:String>
-    <s:String x:Key="Toggle Cards/List">Alternar Cartões/Lista</s:String>
     <s:String x:Key="system_options_general_title">Geral</s:String>
     <s:String x:Key="Run automatically at OS startup">Executar automaticamente no arranque do sistema operativo (minimizado)</s:String>
     <s:String x:Key="Confirm before closing">Confirmar antes de fechar</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Informações da ligação</s:String>
     <s:String x:Key="Connection Settings">Ligação</s:String>
     <s:String x:Key="server_editor_group_title_display">Ecrã</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Vantagem</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Configurações avançadas</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Servidor de gateway RD</s:String>
     <s:String x:Key="server_editor_tags_tag">Pode introduzir vários, separados por ','</s:String>
     <s:String x:Key="Script before connect">Script antes de ligar</s:String>
@@ -328,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Selecionar credenciais dentro da mesma base de dados</s:String>
     <s:String x:Key="Reset main window location">Redefinir localização da janela principal</s:String>
     <s:String x:Key="New server">Novo servidor</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Excluir a pasta `{0}` e mover seu conteúdo para a pasta pai?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
-    <s:String x:Key="Do not check for new version">Não verifique se há uma nova versão</s:String>
+    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
 </ResourceDictionary>
