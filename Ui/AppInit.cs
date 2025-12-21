@@ -312,8 +312,16 @@ namespace _1RM
                 if (string.IsNullOrWhiteSpace(local.Path))
                     local.Path = AppPathHelper.Instance.SqliteDbDefaultPath;
                 var fi = new FileInfo(local.Path);
-                if (fi?.Directory?.Exists == false)
-                    fi.Directory.Create();
+                try
+                {
+                    if (fi?.Directory?.Exists == false)
+                        fi.Directory.Create();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+
                 _localDataConnectionStatus = dataSourceService.InitLocalDataSource(local);
                 Task.Factory.StartNew(() =>
                 {

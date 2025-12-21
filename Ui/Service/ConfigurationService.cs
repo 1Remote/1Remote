@@ -332,8 +332,17 @@ namespace _1RM.Service
                 CanSave = false;
                 {
                     var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
-                    if (fi?.Directory?.Exists == false)
-                        fi.Directory.Create();
+
+                    try
+                    {
+                        if (fi?.Directory?.Exists == false)
+                            fi.Directory.Create();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                        return;
+                    }
 
                     RetryHelper.Try(() =>
                     {

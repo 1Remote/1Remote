@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -13,8 +14,16 @@ namespace _1RM.Utils.PuTTY.Model
         public static void Install(string resourcePath, string installPath)
         {
             var fi = new FileInfo(installPath);
-            if (fi?.Directory?.Exists == false)
-                fi.Directory.Create();
+            try
+            {
+                if (fi?.Directory?.Exists == false)
+                    fi.Directory.Create();
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                return;
+            }
 
             var stream = System.Windows.Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly(resourcePath))?.Stream;
             if (stream == null)
