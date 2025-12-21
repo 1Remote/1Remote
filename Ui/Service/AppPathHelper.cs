@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using _1RM.Utils;
 using _1RM.View.Guidance;
+using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 
 namespace _1RM.Service
@@ -35,7 +36,14 @@ namespace _1RM.Service
             }
             if (di?.Exists == false)
             {
-                di.Create();
+                try
+                {
+                    di.Create();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
             }
         }
 

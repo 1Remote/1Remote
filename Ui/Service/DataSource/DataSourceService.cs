@@ -237,8 +237,16 @@ namespace _1RM.Service.DataSource
                 else
                 {
                     var fi = new FileInfo(path);
-                    if (fi?.Directory?.Exists == false)
-                        fi.Directory.Create();
+                    try
+                    {
+                        if (fi?.Directory?.Exists == false)
+                            fi.Directory.Create();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Error(e);
+                        return;
+                    }
                     if (IoPermissionHelper.HasWritePermissionOnFile(path))
                         RetryHelper.Try(() =>
                         {
