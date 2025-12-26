@@ -327,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Vyberte pověření ve stejné databázi</s:String>
     <s:String x:Key="Reset main window location">Resetovat umístění hlavního okna</s:String>
     <s:String x:Key="New server">Nový server</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Smazat složku `{0}` a přesunout její obsah do nadřazené složky?</s:String>
     <s:String x:Key="ListViewMode">Zobrazení</s:String>
     <s:String x:Key="ListViewMode_List">Seznam</s:String>
     <s:String x:Key="ListViewMode_Card">Karta</s:String>
     <s:String x:Key="ListViewMode_Tree">Strom</s:String>
-    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
+    <s:String x:Key="Do not check for new version">Nekontrolujte novou verzi</s:String>
 </ResourceDictionary>

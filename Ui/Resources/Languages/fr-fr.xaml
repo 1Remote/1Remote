@@ -327,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Sélectionnez des informations d'identification dans la même base de données</s:String>
     <s:String x:Key="Reset main window location">Réinitialiser l'emplacement de la fenêtre principale</s:String>
     <s:String x:Key="New server">Nouveau serveur</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Delete folder `{0}` and move its contents to parent folder?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Supprimer le dossier `{0}` et déplacer son contenu vers le dossier parent ?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
-    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
+    <s:String x:Key="Do not check for new version">Ne vérifiez pas la nouvelle version</s:String>
 </ResourceDictionary>

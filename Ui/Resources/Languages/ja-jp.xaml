@@ -332,5 +332,5 @@
     <s:String x:Key="ListViewMode_List">リスト</s:String>
     <s:String x:Key="ListViewMode_Card">カード</s:String>
     <s:String x:Key="ListViewMode_Tree">ツリー</s:String>
-    <s:String x:Key="Do not check for new version">Do not check for new version</s:String>
+    <s:String x:Key="Do not check for new version">新しいバージョンをチェックしない</s:String>
 </ResourceDictionary>
