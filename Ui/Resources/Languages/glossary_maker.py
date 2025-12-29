@@ -11,6 +11,9 @@ import sys
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
 
+Use_proxy_for_google_translator = False
+#Use_proxy_for_google_translator = True
+
 Special_Marks_in_XAML_Content = ["&", "<", ">", "\r", "\n"]
 Special_Characters_in_XAML_Content = ["&amp;", "&lt;", "&gt;", "\\r", "\\n"]
 Forbidden_Characters_in_XAML_Key = ['"', "'", *Special_Marks_in_XAML_Content]
@@ -124,9 +127,12 @@ def translate_text(translator, text, target_lang_code):
         return None
 
 def generate_xaml_files():
-    http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
-    proxies = {'http': http_proxy, 'https': http_proxy}
-    translator = Translator(proxies=proxies)
+    if Use_proxy_for_google_translator:
+        http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
+        proxies = {'http': http_proxy, 'https': http_proxy}
+        translator = Translator(proxies=proxies)
+    else:
+        translator = Translator()
 
     """Generate XAML files from CSV files in glossary directory with auto-translation"""
     print("Enhanced Language Manager - Generating XAML files...")

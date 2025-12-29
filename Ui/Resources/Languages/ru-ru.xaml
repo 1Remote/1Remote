@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Заменить или отменить</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">В пункте назначения есть {0} файлов с такими же именами. Вы хотите продолжить?</s:String>
     <s:String x:Key="host_reconecting_info">Повторное подключение...</s:String>
-    <s:String x:Key="Toggle Cards/List">Переключить вид: карты/список</s:String>
     <s:String x:Key="system_options_general_title">Общий</s:String>
     <s:String x:Key="Run automatically at OS startup">Запускаться автоматически при запуске ОС (в свернутом виде)</s:String>
     <s:String x:Key="Confirm before closing">Подтверждать перед закрытие</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Подключение</s:String>
     <s:String x:Key="Connection Settings">Подключение</s:String>
     <s:String x:Key="server_editor_group_title_display">Экран</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Продвинутые</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Расширенные настройки</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Сервер шлюза удаленных рабочих столов</s:String>
     <s:String x:Key="server_editor_tags_tag">Можно ввести несколько, разделив их ','</s:String>
     <s:String x:Key="Script before connect">Скрипт перед подключением</s:String>
@@ -328,10 +327,10 @@
     <s:String x:Key="Select credentials within the same database">Выберите учетные данные в той же базе данных</s:String>
     <s:String x:Key="Reset main window location">Сбросить расположение основного окна</s:String>
     <s:String x:Key="New server">Новый сервер</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Удалить папку `{0}` и переместить его содержимое в родительскую папку?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Удалить папку `{0}` и переместить ее содержимое в родительскую папку?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
-    <s:String x:Key="Do not check for new version">Не проверяйте новую версию</s:String>
+    <s:String x:Key="Do not check for new version">Не проверять наличие новой версии</s:String>
 </ResourceDictionary>

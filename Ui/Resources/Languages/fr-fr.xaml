@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Remplacer ou annuler</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">La destination contient {0} fichiers portant les mêmes noms. Voulez-vous continuer?</s:String>
     <s:String x:Key="host_reconecting_info">Reconnexion ...</s:String>
-    <s:String x:Key="Toggle Cards/List">Basculer les Tuiles/Liste</s:String>
     <s:String x:Key="system_options_general_title">Général</s:String>
     <s:String x:Key="Run automatically at OS startup">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
     <s:String x:Key="Confirm before closing">Confirmer avant de fermer</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Informations sur la connexion</s:String>
     <s:String x:Key="Connection Settings">Connexion</s:String>
     <s:String x:Key="server_editor_group_title_display">Affichage</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Avantage</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Paramètres avancés</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serveur de passerelle RD</s:String>
     <s:String x:Key="server_editor_tags_tag">Peut entrer plusieurs, séparés par ','</s:String>
     <s:String x:Key="Script before connect">Script avant connexion</s:String>
@@ -328,7 +327,7 @@
     <s:String x:Key="Select credentials within the same database">Sélectionnez des informations d'identification dans la même base de données</s:String>
     <s:String x:Key="Reset main window location">Réinitialiser l'emplacement de la fenêtre principale</s:String>
     <s:String x:Key="New server">Nouveau serveur</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Supprimer le dossier `{0}` et déplacer son contenu vers le dossier parent?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Supprimer le dossier `{0}` et déplacer son contenu vers le dossier parent ?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>

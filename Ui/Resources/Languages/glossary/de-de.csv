@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Speichern nach... (STRG + S)
 file_transmit_host_warning_same_names_title;Austauschen oder abbrechen
 file_transmit_host_warning_same_names;Das Ziel hat {0} Dateien mit den gleichen Namen. Möchten Sie fortfahren?
 host_reconecting_info;Wiederverbinden...
-Toggle Cards/List;Kacheln/Liste anzeigen
 system_options_general_title;Allgemein
 Run automatically at OS startup;Mit dem Betriebssystem starten (minimiert)
 Confirm before closing;Bestätigen Sie vor dem Schließen
@@ -125,7 +124,7 @@ server_editor_group_title_common;Allgemein
 Connection Info;Verbindung
 Connection Settings;Verbindung
 server_editor_group_title_display;Anzeige
-server_editor_group_title_advantage;Erweitert
+server_editor_group_title_advantage;Erweiterte Einstellungen
 server_editor_group_title_gateway;Remotedesktop-Gatewayserver
 server_editor_tags_tag;Mehrere durch „,“ getrennte möglich
 Script before connect;Skript vor Verbindungsaufbau

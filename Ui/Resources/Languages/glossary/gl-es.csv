@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Gravar coma…. (Ctrl + S)
 file_transmit_host_warning_same_names_title;Reemplazar ou cancelar
 file_transmit_host_warning_same_names;O destiño ten {0} arquivo(s) co mesmo nome(s). Queres continuar=
 host_reconecting_info;Reconectando…
-Toggle Cards/List;Cambiar Cartas/Lista
 system_options_general_title;Xeral
 Run automatically at OS startup;Executar automáticamente ao inicio do SO(minimized)
 Confirm before closing;Confirmar antes de pechar
@@ -125,7 +124,7 @@ server_editor_group_title_common;Común
 Connection Info;Conexión
 Connection Settings;Conexión
 server_editor_group_title_display;Pantalla
-server_editor_group_title_advantage;Ventaxa
+server_editor_group_title_advantage;Configuración avanzada
 server_editor_group_title_gateway;Porta en enlace do servidor RD
 server_editor_tags_tag;Podes meter varios, separados por ','
 Script before connect;Script antes de conectar

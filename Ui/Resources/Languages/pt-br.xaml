@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Substituir ou cancelar</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">O destino tem {0} arquivo(s) com o(s) mesmo(s) nome(s). Você quer continuar?</s:String>
     <s:String x:Key="host_reconecting_info">Reconectando...</s:String>
-    <s:String x:Key="Toggle Cards/List">Alternar Cartões/Lista</s:String>
     <s:String x:Key="system_options_general_title">Geral</s:String>
     <s:String x:Key="Run automatically at OS startup">Executar automaticamente na inicialização do SO(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirme antes de fechar</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Conexão</s:String>
     <s:String x:Key="Connection Settings">Conexão</s:String>
     <s:String x:Key="server_editor_group_title_display">Tela</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Vantagem</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Configurações avançadas</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Servidor Gateway RD</s:String>
     <s:String x:Key="server_editor_tags_tag">Podem ser inseridos vários, separados por ','</s:String>
     <s:String x:Key="Script before connect">Script antes de conectar</s:String>
@@ -333,5 +332,5 @@
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>
     <s:String x:Key="ListViewMode_Tree">Tree</s:String>
-    <s:String x:Key="Do not check for new version">Não verifique se há uma nova versão</s:String>
+    <s:String x:Key="Do not check for new version">Não verifique se há nova versão</s:String>
 </ResourceDictionary>

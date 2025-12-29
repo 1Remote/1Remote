@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Сохранить в... (Ctrl + S)
 file_transmit_host_warning_same_names_title;Заменить или отменить
 file_transmit_host_warning_same_names;В пункте назначения есть {0} файлов с такими же именами. Вы хотите продолжить?
 host_reconecting_info;Повторное подключение...
-Toggle Cards/List;Переключить вид: карты/список
 system_options_general_title;Общий
 Run automatically at OS startup;Запускаться автоматически при запуске ОС (в свернутом виде)
 Confirm before closing;Подтверждать перед закрытие
@@ -125,7 +124,7 @@ server_editor_group_title_common;Общие
 Connection Info;Подключение
 Connection Settings;Подключение
 server_editor_group_title_display;Экран
-server_editor_group_title_advantage;Продвинутые
+server_editor_group_title_advantage;Расширенные настройки
 server_editor_group_title_gateway;Сервер шлюза удаленных рабочих столов
 server_editor_tags_tag;Можно ввести несколько, разделив их ','
 Script before connect;Скрипт перед подключением

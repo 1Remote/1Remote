@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Reemplazar o cancelar</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">El destino tiene {0} archivo(s) con el mismo nombre. ¿Querés continuar?</s:String>
     <s:String x:Key="host_reconecting_info">Reconectando...</s:String>
-    <s:String x:Key="Toggle Cards/List">Toggle Cards/List</s:String>
     <s:String x:Key="system_options_general_title">General</s:String>
     <s:String x:Key="Run automatically at OS startup">Ejecutar automáticamente al iniciar el SO (minimizado)</s:String>
     <s:String x:Key="Confirm before closing">Confirmar antes de cerrar</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Info de conexión</s:String>
     <s:String x:Key="Connection Settings">Conexión</s:String>
     <s:String x:Key="server_editor_group_title_display">Pantalla</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Avanzado</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Configuración avanzada</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Servidor Gateway RD</s:String>
     <s:String x:Key="server_editor_tags_tag">Podés ingresar varias, separadas por ','</s:String>
     <s:String x:Key="Script before connect">Script antes de conectar</s:String>
@@ -271,8 +270,8 @@
     <s:String x:Key="Show credentials info">Mostrar info de credenciales</s:String>
     <s:String x:Key="Sorting">Ordenar</s:String>
     <s:String x:Key="Sort by drag">Ordenar arrastrando</s:String>
-    <s:String x:Key="We can not connect database:">No podemos conectar base de datos:</s:String>
-    <s:String x:Key="We can not create tables on database:">We can not create tables on database:</s:String>
+    <s:String x:Key="We can not connect database:">No podemos conectar a la base de datos:</s:String>
+    <s:String x:Key="We can not create tables on database:">No podemos crear tablas en la base de datos:</s:String>
     <s:String x:Key="We can not insert into database:">No podemos insertar en la base de datos:</s:String>
     <s:String x:Key="We can not update on database:">No podemos actualizar en la base de datos:</s:String>
     <s:String x:Key="We can not read from database:">No podemos leer de la base de datos:</s:String>

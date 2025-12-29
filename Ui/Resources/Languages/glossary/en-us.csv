@@ -124,7 +124,7 @@ server_editor_group_title_common;Common
 Connection Info;Connection Info
 Connection Settings;Connection
 server_editor_group_title_display;Display
-server_editor_group_title_advantage;Advantage
+server_editor_group_title_advantage;Advanced Settings
 server_editor_group_title_gateway;RD Gateway Server
 server_editor_tags_tag;Can enter multiple, separated by ','
 Script before connect;Script before connect
