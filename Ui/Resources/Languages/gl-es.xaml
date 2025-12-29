@@ -92,7 +92,6 @@
     <s:String x:Key="file_transmit_host_warning_same_names_title">Reemplazar ou cancelar</s:String>
     <s:String x:Key="file_transmit_host_warning_same_names">O destiño ten {0} arquivo(s) co mesmo nome(s). Queres continuar=</s:String>
     <s:String x:Key="host_reconecting_info">Reconectando…</s:String>
-    <s:String x:Key="Toggle Cards/List">Cambiar Cartas/Lista</s:String>
     <s:String x:Key="system_options_general_title">Xeral</s:String>
     <s:String x:Key="Run automatically at OS startup">Executar automáticamente ao inicio do SO(minimized)</s:String>
     <s:String x:Key="Confirm before closing">Confirmar antes de pechar</s:String>
@@ -126,7 +125,7 @@
     <s:String x:Key="Connection Info">Conexión</s:String>
     <s:String x:Key="Connection Settings">Conexión</s:String>
     <s:String x:Key="server_editor_group_title_display">Pantalla</s:String>
-    <s:String x:Key="server_editor_group_title_advantage">Ventaxa</s:String>
+    <s:String x:Key="server_editor_group_title_advantage">Configuración avanzada</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Porta en enlace do servidor RD</s:String>
     <s:String x:Key="server_editor_tags_tag">Podes meter varios, separados por ','</s:String>
     <s:String x:Key="Script before connect">Script antes de conectar</s:String>
@@ -328,7 +327,7 @@
     <s:String x:Key="Select credentials within the same database">Seleccione credenciais dentro da mesma base de datos</s:String>
     <s:String x:Key="Reset main window location">Restablecer la ubicación de la ventana principal</s:String>
     <s:String x:Key="New server">Nuevo servidor</s:String>
-    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Eliminar o cartafol `{0}` e mover o seu contido ao cartafol pai?</s:String>
+    <s:String x:Key="Delete folder XXXX and move its contents to parent folder">Queres eliminar o cartafol `{0}` e mover o seu contido ao cartafol principal?</s:String>
     <s:String x:Key="ListViewMode">View</s:String>
     <s:String x:Key="ListViewMode_List">List</s:String>
     <s:String x:Key="ListViewMode_Card">Card</s:String>

@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Uložit do… (Ctrl + S)
 file_transmit_host_warning_same_names_title;Nahradit nebo zrušit
 file_transmit_host_warning_same_names;Cíl už obsahuje {0} takto nazvaný soubor(y). Chcete je přepsat?
 host_reconecting_info;Opětovné připojování…
-Toggle Cards/List;Přepnout mezi kartami/seznamem
 system_options_general_title;Obecné
 Run automatically at OS startup;Spouštět automaticky při přihlášení do systému(minimized)
 Confirm before closing;Zavírat až po potvrzení
@@ -125,7 +124,7 @@ server_editor_group_title_common;Společné
 Connection Info;Připojení
 Connection Settings;Připojení
 server_editor_group_title_display;Zobrazení
-server_editor_group_title_advantage;Výhoda
+server_editor_group_title_advantage;Pokročilá nastavení
 server_editor_group_title_gateway;Server brány vzdálených ploch
 server_editor_tags_tag;Je možné zadat vícero, oddělovaných „,“ (čárkou)
 Script before connect;Skript před připojením

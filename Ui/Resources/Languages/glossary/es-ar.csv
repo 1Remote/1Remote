@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;Guardar en... (Ctrl + S);
 file_transmit_host_warning_same_names_title;Reemplazar o cancelar;
 file_transmit_host_warning_same_names;El destino tiene {0} archivo(s) con el mismo nombre. ¿Querés continuar?;
 host_reconecting_info;Reconectando...;
-Toggle Cards/List;Toggle Cards/List
 system_options_general_title;General;
 Run automatically at OS startup;Ejecutar automáticamente al iniciar el SO (minimizado);
 Confirm before closing;Confirmar antes de cerrar;
@@ -125,7 +124,7 @@ server_editor_group_title_common;Común;
 Connection Info;Info de conexión;
 Connection Settings;Conexión;
 server_editor_group_title_display;Pantalla;
-server_editor_group_title_advantage;Avanzado;
+server_editor_group_title_advantage;Configuración avanzada;
 server_editor_group_title_gateway;Servidor Gateway RD;
 server_editor_tags_tag;Podés ingresar varias, separadas por ',';
 Script before connect;Script antes de conectar;
@@ -272,8 +271,6 @@ Sorting;Ordenar;
 Sort by drag;Ordenar arrastrando;
 We can not connect database:;No podemos conectar a la base de datos:;
 We can not create tables on database:;No podemos crear tablas en la base de datos:;
-We can not connect database:;No podemos conectar base de datos:;
-We can not create tables on database:;We can not create tables on database:
 We can not insert into database:;No podemos insertar en la base de datos:;
 We can not update on database:;No podemos actualizar en la base de datos:;
 We can not read from database:;No podemos leer de la base de datos:;

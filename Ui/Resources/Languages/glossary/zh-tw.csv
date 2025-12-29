@@ -91,7 +91,6 @@ file_transmit_host_command_save_to;儲存到... (Ctrl + S)
 file_transmit_host_warning_same_names_title;取代或略過
 file_transmit_host_warning_same_names;目標位置已有 {0} 個相同名稱的檔案，要以這些檔案取代嗎？
 host_reconecting_info;正在重試連線...
-Toggle Cards/List;切換卡片/清單
 system_options_general_title;一般
 Run automatically at OS startup;跟隨作業系統一併啟動(縮小至系統匣)
 Confirm before closing;關閉遠端工作階段前顯示確認視窗
