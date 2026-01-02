@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Timers;
+using System.Runtime.InteropServices;
 using Dragablz;
 using _1RM.Service;
 using _1RM.Utils;
@@ -17,15 +19,37 @@ namespace _1RM.View.Host
 {
     public class TabWindowViewModel : MaskLayerContainerScreenBase, IDisposable
     {
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string? lpszClass, string lpszTitle);
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string? lpszClass, string lpszTitle);
+        [DllImport("user32.dll")]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetFocus(IntPtr hWnd);
+
         public readonly string Token;
         public new TabWindowView View { get; private set; }
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
+
+        private IntPtr _hWndTabContent = IntPtr.Zero;
+        private readonly Timer _timer_ObserveTabSwitching = new Timer(1);
+        private int _timer_Count = 0;
+
+        private void InitTabSwitchingTimer()
+        {
+            _timer_ObserveTabSwitching.AutoReset = false;
+            _timer_ObserveTabSwitching.Elapsed += (sender, args) => AwaitTabSwitching();
+        }
 
         public TabWindowViewModel(TabWindowView windowView)
         {
             View = windowView;
             Token = DateTime.Now.Ticks.ToString();
             Items.CollectionChanged += ItemsOnCollectionChanged;
+            InitTabSwitchingTimer();
         }
 
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -39,6 +63,7 @@ namespace _1RM.View.Host
 
         public void Dispose()
         {
+            _timer_ObserveTabSwitching.Stop();
             Execute.OnUIThread(() =>
             {
                 SelectedItem = null;
@@ -82,6 +107,16 @@ namespace _1RM.View.Host
             get => _selectedItem;
             set
             {
+                _timer_ObserveTabSwitching.Stop();
+
+                // Get effective window of the current tab content.
+                _hWndTabContent = IntPtr.Zero;
+                IntPtr hWndParent = FindWindow(null, this.Title);
+                if (hWndParent != IntPtr.Zero)
+                {
+                    _hWndTabContent = GetCurrentTabContentWindow();
+                }
+
                 if (_selectedItem != null)
                 {
                     _selectedItem.Content.OnCanResizeNowChanged -= OnCanResizeNowChanged;
@@ -98,7 +133,9 @@ namespace _1RM.View.Host
                     {
                         SetTitle();
                         _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
-                        _selectedItem.Content.FocusOnMe();
+                        // _selectedItem.Content.FocusOnMe();
+                        _timer_Count = 200;
+                        _timer_ObserveTabSwitching.Start();
                     }
                     foreach (var item in Items)
                     {
@@ -109,6 +146,40 @@ namespace _1RM.View.Host
                     }
                     RaisePropertyChanged(nameof(WindowResizeMode));
                 }
+            }
+        }
+
+        private IntPtr GetCurrentTabContentWindow()
+        {
+            IntPtr hWndParent = FindWindow(null, this.Title);
+            if (hWndParent == IntPtr.Zero)
+            {
+                return IntPtr.Zero;
+            }
+            IntPtr last = IntPtr.Zero;
+            do
+            {
+                IntPtr hWnd = FindWindowEx(hWndParent, last, null, "");
+                if (hWnd != IntPtr.Zero && IsWindowVisible(hWnd))
+                {
+                    return hWnd;
+                }
+                last = hWnd;
+            } while (last != IntPtr.Zero);
+            return IntPtr.Zero;
+        }
+
+        private void AwaitTabSwitching()
+        {
+            IntPtr hWnd = GetCurrentTabContentWindow();
+            if (hWnd != IntPtr.Zero && hWnd != _hWndTabContent)
+            {
+                const int WM_SETFOCUS = 0x0007;
+                SendMessage(hWnd, WM_SETFOCUS, hWnd, IntPtr.Zero);
+            }
+            else
+            {
+                _timer_ObserveTabSwitching.Start();  // continue to observe
             }
         }
 
