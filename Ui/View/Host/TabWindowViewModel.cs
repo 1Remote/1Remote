@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Timers;
-using System.Runtime.InteropServices;
 using Dragablz;
 using _1RM.Service;
 using _1RM.Utils;
+using _1RM.Utils.WindowsApi;
 using _1RM.View.Host.ProtocolHosts;
 using _1RM.View.Settings;
 using _1RM.View.Utils;
@@ -19,23 +19,12 @@ namespace _1RM.View.Host
 {
     public class TabWindowViewModel : MaskLayerContainerScreenBase, IDisposable
     {
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(string? lpszClass, string lpszTitle);
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string? lpszClass, string lpszTitle);
-        [DllImport("user32.dll")]
-        public static extern bool IsWindowVisible(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetFocus(IntPtr hWnd);
-
         public readonly string Token;
         public new TabWindowView View { get; private set; }
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
         private IntPtr _hWndTabContent = IntPtr.Zero;
-        private readonly Timer _timer_ObserveTabSwitching = new Timer(1);
+        private readonly Timer _timer_ObserveTabSwitching = new Timer(5);
         private int _timer_Count = 0;
 
         private void InitTabSwitchingTimer()
@@ -111,7 +100,7 @@ namespace _1RM.View.Host
 
                 // Get effective window of the current tab content.
                 _hWndTabContent = IntPtr.Zero;
-                IntPtr hWndParent = FindWindow(null, this.Title);
+                IntPtr hWndParent = Win32Api.FindWindow(null, this.Title);
                 if (hWndParent != IntPtr.Zero)
                 {
                     _hWndTabContent = GetCurrentTabContentWindow();
@@ -134,7 +123,7 @@ namespace _1RM.View.Host
                         SetTitle();
                         _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
                         // _selectedItem.Content.FocusOnMe();
-                        _timer_Count = 200;
+                        _timer_Count = 40;  // 5ms interval, total 200ms
                         _timer_ObserveTabSwitching.Start();
                     }
                     foreach (var item in Items)
@@ -151,7 +140,7 @@ namespace _1RM.View.Host
 
         private IntPtr GetCurrentTabContentWindow()
         {
-            IntPtr hWndParent = FindWindow(null, this.Title);
+            IntPtr hWndParent = Win32Api.FindWindow(null, this.Title);
             if (hWndParent == IntPtr.Zero)
             {
                 return IntPtr.Zero;
@@ -159,8 +148,8 @@ namespace _1RM.View.Host
             IntPtr last = IntPtr.Zero;
             do
             {
-                IntPtr hWnd = FindWindowEx(hWndParent, last, null, "");
-                if (hWnd != IntPtr.Zero && IsWindowVisible(hWnd))
+                IntPtr hWnd = Win32Api.FindWindowEx(hWndParent, last, null, "");
+                if (hWnd != IntPtr.Zero && Win32Api.IsWindowVisible(hWnd))
                 {
                     return hWnd;
                 }
@@ -171,15 +160,16 @@ namespace _1RM.View.Host
 
         private void AwaitTabSwitching()
         {
+            if (_timer_Count <= 0) return;
+            _timer_Count--;
             IntPtr hWnd = GetCurrentTabContentWindow();
-            if (hWnd != IntPtr.Zero && hWnd != _hWndTabContent)
+            if (hWnd == IntPtr.Zero || hWnd == _hWndTabContent)
             {
-                const int WM_SETFOCUS = 0x0007;
-                SendMessage(hWnd, WM_SETFOCUS, hWnd, IntPtr.Zero);
+                _timer_ObserveTabSwitching.Start();  // continue to observe
             }
             else
             {
-                _timer_ObserveTabSwitching.Start();  // continue to observe
+                Win32Api.SetForegroundWindow(hWnd);
             }
         }
 
