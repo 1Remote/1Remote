@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace _1RM.Utils.WindowsApi
 {
@@ -55,5 +56,27 @@ namespace _1RM.Utils.WindowsApi
         {
             return Environment.OSVersion.Version.Build >= 22600; // Win11 22H2
         }
+    }
+
+    public static class Win32Api
+    {
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string? lpszClass, string lpszTitle);
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string? lpszClass, string lpszTitle);
+        [DllImport("user32.dll")]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetFocus(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        public const int WM_SETFOCUS = 0x0007;
+        public const int WM_KILLFOCUS = 0x0008;
+        public const int WM_ENABLE = 0x000A;
+        public const int WM_CANCELMODE = 0x001F;
+        public const int WM_MOUSEACTIVATE = 0x0021;
     }
 }
