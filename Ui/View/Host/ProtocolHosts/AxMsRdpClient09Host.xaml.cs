@@ -10,6 +10,7 @@ using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.WindowsApi;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
@@ -43,7 +44,7 @@ namespace _1RM.View.Host.ProtocolHosts
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             // Fix for the missing focus issue on the rdp client component
-            if (m.Msg == 0x0021) // WM_MOUSEACTIVATE
+            if (m.Msg == Win32Api.WM_MOUSEACTIVATE)
             {
                 if (!this.ContainsFocus)
                 {
