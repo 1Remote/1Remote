@@ -122,7 +122,17 @@ namespace _1RM.View.Host
                     {
                         SetTitle();
                         _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
+
+                        // Here, the SelectedItem property has merely been assigned a new value;
+                        // the tab switching process is not yet complete. Therefore, it is still
+                        // not possible to give focus to the tab that will become active.
+
+                        // Commented out for the reasons above.
                         // _selectedItem.Content.FocusOnMe();
+
+                        // Since there is no event notification when a new tab becomes active,
+                        // we use a timer to detect this change and then give focus to the newly
+                        // active tab.
                         _timer_Count = 40;  // 5ms interval, total 200ms
                         _timer_ObserveTabSwitching.Start();
                     }
