@@ -99,12 +99,7 @@ namespace _1RM.View.Host
                 _timer_ObserveTabSwitching.Stop();
 
                 // Get effective window of the current tab content.
-                _hWndTabContent = IntPtr.Zero;
-                IntPtr hWndParent = Win32Api.FindWindow(null, this.Title);
-                if (hWndParent != IntPtr.Zero)
-                {
-                    _hWndTabContent = GetCurrentTabContentWindow();
-                }
+                _hWndTabContent = GetCurrentTabContentWindow();
 
                 if (_selectedItem != null)
                 {
