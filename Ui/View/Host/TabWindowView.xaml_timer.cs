@@ -100,13 +100,21 @@ namespace _1RM.View.Host
             }
 
             // focus content when tab is focused
+            /****
+             * In the past, the following if statement included the additional condition
+             * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
+             * and the following comment explains why it is necessary:
+             * 
+             * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
+             *  needed: Without IT, once the tab gains focus, the timer will immediately
+             *  transfer the focus to the integrated window, causing the tab to be
+             *  unselectable or undraggable."
+             *
+             * However, it had to be removed to resolve issue #1052.
+             * Even after its removal, the undesirable behavior described in the comment
+             * did not occur.
+             ***/
             if (nowActivatedWindowHandle == _myHandle)
-            //         && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
-            /*
-             * Removed the condition `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` to resolve issue #1052.
-             * (Couldn't verify the described behavior as below as the reason of the condition.)
-             * ---- why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is needed: Without IT, once the tab gains focus, the timer will immediately transfer the focus to the integrated window, causing the tab to be unselectable or undraggable.
-             */
             {
                 SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
