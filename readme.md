@@ -75,7 +75,7 @@ Latest Version: 1.1.1
 
 If you're experiencing an RDP authentication error after a Windows update, this is caused by **Windows Update KB5074109**. Microsoft has released a fix in **KB5077744**.
 
-📖 **[Complete troubleshooting guide](TROUBLESHOOTING_RDP_AUTH_ERROR.md)**
+📖 **[Complete troubleshooting guide](TROUBLESHOOTING_RDP_AUTH_ERROR.md)** | **[中文故障排除指南](TROUBLESHOOTING_RDP_AUTH_ERROR_ZH.md)**
 
 For more information, see [Issue #1056](https://github.com/1Remote/1Remote/issues/1056).
 
