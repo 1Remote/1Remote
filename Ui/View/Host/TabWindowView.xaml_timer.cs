@@ -74,35 +74,47 @@ namespace _1RM.View.Host
         /// </summary>
         private void RunForIntegrate()
         {
-            IntPtr hWnd;
-            try
+            IntPtr hWnd = IntPtr.Zero;
+            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate)
             {
-                if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
-                    return;
-                hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+                try
+                {
+                    hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+                }
+                catch (Exception ex)
+                {
+                    SimpleLogHelper.Warning($"Failed to get host hwnd: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                SimpleLogHelper.Warning($"Failed to get host hwnd: {ex.Message}");
-                return;
-            }
-            
-            if (hWnd == IntPtr.Zero) return;
 
             var nowActivatedWindowHandle = GetForegroundWindow();
-
-            //SimpleLogHelper.Debug($"TabWindowView: isTimer = {isTimer}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, _lastActivatedWindowHandle = {_lastActivatedWindowHandle}, _myHandle = {_myHandle}");
-            // bring Tab window to top, when the host content is Integrate.
-            if (nowActivatedWindowHandle == hWnd && _lastActivatedWindowHandle != hWnd)
+            if (hWnd != IntPtr.Zero)
             {
-                SimpleLogHelper.Debug($@"TabWindowView: BringWindowToTop({_myHandle})");
-                BringWindowToTop(_myHandle);
+                //SimpleLogHelper.Debug($"TabWindowView: isTimer = {isTimer}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, _lastActivatedWindowHandle = {_lastActivatedWindowHandle}, _myHandle = {_myHandle}");
+                // bring Tab window to top, when the host content is Integrate.
+                if (nowActivatedWindowHandle == hWnd && _lastActivatedWindowHandle != hWnd)
+                {
+                    SimpleLogHelper.Debug($@"TabWindowView: BringWindowToTop({_myHandle})");
+                    BringWindowToTop(_myHandle);
+                }
             }
 
             // focus content when tab is focused
-            // why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is needed: Without IT, once the tab gains focus, the timer will immediately transfer the focus to the integrated window, causing the tab to be unselectable or undraggable.
-            else if (nowActivatedWindowHandle == _myHandle 
-                     && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left) 
+            /****
+             * In the past, the following if statement included the additional condition
+             * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
+             * and the following comment explains why it is necessary:
+             * 
+             * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
+             *  needed: Without IT, once the tab gains focus, the timer will immediately
+             *  transfer the focus to the integrated window, causing the tab to be
+             *  unselectable or undraggable."
+             *
+             * However, it had to be removed to resolve issue #1052.
+             * Even after its removal, the undesirable behavior described in the comment
+             * did not occur.
+             ***/
+            if (nowActivatedWindowHandle == _myHandle)
             {
                 SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
