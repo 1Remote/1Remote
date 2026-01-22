@@ -69,6 +69,16 @@ Latest Version: 1.1.1
     ↑ Customizable runners
 </p>
 
+## 🔧 Troubleshooting
+
+### RDP Authentication Error (Code: 0x80080005)
+
+If you're experiencing an RDP authentication error after a Windows update, this is caused by **Windows Update KB5074109**. Microsoft has released a fix in **KB5077744**.
+
+📖 **[Complete troubleshooting guide](TROUBLESHOOTING_RDP_AUTH_ERROR.md)**
+
+For more information, see [Issue #1056](https://github.com/1Remote/1Remote/issues/1056).
+
 ## Make 1Remote Stronger
 
 If you like **1Remote**, help us make it stronger by doing any of the following:
