@@ -99,27 +99,31 @@ namespace _1RM.View.Host
                 }
             }
 
-            // focus content when tab is focused
-            /****
-             * In the past, the following if statement included the additional condition
-             * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
-             * and the following comment explains why it is necessary:
-             * 
-             * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
-             *  needed: Without IT, once the tab gains focus, the timer will immediately
-             *  transfer the focus to the integrated window, causing the tab to be
-             *  unselectable or undraggable."
-             *
-             * However, it had to be removed to resolve issue #1052.
-             * Even after its removal, the undesirable behavior described in the comment
-             * did not occur.
-             ***/
-            if (nowActivatedWindowHandle == _myHandle)
+            if (_lastActivatedWindowHandle != nowActivatedWindowHandle)
             {
-                SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
-                Vm?.SelectedItem?.Content?.FocusOnMe();
+                // focus content when tab is focused
+                /****
+                 * In the past, the following if statement included the additional condition
+                 * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
+                 * and the following comment explains why it is necessary:
+                 * 
+                 * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
+                 *  needed: Without IT, once the tab gains focus, the timer will immediately
+                 *  transfer the focus to the integrated window, causing the tab to be
+                 *  unselectable or undraggable."
+                 *
+                 * However, it had to be removed to resolve issue #1052.
+                 * Even after its removal, the undesirable behavior described in the comment
+                 * did not occur.
+                 ***/
+                if (nowActivatedWindowHandle == _myHandle)
+                {
+                    SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
+                    Vm?.SelectedItem?.Content?.FocusOnMe();
+                }
+
+               _lastActivatedWindowHandle = nowActivatedWindowHandle;
             }
-            _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
         /****
