@@ -78,5 +78,6 @@ namespace _1RM.Utils.WindowsApi
         public const int WM_ENABLE = 0x000A;
         public const int WM_CANCELMODE = 0x001F;
         public const int WM_MOUSEACTIVATE = 0x0021;
+        public const int WM_GETOBJECT = 0x003D;
     }
 }
