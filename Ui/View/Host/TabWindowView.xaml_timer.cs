@@ -114,7 +114,7 @@ namespace _1RM.View.Host
              * Even after its removal, the undesirable behavior described in the comment
              * did not occur.
              ***/
-            if (nowActivatedWindowHandle == _myHandle)
+            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != nowActivatedWindowHandle)
             {
                 SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
