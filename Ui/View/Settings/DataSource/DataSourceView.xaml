@@ -219,7 +219,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="MySQL"></TextBlock>
                                 <TextBlock VerticalAlignment="Center" Margin="2 0">
-                                    <Hyperlink NavigateUri="https://1remote.org/usage/database/use-online-database/" TextDecorations="{x:Null}" 
+                                    <Hyperlink NavigateUri="https://1remote.github.io/usage/database/use-online-database/" TextDecorations="{x:Null}" 
                                                controls:HyperlinkHelper.IsOpenExternal="True">
                                         (?)
                                     </Hyperlink>
@@ -236,7 +236,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="PostgreSQL"></TextBlock>
                                 <TextBlock VerticalAlignment="Center" Margin="2 0">
-                                    <Hyperlink NavigateUri="https://1remote.org/usage/database/use-online-database/" TextDecorations="{x:Null}" 
+                                    <Hyperlink NavigateUri="https://1remote.github.io/usage/database/use-online-database/" TextDecorations="{x:Null}" 
                                                controls:HyperlinkHelper.IsOpenExternal="True">
                                         (?)
                                     </Hyperlink>
@@ -253,7 +253,7 @@
             </Menu>
 
             <TextBlock VerticalAlignment="Center" Margin="2 0">
-                <Hyperlink NavigateUri="https://1remote.org/usage/team/team-sharing/" TextDecorations="{x:Null}" 
+                <Hyperlink NavigateUri="https://1remote.github.io/usage/team/team-sharing/" TextDecorations="{x:Null}" 
                            controls:HyperlinkHelper.IsOpenExternal="True">
                     (?)
                 </Hyperlink>

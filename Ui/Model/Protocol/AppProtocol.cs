@@ -221,7 +221,7 @@ namespace _1RM.Model.Protocol
 
         public override string GetHelpUrl()
         {
-            return "https://1remote.org/usage/protocol/especial/app/";
+            return "https://1remote.github.io/usage/protocol/especial/app/";
         }
     }
 }
