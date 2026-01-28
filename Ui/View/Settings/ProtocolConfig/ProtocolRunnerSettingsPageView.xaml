@@ -237,7 +237,7 @@
                                   StrokeThickness="2" Stretch="Uniform" />
                             </Grid>
                             <TextBlock VerticalAlignment="Center" Margin="2 0">
-                                <Hyperlink NavigateUri="https://1remote.org/usage/protocol/runner/" TextDecorations="{x:Null}" 
+                                <Hyperlink NavigateUri="https://1remote.github.io/usage/protocol/runner/" TextDecorations="{x:Null}" 
                                            controls:HyperlinkHelper.IsOpenExternal="True">
                                     (?)
                                 </Hyperlink>

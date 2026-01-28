@@ -13,32 +13,32 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro%E2%80%90ZhCn)
 
 ## Features
 
-- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://1remote.org/usage/protocol/especial/remoteapp/), [NoMachine and other app](https://1remote.org/usage/protocol/especial/app/)
+- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://1remote.github.io/usage/protocol/especial/remoteapp/), [NoMachine and other app](https://1remote.github.io/usage/protocol/especial/app/)
 - Quick and convenient remote session launcher (Alt + M)
 - Multi-screen and HiDPI RDP connection (Test on **Win10 + 4k monitor *2** RDP TO **Win2016**)
 - Detailed connection configuration: tags, icons, colors, connection scripts etc.
 - Multiple languages, themes and tabbed interface
-- [Import connections from mRemoteNG](https://1remote.org/usage/overview/#importing-from-mremoteng)
-- Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://1remote.org/usage/protocol/runner/)
+- [Import connections from mRemoteNG](https://1remote.github.io/usage/overview/#importing-from-mremoteng)
+- Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://1remote.github.io/usage/protocol/runner/)
 - Portable - just unpack and run
 
 ## 🚩Installation
 
 Latest Version: 1.1.1
 
-### 🗺[Quick start](https://1remote.org/usage/quick-start/)
+### 🗺[Quick start](https://1remote.github.io/usage/quick-start/)
 
-### 🔻[Download](https://1remote.org/download/)
+### 🔻[Download](https://1remote.github.io/download/)
 
 ## 👓Overview
 
-<img src="https://1remote.org/img/home_override/hero1.png" width="800" />
+<img src="https://1remote.github.io/img/home_override/hero1.png" width="800" />
 
 <p align="center">
-    <img src="https://1remote.org/img/home_override/protocols.png" width="400" />
+    <img src="https://1remote.github.io/img/home_override/protocols.png" width="400" />
 </p>
 <p align="center">
-    <img src="https://1remote.org/img/home_override/hero2.gif" width="400"/>
+    <img src="https://1remote.github.io/img/home_override/hero2.gif" width="400"/>
 </p>
 
 <p align="center">
@@ -74,7 +74,7 @@ Latest Version: 1.1.1
 If you like **1Remote**, help us make it stronger by doing any of the following:
 
 1. Simply star this repository
-2. [Help translation](https://1remote.org/usage/misc/help-translation/)
+2. [Help translation](https://1remote.github.io/usage/misc/help-translation/)
 3. [Buy a coffee](https://ko-fi.com/VShawn)
 4. [Join DEV](DEVELOP.md)
 

@@ -19,13 +19,13 @@ namespace _1RM
             string.IsNullOrEmpty(PreRelease)
                 ? new[]
                 {
-                    "https://1remote.org/download/",
+                    "https://1remote.github.io/download/",
                     "https://github.com/1Remote/1Remote",
                 }
                 : new[]
                 {
                     "https://github.com/1Remote/1Remote/releases/expanded_assets/Nightly",
-                    "https://1remote.org/download/",
+                    "https://1remote.github.io/download/",
                     "https://github.com/1Remote/1Remote",
                 };
 
@@ -33,13 +33,13 @@ namespace _1RM
             string.IsNullOrEmpty(PreRelease)
                 ? new[]
                 {
-                    "https://1remote.org/download/",
+                    "https://1remote.github.io/download/",
                     "https://github.com/1Remote/1Remote",
                 }
                 : new[]
                 {
                     "https://github.com/1Remote/1Remote/releases/tag/Nightly",
-                    "https://1remote.org/download/",
+                    "https://1remote.github.io/download/",
                     "https://github.com/1Remote/1Remote",
                 };
     }
