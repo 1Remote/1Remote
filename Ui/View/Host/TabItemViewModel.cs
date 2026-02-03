@@ -9,7 +9,7 @@ using Shawn.Utils.Wpf;
 
 namespace _1RM.View.Host
 {
-    public class TabItemViewModel : NotifyPropertyChangedBase
+    public class TabItemViewModel : DisposableViewModel
     {
         public TabItemViewModel(HostBase hostBase, string displayName)
         {
@@ -22,15 +22,22 @@ namespace _1RM.View.Host
 
         private void ProtocolServerOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
+            if (_isDisposed) return;
+
             if (args.PropertyName == nameof(ProtocolBase.DisplayName))
             {
                 DisplayName = Content.ProtocolServer.DisplayName;
             }
         }
 
-        ~TabItemViewModel()
+        public override void Dispose()
         {
-            Content.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
+            if (!_isDisposed)
+            {
+                Content.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
+                _isDisposed = true;
+            }
+            base.Dispose();
         }
 
 
