@@ -193,7 +193,12 @@ namespace _1RM
                     {
                         PRemoteMTransferHelper.RunIsNeedTransferCheckAsync();
                         SecondaryVerificationHelper.Init();
-                        // 新用户显示引导窗口
+                        // Ensure LanguageServiceObj is initialized
+                        if (LanguageServiceObj == null)
+                        {
+                            throw new InvalidOperationException("LanguageServiceObj must be initialized before showing guidance window");
+                        }
+
                         var guidanceWindowViewModel = new GuidanceWindowViewModel(LanguageServiceObj, newConfiguration, defaultStorage);
                         var guidanceWindow = new GuidanceWindow(guidanceWindowViewModel);
                         guidanceWindow.ShowDialog();

@@ -142,19 +142,29 @@ namespace _1RM
             }
 
             if (!App.ExitingFlag)
+            {
+                // Capture exception reference inside lock to prevent concurrent modifications
+                Exception? exceptionToHandle = null;
                 lock (this)
                 {
-                    SimpleLogHelper.Fatal(e.Exception);
-                    UnifyTracing.Error(e.Exception, new Dictionary<string, string>()
+                    exceptionToHandle = e.Exception;
+                }
+
+                // Log and handle UI operations outside of lock
+                if (exceptionToHandle != null)
+                {
+                    SimpleLogHelper.Fatal(exceptionToHandle);
+                    UnifyTracing.Error(exceptionToHandle, new Dictionary<string, string>()
                     {
                         {"Where", "Bootstrapper.OnUnhandledException"},
                     });
+
                     Execute.OnUIThread(() =>
                     {
                         if (!App.ExitingFlag)
                             try
                             {
-                                var errorReport = new ErrorReportWindow(e.Exception);
+                                var errorReport = new ErrorReportWindow(exceptionToHandle);
                                 errorReport.ShowDialog();
                             }
                             finally
@@ -163,6 +173,7 @@ namespace _1RM
                             }
                     });
                 }
+            }
             e.Handled = true;
         }
 

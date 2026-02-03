@@ -214,8 +214,14 @@ namespace _1RM.View.Host
                 Execute.OnUIThreadSync(() =>
                 {
                     Items.Remove(item);
+                    // Dispose the item to release event subscriptions
+                    if (item is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
                     SelectedItem = Items.FirstOrDefault();
                 });
+                return true;
             }
             return false;
         }

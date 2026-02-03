@@ -79,7 +79,5 @@ namespace _1RM.Service
 
             return false;
         }
-
-        public Action? OnLauncherHotkeyPressed { get; set; }
     }
 }
