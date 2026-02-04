@@ -15,7 +15,14 @@ namespace _1RM.Utils
         {
             if (Image.FromStream(input) is Bitmap inputBitmap)
             {
-                return ConvertToIcon(inputBitmap, output, size, preserveAspectRatio);
+                try
+                {
+                    return ConvertToIcon(inputBitmap, output, size, preserveAspectRatio);
+                }
+                finally
+                {
+                    inputBitmap.Dispose();
+                }
             }
             return false;
         }
@@ -40,7 +47,7 @@ namespace _1RM.Utils
             {
                 width = height = size;
             }
-            var newBitmap = new Bitmap(inputBitmap, new Size(width, height));
+            using var newBitmap = new Bitmap(inputBitmap, new Size(width, height));
             // save the resized png into a memory stream for future use
             using var memoryStream = new MemoryStream();
             newBitmap.Save(memoryStream, ImageFormat.Png);

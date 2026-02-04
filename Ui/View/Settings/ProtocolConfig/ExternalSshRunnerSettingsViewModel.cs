@@ -1,29 +1,34 @@
-﻿using System;
-using System.IO;
-using System.Windows;
-using Newtonsoft.Json;
-using _1RM.Model.Protocol;
+using System.ComponentModel;
 using _1RM.Model.ProtocolRunner;
-using _1RM.Utils;
 using Shawn.Utils.Interface;
-using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
-using Shawn.Utils.Wpf.FileSystem;
 using _1RM.Service;
 
 namespace _1RM.View.Settings.ProtocolConfig;
 
 public class ExternalSshRunnerSettingsViewModel : ExternalRunnerSettingsViewModel
 {
+    private readonly PropertyChangedEventHandler? _propertyChangedHandler;
+
     public ExternalSshRunnerSettingsViewModel(ExternalRunnerForSSH externalRunner, ILanguageService languageService) : base(externalRunner, languageService)
     {
         ExternalRunnerForSSH = externalRunner;
-        ExternalRunnerForSSH.PropertyChanged += (sender, args) =>
+        _propertyChangedHandler = (sender, args) =>
         {
             IoC.Get<ProtocolConfigurationService>().Save();
         };
+        ExternalRunnerForSSH.PropertyChanged += _propertyChangedHandler;
     }
 
     public ExternalRunnerForSSH ExternalRunnerForSSH { get; }
 
+    public new void Dispose()
+    {
+        // Unsubscribe from SSH-specific event to prevent memory leak
+        if (_propertyChangedHandler != null)
+        {
+            ExternalRunnerForSSH.PropertyChanged -= _propertyChangedHandler;
+        }
+        // Call base dispose to unsubscribe from base class event
+        base.Dispose();
+    }
 }

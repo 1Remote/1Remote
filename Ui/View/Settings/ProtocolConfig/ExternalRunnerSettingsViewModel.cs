@@ -1,7 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using System.Windows.Media.Animation;
 using Newtonsoft.Json;
 using _1RM.Model.Protocol;
 using _1RM.Model.ProtocolRunner;
@@ -11,15 +11,13 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
-using Shawn.Utils.Wpf.PageHost;
-using Stylet;
-using System.Windows.Shapes;
 
 namespace _1RM.View.Settings.ProtocolConfig;
 
-public class ExternalRunnerSettingsViewModel
+public class ExternalRunnerSettingsViewModel : IDisposable
 {
     private readonly ILanguageService _languageService;
+    private readonly PropertyChangedEventHandler? _propertyChangedHandler;
     public ExternalRunner ExternalRunner { get; }
 
     public ExternalRunnerSettingsViewModel(ExternalRunner externalRunner, ILanguageService languageService)
@@ -27,7 +25,7 @@ public class ExternalRunnerSettingsViewModel
         ExternalRunner = externalRunner;
         _languageService = languageService;
 
-        ExternalRunner.PropertyChanged += (sender, args) =>
+        _propertyChangedHandler = (sender, args) =>
         {
             if (args.PropertyName == nameof(Model.ProtocolRunner.ExternalRunner.ExePath))
             {
@@ -35,6 +33,16 @@ public class ExternalRunnerSettingsViewModel
             }
             IoC.Get<ProtocolConfigurationService>().Save();
         };
+        ExternalRunner.PropertyChanged += _propertyChangedHandler;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from event to prevent memory leak
+        if (_propertyChangedHandler != null)
+        {
+            ExternalRunner.PropertyChanged -= _propertyChangedHandler;
+        }
     }
 
     private void AutoArguments()

@@ -37,6 +37,11 @@ namespace _1RM.Service
 
         public void Release()
         {
+            // Unsubscribe from static events to prevent memory leaks
+            GlobalEventHelper.OnRequestServerConnect -= this.OnRequestOpenConnection;
+            GlobalEventHelper.OnRequestQuickConnect -= this.OnRequestOpenConnection;
+            GlobalEventHelper.OnRequestServersConnect -= this.OnRequestOpenConnection;
+
             lock (_dictLock)
             {
                 foreach (var tabWindow in _token2TabWindows.ToArray())

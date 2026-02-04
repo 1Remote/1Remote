@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,23 +16,37 @@ namespace _1RM.View.Settings.ProtocolConfig
             DependencyProperty.Register("Runner", typeof(PuttyRunner), typeof(PuttyRunnerSettings),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
+        private PropertyChangedEventHandler? _propertyChangedHandler;
+
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (PuttyRunner)e.NewValue;
-            ((PuttyRunnerSettings)d).DataContext = value;
+            var control = (PuttyRunnerSettings)d;
+            var oldValue = e.OldValue as PuttyRunner;
+            var newValue = (PuttyRunner)e.NewValue;
+
+            // Unsubscribe from old runner
+            if (oldValue != null && control._propertyChangedHandler != null)
+            {
+                oldValue.PropertyChanged -= control._propertyChangedHandler;
+            }
+
+            // Subscribe to new runner
+            if (newValue != null)
+            {
+                control._propertyChangedHandler = (sender, args) =>
+                {
+                    IoC.Get<ProtocolConfigurationService>().Save();
+                };
+                newValue.PropertyChanged += control._propertyChangedHandler;
+            }
+
+            control.DataContext = newValue;
         }
 
         public PuttyRunner Runner
         {
             get => (PuttyRunner)GetValue(RunnerProperty);
-            set
-            {
-                SetValue(RunnerProperty, value);
-                value.PropertyChanged += (sender, args) =>
-                {
-                    IoC.Get<ProtocolConfigurationService>().Save();
-                };
-            }
+            set => SetValue(RunnerProperty, value);
         }
 
 

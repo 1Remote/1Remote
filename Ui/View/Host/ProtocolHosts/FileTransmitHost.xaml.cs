@@ -52,25 +52,27 @@ namespace _1RM.View.Host.ProtocolHosts
 
             DataContext = _vmRemote;
 
-            _vmRemote.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem))
-                {
-                    var scrollTo = _vmRemote.SelectedRemoteItem;
-                    if (scrollTo == null && _vmRemote.RemoteItems.Count >= 1)
-                    {
-                        scrollTo = _vmRemote.RemoteItems.First();
-                    }
-                    if (scrollTo != null)
-                    {
-                        TvFileList.ScrollIntoView(scrollTo);
-                    }
-                }
-            };
+            _vmRemote.PropertyChanged += OnVmRemotePropertyChanged;
 
             this.AllowDrop = true;
             this.DragEnter += OnDragEnter;
             this.Drop += OnDrop;
+        }
+
+        private void OnVmRemotePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(VmFileTransmitHost.SelectedRemoteItem))
+            {
+                var scrollTo = _vmRemote.SelectedRemoteItem;
+                if (scrollTo == null && _vmRemote.RemoteItems.Count >= 1)
+                {
+                    scrollTo = _vmRemote.RemoteItems.First();
+                }
+                if (scrollTo != null)
+                {
+                    TvFileList.ScrollIntoView(scrollTo);
+                }
+            }
         }
 
         private void OnDrop(object sender, DragEventArgs e)
@@ -126,7 +128,12 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void Close()
         {
-            _vmRemote?.Release();
+            // Unsubscribe from PropertyChanged event to prevent memory leaks
+            if (_vmRemote != null)
+            {
+                _vmRemote.PropertyChanged -= OnVmRemotePropertyChanged;
+                _vmRemote.Release();
+            }
             Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }

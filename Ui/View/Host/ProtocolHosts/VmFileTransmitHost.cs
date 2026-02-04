@@ -665,8 +665,13 @@ namespace _1RM.View.Host.ProtocolHosts
                             var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, ConnectionId, fi!.Directory!.FullName, ris);
                             AddTransmitTask(t);
                             t.StartTransmitAsync(this.RemoteItems);
-                            t.OnTaskEnd += (status, exception) =>
+
+                            // Use named method to allow unsubscription
+                            void OnPreviewFileTransmitEnd(ETransmitTaskStatus status, Exception? exception)
                             {
+                                // Unsubscribe to prevent memory leak
+                                t.OnTaskEnd -= OnPreviewFileTransmitEnd;
+
                                 var item = t.Items.FirstOrDefault();
                                 if (item != null)
                                 {
@@ -679,7 +684,20 @@ namespace _1RM.View.Host.ProtocolHosts
                                     };
                                     System.Diagnostics.Process.Start(psi);
                                 }
-                            };
+
+                                // Remove from collection when task completes to prevent memory leak
+                                if (status == ETransmitTaskStatus.Transmitted
+                                    || status == ETransmitTaskStatus.Cancel)
+                                {
+                                    Execute.OnUIThread(() =>
+                                    {
+                                        if (TransmitTasks.Contains(t))
+                                            TransmitTasks.Remove(t);
+                                    });
+                                }
+                            }
+
+                            t.OnTaskEnd += OnPreviewFileTransmitEnd;
                         }
                         catch (Exception e)
                         {

@@ -66,6 +66,9 @@ namespace _1RM.Service
 
         public void TaskTrayDispose()
         {
+            // Unsubscribe from static events to prevent memory leaks
+            GlobalEventHelper.OnLanguageChanged -= ReloadTaskTrayContextMenu;
+
             if (_taskTrayIcon != null)
             {
                 _taskTrayIcon.Visible = false;
