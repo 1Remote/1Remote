@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
@@ -12,23 +14,37 @@ namespace _1RM.View.Settings.ProtocolConfig
             DependencyProperty.Register("Runner", typeof(KittyRunner), typeof(KittyRunnerSettings),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
+        private PropertyChangedEventHandler? _propertyChangedHandler;
+
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (KittyRunner)e.NewValue;
-            ((KittyRunnerSettings)d).DataContext = value;
+            var control = (KittyRunnerSettings)d;
+            var oldValue = e.OldValue as KittyRunner;
+            var newValue = (KittyRunner)e.NewValue;
+
+            // Unsubscribe from old runner
+            if (oldValue != null && control._propertyChangedHandler != null)
+            {
+                oldValue.PropertyChanged -= control._propertyChangedHandler;
+            }
+
+            // Subscribe to new runner
+            if (newValue != null)
+            {
+                control._propertyChangedHandler = (sender, args) =>
+                {
+                    IoC.Get<ProtocolConfigurationService>().Save();
+                };
+                newValue.PropertyChanged += control._propertyChangedHandler;
+            }
+
+            control.DataContext = newValue;
         }
 
         public KittyRunner Runner
         {
             get => (KittyRunner)GetValue(RunnerProperty);
-            set
-            {
-                SetValue(RunnerProperty, value);
-                value.PropertyChanged += (sender, args) =>
-                {
-                    IoC.Get<ProtocolConfigurationService>().Save();
-                };
-            }
+            set => SetValue(RunnerProperty, value);
         }
 
 

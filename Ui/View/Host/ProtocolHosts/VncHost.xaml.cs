@@ -135,6 +135,11 @@ namespace _1RM.View.Host.ProtocolHosts
             Status = ProtocolHostStatus.Disconnected;
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
+
+            // Unsubscribe from events to prevent memory leaks
+            Vnc.ConnectComplete -= OnConnected;
+            Vnc.ConnectionLost -= OnConnectionLost;
+
             base.Close();
         }
 

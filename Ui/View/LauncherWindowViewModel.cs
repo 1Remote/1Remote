@@ -39,6 +39,10 @@ namespace _1RM.View
         public QuickConnectionViewModel QuickConnectionViewModel { get; }
         private readonly ConfigurationService _configurationService;
 
+        // Event handler delegates to prevent memory leaks
+        private EventHandler? _deactivatedHandler;
+        private KeyEventHandler? _keyDownHandler;
+
         #region properties
 
 
@@ -98,10 +102,22 @@ namespace _1RM.View
             {
                 Execute.OnUIThreadSync(() =>
                 {
+                    // Unsubscribe from previous event handlers to prevent memory leaks
+                    if (_deactivatedHandler != null)
+                        window.Deactivated -= _deactivatedHandler;
+                    if (_keyDownHandler != null)
+                        window.KeyDown -= _keyDownHandler;
+
                     SetHotKey(_configurationService.Launcher.LauncherEnabled,
                         _configurationService.Launcher.HotKeyModifiers, _configurationService.Launcher.HotKeyKey);
-                    window.Deactivated += (s, a) => { HideMe(); };
-                    window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
+
+                    // Create and subscribe new event handlers
+                    _deactivatedHandler = (s, a) => { HideMe(); };
+                    _keyDownHandler = (s, a) => { if (a.Key == Key.Escape) HideMe(); };
+
+                    window.Deactivated += _deactivatedHandler;
+                    window.KeyDown += _keyDownHandler;
+
                     ServerSelectionsViewModel.CalcNoteFieldVisibility();
                 });
             }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using _1RM.Controls.NoteDisplay;
 using _1RM.Model;
@@ -33,10 +34,23 @@ namespace _1RM.Controls
         public ServerCardItem()
         {
             InitializeComponent();
-            PopupCardSettingMenu.Closed += (sender, args) =>
-            {
-                ProtocolBaseViewModel?.ClearActions();
-            };
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            PopupCardSettingMenu.Closed += PopupCardSettingMenuOnClosed;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            PopupCardSettingMenu.Closed -= PopupCardSettingMenuOnClosed;
+        }
+
+        private void PopupCardSettingMenuOnClosed(object? sender, EventArgs e)
+        {
+            ProtocolBaseViewModel?.ClearActions();
         }
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)

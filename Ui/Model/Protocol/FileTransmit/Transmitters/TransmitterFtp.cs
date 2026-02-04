@@ -227,9 +227,14 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
 
         public void Release()
         {
+            var ftp = _ftp;
+            if (ftp != null)
+            {
+                // Unsubscribe from event to prevent memory leak
+                ftp.ValidateCertificate -= OnValidateCertificate;
+            }
             FtpSemaphoe?.Dispose();
             FtpConnection?.Dispose();
-            var ftp = _ftp;
             ftp?.Disconnect();
             ftp?.Dispose();
             _ftp = null;
@@ -247,7 +252,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             _ftp = new AsyncFtpClient(Hostname, new System.Net.NetworkCredential(Username, Password), Port);
             _ftp.Config.EncryptionMode = FtpEncryptionMode.Explicit;
             _ftp.Config.SslProtocols = SslProtocols.Tls12;
-            _ftp.ValidateCertificate += new FtpSslValidation(OnValidateCertificate);
+            _ftp.ValidateCertificate += OnValidateCertificate;
             _ftp.Config.Noop = true;
             await _ftp.AutoConnect();
             if (!_ftp.IsConnected)
