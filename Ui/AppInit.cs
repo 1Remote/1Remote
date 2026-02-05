@@ -328,13 +328,13 @@ namespace _1RM
                 }
 
                 _localDataConnectionStatus = dataSourceService.InitLocalDataSource(local);
-                Task.Factory.StartNew(() =>
-                {
-                    //ConfigurationServiceObj!.LocalDataSource.GetServers(true);
-                    IoC.Get<GlobalData>().ReloadAll(true);
-                    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
-                        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
-                });
+                //Task.Factory.StartNew(() =>
+                //{
+                //    //ConfigurationServiceObj!.LocalDataSource.GetServers(true);
+                //    IoC.Get<GlobalData>().ReloadAll(true);
+                //    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
+                //        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+                //});
             }
 
             // init session controller
@@ -345,6 +345,9 @@ namespace _1RM
 
         public static void InitOnLaunch()
         {
+            IoC.Get<GlobalData>().ReloadAll(true);
+            if (ConfigurationServiceObj?.General.ShowRecentlySessionInTray != false)
+                IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
                 Task.Factory.StartNew(async () =>

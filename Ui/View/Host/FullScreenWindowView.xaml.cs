@@ -68,20 +68,25 @@ namespace _1RM.View.Host
 
             WindowStartupLocation = WindowStartupLocation.Manual;
 
-            Loaded += (sender, args) =>
-            {
-                this.Width = DESIGN_WIDTH;
-                this.Height = DESIGN_HEIGHT;
-                SetContent();
-            };
+            Loaded += OnWindowLoaded;
+            Closed += OnWindowClosed;
+        }
 
-            Closed += (sender, args) =>
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            this.Width = DESIGN_WIDTH;
+            this.Height = DESIGN_HEIGHT;
+            SetContent();
+            // Unsubscribe from Loaded event after it fires once to prevent memory leak
+            Loaded -= OnWindowLoaded;
+        }
+
+        private void OnWindowClosed(object? sender, EventArgs e)
+        {
+            if (Host != null)
             {
-                if (Host != null)
-                {
-                    IoC.Get<SessionControlService>().CloseProtocolHostAsync(Host.ConnectionId);
-                }
-            };
+                IoC.Get<SessionControlService>().CloseProtocolHostAsync(Host.ConnectionId);
+            }
         }
 
         private void SetContent()
