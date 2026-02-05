@@ -152,45 +152,48 @@ namespace _1RM.Service
 
 
             // OPEN SERVER CONNECTION
-            var servers = new List<ProtocolBase>();
-            foreach (var arg in args)
             {
-                if (arg.StartsWith(TAG_PREFIX))
+                //IoC.Get<GlobalData>().ReloadAll();
+                var servers = new List<ProtocolBase>();
+                foreach (var arg in args)
                 {
-                    // tag connect
-                    var tagName = arg.Substring(1);
+                    if (arg.StartsWith(TAG_PREFIX))
+                    {
+                        // tag connect
+                        var tagName = arg.Substring(1);
 
-                    var ss = IoC.Get<GlobalData>().VmItemList
-                        .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase))
-                                                    && servers.Contains(x.Server) == false)
-                        .Select(x => x.Server)
-                        .ToArray();
-                    servers.AddRange(ss);
-                }
-                else if (arg.StartsWith(ULID_PREFIX, StringComparison.OrdinalIgnoreCase))
-                {
-                    var id = arg.Substring(ULID_PREFIX.Length).Trim();
-                    var server = IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase));
-                    if (server != null && servers.Contains(server.Server) == false)
-                    {
-                        servers.Add(server.Server);
+                        var ss = IoC.Get<GlobalData>().VmItemList
+                            .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase))
+                                        && servers.Contains(x.Server) == false)
+                            .Select(x => x.Server)
+                            .ToArray();
+                        servers.AddRange(ss);
                     }
-                }
-                else
-                {
-                    var ss = IoC.Get<GlobalData>().VmItemList.Where(x => string.Equals(x.DisplayName, arg, StringComparison.CurrentCultureIgnoreCase));
-                    foreach (var server in ss)
+                    else if (arg.StartsWith(ULID_PREFIX, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (servers.Contains(server.Server) == false)
+                        var id = arg.Substring(ULID_PREFIX.Length).Trim();
+                        var server = IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase));
+                        if (server != null && servers.Contains(server.Server) == false)
                         {
                             servers.Add(server.Server);
                         }
                     }
+                    else
+                    {
+                        var ss = IoC.Get<GlobalData>().VmItemList.Where(x => string.Equals(x.DisplayName, arg, StringComparison.CurrentCultureIgnoreCase));
+                        foreach (var server in ss)
+                        {
+                            if (servers.Contains(server.Server) == false)
+                            {
+                                servers.Add(server.Server);
+                            }
+                        }
+                    }
                 }
-            }
 
-            if (servers.Count > 0)
-                GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
+                if (servers.Count > 0)
+                    GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
+            }
         }
 
 
