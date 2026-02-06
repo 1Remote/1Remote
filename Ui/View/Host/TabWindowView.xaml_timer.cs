@@ -99,12 +99,12 @@ namespace _1RM.View.Host
                 }
             }
 
-            // focus content when tab is focused
+            // focus content when tab is focused when the focus is back to tab window
             /****
              * In the past, the following if statement included the additional condition
              * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
              * and the following comment explains why it is necessary:
-             * 
+             *
              * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
              *  needed: Without IT, once the tab gains focus, the timer will immediately
              *  transfer the focus to the integrated window, causing the tab to be
@@ -113,8 +113,14 @@ namespace _1RM.View.Host
              * However, it had to be removed to resolve issue #1052.
              * Even after its removal, the undesirable behavior described in the comment
              * did not occur.
+             *
+             * 2026-02-06 update: After further testing, removal of the condition will cause
+             * the following issue: once the tab gains focus, the timer will immediately
+             * transfer the focus to the integrated window, causing the tab(with a ssh session)
+             * to be `unable to resize` or `close button not working`, so I add it back temporarily: https://github.com/1Remote/1Remote/issues/1066
              ***/
-            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != nowActivatedWindowHandle)
+            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != _myHandle 
+                                                      && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
             {
                 SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
