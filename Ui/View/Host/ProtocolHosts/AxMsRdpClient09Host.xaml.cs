@@ -72,8 +72,14 @@ namespace _1RM.View.Host.ProtocolHosts
         /// system scale factor, 100 = 100%, 200 = 200%
         /// </summary>
         private uint _primaryScaleFactor = 100;
-
+        /// <summary>
+        /// if has connected, then rdp can resize
+        /// </summary>
         private bool _flagHasConnected = false;
+        /// <summary>
+        /// if has ever connected successfully, then enabled auto reconnect feature
+        /// </summary>
+        private bool _flagHasEverConnected = false;
 
 
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login

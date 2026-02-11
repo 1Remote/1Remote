@@ -123,8 +123,6 @@ namespace _1RM.View.Host.ProtocolHosts
             lock (this)
             {
                 if (_rdpClient == null) return;
-                var flagHasConnected = this._flagHasConnected;
-                _flagHasConnected = false;
 
                 Status = ProtocolHostStatus.Disconnected;
                 ParentWindowResize_StopWatch();
@@ -167,8 +165,8 @@ namespace _1RM.View.Host.ProtocolHosts
                             // exDiscReasonServerIdleTimeout: user leave and no input for a long time without disconnect or log off, and server set a timeout to drop the session.
                             // exDiscReasonReplacedByOtherConnection: another user (maybe the same user) logon to the server, and the server drop this session.
                             RdpHost.Visibility = Visibility.Collapsed;
-                            TbMessageTitle.Visibility = Visibility.Collapsed;
                             GridMessageBox.Visibility = Visibility.Visible;
+                            TbMessageTitle.Visibility = Visibility.Collapsed;
                             BtnReconn.Visibility = Visibility.Visible;
                             TbMessage.Text = reason;
                             ParentWindowSetToWindow();
@@ -185,7 +183,8 @@ namespace _1RM.View.Host.ProtocolHosts
                         // We try reconnecting.
                         RdpHost.Visibility = Visibility.Collapsed;
                         GridMessageBox.Visibility = Visibility.Visible;
-                        if (_retryCount < MAX_RETRY_COUNT)
+                        if (_flagHasEverConnected // a rdp session with never successful connection should not retry (in the case error code = 4 ex:exDiscReasonNoInfo)
+                            && _retryCount < MAX_RETRY_COUNT)
                         {
                             // Continue to retry.
                             ++_retryCount;
@@ -200,9 +199,8 @@ namespace _1RM.View.Host.ProtocolHosts
                             // The number of retries has reached its limit. Display an error.
                             _retryCount = 0;  // Reset for next time.
                             TbMessageTitle.Visibility = Visibility.Collapsed;
-                            TbMessage.Text = reason;
-                            TbMessage.Visibility = Visibility.Visible;
                             BtnReconn.Visibility = Visibility.Visible;
+                            TbMessage.Text = reason;
                             ParentWindowSetToWindow();
                         }
                         this.ParentWindow?.FlashIfNotActive();
@@ -220,6 +218,7 @@ namespace _1RM.View.Host.ProtocolHosts
             _loginResizeTimer.Start();
 
             _flagHasConnected = true;
+            _flagHasEverConnected = true;
             _retryCount = 0;
             Execute.OnUIThread(() =>
             {
