@@ -234,7 +234,8 @@ namespace _1RM.Service
                             var items = tab.GetViewModel().Items.ToList();
                             if (items.Count == 0)
                             {
-                                tab.Hide();
+                                // execute Hide in UI thread
+                                Execute.OnUIThreadSync(() => tab.Hide());
                                 // move tab from dict to queue
                                 _token2TabWindows.TryRemove(key, out _);
                                 _windowToBeDispose.Enqueue(tab);
@@ -256,7 +257,8 @@ namespace _1RM.Service
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
                             _windowToBeDispose.Enqueue(full);
-                            full.ShowOrHide(null);
+                            // execyte ShowOrHide in UI thread
+                            Execute.OnUIThreadSync(() => full.ShowOrHide(null));
                         }
                     }
                 }
