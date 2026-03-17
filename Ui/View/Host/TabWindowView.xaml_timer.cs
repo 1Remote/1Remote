@@ -74,8 +74,9 @@ namespace _1RM.View.Host
         /// </summary>
         private void RunForIntegrate()
         {
+            bool isIntegrate = Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate;
             IntPtr hWnd = IntPtr.Zero;
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate)
+            if (isIntegrate)
             {
                 try
                 {
@@ -101,7 +102,7 @@ namespace _1RM.View.Host
 
             // focus content when tab is focused when the focus is back to tab window
             if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != _myHandle
-                                                      && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+                                                      && !(isIntegrate && System.Windows.Forms.Control.MouseButtons == MouseButtons.Left))
             {
                 SimpleLogHelper.Debug($@"TabWindowView.RunForIntegrate: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
@@ -246,17 +247,10 @@ namespace _1RM.View.Host
 
             if (IsMouseInside(this))
             {
-                if ((nowActivatedWindowHandle != rdpHandle && IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow))
+                if (nowActivatedWindowHandle != rdpHandle && IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow)
                 {
                     SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(rdpHandle)");
                     SetForegroundWindow(rdpHandle);
-                }
-                // Fix the issue that after clicking the tab label to focus the tab window, the RDP content inside the tab loses focus,
-                // see https://github.com/1Remote/1Remote/issues/1067
-                if (isMousePressed)
-                {
-                    SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: FocusOnMe for RDP content");
-                    Vm?.SelectedItem?.Content?.FocusOnMe();
                 }
             }
             else if (nowActivatedWindowHandle == rdpHandle)
