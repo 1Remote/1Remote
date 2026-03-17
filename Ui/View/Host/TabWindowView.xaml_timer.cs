@@ -74,8 +74,9 @@ namespace _1RM.View.Host
         /// </summary>
         private void RunForIntegrate()
         {
+            bool isIntegrate = Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate;
             IntPtr hWnd = IntPtr.Zero;
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate)
+            if (isIntegrate)
             {
                 try
                 {
@@ -94,35 +95,16 @@ namespace _1RM.View.Host
                 // bring Tab window to top, when the host content is Integrate.
                 if (nowActivatedWindowHandle == hWnd && _lastActivatedWindowHandle != hWnd)
                 {
-                    SimpleLogHelper.Debug($@"TabWindowView: BringWindowToTop({_myHandle})");
+                    SimpleLogHelper.Debug($@"TabWindowView.RunForIntegrate: BringWindowToTop({_myHandle})");
                     BringWindowToTop(_myHandle);
                 }
             }
 
             // focus content when tab is focused when the focus is back to tab window
-            /****
-             * In the past, the following if statement included the additional condition
-             * `&& System.Windows.Forms.Control.MouseButtons != MouseButtons.Left`,
-             * and the following comment explains why it is necessary:
-             *
-             * "why `System.Windows.Forms.Control.MouseButtons != MouseButtons.Left` is
-             *  needed: Without IT, once the tab gains focus, the timer will immediately
-             *  transfer the focus to the integrated window, causing the tab to be
-             *  unselectable or undraggable."
-             *
-             * However, it had to be removed to resolve issue #1052.
-             * Even after its removal, the undesirable behavior described in the comment
-             * did not occur.
-             *
-             * 2026-02-06 update: After further testing, removal of the condition will cause
-             * the following issue: once the tab gains focus, the timer will immediately
-             * transfer the focus to the integrated window, causing the tab(with a ssh session)
-             * to be `unable to resize` or `close button not working`, so I add it back temporarily: https://github.com/1Remote/1Remote/issues/1066
-             ***/
-            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != _myHandle 
-                                                      && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != _myHandle
+                                                      && !(isIntegrate && System.Windows.Forms.Control.MouseButtons == MouseButtons.Left))
             {
-                SimpleLogHelper.Debug($@"TabWindowView: Vm?.SelectedItem?.Content?.FocusOnMe()");
+                SimpleLogHelper.Debug($@"TabWindowView.RunForIntegrate: Vm?.SelectedItem?.Content?.FocusOnMe()");
                 Vm?.SelectedItem?.Content?.FocusOnMe();
             }
             _lastActivatedWindowHandle = nowActivatedWindowHandle;
@@ -171,7 +153,7 @@ namespace _1RM.View.Host
 #if DEBUG
             var r = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y &&
                     mousePos.Y <= windowBottomRight.Y;
-            SimpleLogHelper.Debug($@"TabWindowView IsMouseInside = {r}: mousePos = ({mousePos.X}, {mousePos.Y}), windowPos = ({windowPos.X}, {windowPos.Y}), windowBottomRight = ({windowBottomRight.X}, {windowBottomRight.Y})");
+            //SimpleLogHelper.Debug($@"TabWindowView IsMouseInside = {r}: mousePos = ({mousePos.X}, {mousePos.Y}), windowPos = ({windowPos.X}, {windowPos.Y}), windowBottomRight = ({windowBottomRight.X}, {windowBottomRight.Y})");
 #endif
             return mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
         }
@@ -241,9 +223,6 @@ namespace _1RM.View.Host
 
         private void RunForRdpV2()
         {
-            if(IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow == false)
-                return;
-
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
             //if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
@@ -251,18 +230,10 @@ namespace _1RM.View.Host
             if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
                 return;
 
-            // Fix the resizing bug introduced by #648, see https://github.com/1Remote/1Remote/issues/797 for more details
             bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
                                   || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
                                   || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
-            if (isMousePressed)
-            {
-                //SimpleLogHelper.Debug("Tab focus: Mouse is pressed, do nothing");
-                return;
-            }
-
             var nowActivatedWindowHandle = GetForegroundWindow();
-            var desktopHandle = GetDesktopWindow();
             IntPtr rdpHandle = IntPtr.Zero;
             if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
             {
@@ -274,19 +245,25 @@ namespace _1RM.View.Host
                 throw new NotImplementedException();
             }
 
-            bool isMouseInside = IsMouseInside(this);
-//#if DEBUG
-//            SimpleLogHelper.Debug($"Tab focus: isMouseInside = {isMouseInside}, rdpHandle = {rdpHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
-//#endif
-            if (!isMouseInside && rdpHandle == nowActivatedWindowHandle)
+            if (IsMouseInside(this))
             {
-                // 1 - RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP
-                SetForegroundWindow(desktopHandle);
+                if (nowActivatedWindowHandle != rdpHandle && IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow)
+                {
+                    SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(rdpHandle)");
+                    SetForegroundWindow(rdpHandle);
+                }
             }
-            else if (isMouseInside && (nowActivatedWindowHandle == desktopHandle || nowActivatedWindowHandle == IntPtr.Zero))
+            else if (nowActivatedWindowHandle == rdpHandle)
             {
-                // 2 - desktop has focus
-                SetForegroundWindow(rdpHandle);
+                // !isMousePressed is to fix the resizing bug introduced by #648
+                // Stay focused while the mouse is pressed to avoid losing focus when resizing the RDP window,
+                // see https://github.com/1Remote/1Remote/issues/797 for more details
+                if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow && !isMousePressed)
+                {
+                    // RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP.
+                    SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(desktop)");
+                    SetForegroundWindow(GetDesktopWindow());
+                }
             }
 
             #endregion
