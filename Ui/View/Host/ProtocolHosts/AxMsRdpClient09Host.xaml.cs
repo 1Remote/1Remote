@@ -55,6 +55,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 if (!this.ContainsFocus)
                 {
+                    SimpleLogHelper.Debug("AxMsRdpClient9NotSafeForScriptingEx.WndProc: Focus");
                     this.Focus();
                 }
             }
