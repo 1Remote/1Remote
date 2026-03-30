@@ -206,6 +206,14 @@ namespace _1RM.Service
         }
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
+            // Collect the tab and full-screen updates to perform on the UI thread.
+            // Execute.OnUIThreadSync must NOT be called while holding _dictLock because
+            // ConnectWithTab dispatches work to the UI thread that also needs _dictLock,
+            // creating an AB-BA deadlock. We therefore collect the required UI actions
+            // under the lock and execute them only after the lock is released.
+            var uiTabUpdates = new List<(string key, TabWindowView tab, string connectionId)>();
+            var uiFullscreenUpdates = new List<FullScreenWindowView>();
+
             lock (_dictLock)
             {
                 foreach (var connectionId in connectionIds)
@@ -229,18 +237,9 @@ namespace _1RM.Service
                     foreach (var (key, tab) in _token2TabWindows.ToArray())
                     {
 #endif
-                        if (tab.GetViewModel().TryRemoveItem(connectionId))
-                        {
-                            var items = tab.GetViewModel().Items.ToList();
-                            if (items.Count == 0)
-                            {
-                                // execute Hide in UI thread
-                                Execute.OnUIThreadSync(() => tab.Hide());
-                                // move tab from dict to queue
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
-                        }
+                        // Queue all tabs; TryRemoveItem will return false quickly if the
+                        // connection is not in this tab.
+                        uiTabUpdates.Add((key, tab, connectionId));
                     }
 
                     // hide full
@@ -257,8 +256,7 @@ namespace _1RM.Service
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
                             _windowToBeDispose.Enqueue(full);
-                            // execyte ShowOrHide in UI thread
-                            Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+                            uiFullscreenUpdates.Add(full);
                         }
                     }
                 }
@@ -297,6 +295,34 @@ namespace _1RM.Service
                         PrintCacheCount();
                     }
                 }
+            }
+
+            // Perform UI operations OUTSIDE the lock.
+            // TryRemoveItem and tab.Hide() use Execute.OnUIThreadSync internally, which
+            // would deadlock if called while holding _dictLock (see comment above).
+            foreach (var (key, tab, connectionId) in uiTabUpdates)
+            {
+                if (tab.GetViewModel().TryRemoveItem(connectionId))
+                {
+                    var items = tab.GetViewModel().Items.ToList();
+                    if (items.Count == 0)
+                    {
+                        // execute Hide in UI thread
+                        Execute.OnUIThreadSync(() => tab.Hide());
+                        // move tab from dict to queue
+                        lock (_dictLock)
+                        {
+                            _token2TabWindows.TryRemove(key, out _);
+                            _windowToBeDispose.Enqueue(tab);
+                        }
+                    }
+                }
+            }
+
+            foreach (var full in uiFullscreenUpdates)
+            {
+                // execute ShowOrHide in UI thread
+                Execute.OnUIThreadSync(() => full.ShowOrHide(null));
             }
         }
 

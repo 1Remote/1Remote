@@ -143,6 +143,12 @@ namespace _1RM.Service
         private TabWindowView GetOrCreateTabWindow(string assignTabToken = "")
         {
             TabWindowView? ret = null;
+
+            // Step 1: Find an existing tab window under the lock (no UI operations).
+            // Execute.OnUIThreadSync must NOT be called while holding _dictLock because
+            // ConnectWithTab posts work to the UI thread that also needs _dictLock, which
+            // creates an AB-BA deadlock (background thread holds lock + waits for UI,
+            // UI thread waits for lock held by background thread).
             lock (_dictLock)
             {
                 // find existed
@@ -161,31 +167,39 @@ namespace _1RM.Service
                         ret = _token2TabWindows.Last().Value;
                     }
                 }
-
-                // create new
-                if (ret == null)
-                {
-                    Execute.OnUIThreadSync(() =>
-                    {
-                        ret = new TabWindowView();
-                        AddTab(ret);
-                        ret.Show();
-                        ret.ShowInTaskbar = true;
-                        _lastTabToken = ret.Token;
-
-                        int loopCount = 0;
-                        while (ret.IsLoaded == false)
-                        {
-                            ++loopCount;
-                            Thread.Sleep(100);
-                            if (loopCount > 50)
-                                break;
-                        }
-                    });
-                }
-                Debug.Assert(ret != null);
-                return ret!;
             }
+
+            // Step 2: If no existing tab found, create a new one OUTSIDE the lock.
+            // Execute.OnUIThreadSync is safe here because we are not holding _dictLock.
+            if (ret == null)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    ret = new TabWindowView();
+                    ret.Show();
+                    ret.ShowInTaskbar = true;
+
+                    int loopCount = 0;
+                    while (ret.IsLoaded == false)
+                    {
+                        ++loopCount;
+                        Thread.Sleep(100);
+                        if (loopCount > 50)
+                            break;
+                    }
+                });
+
+                // Step 3: Register the new tab in the dictionary under the lock.
+                Debug.Assert(ret != null);
+                AddTab(ret!); // AddTab acquires _dictLock internally
+                lock (_dictLock)
+                {
+                    _lastTabToken = ret!.Token;
+                }
+            }
+
+            Debug.Assert(ret != null);
+            return ret!;
         }
 
         public TabWindowView? GetTabByConnectionId(string connectionId)
