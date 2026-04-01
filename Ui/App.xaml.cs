@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Media;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using _1RM.Service;
 using _1RM.Utils.Tracing;
 #if FOR_MICROSOFT_STORE_ONLY
@@ -67,6 +70,16 @@ namespace _1RM
             ResourceDictionary = this.Resources;
             base.OnStartup(e);
 
+            // Normalize mouse wheel scroll delta for precision trackpad compatibility.
+            // Precision touchpads on Windows 10/11 may send WM_MOUSEWHEEL with large accumulated
+            // delta values (multiples of 120), causing ScrollViewers to scroll too far per gesture.
+            // This handler caps the effective delta to one standard wheel tick (120) per event.
+            EventManager.RegisterClassHandler(
+                typeof(ScrollViewer),
+                UIElement.PreviewMouseWheelEvent,
+                new MouseWheelEventHandler(NormalizeScrollViewerMouseWheel),
+                true);
+
             // First, make a sound (one second of silence) in the main window
             // so that the Volume Mixer and others will recognize 1Remote as
             // an application that outputs sound.
@@ -94,6 +107,66 @@ namespace _1RM
             {
                 // ignored
             }
+        }
+
+        /// <summary>
+        /// Normalizes the mouse wheel delta for all ScrollViewers to prevent over-scrolling
+        /// when using precision trackpads that may send large accumulated delta values.
+        /// </summary>
+        private static readonly ConditionalWeakTable<ScrollViewer, ScrollWheelState> _scrollWheelStates = new();
+
+        private sealed class ScrollWheelState
+        {
+            public int LastPassedTimestamp;
+        }
+
+        private static void NormalizeScrollViewerMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Handled) return;
+            if (sender is not ScrollViewer scrollViewer) return;
+
+            var state = _scrollWheelStates.GetOrCreateValue(scrollViewer);
+            var timeDelta = e.Timestamp - state.LastPassedTimestamp;
+
+            // Standard Windows WHEEL_DELTA: the delta for one physical mouse-wheel notch.
+            const int wheelDelta = 120;
+            // Minimum interval (ms) between events forwarded to the ScrollViewer.
+            // Events arriving faster than this threshold are rate-limited so that precision
+            // trackpads, which fire many rapid WM_MOUSEWHEEL messages, do not scroll too far.
+            const int minIntervalMs = 100;
+
+            bool isRapidFire = timeDelta >= 0 && timeDelta < minIntervalMs;
+            bool isLargeDelta = Math.Abs(e.Delta) > wheelDelta;
+
+            if (!isRapidFire && !isLargeDelta)
+            {
+                // Normal mouse-wheel event: record the timestamp and let WPF handle it.
+                state.LastPassedTimestamp = e.Timestamp;
+                return;
+            }
+
+            // Either the events are arriving too fast or the delta is unusually large.
+            // Take control of scrolling so the amount stays predictable.
+            e.Handled = true;
+
+            if (isRapidFire)
+            {
+                // Rate limit exceeded: drop this event.
+                return;
+            }
+
+            // Large delta (e.g. several ticks accumulated by the touchpad driver):
+            // normalize to exactly one standard tick and re-dispatch on the ScrollViewer.
+            // The re-dispatched event is MouseWheelEvent (bubble), not PreviewMouseWheelEvent
+            // (tunnel), so it won't re-enter this class handler.
+            state.LastPassedTimestamp = e.Timestamp;
+            var normalizedDelta = Math.Sign(e.Delta) * wheelDelta;
+            var normalizedEvent = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, normalizedDelta)
+            {
+                RoutedEvent = UIElement.MouseWheelEvent,
+                Source = e.Source,
+            };
+            scrollViewer.RaiseEvent(normalizedEvent);
         }
 
         public static bool ExitingFlag = false;
