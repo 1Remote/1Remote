@@ -206,6 +206,9 @@ namespace _1RM.Service
         }
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
+            var uiTabUpdates = new List<(string key, TabWindowView tab, string connectionId)>();
+            var uiFullscreenUpdates = new List<FullScreenWindowView>();
+
             lock (_dictLock)
             {
                 foreach (var connectionId in connectionIds)
@@ -229,18 +232,9 @@ namespace _1RM.Service
                     foreach (var (key, tab) in _token2TabWindows.ToArray())
                     {
 #endif
-                        if (tab.GetViewModel().TryRemoveItem(connectionId))
-                        {
-                            var items = tab.GetViewModel().Items.ToList();
-                            if (items.Count == 0)
-                            {
-                                // execute Hide in UI thread
-                                Execute.OnUIThreadSync(() => tab.Hide());
-                                // move tab from dict to queue
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
-                        }
+                        // Queue all tabs; TryRemoveItem will return false quickly if the
+                        // connection is not in this tab.
+                        uiTabUpdates.Add((key, tab, connectionId));
                     }
 
                     // hide full
@@ -257,8 +251,7 @@ namespace _1RM.Service
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
                             _windowToBeDispose.Enqueue(full);
-                            // execyte ShowOrHide in UI thread
-                            Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+                            uiFullscreenUpdates.Add(full);
                         }
                     }
                 }
@@ -298,6 +291,34 @@ namespace _1RM.Service
                     }
                 }
             }
+
+            // Perform UI operations OUTSIDE the lock.
+            // TryRemoveItem and tab.Hide() use Execute.OnUIThreadSync internally, which
+            // would deadlock if called while holding _dictLock (see comment above).
+            foreach (var (key, tab, connectionId) in uiTabUpdates)
+            {
+                if (tab.GetViewModel().TryRemoveItem(connectionId))
+                {
+                    var items = tab.GetViewModel().Items.ToList();
+                    if (items.Count == 0)
+                    {
+                        // execute Hide in UI thread
+                        Execute.OnUIThreadSync(() => tab.Hide());
+                        // move tab from dict to queue
+                        lock (_dictLock)
+                        {
+                            _token2TabWindows.TryRemove(key, out _);
+                            _windowToBeDispose.Enqueue(tab);
+                        }
+                    }
+                }
+            }
+
+            foreach (var full in uiFullscreenUpdates)
+            {
+                // execute ShowOrHide in UI thread
+                Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+            }
         }
 
         #endregion
@@ -305,28 +326,32 @@ namespace _1RM.Service
         #region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
-            while (_hostToBeDispose.TryDequeue(out var host))
+            // Dispose must happen on UI thread because hosts contain WPF/WinForms components
+            Execute.OnUIThread(() =>
             {
-                PrintCacheCount();
-                host.OnClosed -= OnRequestCloseConnection;
-                host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
-                // Dispose
-                try
+                while (_hostToBeDispose.TryDequeue(out var host))
                 {
-                    if (host is IDisposable d)
+                    PrintCacheCount();
+                    host.OnClosed -= OnRequestCloseConnection;
+                    host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
+                    // Dispose
+                    try
                     {
-                        d.Dispose();
+                        if (host is IDisposable d)
+                        {
+                            d.Dispose();
+                        }
+                        else
+                        {
+                            host.Close();
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        host.Close();
+                        SimpleLogHelper.Error(e);
                     }
                 }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
-            }
+            });
         }
 
         private void CloseEmptyWindows()
