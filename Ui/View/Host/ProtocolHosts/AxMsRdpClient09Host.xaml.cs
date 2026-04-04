@@ -1,25 +1,26 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text;
-using System.Timers;
-using System.Windows;
-using System.Windows.Forms;
-using _1RM.Utils.RdpFile;
-using MSTSCLib;
-using _1RM.Model;
+﻿using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Service.Locality;
 using _1RM.Utils;
+using _1RM.Utils.RdpFile;
 using _1RM.Utils.WindowsApi;
+using MSTSCLib;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
-using Color = System.Drawing.Color;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
+using Color = System.Drawing.Color;
 using Timer = System.Timers.Timer;
 
 namespace _1RM.View.Host.ProtocolHosts
@@ -341,12 +342,10 @@ namespace _1RM.View.Host.ProtocolHosts
             // purpose is not clear
             ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDrives = true; // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
 
-            if (_rdpSettings.EnableDiskDrives == true
-                || _rdpSettings.EnableRedirectDrivesPlugIn == true)
+            if (_rdpSettings.EnableDiskDrives == true || _rdpSettings.EnableRedirectDrivesPlugIn == true)
             {
                 _rdpClient.AdvancedSettings9.RedirectDrives = true;
-
-                // enable then usb disk can be redirect
+                // you must redirect disk drive if you want to redirect usb disk
                 if (_rdpSettings.EnableRedirectDrivesPlugIn == true)
                 {
                     ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices = true; // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
@@ -440,25 +439,42 @@ namespace _1RM.View.Host.ProtocolHosts
             var ocx = _rdpClient?.GetOcx() as MSTSCLib.IMsRdpClientNonScriptable7;
             if (ocx == null)
                 return;
-            ocx.CameraRedirConfigCollection.RedirectByDefault = false;
-            if (_rdpSettings.EnableRedirectCameras == true)
+
+            // Collect FriendlyNames of cameras redirected via the RDPECCAM channel so that
+            // the same physical device is not also claimed by the USB DeviceCollection channel,
+            // which would cause a server-side double-redirect conflict. ref: https://github.com/1Remote/1Remote/issues/1071
+            var cameraFriendlyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // redirect camera
             {
-                // enumerates connected camera devices
-                ocx.CameraRedirConfigCollection.Rescan();
-                for (int i = 0; i < ocx.CameraRedirConfigCollection.Count; i++)
+                ocx.CameraRedirConfigCollection.RedirectByDefault = false;
+                if (_rdpSettings.EnableRedirectCameras == true)
                 {
-                    var camera = ocx.CameraRedirConfigCollection.ByIndex[(uint)i];
-                    camera.Redirected = true;
+                    ocx.CameraRedirConfigCollection.Rescan(); // enumerates connected camera devices
+                    for (int i = 0; i < ocx.CameraRedirConfigCollection.Count; i++)
+                    {
+                        var camera = ocx.CameraRedirConfigCollection.ByIndex[(uint) i];
+                        camera.Redirected = true;
+                        cameraFriendlyNames.Add(ocx.CameraRedirConfigCollection.ByIndex[(uint)i].FriendlyName ?? "");
+                        SimpleLogHelper.Debug($"Redirect camera: {camera.FriendlyName}");
+                    }
                 }
             }
-
-            ocx.DeviceCollection.RescanDevices(false);
-            for (uint i = 0; i < ocx.DeviceCollection.DeviceCount; i++)
+            // redirect device
             {
-                var d = ocx.DeviceCollection.DeviceByIndex[i];
-                SimpleLogHelper.Debug(d.FriendlyName);
-                SimpleLogHelper.Debug(d.DeviceDescription);
-                d.RedirectionState = true;
+                ocx.DeviceCollection.RescanDevices(false);
+                for (uint i = 0; i < ocx.DeviceCollection.DeviceCount; i++)
+                {
+                    var d = ocx.DeviceCollection.DeviceByIndex[i];
+                    if (!string.IsNullOrEmpty(d.FriendlyName) && cameraFriendlyNames.Contains(d.FriendlyName))
+                    {
+                        // Skip cameras already handled by `redirect camera` to avoid double-redirect conflict
+                        SimpleLogHelper.Debug($"Redirect device: skip {d.FriendlyName}({d.DeviceDescription}) for being already redirected as camera");
+                        continue;
+                    }
+
+                    SimpleLogHelper.Debug($"Redirect device: {d.FriendlyName}({d.DeviceDescription})");
+                    d.RedirectionState = true;
+                }
             }
         }
 
