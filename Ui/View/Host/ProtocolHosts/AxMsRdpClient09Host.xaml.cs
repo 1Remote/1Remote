@@ -441,6 +441,11 @@ namespace _1RM.View.Host.ProtocolHosts
             if (ocx == null)
                 return;
             ocx.CameraRedirConfigCollection.RedirectByDefault = false;
+
+            // Collect FriendlyNames of cameras redirected via the RDPECCAM channel so that
+            // the same physical device is not also claimed by the USB DeviceCollection channel,
+            // which would cause a server-side double-redirect conflict.
+            var cameraFriendlyNames = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (_rdpSettings.EnableRedirectCameras == true)
             {
                 // enumerates connected camera devices
@@ -449,6 +454,8 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     var camera = ocx.CameraRedirConfigCollection.ByIndex[(uint)i];
                     camera.Redirected = true;
+                    if (!string.IsNullOrEmpty(camera.FriendlyName))
+                        cameraFriendlyNames.Add(camera.FriendlyName);
                 }
             }
 
@@ -458,6 +465,9 @@ namespace _1RM.View.Host.ProtocolHosts
                 var d = ocx.DeviceCollection.DeviceByIndex[i];
                 SimpleLogHelper.Debug(d.FriendlyName);
                 SimpleLogHelper.Debug(d.DeviceDescription);
+                // Skip cameras already handled by RDPECCAM to avoid double-redirect conflict
+                if (!string.IsNullOrEmpty(d.FriendlyName) && cameraFriendlyNames.Contains(d.FriendlyName))
+                    continue;
                 d.RedirectionState = true;
             }
         }
