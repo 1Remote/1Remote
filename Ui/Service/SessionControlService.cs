@@ -46,11 +46,11 @@ namespace _1RM.Service
             {
                 foreach (var tabWindow in _token2TabWindows.ToArray())
                 {
-                    tabWindow.Value.Hide();
+                    Execute.OnUIThreadSync(() => tabWindow.Value.Hide());
                 }
                 foreach (var kv in _connectionId2FullScreenWindows.ToArray())
                 {
-                    kv.Value.Hide();
+                    Execute.OnUIThreadSync(() => kv.Value.Hide());
                 }
             }
             this.CloseProtocolHostAsync(_connectionId2Hosts.Keys.ToArray());
@@ -206,6 +206,8 @@ namespace _1RM.Service
         }
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
+            var tabsToHide = new List<(string key, TabWindowView tab)>();
+
             lock (_dictLock)
             {
                 foreach (var connectionId in connectionIds)
@@ -234,8 +236,8 @@ namespace _1RM.Service
                             var items = tab.GetViewModel().Items.ToList();
                             if (items.Count == 0)
                             {
-                                // execute Hide in UI thread
-                                Execute.OnUIThreadSync(() => tab.Hide());
+                                // collect instead of calling Hide() inside lock
+                                tabsToHide.Add((key, tab));
                                 // move tab from dict to queue
                                 _token2TabWindows.TryRemove(key, out _);
                                 _windowToBeDispose.Enqueue(tab);
@@ -297,6 +299,13 @@ namespace _1RM.Service
                         PrintCacheCount();
                     }
                 }
+            }
+
+            // perform UI operations outside the lock
+            foreach (var (key, tab) in tabsToHide)
+            {
+                // execute Hide in UI thread
+                Execute.OnUIThreadSync(() => tab.Hide());
             }
         }
 
