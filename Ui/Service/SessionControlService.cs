@@ -259,8 +259,7 @@ namespace _1RM.Service
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
                             _windowToBeDispose.Enqueue(full);
-                            // execyte ShowOrHide in UI thread
-                            Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+                            uiFullscreenUpdates.Add(full);
                         }
                     }
                 }
@@ -314,28 +313,32 @@ namespace _1RM.Service
         #region Clean up CloseProtocol
         private void CloseMarkedProtocolHost()
         {
-            while (_hostToBeDispose.TryDequeue(out var host))
+            // Dispose must happen on UI thread because hosts contain WPF/WinForms components
+            Execute.OnUIThread(() =>
             {
-                PrintCacheCount();
-                host.OnClosed -= OnRequestCloseConnection;
-                host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
-                // Dispose
-                try
+                while (_hostToBeDispose.TryDequeue(out var host))
                 {
-                    if (host is IDisposable d)
+                    PrintCacheCount();
+                    host.OnClosed -= OnRequestCloseConnection;
+                    host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
+                    // Dispose
+                    try
                     {
-                        d.Dispose();
+                        if (host is IDisposable d)
+                        {
+                            d.Dispose();
+                        }
+                        else
+                        {
+                            host.Close();
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        host.Close();
+                        SimpleLogHelper.Error(e);
                     }
                 }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                }
-            }
+            });
         }
 
         private void CloseEmptyWindows()

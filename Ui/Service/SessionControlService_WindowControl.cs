@@ -161,31 +161,33 @@ namespace _1RM.Service
                         ret = _token2TabWindows.Last().Value;
                     }
                 }
-
-                // create new
-                if (ret == null)
-                {
-                    Execute.OnUIThreadSync(() =>
-                    {
-                        ret = new TabWindowView();
-                        AddTab(ret);
-                        ret.Show();
-                        ret.ShowInTaskbar = true;
-                        _lastTabToken = ret.Token;
-
-                        int loopCount = 0;
-                        while (ret.IsLoaded == false)
-                        {
-                            ++loopCount;
-                            Thread.Sleep(100);
-                            if (loopCount > 50)
-                                break;
-                        }
-                    });
-                }
-                Debug.Assert(ret != null);
-                return ret!;
             }
+
+            // create new
+            if (ret == null)
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    ret = new TabWindowView();
+                    ret.Show();
+                    ret.ShowInTaskbar = true;
+                    int loopCount = 0;
+                    while (ret.IsLoaded == false)
+                    {
+                        ++loopCount;
+                        Thread.Sleep(100);
+                        if (loopCount > 50)
+                            break;
+                    }
+                });
+            }
+            Debug.Assert(ret != null);
+            AddTab(ret!);
+            lock (_dictLock)
+            {
+                _lastTabToken = ret!.Token;
+            }
+            return ret!;
         }
 
         public TabWindowView? GetTabByConnectionId(string connectionId)
