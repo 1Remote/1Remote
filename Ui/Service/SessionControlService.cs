@@ -46,11 +46,11 @@ namespace _1RM.Service
             {
                 foreach (var tabWindow in _token2TabWindows.ToArray())
                 {
-                    Execute.OnUIThreadSync(() => tabWindow.Value.Hide());
+                    tabWindow.Value.Hide();
                 }
                 foreach (var kv in _connectionId2FullScreenWindows.ToArray())
                 {
-                    Execute.OnUIThreadSync(() => kv.Value.Hide());
+                    kv.Value.Hide();
                 }
             }
             this.CloseProtocolHostAsync(_connectionId2Hosts.Keys.ToArray());
@@ -206,7 +206,8 @@ namespace _1RM.Service
         }
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
-            var tabsToHide = new List<(string key, TabWindowView tab)>();
+            var uiTabUpdates = new List<(string key, TabWindowView tab, string connectionId)>();
+            var uiFullscreenUpdates = new List<FullScreenWindowView>();
 
             lock (_dictLock)
             {
@@ -231,18 +232,9 @@ namespace _1RM.Service
                     foreach (var (key, tab) in _token2TabWindows.ToArray())
                     {
 #endif
-                        if (tab.GetViewModel().TryRemoveItem(connectionId))
-                        {
-                            var items = tab.GetViewModel().Items.ToList();
-                            if (items.Count == 0)
-                            {
-                                // collect instead of calling Hide() inside lock
-                                tabsToHide.Add((key, tab));
-                                // move tab from dict to queue
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
-                        }
+                        // Queue all tabs; TryRemoveItem will return false quickly if the
+                        // connection is not in this tab.
+                        uiTabUpdates.Add((key, tab, connectionId));
                     }
 
                     // hide full
@@ -299,11 +291,32 @@ namespace _1RM.Service
                 }
             }
 
-            // perform UI operations outside the lock
-            foreach (var (key, tab) in tabsToHide)
+            // Perform UI operations OUTSIDE the lock.
+            // TryRemoveItem and tab.Hide() use Execute.OnUIThreadSync internally, which
+            // would deadlock if called while holding _dictLock (see comment above).
+            foreach (var (key, tab, connectionId) in uiTabUpdates)
             {
-                // execute Hide in UI thread
-                Execute.OnUIThreadSync(() => tab.Hide());
+                if (tab.GetViewModel().TryRemoveItem(connectionId))
+                {
+                    var items = tab.GetViewModel().Items.ToList();
+                    if (items.Count == 0)
+                    {
+                        // execute Hide in UI thread
+                        Execute.OnUIThreadSync(() => tab.Hide());
+                        // move tab from dict to queue
+                        lock (_dictLock)
+                        {
+                            _token2TabWindows.TryRemove(key, out _);
+                            _windowToBeDispose.Enqueue(tab);
+                        }
+                    }
+                }
+            }
+
+            foreach (var full in uiFullscreenUpdates)
+            {
+                // execute ShowOrHide in UI thread
+                Execute.OnUIThreadSync(() => full.ShowOrHide(null));
             }
         }
 
