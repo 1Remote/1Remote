@@ -130,6 +130,14 @@ namespace _1RM.View.Host
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetCursorPos(ref Win32Point pt);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(Win32Point point);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+
+        private const uint GaRoot = 2;
+
         private static Point GetMousePosition()
         {
             var w32Mouse = new Win32Point();
@@ -142,20 +150,40 @@ namespace _1RM.View.Host
 
         private static bool IsMouseInside(Window window)
         {
-            Point mousePos = GetMousePosition();
+            var w32Mouse = new Win32Point();
+            GetCursorPos(ref w32Mouse);
+            Point mousePos = new Point(w32Mouse.X, w32Mouse.Y);
             Point windowPos = new Point(-1, -1);
             Point windowBottomRight = new Point(-1, -1);
+            IntPtr myHandle = IntPtr.Zero;
             Execute.OnUIThreadSync(() =>
             {
                 windowPos = window.PointToScreen(new Point(0, 0));
                 windowBottomRight = window.PointToScreen(new Point(window.Width, window.Height));
+                var helper = new System.Windows.Interop.WindowInteropHelper(window);
+                myHandle = helper.Handle;
             });
+
+            if (myHandle == IntPtr.Zero || GetForegroundWindow() != myHandle)
+                return false;
+
+            bool inRect = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
+            if (!inRect)
+                return false;
+
+            var hitWindow = WindowFromPoint(w32Mouse);
+            if (hitWindow == IntPtr.Zero)
+                return false;
+
+            var hitRoot = GetAncestor(hitWindow, GaRoot);
+            if (hitRoot != IntPtr.Zero && hitRoot != myHandle)
+                return false;
+
 #if DEBUG
-            var r = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y &&
-                    mousePos.Y <= windowBottomRight.Y;
+            var r = true;
             //SimpleLogHelper.Debug($@"TabWindowView IsMouseInside = {r}: mousePos = ({mousePos.X}, {mousePos.Y}), windowPos = ({windowPos.X}, {windowPos.Y}), windowBottomRight = ({windowBottomRight.X}, {windowBottomRight.Y})");
 #endif
-            return mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
+            return true;
         }
 
 
@@ -245,20 +273,12 @@ namespace _1RM.View.Host
                 throw new NotImplementedException();
             }
 
-            if (IsMouseInside(this))
-            {
-                if (nowActivatedWindowHandle != rdpHandle && IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow)
-                {
-                    SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(rdpHandle)");
-                    SetForegroundWindow(rdpHandle);
-                }
-            }
-            else if (nowActivatedWindowHandle == rdpHandle)
+            if (nowActivatedWindowHandle == rdpHandle)
             {
                 // !isMousePressed is to fix the resizing bug introduced by #648
                 // Stay focused while the mouse is pressed to avoid losing focus when resizing the RDP window,
                 // see https://github.com/1Remote/1Remote/issues/797 for more details
-                if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow && !isMousePressed)
+                if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow && !isMousePressed && !IsMouseInside(this))
                 {
                     // RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP.
                     SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(desktop)");
