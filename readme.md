@@ -24,7 +24,7 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro%E2%80%90ZhCn)
 
 ## 🚩Installation
 
-Latest Version: 1.1.1
+Latest Version: 1.2
 
 ### 🗺[Quick start](https://1remote.github.io/usage/quick-start/)
 
