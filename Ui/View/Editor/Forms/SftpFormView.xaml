@@ -13,113 +13,8 @@
 
         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'Connection'}"></TextBlock>
         <ContentControl s:View.Model="{Binding HostViewModel}"></ContentControl>
-
-        <!--<Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding New.Address, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                                 Tag="e.g. 192.168.0.101"></TextBox>
-                </Grid>
-                <TextBlock Style="{StaticResource EditorRowGridTitleFollowing}" Width="60" Text="{DynamicResource Port}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding New.Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"
-                             MinWidth="50" HorizontalAlignment="Left"
-                             InputMethod.IsInputMethodEnabled="False"
-                             InputScope="Number"
-                    ></TextBox>
-                </Grid>
-            </StackPanel>
-        </Grid>-->
-
-        <!--<Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource User}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding New.UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"></TextBox>
-                </Grid>
-            </StackPanel>
-        </Grid>
-
-        <Grid Name="GridPwd">
-            <Grid.Style>
-                <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                    <Setter Property="Margin" Value="0"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Setter Property="IsEnabled" Value="False"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Password}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <controls:PasswordInput Height="28" Password="{Binding New.Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"/>
-                </Grid>
-                <CheckBox Name="CbUsePrivateKey"
-                          Margin="5 0 0 0"
-                          IsChecked="{Binding New.UsePrivateKeyForConnect}"
-                          Content="{DynamicResource 'Use private key'}" 
-                          Checked="CbUsePrivateKey_OnChecked"
-                          Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
-            </StackPanel>
-        </Grid>
-
-        <Grid Name="GridPrivateKey" Height="Auto">
-            <Grid.Style>
-                <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                    <Setter Property="Margin" Value="0"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Setter Property="IsEnabled" Value="False"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Private key'}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Name="TbPrivateKey" Text="{Binding New.PrivateKey}"></TextBox>
-                        <Button Grid.Column="1"
-                                Content="{DynamicResource Select}" 
-                                Click="ButtonOpenPrivateKey_OnClick" 
-                                Style="{StaticResource ButtonPrimaryStyle}"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Stretch">
-                        </Button>
-                    </Grid>
-                    <CheckBox Margin="5 0 0 0"
-                              Content="{DynamicResource 'Use private key'}" 
-                              IsChecked="{Binding ElementName=CbUsePrivateKey, Path=IsChecked}"
-                              Checked="CbUsePrivateKey_OnChecked"
-                              Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource 'Supports the OpenSSH format key only with the internal SFTP client.'}" Opacity="0.7"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource 'Supports the OpenSSH format key and Putty-key with WinSCP.'}" Opacity="0.7"></TextBlock>
-                </StackPanel>
-            </StackPanel>
-        </Grid>
-
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                <CheckBox Content="{DynamicResource 'Ask for password when open connect'}" IsChecked="{Binding New.AskPasswordWhenConnect}"></CheckBox>
-            </StackPanel>
-        </Grid>
+        <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
+        <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
 
         <Grid Style="{StaticResource EditorRowGrid}" Visibility="{Binding New.SelectedRunnerIsInternalRunner, Converter={StaticResource ConverterBool2Visible}}">
             <StackPanel Orientation="Horizontal">
@@ -129,10 +24,7 @@
                              Tag="e.g. /home/user/Desktop"></TextBox>
                 </Grid>
             </StackPanel>
-        </Grid>-->
-
-        <ContentControl s:View.Model="{Binding CredentialViewModel}"></ContentControl>
-        <ContentControl s:View.Model="{Binding AlternativeCredentialListViewModel}"></ContentControl>
+        </Grid>
 
     </StackPanel>
 </UserControl>
