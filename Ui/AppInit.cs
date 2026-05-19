@@ -328,13 +328,6 @@ namespace _1RM
                 }
 
                 _localDataConnectionStatus = dataSourceService.InitLocalDataSource(local);
-                //Task.Factory.StartNew(() =>
-                //{
-                //    //ConfigurationServiceObj!.LocalDataSource.GetServers(true);
-                //    IoC.Get<GlobalData>().ReloadAll(true);
-                //    if (ConfigurationServiceObj.General.ShowRecentlySessionInTray)
-                //        IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
-                //});
             }
 
             // init session controller

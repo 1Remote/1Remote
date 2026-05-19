@@ -159,9 +159,9 @@ namespace _1RM.Service
                 {
                     if (arg.StartsWith(TAG_PREFIX))
                     {
+                        SimpleLogHelper.Debug("ProcessArg: " + arg);
                         // tag connect
                         var tagName = arg.Substring(1);
-
                         var ss = IoC.Get<GlobalData>().VmItemList
                             .Where(x => x.Server.Tags.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase))
                                         && servers.Contains(x.Server) == false)
@@ -171,6 +171,7 @@ namespace _1RM.Service
                     }
                     else if (arg.StartsWith(ULID_PREFIX, StringComparison.OrdinalIgnoreCase))
                     {
+                        SimpleLogHelper.Debug("ProcessArg: " + arg);
                         var id = arg.Substring(ULID_PREFIX.Length).Trim();
                         var server = IoC.Get<GlobalData>().VmItemList.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase));
                         if (server != null && servers.Contains(server.Server) == false)
@@ -180,6 +181,7 @@ namespace _1RM.Service
                     }
                     else
                     {
+                        SimpleLogHelper.Debug("ProcessArg: " + arg);
                         var ss = IoC.Get<GlobalData>().VmItemList.Where(x => string.Equals(x.DisplayName, arg, StringComparison.CurrentCultureIgnoreCase));
                         foreach (var server in ss)
                         {
@@ -192,7 +194,10 @@ namespace _1RM.Service
                 }
 
                 if (servers.Count > 0)
+                {
+                    SimpleLogHelper.Debug("Request connect servers on startup: " + string.Join(", ", servers.Select(x => x.DisplayName)));
                     GlobalEventHelper.OnRequestServersConnect?.Invoke(servers, fromView: "CLI");
+                }
             }
         }
 

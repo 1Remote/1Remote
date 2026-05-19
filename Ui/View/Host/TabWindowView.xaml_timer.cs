@@ -164,7 +164,7 @@ namespace _1RM.View.Host
                 myHandle = helper.Handle;
             });
 
-            if (myHandle == IntPtr.Zero || GetForegroundWindow() != myHandle)
+            if (myHandle == IntPtr.Zero)
                 return false;
 
             bool inRect = mousePos.X >= windowPos.X && mousePos.X <= windowBottomRight.X && mousePos.Y >= windowPos.Y && mousePos.Y <= windowBottomRight.Y;
@@ -258,31 +258,44 @@ namespace _1RM.View.Host
             if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
                 return;
 
-            bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
-                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
-                                  || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
-            var nowActivatedWindowHandle = GetForegroundWindow();
-            IntPtr rdpHandle = IntPtr.Zero;
-            if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
+            if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow)
             {
-                rdpHandle = _myHandle;
-            }
-            else
-            {
-                //rdpHandle = ihfw.GetHostHwnd();
-                throw new NotImplementedException();
-            }
 
-            if (nowActivatedWindowHandle == rdpHandle)
-            {
-                // !isMousePressed is to fix the resizing bug introduced by #648
-                // Stay focused while the mouse is pressed to avoid losing focus when resizing the RDP window,
-                // see https://github.com/1Remote/1Remote/issues/797 for more details
-                if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow && !isMousePressed && !IsMouseInside(this))
+
+                bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
+                                      || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
+                                      || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
+                var nowActivatedWindowHandle = GetForegroundWindow();
+                IntPtr rdpHandle = IntPtr.Zero;
+                if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
                 {
-                    // RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP.
-                    SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(desktop)");
-                    SetForegroundWindow(GetDesktopWindow());
+                    rdpHandle = _myHandle;
+                }
+                else
+                {
+                    //rdpHandle = ihfw.GetHostHwnd();
+                    throw new NotImplementedException();
+                }
+
+                if (IsMouseInside(this))
+                {
+                    if (nowActivatedWindowHandle != rdpHandle)
+                    {
+                        SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(rdpHandle)");
+                        SetForegroundWindow(rdpHandle);
+                    }
+                }
+                else if (nowActivatedWindowHandle == rdpHandle)
+                {
+                    // !isMousePressed is to fix the resizing bug introduced by #648
+                    // Stay focused while the mouse is pressed to avoid losing focus when resizing the RDP window,
+                    // see https://github.com/1Remote/1Remote/issues/797 for more details
+                    if (!isMousePressed)
+                    {
+                        // RDP has focus AND mouse is not inside the tab window, then switch focus to desktop, user input will not be sent to RDP.
+                        SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(desktop)");
+                        SetForegroundWindow(GetDesktopWindow());
+                    }
                 }
             }
 
