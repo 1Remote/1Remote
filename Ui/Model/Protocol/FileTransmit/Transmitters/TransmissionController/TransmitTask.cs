@@ -17,13 +17,31 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 {
     public enum ETransmitTaskStatus
     {
+        /// <summary>
+        /// Waiting to start transmission.
+        /// </summary>
         WaitTransmitStart,
+
+        /// <summary>
+        /// Scanning items before transmission.
+        /// </summary>
         Scanning,
+
+        /// <summary>
+        /// Currently transmitting data.
+        /// </summary>
         Transmitting,
 
         //Pause,
+
+        /// <summary>
+        /// Transmission completed.
+        /// </summary>
         Transmitted,
 
+        /// <summary>
+        /// Transmission was canceled.
+        /// </summary>
         Cancel,
     }
 
@@ -31,22 +49,43 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
     {
         private readonly ITransmitter _transOrg;
         private ITransmitter? _trans;
+        /// <summary>
+        /// Gets the transmission direction of this task.
+        /// </summary>
         public readonly ETransmissionType TransmissionType;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly string _destinationDirectoryPath;
 
+        // for HostToServer transmission, _fis and _dis are source items; for ServerToHost transmission, _ris is source item.
         private readonly FileInfo[]? _fis = null;
         private readonly DirectoryInfo[]? _dis = null;
         private readonly RemoteItem[]? _ris = null;
 
+        /// <summary>
+        /// Gets the display names of items being transmitted.
+        /// </summary>
         public string TransmitItemNames { get; private set; } = "";
+
+        /// <summary>
+        /// Gets the source directory path for display.
+        /// </summary>
         public string TransmitItemSrcDirectoryPath { get; private set; } = "";
+
+        /// <summary>
+        /// Gets the destination directory path for display.
+        /// </summary>
         public string TransmitItemDstDirectoryPath { get; private set; } = "";
 
         private readonly ILanguageService _languageService;
+        /// <summary>
+        /// Gets the connection identifier bound to this task.
+        /// </summary>
         public readonly string ConnectionId;
 
 
+        /// <summary>
+        /// Initializes a new upload task from local files and directories.
+        /// </summary>
         public TransmitTask(ILanguageService languageService, ITransmitter trans, string connectionId, string destinationDirectoryPath, FileInfo[]? fis, DirectoryInfo[]? dis = null)
         {
             Debug.Assert(fis != null || dis != null);
@@ -84,6 +123,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
+        /// <summary>
+        /// Initializes a new download task from remote items.
+        /// </summary>
         public TransmitTask(ILanguageService languageService, ITransmitter trans, string connectionId, string destinationDirectoryPath, RemoteItem[] ris)
         {
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -112,11 +154,17 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
+        /// <summary>
+        /// Finalizes the task and attempts to cancel pending work.
+        /// </summary>
         ~TransmitTask()
         {
             TryCancel();
         }
 
+        /// <summary>
+        /// Cancels the transmission task if it is not completed.
+        /// </summary>
         public void TryCancel()
         {
             if (TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
@@ -127,12 +175,21 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Defines the task completion callback signature.
+        /// </summary>
         public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception? e = null);
 
+        /// <summary>
+        /// Gets or sets the callback invoked when the task ends.
+        /// </summary>
         public OnTaskEndDelegate? OnTaskEnd { get; set; } = null;
 
         private ETransmitTaskStatus _transmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
 
+        /// <summary>
+        /// Gets or sets the current transmission task status.
+        /// </summary>
         public ETransmitTaskStatus TransmitTaskStatus
         {
             get => _transmitTaskStatus;
@@ -147,7 +204,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
         /// <summary>
-        /// return the parent directory full path of Transmission
+        /// Gets the parent destination directory path of transmission items.
         /// </summary>
         public string? TransmitDstDirectoryPath
         {
@@ -174,7 +231,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         private ulong _totalByteLength = 0;
 
         /// <summary>
-        /// byte length to transmit
+        /// Gets or sets the total bytes to be transmitted.
         /// </summary>
         public ulong TotalByteLength
         {
@@ -185,7 +242,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         private ulong _transmittedByteLength = 0;
 
         /// <summary>
-        /// byte length has been transmitted
+        /// Gets or sets the number of bytes already transmitted.
         /// </summary>
         public ulong TransmittedByteLength
         {
@@ -199,17 +256,27 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
         private static readonly object _progressLock = new object();
 
+        /// <summary>
+        /// Gets the current transmission progress percentage.
+        /// </summary>
         public string TransmittedPercentage =>
             TransmitTaskStatus == ETransmitTaskStatus.Transmitted ? "100" :
                 (TransmitTaskStatus != ETransmitTaskStatus.Transmitting ? "0" :
                     (TransmittedByteLength >= TotalByteLength ? "100" :
                         (Math.Floor(10000.0 * TransmittedByteLength / TotalByteLength) / 100.0).ToString("F")));
 
+        /// <summary>
+        /// Gets the transmitted items list.
+        /// </summary>
         public List<TransmitItem> ItemsHaveBeenTransmitted { get; } = new List<TransmitItem>();
-        public Queue<TransmitItem> ItemsWaitForTransmit { get; } = new Queue<TransmitItem>();
 
         /// <summary>
-        /// all items need to be transmitted
+        /// Gets the queue of items waiting to transmit.
+        /// </summary>
+        protected Queue<TransmitItem> ItemsWaitForTransmit { get; } = new Queue<TransmitItem>();
+
+        /// <summary>
+        /// Gets all items scheduled for transmission.
         /// </summary>
         public List<TransmitItem> Items { get; } = new List<TransmitItem>();
 
@@ -218,6 +285,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         /// </summary>
         private readonly ConcurrentQueue<Tuple<DateTime, ulong>> _transmittedDataLength = new ConcurrentQueue<Tuple<DateTime, ulong>>();
 
+        /// <summary>
+        /// Gets the recent average transmitted bytes per second.
+        /// </summary>
         private double TransmittedBytesPerSec
         {
             get
@@ -244,6 +314,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Gets the current transmission speed text.
+        /// </summary>
         public string TransmitSpeed
         {
             get
@@ -264,6 +337,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Gets the estimated remaining transmission time text.
+        /// </summary>
         public string TimeRemaining
         {
             get
@@ -289,6 +365,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Adds a transmission item to the queue and updates totals.
+        /// </summary>
+        /// <param name="item">The item to enqueue.</param>
         private void AddTransmitItem(TransmitItem item)
         {
             if (TransmissionType != item.TransmissionType)
@@ -312,6 +392,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Scans a local directory and enqueues all child items for upload.
+        /// </summary>
+        /// <param name="topDirectory">The root local directory to scan.</param>
         private void AddLocalDirectory(DirectoryInfo topDirectory)
         {
             Debug.Assert(_trans != null);
@@ -360,6 +444,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Scans a remote directory and enqueues all child items for download.
+        /// </summary>
+        /// <param name="topItem">The root remote directory item to scan.</param>
         private async Task AddServerDirectory(RemoteItem topItem)
         {
             Debug.Assert(_trans != null);
@@ -410,6 +498,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Starts scanning, conflict check, and transmission asynchronously.
+        /// </summary>
+        /// <param name="remoteItems">Current remote items used for conflict checks.</param>
         public async void StartTransmitAsync(IEnumerable<RemoteItem> remoteItems)
         {
             _trans = _transOrg.Clone();
@@ -449,7 +541,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
         /// <summary>
-        /// scan all files to be transmitted init by class constructor
+        /// Scans all source items and builds the transmission queue.
         /// </summary>
         private async Task ScanTransmitItems()
         {
@@ -492,6 +584,11 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Checks whether a destination file already exists for download.
+        /// </summary>
+        /// <param name="item">The transmit item to verify.</param>
+        /// <returns>True when an existing destination file is found.</returns>
         private bool CheckExistedFileServerToHost(TransmitItem item)
         {
             if (!item.IsDirectory)
@@ -524,6 +621,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             return false;
         }
 
+        /// <summary>
+        /// Checks whether a destination file already exists for upload.
+        /// </summary>
+        /// <param name="item">The transmit item to verify.</param>
+        /// <param name="remoteItem">Remote items in the target directory.</param>
+        /// <returns>True when an existing destination file is found.</returns>
         private async Task<bool> CheckExistedFileHostToServer(TransmitItem item, IEnumerable<RemoteItem> remoteItem)
         {
             if (!item.IsDirectory)
@@ -538,9 +641,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
         /// <summary>
-        /// check if any same name file exited, return if it can continue to transmit.
+        /// Checks name conflicts and asks whether to continue transmission.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="remoteItems">Current remote items used for upload conflict checks.</param>
+        /// <returns>True when transmission can continue.</returns>
         private async Task<bool> CheckExistedFiles(IEnumerable<RemoteItem> remoteItems)
         {
             // check if existed
@@ -574,6 +678,11 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             return true;
         }
 
+        /// <summary>
+        /// Updates byte progress for a transmitting item.
+        /// </summary>
+        /// <param name="item">The transmit item being updated.</param>
+        /// <param name="readLength">Current transferred length reported by callback.</param>
         private void DataTransmitting(ref TransmitItem item, ulong readLength)
         {
             lock (_progressLock)
@@ -604,6 +713,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Executes transmission for a single download item.
+        /// </summary>
+        /// <param name="item">The download item to process.</param>
         private async Task RunTransmitServerToHost(TransmitItem item)
         {
             try
@@ -637,6 +750,10 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Executes transmission for a single upload item.
+        /// </summary>
+        /// <param name="item">The upload item to process.</param>
         private async Task RunTransmitHostToServer(TransmitItem item)
         {
             if (_trans != null)
@@ -658,6 +775,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Runs queued transmission items sequentially.
+        /// </summary>
         private async Task RunTransmit()
         {
             Debug.Assert(_trans != null);
@@ -706,6 +826,12 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
+        /// <summary>
+        /// Combines path segments using server-style separators.
+        /// </summary>
+        /// <param name="path1">The base path.</param>
+        /// <param name="paths">Additional path segments.</param>
+        /// <returns>A normalized server path.</returns>
         public static string ServerPathCombine(string path1, params string[] paths)
         {
             var ret = path1.Replace('\\', '/').TrimEnd('/');

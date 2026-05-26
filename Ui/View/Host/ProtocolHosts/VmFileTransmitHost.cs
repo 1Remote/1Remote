@@ -10,14 +10,12 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
-using _1RM.Model;
 using _1RM.Model.Protocol.FileTransmit;
 using _1RM.Model.Protocol.FileTransmit.Transmitters;
 using _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
 using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Utils;
-using Dapper;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -27,11 +25,10 @@ using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using ListView = System.Windows.Controls.ListView;
 using ListViewItem = System.Windows.Controls.ListViewItem;
-using MessageBox = System.Windows.MessageBox;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
-    public partial class VmFileTransmitHost : NotifyPropertyChangedBase
+    public class VmFileTransmitHost : NotifyPropertyChangedBase
     {
         public readonly string ConnectionId;
         public VmFileTransmitHost(IFileTransmittable protocol, string connectionId)
@@ -84,6 +81,9 @@ namespace _1RM.View.Host.ProtocolHosts
                 GridLoadingVisibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Adds a transfer task and handles completion updates.
+        /// </summary>
         private void AddTransmitTask(TransmitTask t)
         {
             TransmitTasks.Insert(0, t);
@@ -149,6 +149,9 @@ namespace _1RM.View.Host.ProtocolHosts
         /// 6: by FileType asc
         /// 7: by FileType desc
         /// </summary>
+        /// <summary>
+        /// Gets or sets the sort mode for remote items.
+        /// </summary>
         public int RemoteItemsOrderBy
         {
             get => _remoteItemsOrderBy;
@@ -162,6 +165,9 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
+        /// <summary>
+        /// Reorders the remote item collection based on the selected sort mode.
+        /// </summary>
         private void MakeRemoteItemsOrderBy()
         {
             if (RemoteItems?.Count > 0)
@@ -189,13 +195,11 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         /// <summary>
-        /// mode = 1 go preview, mode = 2 go following
-        /// will not remember pathHistory when mode != 0
-        /// Optimized version to reduce UI blocking and improve performance
+        /// Displays a remote folder and updates navigation state.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="mode"></param>
-        /// <param name="showIoMessage"></param>
+        /// <param name="path">The remote path to display.</param>
+        /// <param name="mode">Navigation mode: 0 normal, 1 previous, 2 following.</param>
+        /// <param name="showIoMessage">True to show a status message after loading.</param>
         private void ShowFolder(string path, int mode = 0, bool showIoMessage = true)
         {
             // Use ThreadPool instead of creating new Task for better performance
@@ -305,6 +309,9 @@ namespace _1RM.View.Host.ProtocolHosts
             });
         }
 
+        /// <summary>
+        /// Deletes all selected remote items and refreshes the current folder.
+        /// </summary>
         private async void DeleteSelectedItems()
         {
             foreach (var itemInfo in RemoteItems)
@@ -328,6 +335,9 @@ namespace _1RM.View.Host.ProtocolHosts
             ShowFolder(CurrentPath, showIoMessage: false);
         }
 
+        /// <summary>
+        /// Builds the context menu for the remote file list.
+        /// </summary>
         public void FileList_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             ListView? view = null;
@@ -488,6 +498,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdDelete;
 
+        /// <summary>
+        /// Gets the command that deletes selected remote items.
+        /// </summary>
         public RelayCommand CmdDelete
         {
             get
@@ -511,6 +524,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdBeginRenaming;
 
+        /// <summary>
+        /// Gets the command that starts renaming the selected item.
+        /// </summary>
         public RelayCommand CmdBeginRenaming
         {
             get
@@ -532,6 +548,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdEndRenaming;
 
+        /// <summary>
+        /// Gets the command that applies create/rename actions.
+        /// </summary>
         public RelayCommand CmdEndRenaming
         {
             get
@@ -588,6 +607,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdCancelRenaming;
 
+        /// <summary>
+        /// Gets the command that cancels item renaming.
+        /// </summary>
         public RelayCommand CmdCancelRenaming
         {
             get
@@ -621,7 +643,7 @@ namespace _1RM.View.Host.ProtocolHosts
         private RelayCommand? _cmdListViewDoubleClick;
 
         /// <summary>
-        /// double click to enter folder or open file
+        /// Gets the command that handles double-click to open folder or preview file.
         /// </summary>
         public RelayCommand CmdListViewDoubleClick
         {
@@ -711,6 +733,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdGoToPathCurrent;
 
+        /// <summary>
+        /// Gets the command that reloads the current path.
+        /// </summary>
         public RelayCommand CmdGoToPathCurrent
         {
             get
@@ -737,6 +762,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdGoToParent;
 
+        /// <summary>
+        /// Gets the command that navigates to the parent folder.
+        /// </summary>
         public RelayCommand CmdGoToParent
         {
             get
@@ -758,6 +786,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdGoToPathPrevious;
 
+        /// <summary>
+        /// Gets the command that navigates to the previous folder in history.
+        /// </summary>
         public RelayCommand CmdGoToPathPrevious
         {
             get
@@ -778,6 +809,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private RelayCommand? _cmdGoToPathFollowing;
+
+        /// <summary>
+        /// Gets the command that navigates to the next folder in history.
+        /// </summary>
         public RelayCommand CmdGoToPathFollowing
         {
             get
@@ -799,6 +834,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private string? _lastDownloadDirPath;
+
+        /// <summary>
+        /// Gets or sets the last valid local directory used for downloads.
+        /// </summary>
         private string? LastDownloadDirPath
         {
             get
@@ -811,6 +850,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private RelayCommand? _cmdDownloadToLastDir;
+
+        /// <summary>
+        /// Gets the command that downloads selected items to the last destination.
+        /// </summary>
         public RelayCommand CmdDownloadToLastDir
         {
             get
@@ -865,6 +908,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private RelayCommand? _cmdDownload;
+
+        /// <summary>
+        /// Gets the command that downloads selected items to a chosen directory.
+        /// </summary>
         public RelayCommand CmdDownload
         {
             get
@@ -912,6 +959,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private RelayCommand? _cmdUpload;
+
+        /// <summary>
+        /// Gets the command that uploads files or folders.
+        /// </summary>
         public RelayCommand CmdUpload
         {
             get
@@ -950,6 +1001,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private RelayCommand? _cmdUploadClipboard;
+
+        /// <summary>
+        /// Gets the command that uploads files from clipboard file list.
+        /// </summary>
         public RelayCommand CmdUploadClipboard
         {
             get
@@ -976,6 +1031,10 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
+        /// <summary>
+        /// Creates and starts an upload task for local files and directories.
+        /// </summary>
+        /// <param name="filePathList">Local file or directory paths to upload.</param>
         public void DoUpload(List<string> filePathList)
         {
             var fis = new List<FileInfo>();
@@ -1007,6 +1066,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private RelayCommand? _cmdShowTransmitDstPath;
 
+        /// <summary>
+        /// Gets the command that opens a transfer destination path.
+        /// </summary>
         public RelayCommand CmdShowTransmitDstPath
         {
             get
@@ -1043,6 +1105,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private RelayCommand? _cmdDeleteTransmitTask;
+
+        /// <summary>
+        /// Gets the command that cancels and removes a transfer task.
+        /// </summary>
         public RelayCommand CmdDeleteTransmitTask
         {
             get
@@ -1066,6 +1132,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the active remote transmitter instance.
+        /// </summary>
         public ITransmitter Trans = null!;
         private readonly IFileTransmittable _protocol;
 
@@ -1073,6 +1142,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private double _gridLoadingBgOpacity = 1;
+
+        /// <summary>
+        /// Gets or sets the background opacity of the loading layer.
+        /// </summary>
         public double GridLoadingBgOpacity
         {
             get => _gridLoadingBgOpacity;
@@ -1080,6 +1153,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private Visibility _gridLoadingVisibility = Visibility.Collapsed;
+
+        /// <summary>
+        /// Gets or sets the visibility of the loading layer.
+        /// </summary>
         public Visibility GridLoadingVisibility
         {
             get => _gridLoadingVisibility;
@@ -1098,8 +1175,9 @@ namespace _1RM.View.Host.ProtocolHosts
         private const int IoMessageLevelWarning = 1;
         private const int IoMessageLevelError = 2;
         private int _ioMessageLevel = 0;
+
         /// <summary>
-        /// level: 0 normal; 1 warning(yellow); 2 error(red);
+        /// Gets or sets the current I/O message severity level.
         /// </summary>
         public int IoMessageLevel
         {
@@ -1108,12 +1186,19 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private string _ioMessage = "";
+
+        /// <summary>
+        /// Gets or sets the current I/O status message.
+        /// </summary>
         public string IoMessage
         {
             get => _ioMessage;
             set => SetAndNotifyIfChanged(ref _ioMessage, value);
         }
 
+        /// <summary>
+        /// Gets or sets the width of the file name column.
+        /// </summary>
         public double ColumnFileNameLength
         {
             get
@@ -1127,6 +1212,10 @@ namespace _1RM.View.Host.ProtocolHosts
             }
             set => IoC.Get<LocalityService>().FtpColumnFileNameLength = (int)value;
         }
+
+        /// <summary>
+        /// Gets or sets the width of the file time column.
+        /// </summary>
         public double ColumnFileTimeLength
         {
             get
@@ -1140,6 +1229,10 @@ namespace _1RM.View.Host.ProtocolHosts
             }
             set => IoC.Get<LocalityService>().FtpColumnFileTimeLength = (int)value;
         }
+
+        /// <summary>
+        /// Gets or sets the width of the file type column.
+        /// </summary>
         public double ColumnFileTypeLength
         {
             get
@@ -1153,6 +1246,10 @@ namespace _1RM.View.Host.ProtocolHosts
             }
             set => IoC.Get<LocalityService>().FtpColumnFileTypeLength = (int)value;
         }
+
+        /// <summary>
+        /// Gets or sets the width of the file size column.
+        /// </summary>
         public double ColumnFileSizeLength
         {
             get
@@ -1174,8 +1271,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private string _currentPathEdit = "";
+
         /// <summary>
-        /// for ui display and edit
+        /// Gets or sets the editable path shown in the UI.
         /// </summary>
         public string CurrentPathEdit
         {
@@ -1184,8 +1282,9 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private string _currentPath = "";
+
         /// <summary>
-        /// for logic control to remember current path
+        /// Gets or sets the current logical remote path.
         /// </summary>
         private string CurrentPath
         {
@@ -1199,6 +1298,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private bool _cmdGoToPathPreviousEnable = false;
+
+        /// <summary>
+        /// Gets or sets whether navigation to previous path is enabled.
+        /// </summary>
         public bool CmdGoToPathPreviousEnable
         {
             get => _cmdGoToPathPreviousEnable;
@@ -1208,6 +1311,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private bool _cmdGoToPathFollowingEnable = false;
+
+        /// <summary>
+        /// Gets or sets whether navigation to following path is enabled.
+        /// </summary>
         public bool CmdGoToPathFollowingEnable
         {
             get => _cmdGoToPathFollowingEnable;
@@ -1218,6 +1325,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
 
         private bool _cmdGoToPathParentEnable = false;
+
+        /// <summary>
+        /// Gets or sets whether navigation to parent path is enabled.
+        /// </summary>
         public bool CmdGoToPathParentEnable
         {
             get => _cmdGoToPathParentEnable;
@@ -1231,6 +1342,10 @@ namespace _1RM.View.Host.ProtocolHosts
 
         #region File list
         private RemoteItem? _selectedRemoteItem;
+
+        /// <summary>
+        /// Gets or sets the currently selected remote item.
+        /// </summary>
         public RemoteItem? SelectedRemoteItem
         {
             get => _selectedRemoteItem;
@@ -1238,6 +1353,10 @@ namespace _1RM.View.Host.ProtocolHosts
         }
 
         private ObservableCollection<RemoteItem> _remoteItems = new ObservableCollection<RemoteItem>();
+
+        /// <summary>
+        /// Gets or sets the current remote item collection.
+        /// </summary>
         public ObservableCollection<RemoteItem> RemoteItems
         {
             get => _remoteItems;
@@ -1250,6 +1369,9 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private ObservableCollection<TransmitTask> _transmitTasks = new ObservableCollection<TransmitTask>();
 
+        /// <summary>
+        /// Gets or sets the active transfer task collection.
+        /// </summary>
         public ObservableCollection<TransmitTask> TransmitTasks
         {
             get => _transmitTasks;
