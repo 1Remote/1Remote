@@ -778,13 +778,19 @@ namespace _1RM.View.ServerView.Tree
                 for (int i = 0; i < currentTreeViewList.Count; i++)
                 {
                     currentTreeViewList[i].CustomOrder = i + 1;
-                    allNodeOrder[currentTreeViewList[i].Id] = i + 1;
+                    if (allNodeOrder.ContainsKey(currentTreeViewList[i].Id))
+                        allNodeOrder[currentTreeViewList[i].Id] = i + 1;
+                    else
+                        allNodeOrder.Add(currentTreeViewList[i].Id, i + 1);
                 }
                 // Then, update the custom order for the servers in the folder
                 for (int i = 0; i < updatedNodes.Count; i++)
                 {
                     updatedNodes[i].CustomOrder = i + 1;
-                    allNodeOrder[updatedNodes[i].Id] = i + 1;
+                    if (allNodeOrder.ContainsKey(updatedNodes[i].Id))
+                        allNodeOrder[updatedNodes[i].Id] = i + 1;
+                    else
+                        allNodeOrder.Add(updatedNodes[i].Id, i + 1);
                 }
                 // Save the complete ordered list
                 LocalityTreeViewService.Settings.CustomNodeOrder = allNodeOrder;

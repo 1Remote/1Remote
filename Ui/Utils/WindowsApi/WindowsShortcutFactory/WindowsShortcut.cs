@@ -280,7 +280,7 @@ namespace _1RM.Utils.WindowsApi.WindowsShortcutFactory
                     var ptr = Marshal.StringToCoTaskMemUni(fileName);
                     try
                     {
-                        res = persistInst->Vtbl->Save(persistInst, ptr, (uint)fileName.Length);
+                        res = persistInst->Vtbl->Save(persistInst, ptr, (uint)(fileName.Length));
                         if (res != 0)
                             throw new COMException("Unable to save shortcut file.", (int)res);
                     }

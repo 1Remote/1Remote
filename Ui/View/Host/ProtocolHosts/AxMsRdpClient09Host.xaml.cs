@@ -111,10 +111,13 @@ namespace _1RM.View.Host.ProtocolHosts
                 Header = "Ctrl + Alt + Del",
                 Command = new RelayCommand((o) =>
                 {
-                    _rdpClient?.Focus();
-                    new MsRdpClientNonScriptableWrapper(_rdpClient.GetOcx()).SendKeys(
-                        new int[] { 0x1d, 0x38, 0x53, 0x53, 0x38, 0x1d },
-                        new bool[] { false, false, false, true, true, true, });
+                    if (_rdpClient != null)
+                    {
+                        _rdpClient.Focus();
+                        new MsRdpClientNonScriptableWrapper(_rdpClient.GetOcx()).SendKeys(
+                            new int[] { 0x1d, 0x38, 0x53, 0x53, 0x38, 0x1d },
+                            new bool[] { false, false, false, true, true, true, });
+                    }
                 }, o => HasConnected)
             });
 

@@ -25,8 +25,8 @@ internal class PRemoteMServer : IDataBaseServer
             }
             if (o.Property("GroupName") != null && x.Tags.Count == 0)
             {
-                var tag = ((string?)(o["DispName"])) ?? "";
-                if (string.IsNullOrEmpty(tag))
+                var tag = ((string?)(o["GroupName"])) ?? "";
+                if (!string.IsNullOrEmpty(tag))
                 {
                     x.Tags.Add(tag);
                 }

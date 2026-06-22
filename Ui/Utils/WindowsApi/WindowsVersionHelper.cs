@@ -50,7 +50,7 @@ namespace _1RM.Utils.WindowsApi
             int versionMajor = Environment.OSVersion.Version.Major;
             int versionMinor = Environment.OSVersion.Version.Minor;
             double version = versionMajor + (double)versionMinor / 10;
-            return version <= 6.1;
+            return version >= 10.0 && Environment.OSVersion.Version.Build >= 22000; // Win11
         }
         public static bool IsWindows1122H2OrHigher()
         {

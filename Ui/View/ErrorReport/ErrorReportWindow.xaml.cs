@@ -138,6 +138,7 @@ namespace _1RM.View.ErrorReport
             {
                 Clipboard.SetDataObject(TbErrorInfo.Text);
                 var sb = new Storyboard();
+                IconCopyDone.Opacity = 1;
                 sb.AddFadeOut(1);
                 sb.Begin(IconCopyDone);
             }
@@ -157,6 +158,7 @@ namespace _1RM.View.ErrorReport
                 if (path == null) return;
                 File.WriteAllText(path, TbErrorInfo.Text.Replace("\n", "\n\n"), Encoding.UTF8);
                 var sb = new Storyboard();
+                IconSaveDone.Opacity = 1;
                 sb.AddFadeOut(1);
                 sb.Begin(IconSaveDone);
             }

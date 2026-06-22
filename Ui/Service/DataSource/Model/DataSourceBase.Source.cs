@@ -211,7 +211,7 @@ namespace _1RM.Service.DataSource.Model
         }
 
 
-        private static string _lastConnectionString = "";
+        private string _lastConnectionString = "";
         public virtual DatabaseStatus Database_SelfCheck(int connectTimeOutSeconds = 5)
         {
             var tro = Database_OpenConnection(connectTimeOutSeconds);
