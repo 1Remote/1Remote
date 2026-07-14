@@ -782,14 +782,15 @@ namespace _1RM.View.Host.ProtocolHosts
                     GridLoading.Visibility = Visibility.Visible;
                     RdpHost.Visibility = Visibility.Collapsed;
                     _rdpClient.Connect();
+                    Status = ProtocolHostStatus.Connected;
                 }
                 catch (Exception e)
                 {
                     GridMessageBox.Visibility = Visibility.Visible;
                     TbMessageTitle.Visibility = Visibility.Collapsed;
                     TbMessage.Text = e.Message;
+                    Status = ProtocolHostStatus.Disconnected;
                 }
-                Status = ProtocolHostStatus.Connected;
             });
         }
 

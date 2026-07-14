@@ -137,29 +137,30 @@ namespace _1RM.Utils.WindowsApi.Credential
         protected bool Save()
         {
             byte[] passwordBytes = Encoding.Unicode.GetBytes(Password);
-            if (Password.Length > 512)
-            {
-                throw new ArgumentOutOfRangeException("The password has exceeded 512 bytes.");
-            }
-
+            if (Password.Length > 512) throw new ArgumentOutOfRangeException("The password has exceeded 512 bytes.");
             var credential = new CREDENTIAL
             {
                 TargetName = CredentialName,
                 UserName = Username,
-                CredentialBlob = Marshal.StringToCoTaskMemUni(Password),
                 CredentialBlobSize = passwordBytes.Length,
                 Comment = Description,
                 Type = (int)CredentialType,
                 Persist = (int)PersistType
             };
-
-            bool result = CredWrite(ref credential, 0);
-            if (!result)
+            try
             {
-                return false;
+                credential.CredentialBlob = Marshal.StringToCoTaskMemUni(Password);
+                bool result = CredWrite(ref credential, 0);
+                if (!result) return false;
+                LastWriteTimeUtc = DateTime.UtcNow;
+                return true;
             }
-            LastWriteTimeUtc = DateTime.UtcNow;
-            return true;
+            finally
+            {
+                // 释放并清零（若用 SecureString 源更佳：Marshal.SecureStringToCoTaskMemUnicode + ZeroFree）
+                if (credential.CredentialBlob != IntPtr.Zero)
+                    Marshal.ZeroFreeCoTaskMemUnicode(credential.CredentialBlob);
+            }
         }
 
         public bool Delete()
@@ -183,7 +184,7 @@ namespace _1RM.Utils.WindowsApi.Credential
                 {
                     return null;
                 }
-                using var credentialHandle = new CriticalCredentialHandle(credPointer);
+                using var credentialHandle = new NativeMethods.CriticalCredentialHandle(credPointer);
                 using var ret = new Credential(credentialName);
                 var credential = credentialHandle.GetCredential();
                 ret.Username = credential.UserName;

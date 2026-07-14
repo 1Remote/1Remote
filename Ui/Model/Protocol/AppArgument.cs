@@ -284,7 +284,7 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
         if (this.IsNullable != newValue.IsNullable) return false;
         if (this.AddBlankAfterKey != newValue.AddBlankAfterKey) return false;
         if (this.AddBlankAfterValue != newValue.AddBlankAfterValue) return false;
-        if (this.Selections.Count != Selections.Count) return false;
+        if (this.Selections.Count != newValue.Selections.Count) return false;
         if (Type == AppArgumentType.Selection)
         {
             foreach (var selection in Selections)

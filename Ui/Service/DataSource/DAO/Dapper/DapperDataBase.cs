@@ -111,7 +111,8 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                 {
                     SimpleLogHelper.Error(e);
                     UnifyTracing.Error(e);
-                    MessageBoxHelper.ErrorAlert(e.Message + "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
+                    MessageBoxHelper.ErrorAlert(e.Message +
+                                                "\r\n\r\nPlease contact the developer if you get this error to help us fix it");
                     Environment.Exit(2);
                 }
                 catch (MySqlException mse)
@@ -153,13 +154,21 @@ namespace _1RM.Service.DataSource.DAO.Dapper
                     if (_lastException?.Message != e.Message)
                     {
                         SimpleLogHelper.Error(e);
-                        UnifyTracing.Error(e, new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
+                        UnifyTracing.Error(e,
+                            new Dictionary<string, string>() { { "DatabaseType", DatabaseType.ToString() } });
                     }
 
                     error = e.Message;
                     _lastException = e;
                 }
-
+                finally
+                {
+                    if (error != "" && _dbConnection != null)
+                    {
+                        try { _dbConnection?.Dispose(); } catch { /* ignore */ }
+                        _dbConnection = null;
+                    }
+                }
                 return Result.Fail(actionInfo, DatabaseName, error);
             }
         }

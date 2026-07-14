@@ -152,7 +152,7 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                 }
                 catch (Exception e)
                 {
-                    return ResultString.Fail(info, DatabaseName, e.Message);
+                    return Result.Fail(info, DatabaseName, e.Message);
                 }
             }
         }

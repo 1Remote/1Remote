@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using _1RM.Model.Protocol;
+﻿using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource.DAO.Dapper;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
 using _1RM.View;
+using MySql.Data.MySqlClient;
+using Npgsql;
 using Shawn.Utils;
+using System;
+using System.Collections.Generic;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 // ReSharper disable InconsistentNaming
 
@@ -239,12 +241,31 @@ namespace _1RM.Service.DataSource.DAO
 
         public static string GetMysqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
         {
-            return $"server={host};port={port};database={dbName};Character Set=utf8;Uid={user};password={password};Connect Timeout={connectTimeOutSeconds};";
+            var csb = new MySqlConnectionStringBuilder
+            {
+                Server = host,
+                Port = (uint)port,
+                Database = dbName,
+                UserID = user,
+                Password = password,
+                CharacterSet = "utf8",
+                ConnectionTimeout = (uint)connectTimeOutSeconds
+            };
+            return csb.ConnectionString;
         }
 
         public static string GetPgsqlConnectionString(string host, int port, string dbName, string user, string password, int connectTimeOutSeconds)
         {
-            return $"Host={host};Port={port};Database=\"{dbName}\";Username={user};Password={password};Timeout={connectTimeOutSeconds};";
+            var csb = new NpgsqlConnectionStringBuilder
+            {
+                Host = host,
+                Port = port,
+                Database = dbName,
+                Username = user,
+                Password = password,
+                Timeout = connectTimeOutSeconds
+            };
+            return csb.ConnectionString;
         }
 
         //private static string? TryGetConfig(this IDatabase iDatabase, string key)

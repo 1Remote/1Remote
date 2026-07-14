@@ -158,6 +158,7 @@ namespace _1RM.View.Host
             IntPtr myHandle = IntPtr.Zero;
             Execute.OnUIThreadSync(() =>
             {
+                if (!window.IsLoaded || window.WindowState == WindowState.Minimized) return; // avoid PointToScreen throwing exception when window is not loaded or minimized
                 windowPos = window.PointToScreen(new Point(0, 0));
                 windowBottomRight = window.PointToScreen(new Point(window.Width, window.Height));
                 var helper = new System.Windows.Interop.WindowInteropHelper(window);

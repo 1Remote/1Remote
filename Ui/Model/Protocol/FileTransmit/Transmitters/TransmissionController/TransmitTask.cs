@@ -297,7 +297,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
                 // throw data length before {second}
                 while (_transmittedDataLength.TryPeek(out var p)
-                       && (now - p.Item1).Seconds > secondRange)
+                       && (now - p.Item1).TotalSeconds > secondRange)
                 {
                     _transmittedDataLength.TryDequeue(out _);
                 }
@@ -346,8 +346,9 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             {
                 if (TransmitTaskStatus != ETransmitTaskStatus.Transmitting)
                     return "";
-
-                int es = (int)Math.Ceiling((TotalByteLength - TransmittedByteLength) / TransmittedBytesPerSec);
+                var bps = TransmittedBytesPerSec;
+                if (bps <= 0) return "";
+                int es = (int)Math.Ceiling((TotalByteLength - TransmittedByteLength) / bps);
                 int seconds = es % 60;
                 string toDisplay = seconds.ToString("D") + "s";
                 es /= 60;
@@ -570,7 +571,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                     foreach (var item in _ris)
                     {
                         if (item.Name == ".." || item.Name == ".")
-                            return;
+                            continue;
                         if (item.IsDirectory)
                         {
                             await AddServerDirectory(item);

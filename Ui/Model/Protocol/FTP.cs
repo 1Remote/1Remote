@@ -13,7 +13,7 @@ namespace _1RM.Model.Protocol
         public static string ProtocolName = "FTP";
         public FTP() : base(ProtocolName, "FTP.V1", "FTP")
         {
-            base.Port = "20";
+            base.Port = "21";
         }
 
         private string _startupPath = "/";

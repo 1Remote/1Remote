@@ -102,9 +102,8 @@ namespace _1RM.Service.Locality
             }
             if (_settings.ConnectRecodes.Count > 100)
             {
-                var ordered = _settings.ConnectRecodes.OrderByDescending(x => x.Value).ToList();
-                var junks = ordered.Where(x => x.Value < ordered[100].Value);
-                foreach (var junk in junks)
+                var ordered = _settings.ConnectRecodes.OrderByDescending(x => x.Value).ToList().Skip(100);
+                foreach (var junk in ordered)
                 {
                     _settings.ConnectRecodes.TryRemove(junk.Key, out _);
                 }

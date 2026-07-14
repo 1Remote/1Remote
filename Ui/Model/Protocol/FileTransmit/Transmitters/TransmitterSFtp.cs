@@ -155,7 +155,7 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
             var item = await Get(path);
             if (item != null)
             {
-                if (item.IsDirectory)
+                if (item is { IsDirectory: true, IsSymlink: false }) // only delete sub files for normal directory, not symlink
                 {
                     var sub = _sftp.ListDirectory(path) ?? new List<SftpFile>();
                     foreach (var file in sub)
@@ -168,7 +168,6 @@ namespace _1RM.Model.Protocol.FileTransmit.Transmitters
                             continue;
                         await Delete((string)file.FullName);
                     }
-
                     _sftp.DeleteDirectory(path);
                 }
                 else

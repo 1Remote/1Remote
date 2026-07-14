@@ -69,7 +69,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
                 Password = protocol.Password,
                 PrivateKeyPath = protocol.PrivateKey
             });
-            SelectedCredential = credentials.First();
+            SelectedCredential = credentials.FirstOrDefault();
         }
         else
         {
@@ -133,7 +133,7 @@ public class CredentialViewModel : NotifyPropertyChangedBaseScreen
         {
             if (_selectedCredential?.Name != value)
             {
-                SelectedCredential = Credentials.FirstOrDefault(x => x.Name == value) ?? Credentials.First();
+                SelectedCredential = Credentials.FirstOrDefault(x => x.Name == value) ?? Credentials.FirstOrDefault();
             }
         }
     }

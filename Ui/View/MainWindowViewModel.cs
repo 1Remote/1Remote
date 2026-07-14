@@ -333,7 +333,7 @@ namespace _1RM.View
             if (this.View is not MainWindowView { IsClosing: false } window) return;
             EditorViewModel = null;
             ShowSetting = false;
-            if (clearSelection)
+            if (clearSelection && ActiveServerViewModel != null)
             {
                 ActiveServerViewModel.ClearSelection();
                 ActiveServerViewModel.CmdCancelSelected.Execute();
