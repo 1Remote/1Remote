@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using _1RM.Model;
-using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
@@ -97,7 +96,7 @@ namespace _1RM.Service.WebUi
         {
             lock (ds)
             {
-                return ds.CachedProtocols.Count(x => x.Server is not Dummy && !x.Server.IsTmpSession());
+                return ds.CachedProtocols.Count(x => WebUiEndpoints.IsConnectable(x.Server));
             }
         }
 
