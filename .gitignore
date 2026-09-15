@@ -347,3 +347,8 @@ healthchecksdb
 
 # superpowers brainstorm session files
 .superpowers/
+
+# Web UI (vite + vue3)
+webui/node_modules/
+webui/dist/
+
