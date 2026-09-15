@@ -9,20 +9,25 @@ const loading = ref(false)
 const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true，供状态栏指示，Task 20 用）
 let unsubscribe = null
 let pollTimer = null
+let gen = 0 // 乱序完成保护：SSE 事件风暴下多个 loadAll 并发，晚发起的批次可能先返回
 
 async function loadAll() {
+  const my = ++gen
   loading.value = true
   try {
-    [servers.value, datasources.value, tags.value] =
-      await Promise.all([api.servers(), api.datasources(), api.tags()])
+    const results = await Promise.all([api.servers(), api.datasources(), api.tags()])
+    if (my !== gen) return // 落后批次整体丢弃（乱序完成保护），不覆盖新批次数据
+    ;[servers.value, datasources.value, tags.value] = results
     connected.value = true
   } catch (e) {
     // 后端不可达是可预期状态（如开发时代理目标未启动）：保持旧数据、标记断连并记日志，
     // 不向上抛——初始加载与 SSE 回调都是 fire-and-forget 调用，抛出只会变成未处理 rejection
-    connected.value = false
-    console.warn('[useServers] reload failed:', e?.message || e)
+    if (my === gen) {
+      connected.value = false
+      console.warn('[useServers] reload failed:', e?.message || e)
+    }
   } finally {
-    loading.value = false
+    if (my === gen) loading.value = false
   }
 }
 
@@ -33,11 +38,17 @@ export function useServers() {
     unsubscribe = subscribeEvents(() => loadAll())
     // 数据源连接状态（重连倒计时等）不触发 OnReloadAll，低频轮询兜底（顺带刷新边栏状态点）
     pollTimer = setInterval(async () => {
+      // 乱序保护（与 loadAll 的 gen 同思路）：loadAll 在途时跳过本拍，防止旧状态点快照
+      // 覆盖刚写入的新数据；剩余极小竞态窗口（检查后才发起的 loadAll）由下一拍 30s 自愈
+      if (loading.value) return
       try {
-        datasources.value = await api.datasources()
-        connected.value = true
+        const ds = await api.datasources()
+        if (!loading.value) {
+          datasources.value = ds
+          connected.value = true
+        }
       } catch {
-        connected.value = false
+        if (!loading.value) connected.value = false
       }
     }, 30000)
   }

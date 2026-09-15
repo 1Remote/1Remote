@@ -1,61 +1,67 @@
 <script setup>
-// 数据层冒烟占位：验证 useServers（加载 / SSE 刷新 / 轮询 / 树构建）可用。
-// Task 15（边栏树）与 Task 16（列表工具栏）会以真实布局整体重写本文件
-import { useServers } from '../composables/useServers'
-const { servers, tags, loading, connected } = useServers()
+// Task 15：两栏布局（spec §3.1：边栏 216px + 内容区）。边栏承载 SideTree（数据源树+标签区）；
+// selection/tag 状态由本组件持有，Task 16（列表按树/标签过滤）与 Task 17（搜索取交集）消费，当前仅存储。
+import { ref } from 'vue'
+import SideTree from '../components/SideTree.vue'
+
+const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中
+const activeTag = ref('') // ''=未按标签过滤
+// 收起状态仅本地内存：spec §8.7 的 <900px 自动收起与 44px 图标条（树/标签/设置入口）归 Task 20，持久化暂缓
+const collapsed = ref(false)
 </script>
 
 <template>
-  <div class="server-list-smoke">
-    <p class="status">
-      {{ servers.length }} 台服务器 · {{ tags.length }} 个标签 · SSE {{ connected ? '已连接' : '未连接' }}<span
-        v-if="loading"
-        class="loading"
-      >（加载中…）</span>
-    </p>
-    <ul class="names">
-      <li v-for="s in servers.slice(0, 10)" :key="s.id">{{ s.displayName }}</li>
-    </ul>
-    <p v-if="!loading && !servers.length" class="hint">（服务器列表为空——后端调试数据库可能没有数据）</p>
+  <div class="server-list">
+    <aside class="sidebar" :class="{ collapsed }">
+      <SideTree
+        v-if="!collapsed"
+        v-model:selection="selection"
+        v-model:tag="activeTag"
+        @update:collapsed="collapsed = true"
+      />
+      <!-- connect 事件（双击服务器叶）此处暂不处理：连接动作 Task 18 接线 -->
+      <button v-else class="expand-rail" title="展开边栏" @click="collapsed = false">»</button>
+    </aside>
+    <main class="content">服务器列表 — Task 16 实现</main>
   </div>
 </template>
 
 <style scoped>
-.server-list-smoke {
+.server-list {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+.sidebar {
+  flex: 0 0 216px;
+  width: 216px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+.sidebar.collapsed {
+  flex-basis: 44px;
+  width: 44px;
+}
+.expand-rail {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 14px;
+  cursor: pointer;
+}
+.expand-rail:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.content {
   flex: 1;
   min-width: 0;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: auto;
-}
-.status {
-  color: var(--text-2);
-  font-size: 13px;
-}
-.loading {
   color: var(--text-4);
-}
-.names {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.names li {
-  color: var(--text-1);
-  font-size: 13px;
-  padding: 3px 6px;
-  border-radius: 5px;
-}
-.names li:hover {
-  background: var(--bg-hover);
-}
-.hint {
-  color: var(--text-4);
-  font-size: 12px;
 }
 </style>
