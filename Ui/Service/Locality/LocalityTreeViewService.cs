@@ -15,7 +15,9 @@ namespace _1RM.Service.Locality
         public Dictionary<string, int> CustomNodeOrder = new Dictionary<string, int>();
         /// <summary>
         /// Dictionary to store tree node expansion states
-        /// Key: full path string of the tree folder node (e.g., "LocalDataSource->Folder1->SubFolder")
+        /// Key: full path string of the tree folder node, segments joined by
+        ///      ServerTreeViewModel.FullPathSeparator (" ]=+=+=+=>[ "),
+        ///      e.g. "LocalDataSource ]=+=+=+=>[ Folder1 ]=+=+=+=>[ SubFolder"
         /// Value: whether the node is expanded
         /// </summary>
         public Dictionary<string, bool> TreeNodeExpansionStates = new Dictionary<string, bool>();

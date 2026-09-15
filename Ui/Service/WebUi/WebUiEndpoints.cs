@@ -191,12 +191,14 @@ namespace _1RM.Service.WebUi
             });
 
             // PUT 校验通过后走 ConfigurationService.Save()（既有保存路径，落盘 1Remote.json），
-            // 返回 200 + 归一后的存储值；任一字段非法即 400，不写入任何值
+            // 返回 200 + 归一后的存储值；任一字段非法即 400，不写入任何值。
+            // font 为自由取值（字体族名不枚举校验）：空串 = 跟随系统，非空 trim 后存储
             app.MapPut("/api/settings/appearance", (AppearanceDto? dto) =>
             {
                 var themeMode = dto?.ThemeMode?.Trim() ?? string.Empty;
                 var accent = dto?.Accent?.Trim() ?? string.Empty;
                 var fontSize = dto?.FontSize?.Trim() ?? string.Empty;
+                var font = dto?.Font?.Trim() ?? string.Empty;
                 if (!ValidThemeModes.Contains(themeMode))
                     return Results.BadRequest(new { error = $"invalid themeMode '{themeMode}', expected one of: dark, light, system" });
                 if (!ValidAccents.Contains(accent))
@@ -208,21 +210,28 @@ namespace _1RM.Service.WebUi
                 cs.WebUiThemeMode = themeMode.ToLowerInvariant();
                 cs.WebUiAccent = accent.ToLowerInvariant();
                 cs.WebUiFontSize = fontSize.ToUpperInvariant();
+                cs.WebUiFontFamily = font;
                 cs.Save();
                 return Results.Json(ReadAppearance(cs));
             });
 
             // 服务器树状态：LocalityTreeViewService（静态类，无 IoC）两个字典的读写代理。
-            // expanded 键为文件夹全路径、order 键为节点 Id（与 WPF 树 BuildView/LoadLocalCaches 消费一致）；
-            // PUT 为整体替换（幂等），落盘 .locality/.tree_view.json
+            // expanded 键为文件夹全路径——各段之间用 ServerTreeViewModel.FullPathSeparator
+            // （" ]=+=+=+=>[ "）连接，如 "LocalDataSource ]=+=+=+=>[ Folder1"，不是 "->"；
+            // order 键为节点 Id（与 WPF 树 BuildView/LoadLocalCaches 消费一致）。
+            // 键对本 API 为不透明透传（前端需按同一分隔符构造）；PUT 为整体替换（幂等），落盘 .locality/.tree_view.json
             app.MapGet("/api/ui-state/tree", () =>
             {
                 var s = LocalityTreeViewService.Settings;
-                // 拷贝快照再序列化：Settings 为静态缓存，WPF 侧重载时会整体替换字典
+                // 拷贝快照再序列化：Settings 为静态缓存，WPF 侧有两种写入方式——重载时整体替换字典
+                // （SaveExpansionStates/LoadExpansionStates），节点展开/折叠时原地写入
+                // （TreeNode.IsExpanded: Settings.TreeNodeExpansionStates[FullPath] = value）。
+                // 原地写入与字典拷贝并发会抛 InvalidOperationException（枚举中集合被修改），
+                // 拷贝失败重试一次；仍失败（持续并发写）交由上层 500
                 return Results.Json(new TreeStateDto
                 {
-                    Expanded = new Dictionary<string, bool>(s.TreeNodeExpansionStates),
-                    Order = new Dictionary<string, int>(s.CustomNodeOrder),
+                    Expanded = CopyDictionaryWithRetry(s.TreeNodeExpansionStates),
+                    Order = CopyDictionaryWithRetry(s.CustomNodeOrder),
                 });
             });
 
@@ -233,11 +242,14 @@ namespace _1RM.Service.WebUi
                 var s = LocalityTreeViewService.Settings;
                 s.TreeNodeExpansionStates = dto.Expanded ?? new Dictionary<string, bool>();
                 s.CustomNodeOrder = dto.Order ?? new Dictionary<string, int>();
+                // Save() 序列化 Settings 时，WPF 侧节点展开的原地写入窗口同样存在——
+                // Save 内部 RetryHelper.Try(3 次) 会吸收该瞬时失败后重试，无需在此额外处理
                 LocalityTreeViewService.Save();
+                // 响应拷贝与 GET 同理：WPF 原地写入窗口下并发拷贝需重试兜底
                 return Results.Json(new TreeStateDto
                 {
-                    Expanded = new Dictionary<string, bool>(s.TreeNodeExpansionStates),
-                    Order = new Dictionary<string, int>(s.CustomNodeOrder),
+                    Expanded = CopyDictionaryWithRetry(s.TreeNodeExpansionStates),
+                    Order = CopyDictionaryWithRetry(s.CustomNodeOrder),
                 });
             });
         }
@@ -249,7 +261,26 @@ namespace _1RM.Service.WebUi
                 ThemeMode = cs.WebUiThemeMode,
                 Accent = cs.WebUiAccent,
                 FontSize = cs.WebUiFontSize,
+                Font = cs.WebUiFontFamily,
             };
+        }
+
+        /// <summary>
+        /// 拷贝静态缓存字典：WPF 侧节点展开会原地写入（非整体替换），并发拷贝可能因
+        /// 集合被修改抛 InvalidOperationException，重拷一次；再失败说明持续并发写，
+        /// 让异常冒泡交由上层 500。
+        /// </summary>
+        private static Dictionary<TKey, TValue> CopyDictionaryWithRetry<TKey, TValue>(Dictionary<TKey, TValue> source)
+            where TKey : notnull
+        {
+            try
+            {
+                return new Dictionary<TKey, TValue>(source);
+            }
+            catch (InvalidOperationException)
+            {
+                return new Dictionary<TKey, TValue>(source);
+            }
         }
     }
 }

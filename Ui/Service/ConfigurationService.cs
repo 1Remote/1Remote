@@ -201,6 +201,7 @@ namespace _1RM.Service
         public string WebUiThemeMode { get; set; } = "dark";   // dark | light | system
         public string WebUiAccent { get; set; } = "blue";      // blue | violet | pink | red | orange | green | slate
         public string WebUiFontSize { get; set; } = "M";       // S | M | L | XL
+        public string WebUiFontFamily { get; set; } = "";      // 界面字体，空 = 跟随系统
 
         public static Configuration? Load(string path)
         {
@@ -271,6 +272,13 @@ namespace _1RM.Service
         {
             get => _cfg.WebUiFontSize;
             set => _cfg.WebUiFontSize = value;
+        }
+
+        /// <summary>Web UI 界面字体（空 = 跟随系统，经 /api/settings/appearance 读写）</summary>
+        public string WebUiFontFamily
+        {
+            get => _cfg.WebUiFontFamily;
+            set => _cfg.WebUiFontFamily = value;
         }
 
         /// <summary>
