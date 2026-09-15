@@ -18,9 +18,17 @@
  *    约定：false / 空串 / 空数组的初值省略（表单 falsy 渲染与 C# 初值一致，且 POST 后
  *    Newtonsoft 反序列化会在 new 实例上落回同样的 C# 默认值），只列 true 开关、
  *    SELECT 初值、非空字符串与数值初值。
+ *    例外类（必须显式列 false）：C# 属性为 `[DefaultValue(true)]` +
+ *    `[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]` 而字段初始化器
+ *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrivesPlugIn/EnableRedirectCameras），
+ *    json 缺失该字段会被 Populate 语义改写为 DefaultValue(true)——与 WPF 新建（false）相悖，
+ *    因此这三个开关必须显式写入 defaults 为 false。
  *
  * TreeNodes（所属文件夹路径）有意不入 schema：Plan 2 网页端的文件夹归属仍由左侧树
  * 拖拽完成（与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失；树选择器归 Plan 4。
+ * IsAutoAlternateAddressSwitching（ProtocolBaseWithAddressPort.cs:83-90，备用地址自动切换）
+ * 同样有意不入 schema：WPF 在备用地址 UI 暴露该开关，web 子表单暂未等价实现，
+ * 值原样透传不丢失；待后续任务补备用地址 UI 时一并接入。
  */
 import { FIELD } from './fieldTypes.js'
 
@@ -295,6 +303,13 @@ export const PROTOCOLS = {
       AudioQualityMode: 0,
       EnableClipboard: true,
       EnableKeyCombinations: true,
+      // 显式 false（勿按"省略 false"约定删）：三者 C# 字段初始化器为 false，但挂了
+      // [DefaultValue(true)] + DefaultValueHandling.Populate——json 缺失该字段时
+      // Newtonsoft 会 Populate 为 true，导致网页新建默认开启磁盘/即插即用/摄像头重定向，
+      // 与 WPF 新建（false）分歧（安全相关）。显式写入 false 使 POST json 携带明确值。
+      EnableDiskDrives: false,
+      EnableRedirectDrivesPlugIn: false,
+      EnableRedirectCameras: false,
       GatewayMode: 2,
       GatewayLogonMethod: 0,
     },
@@ -330,16 +345,24 @@ export const PROTOCOLS = {
       Port: '22',
       UserName: 'root',
       IsPingBeforeConnect: true,
+      SshVersion: 2,
     },
     groups: [
       basicGroup(),
       credentialGroup({ withPrivateKey: true }),
       behaviorGroup([
+        // SshVersion: int?（SSH.cs:20-27，非枚举非字符串），序列化为数字；
+        // WPF 下拉 V1/V2（SshFormView.xaml:137-150，Tag=Int32 1/2）
+        {
+          key: 'SshVersion',
+          type: FIELD.SELECT,
+          options: [{ value: 1 }, { value: 2 }],
+        },
         { key: 'StartupAutoCommand', type: FIELD.TEXT },
         { key: 'OpenSftpOnConnected', type: FIELD.SWITCH },
         { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT },
       ]),
-      // SshVersion / ExternalSessionConfigPath（ExternalKitty 的回退取值属性）透传不编辑
+      // ExternalSessionConfigPath（ExternalKitty 的回退取值属性）透传不编辑
       miscGroup(),
     ],
   },
