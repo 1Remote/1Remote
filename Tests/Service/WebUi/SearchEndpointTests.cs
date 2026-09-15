@@ -46,6 +46,13 @@ namespace Tests.Service.WebUi
                 Address = "3.3.3.3",
                 Tags = new List<string>(),
             }, local);
+            gd.AddServer(new RDP
+            {
+                Id = "search-cn-1",
+                DisplayName = "生产服务器", // 拼音断言用：shengchanfuwuqi / 首字母 scfwq
+                Address = "4.4.4.4",
+                Tags = new List<string>(),
+            }, local);
 
             var builder = WebApplication.CreateBuilder();
             builder.WebHost.UseTestServer();
@@ -78,6 +85,26 @@ namespace Tests.Service.WebUi
             StringAssert.Contains(body, "search-ssh-1");
             Assert.IsFalse(body.Contains("search-rdp-2"), "只含 'search' 不含 'ssh' 的服务器不应命中");
             Assert.IsFalse(body.Contains("seed-rdp"), "不含任何关键字的服务器不应命中");
+        }
+
+        [TestMethod]
+        public async Task Search_ByPinyin_MatchesChineseName()
+        {
+            // 首字母：sc → 生产服务器(shengchanfuwuqi / scfwq)；
+            // fixture 固定启用 Pinyin/PinyinInitials provider，断言跨 locale 确定
+            var resp = await _client.GetAsync("/api/search?q=sc");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "search-cn-1");
+            Assert.IsFalse(body.Contains("search-ssh-1"), "非中文服务器不应命中首字母查询");
+            Assert.IsFalse(body.Contains("seed-rdp"), "非中文服务器不应命中首字母查询");
+
+            // 全拼：shengchan → 生产服务器
+            var resp2 = await _client.GetAsync("/api/search?q=shengchan");
+            Assert.AreEqual(HttpStatusCode.OK, resp2.StatusCode);
+            var body2 = await resp2.Content.ReadAsStringAsync();
+            StringAssert.Contains(body2, "search-cn-1");
+            Assert.IsFalse(body2.Contains("seed-rdp"), "非中文服务器不应命中拼音查询");
         }
 
         [TestMethod]

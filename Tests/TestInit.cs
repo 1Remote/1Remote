@@ -7,6 +7,9 @@ using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using Shawn.Utils.Interface;
+using VariableKeywordMatcher.Provider.ChineseZhCnPinYin;
+using VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials;
+using VariableKeywordMatcher.Provider.DirectMatch;
 
 namespace Tests
 {
@@ -67,6 +70,18 @@ namespace Tests
                 {
                     DatabaseCheckPeriod = 0, // 关闭 GlobalData 重载定时器，避免测试期后台 tick
                     SqliteDatabasePath = dbPath,
+                    // 固定启用拼音 provider：ConfigurationService 构造时会按本配置调用
+                    // KeywordMatchService.Init（EnabledMatchers 为空时回退到按当前 locale 决定，
+                    // 会导致拼音断言在非 zh 环境下失败），这里显式固定，保证跨 locale 确定
+                    KeywordMatch = new KeywordMatchConfig
+                    {
+                        EnabledMatchers = new List<string>
+                        {
+                            DirectMatchProvider.GetName(),
+                            ChineseZhCnPinYinMatchProvider.GetName(),
+                            ChineseZhCnPinYinInitialsMatchProvider.GetName(),
+                        },
+                    },
                 };
                 var configurationService = new ConfigurationService(keywordMatchService, configuration);
                 Register(configurationService);
