@@ -18,6 +18,7 @@
 1. **测试策略**：后端 TDD（MSTest，新测试放 `Tests/Service/WebUi/`，沿用 TestInit 夹具+每类唯一种子 id 模式）；前端以「实现 + 手动验证清单 + `npm run build` 通过 + i18n 键平价 + 非注释 CJK=0」为完成标准。
 2. **基线**：`dotnet test` 44/42/2（2 个失败=所有者未跟踪 RdpConfigTests.cs，与本项目无关，never touch）；`npm run build` 0 错误。
 3. **关键代码事实**（来自调研，执行时若与代码冲突以代码为准并报告）：
+   - **两个 casing 域，勿互相"归一化"**：①列表 DTO（/api/servers）= camelCase（Plan 1 契约）；②编辑器配置 json（/config、POST/PUT body 的 json 字段内部）= **PascalCase 原样直通**（ToJsonString 无命名策略；`CreateFromJsonString` 的 `jObj.Protocol`/`jObj.ClassVersion` 访问大小写敏感）。批量 patch（Task 3/10）属 ① 域（从列表 DTO 取共享值，经具体类型反序列化不区分大小写地绑定）——两域并存是有意设计。
    - `ProtocolBase.ToJsonString()` = `JsonConvert.SerializeObject(this)`，无类型鉴别器；具体类型由 `Protocol`+`ClassVersion`（JSON 属性）选择，经 `ItemCreateHelper.CreateFromJsonString(json)`（`Ui/Utils/ItemCreateHelper.cs:57-94`）反序列化。
    - **加密**：`DataSourceBase.Database_Insert/UpdateServer` 内部克隆并 `EncryptToDatabaseLevel()`；调用方（API）传明文即可。字段：Password、AlternateCredentials[].Password/PrivateKeyPath、SSH.PrivateKey、RDP.GatewayPassword、LocalApp Secret 参数。
    - **解密**：`DecryptToConnectLevel()`（`Ui/Service/DataBaseService.cs:48-78`）。**必须先 `Clone()` 再解密**——内存缓存中的对象是加密态，WPF 原地解密缓存是既有缺陷，web 不复制。
