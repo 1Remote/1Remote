@@ -16,6 +16,19 @@ export const ACCENT_HEX = {
   slate: '#64748b',
 }
 
+// 强调色 hover 色（与 theme.css 中 --accent-hover 保持一致）。
+// naive-ui 内置主题的 primaryColorPressed/Suppl 派生自绿色基底，overrides 只替换给出的键，
+// 故必须一并覆盖，否则按下主按钮/loading 态会闪绿色
+export const ACCENT_HOVER_HEX = {
+  blue: '#4d73ff',
+  violet: '#a78bfa',
+  pink: '#f472b6',
+  red: '#f87171',
+  orange: '#fb923c',
+  green: '#34d399',
+  slate: '#7c8ba1',
+}
+
 // 旧 9 主题 → 预设组合（spec §4）
 export const CLASSIC_THEMES = {
   Light: { themeMode: 'light', accent: 'blue' },
@@ -70,7 +83,12 @@ export async function initTheme() {
   })
   applyTheme() // await 前先按默认值上色，首帧即有 data-theme（见 main.js 挂载策略）
   try {
-    Object.assign(themeState, await api.getAppearance())
+    const saved = await api.getAppearance()
+    // 白名单校验：手工编辑过的 1Remote.json 不应污染 data-theme 或向 Naive overrides 注入 undefined
+    if (['dark', 'light', 'system'].includes(saved.themeMode)) themeState.themeMode = saved.themeMode
+    if (ACCENTS.includes(saved.accent)) themeState.accent = saved.accent
+    if (['S', 'M', 'L', 'XL'].includes(saved.fontSize)) themeState.fontSize = saved.fontSize
+    if (typeof saved.font === 'string') themeState.font = saved.font
   } catch {
     /* 后端不可达时保持默认值 */
   }
@@ -84,8 +102,17 @@ export function useNaiveTheme() {
     overrides: {
       common: {
         primaryColor: ACCENT_HEX[themeState.accent],
-        primaryColorHover: ACCENT_HEX[themeState.accent],
+        primaryColorHover: ACCENT_HOVER_HEX[themeState.accent],
+        primaryColorPressed: ACCENT_HEX[themeState.accent],
+        primaryColorSuppl: ACCENT_HOVER_HEX[themeState.accent],
       },
     },
   }))
+}
+
+// 调试钩子（Task 21 验收后移除）：控制台可用
+// window.__theme.setAppearance(window.__theme.CLASSIC_THEMES.Wine) 实时切换并持久化。
+// 放在 themes 模块内而非 App.vue，避免 Task 13 重写 App.vue 时丢失
+if (typeof window !== 'undefined') {
+  window.__theme = { setAppearance, themeState, CLASSIC_THEMES, ACCENTS }
 }
