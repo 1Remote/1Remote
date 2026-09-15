@@ -6,11 +6,14 @@
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
  * 字段描述符形状见 editor/fieldTypes.js；i18n 回退约定：labelKey 缺失显示 key 原样
  * （PascalCase），SELECT 选项 labelKey 缺失显示 String(value)（Task 11 补齐全部文案）。
- * icon / credential 为占位实现（Task 9 接 IconPicker / CredentialPicker）。
+ * icon → IconPicker、credential → CredentialPicker（Task 9）：credential 的选项按数据源隔离，
+ * dataSourceName 由父级（EditorDrawer）逐层传入（SubformList 透传，保持行内同数据源）。
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SubformList from './SubformList.vue'
+import IconPicker from './IconPicker.vue'
+import CredentialPicker from './CredentialPicker.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
 
 const props = defineProps({
@@ -19,6 +22,8 @@ const props = defineProps({
   /** json 中 field.key 处的当前值（任意类型；switch 可能是 null，subform 是数组） */
   modelValue: { type: null, default: null },
   disabled: { type: Boolean, default: false },
+  /** credential 字段的凭据库数据源（透传给 CredentialPicker） */
+  dataSourceName: { type: String, default: '' },
 })
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
@@ -87,13 +92,6 @@ const COLOR_SWATCHES = ['#00000000', '#FF565A63', '#FFEF6A6A', '#FFF0B25F', '#FF
 function toCssColor(hex) {
   return typeof hex === 'string' && /^#[0-9a-fA-F]{8}$/.test(hex) ? '#' + hex.slice(3) + hex.slice(1, 3) : hex
 }
-
-// ---- credential 占位（TODO Task 9：接 CredentialPicker，选项来自
-// /api/credentials/names?ds=...）：当前先用只含现值的下拉呈现字符串值，可清空
-// （InheritedCredentialName 空串 = 手动输入凭据）。
-const credentialOptions = computed(() =>
-  typeof props.modelValue === 'string' && props.modelValue !== '' ? [{ value: props.modelValue, label: props.modelValue }] : [],
-)
 
 const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 </script>
@@ -194,12 +192,13 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:value="emit('update:modelValue', $event)"
       />
 
-      <!-- icon：占位（TODO Task 9：接 IconPicker——内置图标网格/本地上传/exe 提取） -->
-      <div v-else-if="field.type === FIELD_TYPE.ICON" class="ff-icon">
-        <img v-if="modelValue" class="ff-icon-img" :src="'data:image/png;base64,' + modelValue" alt="" />
-        <span v-else class="ff-icon-empty"></span>
-        <button class="ff-icon-btn" type="button" disabled :title="t('common.comingSoon')">…</button>
-      </div>
+      <!-- icon：IconPicker（内置网格/本地上传/exe 提取/清除） -->
+      <IconPicker
+        v-else-if="field.type === FIELD_TYPE.ICON"
+        :model-value="modelValue || ''"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- color：色板 + 原始 hex -->
       <div v-else-if="field.type === FIELD_TYPE.COLOR" class="ff-color">
@@ -225,15 +224,13 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         />
       </div>
 
-      <!-- credential：占位（Task 9 接 CredentialPicker），清空 = 手动输入 -->
-      <n-select
+      <!-- credential：CredentialPicker（选项按数据源隔离；清空 = 手动输入） -->
+      <CredentialPicker
         v-else-if="field.type === FIELD_TYPE.CREDENTIAL"
-        size="small"
-        :value="modelValue || undefined"
-        :options="credentialOptions"
-        clearable
+        :model-value="modelValue || ''"
+        :data-source-name="dataSourceName"
         :disabled="disabled"
-        @update:value="emit('update:modelValue', $event ?? '')"
+        @update:model-value="emit('update:modelValue', $event)"
       />
 
       <!-- subform -->
@@ -241,6 +238,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         v-else-if="field.type === FIELD_TYPE.SUBFORM"
         :fields="field.subform?.fields || []"
         :row-defaults="field.subform?.rowDefaults || {}"
+        :data-source-name="dataSourceName"
         :model-value="modelValue"
         @update:model-value="emit('update:modelValue', $event)"
       />
@@ -353,37 +351,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   outline: none;
 }
 
-/* icon 占位：缩略图 + 「…」按钮（Task 9 IconPicker） */
-.ff-icon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ff-icon-img {
-  width: 22px;
-  height: 22px;
-  border-radius: 3px;
-  object-fit: cover;
-}
-.ff-icon-empty {
-  width: 22px;
-  height: 22px;
-  border: 1px dashed var(--border-strong);
-  border-radius: 3px;
-}
-.ff-icon-btn {
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: 12px;
-  line-height: 1;
-  padding: 5px 10px;
-}
-.ff-icon-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
+/* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */
 
 /* color：色板 + hex 输入 */
 .ff-color {
