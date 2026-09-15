@@ -50,18 +50,22 @@ namespace _1RM.Service.WebUi
 
     /// <summary>
     /// /api/settings/appearance DTO（Web UI 专属外观，独立于 WPF ThemeConfig，spec §4）。
-    /// themeMode: dark|light|system；accent: blue|violet|pink|red|orange|green|slate；fontSize: S|M|L|XL。
+    /// themeMode: dark|light|system；accent: blue|violet|pink|red|orange|green|slate；fontSize: S|M|L|XL；
+    /// font: 字体族名（自由取值不枚举，空串 = 跟随系统，非空存储前 trim）。
     /// </summary>
     public class AppearanceDto
     {
         public string ThemeMode { get; set; } = string.Empty;
         public string Accent { get; set; } = string.Empty;
         public string FontSize { get; set; } = string.Empty;
+        public string Font { get; set; } = string.Empty;
     }
 
     /// <summary>
     /// /api/ui-state/tree DTO：LocalityTreeViewService 两个字典的忠实投影。
-    /// expanded: 文件夹节点全路径 → 是否展开（TreeNodeExpansionStates，如 "LocalDataSource-&gt;Folder1"）；
+    /// expanded: 文件夹节点全路径 → 是否展开（TreeNodeExpansionStates）。全路径各段之间的分隔符是
+    /// ServerTreeViewModel.FullPathSeparator，即 " ]=+=+=+=>[ "，如 "LocalDataSource ]=+=+=+=>[ Folder1"
+    /// ——不是 "->"；键对本 API 为不透明透传，前端后续需按同一分隔符构造。
     /// order: 节点 Id → 自定义序号（CustomNodeOrder，排序模式=Custom 时生效）。
     /// PUT 为整体替换语义。字典键不做大小写转换（路径/Id 原样透传）。
     /// </summary>

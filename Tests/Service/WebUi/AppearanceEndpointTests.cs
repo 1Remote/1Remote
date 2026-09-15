@@ -12,6 +12,7 @@ using Tests;
 using _1RM.Service;
 using _1RM.Service.Locality;
 using _1RM.Service.WebUi;
+using _1RM.View.ServerView.Tree;
 
 namespace Tests.Service.WebUi
 {
@@ -52,6 +53,7 @@ namespace Tests.Service.WebUi
             cs.WebUiThemeMode = "dark";
             cs.WebUiAccent = "blue";
             cs.WebUiFontSize = "M";
+            cs.WebUiFontFamily = "";
             cs.Save();
         }
 
@@ -66,6 +68,7 @@ namespace Tests.Service.WebUi
             Assert.AreEqual("dark", dto.ThemeMode);
             Assert.AreEqual("blue", dto.Accent);
             Assert.AreEqual("M", dto.FontSize);
+            Assert.AreEqual(string.Empty, dto.Font, "默认字体 = 空串（跟随系统）");
         }
 
         [TestMethod]
@@ -73,13 +76,15 @@ namespace Tests.Service.WebUi
         {
             try
             {
+                // font 自由取值不校验枚举，trim 后存储（前后空格应被去掉）
                 var (code, body) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"light\",\"accent\":\"violet\",\"fontSize\":\"XL\"}");
+                    "{\"themeMode\":\"light\",\"accent\":\"violet\",\"fontSize\":\"XL\",\"font\":\"  Microsoft YaHei UI  \"}");
                 Assert.AreEqual(HttpStatusCode.OK, code, body);
                 var stored = JsonConvert.DeserializeObject<AppearanceDto>(body)!;
                 Assert.AreEqual("light", stored.ThemeMode);
                 Assert.AreEqual("violet", stored.Accent);
                 Assert.AreEqual("XL", stored.FontSize);
+                Assert.AreEqual("Microsoft YaHei UI", stored.Font);
 
                 // GET 返回更新后的值
                 var after = JsonConvert.DeserializeObject<AppearanceDto>(
@@ -87,6 +92,7 @@ namespace Tests.Service.WebUi
                 Assert.AreEqual("light", after.ThemeMode);
                 Assert.AreEqual("violet", after.Accent);
                 Assert.AreEqual("XL", after.FontSize);
+                Assert.AreEqual("Microsoft YaHei UI", after.Font);
 
                 // 落盘验证：ProfileJsonPath（测试 cwd 下 1Remote.json）应包含新值，
                 // 且反序列化为 Configuration 后字段一致（证明走的是既有保存路径）
@@ -94,11 +100,13 @@ namespace Tests.Service.WebUi
                 Assert.IsTrue(File.Exists(path), $"配置文件应已生成: {path}");
                 var raw = File.ReadAllText(path);
                 StringAssert.Contains(raw, "violet");
+                StringAssert.Contains(raw, "Microsoft YaHei UI");
                 var cfg = JsonConvert.DeserializeObject<Configuration>(raw);
                 Assert.IsNotNull(cfg);
                 Assert.AreEqual("light", cfg!.WebUiThemeMode);
                 Assert.AreEqual("violet", cfg.WebUiAccent);
                 Assert.AreEqual("XL", cfg.WebUiFontSize);
+                Assert.AreEqual("Microsoft YaHei UI", cfg.WebUiFontFamily);
             }
             finally
             {
@@ -113,30 +121,31 @@ namespace Tests.Service.WebUi
             {
                 // 先写入一组已知合法值
                 var (ok, _) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"light\",\"accent\":\"green\",\"fontSize\":\"L\"}");
+                    "{\"themeMode\":\"light\",\"accent\":\"green\",\"fontSize\":\"L\",\"font\":\"SimSun\"}");
                 Assert.AreEqual(HttpStatusCode.OK, ok);
 
                 // 非法 themeMode
                 var (bad1, body1) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"neon\",\"accent\":\"green\",\"fontSize\":\"L\"}");
+                    "{\"themeMode\":\"neon\",\"accent\":\"green\",\"fontSize\":\"L\",\"font\":\"SimSun\"}");
                 Assert.AreEqual(HttpStatusCode.BadRequest, bad1, body1);
 
                 // 非法 accent
                 var (bad2, body2) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"light\",\"accent\":\"magenta\",\"fontSize\":\"L\"}");
+                    "{\"themeMode\":\"light\",\"accent\":\"magenta\",\"fontSize\":\"L\",\"font\":\"SimSun\"}");
                 Assert.AreEqual(HttpStatusCode.BadRequest, bad2, body2);
 
                 // 非法 fontSize
                 var (bad3, body3) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"light\",\"accent\":\"green\",\"fontSize\":\"XXL\"}");
+                    "{\"themeMode\":\"light\",\"accent\":\"green\",\"fontSize\":\"XXL\",\"font\":\"SimSun\"}");
                 Assert.AreEqual(HttpStatusCode.BadRequest, bad3, body3);
 
-                // 值保持不变
+                // 值保持不变（含 font——任一字段非法即整体不写入）
                 var after = JsonConvert.DeserializeObject<AppearanceDto>(
                     await _client.GetStringAsync("/api/settings/appearance"))!;
                 Assert.AreEqual("light", after.ThemeMode);
                 Assert.AreEqual("green", after.Accent);
                 Assert.AreEqual("L", after.FontSize);
+                Assert.AreEqual("SimSun", after.Font);
             }
             finally
             {
@@ -149,14 +158,16 @@ namespace Tests.Service.WebUi
         {
             try
             {
-                // 大小写宽容 + 归一：ThemeMode/accent 归一小写，fontSize 归一大写
+                // 大小写宽容 + 归一：ThemeMode/accent 归一小写，fontSize 归一大写；
+                // font 空串合法（= 跟随系统）
                 var (code, body) = await PutAsync("/api/settings/appearance",
-                    "{\"themeMode\":\"System\",\"accent\":\"GREEN\",\"fontSize\":\"s\"}");
+                    "{\"themeMode\":\"System\",\"accent\":\"GREEN\",\"fontSize\":\"s\",\"font\":\"\"}");
                 Assert.AreEqual(HttpStatusCode.OK, code, body);
                 var stored = JsonConvert.DeserializeObject<AppearanceDto>(body)!;
                 Assert.AreEqual("system", stored.ThemeMode);
                 Assert.AreEqual("green", stored.Accent);
                 Assert.AreEqual("S", stored.FontSize);
+                Assert.AreEqual(string.Empty, stored.Font);
             }
             finally
             {
@@ -169,15 +180,20 @@ namespace Tests.Service.WebUi
         {
             try
             {
-                var payload = "{\"expanded\":{\"LocalDataSource->Folder1\":true,\"LocalDataSource->Folder1->Sub\":false},"
+                // expanded 键 = WPF 树节点 FullPath：段间分隔符为 ServerTreeViewModel.FullPathSeparator
+                // （" ]=+=+=+=>[ "），直接引用常量防止注释/测试与真实分隔符漂移
+                var sep = ServerTreeViewModel.FullPathSeparator;
+                var folder1 = "LocalDataSource" + sep + "Folder1";
+                var folder1Sub = folder1 + sep + "Sub";
+                var payload = "{\"expanded\":{\"" + folder1 + "\":true,\"" + folder1Sub + "\":false},"
                               + "\"order\":{\"srv-1\":1,\"srv-2\":2}}";
                 var (code, body) = await PutAsync("/api/ui-state/tree", payload);
                 Assert.AreEqual(HttpStatusCode.OK, code, body);
 
                 var stored = JsonConvert.DeserializeObject<TreeStateDto>(body)!;
                 Assert.AreEqual(2, stored.Expanded.Count);
-                Assert.IsTrue(stored.Expanded["LocalDataSource->Folder1"]);
-                Assert.IsFalse(stored.Expanded["LocalDataSource->Folder1->Sub"]);
+                Assert.IsTrue(stored.Expanded[folder1]);
+                Assert.IsFalse(stored.Expanded[folder1Sub]);
                 Assert.AreEqual(2, stored.Order.Count);
                 Assert.AreEqual(1, stored.Order["srv-1"]);
                 Assert.AreEqual(2, stored.Order["srv-2"]);
@@ -186,8 +202,8 @@ namespace Tests.Service.WebUi
                 var got = JsonConvert.DeserializeObject<TreeStateDto>(
                     await _client.GetStringAsync("/api/ui-state/tree"))!;
                 Assert.AreEqual(2, got.Expanded.Count);
-                Assert.IsTrue(got.Expanded["LocalDataSource->Folder1"]);
-                Assert.IsFalse(got.Expanded["LocalDataSource->Folder1->Sub"]);
+                Assert.IsTrue(got.Expanded[folder1]);
+                Assert.IsFalse(got.Expanded[folder1Sub]);
                 Assert.AreEqual(2, got.Order.Count);
                 Assert.AreEqual(1, got.Order["srv-1"]);
                 Assert.AreEqual(2, got.Order["srv-2"]);
@@ -199,8 +215,8 @@ namespace Tests.Service.WebUi
                     File.ReadAllText(LocalityTreeViewService.JsonPath))!;
                 Assert.IsNotNull(settings);
                 Assert.AreEqual(2, settings!.TreeNodeExpansionStates.Count);
-                Assert.IsTrue(settings.TreeNodeExpansionStates["LocalDataSource->Folder1"]);
-                Assert.IsFalse(settings.TreeNodeExpansionStates["LocalDataSource->Folder1->Sub"]);
+                Assert.IsTrue(settings.TreeNodeExpansionStates[folder1]);
+                Assert.IsFalse(settings.TreeNodeExpansionStates[folder1Sub]);
                 Assert.AreEqual(2, settings.CustomNodeOrder.Count);
                 Assert.AreEqual(1, settings.CustomNodeOrder["srv-1"]);
             }
