@@ -7,7 +7,8 @@
 //   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
 // - 批量条：选中 ≥1 时渲染于表头上方；连接 emit 到父级执行，批量编辑/导出 Plan 2/4 占位禁用
 // - 右键菜单：连接/复制地址/复制用户名可用，其余 Plan 2/4 禁用占位（title 提示）；点击外部/Esc 关闭
-// - 空态：简单居中提示（引导卡片归 Task 20）
+// - 空态：默认居中提示按「传入列表空=空库 / 非空但过滤后无行=无匹配」二分；
+//   具名插槽 empty 供父级覆写（ServerListView 的引导卡片/无匹配态在表格外层接管，见 Task 20）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
@@ -316,7 +317,9 @@ const colVars = computed(() => ({
         @edit="emit('edit', s)"
         @context-menu="openMenu"
       />
-      <div v-if="!sorted.length" class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
+      <slot v-if="!sorted.length" name="empty">
+        <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
+      </slot>
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">

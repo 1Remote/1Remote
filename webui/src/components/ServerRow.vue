@@ -16,7 +16,7 @@ defineProps({
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 : '')
 const initial = (p) => (p || '?').charAt(0).toUpperCase()
@@ -24,8 +24,9 @@ const initial = (p) => (p || '?').charAt(0).toUpperCase()
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
 // 标签胶囊：最多 2 个 + 溢出计数（完整列表见 title）
 const overflow = (s) => Math.max(0, s.tags.length - 2)
-// 从未连接 = formatRelativeTime 返回 null 时的占位文案（i18n；t 在渲染期调用，随语言切换刷新）
-const relTime = (s) => formatRelativeTime(s.lastConnectTime) || t('status.never')
+// 从未连接 = formatRelativeTime 返回 null 时的占位文案；相对时间显式注入当前 i18n locale
+// （渲染期读 locale.value，语言切换即时重格式化，不再依赖 navigator.language）
+const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.value) || t('status.never')
 </script>
 
 <template>
@@ -51,7 +52,7 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime) || t('status.never'
     </div>
     <div class="cell cell-addr" :title="addressText(server)">{{ addressText(server) }}</div>
     <div class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
-    <div class="cell cell-tags" :title="server.tags.join('、')">
+    <div class="cell cell-tags" :title="server.tags.join(t('row.tagSep'))">
       <span v-for="t in server.tags.slice(0, 2)" :key="t" class="tag">{{ t }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
