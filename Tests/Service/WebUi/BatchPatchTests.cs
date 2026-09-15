@@ -230,6 +230,22 @@ namespace Tests.Service.WebUi
         }
 
         [TestMethod]
+        public async Task BatchPatch_NullPatchValue_Returns400_NothingSaved()
+        {
+            // JSON null 一律拒绝：null 会绕过部分 C# setter 的防护直落库（如 Note→null 字符串，
+            // WPF 只会产出 ""），下游序列化/连接路径有 NRE/500 风险。清空须显式用 "" 或 []。
+            var resp = await PostBatchAsync("{\"ids\":[\"batch-1\"],\"patch\":{\"note\":null}}");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode, "null patch 值必须拒绝");
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "note", "错误消息应点名该字段");
+
+            // 预校验原子性：拒绝后不得有任何写入
+            var cfg = await GetConfigAsync("batch-1");
+            StringAssert.Contains(cfg, "\"DisplayName\":\"batch-1\"", "拒绝后服务器不得被修改");
+            StringAssert.Contains(cfg, "\"Port\":\"3381\"");
+        }
+
+        [TestMethod]
         public async Task BatchPatch_FieldMissingOnProtocol_Returns400_NothingSaved()
         {
             // startupPath 只存在于 FTP/SFTP：对 RDP 批量 patch 该字段 → 400 且零写入

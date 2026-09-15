@@ -203,7 +203,9 @@ namespace _1RM.Service.WebUi
                 var result = WebUiEditorService.ApplyBatchPatch(dataSourceName, body.Ids, patch.Value.GetRawText());
                 return result.Status switch
                 {
-                    EditorSaveStatus.Ok => Results.Json(new { updated = body.Ids!.Count }),
+                    // updated 取服务端实际保存台数（Ok 载荷经 ServerId 字符串载体带回）——
+                    // 不复用 body.Ids.Count（重复 id 已在服务端去重，二者可能不等）
+                    EditorSaveStatus.Ok => Results.Json(new { updated = int.Parse(result.ServerId) }),
                     EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
                     EditorSaveStatus.NotFound => Results.NotFound(),
                     _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
