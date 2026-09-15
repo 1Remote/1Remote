@@ -58,6 +58,36 @@ namespace Tests.Service.WebUi
             Assert.AreEqual(HttpStatusCode.NotFound, resp.StatusCode);
         }
 
+        // ---- IsConnectable 过滤器单元测试（纯函数，无需 HTTP/夹具种子）----
+
+        [TestMethod]
+        public void IsConnectable_NormalServer_True()
+        {
+            var rdp = new RDP { Id = "01J8Z", DisplayName = "n", Address = "1.2.3.4" };
+            Assert.IsTrue(WebUiEndpoints.IsConnectable(rdp));
+        }
+
+        [TestMethod]
+        public void IsConnectable_DummyGroupHeader_False()
+        {
+            // VmItemList 中的分组头（树形列表虚拟节点）不是可连接的真实服务器
+            var dummy = new Dummy { Id = "group-header" };
+            Assert.IsFalse(WebUiEndpoints.IsConnectable(dummy));
+        }
+
+        [TestMethod]
+        public void IsConnectable_TmpSession_False()
+        {
+            // 未设置 Id 的对象（编辑器/临时会话形态）：Id getter 会生成 TMP_SESSION_ 前缀 id
+            var fresh = new RDP { DisplayName = "t", Address = "1.2.3.4" };
+            Assert.IsTrue(fresh.IsTmpSession(), "前置：未设置 Id 的服务器对象即临时会话");
+            Assert.IsFalse(WebUiEndpoints.IsConnectable(fresh));
+
+            // 显式 TMP_SESSION_ 前缀 id 同样不可连接
+            var tmp = new RDP { Id = "TMP_SESSION_123", DisplayName = "t2", Address = "1.2.3.4" };
+            Assert.IsFalse(WebUiEndpoints.IsConnectable(tmp));
+        }
+
         [TestMethod]
         public async Task Connect_KnownId_FiresEventAndReturnsOk()
         {

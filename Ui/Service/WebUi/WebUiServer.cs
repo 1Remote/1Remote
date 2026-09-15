@@ -9,7 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace _1RM.Service.WebUi
 {
-    /// <summary>进程内本地 Web 服务：仅监听回环地址。DEBUG 固定端口免 token，Release 随机端口 + token。</summary>
+    /// <summary>
+    /// 进程内本地 Web 服务：仅监听回环地址。DEBUG 固定端口免 token，Release 随机端口 + token。
+    /// 注意：WPF UI 线程禁止同步（.Result/.Wait）调用本服务端点（与 SessionControlService 关闭路径的 _dictLock+OnUIThreadSync 组合可致死锁）
+    /// </summary>
     public static class WebUiServer
     {
         private static WebApplication? _app;
