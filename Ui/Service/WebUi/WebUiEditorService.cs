@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -13,9 +17,9 @@ namespace _1RM.Service.WebUi
     public enum EditorSaveStatus
     {
         Ok,
-        BadRequest,      // 请求体/数据源名/鉴别字段非法，或 WPF 平价校验未通过（写入前拦截）
+        BadRequest,      // 请求体/数据源名/鉴别字段非法、数据源只读，或 WPF 平价校验未通过（写入前拦截）
         NotFound,        // 目标 id 不存在（或不可编辑：Dummy 分组头/临时会话）
-        DbError,         // 校验通过但写库失败（含只读数据源），500 + 错误详情
+        DbError,         // 校验通过但写库失败，500 + 错误详情
     }
 
     public sealed class EditorSaveResult
@@ -71,6 +75,8 @@ namespace _1RM.Service.WebUi
             var dataSource = ResolveDataSource(dataSourceName);
             if (dataSource == null)
                 return EditorSaveResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
+            if (dataSource.IsWritable != true)
+                return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSource.DataSourceName}' is read-only" });
 
             var server = ItemCreateHelper.CreateFromJsonString(serverJson);
             if (server == null)
@@ -101,6 +107,8 @@ namespace _1RM.Service.WebUi
             var dataSource = ResolveDataSource(dataSourceName);
             if (dataSource == null)
                 return EditorSaveResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
+            if (dataSource.IsWritable != true)
+                return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSource.DataSourceName}' is read-only" });
 
             var server = ItemCreateHelper.CreateFromJsonString(serverJson);
             if (server == null)
@@ -135,12 +143,181 @@ namespace _1RM.Service.WebUi
             var vm = GetEditableVm(dataSourceName, id);
             if (vm == null)
                 return EditorSaveResult.NotFound();
+            if (vm.Server.DataSource?.IsWritable != true)
+                return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSourceName}' is read-only" });
 
             var ret = IoC.Get<GlobalData>().DeleteServer(new[] { vm.Server });
             return ret.IsSuccess
                 ? EditorSaveResult.Ok(id)
                 : EditorSaveResult.DbError(ret.ErrorInfo);
         }
+
+        #region 批量补丁（POST /api/servers/batch）
+
+        /// <summary>
+        /// 批量 patch 的字段 allow-list：camelCase patch 键（列表 DTO 域）→ C# PascalCase 属性名。
+        /// 显式枚举、逐项核对过真实属性名——不盲目反射任意键（未知键 400 列出，防静默丢弃）。
+        /// 键匹配大小写不敏感（camelCase 为规范形式，PascalCase 亦接受）。
+        /// 注意 startupAutoCommand（SSH/Telnet/Serial）、startupPath（FTP/SFTP）、
+        /// rdpFileAdditionalSettings（RDP/RdpApp）并非所有协议都有——属性不存在时按台 400（见 ApplyBatchPatch）。
+        /// </summary>
+        private static readonly Dictionary<string, string> BatchPatchFieldMap = new(System.StringComparer.OrdinalIgnoreCase)
+        {
+            // ProtocolBase 层
+            ["displayName"] = nameof(ProtocolBase.DisplayName),
+            ["note"] = nameof(ProtocolBase.Note),
+            ["tags"] = nameof(ProtocolBase.Tags),                       // List<string>，显式覆盖语义（非 WPF 交集合并，Plan 2 有意偏差）
+            ["colorHex"] = nameof(ProtocolBase.ColorHex),
+            ["iconBase64"] = nameof(ProtocolBase.IconBase64),
+            // ProtocolBaseWithAddressPort 层
+            ["address"] = nameof(ProtocolBaseWithAddressPort.Address),
+            ["port"] = nameof(ProtocolBaseWithAddressPort.Port),
+            // ProtocolBaseWithAddressPortUserPwd 层；password 为明文，加密由 DataSourceBase 保存时完成
+            ["userName"] = nameof(ProtocolBaseWithAddressPortUserPwd.UserName),
+            ["password"] = nameof(ProtocolBaseWithAddressPortUserPwd.Password),
+            ["inheritedCredentialName"] = nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName),
+            ["askPasswordWhenConnect"] = nameof(ProtocolBaseWithAddressPortUserPwd.AskPasswordWhenConnect), // bool?
+            // 协议专属（见上方注释：非全协议共有）
+            ["startupAutoCommand"] = nameof(SSH.StartupAutoCommand),
+            ["startupPath"] = nameof(SFTP.StartupPath),
+            ["rdpFileAdditionalSettings"] = nameof(RDP.RdpFileAdditionalSettings),
+        };
+
+        /// <summary>
+        /// 有意不进 allow-list 的深层/子表单字段（Plan 2 简化）：批量编辑只支持扁平字段，
+        /// 子表单（备用凭据、参数表）走单机编辑 PUT /api/servers/{id}。命中即 400 并附引导消息。
+        /// </summary>
+        private static readonly HashSet<string> BatchPatchDeepFields = new(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "alternateCredentials",
+            "argumentList",
+            "treeNodes",
+        };
+
+        /// <summary>
+        /// POST /api/servers/batch：补丁式批量编辑（patch 中缺失的字段 = 保持不变）。
+        /// 原子性为「预校验原子性」：ids 全部查找成功 + 每台补丁应用与校验（WPF 平价）全部通过后，
+        /// 才统一走 GlobalData.UpdateServer(IEnumerable)；任一环节失败 → 整批零执行。
+        /// （DB 层批量更新无事务，与 WPF 行为一致；预校验失败不写库，见计划全局约定 8。）
+        /// 返回 Ok(更新台数)；NotFound=任一 id 不存在；BadRequest=请求体/未知键/深层字段/只读/校验失败。
+        /// </summary>
+        public static EditorSaveResult ApplyBatchPatch(string? dataSourceName, List<string>? ids, string? patchJson)
+        {
+            if (ids == null || ids.Count == 0)
+                return EditorSaveResult.BadRequest(new List<string> { "ids must be a non-empty array of server ids" });
+
+            var dataSource = ResolveDataSource(dataSourceName);
+            if (dataSource == null)
+                return EditorSaveResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
+            if (dataSource.IsWritable != true)
+                return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSource.DataSourceName}' is read-only" });
+
+            JObject patch;
+            try
+            {
+                patch = JObject.Parse(patchJson ?? string.Empty);
+            }
+            catch (Exception)
+            {
+                return EditorSaveResult.BadRequest(new List<string> { "patch must be a JSON object" });
+            }
+            if (patch.Count == 0)
+                return EditorSaveResult.BadRequest(new List<string> { "patch must contain at least one field" });
+
+            // 键校验：深层字段拒绝（附单机编辑引导）、未知键拒绝并列出——都不做任何查找与写入
+            var keyErrors = new List<string>();
+            var unknownKeys = new List<string>();
+            foreach (var prop in patch.Properties())
+            {
+                if (BatchPatchDeepFields.Contains(prop.Name))
+                    keyErrors.Add($"patch field '{prop.Name}' is not supported in batch edit (subform/array fields must be edited per-server via PUT /api/servers/{{id}})");
+                else if (!BatchPatchFieldMap.ContainsKey(prop.Name))
+                    unknownKeys.Add(prop.Name);
+            }
+            if (unknownKeys.Count > 0)
+                keyErrors.Add($"unknown patch fields: {string.Join(", ", unknownKeys)}; allowed fields: {string.Join(", ", BatchPatchFieldMap.Keys)}");
+            if (keyErrors.Count > 0)
+                return EditorSaveResult.BadRequest(keyErrors);
+
+            // 预校验原子性第一环：锁内查找全部 id，任一缺失/不可编辑 → 404，整批不执行
+            var gd = IoC.Get<GlobalData>();
+            var vms = new List<ProtocolBaseViewModel>();
+            lock (gd) // 快照语义同 /api/servers：锁内只做查找，后续处理在锁外
+            {
+                foreach (var id in ids)
+                {
+                    var vm = gd.GetItemById(dataSource.DataSourceName, id);
+                    if (vm == null || !WebUiEndpoints.IsConnectable(vm.Server))
+                        return EditorSaveResult.NotFound();
+                    vms.Add(vm);
+                }
+            }
+
+            // 第二环：逐台克隆 → 应用补丁 → WPF 平价校验；全部通过才收集，任一失败 → 400（带台 id），零写入
+            var updated = new List<ProtocolBase>();
+            var validationErrors = new List<string>();
+            foreach (var vm in vms)
+            {
+                // 克隆缓存中的加密态对象后直接打补丁：不动 VmItemList 原对象，未 patch 的字段保持原样。
+                // 加密安全性：未 patch 的密文字段二次落库安全——EncryptToDatabaseLevel 内部用
+                // UnSafeStringEncipher.EncryptOnce（解得开=已是密文→原样透传，解不开=明文→加密一次），
+                // 幂等不双重加密；patch 进来的 password 为明文，恰好在保存时被加密一次（与 WPF 同路径）。
+                var clone = (ProtocolBase)vm.Server.Clone();
+                var errors = ApplyPatchToServer(clone, patch);
+                errors.AddRange(ValidateForSave(clone));
+                if (errors.Count > 0)
+                {
+                    validationErrors.AddRange(errors.Select(e => $"{vm.Id}: {e}"));
+                    continue;
+                }
+                updated.Add(clone);
+            }
+            if (validationErrors.Count > 0)
+                return EditorSaveResult.BadRequest(validationErrors);
+
+            // 第三环：统一保存（IEnumerable 重载按 DataSource 分组落库并联动缓存/标签/UI 通知）
+            var ret = gd.UpdateServer(updated);
+            return ret.IsSuccess
+                ? EditorSaveResult.Ok(updated.Count.ToString())
+                : EditorSaveResult.DbError(ret.ErrorInfo);
+        }
+
+        /// <summary>
+        /// 将 patch 的各字段应用到克隆对象：经 allow-list 取 PascalCase 属性名 → 反射定位
+        /// （属性可能不在该协议类型上，如 RDP 无 StartupPath → 报错由调用方聚合）→
+        /// Newtonsoft 按属性类型转换 JSON 值（string/bool?/List&lt;string&gt;）→ 走 C# 属性 setter
+        /// （与 WPF 编辑器同一语义：含 Password/PrivateKey 互斥清空、Tags 去重排序等副作用）。
+        /// 返回该台的错误列表（空=全部应用成功）。
+        /// </summary>
+        private static List<string> ApplyPatchToServer(ProtocolBase server, JObject patch)
+        {
+            var errors = new List<string>();
+            foreach (var prop in patch.Properties())
+            {
+                var propertyName = BatchPatchFieldMap[prop.Name];
+                var property = server.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                if (property == null || !property.CanWrite || property.SetMethod == null)
+                {
+                    errors.Add($"field '{prop.Name}' (property '{propertyName}') does not exist on protocol '{server.Protocol}'");
+                    continue;
+                }
+
+                object? converted;
+                try
+                {
+                    converted = prop.Value?.ToObject(property.PropertyType);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"cannot convert patch field '{prop.Name}' to {property.PropertyType.Name}: {ex.Message}");
+                    continue;
+                }
+                property.SetValue(server, converted);
+            }
+            return errors;
+        }
+
+        #endregion
 
         /// <summary>
         /// 保存前校验，与 WPF 编辑器 IDataErrorInfo 同一套规则（复用其索引器，

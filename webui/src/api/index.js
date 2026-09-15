@@ -31,6 +31,7 @@ export const api = {
   saveAppearance: (a) => request('/api/settings/appearance', { method: 'PUT', body: a }),
   getTreeState: () => request('/api/ui-state/tree'),
   saveTreeState: (s) => request('/api/ui-state/tree', { method: 'PUT', body: s }),
+  batchUpdate: (ids, patch) => request('/api/servers/batch', { method: 'POST', body: { ids, patch } }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */

@@ -188,6 +188,28 @@ namespace _1RM.Service.WebUi
                 };
             });
 
+            // 批量补丁编辑：POST /api/servers/batch，body {ids, ds?, patch}。patch 键为 camelCase（列表
+            // DTO 域），经显式 allow-list 映射到 C# 属性；缺失字段=保持不变；未知键 400 列出；
+            // 深层字段（alternateCredentials 等子表单）400 引导单机编辑（Plan 2 简化）。
+            // 原子性=预校验原子性：任一 id 缺失(404)或任一台校验失败(400) → 整批零执行。
+            app.MapPost("/api/servers/batch", (BatchPatchRequest? body) =>
+            {
+                var patch = body?.Patch;
+                if (patch == null || patch.Value.ValueKind != JsonValueKind.Object)
+                    return Results.BadRequest(new { errors = new[] { "body must contain a 'patch' object" } });
+                var dataSourceName = string.IsNullOrWhiteSpace(body!.Ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : body.Ds;
+                var result = WebUiEditorService.ApplyBatchPatch(dataSourceName, body.Ids, patch.Value.GetRawText());
+                return result.Status switch
+                {
+                    EditorSaveStatus.Ok => Results.Json(new { updated = body.Ids!.Count }),
+                    EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                    EditorSaveStatus.NotFound => Results.NotFound(),
+                    _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
             // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
             // data 为本连接内重载次数（每连接独立从 0 起计）——前端收到后重新拉取 /api/servers 等即可，
             // 无重载时每 15s 写一行注释心跳保活；断开（RequestAborted）在 finally 中退订。

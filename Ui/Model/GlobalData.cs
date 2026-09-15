@@ -161,7 +161,10 @@ namespace _1RM.Model
                     }
                     needReload |= source.NeedRead(TableServer.TABLE_NAME);
                     var tmp = source.Database_UpdateServer(groupedServer);
-                    isAnySuccess = tmp.IsSuccess;
+                    // Accumulate across datasource groups: plain assignment (`=`) would let the LAST
+                    // group's failure overwrite earlier groups' success, so a partially-successful
+                    // multi-datasource batch would skip ReloadAll and leave VmItemList stale.
+                    isAnySuccess |= tmp.IsSuccess;
                     if (!tmp.IsSuccess)
                     {
                         failMessages.Add(tmp.ErrorInfo);
