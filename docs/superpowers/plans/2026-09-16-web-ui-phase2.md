@@ -29,6 +29,8 @@
 4. **安全边界**：编辑 API 返回/接收明文密码——与 WPF 编辑器同级暴露，受 token（仅 /api）+ 回环保护。POST/PUT 前端不缓存密码到 localStorage。
 5. **提交规范**：英文 conventional commits + `Co-Authored-By: Claude <noreply@anthropic.com>`。
 6. **WPF 侧零改动**（本计划不动 WPF 视图；只在 `Ui/Service/WebUi/` 与 `webui/src/` 添加）。
+7. **lock(gd) 纪律**：所有新端点对 VmItemList/GetItemById 的读取沿用 Plan 1 的 `lock(gd)` 快照模式（读在锁内物化，写库在锁外；参照 WebUiEndpoints.cs 既有注释）。
+8. **批量原子性措辞**：Task 3 的原子性指"预校验原子性"（任一 id 无效则整批不执行、不写库）；DB 层批量更新无事务，中途故障可能留部分写入（与 WPF 行为一致，记录即可，不加事务）。
 
 ## 文件结构
 
@@ -60,7 +62,7 @@ Tests/Service/WebUi/
 
 **Files:** Modify `Ui/Service/WebUi/WebUiEndpoints.cs`、`WebUiEditorService.cs`(新)、`Tests/Service/WebUi/EditorEndpointsTests.cs`(新)
 
-- [ ] Step 1 失败测试（TestInit 夹具 + 种子 "editor-rdp-1"，`IoC.Get<GlobalData>().AddServer(new RDP{Id="editor-rdp-1",DisplayName="ed",Address="1.1.1.1",Password="pw123"}, localDs)`）：`GET /api/servers/editor-rdp-1/config?ds=Local` → 200，body 含 `"displayName":"ed"`、**`"password":"pw123"`（明文）**、`"protocol":"RDP"`、`"classVersion"`；未知 id → 404。断言缓存未被污染：再次 GET 仍返回同样明文（若原地解密则第二次 Password 已是明文+已解密态——改用更强断言：GET 后调 `IoC.Get<GlobalData>().GetItemById(...)` 检查其 Server.Password 仍为加密态或与原始一致）。
+- [ ] Step 1 失败测试（TestInit 夹具 + 种子 "editor-rdp-1"，`IoC.Get<GlobalData>().AddServer(new RDP{Id="editor-rdp-1",DisplayName="ed",Address="1.1.1.1",Password="pw123"}, localDs)`）：`GET /api/servers/editor-rdp-1/config?ds=Local` → 200。**键大小写约定（关键）**：端点信封字段（id/dataSourceName/protocol/json）随 ASP.NET camelCase，但**内嵌 json 对象的键保持 ToJsonString 的 PascalCase 原样直通**（System.Text.Json 不对嵌套对象键应用命名策略；`CreateFromJsonString` 的 `jObj.Protocol`/`jObj.ClassVersion` 访问是大小写敏感的，任何一侧做 camelCase 转换都会破坏直通）。断言：body 含 `"DisplayName":"ed"`、**`"Password":"pw123"`（明文）**、`"Protocol":"RDP"`（信封）、json 内 `"ClassVersion"`；未知 id → 404。断言缓存未被污染：GET 后调 `IoC.Get<GlobalData>().GetItemById(...)` 检查其 Server.Password 仍为原始（加密态）值。
 - [ ] Step 2 红 → Step 3 实现 `WebUiEditorService.GetEditableConfig(dataSourceName, id)`：`GetItemById` → `(ProtocolBase)vm.Server.Clone()` → `DecryptToConnectLevel()` → `ToJsonString()`（**先克隆后解密**，理由注释）。端点包 `{ id, dataSourceName, protocol, json }`（json 为对象非字符串，前端免二次解析）。
 - [ ] Step 4 绿（全套 46/44/2）→ Step 5 提交 `feat(webui): editable server config endpoint with clone-then-decrypt`
 
@@ -68,12 +70,12 @@ Tests/Service/WebUi/
 
 **Files:** Modify `WebUiEndpoints.cs`、`WebUiEditorService.cs`；Test 同上
 
-- [ ] Step 1 失败测试：
-  - POST `{json:{protocol:"RDP",classVersion:"RDP.V1",displayName:"new1",address:"2.2.2.2",port:"3389"}, dataSourceName:"Local"}` → 200 `{id:"<新生成ULID>"}`；GET config 可回读且 AddServer 后 `/api/servers` 含 new1。
-  - PUT 修改 editor-rdp-1 的 displayName → 200；回读已变。
-  - POST 缺 displayName → 400；Port 非数字 → 400（校验三规则，与 WPF IDataErrorInfo 对齐）。
+- [ ] Step 1 失败测试（**请求体与断言中 json 内嵌键一律 PascalCase**，与 GET 直通一致；信封键 camelCase）：
+  - POST `{dataSourceName:"Local", json:{"Protocol":"RDP","ClassVersion":"RDP.V1","DisplayName":"new1","Address":"2.2.2.2","Port":"3389"}}` → 200 `{id:"<新生成ULID>"}`；GET config 可回读且 AddServer 后 `/api/servers` 含 new1。
+  - PUT 修改 editor-rdp-1 的 DisplayName → 200；回读已变。
+  - POST 缺 DisplayName → 400；Port 非数字 → 400（校验三规则，与 WPF IDataErrorInfo 对齐）。
   - DELETE editor-rdp-1 → 204；`/api/servers` 不再含它；再 GET config → 404。
-  - 往返加密断言：POST 带 password:"pwA" → GET config 返回 "pwA"（加密发生在 DataSourceBase 内部，对称验证）。
+  - 往返加密断言：POST 带 Password:"pwA" → GET config 返回 "pwA"（加密发生在 DataSourceBase 内部，对称验证）。
 - [ ] Step 2 红 → Step 3 实现 `WebUiEditorService.SaveFromJson(json, dataSourceName)`：`ItemCreateHelper.CreateFromJsonString(serialize(json))` → 应用校验（DisplayName/Address/Port + RdpApp/Serial/LocalApp 规则，返回错误串）→ `IsTmpSession/Id 空` → AddServer 否则 UpdateServer；DELETE 走 `GlobalData.DeleteServer`。**注意**：UpdateServer 路径要求对象的 DataSource 字段——从 GetItemById 原对象克隆后 Update 或设置 `server.DataSource`（参照 WPF 保存路径 ServerEditorPageViewModel.cs:487-500；DataSource 为 [JsonIgnore]，需服务端回填）。
 - [ ] Step 4 绿（48/46/2）→ Step 5 提交 `feat(webui): server create/update/delete endpoints with WPF-parity validation`
 
@@ -102,7 +104,7 @@ Tests/Service/WebUi/
 **Files:** Create `webui/src/editor/schemas.js`；Create `webui/src/editor/fieldTypes.js`
 
 - [ ] Step 1 `fieldTypes.js`：类型常量与元信息约定（`text/number/select/options[]/switch/tags/password/textarea/icon/color/credential/ref`），每个字段描述 `{key, type, label(i18n键), options?, visibleWhen?(依赖字段表达式), required?, placeholder?}`。
-- [ ] Step 2 `schemas.js` 主流 4 协议。**RDP 为完整样板**（对照 `Ui/Model/Protocol/RDP.cs` 核对每个字段名，草案）：基本信息组（displayName*/address*/port*/tags/icon/color/当前文件夹 treeNodes 转所属文件夹下拉——用服务器 folderPath 编辑：文本输入 `folderPath`（'/'分隔，Plan 2 简化为文本+说明，Plan 4 树选择器））、凭据组（userName/password/askPasswordWhenConnect/inheritedCredentialName(credential 类型)/备用凭据子表——**Plan 2 简化**：alternateCredentials 用 textarea JSON 编辑？**否——太糙**。用子表单：数组编辑 UI（增删行，每行 name/address/port/userName/password/privateKeyPath），作为 `subform` 类型） 、显示组（rdpFullScreenFlag/isConnWithFullScreen/isFullScreenWithConnectionBar/isPinTheConnectionBarByDefault/rdpWindowResizeMode(select)/rdpWidth/rdpHeight(visibleWhen resizeMode=Fixed*)/isScaleFactorFollowSystem/scaleFactorCustomValue/displayPerformance）、mstsc 组（mstscModeEnabled/rdpFileAdditionalSettings(textarea)）、高级组（isAdministrativePurposes/audioRedirectionMode/audioQualityMode/9 个 Enable* 开关）、网关组（gatewayMode/gatewayHostName/gatewayLogonMethod/gatewayUserName/gatewayPassword(visibleWhen)）、连接组（isPingBeforeConnect）、杂项（rdpControlAdditionalSettings(textarea)、note(备注字段——从 ProtocolBase 确认字段名)）。**SSH**：基本+凭据（含 privateKey/password 二选一 usePrivateKeyForConnect、privateKey 路径文本输入）+启动（startupAutoCommand/openSftpOnConnected/externalKittySessionConfigPath）+Runner 说明。**SFTP/FTP**：基本+凭据+startupPath。**执行规则**：每个字段名必须打开对应 C# 类核对拼写与大小写（Newtonsoft 默认 PascalCase 序列化——**注意**：检查 ToJsonString 是否设置 CamelCase 命名策略——默认 PascalCase！schema key 用 C# 属性原名 PascalCase，前端不做命名转换，端到端直通）。select 的 options 枚举值对照 C# 枚举的字符串值。
+- [ ] Step 2 `schemas.js` 主流 4 协议。**每个 schema 必须含协议鉴别常量**（新建 POST 时前端注入 json，编辑模式回传时已存在）：`protocol:"RDP"`, `classVersion:"RDP.V1"`（对照各 C# 类构造函数核值——RDP.cs:115 等）。**RDP 为完整样板**（对照 `Ui/Model/Protocol/RDP.cs` 核对每个字段名，草案）：基本信息组（DisplayName*/Address*/Port*/Tags/Icon/Color/当前文件夹 TreeNodes 转所属文件夹下拉——用服务器 folderPath 编辑：文本输入 `folderPath`（'/'分隔，Plan 2 简化为文本+说明，Plan 4 树选择器））、凭据组（UserName/Password/AskPasswordWhenConnect/InheritedCredentialName(credential 类型)/备用凭据子表——**Plan 2 简化**：alternateCredentials 用 textarea JSON 编辑？**否——太糙**。用子表单：数组编辑 UI（增删行，每行 name/address/port/userName/password/privateKeyPath），作为 `subform` 类型） 、显示组（RdpFullScreenFlag/IsConnWithFullScreen/IsFullScreenWithConnectionBar/IsPinTheConnectionBarByDefault/RdpWindowResizeMode(select)/RdpWidth/RdpHeight(visibleWhen resizeMode=Fixed*)/IsScaleFactorFollowSystem/ScaleFactorCustomValue/DisplayPerformance）、mstsc 组（MstscModeEnabled/RdpFileAdditionalSettings(textarea)）、高级组（IsAdministrativePurposes/AudioRedirectionMode/AudioQualityMode/9 个 Enable* 开关）、网关组（GatewayMode/GatewayHostName/GatewayLogonMethod/GatewayUserName/GatewayPassword(visibleWhen)）、连接组（IsPingBeforeConnect）、杂项（RdpControlAdditionalSettings(textarea)、Note(备注字段——从 ProtocolBase 确认字段名)）。**SSH**：基本+凭据（含 PrivateKey/Password 二选一 UsePrivateKeyForConnect、PrivateKey 路径文本输入）+启动（StartupAutoCommand/OpenSftpOnConnected/ExternalKittySessionConfigPath）+Runner 说明。**SFTP/FTP**：基本+凭据+StartupPath。**执行规则**：每个字段名必须打开对应 C# 类核对拼写与大小写（Newtonsoft 默认 PascalCase 序列化——**注意**：检查 ToJsonString 是否设置 CamelCase 命名策略——默认 PascalCase！schema key 用 C# 属性原名 PascalCase，前端不做命名转换，端到端直通）。select 的 options 枚举值对照 C# 枚举的字符串值。schema 另含 `defaults`（新建初值：Port 等，对照 C# 构造函数默认）。
 - [ ] Step 3 验证：node 脚本断言 schema 结构完整（每组字段 key 非空、类型合法）；对照 RDP.cs grep 字段名抽查 10 个。
 - [ ] Step 4 提交 `feat(webui): editor schemas for RDP/SSH/SFTP/FTP`
 
@@ -110,7 +112,7 @@ Tests/Service/WebUi/
 
 **Files:** Modify `schemas.js`
 
-- [ ] Step 1 五个协议 schema（对照 C# 类）：VNC（vncWindowResizeMode）、Telnet（startupAutoCommand）、Serial（serialPort*/bitRate*/dataBits/stopBits/parity/flowControl——options 对照 Serial.cs 枚举）、RdpApp（remoteApplicationName*/remoteApplicationProgram*/audio 设置+RDP 公共组复用）、LocalApp（exePath*/runWithHosting/argumentList 子表单（type/name/value，Secret 行密码样式）+ 宏说明 tooltip + 动态字段 visibleWhen：address/port/userName/password/privateKey 按 CheckMacroRequirement 语义声明）。协议间共享组用函数复用（baseFields(addressPortUserPwd) 等）。
+- [ ] Step 1 五个协议 schema（对照 C# 类，同样含 protocol/classVersion 常量与 defaults）：VNC（VncWindowResizeMode）、Telnet（StartupAutoCommand）、Serial（SerialPort*/BitRate*/DataBits/StopBits/Parity/FlowControl——options 对照 Serial.cs 枚举）、RdpApp（RemoteApplicationName*/RemoteApplicationProgram*/audio 设置+RDP 公共组复用）、LocalApp（ExePath*/RunWithHosting/ArgumentList 子表单（Type/Name/Value，Secret 行密码样式）+ 宏说明 tooltip + 动态字段 visibleWhen：Address/Port/UserName/Password/PrivateKey 按 CheckMacroRequirement 语义声明）。协议间共享组用函数复用（baseFields(addressPortUserPwd) 等）。
 - [ ] Step 2 结构断言 + 抽查 → Step 3 提交 `feat(webui): editor schemas for remaining protocols`
 
 ### Task 7: FormField 通用字段渲染器 + 子表单
@@ -125,8 +127,8 @@ Tests/Service/WebUi/
 
 **Files:** Create `EditorDrawer.vue`；Modify `ServerListView.vue`、`api/index.js`、locales
 
-- [ ] Step 1 Drawer：右滑 68% 宽（拖边缘 560-900）、头部（图标+标题=新建 RDP/编辑：{名}+归属+协议切换 n-select——切换时保留公共字段：调 `PATCH 语义`：从前端视角=保留 base 类字段丢弃专属字段，用 `ProtocolBase.Update(levelType)` 的前端等价：schema 切换+json 中保留两边共同分组的字段）、分组页签（schema 组名，未保存小圆点）、底部（取消/Ctrl+S 保存/Esc 关闭+未保存确认 n-modal）。
-- [ ] Step 2 保存流：加载（config→json 合入本地响应式对象）；编辑模式 PUT（整个 json 对象：schema 字段+透传未列字段——**实现**：加载时深拷贝原 json，schema 绑定修改该拷贝，保存时整体回传）；新建模式 POST（协议默认值由**服务端**生成？**否**——前端 schema 定义 defaults（port 等），POST body 含完整 json）。保存成功 → toast + 关抽屉 + SSE 自动刷新列表。
+- [ ] Step 1 Drawer：右滑 68% 宽（拖边缘 560-900）、头部（图标+标题=新建 RDP/编辑：{名}+归属+最后修改时间（编辑模式从列表 DTO lastConnectTime 之外显示服务端无修改时间——**用所属数据源+协议代替**，修改时间字段后端不存储，跳过并注释 spec 偏差）+协议切换 n-select——切换时保留公共字段：从前端视角=保留 base 类字段丢弃专属字段，schema 切换+json 中保留两边共同分组的字段+**注入新协议的 Protocol/ClassVersion 常量**）、分组页签（schema 组名，未保存小圆点）、底部（取消/Ctrl+S 保存/Esc 关闭+未保存确认 n-modal）。
+- [ ] Step 2 保存流：加载（config→json 合入本地响应式对象）；编辑模式 PUT（整个 json 对象：schema 字段+透传未列字段——**实现**：加载时深拷贝原 json，schema 绑定修改该拷贝，保存时整体回传）；新建模式 POST（**前端组装完整 json：schema.defaults 起底 + 用户输入 + 注入 `Protocol`/`ClassVersion` 鉴别字段**，无鉴别字段后端无法选型）。保存成功 → toast + 关抽屉 + SSE 自动刷新列表。
 - [ ] Step 3 入口接线（ServerListView）：＋新建（启用 Plan 1 的禁用按钮）、✎ 编辑（启用）、右键 编辑/复制（复制=config→清 id→POST）/删除（确认 n-modal→DELETE→toast）、批量条 批量编辑（选中 N>1 → Task 10 批量模式）。
 - [ ] Step 4 验证（build、i18n 平价、CJK 审计）→ Step 5 提交 `feat(webui): editor drawer with schema tabs and save flow`
 
