@@ -61,6 +61,30 @@ namespace _1RM.View
             // 按配置应用界面引擎（WPF / WebView2 壳）
             this.Loaded += MainWindowView_OnLoaded;
 
+            // WebView2 用户数据目录固定到本机数据目录（便携模式随程序目录、AppData 模式随本地应用数据），
+            // 避免默认落在 exe 所在目录污染安装目录；浏览器 profile 属于本机数据，不参与同步
+            WebUI.CreationProperties = new Microsoft.Web.WebView2.Wpf.CoreWebView2CreationProperties
+            {
+                UserDataFolder = System.IO.Path.Combine(AppPathHelper.Instance.LocalityDirPath, "WebView2"),
+            };
+
+            // WebView2 初始化是异步的：运行时缺失(LTSC/Server)或用户数据目录不可写等失败
+            // 通过此事件异步上报（Core 包装的参数为 IsSuccess/InitializationException），
+            // 不处理会进入全局未处理异常导致应用退出
+            WebUI.CoreWebView2InitializationCompleted += (_, e) =>
+            {
+                if (e.IsSuccess == false)
+                {
+                    SimpleLogHelper.Error(e.InitializationException);
+                    WebUI.Visibility = Visibility.Collapsed;
+                }
+            };
+
+            // WebView2 是 HwndHost（airspace）：其 HWND 恒渲染在本窗口所有 WPF 内容之上，
+            // XAML 层级对它无效。因此 TopLevel 遮罩（等待动画/弹窗等）显示期间必须隐藏 WebUI，
+            // 遮罩关闭后再按配置恢复（已初始化的 WebView2 隐藏/显示不丢失页面状态）
+            Vm.PropertyChanged += VmOnPropertyChanged;
+
             // Restore or reset window location
             if (double.IsNaN(localityService.MainWindowTop) || double.IsNaN(localityService.MainWindowLeft)
                 || localityService.MainWindowTop < SystemParameters.VirtualScreenTop
@@ -130,8 +154,23 @@ namespace _1RM.View
             ApplyUiEngineFromConfig();
         }
 
+        private void VmOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(Vm.TopLevelViewModel))
+                return;
+            // TopLevel 遮罩出现时隐藏 WebUI（HwndHost airspace，见构造函数注释）；关闭后按配置恢复
+            if (Vm.TopLevelViewModel != null)
+            {
+                WebUI.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                ApplyUiEngineFromConfig();
+            }
+        }
+
         /// <summary>
-        /// 读取 GeneralConfig.UiEngine 并切换界面引擎（在窗口 Loaded 时应用一次；
+        /// 读取 GeneralConfig.UiEngine 并切换界面引擎（在窗口 Loaded 及遮罩关闭时应用；
         /// 运行中的切换由 GeneralSettingViewModel 调用 ShowWebUi/HideWebUi）
         /// </summary>
         public void ApplyUiEngineFromConfig()
@@ -146,13 +185,20 @@ namespace _1RM.View
         {
             try
             {
+                if (WebUI.CoreWebView2 != null)
+                {
+                    // 已初始化完成：隐藏/显示不会销毁内容，直接恢复可见即可，避免重新导航丢状态
+                    WebUI.Visibility = Visibility.Visible;
+                    return;
+                }
 #if DEBUG
-                // 前端尚未创建（Task 10+）；验证服务可用可直接导航 http://localhost:17321/api/version
+                // 前端尚未创建（Task 10+），连接失败页为预期表现
                 WebUI.Source = new Uri("http://localhost:5173");
 #else
                 if (_1RM.Service.WebUi.WebUiServer.IsRunning == false)
                 {
                     SimpleLogHelper.Warning("WebUiServer is not running, skip Web UI");
+                    WebUI.Visibility = Visibility.Collapsed;
                     return;
                 }
                 WebUI.Source = new Uri($"http://127.0.0.1:{_1RM.Service.WebUi.WebUiServer.Port}/?token={_1RM.Service.WebUi.WebUiServer.Token}");
@@ -161,7 +207,7 @@ namespace _1RM.View
             }
             catch (Exception ex)
             {
-                // WebView2 运行时缺失等异常不阻断桌面版
+                // WebView2 运行时缺失等同步异常不阻断桌面版（异步失败见 CoreWebView2InitializationCompleted）
                 SimpleLogHelper.Error(ex);
                 WebUI.Visibility = Visibility.Collapsed;
             }
