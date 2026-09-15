@@ -87,4 +87,18 @@ namespace _1RM.Service.WebUi
         public string? DataSourceName { get; set; } // 仅 POST 使用；PUT/DELETE 经 ?ds= 查询参数
         public JsonElement? Json { get; set; }
     }
+
+    /// <summary>
+    /// POST /api/servers/batch 请求体（补丁式批量编辑）。信封键 camelCase；
+    /// patch 键属列表 DTO（camelCase）域——与编辑器配置 json（PascalCase 直通）是两个 casing 域，
+    /// 服务端经显式 allow-list（WebUiEditorService.BatchPatchFieldMap）映射到 C# PascalCase 属性，
+    /// 未知键 400 列出（防静默丢弃）。patch 中缺失的字段 = 保持不变；password 为明文（保存时加密）。
+    /// ds 省略 = Local；ids 空数组/缺失 → 400。
+    /// </summary>
+    public class BatchPatchRequest
+    {
+        public List<string>? Ids { get; set; }
+        public string? Ds { get; set; }
+        public JsonElement? Patch { get; set; }
+    }
 }
