@@ -15,12 +15,13 @@
 
 ## 全局约定（每个任务都适用）
 
-1. **测试策略**：后端任务 TDD（MSTest，新测试放 `Tests/Service/WebUi/`，必须先 `TestInit.Init()`——参见现有 `Tests/TestInit.cs` 的 mock 注入模式）；前端任务以"实现 + 手动验证清单 + `npm run build` 通过"为完成标准（spec §9 未引入前端测试框架，有意取舍）。
+1. **测试策略**：后端任务 TDD（MSTest 3.6.4，新测试放 `Tests/Service/WebUi/`）。**注意**：原 `Tests/TestInit.cs` 已在 Task 1 清理中删除（死代码，引用已不存在的 API）；Task 2/3 的测试不依赖 IoC，直接写即可；Task 4 将以当前 API 重建精简版 TestInit（`IoC.GetByType` 委托注入 + 实例缓存静态字段 + `MockLanguageService` 模式，参照 `Ui/Ioc.cs:20`）。当前测试基线：10 个测试 8 过 2 败（2 个失败在仓库所有者未跟踪的 TDD 红灯文件 `Tests/Utils/RdpConfigTests.cs`，与本项目无关）。前端任务以"实现 + 手动验证清单 + `npm run build` 通过"为完成标准（spec §9 未引入前端测试框架，有意取舍）。
 2. **构建/测试命令**：解决方案根目录运行 `dotnet build` / `dotnet test Tests/Tests.csproj`（若仓库现有测试有特殊运行方式，以能跑通现有测试的方式为准）。前端在 `webui/` 目录运行 `npm run dev`（Vite 5173）与 `npm run build`。
 3. **端口约定**：DEBUG：后端固定 `17321`、无 token（仅回环）；Release：随机端口 18000-25000 + 32 位随机 token，页面 URL 以 `?token=` 传递（fragment 不会发往服务器，不能用 `#token=`）。
-4. **提交规范**：英文 conventional commits（`feat:`/`test:`/`chore:`），每任务至少一次提交，消息末尾加 `Co-Authored-By: Claude <noreply@anthropic.com>`。
-5. **代码位置**：后端新代码全部在 `Ui/Service/WebUi/`；前端新工程在仓库根 `webui/`（独立于 Ui.csproj）。
-6. **WPF 侧改动最小化**：只动 `AppInit.cs`（启动服务）、`MainWindowView.xaml(.cs)`（WebView2 壳）、`Ui/Service/ConfigurationService.cs` 中的 GeneralConfig（引擎开关）、`GeneralSettingView`（开关下拉）。其余 WPF 代码一律不碰。
+4. **特殊配置政策**：Web UI 仅支持默认 net9 配置（Debug/Release/StoreDebug/StoreRelease）。`ReleaseNet48`/`ReleaseNet6` 为仓库既有的 broken 配置（TFM 修复前即无法完整编译），本计划不为它们做兼容；`Ui/Service/WebUi/` 下的新代码无需条件编译。
+5. **提交规范**：英文 conventional commits（`feat:`/`test:`/`chore:`），每任务至少一次提交，消息末尾加 `Co-Authored-By: Claude <noreply@anthropic.com>`。
+6. **代码位置**：后端新代码全部在 `Ui/Service/WebUi/`；前端新工程在仓库根 `webui/`（独立于 Ui.csproj）。
+7. **WPF 侧改动最小化**：只动 `AppInit.cs`（启动服务）、`MainWindowView.xaml(.cs)`（WebView2 壳）、`Ui/Service/ConfigurationService.cs` 中的 GeneralConfig（引擎开关）、`GeneralSettingView`（开关下拉）。其余 WPF 代码一律不碰。
 
 ## 文件结构总览
 
@@ -341,9 +342,7 @@ namespace Tests.Service.WebUi
     [TestClass]
     public class DtoMapperTests
     {
-        [ClassInitialize]
-        public static void Init(TestContext _) => TestInit.Init();
-
+        // 纯函数测试，不需要 TestInit/IoC
         [TestMethod]
         public void Map_RdpServer_FieldsComplete()
         {
@@ -492,9 +491,9 @@ git commit -m "feat(webui): server/DataSource/Tag DTOs with mapper from protocol
 - 数据源：`IoC.Get<DataSourceService>()`（`LocalDataSource` + `AdditionalSources`，各源 `Status/IsWritable/ReconnectInfo`）。
 - 标签：`IoC.Get<GlobalData>()` 的标签聚合（`GlobalData_Tag.cs`），置顶来自 `LocalityTagService`。
 
-- [ ] **Step 1: 扩展 TestInit 测试夹具（前置：现有 mock 不含本组端点依赖）**
+- [ ] **Step 1: 重建精简版 TestInit 测试夹具（原文件已在 Task 1 清理中删除）**
 
-`Tests/TestInit.cs` 追加（**关键：IoC.GetByType 每次直通调用，必须缓存实例**，否则种子数据加进的对象与端点内 `IoC.Get<T>()` 取到的不是同一实例，`/api/servers` 会返回空。参照该文件第 34 行起现有写法）：
+新建 `Tests/TestInit.cs`（用当前 API，勿参考 git 历史旧版——旧版引用的 API 已不存在）：
 
 ```csharp
 // 新增静态字段（类顶部）：
