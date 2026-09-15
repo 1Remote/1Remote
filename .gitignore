@@ -344,3 +344,6 @@ healthchecksdb
 /Ui/Properties/launchSettings.json
 /Ui/Resources/PuTTY
 /Ui/Resources/Languages/glossary_translated_by_google
+
+# superpowers brainstorm session files
+.superpowers/
