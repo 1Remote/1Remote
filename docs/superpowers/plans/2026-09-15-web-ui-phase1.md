@@ -89,7 +89,7 @@ Tests/Service/WebUi/            # 本计划全部后端测试
 </ItemGroup>
 ```
 
-注意：MSTest 2.2.7 若在 net9 下报兼容错误，将 `MSTest.TestAdapter`/`MSTest.TestFramework` 升级到 `3.6.4`（测试代码无需改动）。验证：`dotnet test Tests/Tests.csproj` 能还原并跑通**现有**测试（这是后续所有任务测试循环的前提；现有测试若有个别与本次改动无关的既有失败，记录并保持原状，不算本任务失败）。
+注意：MSTest 2.2.7 若在 net9 下报兼容错误，将 `MSTest.TestAdapter`/`MSTest.TestFramework` 升级到 `3.6.4`、`Microsoft.NET.Test.Sdk` 升级到 `17.12.0`（测试代码无需改动）。验证：`dotnet test Tests/Tests.csproj` 能还原并跑通**现有**测试（这是后续所有任务测试循环的前提；现有测试若有个别与本次改动无关的既有失败，记录并保持原状，不算本任务失败）。
 
 - [ ] **Step 3: 验证编译**
 
@@ -494,23 +494,34 @@ git commit -m "feat(webui): server/DataSource/Tag DTOs with mapper from protocol
 
 - [ ] **Step 1: 扩展 TestInit 测试夹具（前置：现有 mock 不含本组端点依赖）**
 
-`Tests/TestInit.cs` 的 `IoC.GetByType` 追加注册（参照该文件第 34 行起现有写法）：
+`Tests/TestInit.cs` 追加（**关键：IoC.GetByType 每次直通调用，必须缓存实例**，否则种子数据加进的对象与端点内 `IoC.Get<T>()` 取到的不是同一实例，`/api/servers` 会返回空。参照该文件第 34 行起现有写法）：
 
 ```csharp
-if (type == typeof(KeywordMatchService) || type == typeof(KeywordMatchService<>))
-    return new KeywordMatchService(configurationService, languageService); // 构造参数以 KeywordMatchService.cs 为准
+// 新增静态字段（类顶部）：
+private static KeywordMatchService? _keywordMatchService;
+private static GlobalData? _globalData;
+private static DataSourceService? _dataSourceService;
+
+// GetByType lambda 中追加（缓存返回，注意 KeywordMatchService 为无参构造、非泛型）：
+if (type == typeof(KeywordMatchService))
+    return _keywordMatchService ??= new KeywordMatchService();
+if (type == typeof(DataSourceService) && _dataSourceService != null)
+    return _dataSourceService; // 若已有注册行则改为同样走缓存
 if (type == typeof(GlobalData))
-    return new GlobalData(configurationService, IoC.Get<DataSourceService>(),
-        IoC.Get<KeywordMatchService>()); // 构造参数以 GlobalData.cs 为准
+    return _globalData ??= new GlobalData(); // 构造参数以 GlobalData.cs 为准
 ```
 
-并在 `Init()` 末尾初始化本地数据源与种子数据（供 servers/datasources/tags/search/connect 端点测试共用）：
+并在 `Init()` 末尾初始化数据链路（`VmItemList` 仅由 `ReloadAll()` 填充，且 `ReloadAll` 要求先 `SetDataSourceService` 注入；`LocalDataSource` 为 get-only，须经 `InitLocalDataSource` 打开 SQLite）并植入种子数据：
 
 ```csharp
-var dss = IoC.Get<DataSourceService>();
-dss.LocalDataSource = new SqliteSource { Name = "Local", Path = Path.Combine(Path.GetTempPath(), "tests-1rm.db") };
-// 若 LocalDataSource 为只读属性或初始化方式不同，以 DataSourceService.cs 实际成员为准调整
-IoC.Get<GlobalData>().AddServer(new RDP { Id = "seed-rdp", DisplayName = "seed-rdp", Address = "1.1.1.1" });
+_dataSourceService = _dataSourceService ?? new DataSourceService();
+var sqliteConfig = new SqliteSource { Name = "Local", Path = Path.Combine(Path.GetTempPath(), "tests-1rm.db") };
+_dataSourceService.InitLocalDataSource(sqliteConfig); // 成员名以 DataSourceService.cs 为准
+_globalData = _globalData ?? new GlobalData();
+_globalData.SetDataSourceService(_dataSourceService); // 若方法名不同以 GlobalData.cs 为准
+_globalData.ReloadAll(true);
+_globalData.AddServer(new RDP { Id = "seed-rdp", DisplayName = "seed-rdp", Address = "1.1.1.1" },
+    _dataSourceService.LocalDataSource); // AddServer 为双参数 (ProtocolBase, DataSourceBase)
 ```
 
 **Step 2: 写失败测试**（模式同 Task 2：TestServer 挂真实端点；`[ClassInitialize]` 先 `TestInit.Init()` 再 `app.StartAsync()`）
@@ -540,7 +551,7 @@ namespace Tests.Service.WebUi
             builder.WebHost.UseTestServer();
             var app = builder.Build();
             WebUiEndpoints.MapAll(app);
-            app.RunAsync();
+            app.StartAsync().GetAwaiter().GetResult(); // 与 Task 2 一致，避免启动竞态
             _client = app.GetTestClient();
         }
 
@@ -718,9 +729,10 @@ app.MapGet("/api/events", async (HttpContext ctx) =>
 {
     ctx.Response.Headers.ContentType = "text/event-stream";
     ctx.Response.Headers.CacheControl = "no-cache";
+    var gd = IoC.Get<GlobalData>();
     var version = 0;
     void OnReload() => Interlocked.Increment(ref version);
-    GlobalData.OnReloadAll += OnReload;
+    gd.OnReloadAll += OnReload; // 注意：OnReloadAll 是 GlobalData 的实例字段（非静态）
     try
     {
         await ctx.Response.WriteAsync(": connected\n\n", ctx.RequestAborted);
@@ -740,7 +752,7 @@ app.MapGet("/api/events", async (HttpContext ctx) =>
         }
     }
     catch (OperationCanceledException) { /* 客户端断开 */ }
-    finally { GlobalData.OnReloadAll -= OnReload; }
+    finally { gd.OnReloadAll -= OnReload; }
 });
 ```
 
@@ -811,7 +823,7 @@ public void HideWebUi() { WebUI.Visibility = Visibility.Collapsed; WebUI.Source 
 try
 {
     _1RM.Service.WebUi.WebUiServer.Start();
-    if (IoC.Get<_1RM.Service.Configuration>().GeneralConfig.UiEngine == "Web")
+    if (IoC.Get<_1RM.Service.Configuration>().General.UiEngine == "Web") // 属性名为 General（类型 GeneralConfig）
         IoC.Get<MainWindowView>().ShowWebUi();
 }
 catch (Exception e) { SimpleLogHelper.Error(e); /* Web 服务失败不阻断桌面版 */ }
@@ -1217,7 +1229,7 @@ cd webui && npm run build   # 产出 webui/dist/
 3. 点根节点看全库列表，「文件夹」列出现；点文件夹该列消失、面包屑正确
 4. 搜索拼音与 WPF 一致；Ctrl K / Esc 键盘流可用
 5. 双击连接 → 桌面会话窗口打开（RDP 与 SSH 各验证一台）
-6. 主题：深/浅/跟随系统切换 + 7 强调色 + Wine/Forest 经典预设，重启后保持
+6. 主题：深/浅/跟随系统切换 + 7 强调色 + 经典预设生效并持久化，重启后保持（设置页 UI 属计划 3，本计划经浏览器 devtools console 验证：`setAppearance(CLASSIC_THEMES.Wine)`——themes 模块需在 window 上暴露调试入口）
 7. 桌面端修改服务器（WPF 引擎下编辑）→ Web 端 10 秒内自动刷新（SSE 重载推送；数据源状态点经 30s 低频轮询更新）
 8. 引擎切回 Desktop → WPF 界面完全正常（回退保险）
 9. `dotnet test Tests/Tests.csproj` 全绿；`npm run build` 零报错
