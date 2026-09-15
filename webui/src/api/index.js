@@ -14,7 +14,7 @@ let token = ''
 async function request(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
-  const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined })
+  const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30_000) })
   if (resp.status === 401) throw new Error('unauthorized')
   if (!resp.ok) throw new Error(`${resp.status} ${path}`)
   return resp.json()
