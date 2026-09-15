@@ -7,11 +7,14 @@ const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
 // Ctrl+K / Cmd+K 全局聚焦搜索框（spec §8）：keydown 于 window（冒泡），preventDefault 让位
-// 浏览器默认（如地址栏搜索）。Esc 清空留在输入框本地（.stop 不外传，Task 18 再做全局 Esc 链）。
+// 浏览器默认（如地址栏搜索）；再次按下全选已有内容，方便直接覆盖输入。
+// Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——
+// 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度（Task 18）。
 function onGlobalKey(e) {
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'k') {
     e.preventDefault()
     searchInput.value?.focus()
+    searchInput.value?.select()
   }
 }
 onMounted(() => window.addEventListener('keydown', onGlobalKey))
@@ -24,7 +27,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
       <div class="shell">
         <header class="topbar">
           <div class="logo">1Remote</div>
-          <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦 / Esc 清空（见 setup） -->
+          <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦全选 / Esc 由全局链清空（见 setup） -->
           <div class="searchbox" title="Ctrl+K 聚焦 · Esc 清空" @click="searchInput?.focus()">
             <span class="sb-icon">⌕</span>
             <input
@@ -33,9 +36,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
               class="sb-input"
               type="text"
               placeholder="搜索服务器、标签…"
-              @keydown.esc.stop.prevent="searchQuery = ''"
             />
-            <span v-if="searching" class="sb-spin" title="搜索中…"></span>
+            <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
+            <span class="sb-spin" :class="{ on: searching }" title="搜索中…"></span>
           </div>
           <div class="topbar-actions">
             <n-button quaternary size="small" title="Task 14">＋</n-button>
@@ -111,6 +114,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
   border: 2px solid var(--border-strong);
   border-top-color: var(--accent);
   border-radius: 50%;
+  visibility: hidden; /* 常驻占位防宽度跳动（见模板注释） */
+}
+.sb-spin.on {
+  visibility: visible;
   animation: sb-rotate 0.7s linear infinite;
 }
 @keyframes sb-rotate {

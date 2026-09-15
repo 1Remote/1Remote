@@ -11,6 +11,7 @@ defineProps({
   server: { type: Object, required: true },
   selected: { type: Boolean, default: false }, // 复选框勾选态（批量操作）
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
+  cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
@@ -27,7 +28,7 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime) || '从未'
 <template>
   <div
     class="row"
-    :class="{ selected: selected, highlighted: highlighted }"
+    :class="{ selected: selected, highlighted: highlighted, cursor: cursor }"
     @click="emit('row-click', $event)"
     @dblclick="emit('connect')"
     @contextmenu.prevent="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
@@ -84,6 +85,10 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime) || '从未'
 }
 .row.highlighted {
   box-shadow: inset 2px 0 0 var(--accent); /* 树叶选中行：左侧强调色细条 */
+}
+.row.cursor {
+  outline: 1px solid var(--border-strong); /* 键盘光标行：subtle 外框（不占布局） */
+  outline-offset: -1px;
 }
 
 .cell {

@@ -3,7 +3,9 @@
 // - 过滤：selection 非空 → 数据源匹配 + 文件夹递归含子级（spec §3.2，根=整库）；serverId 仅作行高亮
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化（列宽列显 Plan 4）
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选；视图变化剔除不可见勾选
-// - 批量条：选中 ≥1 时渲染于表头上方；连接 emit（Task 18 接线），批量编辑/导出 Plan 2/4 占位禁用
+// - 键盘（spec §8.2，Task 18）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见；
+//   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
+// - 批量条：选中 ≥1 时渲染于表头上方；连接 emit 到父级执行，批量编辑/导出 Plan 2/4 占位禁用
 // - 右键菜单：连接/复制地址/复制用户名可用，其余 Plan 2/4 禁用占位（title 提示）；点击外部/Esc 关闭
 // - 空态：简单居中提示（引导卡片归 Task 20）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
@@ -79,6 +81,7 @@ function toggleChecked(id) {
   checked.value = next
 }
 function onRowClick(server, ev, idx) {
+  cursorId.value = server.id // 点击行 = 光标落位（Enter 连接光标行，↑↓ 由此起算）
   if (ev.shiftKey && anchorIdx >= 0) {
     const lo = Math.min(anchorIdx, idx)
     const hi = Math.max(anchorIdx, idx)
@@ -103,9 +106,10 @@ function clearChecked() {
   anchorIdx = -1
 }
 // 过滤/数据变化后剔除不可见行勾选，批量条计数始终对当前视图有效；同时作废 Shift 范围锚点
-// （树切换/搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
+// 与不可见的光标行（树切换/搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
 watch(sorted, list => {
   anchorIdx = -1
+  if (cursorId.value != null && !list.some(s => s.id === cursorId.value)) cursorId.value = null
   if (!checked.value.size) return
   const ids = new Set(list.map(s => s.id))
   const kept = [...checked.value].filter(id => ids.has(id))
@@ -113,7 +117,7 @@ watch(sorted, list => {
 })
 watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N 台」
 
-// ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2，实际按键 Task 18）----
+// ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2：Enter 连接已接线，E/Ctrl+D/Del 归 Plan 2）----
 const MENU = [
   { key: 'connect', label: '连接', hint: 'Enter', on: true },
   { key: 'new-window', label: '新窗口连接', hint: 'Plan 2' },
@@ -128,6 +132,7 @@ const MENU = [
 const menu = ref(null) // { server, x, y }（x/y 相对本容器左上角）
 const rootEl = ref(null)
 function openMenu({ server, x, y }) {
+  cursorId.value = server.id // 菜单锚定行 = 光标落位（Enter/菜单「连接」语义一致）
   const r = rootEl.value?.getBoundingClientRect()
   const px = r ? x - r.left : x
   const py = r ? y - r.top : y
@@ -170,16 +175,82 @@ async function copyText(text, what) {
 function onGlobalDown(e) {
   if (menu.value && !e.target.closest?.('.ctx-menu')) menu.value = null
 }
-function onGlobalKey(e) {
-  if (e.key === 'Escape' && menu.value) menu.value = null
+
+// ---- 键盘导航（spec §8.2，Task 18）：↑↓ 光标行、Enter 连接光标行、Ctrl+A 全选可见 ----
+// 光标（cursorId）是纯视觉焦点（行外框），与勾选（checked）相互独立，仅在排序后的可见列表内移动。
+// 表格焦点（tableFocused）：用户点过表格区域才算"焦点在表格"，避免抢走搜索框等处输入——
+// document focusin 追踪：焦点落到表格外可交互元素 → false；落到 body（点击了边栏/滚动条等
+// 不可聚焦区，浏览器把焦点滑到 body）不算离开，保持原状；配合根节点 mousedown 置 true 兜底。
+const cursorId = ref(null)
+const tableFocused = ref(false)
+function onDocFocusin(e) {
+  if (e.target === document.body) return
+  tableFocused.value = !!e.target.closest?.('.server-table')
 }
+function onTableMousedown() {
+  tableFocused.value = true
+}
+function moveCursor(delta) {
+  const list = sorted.value
+  if (!list.length) return
+  const cur = list.findIndex(s => s.id === cursorId.value)
+  const next = cur < 0 ? (delta > 0 ? 0 : list.length - 1) : Math.min(list.length - 1, Math.max(0, cur + delta))
+  cursorId.value = list[next].id
+  // 光标行滚入可视区：行 DOM 均已存在（仅类名切换），无需等 nextTick
+  rootEl.value?.querySelector(`[data-id="${CSS.escape(String(cursorId.value))}"]`)?.scrollIntoView({ block: 'nearest' })
+}
+function onGlobalKey(e) {
+  // Esc 不在此处理：全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度，避免双触发
+  if (!tableFocused.value) return
+  // 表格内的可交互控件（表头复选框/批量条按钮等）聚焦时不抢按键：Enter/空格留给原生行为
+  if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault() // 阻止页面/滚动容器滚动，光标移动优先
+    moveCursor(e.key === 'ArrowDown' ? 1 : -1)
+  } else if (e.key === 'Enter') {
+    if (cursorId.value != null) {
+      e.preventDefault()
+      emit('connect', cursorId.value)
+    }
+  } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'a') {
+    e.preventDefault() // 抢在浏览器文本全选前，全选当前视图（spec §8.2）
+    checked.value = new Set(sorted.value.map(s => s.id))
+  }
+}
+
+// ---- 供 ServerListView 全局 Esc 链逐级回退调用：返回 true = 本次 Esc 消费在此级 ----
+function closeMenuIfOpen() {
+  if (menu.value) {
+    menu.value = null
+    return true
+  }
+  return false
+}
+function clearCheckedIfAny() {
+  if (checked.value.size) {
+    clearChecked()
+    return true
+  }
+  return false
+}
+function clearCursorIfAny() {
+  if (cursorId.value != null) {
+    cursorId.value = null
+    return true
+  }
+  return false
+}
+defineExpose({ closeMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
+
 onMounted(() => {
   window.addEventListener('mousedown', onGlobalDown)
   window.addEventListener('keydown', onGlobalKey)
+  document.addEventListener('focusin', onDocFocusin)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('mousedown', onGlobalDown)
   window.removeEventListener('keydown', onGlobalKey)
+  document.removeEventListener('focusin', onDocFocusin)
 })
 
 // ---- 列宽（flex 比例，样张 v2；隐藏文件夹列时把宽度让给名称/标签）----
@@ -197,10 +268,10 @@ const colVars = computed(() => ({
 </script>
 
 <template>
-  <div ref="rootEl" class="server-table" :style="colVars">
+  <div ref="rootEl" class="server-table" :style="colVars" @mousedown="onTableMousedown">
     <div v-if="checked.size" class="batch-bar">
       <span class="bb-count">已选 {{ checked.size }} 台</span>
-      <button class="bb-btn bb-primary" title="连接全部已选（Task 18）" @click="emit('batch-connect', [...checked])">▶ 连接</button>
+      <button class="bb-btn bb-primary" title="连接全部已选" @click="emit('batch-connect', [...checked])">▶ 连接</button>
       <button class="bb-btn" disabled title="Plan 2">✎ 批量编辑</button>
       <button class="bb-btn" disabled title="Plan 4">⤓ 导出</button>
       <button class="bb-x" title="取消选择" @click="clearChecked">✕</button>
@@ -228,7 +299,9 @@ const colVars = computed(() => ({
         :server="s"
         :selected="checked.has(s.id)"
         :highlighted="!!selection && selection.serverId === s.id"
+        :cursor="s.id === cursorId"
         :show-folder="showFolder"
+        :data-id="s.id"
         @toggle-select="onToggleSelect(s, i)"
         @row-click="onRowClick(s, $event, i)"
         @connect="emit('connect', s.id)"
