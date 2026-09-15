@@ -8,8 +8,9 @@ export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', name: 'servers', component: ServerListView },
-    { path: '/settings', name: 'settings', component: PlaceholderView, props: { title: 'Settings' } },
-    { path: '/editor', name: 'editor', component: PlaceholderView, props: { title: 'Editor' } },
+    // titleKey → locales 的 page.* 词条（占位页标题 i18n；Plan 2/3 实装后替换为真实页面）
+    { path: '/settings', name: 'settings', component: PlaceholderView, props: { titleKey: 'settings' } },
+    { path: '/editor', name: 'editor', component: PlaceholderView, props: { titleKey: 'editor' } },
     { path: '/:pathMatch(.*)*', redirect: '/' }, // 兜底：未知路径回服务器列表
   ],
 })

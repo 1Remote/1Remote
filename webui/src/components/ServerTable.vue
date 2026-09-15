@@ -9,6 +9,7 @@
 // - 右键菜单：连接/复制地址/复制用户名可用，其余 Plan 2/4 禁用占位（title 提示）；点击外部/Esc 关闭
 // - 空态：简单居中提示（引导卡片归 Task 20）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import ServerRow from './ServerRow.vue'
 import { naturalIpCompare } from '../utils/compare'
@@ -18,6 +19,7 @@ const props = defineProps({
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
 })
 const emit = defineEmits(['connect', 'batch-connect', 'edit', 'counted'])
+const { t } = useI18n()
 const message = useMessage()
 
 // ---- 过滤：搜索/标签过滤已由 ServerListView（applyServerFilters）收窄后经 servers prop 传入，
@@ -118,17 +120,19 @@ watch(sorted, list => {
 watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N 台」
 
 // ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2：Enter 连接已接线，E/Ctrl+D/Del 归 Plan 2）----
-const MENU = [
-  { key: 'connect', label: '连接', hint: 'Enter', on: true },
-  { key: 'new-window', label: '新窗口连接', hint: 'Plan 2' },
-  { key: 'other-credential', label: '使用其他凭据连接', hint: 'Plan 2' },
-  { key: 'edit', label: '编辑', hint: 'E', tip: 'Plan 2' },
-  { key: 'duplicate', label: '复制', hint: 'Ctrl+D', tip: 'Plan 2' },
-  { key: 'copy-address', label: '复制地址', on: true },
-  { key: 'copy-username', label: '复制用户名', on: true },
-  { key: 'shortcut', label: '创建桌面快捷方式', tip: 'Plan 4' },
-  { key: 'delete', label: '删除', hint: 'Del', tip: 'Plan 2' },
-]
+// 标签/提示走 i18n（computed：语言切换即时刷新）；未接线项的占位提示统一「即将推出」，
+// 内部计划号（Plan 2/4）只留在代码注释，不进 UI。
+const MENU = computed(() => [
+  { key: 'connect', label: t('ctx.connect'), hint: 'Enter', on: true },
+  { key: 'new-window', label: t('ctx.newWindow'), hint: t('common.comingSoon') },
+  { key: 'other-credential', label: t('ctx.otherCredential'), hint: t('common.comingSoon') },
+  { key: 'edit', label: t('ctx.edit'), hint: 'E', tip: t('common.comingSoon') },
+  { key: 'duplicate', label: t('ctx.duplicate'), hint: 'Ctrl+D', tip: t('common.comingSoon') },
+  { key: 'copy-address', label: t('ctx.copyAddress'), on: true },
+  { key: 'copy-username', label: t('ctx.copyUsername'), on: true },
+  { key: 'shortcut', label: t('ctx.shortcut'), tip: t('common.comingSoon') },
+  { key: 'delete', label: t('ctx.delete'), hint: 'Del', tip: t('common.comingSoon') },
+])
 const menu = ref(null) // { server, x, y }（x/y 相对本容器左上角）
 const rootEl = ref(null)
 function openMenu({ server, x, y }) {
@@ -149,18 +153,18 @@ function onMenuAction(item) {
   if (item.key === 'connect') emit('connect', s.id)
   else if (item.key === 'copy-address') {
     // Serial 等无地址协议：提示而非把协议名当地址写进剪贴板
-    if (!s.address) message.warning('无地址可复制')
-    else copyText(s.address + (s.port ? ':' + s.port : ''), '地址')
-  } else if (item.key === 'copy-username') copyText(s.userName, '用户名')
+    if (!s.address) message.warning(t('toast.noAddressToCopy'))
+    else copyText(s.address + (s.port ? ':' + s.port : ''), t('common.address'))
+  } else if (item.key === 'copy-username') copyText(s.userName, t('common.username'))
 }
 async function copyText(text, what) {
   if (!text) {
-    message.warning(`无${what}可复制`)
+    message.warning(t('toast.nothingToCopy', { what }))
     return
   }
   try {
     await navigator.clipboard.writeText(text) // 安全上下文（localhost / WebView2）
-    message.success(`已复制${what}`)
+    message.success(t('toast.copied', { what }))
   } catch {
     const ta = document.createElement('textarea') // 回退 execCommand（非安全上下文兜底）
     ta.value = text
@@ -169,7 +173,7 @@ async function copyText(text, what) {
     ta.select()
     const ok = document.execCommand('copy')
     ta.remove()
-    ok ? message.success(`已复制${what}`) : message.error(`复制${what}失败`)
+    ok ? message.success(t('toast.copied', { what })) : message.error(t('toast.copyFailed', { what }))
   }
 }
 function onGlobalDown(e) {
@@ -273,11 +277,12 @@ const colVars = computed(() => ({
 <template>
   <div ref="rootEl" class="server-table" :style="colVars" @mousedown="onTableMousedown">
     <div v-if="checked.size" class="batch-bar">
-      <span class="bb-count">已选 {{ checked.size }} 台</span>
-      <button class="bb-btn bb-primary" title="连接全部已选" @click="emit('batch-connect', [...checked])">▶ 连接</button>
-      <button class="bb-btn" disabled title="Plan 2">✎ 批量编辑</button>
-      <button class="bb-btn" disabled title="Plan 4">⤓ 导出</button>
-      <button class="bb-x" title="取消选择" @click="clearChecked">✕</button>
+      <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
+      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶ {{ t('batch.connect') }}</button>
+      <!-- 批量编辑（Plan 2）/导出（Plan 4）占位：内部计划号不入 UI，统一「即将推出」 -->
+      <button class="bb-btn" disabled :title="t('common.comingSoon')">✎ {{ t('batch.edit') }}</button>
+      <button class="bb-btn" disabled :title="t('common.comingSoon')">⤓ {{ t('batch.export') }}</button>
+      <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>
 
     <div class="tbody">
@@ -285,16 +290,16 @@ const colVars = computed(() => ({
            表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻 -->
       <div class="thead">
         <div class="hcell h-check">
-          <input ref="allCb" type="checkbox" :checked="allChecked" title="全选（Ctrl A）" @click.stop @change="toggleAll" />
+          <input ref="allCb" type="checkbox" :checked="allChecked" :title="t('col.selectAll')" @click.stop @change="toggleAll" />
         </div>
-        <div class="hcell h-status">状态</div>
-        <div class="hcell h-name sortable" @click="toggleSort('displayName')">名称 <span class="arrow">{{ arrow('displayName') }}</span></div>
-        <div class="hcell h-addr sortable" @click="toggleSort('address')">地址 <span class="arrow">{{ arrow('address') }}</span></div>
-        <div class="hcell h-proto sortable" @click="toggleSort('protocol')">协议 <span class="arrow">{{ arrow('protocol') }}</span></div>
-        <div class="hcell h-tags">标签</div>
-        <div v-if="showFolder" class="hcell h-folder">文件夹</div>
-        <div class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">最近连接 <span class="arrow">{{ arrow('lastConnectTime') }}</span></div>
-        <div class="hcell h-act">操作</div>
+        <div class="hcell h-status">{{ t('col.status') }}</div>
+        <div class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span></div>
+        <div class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span></div>
+        <div class="hcell h-proto sortable" @click="toggleSort('protocol')">{{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span></div>
+        <div class="hcell h-tags">{{ t('col.tags') }}</div>
+        <div v-if="showFolder" class="hcell h-folder">{{ t('col.folder') }}</div>
+        <div class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span></div>
+        <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
       <ServerRow
         v-for="(s, i) in sorted"
@@ -311,7 +316,7 @@ const colVars = computed(() => ({
         @edit="emit('edit', s)"
         @context-menu="openMenu"
       />
-      <div v-if="!sorted.length" class="empty">{{ servers.length ? '此视图暂无服务器' : '暂无服务器' }}</div>
+      <div v-if="!sorted.length" class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">

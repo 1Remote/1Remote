@@ -7,12 +7,14 @@
 // 全局 Esc 链是唯一的 window 级 Esc 处理器（App.vue 搜索框与 ServerTable 均不本地拦截，
 // 避免焦点位置不同导致链序漂移或双触发）。
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
 import { api } from '../api'
 import { applyServerFilters, useServers } from '../composables/useServers'
 
+const { t } = useI18n()
 const message = useMessage()
 const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）
 const activeTag = ref('') // ''=未按标签过滤
@@ -28,8 +30,8 @@ const searchActive = computed(() => searchedIds.value != null) // null=未启用
 // 面包屑（spec §3.2）：根=「数据源名 · 全部服务器」、文件夹=「数据源 / 路径」；右侧计数由 ServerTable 上报
 const breadcrumb = computed(() => {
   const sel = selection.value
-  if (!sel || !sel.dataSourceName) return '全部数据源'
-  return sel.folderPath ? `${sel.dataSourceName} / ${sel.folderPath}` : `${sel.dataSourceName} · 全部服务器`
+  if (!sel || !sel.dataSourceName) return t('crumb.allDataSources')
+  return sel.folderPath ? `${sel.dataSourceName} / ${sel.folderPath}` : `${sel.dataSourceName} · ${t('crumb.allServers')}`
 })
 const tableCount = ref(0)
 const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其暴露的菜单/勾选/光标回退方法
@@ -40,10 +42,10 @@ async function onConnect(id) {
   const name = servers.value.find(s => s.id === id)?.displayName || id
   try {
     await api.connect(id)
-    message.success(`已发起连接：${name}`)
+    message.success(t('toast.connectStarted', { name }))
   } catch (e) {
     console.warn('[ServerListView] connect failed:', e?.message || e)
-    message.error('连接发起失败')
+    message.error(t('toast.connectFailed'))
   }
 }
 
@@ -59,8 +61,8 @@ async function onBatchConnect(ids) {
       console.warn('[ServerListView] batch connect failed:', id, e?.message || e)
     }
   }
-  if (ok) message.success(`已发起 ${ok} 个连接`)
-  if (ok < ids.length) message.error(`${ids.length - ok} 个连接发起失败`)
+  if (ok) message.success(t('toast.batchConnectStarted', { n: ok }))
+  if (ok < ids.length) message.error(t('toast.batchConnectFailed', { n: ids.length - ok }))
 }
 
 // ---- 全局 Esc 链（spec §8.2）：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
@@ -69,13 +71,13 @@ async function onBatchConnect(ids) {
 // 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。----
 function onGlobalEsc(e) {
   if (e.key !== 'Escape') return
-  const t = table.value
-  if (t?.closeMenuIfOpen()) e.preventDefault()
-  else if (t?.clearCheckedIfAny()) e.preventDefault()
+  const tb = table.value // 命名避免遮蔽 i18n 的 t
+  if (tb?.closeMenuIfOpen()) e.preventDefault()
+  else if (tb?.clearCheckedIfAny()) e.preventDefault()
   else if (searchQuery.value) {
     searchQuery.value = ''
     e.preventDefault()
-  } else if (t?.clearCursorIfAny()) e.preventDefault()
+  } else if (tb?.clearCursorIfAny()) e.preventDefault()
 }
 onMounted(() => window.addEventListener('keydown', onGlobalEsc))
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalEsc))
@@ -94,15 +96,15 @@ function onEdit() {}
         @update:collapsed="collapsed = $event"
         @connect="onConnect"
       />
-      <button v-else class="expand-rail" title="展开边栏" @click="collapsed = false">»</button>
+      <button v-else class="expand-rail" :title="t('sidebar.expand')" @click="collapsed = false">»</button>
     </aside>
     <main class="content">
       <div class="crumb-row">
-        <div class="crumb" :title="breadcrumb">{{ breadcrumb }}<span class="crumb-count"> · {{ tableCount }} 台</span></div>
+        <div class="crumb" :title="breadcrumb">{{ breadcrumb }}<span class="crumb-count">{{ t('crumb.count', { n: tableCount }) }}</span></div>
         <!-- 搜索过滤 chip（Task 17）：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
-        <span v-if="searchActive" class="search-chip" title="搜索过滤中">
+        <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
           <span class="sc-label">⌕ {{ searchQuery }}</span>
-          <button class="sc-x" title="清除搜索（Esc）" @click="searchQuery = ''">✕</button>
+          <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
         </span>
       </div>
       <ServerTable

@@ -1,0 +1,73 @@
+{
+  "common.comingSoon": "即将推出",
+  "common.address": "地址",
+  "common.username": "用户名",
+
+  "search.placeholder": "搜索服务器、标签…",
+  "search.title": "Ctrl+K 聚焦 · Esc 清空",
+  "search.searching": "搜索中…",
+
+  "crumb.allDataSources": "全部数据源",
+  "crumb.allServers": "全部服务器",
+  "crumb.count": " · {n} 台",
+  "crumb.searchChip": "搜索过滤中",
+  "crumb.clearSearch": "清除搜索（Esc）",
+
+  "sidebar.expand": "展开边栏",
+
+  "tree.noDatasources": "（无数据源）",
+  "tree.reconnecting": "重连中",
+  "tree.tags": "标签",
+  "tree.manageTags": "+ 管理",
+  "tree.collapse": "« 收起边栏",
+  "tree.collapseTitle": "收起边栏",
+
+  "col.status": "状态",
+  "col.name": "名称",
+  "col.address": "地址",
+  "col.protocol": "协议",
+  "col.tags": "标签",
+  "col.folder": "文件夹",
+  "col.lastConnect": "最近连接",
+  "col.actions": "操作",
+  "col.selectAll": "全选（Ctrl A）",
+
+  "batch.selected": "已选 {n} 台",
+  "batch.connect": "连接",
+  "batch.connectTitle": "连接全部已选",
+  "batch.edit": "批量编辑",
+  "batch.export": "导出",
+  "batch.clear": "取消选择",
+
+  "ctx.connect": "连接",
+  "ctx.newWindow": "新窗口连接",
+  "ctx.otherCredential": "使用其他凭据连接",
+  "ctx.edit": "编辑",
+  "ctx.duplicate": "复制",
+  "ctx.copyAddress": "复制地址",
+  "ctx.copyUsername": "复制用户名",
+  "ctx.shortcut": "创建桌面快捷方式",
+  "ctx.delete": "删除",
+
+  "row.select": "选择",
+  "row.connect": "连接",
+  "row.editSoon": "编辑（即将推出）",
+  "row.more": "更多",
+  "status.never": "从未",
+
+  "empty.none": "暂无服务器",
+  "empty.filtered": "此视图暂无服务器",
+
+  "toast.connectStarted": "已发起连接：{name}",
+  "toast.connectFailed": "连接发起失败",
+  "toast.batchConnectStarted": "已发起 {n} 个连接",
+  "toast.batchConnectFailed": "{n} 个连接发起失败",
+  "toast.noAddressToCopy": "无地址可复制",
+  "toast.nothingToCopy": "无{what}可复制",
+  "toast.copied": "已复制{what}",
+  "toast.copyFailed": "复制{what}失败",
+
+  "page.settings": "设置",
+  "page.editor": "编辑器",
+  "placeholder.comingSoon": "敬请期待 — {title}"
+}
