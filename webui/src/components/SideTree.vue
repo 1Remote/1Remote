@@ -28,7 +28,10 @@ const tree = computed(() => buildTree(servers.value, datasources.value))
 
 // ---- 展开状态：key → bool（true=展开）。缺失键=展开（对齐 WPF LoadExpansionStates 的 GetValueOrDefault(path, true)）
 const expandedMap = ref({})
-let fetchedExpanded = {} // 最近一次 GET 的字典：PUT 为全量替换，保存时以它为基底合并，保留 web 树不认识的键（如 WPF 侧空文件夹）
+// 最近一次 GET 的两个字典：PUT 为全量替换，保存时必须以它们为基底——expanded 合并保留 web 树
+// 不认识的键（如 WPF 侧空文件夹）；order 原样回传（发 {} 会清掉 WPF 侧拖拽产生的 CustomNodeOrder）
+let fetchedExpanded = {}
+let fetchedOrder = {}
 let hydrated = false // 是否成功 GET 过——未取到基底前绝不 PUT，避免全量替换清空既有持久化
 
 const isExpanded = (key) => expandedMap.value[key] ?? true
@@ -37,7 +40,10 @@ async function loadTreeState() {
   try {
     const st = await api.getTreeState()
     fetchedExpanded = st?.expanded || {}
-    expandedMap.value = { ...fetchedExpanded }
+    fetchedOrder = st?.order || {}
+    // 水合合并：仅补充内存中没有的键——GET 返回前用户已切换过的展开态（本地意图）优先，
+    // 不能被后到的旧快照覆盖
+    expandedMap.value = { ...fetchedExpanded, ...expandedMap.value }
     hydrated = true
   } catch {
     // 后端不可达：保持全展开默认；首次保存前会再试一次 GET
@@ -67,8 +73,9 @@ async function flushSave() {
     if (row.kind !== 'server') merged[row.key] = isExpanded(row.key)
   }
   try {
-    // order 未动也必须整体回传（全量替换语义）；自定义排序属 Plan 4，恒发空字典
-    await api.saveTreeState({ expanded: merged, order: {} })
+    // order 原样回传 GET 到的字典——PUT 对两个字典都是全量替换，web 侧未实现自定义排序
+    // （Plan 4），发空字典会永久清掉 WPF 侧拖拽产生的 CustomNodeOrder
+    await api.saveTreeState({ expanded: merged, order: { ...fetchedOrder } })
     fetchedExpanded = merged
   } catch (e) {
     console.warn('[SideTree] saveTreeState failed:', e?.message || e)
@@ -204,7 +211,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           class="tag-chip"
           :class="{ active: t.name === tag }"
           :title="t.name"
-          @click="emit('update:tag', t.name)"
+          @click="emit('update:tag', t.name === tag ? '' : t.name)"
         >
           <span v-if="t.isPinned" class="pin">📌</span>{{ t.name }}<span class="tag-count">{{ t.count }}</span>
         </button>

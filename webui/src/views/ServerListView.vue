@@ -17,7 +17,7 @@ const collapsed = ref(false)
         v-if="!collapsed"
         v-model:selection="selection"
         v-model:tag="activeTag"
-        @update:collapsed="collapsed = true"
+        @update:collapsed="collapsed = $event"
       />
       <!-- connect 事件（双击服务器叶）此处暂不处理：连接动作 Task 18 接线 -->
       <button v-else class="expand-rail" title="展开边栏" @click="collapsed = false">»</button>
