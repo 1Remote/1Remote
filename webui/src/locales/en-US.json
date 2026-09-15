@@ -65,9 +65,11 @@
   "empty.searchedFor": "No servers match “{q}”",
   "empty.taggedNone": "No servers under tag “{tag}”",
   "empty.clearFilters": "Clear filters",
+  "empty.offline": "Backend unreachable",
+  "empty.offlineHint": "Cannot reach the 1Remote backend. Make sure the app is running; this page recovers automatically.",
 
-  "statusbar.serverCount": "{n} servers",
-  "statusbar.tagCount": "{m} tags",
+  "statusbar.serverCount": "{n} server | {n} servers",
+  "statusbar.tagCount": "{m} tag | {m} tags",
   "statusbar.sseOk": "SSE connected",
   "statusbar.sseOff": "SSE disconnected",
   "statusbar.sseTip": "Indicates backend reachability (result of the last fetch/poll, not connection-session state)",

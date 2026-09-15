@@ -53,7 +53,8 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
     <div class="cell cell-addr" :title="addressText(server)">{{ addressText(server) }}</div>
     <div class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
     <div class="cell cell-tags" :title="server.tags.join(t('row.tagSep'))">
-      <span v-for="t in server.tags.slice(0, 2)" :key="t" class="tag">{{ t }}</span>
+      <!-- 循环变量命名 tag：避免遮蔽 i18n 的 t（title 属性在循环外也用到 t） -->
+      <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
     <div v-if="showFolder" class="cell cell-folder" :title="server.folderPath">{{ server.folderPath || '—' }}</div>

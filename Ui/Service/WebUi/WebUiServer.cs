@@ -30,10 +30,18 @@ namespace _1RM.Service.WebUi
             Port = Random.Shared.Next(18000, 25000);
             Token = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
 #endif
-            var builder = WebApplication.CreateBuilder();
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                // WPF 进程的工作目录不保证是 exe 目录（快捷方式/开机自启等场景），而静态托管按
+                // ContentRoot 解析 wwwroot（csproj 已将 webui/dist 复制到输出目录 wwwroot/），
+                // 固定 ContentRoot 到 exe 目录，确保无论从何处启动都能命中同一份产物
+                ContentRootPath = AppContext.BaseDirectory,
+            });
             builder.Logging.ClearProviders(); // 避免与 SimpleLogHelper 重复
             builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, Port));
             var app = builder.Build();
+            app.UseDefaultFiles(); // GET / → wwwroot/index.html（Web UI 构建产物入口；须在 UseStaticFiles 前注册）
+            app.UseStaticFiles(); // wwwroot 静态资源（/assets/* 等）。TokenMiddleware 仅守卫 /api，静态资源自由通行
             app.UseMiddleware<TokenMiddleware>(Token);
             WebUiEndpoints.MapAll(app);
             _app = app;

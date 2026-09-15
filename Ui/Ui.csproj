@@ -197,6 +197,15 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Web UI 前端构建产物（webui/dist → 输出目录 wwwroot/，由进程内 Kestrel 静态托管）：
+             源码在 webui/，dist/ 不入版本库（.gitignore）；dist 尚未构建时通配符匹配 0 项，Debug 构建照常通过 -->
+        <Content Include="..\webui\dist\**\*">
+            <Link>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Dragablz\Dragablz\Dragablz.csproj" />
         <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.WpfResources\Shawn.Utils.WpfResources.csproj" />
         <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj" />

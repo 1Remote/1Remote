@@ -81,11 +81,15 @@ export function useServers() {
       // 乱序保护（与 loadAll 的 gen 同思路）：loadAll 在途时跳过本拍，防止旧状态点快照
       // 覆盖刚写入的新数据；剩余极小竞态窗口（检查后才发起的 loadAll）由下一拍 30s 自愈
       if (loading.value) return
+      const wasDown = !connected.value
       try {
         const ds = await api.datasources()
         if (!loading.value) {
           datasources.value = ds
           connected.value = true
+          // 断连恢复：servers/tags 仍是断连前的旧值（初载失败时为空），补一次全量重载，
+          // 让离线提示（ServerListView）真正自动切回内容而非停留在空态
+          if (wasDown) await loadAll()
         }
       } catch {
         if (!loading.value) connected.value = false

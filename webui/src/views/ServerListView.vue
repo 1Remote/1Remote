@@ -48,9 +48,12 @@ const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其
 // ---- 内容区三态（spec §8.5 + 骨架屏，Task 20）：互斥地取代 ServerTable（表格隐藏时 ref 为 null，
 // Esc 链的 tb?. 守卫天然兼容）。SSE 重载时列表已有数据，不闪骨架 ----
 const showSkeleton = computed(() => loading.value && !servers.value.length) // 首载进行中
-const showGuide = computed(() => !loading.value && !servers.value.length) // 整库为空 → 引导卡片
+// 后端不可达（拉取失败且无任何数据）：优先于空库引导展示——引导卡的「新建/导入」会把用户带向
+// 错误方向；恢复靠 30s 轮询（useServers 断连恢复时会补一次全量重载，此处自动切回正常内容）
+const showOffline = computed(() => !connected.value && !loading.value && !servers.value.length)
+const showGuide = computed(() => connected.value && !loading.value && !servers.value.length) // 已连通且整库为空 → 引导卡片
 const showNoMatch = computed(() => servers.value.length > 0 && !visibleServers.value.length) // 标签/搜索交集为空
-const tableHidden = computed(() => showSkeleton.value || showGuide.value || showNoMatch.value)
+const tableHidden = computed(() => showSkeleton.value || showOffline.value || showGuide.value || showNoMatch.value)
 // 表格卸载后 counted 不再上报，面包屑计数跟随空态归零（骨架期如实显示 0）
 const listCount = computed(() => (tableHidden.value ? 0 : tableCount.value))
 const noMatchDetail = computed(() => {
@@ -74,11 +77,10 @@ const dsHidden = computed(() => Math.max(0, datasources.value.length - MAX_DS))
 const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
 const dsTitle = (ds) =>
   ds.status === 'reconnecting' ? ds.name + ' · ' + (ds.reconnectInfo || t('tree.reconnecting')) : ds.name
-// 语言切换（暂驻状态栏；设置页完整选择器归后续）：循环 zh-CN ↔ en-US，按钮显示目标语言
 function toggleLocale() {
   setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
 }
-// 语言切换（暂驻状态栏；设置页完整选择器归后续）：循环 zh-CN ↔ en-US，按钮显示目标语言自称
+// 按钮显示目标语言自称
 // （「中/EN」为语言名，两语言环境下取值一致，经 i18n 键下发以保持代码内零硬编码文案）
 const nextLang = computed(() => (locale.value === 'zh-CN' ? t('statusbar.langEn') : t('statusbar.langZh')))
 
@@ -165,6 +167,12 @@ function onEdit() {}
         </div>
       </div>
 
+      <!-- 后端不可达（Task 21）：居中提示，取代空库引导卡——后端未运行时引导用户新建/导入会误导 -->
+      <div v-else-if="showOffline" class="empty-offline">
+        <div class="eo-title">{{ t('empty.offline') }}</div>
+        <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
+      </div>
+
       <!-- 空库引导卡片（spec §8.5）：新建/导入按钮为后续计划占位（禁用 + 即将推出），热键提示指向桌面启动器 -->
       <div v-else-if="showGuide" class="empty-guide">
         <div class="eg-title">{{ t('empty.none') }}</div>
@@ -202,7 +210,9 @@ function onEdit() {}
         </span>
         <span v-if="dsHidden" class="sb-more" :title="t('statusbar.dsMore', { n: dsHidden })">+{{ dsHidden }}</span>
         <div class="sb-right">
-          <span>{{ t('statusbar.serverCount', { n: servers.length }) }} · {{ t('statusbar.tagCount', { m: tags.length }) }}</span>
+          <!-- 计数用 vue-i18n 复数形式（en："{n} server | {n} servers"）；zh 无管道单形式同样兼容，
+               {m} 需显式传命名参数 + 复数值（隐式仅绑定 n） -->
+          <span>{{ t('statusbar.serverCount', servers.length) }} · {{ t('statusbar.tagCount', { m: tags.length }, tags.length) }}</span>
           <span class="sb-sse" :title="t('statusbar.sseTip')">
             <span class="sb-dot" :class="connected ? 'ok' : 'bad'"></span>
             {{ connected ? t('statusbar.sseOk') : t('statusbar.sseOff') }}
@@ -410,6 +420,27 @@ function onEdit() {}
   color: var(--text-4);
 }
 
+/* ---- 后端不可达：居中提示（无操作——恢复自动进行，不做手动重试按钮） ---- */
+.empty-offline {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+}
+.eo-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.eo-hint {
+  font-size: 12px;
+  color: var(--text-4);
+}
+
 /* ---- 无匹配（过滤后为空）：轻提示 + 清除过滤按钮 ---- */
 .empty-nomatch {
   flex: 1;
@@ -458,6 +489,7 @@ function onEdit() {}
   color: var(--text-3);
   font-size: 11.5px;
   white-space: nowrap;
+  overflow: hidden; /* 数据源名过长时截断而非把右侧统计挤出可视区 */
 }
 .sb-ds {
   display: inline-flex;
@@ -494,6 +526,8 @@ function onEdit() {}
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  overflow: hidden; /* 左侧数据源名撑满时不被顶出，内部整体截断 */
 }
 .sb-sse {
   display: inline-flex;

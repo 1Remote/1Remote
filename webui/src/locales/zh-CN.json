@@ -65,6 +65,8 @@
   "empty.searchedFor": "搜索「{q}」未命中服务器",
   "empty.taggedNone": "标签「{tag}」下没有服务器",
   "empty.clearFilters": "清除过滤",
+  "empty.offline": "后端不可达",
+  "empty.offlineHint": "无法连接 1Remote 后端服务，请确认应用正在运行；恢复后将自动加载",
 
   "statusbar.serverCount": "{n} 台服务器",
   "statusbar.tagCount": "{m} 个标签",
