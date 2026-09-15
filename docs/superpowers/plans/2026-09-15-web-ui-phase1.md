@@ -765,7 +765,7 @@ app.MapGet("/api/events", async (HttpContext ctx) =>
 - Modify: `Ui/Service/WebUi/WebUiEndpoints.cs`、`Ui/Service/WebUi/WebUiDto.cs`（AppearanceDto）
 - Test: `Tests/Service/WebUi/AppearanceEndpointTests.cs`
 
-- `GET/PUT /api/settings/appearance`：读写主题设置 `{ themeMode: "dark"|"light"|"system", accent: "blue"|…, fontSize: "S"|"M"|"L"|"XL", font: "" }`。持久化复用 `IoC.Get<_1RM.Service.Configuration>()`（执行时核对 `ThemeConfig` 现有字段——本计划**新增独立字段** `WebUiThemeMode/WebUiAccent` 存进 GeneralConfig 或新节，不动 WPF 现有 ThemeConfig；PUT 后同时写 `1Remote.json`（调现有 Save））。
+- `GET/PUT /api/settings/appearance`：读写主题设置 `{ themeMode: "dark"|"light"|"system", accent: "blue"|…, fontSize: "S"|"M"|"L"|"XL", font: "" }`（font 为界面字体族，空串=跟随系统）。持久化复用 `IoC.Get<ConfigurationService>()`——**已落地为 Configuration 平铺字段 `WebUiThemeMode/WebUiAccent/WebUiFontSize/WebUiFontFamily`**（Task 8 实现选择，不动 WPF 现有 ThemeConfig）；PUT 后同时写 `1Remote.json`（调现有 Save）。PUT 为全量替换语义：四个字段缺一不可。
 - `GET/PUT /api/ui-state/tree`：代理 `LocalityTreeViewService` 的展开状态与自定义顺序（序列化为 `{ expanded: [path…], order: {path: [children…]} }`；执行时核对 `LocalityTreeViewService` 的公开成员，直接 JSON 化其字典）。
 
 - [ ] **Step 1: 写失败测试**（GET 返回默认值 dark/blue；PUT 后 GET 回读一致；断言 `1Remote.json` 落盘）
@@ -999,7 +999,9 @@ export function applyTheme() {
 export function setAppearance(patch) {
   Object.assign(themeState, patch)
   applyTheme()
-  api.saveAppearance({ themeMode: themeState.themeMode, accent: themeState.accent, fontSize: themeState.fontSize })
+  // PUT 为全量替换：必须始终携带全部四个字段（含 font），否则遗漏字段会被清空
+  api.saveAppearance({ themeMode: themeState.themeMode, accent: themeState.accent,
+    fontSize: themeState.fontSize, font: themeState.font })
     .catch(() => {}) // 桌面后端未运行（纯浏览器预览）时静默
 }
 
