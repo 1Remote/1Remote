@@ -24,7 +24,10 @@ namespace _1RM.Service.WebUi
             app.MapGet("/api/servers", () =>
             {
                 var gd = IoC.Get<GlobalData>();
-                lock (gd) // GlobalData 内部对实例本体加锁（StopTick/StartTick/GetServers），保持一致
+                // 快照语义：ReloadAll 原子交换 VmItemList 引用且换出的旧列表不再被修改，
+                // 读侧即使不加锁也安全；此锁仅与 GlobalData 自身的 lock(this)（StopTick/StartTick）串行化。
+                // 注意：加载数据的 GetServers 锁的是 DataSourceService/DataSourceBase 实例，不是 GlobalData。
+                lock (gd)
                 {
                     var list = gd.VmItemList
                         .Where(vm => vm.Server is not Dummy && !vm.Server.IsTmpSession())
