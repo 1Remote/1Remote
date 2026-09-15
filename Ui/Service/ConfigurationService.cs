@@ -195,6 +195,13 @@ namespace _1RM.Service
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
         public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
+
+        // Web UI 外观（独立于 WPF ThemeConfig，见 docs/superpowers/specs/2026-09-15-web-ui-redesign-design.md §4）。
+        // 旧版 1Remote.json 缺这些字段时 Newtonsoft 反序列化不会覆盖缺失成员，属性初始化器即为默认值。
+        public string WebUiThemeMode { get; set; } = "dark";   // dark | light | system
+        public string WebUiAccent { get; set; } = "blue";      // blue | violet | pink | red | orange | green | slate
+        public string WebUiFontSize { get; set; } = "M";       // S | M | L | XL
+
         public static Configuration? Load(string path)
         {
             var tmp = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
@@ -244,6 +251,28 @@ namespace _1RM.Service
 
         public ThemeConfig Theme => _cfg.Theme;
         public EngagementSettings Engagement => _cfg.Engagement;
+
+        /// <summary>Web UI 外观（独立于 WPF ThemeConfig，经 /api/settings/appearance 读写）</summary>
+        public string WebUiThemeMode
+        {
+            get => _cfg.WebUiThemeMode;
+            set => _cfg.WebUiThemeMode = value;
+        }
+
+        /// <summary>Web UI 强调色（独立于 WPF ThemeConfig，经 /api/settings/appearance 读写）</summary>
+        public string WebUiAccent
+        {
+            get => _cfg.WebUiAccent;
+            set => _cfg.WebUiAccent = value;
+        }
+
+        /// <summary>Web UI 字号档位（独立于 WPF ThemeConfig，经 /api/settings/appearance 读写）</summary>
+        public string WebUiFontSize
+        {
+            get => _cfg.WebUiFontSize;
+            set => _cfg.WebUiFontSize = value;
+        }
+
         /// <summary>
         /// Tags that show on the tab bar of the main window
         /// </summary>

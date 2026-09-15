@@ -47,4 +47,27 @@ namespace _1RM.Service.WebUi
         public int Count { get; set; }
         public bool IsPinned { get; set; }
     }
+
+    /// <summary>
+    /// /api/settings/appearance DTO（Web UI 专属外观，独立于 WPF ThemeConfig，spec §4）。
+    /// themeMode: dark|light|system；accent: blue|violet|pink|red|orange|green|slate；fontSize: S|M|L|XL。
+    /// </summary>
+    public class AppearanceDto
+    {
+        public string ThemeMode { get; set; } = string.Empty;
+        public string Accent { get; set; } = string.Empty;
+        public string FontSize { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// /api/ui-state/tree DTO：LocalityTreeViewService 两个字典的忠实投影。
+    /// expanded: 文件夹节点全路径 → 是否展开（TreeNodeExpansionStates，如 "LocalDataSource-&gt;Folder1"）；
+    /// order: 节点 Id → 自定义序号（CustomNodeOrder，排序模式=Custom 时生效）。
+    /// PUT 为整体替换语义。字典键不做大小写转换（路径/Id 原样透传）。
+    /// </summary>
+    public class TreeStateDto
+    {
+        public Dictionary<string, bool> Expanded { get; set; } = new();
+        public Dictionary<string, int> Order { get; set; } = new();
+    }
 }

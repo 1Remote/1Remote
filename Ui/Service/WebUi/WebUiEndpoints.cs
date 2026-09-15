@@ -9,12 +9,24 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.Service.Locality;
 using _1RM.View;
 
 namespace _1RM.Service.WebUi
 {
     public static class WebUiEndpoints
     {
+        /// <summary>
+        /// 外观取值域（spec §4）。校验大小写不敏感，存储时归一：
+        /// themeMode/accent 归一小写、fontSize 归一大写，GET 返回值即规范形式。
+        /// </summary>
+        private static readonly HashSet<string> ValidThemeModes = new(StringComparer.OrdinalIgnoreCase)
+            { "dark", "light", "system" };
+        private static readonly HashSet<string> ValidAccents = new(StringComparer.OrdinalIgnoreCase)
+            { "blue", "violet", "pink", "red", "orange", "green", "slate" };
+        private static readonly HashSet<string> ValidFontSizes = new(StringComparer.OrdinalIgnoreCase)
+            { "S", "M", "L", "XL" };
+
         /// <summary>
         /// Web UI 侧的服务器过滤判定：跳过分组头 Dummy（树形列表虚拟节点）与
         /// 临时会话（TMP_SESSION_ 前缀或空 Id，即编辑器中尚未落库的对象）。
@@ -169,6 +181,75 @@ namespace _1RM.Service.WebUi
                     // SemaphoreSlim 无非托管资源，交给 GC 即可
                 }
             });
+
+            // 外观设置（Web UI 专属字段，独立于 WPF ThemeConfig，持久化到 1Remote.json，spec §4）。
+            // GET 返回当前值（旧配置缺字段时由 Configuration 属性初始化器给默认 dark/blue/M）
+            app.MapGet("/api/settings/appearance", () =>
+            {
+                var cs = IoC.Get<ConfigurationService>();
+                return Results.Json(ReadAppearance(cs));
+            });
+
+            // PUT 校验通过后走 ConfigurationService.Save()（既有保存路径，落盘 1Remote.json），
+            // 返回 200 + 归一后的存储值；任一字段非法即 400，不写入任何值
+            app.MapPut("/api/settings/appearance", (AppearanceDto? dto) =>
+            {
+                var themeMode = dto?.ThemeMode?.Trim() ?? string.Empty;
+                var accent = dto?.Accent?.Trim() ?? string.Empty;
+                var fontSize = dto?.FontSize?.Trim() ?? string.Empty;
+                if (!ValidThemeModes.Contains(themeMode))
+                    return Results.BadRequest(new { error = $"invalid themeMode '{themeMode}', expected one of: dark, light, system" });
+                if (!ValidAccents.Contains(accent))
+                    return Results.BadRequest(new { error = $"invalid accent '{accent}', expected one of: blue, violet, pink, red, orange, green, slate" });
+                if (!ValidFontSizes.Contains(fontSize))
+                    return Results.BadRequest(new { error = $"invalid fontSize '{fontSize}', expected one of: S, M, L, XL" });
+
+                var cs = IoC.Get<ConfigurationService>();
+                cs.WebUiThemeMode = themeMode.ToLowerInvariant();
+                cs.WebUiAccent = accent.ToLowerInvariant();
+                cs.WebUiFontSize = fontSize.ToUpperInvariant();
+                cs.Save();
+                return Results.Json(ReadAppearance(cs));
+            });
+
+            // 服务器树状态：LocalityTreeViewService（静态类，无 IoC）两个字典的读写代理。
+            // expanded 键为文件夹全路径、order 键为节点 Id（与 WPF 树 BuildView/LoadLocalCaches 消费一致）；
+            // PUT 为整体替换（幂等），落盘 .locality/.tree_view.json
+            app.MapGet("/api/ui-state/tree", () =>
+            {
+                var s = LocalityTreeViewService.Settings;
+                // 拷贝快照再序列化：Settings 为静态缓存，WPF 侧重载时会整体替换字典
+                return Results.Json(new TreeStateDto
+                {
+                    Expanded = new Dictionary<string, bool>(s.TreeNodeExpansionStates),
+                    Order = new Dictionary<string, int>(s.CustomNodeOrder),
+                });
+            });
+
+            app.MapPut("/api/ui-state/tree", (TreeStateDto? dto) =>
+            {
+                if (dto == null)
+                    return Results.BadRequest(new { error = "body must be a JSON object" });
+                var s = LocalityTreeViewService.Settings;
+                s.TreeNodeExpansionStates = dto.Expanded ?? new Dictionary<string, bool>();
+                s.CustomNodeOrder = dto.Order ?? new Dictionary<string, int>();
+                LocalityTreeViewService.Save();
+                return Results.Json(new TreeStateDto
+                {
+                    Expanded = new Dictionary<string, bool>(s.TreeNodeExpansionStates),
+                    Order = new Dictionary<string, int>(s.CustomNodeOrder),
+                });
+            });
+        }
+
+        private static AppearanceDto ReadAppearance(ConfigurationService cs)
+        {
+            return new AppearanceDto
+            {
+                ThemeMode = cs.WebUiThemeMode,
+                Accent = cs.WebUiAccent,
+                FontSize = cs.WebUiFontSize,
+            };
         }
     }
 }
