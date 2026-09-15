@@ -6,6 +6,7 @@ using _1RM.Model.Protocol;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
+using _1RM.View.ServerView;
 using Shawn.Utils.Interface;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYin;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials;
@@ -91,6 +92,12 @@ namespace Tests
 
                 var globalData = new GlobalData(configurationService);
                 Register(globalData);
+
+                // GlobalData.UpdateServer 成功路径会调用 IoC.Get<ServerListPageViewModel>().ClearSelection()
+                // （编辑保存后清除列表选中态），测试环境必须注册同型实例；其构造仅依赖上述已注册服务，
+                // View 永不附加（OnViewLoaded 不触发），ClearSelection 在未构建的空列表上是空操作。
+                Register(new TagsPanelViewModel()); // ServerListPageViewModel 基类构造需要
+                Register(new ServerListPageViewModel(dataSourceService, globalData));
 
                 // 2. 数据链路：构造 DataSourceService → InitLocalDataSource → SetDataSourceService → ReloadAll → AddServer
                 var localSource = new SqliteSource(DataSourceService.LOCAL_DATA_SOURCE_NAME) { Path = dbPath };
