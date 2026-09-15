@@ -3,7 +3,7 @@
  * 语言取 navigator.language（取不到的环境如单测回退 'zh'）。
  * @param {number} unixSeconds Unix 秒；0/非法 = 从未连接，返回 null（由调用方渲染「从未」）
  * @param {number} nowMs 当前毫秒时间戳（默认 Date.now()；单测可注入）
- * @param {string} [locale] 显式 locale（单测用）；缺省走 navigator.language
+ * @param {string} [locale] 显式 locale（组件按当前 i18n 语言注入渲染；单测亦可指定）；缺省走 navigator.language
  * @returns {string|null} 如「刚刚 / 3 分钟前 / 2 小时前 / 5 天前 / 2026年8月3日」
  */
 export function formatRelativeTime(unixSeconds, nowMs = Date.now(), locale) {

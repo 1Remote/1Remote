@@ -1,10 +1,13 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { enUS, zhCN } from 'naive-ui'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 const naive = useNaiveTheme()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+// naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）
+const naiveLocale = computed(() => (locale.value === 'en-US' ? enUS : zhCN))
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
@@ -24,7 +27,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 </script>
 
 <template>
-  <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides">
+  <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides" :locale="naiveLocale">
     <n-message-provider>
       <div class="shell">
         <header class="topbar">
@@ -44,7 +47,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
           </div>
           <div class="topbar-actions">
             <!-- 新建服务器（Task 14 占位）：内部任务号不入 UI，统一「即将推出」文案 -->
-            <n-button quaternary size="small" :title="t('common.comingSoon')">＋</n-button>
+            <n-button quaternary size="small" :title="t('common.comingSoon')">+</n-button>
             <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
           </div>
         </header>
