@@ -18,6 +18,13 @@ namespace _1RM.Service.WebUi
 
         public async Task InvokeAsync(HttpContext context)
         {
+            // 仅守卫 API；静态文件（页面本身经 ?token= 加载后，其资源请求不再携带 token）直接放行
+            if (!context.Request.Path.StartsWithSegments("/api"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(_token))
             {
                 var provided = context.Request.Query["token"].ToString();

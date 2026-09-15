@@ -20,6 +20,8 @@ namespace Tests.Service.WebUi
             var tokenInPipe = token; // null 表示"服务端未启用 token"（DEBUG 形态）
             app.UseMiddleware<_1RM.Service.WebUi.TokenMiddleware>(tokenInPipe ?? "");
             app.MapGet("/api/version", () => new { version = "test", api = 1 });
+            // 模拟静态资源路径（非 /api），用于验证 token 只守卫 API
+            app.MapGet("/index.html", () => "<html></html>");
             app.StartAsync().GetAwaiter().GetResult(); // 显式启动，避免 GetTestClient 竞态
             var client = app.GetTestClient();
             return client;
@@ -75,6 +77,15 @@ namespace Tests.Service.WebUi
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "wrong-token");
             var resp = await client.GetAsync("/api/version");
             Assert.AreEqual(HttpStatusCode.Unauthorized, resp.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task WithTokenEnabled_NonApiPath_NoToken_Returns200()
+        {
+            // token 只守卫 API：页面经 ?token= 加载后，静态资源请求不携带 token 也应放行
+            using var client = CreateClient("secret123");
+            var resp = await client.GetAsync("/index.html");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
         }
     }
 }
