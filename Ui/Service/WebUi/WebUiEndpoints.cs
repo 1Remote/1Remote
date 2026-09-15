@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using _1RM.Model;
@@ -13,6 +15,16 @@ namespace _1RM.Service.WebUi
 {
     public static class WebUiEndpoints
     {
+        /// <summary>
+        /// Web UI 侧的服务器过滤判定：跳过分组头 Dummy（树形列表虚拟节点）与
+        /// 临时会话（TMP_SESSION_ 前缀或空 Id，即编辑器中尚未落库的对象）。
+        /// /api/servers、/api/search、/api/connect 共用同一语义，避免各处过滤条件漂移。
+        /// </summary>
+        public static bool IsConnectable(ProtocolBase server)
+        {
+            return server is not Dummy && !server.IsTmpSession();
+        }
+
         public static void MapAll(WebApplication app)
         {
             app.MapGet("/api/version", () => Results.Json(new
@@ -31,7 +43,7 @@ namespace _1RM.Service.WebUi
                 lock (gd)
                 {
                     var list = gd.VmItemList
-                        .Where(vm => vm.Server is not Dummy && !vm.Server.IsTmpSession())
+                        .Where(vm => IsConnectable(vm.Server))
                         .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime))
                         .ToList();
                     return Results.Json(list); // 先物化快照再序列化，锁内不做 IO
@@ -69,7 +81,7 @@ namespace _1RM.Service.WebUi
                     // 快照语义同 /api/servers：锁内仅物化列表，
                     // 匹配在锁外执行（MatchKeywords 内部并行，且不触碰 GlobalData 的锁）
                     source = gd.VmItemList
-                        .Where(vm => vm.Server is not Dummy && !vm.Server.IsTmpSession())
+                        .Where(vm => IsConnectable(vm.Server))
                         .ToList();
                 }
 
@@ -88,11 +100,65 @@ namespace _1RM.Service.WebUi
                 ProtocolBaseViewModel? vm;
                 lock (gd) // 快照语义同 /api/servers：锁内只做查找
                 {
-                    vm = gd.VmItemList.FirstOrDefault(x => x.Server.Id == id && x.Server is not Dummy && !x.Server.IsTmpSession());
+                    vm = gd.VmItemList.FirstOrDefault(x => x.Server.Id == id && IsConnectable(x.Server));
                 }
                 if (vm == null) return Results.NotFound();
                 GlobalEventHelper.OnRequestServerConnect?.Invoke(vm.Server, fromView: "WebUi");
                 return Results.Ok(new { started = true });
+            });
+
+            // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
+            // data 为本连接内重载次数（每连接独立从 0 起计）——前端收到后重新拉取 /api/servers 等即可，
+            // 无重载时每 15s 写一行注释心跳保活；断开（RequestAborted）在 finally 中退订。
+            // 即时性：用 SemaphoreSlim 唤醒替代固定 Task.Delay 轮询——若每轮睡满 15s，
+            // 重载事件最迟要等满一个心跳周期才发出，无法满足前端"秒级自动刷新"的诉求。
+            app.MapGet("/api/events", async (HttpContext ctx) =>
+            {
+                ctx.Response.Headers.ContentType = "text/event-stream";
+                ctx.Response.Headers.CacheControl = "no-cache";
+                var gd = IoC.Get<GlobalData>();
+                var version = 0; // 本连接内已发生的重载次数（OnReload 与写循环分属不同线程，Interlocked 维护）
+                var wakeup = new SemaphoreSlim(0, 1);
+                void OnReload()
+                {
+                    Interlocked.Increment(ref version);
+                    try
+                    {
+                        wakeup.Release(); // 唤醒写循环立即推送；信号粘滞，循环未消费期间不重复释放
+                    }
+                    catch (SemaphoreFullException)
+                    {
+                        // 上一次唤醒尚未被消费：版本号已合并递增，无需二次唤醒
+                    }
+                }
+                gd.OnReloadAll += OnReload;
+                try
+                {
+                    await ctx.Response.WriteAsync(": connected\n\n", ctx.RequestAborted);
+                    var lastSent = 0; // 0 = 连接建立基线：连接前的重载不补发（前端连接后自行全量拉取一次）
+                    while (!ctx.RequestAborted.IsCancellationRequested)
+                    {
+                        // 等待：被唤醒（有重载，立即推送）或 15s 超时（心跳保活）
+                        await wakeup.WaitAsync(TimeSpan.FromSeconds(15), ctx.RequestAborted);
+                        if (version != lastSent)
+                        {
+                            lastSent = version;
+                            await ctx.Response.WriteAsync($"event: reload\ndata: {version}\n\n", ctx.RequestAborted);
+                        }
+                        else
+                        {
+                            await ctx.Response.WriteAsync(": heartbeat\n\n", ctx.RequestAborted);
+                        }
+                    }
+                }
+                catch (OperationCanceledException) { /* 客户端断开，正常结束 */ }
+                finally
+                {
+                    gd.OnReloadAll -= OnReload;
+                    // 不 Dispose wakeup：退订与并发执行中的 OnReload 之间存在窗口，
+                    // Dispose 后到达的 Release 会抛 ObjectDisposedException 并打断 ReloadAll 调用方；
+                    // SemaphoreSlim 无非托管资源，交给 GC 即可
+                }
             });
         }
     }
