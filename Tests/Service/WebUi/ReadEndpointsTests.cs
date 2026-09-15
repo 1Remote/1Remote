@@ -50,6 +50,8 @@ namespace Tests.Service.WebUi
         {
             var resp = await _client.GetAsync("/api/tags");
             Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "seed-tag"); // 种子服务器带标签，聚合后必须可见
         }
     }
 }

@@ -53,6 +53,7 @@ namespace _1RM.Service.WebUi
                 FolderPath = server.TreeNodes != null ? string.Join("/", server.TreeNodes) : string.Empty,
                 LastConnectTime = lastConnectTime <= DateTime.MinValue
                     ? 0
+                    // 假定本地墙上时钟（与 LocalityConnectRecorder 写入 DateTime.Now 一致）
                     : new DateTimeOffset(lastConnectTime).ToUnixTimeSeconds(),
                 ConnectionState = WebUiConstants.StatusDisconnected,
             };
@@ -81,16 +82,33 @@ namespace _1RM.Service.WebUi
                 },
                 Writable = ds.IsWritable,
                 ReconnectInfo = ds.ReconnectInfo ?? string.Empty,
-                ServerCount = ds.CachedProtocols.Count(x => x.Server is not Dummy && !x.Server.IsTmpSession()),
+                ServerCount = CountCachedServers(ds),
             };
         }
 
         /// <summary>
+        /// 数据源缓存的服务器计数（剔除分组头与临时会话）。
+        /// DataSourceBase.GetServers 在 lock(this=ds) 下整体替换 CachedProtocols，
+        /// 读侧同步加锁以避免并发重载时枚举抛 InvalidOperationException（HTTP 500）。
+        /// 注：上游 Database_DeleteServer 对 CachedProtocols 的 RemoveAll 本就未加锁
+        /// （DataSourceBase.Source.cs 既有行为，此处不改动），该窗口由快照读兜底。
+        /// </summary>
+        private static int CountCachedServers(DataSourceBase ds)
+        {
+            lock (ds)
+            {
+                return ds.CachedProtocols.Count(x => x.Server is not Dummy && !x.Server.IsTmpSession());
+            }
+        }
+
+        /// <summary>
         /// 标签聚合快照：GlobalData.TagList 由 ReloadTagsFromServers 维护（含 IsPinned/计数）。
+        /// 快照语义：ReloadTagsFromServers 原子交换 TagList 引用且换出的旧列表不再被修改，
+        /// 读侧即使不加锁也安全；此锁仅与 GlobalData 自身的 lock(this)（StopTick/StartTick）串行化。
         /// </summary>
         public static List<TagDto> BuildTags(GlobalData gd)
         {
-            lock (gd) // 对齐 GlobalData 的锁策略
+            lock (gd)
             {
                 return gd.TagList
                     .Select(t => new TagDto

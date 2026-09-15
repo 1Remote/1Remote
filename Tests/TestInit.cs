@@ -89,6 +89,7 @@ namespace Tests
                     Id = "seed-rdp",
                     DisplayName = "seed-rdp",
                     Address = "1.1.1.1",
+                    Tags = new List<string> { "seed-tag" }, // /api/tags 断言用
                 }, localSource);
             }
         }
