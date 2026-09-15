@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace _1RM.Service.WebUi
 {
@@ -73,5 +74,17 @@ namespace _1RM.Service.WebUi
     {
         public Dictionary<string, bool> Expanded { get; set; } = new();
         public Dictionary<string, int> Order { get; set; } = new();
+    }
+
+    /// <summary>
+    /// POST/PUT /api/servers 请求体。信封键 camelCase；内嵌 json 为编辑器配置对象——
+    /// 其键保持 ToJsonString 的 PascalCase 原样直通（两个 casing 域，勿互相归一）：
+    /// 用 JsonElement 内嵌可原样保留键名大小写，GetRawText() 后交 ItemCreateHelper 反序列化。
+    /// json 必须含 Protocol/ClassVersion 鉴别字段（访问大小写敏感）。
+    /// </summary>
+    public class ServerSaveRequest
+    {
+        public string? DataSourceName { get; set; } // 仅 POST 使用；PUT/DELETE 经 ?ds= 查询参数
+        public JsonElement? Json { get; set; }
     }
 }

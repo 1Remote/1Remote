@@ -146,6 +146,48 @@ namespace _1RM.Service.WebUi
                 });
             });
 
+            // 新建服务器：body {dataSourceName, json}。json 为编辑器配置全量（PascalCase 直通），
+            // 服务端 ItemCreateHelper 反序列化 → WPF 平价校验（不过则 400 {errors}，零写入）→ AddServer。
+            // 加密由 DataSourceBase 在内部克隆上完成（调用方传明文）；响应 {id}=插入路径回写的 ULID。
+            app.MapPost("/api/servers", (ServerSaveRequest? body) =>
+            {
+                var json = body?.Json;
+                if (json == null || json.Value.ValueKind != JsonValueKind.Object)
+                    return Results.BadRequest(new { errors = new[] { "body must contain a 'json' object" } });
+                var dataSourceName = string.IsNullOrWhiteSpace(body!.DataSourceName)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : body.DataSourceName;
+                return MapSaveResult(WebUiEditorService.Create(dataSourceName, json.Value.GetRawText()));
+            });
+
+            // 更新服务器：整体替换语义（前端回传加载时的完整 json）。DataSource 为 [JsonIgnore]，
+            // 服务端从缓存原对象回填后走 GlobalData.UpdateServer（与 WPF 编辑器保存同一路径）。
+            app.MapPut("/api/servers/{id}", (string id, string? ds, ServerSaveRequest? body) =>
+            {
+                var json = body?.Json;
+                if (json == null || json.Value.ValueKind != JsonValueKind.Object)
+                    return Results.BadRequest(new { errors = new[] { "body must contain a 'json' object" } });
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                return MapSaveResult(WebUiEditorService.Update(dataSourceName, id, json.Value.GetRawText()));
+            });
+
+            // 删除服务器：204 无内容；未知 id → 404；写库失败 → 500
+            app.MapDelete("/api/servers/{id}", (string id, string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var result = WebUiEditorService.Delete(dataSourceName, id);
+                return result.Status switch
+                {
+                    EditorSaveStatus.Ok => Results.NoContent(),
+                    EditorSaveStatus.NotFound => Results.NotFound(),
+                    _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
             // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
             // data 为本连接内重载次数（每连接独立从 0 起计）——前端收到后重新拉取 /api/servers 等即可，
             // 无重载时每 15s 写一行注释心跳保活；断开（RequestAborted）在 finally 中退订。
@@ -289,6 +331,18 @@ namespace _1RM.Service.WebUi
                 Accent = cs.WebUiAccent,
                 FontSize = cs.WebUiFontSize,
                 Font = cs.WebUiFontFamily,
+            };
+        }
+
+        /// <summary>保存（POST/PUT）结果 → HTTP 映射：Ok→200 {id}；BadRequest→400 {errors}；NotFound→404；DbError→500。</summary>
+        private static IResult MapSaveResult(EditorSaveResult result)
+        {
+            return result.Status switch
+            {
+                EditorSaveStatus.Ok => Results.Json(new { id = result.ServerId }),
+                EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                EditorSaveStatus.NotFound => Results.NotFound(),
+                _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
             };
         }
 
