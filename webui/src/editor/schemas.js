@@ -28,7 +28,7 @@
  *    SELECT 初值、非空字符串与数值初值。
  *    例外类（必须显式列 false）：C# 属性为 `[DefaultValue(true)]` +
  *    `[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]` 而字段初始化器
- *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrives/EnableRedirectCameras），
+ *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrivesPlugIn/EnableRedirectCameras），
  *    json 缺失该字段会被 Populate 语义改写为 DefaultValue(true)——与 WPF 新建（false）相悖，
  *    因此这三个开关必须显式写入 defaults 为 false。
  *    Task 6 的 DefaultValue 审计结论（新增 5 类 + AppArgument，逐类 grep [DefaultValue]）：
