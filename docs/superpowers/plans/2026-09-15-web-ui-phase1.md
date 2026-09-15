@@ -1221,7 +1221,7 @@ cd webui && npm run build   # 产出 webui/dist/
 </ItemGroup>
 ```
 
-`WebUiEndpoints.MapAll` 加静态托管（`app.UseDefaultFiles(); app.UseStaticFiles();`——放在 Token 中间件之后；`WebApplication.CreateBuilder()` 默认 ContentRoot 即 exe 目录，wwwroot 需显式 `builder.WebHost.UseWebRoot` 或 `UseContentRoot(AppContext.BaseDirectory)` 指向输出目录，执行时验证）。
+`WebUiEndpoints.MapAll` 加静态托管（`app.UseDefaultFiles(); app.UseStaticFiles();`——`TokenMiddleware` 已于 Task 11 后改为仅守卫 `/api` 前缀（提交 887e07a9），静态资源直接放行，不会出现资源 401 白屏；`WebApplication.CreateBuilder()` 默认 ContentRoot 即 exe 目录，wwwroot 需显式 `builder.WebHost.UseWebRoot` 或 `UseContentRoot(AppContext.BaseDirectory)` 指向输出目录，执行时验证）。
 
 - [ ] **Step 2: 端到端验收（Release 形态手动清单）**
 
