@@ -11,6 +11,7 @@
 }
 
 [data-theme='dark'] {
+  color-scheme: dark; /* 让原生滚动条/输入框跟随深色，否则会渲染成浅色 */
   --bg: #0f1011;
   --bg-panel: #131417;
   --bg-elevated: #1a1b1f;
@@ -27,6 +28,7 @@
 }
 
 [data-theme='light'] {
+  color-scheme: light;
   --bg: #fafafa;
   --bg-panel: #ffffff;
   --bg-elevated: #ffffff;
