@@ -1,18 +1,22 @@
 <script setup>
 // 两栏布局（spec §3.1：边栏 216px + 内容区）。边栏承载 SideTree（数据源树+标签区）；
 // 内容区 = 面包屑行 + 行列表（Task 16）。selection/tag 状态由本组件持有；
-// tag 过滤 Task 17 接线（与搜索取交集），当前仅存储。
+// tag 与搜索过滤在此取交集（Task 17）：基础列表 → 标签 → 搜索命中集 → 传 ServerTable。
 import { computed, ref } from 'vue'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
-import { useServers } from '../composables/useServers'
+import { applyServerFilters, useServers } from '../composables/useServers'
 
 const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）
 const activeTag = ref('') // ''=未按标签过滤
 // 收起状态仅本地内存：spec §8.7 的 <900px 自动收起与 44px 图标条（树/标签/设置入口）归 Task 20，持久化暂缓
 const collapsed = ref(false)
 
-const { servers } = useServers()
+const { servers, searchQuery, searchedIds } = useServers()
+
+// 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）
+const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
+const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
 
 // 面包屑（spec §3.2）：根=「数据源名 · 全部服务器」、文件夹=「数据源 / 路径」；右侧计数由 ServerTable 上报
 const breadcrumb = computed(() => {
@@ -48,11 +52,15 @@ function onEdit() {}
     <main class="content">
       <div class="crumb-row">
         <div class="crumb" :title="breadcrumb">{{ breadcrumb }}<span class="crumb-count"> · {{ tableCount }} 台</span></div>
-        <!-- 搜索过滤 chips（Task 17）与批量操作条（ServerTable 内渲染）不在此层 -->
+        <!-- 搜索过滤 chip（Task 17）：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
+        <span v-if="searchActive" class="search-chip" title="搜索过滤中">
+          <span class="sc-label">⌕ {{ searchQuery }}</span>
+          <button class="sc-x" title="清除搜索（Esc）" @click="searchQuery = ''">✕</button>
+        </span>
       </div>
       <ServerTable
         class="table-host"
-        :servers="servers"
+        :servers="visibleServers"
         :selection="selection"
         @counted="tableCount = $event"
         @connect="onConnect"
@@ -121,6 +129,44 @@ function onEdit() {}
 }
 .crumb-count {
   color: var(--text-4);
+}
+.search-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 280px;
+  margin-left: 10px;
+  padding: 2px 4px 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--text-2);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+.sc-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sc-x {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-4);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+.sc-x:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 .table-host {
   flex: 1;

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { api, subscribeEvents } from '../api'
 
 // 模块级共享状态（spec §9.1：不用 Pinia；多组件调用 useServers() 共享同一份 refs）
@@ -31,6 +31,42 @@ async function loadAll() {
   }
 }
 
+// ---- 搜索（spec §3.1/§8，Task 17）：模块级共享搜索态，App.vue 顶栏输入框与列表过滤共同消费 ----
+const searchQuery = ref('')
+const searchedIds = ref(null) // Set<serverId> | null；null=未启用搜索过滤（区别于空集=搜了但零命中）
+const searching = ref(false)
+let searchTimer = null
+let searchGen = 0 // 乱序完成保护（与 loadAll 的 gen 同思路）：防抖后连发多请求，晚发的可能先返回
+
+// 输入变化 → 200ms 防抖后才发请求；清空（含纯空白）立即撤销过滤并作废在途请求
+watch(searchQuery, q => {
+  clearTimeout(searchTimer)
+  if (!q || !q.trim()) {
+    searchGen++ // 在途请求即使返回也因 gen 落后被丢弃，避免清空后旧结果闪回
+    searching.value = false
+    searchedIds.value = null
+    return
+  }
+  searchTimer = setTimeout(() => doSearch(q.trim()), 200)
+})
+
+async function doSearch(q) {
+  const my = ++searchGen
+  searching.value = true
+  try {
+    const results = await api.search(q)
+    if (my !== searchGen) return // 落后响应丢弃（乱序完成保护）
+    searchedIds.value = new Set(results.map(s => s.id))
+  } catch (e) {
+    if (my === searchGen) {
+      console.warn('[useServers] search failed:', e?.message || e)
+      searchedIds.value = new Set() // 失败按零命中呈现：过滤结果与输入框中可见的查询保持一致，不用旧结果误导
+    }
+  } finally {
+    if (my === searchGen) searching.value = false
+  }
+}
+
 export function useServers() {
   if (!unsubscribe) {
     loadAll()
@@ -52,7 +88,7 @@ export function useServers() {
       }
     }, 30000)
   }
-  return { servers, datasources, tags, loading, connected, reload: loadAll }
+  return { servers, datasources, tags, loading, connected, reload: loadAll, searchQuery, searchedIds, searching }
 }
 
 /**
@@ -83,4 +119,21 @@ export function buildTree(servers, datasources) {
     roots.push(root)
   }
   return roots
+}
+
+/**
+ * 组合应用边栏过滤（spec §3.1/§3.3，Task 17）：基础列表 → 标签过滤 → 搜索命中集逐层收窄。
+ * 纯函数（ServerListView 的 computed 与 node 断言共用；调用方负责传入响应式值以维持依赖追踪）：
+ * - activeTag 非空 → 仅保留 tags 含该标签的服务器（后端标签名大小写无统一保证，按小写比较）
+ * - searchedIds 非 null → 仅保留命中搜索的服务器（null=未启用搜索过滤，全通过）
+ * 树选中过滤与排序不在此层——由 ServerTable 在收到收窄后的列表后自行应用，交集自然复合。
+ */
+export function applyServerFilters(servers, activeTag, searchedIds) {
+  let list = servers
+  if (activeTag) {
+    const t = activeTag.toLowerCase()
+    list = list.filter(s => (s.tags || []).some(tag => tag.toLowerCase() === t))
+  }
+  if (searchedIds) list = list.filter(s => searchedIds.has(s.id))
+  return list
 }
