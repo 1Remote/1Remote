@@ -70,8 +70,12 @@ async function doSearch(q) {
 export function useServers() {
   if (!unsubscribe) {
     loadAll()
-    // SSE reload 的 data 是每连接计数——只当"数据变了"的信号用，禁止比较版本号
-    unsubscribe = subscribeEvents(() => loadAll())
+    // SSE reload 的 data 是每连接计数——只当"数据变了"的信号用，禁止比较版本号。
+    // 重载后若搜索过滤仍在生效，旧命中集已过期，需以新数据重跑搜索刷新（searchGen 乱序保护仍生效）
+    unsubscribe = subscribeEvents(async () => {
+      await loadAll()
+      if (searchQuery.value.trim()) doSearch(searchQuery.value.trim())
+    })
     // 数据源连接状态（重连倒计时等）不触发 OnReloadAll，低频轮询兜底（顺带刷新边栏状态点）
     pollTimer = setInterval(async () => {
       // 乱序保护（与 loadAll 的 gen 同思路）：loadAll 在途时跳过本拍，防止旧状态点快照
