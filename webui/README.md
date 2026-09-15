@@ -23,6 +23,10 @@
 3. 浏览器打开 <http://localhost:5173>。`/api/*` 请求由 Vite 代理转发到 17321
    （见 `vite.config.js` 的 `server.proxy`），页面改动即时热更新。
 
+   注意：DEBUG 下应用内 WebView2 切到 Web 引擎时同样导航到 `http://localhost:5173`——
+   即**应用内调试也要求 dev server 正在运行**（`npm run dev`），否则 WebView 显示连接失败页；
+   Release 形态则由进程内 Kestrel 直接托管静态产物，无需 dev server。
+
 ## 构建发布
 
 ```bash
@@ -36,3 +40,5 @@ csproj 会把 `webui/dist/**` 复制到输出目录的 `wwwroot/`，根路径 `/
 
 - `dist/` 为构建产物，不入版本库；改动前端后需重新 `npm run build`，桌面端构建才会带上最新产物。
 - dist 不存在时 csproj 通配符匹配 0 项，桌面端 Debug 构建不受影响（仅无静态页可托管）。
+- 排障：Release 运行时页面 404/空白 → webui/dist 未构建（先执行 `npm run build` 再
+  `dotnet build`/`dotnet publish`；CI 已在 publish 前自动构建 webui，不会出现此问题）。
