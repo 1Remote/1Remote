@@ -78,6 +78,22 @@ namespace _1RM.Service.WebUi
                     .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime))
                     .ToList());
             });
+
+            // 连接：触发与 WPF/托盘/命名管道相同的 OnRequestServerConnect 事件（fromView="WebUi"），
+            // 密码交互、会话窗口等仍由桌面端 SessionControlService 管线处理（其内部自行起任务，
+            // 故在 Kestrel 线程上同步 Invoke 是安全的）；assign* 参数留空 = 默认行为
+            app.MapPost("/api/connect/{id}", (string id) =>
+            {
+                var gd = IoC.Get<GlobalData>();
+                ProtocolBaseViewModel? vm;
+                lock (gd) // 快照语义同 /api/servers：锁内只做查找
+                {
+                    vm = gd.VmItemList.FirstOrDefault(x => x.Server.Id == id && x.Server is not Dummy && !x.Server.IsTmpSession());
+                }
+                if (vm == null) return Results.NotFound();
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(vm.Server, fromView: "WebUi");
+                return Results.Ok(new { started = true });
+            });
         }
     }
 }
