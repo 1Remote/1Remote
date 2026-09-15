@@ -131,7 +131,13 @@ namespace _1RM.Service.WebUi
                         // 上一次唤醒尚未被消费：版本号已合并递增，无需二次唤醒
                     }
                 }
-                gd.OnReloadAll += OnReload;
+                // OnReloadAll 是 public 字段（非 event），+=/-= 编译为非原子读改写；
+                // SSE 是其首个多线程订阅方（Kestrel 请求线程），并发开/关页签会丢失订阅或退订，
+                // 故与其它端点一致用 lock(gd) 串行化。Invoke 侧无需加锁（委托调用列表是不可变快照）。
+                lock (gd)
+                {
+                    gd.OnReloadAll += OnReload;
+                }
                 try
                 {
                     await ctx.Response.WriteAsync(": connected\n\n", ctx.RequestAborted);
@@ -154,7 +160,10 @@ namespace _1RM.Service.WebUi
                 catch (OperationCanceledException) { /* 客户端断开，正常结束 */ }
                 finally
                 {
-                    gd.OnReloadAll -= OnReload;
+                    lock (gd) // 同上：字段 -= 非原子，防止并发断开时丢失退订导致处理器泄漏
+                    {
+                        gd.OnReloadAll -= OnReload;
+                    }
                     // 不 Dispose wakeup：退订与并发执行中的 OnReload 之间存在窗口，
                     // Dispose 后到达的 Release 会抛 ObjectDisposedException 并打断 ReloadAll 调用方；
                     // SemaphoreSlim 无非托管资源，交给 GC 即可
