@@ -19,7 +19,7 @@ const props = defineProps({
   servers: { type: Array, default: () => [] },
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
 })
-const emit = defineEmits(['connect', 'batch-connect', 'edit', 'duplicate', 'delete', 'counted'])
+const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'edit', 'duplicate', 'delete', 'counted'])
 const { t } = useI18n()
 const message = useMessage()
 
@@ -284,8 +284,8 @@ const colVars = computed(() => ({
     <div v-if="checked.size" class="batch-bar">
       <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
       <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶ {{ t('batch.connect') }}</button>
-      <!-- 批量编辑（Plan 2）/导出（Plan 4）占位：内部计划号不入 UI，统一「即将推出」 -->
-      <button class="bb-btn" disabled :title="t('common.comingSoon')">✎ {{ t('batch.edit') }}</button>
+      <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开；导出 Plan 4 占位 -->
+      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit') }}</button>
       <button class="bb-btn" disabled :title="t('common.comingSoon')">⤓ {{ t('batch.export') }}</button>
       <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>

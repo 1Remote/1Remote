@@ -19,22 +19,30 @@
  * 复制（duplicateFrom）：create 语义 + 预填来源服务器 config；Id 为 [JsonIgnore] 本就不在
  * json 中（防御性 delete），后端 Create 路径也会清 Id 并生成新 ULID；TreeNodes（文件夹归属）
  * 随 json 携带 → 复制品与来源同文件夹（与 WPF 复制一致）。
+ *
+ * 批量模式（Plan 2 Task 10，mode='bulk'）：不加载单台 config——共享值由父级传入的列表 DTO
+ * （camelCase 域，bulkServers）逐字段计算：全同 → 只读展示；不同/列表 DTO 无此字段 →
+ * 「‹N 台各不相同›」/「未读取」占位。每字段默认「保持不变」（不进 patch），点「覆盖」后
+ * 从共享值（已知且全同）或空值起编辑；保存 = diffPatch(共享初值, 当前值) 仅取被覆盖字段
+ * → POST /api/servers/batch（patch 键 camelCase，缺失 = 保持不变）。表单字段限于后端
+ * BatchPatchFieldMap 的 allow-list（schemas.js BULK_FIELDS），深层/子表单字段不参与批量。
  */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
-import { PROTOCOLS } from '../../editor/schemas.js'
+import { PROTOCOLS, BULK_FIELDS } from '../../editor/schemas.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
+import { diffPatch } from '../../editor/patch.js'
 import { api } from '../../api'
 
 const props = defineProps({
-  /** 'create' | 'edit'（create + duplicateFrom = 复制预填，保存走 POST 新建） */
+  /** 'create' | 'edit'（create + duplicateFrom = 复制预填，保存走 POST 新建）| 'bulk'（Task 10 批量） */
   mode: { type: String, required: true },
   /** edit 模式目标服务器 id */
   serverId: { type: String, default: '' },
-  /** 归属数据源（加载 config 与保存的 ds 参数） */
+  /** 归属数据源（加载 config 与保存的 ds 参数；bulk 模式取 bulkServers[0] 所属） */
   dataSourceName: { type: String, default: 'Local' },
   /** create 模式初始协议（PROTOCOLS key），缺省 RDP */
   protocol: { type: String, default: '' },
@@ -42,6 +50,10 @@ const props = defineProps({
   initialServer: { type: Object, default: null },
   /** 复制来源服务器 id（create 语义预填） */
   duplicateFrom: { type: String, default: '' },
+  /** bulk 模式：目标服务器 id 列表（父级去重后的勾选集） */
+  bulkIds: { type: Array, default: () => [] },
+  /** bulk 模式：与 bulkIds 对应的列表 DTO（camelCase 域，共享值计算来源） */
+  bulkServers: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['close', 'saved'])
 const { t } = useI18n()
@@ -50,6 +62,7 @@ const dialog = useDialog()
 
 const isCreate = computed(() => props.mode === 'create')
 const isDuplicate = computed(() => props.mode === 'create' && !!props.duplicateFrom)
+const isBulk = computed(() => props.mode === 'bulk')
 
 // ---- 状态 ----
 const json = reactive({}) // 编辑中的配置（PascalCase 直通；见文件头数据纪律）
@@ -75,6 +88,104 @@ const activeFields = computed(() => {
 })
 const protocolOptions = Object.keys(PROTOCOLS).map((k) => ({ value: k, label: k }))
 
+// ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
+// bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
+//  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
+//  - dtoKey=null（note/password 等列表 DTO 不携带）→ known=false，只提示、不展示值。
+// 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
+const bulkFields = computed(() =>
+  BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol))),
+)
+const bulkShared = computed(() => {
+  const out = {}
+  for (const f of BULK_FIELDS) {
+    if (!f.dtoKey) {
+      out[f.key] = { known: false, same: false, value: undefined }
+      continue
+    }
+    const vals = props.bulkServers.map((s) => s?.[f.dtoKey])
+    const first = JSON.stringify(vals[0])
+    const same = vals.every((v) => JSON.stringify(v) === first)
+    out[f.key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+  }
+  return out
+})
+const bulkOverwrite = reactive({}) // key → true（已切到覆盖编辑）；缺省 = 保持不变
+const bulkValues = reactive({}) // key → 覆盖态下的当前值（仅覆盖态有意义）
+const bulkCount = computed(() => props.bulkServers.length)
+const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
+// 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
+const bulkDsMixed = computed(() => isBulk.value && bulkDsNames.value.size > 1)
+const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.dataSourceName || 'Local')
+
+function emptyValueFor(field) {
+  if (field.type === 'tags') return []
+  if (field.type === 'switch') return false
+  return ''
+}
+function toggleOverwrite(field) {
+  const key = field.key
+  if (bulkOverwrite[key]) {
+    bulkOverwrite[key] = false // 回到「保持不变」：该字段退出 patch
+    return
+  }
+  const shared = bulkShared.value[key]
+  bulkValues[key] = shared.known && shared.same ? deepClone(shared.value) : emptyValueFor(field)
+  bulkOverwrite[key] = true
+}
+const bulkDirty = computed(() => Object.values(bulkOverwrite).some(Boolean))
+// 覆盖态字段的共享初值/当前值对 → diffPatch 仅产出真正变化的键（值与共享值相同的覆盖不产生写入）
+function buildBulkPatch() {
+  const initial = {}
+  const current = {}
+  for (const f of bulkFields.value) {
+    if (!bulkOverwrite[f.key]) continue
+    const shared = bulkShared.value[f.key]
+    if (shared.known && shared.same) initial[f.key] = shared.value
+    current[f.key] = bulkValues[f.key]
+  }
+  return diffPatch(initial, current)
+}
+function validateBulkRequired() {
+  const missing = []
+  for (const f of bulkFields.value) {
+    if (!f.required || !bulkOverwrite[f.key]) continue
+    const v = bulkValues[f.key]
+    if (v == null || (typeof v === 'string' && v.trim() === '')) {
+      missing.push(f.labelKey ? t(f.labelKey) : f.key)
+    }
+  }
+  return missing
+}
+async function saveBulk() {
+  if (saving.value || bulkDsMixed.value) return
+  missingRequired.value = validateBulkRequired()
+  if (missingRequired.value.length) return
+  const patch = buildBulkPatch()
+  if (!Object.keys(patch).length) {
+    // 后端空 patch 400（"patch must contain at least one field"）——前端先行提示
+    message.warning(t('editor.bulkNoChanges'))
+    return
+  }
+  saveErrors.value = []
+  saving.value = true
+  try {
+    await api.batchUpdate(props.bulkIds, patch, bulkDs.value)
+    message.success(t('editor.bulkUpdated', { n: bulkCount.value }))
+    emit('saved', { mode: 'bulk', ids: props.bulkIds })
+    doClose() // 列表刷新由 SSE reload 自动完成
+  } catch (e) {
+    if (e?.status === 400) {
+      const errs = e.body?.errors || (e.body?.error ? [e.body.error] : [])
+      saveErrors.value = errs.length ? errs : [`${e.message}`]
+    } else {
+      message.error(t('editor.saveFailed') + (e?.message ? ` (${e.message})` : ''))
+    }
+  } finally {
+    saving.value = false
+  }
+}
+
 // ---- 深拷贝（JSON 往返：与 snapshot 基准的序列化语义一致， reactive 代理脱钩）----
 function deepClone(o) {
   return JSON.parse(JSON.stringify(o ?? {}))
@@ -89,6 +200,7 @@ function setField(key, v) {
 
 // ---- 加载 ----
 async function load() {
+  if (isBulk.value) return // 批量模式不加载单台 config（共享值来自 bulkServers prop，同步计算）
   loading.value = true
   loadError.value = ''
   try {
@@ -134,7 +246,10 @@ const groupDirty = computed(() => {
   }
   return map
 })
-const dirty = computed(() => protocolKey.value !== loadedProtocol || Object.values(groupDirty.value).some(Boolean))
+const dirty = computed(() => {
+  if (isBulk.value) return bulkDirty.value // 覆盖态字段数即脏态（值变化不退出覆盖，无需更细）
+  return protocolKey.value !== loadedProtocol || Object.values(groupDirty.value).some(Boolean)
+})
 
 // ---- 协议切换（编辑/新建/复制均可；字段携带规则见 protocolSwitch.js）----
 function onProtocolSwitch(next) {
@@ -216,6 +331,10 @@ function displayName() {
   return json.DisplayName || props.initialServer?.displayName || props.serverId || ''
 }
 async function save() {
+  if (isBulk.value) {
+    await saveBulk()
+    return
+  }
   if (saving.value || loading.value || loadError.value) return
   missingRequired.value = validateRequired()
   if (missingRequired.value.length) return
@@ -255,6 +374,7 @@ async function save() {
 
 // ---- 头部 ----
 const title = computed(() => {
+  if (isBulk.value) return t('editor.bulkTitle', { n: bulkCount.value })
   if (isDuplicate.value) return t('editor.title.duplicate', { name: props.initialServer?.displayName || json.DisplayName || '' })
   if (isCreate.value) return t('editor.title.create', { protocol: protocolKey.value || props.protocol || '?' })
   return t('editor.title.edit', { name: props.initialServer?.displayName || json.DisplayName || props.serverId })
@@ -282,14 +402,15 @@ onBeforeUnmount(() => {
   <div class="ed-root" :class="{ open: show }">
     <div class="ed-scrim" @click="requestClose"></div>
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="title">
-      <!-- 头部：协议瓦片 + 标题/归属 + 协议切换 + 关闭 -->
+      <!-- 头部：协议瓦片 + 标题/归属 + 协议切换 + 关闭（bulk：无协议切换，瓦片为批量符号） -->
       <header class="ed-head">
-        <span class="ed-tile" :style="tileStyle">{{ (protocolKey || '?').charAt(0) }}</span>
+        <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
         <div class="ed-head-main">
           <div class="ed-title" :title="title">{{ title }}</div>
-          <div class="ed-ds" :title="t('editor.dataSource') + ': ' + dataSourceName">{{ dataSourceName }}</div>
+          <div class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : dataSourceName)">{{ isBulk ? bulkDs : dataSourceName }}</div>
         </div>
         <n-select
+          v-if="!isBulk"
           class="ed-proto"
           size="small"
           :value="protocolKey || undefined"
@@ -309,35 +430,89 @@ onBeforeUnmount(() => {
           <div class="ed-state-detail">{{ loadError }}</div>
         </div>
         <template v-else>
-          <nav class="ed-tabs">
-            <button
-              v-for="g in groups"
-              :key="g.id"
-              class="ed-tab"
-              :class="{ active: g.id === activeGroup }"
-              type="button"
-              @click="activeGroup = g.id"
-            >
-              {{ g.labelKey ? t(g.labelKey) : g.id }}
-              <span v-if="groupDirty[g.id]" class="ed-dot" :title="t('editor.unsavedTab')"></span>
-            </button>
-          </nav>
-          <div class="ed-fields">
+          <!-- 批量模式（Task 10）：无分组页签，BULK_FIELDS 扁平列表 + 逐字段「保持不变/覆盖」 -->
+          <div v-if="isBulk" class="ed-fields">
+            <div v-if="bulkDsMixed" class="ed-banner">{{ t('editor.bulkMixedDs') }}</div>
             <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
               {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
             </div>
             <div v-if="saveErrors.length" class="ed-banner">
               <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
             </div>
-            <FormField
-              v-for="f in activeFields"
-              :key="f.key"
-              :field="f"
-              :model-value="json[f.key]"
-              :data-source-name="dataSourceName"
-              @update:model-value="(v) => setField(f.key, v)"
-            />
+            <div v-for="f in bulkFields" :key="f.key" class="bulk-field">
+              <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
+              <FormField
+                v-if="bulkOverwrite[f.key]"
+                class="bulk-control"
+                :field="f"
+                :model-value="bulkValues[f.key]"
+                :data-source-name="bulkDs"
+                @update:model-value="(v) => (bulkValues[f.key] = v)"
+              />
+              <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
+              <FormField
+                v-else-if="bulkShared[f.key].known && bulkShared[f.key].same"
+                class="bulk-control"
+                :field="f"
+                :model-value="bulkShared[f.key].value"
+                disabled
+              />
+              <!-- 保持不变 + 各不相同/未读取：占位行（标签列对齐 FormField 的 148px） -->
+              <div v-else class="bulk-keep bulk-control">
+                <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
+                  {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
+                </div>
+                <div
+                  class="bulk-hint"
+                  :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')"
+                >
+                  {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown') }}
+                </div>
+              </div>
+              <button
+                class="bulk-toggle"
+                :class="{ on: bulkOverwrite[f.key] }"
+                type="button"
+                :title="bulkOverwrite[f.key] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })"
+                @click="toggleOverwrite(f)"
+              >
+                {{ bulkOverwrite[f.key] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
+              </button>
+            </div>
           </div>
+
+          <!-- 单机模式：分组页签 + 字段 -->
+          <template v-else>
+            <nav class="ed-tabs">
+              <button
+                v-for="g in groups"
+                :key="g.id"
+                class="ed-tab"
+                :class="{ active: g.id === activeGroup }"
+                type="button"
+                @click="activeGroup = g.id"
+              >
+                {{ g.labelKey ? t(g.labelKey) : g.id }}
+                <span v-if="groupDirty[g.id]" class="ed-dot" :title="t('editor.unsavedTab')"></span>
+              </button>
+            </nav>
+            <div class="ed-fields">
+              <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
+                {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
+              </div>
+              <div v-if="saveErrors.length" class="ed-banner">
+                <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
+              </div>
+              <FormField
+                v-for="f in activeFields"
+                :key="f.key"
+                :field="f"
+                :model-value="json[f.key]"
+                :data-source-name="dataSourceName"
+                @update:model-value="(v) => setField(f.key, v)"
+              />
+            </div>
+          </template>
         </template>
       </div>
 
@@ -349,7 +524,7 @@ onBeforeUnmount(() => {
           <button
             class="ed-btn ed-primary"
             type="button"
-            :disabled="saving || loading || !!loadError"
+            :disabled="saving || loading || !!loadError || bulkDsMixed"
             @click="save"
           >{{ saving ? t('editor.saving') : t('editor.save') }}</button>
         </div>
@@ -553,6 +728,66 @@ onBeforeUnmount(() => {
 }
 .ed-banner-required {
   border-color: var(--danger);
+}
+
+/* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
+.bulk-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bulk-control {
+  flex: 1;
+  min-width: 0;
+}
+.bulk-toggle {
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-elevated);
+  color: var(--text-3);
+  font-size: 11.5px;
+  line-height: 1;
+  padding: 5px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bulk-toggle:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.bulk-toggle.on {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+/* 「各不相同/未读取」占位行：布局对齐 FormField（148px 标签列 + 控件列） */
+.bulk-keep {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: center;
+}
+.bulk-keep-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.ff-required-like {
+  margin-left: 2px;
+  color: var(--danger);
+}
+.bulk-hint {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-4);
+  font-size: 12px;
+  font-style: italic;
 }
 
 /* 底部 */
