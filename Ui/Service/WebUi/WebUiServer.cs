@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace _1RM.Service.WebUi
@@ -33,7 +34,15 @@ namespace _1RM.Service.WebUi
             app.UseMiddleware<TokenMiddleware>(Token);
             WebUiEndpoints.MapAll(app);
             _app = app;
-            _ = app.RunAsync(); // 后台运行，不阻塞 WPF 启动
+            try
+            {
+                app.Start(); // 同步绑定——端口被占用时在此处抛出，调用方可捕获
+            }
+            catch
+            {
+                _app = null;
+                throw;
+            }
         }
 
         public static async Task StopAsync()
