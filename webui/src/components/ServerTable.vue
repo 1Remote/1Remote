@@ -101,8 +101,10 @@ function clearChecked() {
   checked.value = new Set()
   anchorIdx = -1
 }
-// 过滤/数据变化后剔除不可见行勾选，批量条计数始终对当前视图有效
+// 过滤/数据变化后剔除不可见行勾选，批量条计数始终对当前视图有效；同时作废 Shift 范围锚点
+// （树切换/Task 17 搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
 watch(sorted, list => {
+  anchorIdx = -1
   if (!checked.value.size) return
   const ids = new Set(list.map(s => s.id))
   const kept = [...checked.value].filter(id => ids.has(id))
@@ -139,8 +141,11 @@ function onMenuAction(item) {
   const s = menu.value.server
   menu.value = null
   if (item.key === 'connect') emit('connect', s.id)
-  else if (item.key === 'copy-address') copyText(s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol, '地址')
-  else if (item.key === 'copy-username') copyText(s.userName, '用户名')
+  else if (item.key === 'copy-address') {
+    // Serial 等无地址协议：提示而非把协议名当地址写进剪贴板
+    if (!s.address) message.warning('无地址可复制')
+    else copyText(s.address + (s.port ? ':' + s.port : ''), '地址')
+  } else if (item.key === 'copy-username') copyText(s.userName, '用户名')
 }
 async function copyText(text, what) {
   if (!text) {
@@ -200,21 +205,22 @@ const colVars = computed(() => ({
       <button class="bb-x" title="取消选择" @click="clearChecked">✕</button>
     </div>
 
-    <div class="thead">
-      <div class="hcell h-check">
-        <input ref="allCb" type="checkbox" :checked="allChecked" title="全选（Ctrl A）" @click.stop @change="toggleAll" />
-      </div>
-      <div class="hcell h-status">状态</div>
-      <div class="hcell h-name sortable" @click="toggleSort('displayName')">名称 <span class="arrow">{{ arrow('displayName') }}</span></div>
-      <div class="hcell h-addr sortable" @click="toggleSort('address')">地址 <span class="arrow">{{ arrow('address') }}</span></div>
-      <div class="hcell h-proto sortable" @click="toggleSort('protocol')">协议 <span class="arrow">{{ arrow('protocol') }}</span></div>
-      <div class="hcell h-tags">标签</div>
-      <div v-if="showFolder" class="hcell h-folder">文件夹</div>
-      <div class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">最近连接 <span class="arrow">{{ arrow('lastConnectTime') }}</span></div>
-      <div class="hcell h-act">操作</div>
-    </div>
-
     <div class="tbody">
+      <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
+           表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻 -->
+      <div class="thead">
+        <div class="hcell h-check">
+          <input ref="allCb" type="checkbox" :checked="allChecked" title="全选（Ctrl A）" @click.stop @change="toggleAll" />
+        </div>
+        <div class="hcell h-status">状态</div>
+        <div class="hcell h-name sortable" @click="toggleSort('displayName')">名称 <span class="arrow">{{ arrow('displayName') }}</span></div>
+        <div class="hcell h-addr sortable" @click="toggleSort('address')">地址 <span class="arrow">{{ arrow('address') }}</span></div>
+        <div class="hcell h-proto sortable" @click="toggleSort('protocol')">协议 <span class="arrow">{{ arrow('protocol') }}</span></div>
+        <div class="hcell h-tags">标签</div>
+        <div v-if="showFolder" class="hcell h-folder">文件夹</div>
+        <div class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">最近连接 <span class="arrow">{{ arrow('lastConnectTime') }}</span></div>
+        <div class="hcell h-act">操作</div>
+      </div>
       <ServerRow
         v-for="(s, i) in sorted"
         :key="s.id"
@@ -308,8 +314,11 @@ const colVars = computed(() => ({
   color: var(--text-1);
 }
 
-/* 表头：列宽与 ServerRow 的 --c-* 同源 */
+/* 表头：列宽与 ServerRow 的 --c-* 同源；sticky 于滚动容器内首行（背景必须不透明，防行内容透出） */
 .thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   display: flex;
   align-items: center;
   height: 32px;
