@@ -89,5 +89,11 @@
 
   "page.settings": "设置",
   "page.editor": "编辑器",
-  "placeholder.comingSoon": "敬请期待 — {title}"
+  "placeholder.comingSoon": "敬请期待 — {title}",
+
+  "editor.addRow": "添加行",
+  "editor.removeRow": "删除此行",
+  "editor.removeTag": "移除标签",
+  "editor.showPassword": "显示密码",
+  "editor.hidePassword": "隐藏密码"
 }

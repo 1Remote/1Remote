@@ -89,5 +89,11 @@
 
   "page.settings": "Settings",
   "page.editor": "Editor",
-  "placeholder.comingSoon": "Coming soon — {title}"
+  "placeholder.comingSoon": "Coming soon — {title}",
+
+  "editor.addRow": "Add row",
+  "editor.removeRow": "Remove row",
+  "editor.removeTag": "Remove tag",
+  "editor.showPassword": "Show password",
+  "editor.hidePassword": "Hide password"
 }

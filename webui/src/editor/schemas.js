@@ -204,7 +204,10 @@ function alternateCredentialsField() {
     type: FIELD.SUBFORM,
     subform: {
       fields: [
-        { key: 'Name', type: FIELD.TEXT },
+        // required：WPF 备用凭据弹窗 IDataErrorInfo 强制 Name 非空（AlternativeCredentialEditViewModel.cs:275）。
+        // 子表单内 UI 只标 *，非空校验由保存流/后端把关（AlternateCredentials 数组反序列化不逐行校验，
+        // 空名行会在保存时被整体拒绝或按后端行为处理——Task 8 保存错误提示承接）
+        { key: 'Name', type: FIELD.TEXT, required: true },
         { key: 'Address', type: FIELD.TEXT },
         // Credential.Port 是 string（Credential.cs:81），子表单内保持文本不转数字
         { key: 'Port', type: FIELD.TEXT },
