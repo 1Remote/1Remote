@@ -228,7 +228,10 @@ namespace _1RM.Model
 
                     var tmp = source.Database_DeleteServer(groupedServer.Select(x => x.Id));
                     SimpleLogHelper.DebugInfo($"DeleteServer: {string.Join(", ", groupedServer.Select(x => x.Id))}, tmp.IsSuccess = {tmp.IsSuccess}");
-                    isAnySuccess = tmp.IsSuccess;
+                    // Accumulate across datasource groups: plain assignment (`=`) would let the LAST
+                    // group's failure overwrite earlier groups' success, so ReloadAll would be skipped
+                    // and VmItemList would keep deleted servers as stale entries.
+                    isAnySuccess |= tmp.IsSuccess;
                     if (!tmp.IsSuccess)
                     {
                         failMessages.Add(tmp.ErrorInfo);

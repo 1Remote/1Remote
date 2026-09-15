@@ -205,6 +205,7 @@ namespace _1RM.Service.WebUi
         {
             if (ids == null || ids.Count == 0)
                 return EditorSaveResult.BadRequest(new List<string> { "ids must be a non-empty array of server ids" });
+            ids = ids.Distinct().ToList(); // 重复 id 去重：避免同台重复写库（无害但浪费）并使计数与保存一致
 
             var dataSource = ResolveDataSource(dataSourceName);
             if (dataSource == null)
@@ -299,6 +300,15 @@ namespace _1RM.Service.WebUi
                 if (property == null || !property.CanWrite || property.SetMethod == null)
                 {
                     errors.Add($"field '{prop.Name}' (property '{propertyName}') does not exist on protocol '{server.Protocol}'");
+                    continue;
+                }
+
+                // JSON null 一律拒绝：部分属性的 C# setter 无 null 防护（如 Note 直落 null 字符串，
+                // WPF 只会产出 ""），null 落库会在下游（序列化/连接路径）放大成 NRE/500。
+                // 清空请显式用 ""（字符串）或 []（tags）。
+                if (prop.Value == null || prop.Value.Type == JTokenType.Null)
+                {
+                    errors.Add($"patch field '{prop.Name}' cannot be null (use \"\" or [] to clear)");
                     continue;
                 }
 
