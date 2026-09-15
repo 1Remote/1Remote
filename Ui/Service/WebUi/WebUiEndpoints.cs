@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -117,6 +118,32 @@ namespace _1RM.Service.WebUi
                 if (vm == null) return Results.NotFound();
                 GlobalEventHelper.OnRequestServerConnect?.Invoke(vm.Server, fromView: "WebUi");
                 return Results.Ok(new { started = true });
+            });
+
+            // 可编辑配置：克隆+解密后的全字段明文 JSON（与 WPF 编辑器同级暴露，受 token+回环保护）。
+            // 两个 casing 域勿互相归一：信封键（id/dataSourceName/protocol/json）camelCase；
+            // 内嵌 json 对象的键保持 ToJsonString 的 PascalCase 原样直通——CreateFromJsonString 的
+            // jObj.Protocol/jObj.ClassVersion 访问大小写敏感，任何一侧做命名转换都会破坏直通。
+            // 注：json 用 System.Text.Json 的 JsonElement 内嵌（JsonDocument.Parse 后 Clone 脱离文档生命周期）；
+            // 不能用 Newtonsoft JObject——STJ 会把 JProperty/JToken 枚举成空数组结构（实测）。
+            app.MapGet("/api/servers/{id}/config", (string id, string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var json = WebUiEditorService.GetEditableConfig(dataSourceName, id);
+                if (json == null)
+                    return Results.NotFound();
+
+                using var doc = JsonDocument.Parse(json);
+                var configJson = doc.RootElement.Clone();
+                return Results.Json(new
+                {
+                    id,
+                    dataSourceName,
+                    protocol = configJson.TryGetProperty("Protocol", out var protocol) ? protocol.GetString() : "",
+                    json = configJson, // 内嵌 JSON 对象（非字符串），前端免二次解析
+                });
             });
 
             // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
