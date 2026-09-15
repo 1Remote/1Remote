@@ -18,7 +18,8 @@ const props = defineProps({
 const emit = defineEmits(['connect', 'batch-connect', 'edit', 'counted'])
 const message = useMessage()
 
-// ---- 过滤（Task 17 搜索在此之上再取交集）----
+// ---- 过滤：搜索/标签过滤已由 ServerListView（applyServerFilters）收窄后经 servers prop 传入，
+// 此处仅剩树选中过滤（spec §3.2，根=整库）；两层交集自然复合 ----
 const filtered = computed(() => {
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 未选树节点 → 全部
@@ -102,7 +103,7 @@ function clearChecked() {
   anchorIdx = -1
 }
 // 过滤/数据变化后剔除不可见行勾选，批量条计数始终对当前视图有效；同时作废 Shift 范围锚点
-// （树切换/Task 17 搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
+// （树切换/搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
 watch(sorted, list => {
   anchorIdx = -1
   if (!checked.value.size) return
