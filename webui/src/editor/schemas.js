@@ -1,18 +1,26 @@
 /**
- * 连接编辑器 schema —— 主流 4 协议（RDP / SSH / SFTP / FTP）。
- * 其余 5 协议（VNC/Telnet/Serial/RdpApp/LocalApp）由 Task 6 补充。
+ * 连接编辑器 schema —— 全部 9 协议（RDP / SSH / SFTP / FTP / VNC / Telnet /
+ * Serial / RemoteApp / APP）。键名 = PROTOCOLS 的 key = json 的 Protocol 鉴别值。
  *
  * 准确性规则：
  *  - 每个字段 `key` 都是 C# 属性名的逐字拷贝（PascalCase，编辑器 json 域直通，勿改拼写），
  *    对照来源（Ui/Model/Protocol/）：
  *      Base/ProtocolBase.cs（DisplayName/Tags/TreeNodes/IconBase64/ColorHex/Note/...）
- *      Base/ProtocolBaseWithAddressPort.cs（Address/Port/AlternateCredentials/IsPingBeforeConnect/...）
+ *      Base/ProtocolBaseWithAddressPort.cs（Address/Port/AlternateCredentials/IsPingBeforeConnect/...，
+ *        继承链上 Serial 只到 ProtocolBase —— 无 Address/Port/IsPingBeforeConnect）
  *      Base/ProtocolBaseWithAddressPortUserPwd.cs（UserName/Password/AskPasswordWhenConnect/
  *        InheritedCredentialName/UsePrivateKeyForConnect/PrivateKey）
  *      Base/Credential.cs（AlternateCredentials 子表单行字段）
- *      RDP.cs / SSH.cs / SFTP.cs / FTP.cs（协议专属字段与 ClassVersion）
+ *      RDP.cs / SSH.cs / SFTP.cs / FTP.cs / Vnc.cs / Telnet.cs / Serial.cs /
+ *      RdpApp.cs / AppProtocol.cs(LocalApp) / AppArgument.cs（协议专属字段与 ClassVersion）
  *  - SELECT 枚举选项的 value 用枚举成员整数值：Newtonsoft 默认把枚举序列化为数字
  *    （ToJsonString 未挂 StringEnumConverter），GET /config 回读的就是数字。
+ *    两个例外（值域为字符串，非枚举整数）：
+ *      Serial 的 DataBits/StopBits/Parity/FlowControl 是 C# string 属性（Serial.cs 根本
+ *      没有对应枚举），WPF 用 ComboBox 绑定 Serial.cs 的 string[] 集合 → SELECT 的
+ *      value = 集合里的字符串原文（"8"/"1"/"NONE"/"XON/XOFF"...）。
+ *      AppArgument.Type 挂了 [JsonConverter(StringEnumConverter)]（AppArgument.cs:52）
+ *      → json 里是成员名字符串（"Normal"/"Secret"...），非数字。
  *  - visibleWhen 条件对齐 WPF 编辑器 XAML 的可见性触发（RdpFormView.xaml 等）。
  *  - `defaults` 为新建初值，对照各 C# 构造函数与字段初始化器；只列 schema 内字段。
  *    约定：false / 空串 / 空数组的初值省略（表单 falsy 渲染与 C# 初值一致，且 POST 后
@@ -20,9 +28,20 @@
  *    SELECT 初值、非空字符串与数值初值。
  *    例外类（必须显式列 false）：C# 属性为 `[DefaultValue(true)]` +
  *    `[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]` 而字段初始化器
- *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrivesPlugIn/EnableRedirectCameras），
+ *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrives/EnableRedirectCameras），
  *    json 缺失该字段会被 Populate 语义改写为 DefaultValue(true)——与 WPF 新建（false）相悖，
  *    因此这三个开关必须显式写入 defaults 为 false。
+ *    Task 6 的 DefaultValue 审计结论（新增 5 类 + AppArgument，逐类 grep [DefaultValue]）：
+ *      Vnc.cs / Telnet.cs / Serial.cs / RdpApp.cs / AppProtocol.cs(LocalApp) 自身均无
+ *      [DefaultValue] 特性；继承链上与本批协议相关的有两处，均已落入 defaults：
+ *      ① LocalApp ctor 显式 IsPingBeforeConnect=false（AppProtocol.cs:24），而基类该属性
+ *        为 [DefaultValue(true)]+Populate（ProtocolBaseWithAddressPort.cs:74）→ json 缺失时
+ *        会被 Populate 成 true → APP 的 defaults 必须显式 IsPingBeforeConnect:false；
+ *      ② AppArgument.AddBlankAfterKey 字段初始化器为 false，但挂 [DefaultValue(true)]+Populate
+ *        （AppArgument.cs:96-98）→ 子表单新行缺该键会被 Populate 成 true（WPF 新建行是
+ *        false）→ ArgumentList 的 subform.rowDefaults 必须显式 false。
+ *        （同文件 Key=[DefaultValue("")]+Populate 与初始化器一致、AddBlankAfterValue=
+ *        [DefaultValue(true)]+Populate 与初始化器 true 一致，均无分歧。）
  *
  * TreeNodes（所属文件夹路径）有意不入 schema：Plan 2 网页端的文件夹归属仍由左侧树
  * 拖拽完成（与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失；树选择器归 Plan 4。
@@ -87,25 +106,94 @@ const RDP_GATEWAY_LOGON_METHOD_OPTIONS = [
   { value: 1 },
 ]
 
+/** EVncWindowResizeMode（Vnc.cs:11）Stretch=0 / Fixed=1（ctor 初始化器 Stretch） */
+const VNC_WINDOW_RESIZE_MODE_OPTIONS = [
+  { value: 0 },
+  { value: 1 },
+]
+
+// Serial 的下列选项不是枚举：Serial.cs 的 DataBits/StopBits/Parity/FlowControl 均为
+// string 属性，WPF ComboBox 绑定 Serial.cs 内的 string[] 集合（SelectedItem=字符串），
+// json 里就是这些字符串原文，因此 SELECT 的 value 必须是字符串而非枚举整数。
+
+/** Serial.DataBitsCollection（Serial.cs:84） */
+const SERIAL_DATA_BITS_OPTIONS = [
+  { value: '5' },
+  { value: '6' },
+  { value: '7' },
+  { value: '8' },
+]
+
+/** Serial.StopBitsCollection（Serial.cs:93） */
+const SERIAL_STOP_BITS_OPTIONS = [
+  { value: '1' },
+  { value: '2' },
+]
+
+/** Serial.ParityCollection（Serial.cs:101） */
+const SERIAL_PARITY_OPTIONS = [
+  { value: 'NONE' },
+  { value: 'ODD' },
+  { value: 'EVEN' },
+  { value: 'MARK' },
+  { value: 'SPACE' },
+]
+
+/** Serial.FlowControlCollection（Serial.cs:124） */
+const SERIAL_FLOW_CONTROL_OPTIONS = [
+  { value: 'NONE' },
+  { value: 'XON/XOFF' },
+  { value: 'RTS/CTS' },
+  { value: 'DSR/DTR' },
+]
+
+/**
+ * AppArgumentType（AppArgument.cs:17）Normal/Int/Float/File/Secret/Flag/Selection/Const。
+ * Type 属性挂了 [JsonConverter(StringEnumConverter)]（AppArgument.cs:52）——本项目唯一
+ * 的字符串枚举序列化点，json 里是成员名而非整数，选项 value 用字符串。
+ */
+const APP_ARGUMENT_TYPE_OPTIONS = [
+  { value: 'Normal' },
+  { value: 'Int' },
+  { value: 'Float' },
+  { value: 'File' },
+  { value: 'Secret' },
+  { value: 'Flag' },
+  { value: 'Selection' },
+  { value: 'Const' },
+]
+
 // ---------------------------------------------------------------------------
 // 共享分组构造器（协议间复用；Task 6 其余协议同样复用）
 // ---------------------------------------------------------------------------
 
-/** 基本信息组：全部协议一致（字段来自 ProtocolBase + ProtocolBaseWithAddressPort）。 */
-function basicGroup() {
-  return {
-    id: 'basic',
-    labelKey: 'editor.group.basic',
-    fields: [
-      { key: 'DisplayName', type: FIELD.TEXT, required: true },
+/**
+ * 基本信息组（字段来自 ProtocolBase + ProtocolBaseWithAddressPort）。
+ * @param {{withAddressPort?: boolean}} opts
+ *   withAddressPort=false 时去掉 Address/Port 两行：Serial 只继承 ProtocolBase（无此二属性），
+ *   LocalApp 的地址端口在专属 connection 组中展示（见 APP schema 注释）。
+ */
+function basicGroup({ withAddressPort = true } = {}) {
+  const fields = [
+    { key: 'DisplayName', type: FIELD.TEXT, required: true },
+  ]
+  if (withAddressPort) {
+    fields.push(
       { key: 'Address', type: FIELD.TEXT, required: true },
       // C# Port 是 string（ProtocolBaseWithAddressPort.cs:49），数字输入但按字符串写回
       { key: 'Port', type: FIELD.NUMBER, required: true, asString: true },
-      { key: 'Tags', type: FIELD.TAGS },
-      { key: 'IconBase64', type: FIELD.ICON },
-      { key: 'ColorHex', type: FIELD.COLOR },
-      { key: 'Note', type: FIELD.TEXTAREA },
-    ],
+    )
+  }
+  fields.push(
+    { key: 'Tags', type: FIELD.TAGS },
+    { key: 'IconBase64', type: FIELD.ICON },
+    { key: 'ColorHex', type: FIELD.COLOR },
+    { key: 'Note', type: FIELD.TEXTAREA },
+  )
+  return {
+    id: 'basic',
+    labelKey: 'editor.group.basic',
+    fields,
   }
 }
 
@@ -278,6 +366,94 @@ function rdpGatewayGroup() {
 }
 
 // ---------------------------------------------------------------------------
+// Task 6 协议专属分组/字段（VNC/Telnet/Serial/RdpApp/LocalApp）
+// ---------------------------------------------------------------------------
+
+/**
+ * ArgumentList 子表单（LocalApp.ArgumentList: AppArgument[]，行字段对照 AppArgument.cs:36）。
+ *  - Type 选项为字符串成员名（StringEnumConverter，见常量注释）。
+ *  - 行内未列字段（Selections: Dictionary<string,string>，Selection/Const 型参数的取值表）
+ *    无法用静态字段描述符表达 → 由 SubformList 行编辑原样保留（Task 7 约定：行对象原地
+ *    修改，不重建），本 schema 只列出可安全编辑的标量字段。
+ *  - Value 在 WPF 里按 Type 切换渲染（Secret=密码框/Flag=勾选/Selection=下拉，见
+ *    ArgumentListControl.xaml:126-145）；静态描述符无法按行内另一字段的值切换控件类型，
+ *    web 统一按 TEXT 渲染（Task 11/后续可由 SubformList 按 row.Type==='Secret' 特判加掩码），
+ *    值语义（Flag 存 "1"/"" 等）不受影响。
+ *  - rowDefaults：SubformList 新增行初值，对照 AppArgument 字段初始化器；
+ *    AddBlankAfterKey 显式 false —— [DefaultValue(true)]+Populate 陷阱（见文件头审计②）。
+ */
+function appArgumentListField() {
+  return {
+    key: 'ArgumentList',
+    type: FIELD.SUBFORM,
+    subform: {
+      rowDefaults: {
+        Type: 'Normal',
+        IsNullable: true,
+        AddBlankAfterKey: false,
+        AddBlankAfterValue: true,
+      },
+      fields: [
+        { key: 'Type', type: FIELD.SELECT, options: APP_ARGUMENT_TYPE_OPTIONS },
+        { key: 'Name', type: FIELD.TEXT },
+        { key: 'Key', type: FIELD.TEXT },
+        { key: 'Value', type: FIELD.TEXT },
+        { key: 'IsNullable', type: FIELD.SWITCH },
+        { key: 'AddBlankAfterKey', type: FIELD.SWITCH },
+        { key: 'AddBlankAfterValue', type: FIELD.SWITCH },
+        { key: 'Description', type: FIELD.TEXT },
+      ],
+    },
+  }
+}
+
+/** Serial 连接参数组（Serial.cs；SerialPort/BitRate 为 C# string，WPF 用可自由输入的 AutoCompleteComboBox）。 */
+function serialGroup() {
+  return {
+    id: 'serial',
+    labelKey: 'editor.group.serial',
+    fields: [
+      // WPF 下拉数据源是后端机器的 SerialPort.GetPortNames()（Serial.cs:157），
+      // web 无法枚举远端 COM 口 → 文本输入；IDataErrorInfo 要求非空
+      { key: 'SerialPort', type: FIELD.TEXT, required: true },
+      // WPF 为 BitRates 列表的可输入组合框（Serial.cs:71），允许自定义波特率 → 文本输入；
+      // IDataErrorInfo 要求非空且可 long.Parse
+      { key: 'BitRate', type: FIELD.NUMBER, required: true, asString: true },
+      { key: 'DataBits', type: FIELD.SELECT, options: SERIAL_DATA_BITS_OPTIONS },
+      { key: 'StopBits', type: FIELD.SELECT, options: SERIAL_STOP_BITS_OPTIONS },
+      { key: 'Parity', type: FIELD.SELECT, options: SERIAL_PARITY_OPTIONS },
+      { key: 'FlowControl', type: FIELD.SELECT, options: SERIAL_FLOW_CONTROL_OPTIONS },
+    ],
+  }
+}
+
+/**
+ * LocalApp 连接字段组（WPF LocalAppFormView.xaml:63-182 的 Connection 区）。
+ * WPF 按 CheckMacroRequirement（LocalAppFormViewModel.cs:224）动态显隐：仅当 ArgumentList
+ * 某行的 Value 含对应宏（%1RM_HOSTNAME%/%1RM_PORT%/%1RM_USERNAME%/%1RM_PASSWORD%/
+ * %1RM_PRIVATE_KEY_PATH%，定义于 ProtocolBaseWithAddressPort(UserPwd).cs）时才显示对应字段，
+ * 且宏消失时 WPF 会清空该字段值。静态字段级 visibleWhen 只能依赖单字段取值、无法扫描
+ * ArgumentList 内容 → 决策：web 上始终显示这五个字段（简化），未使用的字段留空即等价
+ * （后端只在宏替换时消费这些值）；与 WPF 的该显隐差异为有意简化，记录在案。
+ * AlternateCredentials 跟随 WPF：LocalApp 继承 ProtocolBaseWithAddressPortUserPwd，
+ * WPF 在 Connection 区尾部展示备用凭据列表（LocalAppFormView.xaml:163）。
+ */
+function localAppConnectionGroup() {
+  return {
+    id: 'connection',
+    labelKey: 'editor.group.connection',
+    fields: [
+      { key: 'Address', type: FIELD.TEXT },
+      { key: 'Port', type: FIELD.NUMBER, asString: true },
+      { key: 'UserName', type: FIELD.TEXT },
+      { key: 'Password', type: FIELD.PASSWORD },
+      { key: 'PrivateKey', type: FIELD.TEXT },
+      alternateCredentialsField(),
+    ],
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 协议 schema
 // ---------------------------------------------------------------------------
 
@@ -399,6 +575,187 @@ export const PROTOCOLS = {
       // FTP 未覆写 ShowPrivateKeyInput()（基类默认 false），无私钥两件套
       credentialGroup(),
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
+      miscGroup(),
+    ],
+  },
+
+  /** VNC：Ui/Model/Protocol/Vnc.cs，ctor 见 Vnc.cs:18-22（Protocol="VNC"，UserName 置空）。 */
+  VNC: {
+    protocol: 'VNC',
+    classVersion: 'VNC.V1',
+    defaults: {
+      ColorHex: '#00000000',
+      Port: '5900',
+      IsPingBeforeConnect: true,
+      VncWindowResizeMode: 0,
+    },
+    groups: [
+      basicGroup(),
+      // WPF CredentialView 对 VNC 同样渲染 UserName 行（CredentialView.xaml:123 无条件，
+      // VNC.ShowUserNameInput()=false 只影响凭据库新增弹窗的必填项，Vnc.cs:55）；
+      // ShowPrivateKeyInput()=false（Vnc.cs:65）→ 无私钥两件套，与 FTP 同构
+      credentialGroup(),
+      {
+        id: 'display',
+        labelKey: 'editor.group.display',
+        fields: [
+          // EVncWindowResizeMode?（可空枚举，json 为数字），初始化器 Stretch=0（Vnc.cs:24）
+          { key: 'VncWindowResizeMode', type: FIELD.SELECT, options: VNC_WINDOW_RESIZE_MODE_OPTIONS },
+        ],
+      },
+      miscGroup(),
+    ],
+  },
+
+  /**
+   * Telnet：Ui/Model/Protocol/Telnet.cs，ctor 见 Telnet.cs:13-16。
+   * 注意基类是 ProtocolBaseWithAddressPort（Telnet.cs:10）——模型里没有
+   * UserName/Password/AskPasswordWhenConnect/InheritedCredentialName/PrivateKey，
+   * 凭据组只放 AlternateCredentials 子表单（WPF TelnetFormView.xaml:35 也只挂备用凭据列表）。
+   */
+  Telnet: {
+    protocol: 'Telnet',
+    classVersion: 'Putty.Telnet.V1',
+    defaults: {
+      ColorHex: '#00000000',
+      Port: '23',
+      IsPingBeforeConnect: true,
+    },
+    groups: [
+      basicGroup(),
+      {
+        id: 'credential',
+        labelKey: 'editor.group.credential',
+        fields: [alternateCredentialsField()],
+      },
+      // WPF 优势组只有 StartupAutoCommand（TelnetFormView.xaml:39-50）；
+      // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传
+      behaviorGroup([{ key: 'StartupAutoCommand', type: FIELD.TEXT }]),
+      miscGroup(),
+    ],
+  },
+
+  /**
+   * Serial：Ui/Model/Protocol/Serial.cs，ctor 见 Serial.cs:16-19。
+   * 基类是 ProtocolBase（Serial.cs:13）——没有 Address/Port/AlternateCredentials/
+   * IsPingBeforeConnect（后三者在 ProtocolBaseWithAddressPort 上），故 basic 组去掉地址端口、
+   * 无 misc 组；StartupAutoCommand 属性存在但 WPF 表单已将其注释隐藏（SerialFormView.xaml:38-46）→ 透传。
+   */
+  Serial: {
+    protocol: 'Serial',
+    classVersion: 'Putty.Serial.V1',
+    defaults: {
+      ColorHex: '#00000000',
+      // ctor 取后端机器第一个 COM 口兜底 "COM1"（Serial.cs:18），web 新建用同一兜底值
+      SerialPort: 'COM1',
+      BitRate: '9600',
+      DataBits: '8',
+      StopBits: '1',
+      Parity: 'NONE',
+      FlowControl: 'XON/XOFF',
+    },
+    groups: [
+      basicGroup({ withAddressPort: false }),
+      serialGroup(),
+      // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）
+      behaviorGroup([{ key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT }]),
+    ],
+  },
+
+  /**
+   * RemoteApp：Ui/Model/Protocol/RdpApp.cs，ctor 见 RdpApp.cs:14-18
+   * （Protocol 鉴别值是 "RemoteApp" 而非类名 "RdpApp"，ClassVersion="RemoteApp.V1"）。
+   * 音频两枚举复用 RDP.cs 的 EAudioRedirectionMode/EAudioQualityMode（同一类型），整数序列化。
+   * RdpApp.cs 自身无 [DefaultValue] 特性（文件头审计），默认值取字段初始化器。
+   */
+  RemoteApp: {
+    protocol: 'RemoteApp',
+    classVersion: 'RemoteApp.V1',
+    defaults: {
+      ColorHex: '#00000000',
+      Port: '3389',
+      UserName: 'Administrator',
+      IsPingBeforeConnect: true,
+      AudioRedirectionMode: 0,
+      AudioQualityMode: 0,
+    },
+    groups: [
+      basicGroup(),
+      // WPF RdpAppFormView 挂 CredentialView + 备用凭据列表；ShowPrivateKeyInput 基类默认 false
+      credentialGroup(),
+      {
+        // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）
+        id: 'remote',
+        labelKey: 'editor.group.remote',
+        fields: [
+          { key: 'RemoteApplicationName', type: FIELD.TEXT, required: true },
+          { key: 'RemoteApplicationProgram', type: FIELD.TEXT, required: true },
+        ],
+      },
+      {
+        id: 'display',
+        labelKey: 'editor.group.display',
+        fields: [
+          { key: 'AudioRedirectionMode', type: FIELD.SELECT, options: RDP_AUDIO_REDIRECTION_MODE_OPTIONS },
+          // 音质仅在重定向到本机(0)时可见（RdpAppFormView.xaml:118，与 RDP 表单同规则）
+          {
+            key: 'AudioQualityMode',
+            type: FIELD.SELECT,
+            options: RDP_AUDIO_QUALITY_MODE_OPTIONS,
+            visibleWhen: { field: 'AudioRedirectionMode', in: [0] },
+          },
+        ],
+      },
+      {
+        id: 'mstsc',
+        labelKey: 'editor.group.mstsc',
+        fields: [{ key: 'RdpFileAdditionalSettings', type: FIELD.TEXTAREA }],
+      },
+      miscGroup(),
+    ],
+  },
+
+  /**
+   * APP（LocalApp）：Ui/Model/Protocol/AppProtocol.cs，ctor 见 AppProtocol.cs:17-25
+   * （Protocol="APP"，ClassVersion="APP.V1"）。
+   *  - LocalApp 继承 ProtocolBaseWithAddressPortUserPwd（AppProtocol.cs:15），五个连接字段
+   *    均在模型中；ctor 把 Address/Port/UserName/Password/PrivateKey 与 IsPingBeforeConnect
+   *    全部置空/置 false。
+   *  - 连接字段组见 localAppConnectionGroup() 注释：WPF 按 ArgumentList 宏引用动态显隐，
+   *    web 简化为始终显示（有意偏差）。
+   *  - Arguments 属性已标 [Obsolete]（AppProtocol.cs:57-64）→ 透传不编辑。
+   *  - AskPasswordWhenConnect/InheritedCredentialName/UsePrivateKeyForConnect 模型存在但
+   *    WPF LocalApp 表单未暴露 → 透传。
+   */
+  APP: {
+    protocol: 'APP',
+    classVersion: 'APP.V1',
+    defaults: {
+      ColorHex: '#00000000',
+      // 显式 false（勿按"省略 false"约定删）：ctor 置 false（AppProtocol.cs:24），而基类
+      // 该属性挂 [DefaultValue(true)]+Populate（ProtocolBaseWithAddressPort.cs:74）——
+      // json 缺失该字段时会被 Populate 成 true，与 WPF 新建（false）相悖（文件头审计①）
+      IsPingBeforeConnect: false,
+    },
+    groups: [
+      basicGroup({ withAddressPort: false }),
+      {
+        id: 'exe',
+        labelKey: 'editor.group.exe',
+        fields: [
+          // IDataErrorInfo：ExePath 必填（AppProtocol.cs:206-211）
+          { key: 'ExePath', type: FIELD.TEXT, required: true },
+          { key: 'RunWithHosting', type: FIELD.SWITCH },
+          // 自定义协议显示名（LocalAppFormView.xaml:52-60，可选项）
+          { key: 'AppProtocolDisplayName', type: FIELD.TEXT },
+        ],
+      },
+      {
+        id: 'arguments',
+        labelKey: 'editor.group.arguments',
+        fields: [appArgumentListField()],
+      },
+      localAppConnectionGroup(),
       miscGroup(),
     ],
   },
