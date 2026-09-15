@@ -605,8 +605,10 @@
             </Grid>
         </Grid>
 
-        <!-- Web 界面引擎壳：覆盖内容区（避开顶部 40px 标题栏），
-             放在 TopLevel 遮罩层之前以保证等待/弹窗动画仍然可见 -->
+        <!-- Web 界面引擎壳：覆盖内容区（避开顶部 40px 标题栏）。
+             注意 WebView2 为 HwndHost（airspace）：其 HWND 恒浮于本窗口内所有 WPF 内容之上，
+             XAML 层级对它无效，TopLevel 遮罩(等待动画/弹窗)显示期间须在代码中隐藏本控件，
+             见 MainWindowView.xaml.cs 中对 TopLevelViewModel 的处理 -->
         <wpf:WebView2 x:Name="WebUI" Margin="0,40,0,0" Visibility="Collapsed" />
 
         <Grid Background="Transparent">
