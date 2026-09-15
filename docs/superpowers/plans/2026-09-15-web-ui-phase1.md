@@ -9,7 +9,7 @@
 **Tech Stack:** 后端 .NET 9 Minimal API（FrameworkReference Microsoft.AspNetCore.App）+ MSTest；前端 Vue 3 `<script setup>` + Vite + JavaScript + Naive UI + vue-i18n + @vueuse/core + vuedraggable（拖拽本计划不用，计划 4 用）。
 
 **上游 Spec:** `docs/superpowers/specs/2026-09-15-web-ui-redesign-design.md`（视觉与交互以 spec §2-§8 为准）
-**计划系列:** 本计划是 4 个连续计划中的第 1 个（2=编辑器、3=设置/凭据库/i18n 完整体、4=拖拽与导入导出）。
+**计划系列:** 本计划是 4 个连续计划中的第 1 个（2=编辑器、3=设置/凭据库/i18n 完整体、4=拖拽、导入导出、虚拟滚动 >500 行、列宽/列显持久化等体验精化——spec §3.4 虚拟滚动与 §8.6 列状态持久化归计划 4）。
 
 ---
 
@@ -20,7 +20,7 @@
 3. **端口约定**：DEBUG：后端固定 `17321`、无 token（仅回环）；Release：随机端口 18000-25000 + 32 位随机 token，页面 URL 以 `?token=` 传递（fragment 不会发往服务器，不能用 `#token=`）。
 4. **提交规范**：英文 conventional commits（`feat:`/`test:`/`chore:`），每任务至少一次提交，消息末尾加 `Co-Authored-By: Claude <noreply@anthropic.com>`。
 5. **代码位置**：后端新代码全部在 `Ui/Service/WebUi/`；前端新工程在仓库根 `webui/`（独立于 Ui.csproj）。
-6. **WPF 侧改动最小化**：只动 `AppInit.cs`（启动服务）、`MainWindowView.xaml(.cs)`（WebView2 壳）、`Configuration/GeneralConfig`（引擎开关）、`GeneralSettingView`（开关下拉）。其余 WPF 代码一律不碰。
+6. **WPF 侧改动最小化**：只动 `AppInit.cs`（启动服务）、`MainWindowView.xaml(.cs)`（WebView2 壳）、`Ui/Service/ConfigurationService.cs` 中的 GeneralConfig（引擎开关）、`GeneralSettingView`（开关下拉）。其余 WPF 代码一律不碰。
 
 ## 文件结构总览
 
@@ -73,11 +73,23 @@ Tests/Service/WebUi/            # 本计划全部后端测试
 </ItemGroup>
 ```
 
-- [ ] **Step 2: Tests.csproj 加集成测试宿主包**
+- [ ] **Step 2: 修复 Tests 工程目标框架（仓库现状：net6 引用 net9 的 Ui 报 NU1201，`dotnet test` 无法还原）**
+
+`Tests/Tests.csproj` 改动：
 
 ```xml
-<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.32" />
+<!-- TargetFramework 从 net6.0-windows10.0.17763.0 改为与 Ui 默认配置一致 -->
+<TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
 ```
+
+```xml
+<ItemGroup>
+  <!-- 新增：Minimal API 管道集成测试宿主（与 net9 对齐） -->
+  <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.0" />
+</ItemGroup>
+```
+
+注意：MSTest 2.2.7 若在 net9 下报兼容错误，将 `MSTest.TestAdapter`/`MSTest.TestFramework` 升级到 `3.6.4`（测试代码无需改动）。验证：`dotnet test Tests/Tests.csproj` 能还原并跑通**现有**测试（这是后续所有任务测试循环的前提；现有测试若有个别与本次改动无关的既有失败，记录并保持原状，不算本任务失败）。
 
 - [ ] **Step 3: 验证编译**
 
@@ -125,7 +137,7 @@ namespace Tests.Service.WebUi
             var tokenInPipe = token; // null 表示"服务端未启用 token"（DEBUG 形态）
             app.UseMiddleware<_1RM.Service.WebUi.TokenMiddleware>(tokenInPipe ?? "");
             app.MapGet("/api/version", () => new { version = "test", api = 1 });
-            app.RunAsync();
+            app.StartAsync().GetAwaiter().GetResult(); // 显式启动，避免 GetTestClient 竞态
             var client = app.GetTestClient();
             return client;
         }
@@ -480,7 +492,28 @@ git commit -m "feat(webui): server/DataSource/Tag DTOs with mapper from protocol
 - 数据源：`IoC.Get<DataSourceService>()`（`LocalDataSource` + `AdditionalSources`，各源 `Status/IsWritable/ReconnectInfo`）。
 - 标签：`IoC.Get<GlobalData>()` 的标签聚合（`GlobalData_Tag.cs`），置顶来自 `LocalityTagService`。
 
-- [ ] **Step 1: 写失败测试**（模式同 Task 2：TestServer 挂真实端点）
+- [ ] **Step 1: 扩展 TestInit 测试夹具（前置：现有 mock 不含本组端点依赖）**
+
+`Tests/TestInit.cs` 的 `IoC.GetByType` 追加注册（参照该文件第 34 行起现有写法）：
+
+```csharp
+if (type == typeof(KeywordMatchService) || type == typeof(KeywordMatchService<>))
+    return new KeywordMatchService(configurationService, languageService); // 构造参数以 KeywordMatchService.cs 为准
+if (type == typeof(GlobalData))
+    return new GlobalData(configurationService, IoC.Get<DataSourceService>(),
+        IoC.Get<KeywordMatchService>()); // 构造参数以 GlobalData.cs 为准
+```
+
+并在 `Init()` 末尾初始化本地数据源与种子数据（供 servers/datasources/tags/search/connect 端点测试共用）：
+
+```csharp
+var dss = IoC.Get<DataSourceService>();
+dss.LocalDataSource = new SqliteSource { Name = "Local", Path = Path.Combine(Path.GetTempPath(), "tests-1rm.db") };
+// 若 LocalDataSource 为只读属性或初始化方式不同，以 DataSourceService.cs 实际成员为准调整
+IoC.Get<GlobalData>().AddServer(new RDP { Id = "seed-rdp", DisplayName = "seed-rdp", Address = "1.1.1.1" });
+```
+
+**Step 2: 写失败测试**（模式同 Task 2：TestServer 挂真实端点；`[ClassInitialize]` 先 `TestInit.Init()` 再 `app.StartAsync()`）
 
 ```csharp
 using System.Linq;
@@ -538,12 +571,12 @@ namespace Tests.Service.WebUi
 }
 ```
 
-- [ ] **Step 2: 跑测试确认失败**
+- [ ] **Step 3: 跑测试确认失败**
 
 Run: `dotnet test Tests/Tests.csproj --filter ReadEndpointsTests`
 Expected: FAIL（路由不存在 → 404）
 
-- [ ] **Step 3: 实现端点**（`WebUiEndpoints.MapAll` 追加）
+- [ ] **Step 4: 实现端点**（`WebUiEndpoints.MapAll` 追加）
 
 ```csharp
 app.MapGet("/api/servers", () =>
@@ -574,9 +607,9 @@ app.MapGet("/api/tags", () =>
 
 `DtoMapper` 补充 `FromDataSource(DataSourceBase)` 与 `BuildTags(GlobalData)`（成员名以 `Service/DataSource/DataSourceService.cs`、`Model/GlobalData_Tag.cs` 为准）。注意：端点在 Kestrel 线程访问 `VmItemList`，若 `FromServer` 内部触及 WPF 依赖（如 `IconImg`）则只取 `IconBase64` 字符串字段，绝不触碰 `BitmapSource` 属性。
 
-- [ ] **Step 4: 跑测试确认通过** → `dotnet test Tests/Tests.csproj --filter ReadEndpointsTests` PASS
+- [ ] **Step 5: 跑测试确认通过** → `dotnet test Tests/Tests.csproj --filter ReadEndpointsTests` PASS
 
-- [ ] **Step 5: Commit** `feat(webui): read-only endpoints for servers, datasources, tags`
+- [ ] **Step 6: Commit** `feat(webui): read-only endpoints for servers, datasources, tags`
 
 ### Task 5: 搜索端点（服务端 KeywordMatchService 复用）
 
@@ -733,14 +766,14 @@ app.MapGet("/api/events", async (HttpContext ctx) =>
 **Files:**
 - Modify: `Ui/View/MainWindowView.xaml`（内容区最外层 Grid 新增 WebView2 控件）
 - Modify: `Ui/View/MainWindowView.xaml.cs`（导航逻辑）
-- Modify: `Ui/Service/Configuration.cs` 的 GeneralConfig（加 `UiEngine` 字段，默认 `"Desktop"`）
+- Modify: `Ui/Service/ConfigurationService.cs` 的 GeneralConfig（加 `UiEngine` 字段，默认 `"Desktop"`）
 - Modify: `Ui/View/Settings/General/GeneralSettingView.xaml(.cs)`（加"界面引擎"下拉：Desktop/Web）
 - Modify: `Ui/AppInit.cs`（启动时 `WebUiServer.Start()`，仅当 `UiEngine == "Web"` 或 DEBUG）
 
 - [ ] **Step 1: GeneralConfig 加字段**
 
 ```csharp
-// Ui/Service/Configuration.cs → GeneralConfig
+// Ui/Service/ConfigurationService.cs → GeneralConfig 类
 public string UiEngine { get; set; } = "Desktop"; // "Desktop" | "Web"
 ```
 
@@ -922,10 +955,16 @@ export function subscribeEvents(onReload) {
 - [ ] **Step 2: themes/index.js**
 
 ```javascript
+import { reactive, computed } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
 import { api } from '../api'
 
 export const ACCENTS = ['blue', 'violet', 'pink', 'red', 'orange', 'green', 'slate']
+// 强调色 → Naive UI primaryColor 映射（与 theme.css 中 --accent 保持一致）
+export const ACCENT_HEX = {
+  blue: '#2c5aff', violet: '#8b5cf6', pink: '#ec4899', red: '#ef4444',
+  orange: '#f97316', green: '#10b981', slate: '#64748b',
+}
 export const CLASSIC_THEMES = { // spec §4：旧 9 主题 → 预设组合
   Light: { themeMode: 'light', accent: 'blue' }, Dark: { themeMode: 'dark', accent: 'blue' },
   Wine: { themeMode: 'light', accent: 'red' }, Forest: { themeMode: 'dark', accent: 'green' },
@@ -934,36 +973,43 @@ export const CLASSIC_THEMES = { // spec §4：旧 9 主题 → 预设组合
   PRemoteM: { themeMode: 'dark', accent: 'violet' },
 }
 
-const state = { themeMode: 'dark', accent: 'blue', fontSize: 'M', systemDark: true }
+// reactive 保证切换强调色时 Naive 组件同步刷新（spec §11.3 风险点的处理）
+export const themeState = reactive({ themeMode: 'dark', accent: 'blue', fontSize: 'M', systemDark: true })
 
 export function applyTheme() {
-  const resolved = state.themeMode === 'system'
-    ? (state.systemDark ? 'dark' : 'light') : state.themeMode
+  const resolved = themeState.themeMode === 'system'
+    ? (themeState.systemDark ? 'dark' : 'light') : themeState.themeMode
   document.documentElement.dataset.theme = resolved
-  document.documentElement.dataset.accent = state.accent
+  document.documentElement.dataset.accent = themeState.accent
   const sizes = { S: '12px', M: '13px', L: '14px', XL: '15px' }
-  document.documentElement.style.fontSize = sizes[state.fontSize] || '13px'
+  document.documentElement.style.fontSize = sizes[themeState.fontSize] || '13px'
 }
 
 export function setAppearance(patch) {
-  Object.assign(state, patch)
+  Object.assign(themeState, patch)
   applyTheme()
-  api.saveAppearance({ themeMode: state.themeMode, accent: state.accent, fontSize: state.fontSize })
+  api.saveAppearance({ themeMode: themeState.themeMode, accent: themeState.accent, fontSize: themeState.fontSize })
     .catch(() => {}) // 桌面后端未运行（纯浏览器预览）时静默
 }
 
 export async function initTheme() {
   const mq = matchMedia('(prefers-color-scheme: dark)')
-  state.systemDark = mq.matches
-  mq.addEventListener('change', (e) => { state.systemDark = e.matches; applyTheme() })
-  try { Object.assign(state, await api.getAppearance()) } catch { /* 默认值 */ }
+  themeState.systemDark = mq.matches
+  mq.addEventListener('change', (e) => { themeState.systemDark = e.matches; applyTheme() })
+  try { Object.assign(themeState, await api.getAppearance()) } catch { /* 默认值 */ }
   applyTheme()
 }
 
-/** Naive UI 全局主题：与 CSS 变量同源 */
-export function naiveTheme() {
-  const resolved = state.themeMode === 'system' ? (state.systemDark ? 'dark' : 'light') : state.themeMode
-  return resolved === 'dark' ? darkTheme : lightTheme
+/** Naive UI 主题（含 overrides），供 n-config-provider 绑定 —— computed 保持响应式 */
+export function useNaiveTheme() {
+  return computed(() => {
+    const resolved = themeState.themeMode === 'system'
+      ? (themeState.systemDark ? 'dark' : 'light') : themeState.themeMode
+    return {
+      theme: resolved === 'dark' ? darkTheme : lightTheme,
+      overrides: { common: { primaryColor: ACCENT_HEX[themeState.accent], primaryColorHover: ACCENT_HEX[themeState.accent] } },
+    }
+  })
 }
 ```
 
@@ -981,19 +1027,19 @@ export function naiveTheme() {
 
 ```vue
 <script setup>
-import { computed } from 'vue'
+import { useNaiveTheme } from './themes'
 import { useRouter } from 'vue-router'
-import { naiveTheme } from './themes'
 const router = useRouter()
-const theme = computed(() => naiveTheme())
+const naive = useNaiveTheme()
 </script>
 <template>
-  <n-config-provider :theme="theme" style="height: 100vh">
+  <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides" style="height: 100vh">
     <n-message-provider>
       <div class="shell">
         <header class="topbar">
           <div class="logo">1Remote</div>
-          <slot name="search" />
+          <!-- Task 13 先放只读搜索框占位；Task 17 接线防抖搜索与 Ctrl K -->
+          <div class="searchbox">⌕ {{ $t('search.placeholder') }}</div>
           <div class="topbar-actions">
             <n-button quaternary size="small" @click="router.push('/settings')">⚙</n-button>
           </div>
@@ -1022,7 +1068,7 @@ const theme = computed(() => naiveTheme())
 - Create: `webui/src/composables/useServers.js`
 
 ```javascript
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { api, subscribeEvents } from '../api'
 
 // 模块级共享状态（spec §9.1：不用 Pinia）
@@ -1031,6 +1077,7 @@ const datasources = ref([])
 const tags = ref([])
 const loading = ref(false)
 let unsubscribe = null
+let pollTimer = null
 
 async function loadAll() {
   loading.value = true
@@ -1044,6 +1091,10 @@ export function useServers() {
   if (!unsubscribe) {
     loadAll()
     unsubscribe = subscribeEvents(() => loadAll()) // SSE 版本变化 → 拉全量
+    // 数据源连接状态（重连倒计时等）不触发 OnReloadAll，低频轮询兜底（顺带刷新边栏状态点）
+    pollTimer = setInterval(async () => {
+      try { datasources.value = await api.datasources() } catch { /* 后端未运行 */ }
+    }, 30000)
   }
   return { servers, datasources, tags, loading, reload: loadAll }
 }
@@ -1167,7 +1218,7 @@ cd webui && npm run build   # 产出 webui/dist/
 4. 搜索拼音与 WPF 一致；Ctrl K / Esc 键盘流可用
 5. 双击连接 → 桌面会话窗口打开（RDP 与 SSH 各验证一台）
 6. 主题：深/浅/跟随系统切换 + 7 强调色 + Wine/Forest 经典预设，重启后保持
-7. 桌面端修改服务器（WPF 引擎下编辑）→ Web 端 10 秒内自动刷新（SSE + 轮询）
+7. 桌面端修改服务器（WPF 引擎下编辑）→ Web 端 10 秒内自动刷新（SSE 重载推送；数据源状态点经 30s 低频轮询更新）
 8. 引擎切回 Desktop → WPF 界面完全正常（回退保险）
 9. `dotnet test Tests/Tests.csproj` 全绿；`npm run build` 零报错
 10. 窗口 <900px 边栏收起；语言中英切换完整
