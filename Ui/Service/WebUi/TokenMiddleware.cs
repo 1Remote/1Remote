@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -26,7 +27,9 @@ namespace _1RM.Service.WebUi
                     if (auth.StartsWith("Bearer ", System.StringComparison.OrdinalIgnoreCase))
                         provided = auth["Bearer ".Length..].Trim();
                 }
-                if (provided != _token)
+                var expected = System.Text.Encoding.UTF8.GetBytes(_token);
+                var actual = System.Text.Encoding.UTF8.GetBytes(provided ?? string.Empty);
+                if (!CryptographicOperations.FixedTimeEquals(expected, actual))
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     return;
