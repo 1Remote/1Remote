@@ -341,6 +341,18 @@ namespace _1RM
             IoC.Get<GlobalData>().ReloadAll(true);
             if (ConfigurationServiceObj?.General.ShowRecentlySessionInTray != false)
                 IoC.Get<TaskTrayService>().ReloadTaskTrayContextMenu();
+
+            // 启动进程内 Web UI 服务（回环监听）；失败不阻断桌面版。
+            // 界面引擎切换（ShowWebUi）由 MainWindowView.Loaded 按配置应用，不在此处直接驱动视图。
+            try
+            {
+                _1RM.Service.WebUi.WebUiServer.Start();
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+            }
+
             if (_isNewUser == false && ConfigurationServiceObj != null)
             {
                 Task.Factory.StartNew(async () =>

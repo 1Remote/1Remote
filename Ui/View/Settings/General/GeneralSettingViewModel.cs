@@ -75,6 +75,28 @@ namespace _1RM.View.Settings.General
             }
         }
 
+        /// <summary>
+        /// 界面引擎下拉框索引：0 = Desktop(WPF)，1 = Web(WebView2)
+        /// </summary>
+        public int UiEngineIndex
+        {
+            get => string.Equals(_configurationService.General.UiEngine, "Web", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+            set
+            {
+                var engine = value == 1 ? "Web" : "Desktop";
+                if (SetAndNotifyIfChanged(ref _configurationService.General.UiEngine, engine))
+                {
+                    _configurationService.Save();
+                    // 立即生效
+                    var mainWindow = IoC.Get<MainWindowView>();
+                    if (string.Equals(engine, "Web", StringComparison.OrdinalIgnoreCase))
+                        mainWindow.ShowWebUi();
+                    else
+                        mainWindow.HideWebUi();
+                }
+            }
+        }
+
         public bool ConfirmBeforeClosingSession
         {
             get => _configurationService.General.ConfirmBeforeClosingSession;

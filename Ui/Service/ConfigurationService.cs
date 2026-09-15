@@ -49,6 +49,10 @@ namespace _1RM.Service
         public bool DoNotCheckNewVersion = false;
         public int CloseButtonBehavior = (int)EnumCloseButtonBehavior.Minimize;
         public bool ConfirmBeforeClosingSession = false;
+        /// <summary>
+        /// 界面引擎："Desktop"(默认 WPF) | "Web"(WebView2 壳)
+        /// </summary>
+        public string UiEngine = "Desktop";
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ShowSessionIconInSessionWindow = true;

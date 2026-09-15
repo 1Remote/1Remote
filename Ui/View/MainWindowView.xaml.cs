@@ -58,6 +58,9 @@ namespace _1RM.View
             WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
+            // 按配置应用界面引擎（WPF / WebView2 壳）
+            this.Loaded += MainWindowView_OnLoaded;
+
             // Restore or reset window location
             if (double.IsNaN(localityService.MainWindowTop) || double.IsNaN(localityService.MainWindowLeft)
                 || localityService.MainWindowTop < SystemParameters.VirtualScreenTop
@@ -119,6 +122,55 @@ namespace _1RM.View
             // Place the window in the center of the current screen
             this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
             this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+        }
+
+
+        private void MainWindowView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplyUiEngineFromConfig();
+        }
+
+        /// <summary>
+        /// 读取 GeneralConfig.UiEngine 并切换界面引擎（在窗口 Loaded 时应用一次；
+        /// 运行中的切换由 GeneralSettingViewModel 调用 ShowWebUi/HideWebUi）
+        /// </summary>
+        public void ApplyUiEngineFromConfig()
+        {
+            if (string.Equals(_configurationService.General.UiEngine, "Web", StringComparison.OrdinalIgnoreCase))
+                ShowWebUi();
+            else
+                HideWebUi();
+        }
+
+        public void ShowWebUi()
+        {
+            try
+            {
+#if DEBUG
+                // 前端尚未创建（Task 10+）；验证服务可用可直接导航 http://localhost:17321/api/version
+                WebUI.Source = new Uri("http://localhost:5173");
+#else
+                if (_1RM.Service.WebUi.WebUiServer.IsRunning == false)
+                {
+                    SimpleLogHelper.Warning("WebUiServer is not running, skip Web UI");
+                    return;
+                }
+                WebUI.Source = new Uri($"http://127.0.0.1:{_1RM.Service.WebUi.WebUiServer.Port}/?token={_1RM.Service.WebUi.WebUiServer.Token}");
+#endif
+                WebUI.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                // WebView2 运行时缺失等异常不阻断桌面版
+                SimpleLogHelper.Error(ex);
+                WebUI.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public void HideWebUi()
+        {
+            WebUI.Visibility = Visibility.Collapsed;
+            WebUI.Source = null;
         }
 
         protected override void OnClosing(CancelEventArgs e)

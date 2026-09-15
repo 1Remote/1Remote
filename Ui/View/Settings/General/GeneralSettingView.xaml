@@ -90,6 +90,19 @@
                     </ComboBox>
                 </Grid>
 
+                <Grid Style="{StaticResource GridOneRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                        <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Interface engine'}"></TextBlock>
+                    <ComboBox Grid.Column="1" MinWidth="200" HorizontalAlignment="Left" SelectedIndex="{Binding UiEngineIndex}">
+                        <ComboBoxItem Content="{DynamicResource 'Interface engine desktop'}"/>
+                        <ComboBoxItem Content="{DynamicResource 'Interface engine web'}"/>
+                    </ComboBox>
+                </Grid>
+
 
 
                 <Grid Style="{StaticResource GridOneRow}">
