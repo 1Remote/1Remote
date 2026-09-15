@@ -16,7 +16,20 @@ async function request(path, { method = 'GET', body } = {}) {
   if (token) headers.Authorization = `Bearer ${token}`
   const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30_000) })
   if (resp.status === 401) throw new Error('unauthorized')
-  if (!resp.ok) throw new Error(`${resp.status} ${path}`)
+  if (!resp.ok) {
+    // 错误体尽量带回：编辑器保存 400 的 {errors} 列表要在抽屉内联展示（err.status/err.body）
+    let errBody = null
+    try {
+      errBody = await resp.json()
+    } catch {
+      /* 无响应体或非 JSON（404/500 可能是空体）——保持 null */
+    }
+    const err = new Error(`${resp.status} ${path}`)
+    err.status = resp.status
+    err.body = errBody
+    throw err
+  }
+  if (resp.status === 204) return null // DELETE 成功无内容（resp.json() 对空体会抛 SyntaxError）
   return resp.json()
 }
 
@@ -31,6 +44,12 @@ export const api = {
   saveAppearance: (a) => request('/api/settings/appearance', { method: 'PUT', body: a }),
   getTreeState: () => request('/api/ui-state/tree'),
   saveTreeState: (s) => request('/api/ui-state/tree', { method: 'PUT', body: s }),
+  // 编辑器（Plan 2 Task 8）：config/POST/PUT 的内嵌 json 为 PascalCase 直通域（勿做命名转换），
+  // DELETE 成功返回 204 → null（request 内已处理空体）
+  getServerConfig: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}/config?ds=${encodeURIComponent(ds ?? 'Local')}`),
+  createServer: (json, ds) => request('/api/servers', { method: 'POST', body: { dataSourceName: ds ?? 'Local', json } }),
+  updateServer: (id, json, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'PUT', body: { json } }),
+  deleteServer: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
   batchUpdate: (ids, patch) => request('/api/servers/batch', { method: 'POST', body: { ids, patch } }),
   icons: () => request('/api/icons'),
   credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),

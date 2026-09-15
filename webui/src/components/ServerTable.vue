@@ -19,7 +19,7 @@ const props = defineProps({
   servers: { type: Array, default: () => [] },
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
 })
-const emit = defineEmits(['connect', 'batch-connect', 'edit', 'counted'])
+const emit = defineEmits(['connect', 'batch-connect', 'edit', 'duplicate', 'delete', 'counted'])
 const { t } = useI18n()
 const message = useMessage()
 
@@ -123,16 +123,17 @@ watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N �
 // ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2：Enter 连接已接线，E/Ctrl+D/Del 归 Plan 2）----
 // 标签/提示走 i18n（computed：语言切换即时刷新）；未接线项的占位提示统一「即将推出」，
 // 内部计划号（Plan 2/4）只留在代码注释，不进 UI。
+// Plan 2 Task 8：编辑/复制/删除已接线（emit 至 ServerListView 打开编辑抽屉/确认删除）。
 const MENU = computed(() => [
   { key: 'connect', label: t('ctx.connect'), hint: 'Enter', on: true },
   { key: 'new-window', label: t('ctx.newWindow'), hint: t('common.comingSoon') },
   { key: 'other-credential', label: t('ctx.otherCredential'), hint: t('common.comingSoon') },
-  { key: 'edit', label: t('ctx.edit'), hint: 'E', tip: t('common.comingSoon') },
-  { key: 'duplicate', label: t('ctx.duplicate'), hint: 'Ctrl+D', tip: t('common.comingSoon') },
+  { key: 'edit', label: t('ctx.edit'), hint: 'E', on: true },
+  { key: 'duplicate', label: t('ctx.duplicate'), hint: 'Ctrl+D', on: true },
   { key: 'copy-address', label: t('ctx.copyAddress'), on: true },
   { key: 'copy-username', label: t('ctx.copyUsername'), on: true },
   { key: 'shortcut', label: t('ctx.shortcut'), tip: t('common.comingSoon') },
-  { key: 'delete', label: t('ctx.delete'), hint: 'Del', tip: t('common.comingSoon') },
+  { key: 'delete', label: t('ctx.delete'), hint: 'Del', on: true },
 ])
 const menu = ref(null) // { server, x, y }（x/y 相对本容器左上角）
 const rootEl = ref(null)
@@ -152,6 +153,9 @@ function onMenuAction(item) {
   const s = menu.value.server
   menu.value = null
   if (item.key === 'connect') emit('connect', s.id)
+  else if (item.key === 'edit') emit('edit', s)
+  else if (item.key === 'duplicate') emit('duplicate', s)
+  else if (item.key === 'delete') emit('delete', s)
   else if (item.key === 'copy-address') {
     // Serial 等无地址协议：提示而非把协议名当地址写进剪贴板
     if (!s.address) message.warning(t('toast.noAddressToCopy'))

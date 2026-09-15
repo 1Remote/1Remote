@@ -10,16 +10,19 @@
 // + <900px 自动收起边栏（spec §8.7）。
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMessage } from 'naive-ui'
+import { useDialog, useMessage } from 'naive-ui'
 import { useWindowSize } from '@vueuse/core'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
+import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import { api } from '../api'
 import { applyServerFilters, useServers } from '../composables/useServers'
+import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
 
 const { t, locale } = useI18n()
 const message = useMessage()
+const dialog = useDialog()
 const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）
 const activeTag = ref('') // ''=未按标签过滤
 // 收起状态仅本地内存（持久化暂缓）。窄窗适配（spec §8.7）：<900px 自动收起，只收不展——
@@ -116,9 +119,12 @@ async function onBatchConnect(ids) {
 // ---- 全局 Esc 链（spec §8.2）：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
 // 菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
 // 搜索归本组件（useServers 共享态）——三处状态在唯一的 window 级 handler 里按序裁决，
-// 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。----
+// 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。
+// 编辑抽屉打开时 Esc 归抽屉（关闭/未保存确认，EditorDrawer 自持 window 级 handler，注册在
+// 本链之后，若此处不守卫会先消费掉 Esc），本链整体让位。----
 function onGlobalEsc(e) {
   if (e.key !== 'Escape') return
+  if (editor.value) return // 抽屉在开：Esc 由抽屉处理
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
   else if (tb?.clearCheckedIfAny()) e.preventDefault()
@@ -130,8 +136,59 @@ function onGlobalEsc(e) {
 onMounted(() => window.addEventListener('keydown', onGlobalEsc))
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalEsc))
 
-// 编辑抽屉（Plan 2）——ServerTable 的 edit emit 在此忽略
-function onEdit() {}
+// ---- 编辑抽屉（Plan 2 Task 8）：状态 + 全部入口汇聚于此 ----
+// editor = { mode:'create', ds, protocol?, duplicateFrom?, initial? } | { mode:'edit', serverId, ds, initial } | null
+const editor = ref(null)
+
+// App.vue 顶栏「+」经 editorBus 请求新建（跨层：顶栏在 router-view 之外无法向本视图 emit）。
+// 抽屉已开时忽略——替换状态会丢掉未保存编辑且绕过脏确认。
+const { createRequest } = useEditorBus()
+watch(createRequest, () => {
+  if (!editor.value) openCreate()
+})
+
+function openCreate() {
+  // 归属数据源 = 当前树选中（根/文件夹/叶）的数据源；未选 = Local
+  editor.value = { mode: 'create', ds: selection.value?.dataSourceName || 'Local', protocol: 'RDP' }
+}
+
+function openEdit(server) {
+  editor.value = { mode: 'edit', serverId: server.id, ds: server.dataSourceName || 'Local', initial: server }
+}
+
+// 复制 = create 语义 + 抽屉预填来源服务器 config（EditorDrawer duplicateFrom：加载→清 Id→POST 新建）
+function openDuplicate(server) {
+  editor.value = { mode: 'create', ds: server.dataSourceName || 'Local', duplicateFrom: server.id, initial: server }
+}
+
+// 删除：确认对话框（naive dialog）→ DELETE → toast；列表经 SSE reload 自动刷新
+function onDelete(server) {
+  dialog.warning({
+    title: t('editor.deleteTitle'),
+    content: t('editor.deleteConfirm', { name: server.displayName }),
+    positiveText: t('editor.deleteYes'),
+    negativeText: t('editor.cancel'),
+    onPositiveClick: async () => {
+      try {
+        await api.deleteServer(server.id, server.dataSourceName)
+        message.success(t('editor.deleteOk', { name: server.displayName }))
+        // 选中态可能指向已删对象（树叶选中）：清理回退，避免高亮悬空
+        if (selection.value?.serverId === server.id) selection.value = null
+      } catch (e) {
+        message.error(t('editor.deleteFailed') + (e?.message ? ` (${e.message})` : ''))
+      }
+    },
+  })
+}
+
+// 保存成功：SSE 已自动刷新列表；这里收敛抽屉状态 + 清理指向旧行的选中态（名称/协议可能已变）
+function onSaved({ id, mode }) {
+  if (mode === 'edit' && selection.value?.serverId && selection.value.serverId !== id) {
+    // 编辑目标的树叶选中态与保存对象不符（多选中残留）——保守回退，避免错误高亮
+    selection.value = null
+  }
+  editor.value = null
+}
 </script>
 
 <template>
@@ -173,11 +230,11 @@ function onEdit() {}
         <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
       </div>
 
-      <!-- 空库引导卡片（spec §8.5）：新建/导入按钮为后续计划占位（禁用 + 即将推出），热键提示指向桌面启动器 -->
+      <!-- 空库引导卡片（spec §8.5）：新建已接线（Plan 2 Task 8，打开编辑抽屉）；导入为 Plan 4 占位 -->
       <div v-else-if="showGuide" class="empty-guide">
         <div class="eg-title">{{ t('empty.none') }}</div>
         <div class="eg-actions">
-          <button class="eg-btn eg-primary" disabled :title="t('common.comingSoon')">+ {{ t('empty.newFirst') }}</button>
+          <button class="eg-btn eg-primary" @click="openCreate">+ {{ t('empty.newFirst') }}</button>
           <button class="eg-btn" disabled :title="t('common.comingSoon')">⤓ {{ t('empty.importMremote') }}</button>
         </div>
         <div class="eg-hint">{{ t('empty.launcherHint') }}</div>
@@ -199,7 +256,22 @@ function onEdit() {}
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"
-        @edit="onEdit"
+        @edit="openEdit"
+        @duplicate="openDuplicate"
+        @delete="onDelete"
+      />
+
+      <!-- 连接编辑抽屉（Plan 2 Task 8）：新建/编辑/复制入口共用；fixed 覆盖层，不参与 flex 布局 -->
+      <EditorDrawer
+        v-if="editor"
+        :mode="editor.mode"
+        :server-id="editor.serverId || ''"
+        :data-source-name="editor.ds"
+        :protocol="editor.protocol || ''"
+        :initial-server="editor.initial || null"
+        :duplicate-from="editor.duplicateFrom || ''"
+        @close="editor = null"
+        @saved="onSaved"
       />
 
       <!-- 底部状态栏（spec §3.1）：数据源状态点 · 台数/标签数 · SSE 可达性 · 语言切换 -->

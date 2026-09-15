@@ -4,8 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { enUS, zhCN } from 'naive-ui'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
+import { useEditorBus } from './composables/editorBus'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
+const { requestNewServer } = useEditorBus()
 // naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）
 const naiveLocale = computed(() => (locale.value === 'en-US' ? enUS : zhCN))
 const { searchQuery, searching } = useServers()
@@ -29,32 +31,35 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 <template>
   <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides" :locale="naiveLocale">
     <n-message-provider>
-      <div class="shell">
-        <header class="topbar">
-          <div class="logo">1Remote</div>
-          <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦全选 / Esc 由全局链清空（见 setup） -->
-          <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
-            <span class="sb-icon">⌕</span>
-            <input
-              ref="searchInput"
-              v-model="searchQuery"
-              class="sb-input"
-              type="text"
-              :placeholder="t('search.placeholder')"
-            />
-            <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
-            <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
+      <!-- n-dialog-provider：编辑抽屉的未保存确认/删除确认（useDialog）与全局 toast 同层提供 -->
+      <n-dialog-provider>
+        <div class="shell">
+          <header class="topbar">
+            <div class="logo">1Remote</div>
+            <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦全选 / Esc 由全局链清空（见 setup） -->
+            <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
+              <span class="sb-icon">⌕</span>
+              <input
+                ref="searchInput"
+                v-model="searchQuery"
+                class="sb-input"
+                type="text"
+                :placeholder="t('search.placeholder')"
+              />
+              <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
+              <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
+            </div>
+            <div class="topbar-actions">
+              <!-- 新建服务器（Plan 2 Task 8 接线）：经 editorBus 通知 ServerListView 打开编辑抽屉 -->
+              <n-button quaternary size="small" :title="t('topbar.newServer')" @click="requestNewServer()">+</n-button>
+              <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
+            </div>
+          </header>
+          <div class="main">
+            <router-view />
           </div>
-          <div class="topbar-actions">
-            <!-- 新建服务器（Task 14 占位）：内部任务号不入 UI，统一「即将推出」文案 -->
-            <n-button quaternary size="small" :title="t('common.comingSoon')">+</n-button>
-            <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
-          </div>
-        </header>
-        <div class="main">
-          <router-view />
         </div>
-      </div>
+      </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
 </template>

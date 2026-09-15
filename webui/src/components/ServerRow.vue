@@ -2,7 +2,7 @@
 // 单行（spec §3.4，对齐已确认样张 v2）：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
 // 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
-// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（与菜单一致：Plan 2 前禁用置灰）。
+// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）。
 import { useI18n } from 'vue-i18n'
 import StatusDot from './StatusDot.vue'
 import ProtocolBadge from './ProtocolBadge.vue'
@@ -61,9 +61,8 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
     <div class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
-      <!-- 编辑按钮与右键菜单「编辑」一致：Plan 2 前禁用置灰（emit 链路保留，届时恢复即可）；
-           内部计划号不入 UI，tooltip 统一「编辑（即将推出）」 -->
-      <button class="act" disabled :title="t('row.editSoon')">✎</button>
+      <!-- 编辑按钮（Plan 2 Task 8 接线）：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
+      <button class="act" :title="t('row.edit')" @click="emit('edit')">✎</button>
       <button
         class="act"
         :title="t('row.more')"
