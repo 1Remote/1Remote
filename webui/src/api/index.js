@@ -5,7 +5,7 @@ let token = ''
   if (q) {
     token = q
     sessionStorage.setItem('1r-token', token)
-    history.replaceState(null, '', location.pathname) // 清掉 URL 中的 token
+    history.replaceState(null, '', location.pathname + location.hash) // 清 token 但保留 hash（深链 ?token=xxx#/settings）
   } else {
     token = sessionStorage.getItem('1r-token') || ''
   }

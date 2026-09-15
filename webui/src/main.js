@@ -9,8 +9,9 @@ import { initTheme } from './themes'
 // 后端返回的已存外观（如 light）随后异步覆盖，可能有一帧默认色闪变，暂可接受。
 initTheme()
 const app = createApp(App)
-// naive-ui 全量注册：无 unplugin 自动按需导入脚手架，全局安装最简（spec 优先可维护性；
-// 本地应用，~300-400kB 未压缩 / ~100kB gzip 的体积代价可接受）
+// naive-ui 全量注册：无 unplugin 自动按需导入脚手架，全局安装最简（spec 优先可维护性）。
+// 实测 dist ~1.4MB 未压缩 / ~400kB gzip（naive 全量为主），本地 WebView2/localhost 加载可接受；
+// 若 Task 21 实测冷启动慢，再考虑 unplugin 按需导入
 app.use(naive)
 app.use(router)
 app.mount('#app')
