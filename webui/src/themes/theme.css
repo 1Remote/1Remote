@@ -1,0 +1,116 @@
+/* 双轨主题 CSS 变量（唯一颜色来源）
+ * 基底（data-theme）：dark / light 决定背景、文字、边框、状态色
+ * 强调（data-accent）：7 种强调色决定 --accent 系列
+ * 亮色基底下 accent-container 为浅色底，需配套更深的 accent-text 保证可读性 */
+
+:root {
+  --accent: #2c5aff;
+  --accent-hover: #4d73ff;
+  --accent-container: #16203a;
+  --accent-text: #7c9bff;
+}
+
+[data-theme='dark'] {
+  --bg: #0f1011;
+  --bg-panel: #131417;
+  --bg-elevated: #1a1b1f;
+  --bg-hover: #17181c;
+  --border: #26272b;
+  --border-strong: #2c2e33;
+  --text-1: #e8e9ea;
+  --text-2: #c9cdd4;
+  --text-3: #8b8f98;
+  --text-4: #565a63;
+  --danger: #ef6a6a;
+  --success: #26a269;
+  --warning: #f0b25f;
+}
+
+[data-theme='light'] {
+  --bg: #fafafa;
+  --bg-panel: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f4f4f5;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text-1: #18181b;
+  --text-2: #3f3f46;
+  --text-3: #71717a;
+  --text-4: #a1a1aa;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+}
+
+[data-accent='blue'] {
+  --accent: #2c5aff;
+  --accent-hover: #4d73ff;
+  --accent-container: #16203a;
+  --accent-text: #7c9bff;
+}
+[data-accent='violet'] {
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-container: #1d1626;
+  --accent-text: #b8a6f7;
+}
+[data-accent='pink'] {
+  --accent: #ec4899;
+  --accent-hover: #f472b6;
+  --accent-container: #26141e;
+  --accent-text: #f5a8cd;
+}
+[data-accent='red'] {
+  --accent: #ef4444;
+  --accent-hover: #f87171;
+  --accent-container: #26120f;
+  --accent-text: #f5a09a;
+}
+[data-accent='orange'] {
+  --accent: #f97316;
+  --accent-hover: #fb923c;
+  --accent-container: #241d12;
+  --accent-text: #f0b25f;
+}
+[data-accent='green'] {
+  --accent: #10b981;
+  --accent-hover: #34d399;
+  --accent-container: #12241a;
+  --accent-text: #5fd38d;
+}
+[data-accent='slate'] {
+  --accent: #64748b;
+  --accent-hover: #7c8ba1;
+  --accent-container: #1b2028;
+  --accent-text: #9aa8bb;
+}
+
+/* 亮色基底下的 accent 浅色容器变体（低饱和浅底 + 深色 accent-text 以保证对比度） */
+[data-theme='light'][data-accent='blue'] {
+  --accent-container: #e8edfa;
+  --accent-text: #2c5aff;
+}
+[data-theme='light'][data-accent='violet'] {
+  --accent-container: #ede9fb;
+  --accent-text: #6d28d9;
+}
+[data-theme='light'][data-accent='pink'] {
+  --accent-container: #fce7f3;
+  --accent-text: #be185d;
+}
+[data-theme='light'][data-accent='red'] {
+  --accent-container: #fee2e2;
+  --accent-text: #b91c1c;
+}
+[data-theme='light'][data-accent='orange'] {
+  --accent-container: #ffedd5;
+  --accent-text: #c2410c;
+}
+[data-theme='light'][data-accent='green'] {
+  --accent-container: #d1fae5;
+  --accent-text: #047857;
+}
+[data-theme='light'][data-accent='slate'] {
+  --accent-container: #e2e8f0;
+  --accent-text: #475569;
+}
