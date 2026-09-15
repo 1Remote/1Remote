@@ -9,6 +9,7 @@ using _1RM.View.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -158,15 +159,19 @@ namespace _1RM.View
         {
             if (e.PropertyName != nameof(Vm.TopLevelViewModel))
                 return;
-            // TopLevel 遮罩出现时隐藏 WebUI（HwndHost airspace，见构造函数注释）；关闭后按配置恢复
-            if (Vm.TopLevelViewModel != null)
+            // TopLevel 遮罩出现时隐藏 WebUI（HwndHost airspace，见构造函数注释）；关闭后按配置恢复。
+            // PropertyChanged 可能在工作线程触发（多处 mask 开关来自后台任务），DP 写入必须回 UI 线程
+            Execute.OnUIThread(() =>
             {
-                WebUI.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                ApplyUiEngineFromConfig();
-            }
+                if (Vm.TopLevelViewModel != null)
+                {
+                    WebUI.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ApplyUiEngineFromConfig();
+                }
+            });
         }
 
         /// <summary>
@@ -215,8 +220,8 @@ namespace _1RM.View
 
         public void HideWebUi()
         {
+            // 仅折叠即可；Source 置 null 在 WebView2 1.0.x 会抛 NotImplementedException
             WebUI.Visibility = Visibility.Collapsed;
-            WebUI.Source = null;
         }
 
         protected override void OnClosing(CancelEventArgs e)
