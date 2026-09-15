@@ -1,11 +1,15 @@
 <script setup>
-// 通用占位页：Plan 2/3 阶段对应路由（settings / editor）暂未实现
-defineProps({ title: { type: String, default: '' } })
+// 通用占位页：Plan 2/3 阶段对应路由（settings / editor）暂未实现；
+// 文案走 i18n（titleKey → page.* 词条），内部计划号不入 UI
+import { useI18n } from 'vue-i18n'
+
+defineProps({ titleKey: { type: String, default: '' } })
+const { t } = useI18n()
 </script>
 
 <template>
   <div class="placeholder">
-    <p class="placeholder-title">敬请期待 / Coming soon — {{ title }} (Plan 2/3)</p>
+    <p class="placeholder-title">{{ t('placeholder.comingSoon', { title: titleKey ? t('page.' + titleKey) : '' }) }}</p>
   </div>
 </template>
 

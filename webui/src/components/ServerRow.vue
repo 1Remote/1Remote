@@ -3,6 +3,7 @@
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
 // 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
 // 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（与菜单一致：Plan 2 前禁用置灰）。
+import { useI18n } from 'vue-i18n'
 import StatusDot from './StatusDot.vue'
 import ProtocolBadge from './ProtocolBadge.vue'
 import { formatRelativeTime } from '../utils/time'
@@ -15,6 +16,7 @@ defineProps({
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
+const { t } = useI18n()
 
 const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 : '')
 const initial = (p) => (p || '?').charAt(0).toUpperCase()
@@ -22,7 +24,8 @@ const initial = (p) => (p || '?').charAt(0).toUpperCase()
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
 // 标签胶囊：最多 2 个 + 溢出计数（完整列表见 title）
 const overflow = (s) => Math.max(0, s.tags.length - 2)
-const relTime = (s) => formatRelativeTime(s.lastConnectTime) || '从未'
+// 从未连接 = formatRelativeTime 返回 null 时的占位文案（i18n；t 在渲染期调用，随语言切换刷新）
+const relTime = (s) => formatRelativeTime(s.lastConnectTime) || t('status.never')
 </script>
 
 <template>
@@ -34,7 +37,7 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime) || '从未'
     @contextmenu.prevent="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
   >
     <div class="cell cell-check">
-      <input type="checkbox" class="cb" :checked="selected" title="选择" @click.stop @change="emit('toggle-select')" />
+      <input type="checkbox" class="cb" :checked="selected" :title="t('row.select')" @click.stop @change="emit('toggle-select')" />
     </div>
     <div class="cell cell-status"><StatusDot :state="server.connectionState" /></div>
     <div class="cell cell-name" :title="server.displayName">
@@ -55,12 +58,13 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime) || '从未'
     <div v-if="showFolder" class="cell cell-folder" :title="server.folderPath">{{ server.folderPath || '—' }}</div>
     <div class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
-      <button class="act" title="连接" @click="emit('connect')">▸</button>
-      <!-- 编辑按钮与右键菜单「编辑」一致：Plan 2 前禁用置灰（emit 链路保留，届时恢复即可） -->
-      <button class="act" disabled title="编辑（Plan 2）">✎</button>
+      <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
+      <!-- 编辑按钮与右键菜单「编辑」一致：Plan 2 前禁用置灰（emit 链路保留，届时恢复即可）；
+           内部计划号不入 UI，tooltip 统一「编辑（即将推出）」 -->
+      <button class="act" disabled :title="t('row.editSoon')">✎</button>
       <button
         class="act"
-        title="更多"
+        :title="t('row.more')"
         @click="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
       >⋯</button>
     </div>

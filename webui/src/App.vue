@@ -1,8 +1,10 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 const naive = useNaiveTheme()
+const { t } = useI18n()
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
@@ -28,20 +30,21 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
         <header class="topbar">
           <div class="logo">1Remote</div>
           <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦全选 / Esc 由全局链清空（见 setup） -->
-          <div class="searchbox" title="Ctrl+K 聚焦 · Esc 清空" @click="searchInput?.focus()">
+          <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
             <span class="sb-icon">⌕</span>
             <input
               ref="searchInput"
               v-model="searchQuery"
               class="sb-input"
               type="text"
-              placeholder="搜索服务器、标签…"
+              :placeholder="t('search.placeholder')"
             />
             <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
-            <span class="sb-spin" :class="{ on: searching }" title="搜索中…"></span>
+            <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
           </div>
           <div class="topbar-actions">
-            <n-button quaternary size="small" title="Task 14">＋</n-button>
+            <!-- 新建服务器（Task 14 占位）：内部任务号不入 UI，统一「即将推出」文案 -->
+            <n-button quaternary size="small" :title="t('common.comingSoon')">＋</n-button>
             <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
           </div>
         </header>

@@ -7,6 +7,7 @@
 // - 底部「« 收起边栏」emit update:collapsed
 // - 展开/折叠经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '../api'
 import { buildTree, useServers } from '../composables/useServers'
 
@@ -22,6 +23,7 @@ const props = defineProps({
   tag: { type: String, default: '' }, // 当前标签过滤（v-model:tag，仅用于 chip 高亮）
 })
 const emit = defineEmits(['update:selection', 'update:tag', 'connect', 'update:collapsed'])
+const { t } = useI18n()
 
 const { servers, datasources, tags } = useServers()
 const tree = computed(() => buildTree(servers.value, datasources.value))
@@ -150,7 +152,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 <template>
   <div class="side-tree">
     <div class="tree-scroll">
-      <div v-if="!rows.length" class="empty-hint">（无数据源）</div>
+      <div v-if="!rows.length" class="empty-hint">{{ t('tree.noDatasources') }}</div>
       <div
         v-for="row in rows"
         :key="row.key"
@@ -177,7 +179,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           <span
             class="dot"
             :class="dotClass(row.ds.status)"
-            :title="row.ds.status === 'reconnecting' ? (row.ds.reconnectInfo || '重连中') : row.ds.status"
+            :title="row.ds.status === 'reconnecting' ? (row.ds.reconnectInfo || t('tree.reconnecting')) : row.ds.status"
           ></span>
           <span class="count">{{ row.count }}</span>
         </template>
@@ -204,24 +206,25 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 
     <!-- 标签区（spec §3.3）：chips+计数，置顶在前；点击=过滤条件（Task 17 接线搜索交集） -->
     <div class="tags">
-      <div class="tags-head">标签</div>
+      <div class="tags-head">{{ t('tree.tags') }}</div>
       <div class="tag-list">
+        <!-- 循环变量命名 tg：避免遮蔽 script setup 暴露的 i18n 翻译函数 t -->
         <button
-          v-for="t in sortedTags"
-          :key="t.name"
+          v-for="tg in sortedTags"
+          :key="tg.name"
           class="tag-chip"
-          :class="{ active: t.name === tag }"
-          :title="t.name"
-          @click="emit('update:tag', t.name === tag ? '' : t.name)"
+          :class="{ active: tg.name === tag }"
+          :title="tg.name"
+          @click="emit('update:tag', tg.name === tag ? '' : tg.name)"
         >
-          <span v-if="t.isPinned" class="pin">📌</span>{{ t.name }}<span class="tag-count">{{ t.count }}</span>
+          <span v-if="tg.isPinned" class="pin">📌</span>{{ tg.name }}<span class="tag-count">{{ tg.count }}</span>
         </button>
-        <!-- 占位：标签管理模态（置顶/重命名/删除等）属 Plan 3 -->
-        <button class="tag-chip tag-manage" title="Plan 3">+ 管理</button>
+        <!-- 占位：标签管理模态（置顶/重命名/删除等）属 Plan 3；内部计划号不入 UI，tooltip 统一「即将推出」 -->
+        <button class="tag-chip tag-manage" :title="t('common.comingSoon')">{{ t('tree.manageTags') }}</button>
       </div>
     </div>
 
-    <button class="collapse-btn" title="收起边栏" @click="emit('update:collapsed', true)">« 收起边栏</button>
+    <button class="collapse-btn" :title="t('tree.collapseTitle')" @click="emit('update:collapsed', true)">« {{ t('tree.collapse') }}</button>
   </div>
 </template>
 

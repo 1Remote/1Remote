@@ -1,0 +1,73 @@
+{
+  "common.comingSoon": "Coming soon",
+  "common.address": "address",
+  "common.username": "username",
+
+  "search.placeholder": "Search servers, tags…",
+  "search.title": "Ctrl+K to focus · Esc to clear",
+  "search.searching": "Searching…",
+
+  "crumb.allDataSources": "All data sources",
+  "crumb.allServers": "All servers",
+  "crumb.count": " · {n} servers",
+  "crumb.searchChip": "Search filter active",
+  "crumb.clearSearch": "Clear search (Esc)",
+
+  "sidebar.expand": "Expand sidebar",
+
+  "tree.noDatasources": "(No data sources)",
+  "tree.reconnecting": "Reconnecting",
+  "tree.tags": "Tags",
+  "tree.manageTags": "+ Manage",
+  "tree.collapse": "« Collapse",
+  "tree.collapseTitle": "Collapse sidebar",
+
+  "col.status": "Status",
+  "col.name": "Name",
+  "col.address": "Address",
+  "col.protocol": "Protocol",
+  "col.tags": "Tags",
+  "col.folder": "Folder",
+  "col.lastConnect": "Last connected",
+  "col.actions": "Actions",
+  "col.selectAll": "Select all (Ctrl A)",
+
+  "batch.selected": "{n} selected",
+  "batch.connect": "Connect",
+  "batch.connectTitle": "Connect all selected",
+  "batch.edit": "Bulk edit",
+  "batch.export": "Export",
+  "batch.clear": "Clear selection",
+
+  "ctx.connect": "Connect",
+  "ctx.newWindow": "Connect in new window",
+  "ctx.otherCredential": "Connect with other credentials",
+  "ctx.edit": "Edit",
+  "ctx.duplicate": "Duplicate",
+  "ctx.copyAddress": "Copy address",
+  "ctx.copyUsername": "Copy username",
+  "ctx.shortcut": "Create desktop shortcut",
+  "ctx.delete": "Delete",
+
+  "row.select": "Select",
+  "row.connect": "Connect",
+  "row.editSoon": "Edit (coming soon)",
+  "row.more": "More",
+  "status.never": "Never",
+
+  "empty.none": "No servers yet",
+  "empty.filtered": "No servers in this view",
+
+  "toast.connectStarted": "Connection started: {name}",
+  "toast.connectFailed": "Failed to start connection",
+  "toast.batchConnectStarted": "Started {n} connections",
+  "toast.batchConnectFailed": "{n} connections failed to start",
+  "toast.noAddressToCopy": "No address to copy",
+  "toast.nothingToCopy": "No {what} to copy",
+  "toast.copied": "Copied {what}",
+  "toast.copyFailed": "Failed to copy {what}",
+
+  "page.settings": "Settings",
+  "page.editor": "Editor",
+  "placeholder.comingSoon": "Coming soon — {title}"
+}
