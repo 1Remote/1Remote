@@ -763,3 +763,38 @@ export const PROTOCOLS = {
     ],
   },
 }
+
+// ---------------------------------------------------------------------------
+// 批量编辑字段（Plan 2 Task 10）
+// ---------------------------------------------------------------------------
+
+/**
+ * 批量编辑表单的字段描述符：与后端 BatchPatchFieldMap 的 allow-list 一一对应
+ * （WebUiEditorService.cs；14 键）。与单机 schema 的 PascalCase 编辑器 json 域不同，
+ * 批量 patch 属列表 DTO 域——`key` 直接就是 camelCase patch 键（后端 allow-list 映射到
+ * C# 属性），也是批量表单 v-model 的绑定键。控件类型复用 FIELD 体系，FormField 直接渲染。
+ *
+ * 扩展属性（批量专用，FormField 不读取）：
+ *  - dtoKey：列表 DTO（/api/servers，camelCase）中对应字段名，用于计算 N 台共享值；
+ *    null = 列表 DTO 无此字段（note/password/inheritedCredentialName/askPasswordWhenConnect
+ *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值；
+ *  - protocols：协议专属字段（startupAutoCommand/startupPath/rdpFileAdditionalSettings）
+ *    的适用协议集（对照 BatchPatchFieldMap 注释）；所选服务器全部适用才显示该字段，
+ *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。
+ */
+export const BULK_FIELDS = [
+  { key: 'displayName', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.displayName', dtoKey: 'displayName' },
+  { key: 'note', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.note', dtoKey: null },
+  { key: 'tags', type: FIELD.TAGS, labelKey: 'editor.bulkField.tags', dtoKey: 'tags' },
+  { key: 'colorHex', type: FIELD.COLOR, labelKey: 'editor.bulkField.colorHex', dtoKey: 'color' },
+  { key: 'iconBase64', type: FIELD.ICON, labelKey: 'editor.bulkField.iconBase64', dtoKey: 'iconBase64' },
+  { key: 'address', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.address', dtoKey: 'address' },
+  { key: 'port', type: FIELD.NUMBER, required: true, asString: true, labelKey: 'editor.bulkField.port', dtoKey: 'port' },
+  { key: 'userName', type: FIELD.TEXT, labelKey: 'editor.bulkField.userName', dtoKey: 'userName' },
+  { key: 'password', type: FIELD.PASSWORD, labelKey: 'editor.bulkField.password', dtoKey: null },
+  { key: 'inheritedCredentialName', type: FIELD.CREDENTIAL, labelKey: 'editor.bulkField.inheritedCredentialName', dtoKey: null },
+  { key: 'askPasswordWhenConnect', type: FIELD.SWITCH, labelKey: 'editor.bulkField.askPasswordWhenConnect', dtoKey: null },
+  { key: 'startupAutoCommand', type: FIELD.TEXT, labelKey: 'editor.bulkField.startupAutoCommand', dtoKey: null, protocols: ['SSH', 'Telnet', 'Serial'] },
+  { key: 'startupPath', type: FIELD.TEXT, labelKey: 'editor.bulkField.startupPath', dtoKey: null, protocols: ['SFTP', 'FTP'] },
+  { key: 'rdpFileAdditionalSettings', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.rdpFileAdditionalSettings', dtoKey: null, protocols: ['RDP', 'RemoteApp'] },
+]

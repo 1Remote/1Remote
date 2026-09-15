@@ -181,7 +181,24 @@ function onDelete(server) {
   })
 }
 
+// ---- 批量编辑（Plan 2 Task 10）：批量条按钮 → 抽屉 bulk 模式 ----
+// 共享值计算需要列表 DTO：按勾选 id 从 servers 快照取（列表 DTO = camelCase 域，
+// 与批量 patch 同域）；快照里找不到的 id（列表恰在勾选后变化）直接跳过，以能取到的为准。
+function openBulkEdit(ids) {
+  const list = (ids || [])
+    .map((id) => servers.value.find((s) => s.id === id))
+    .filter(Boolean)
+  if (!list.length) return
+  editor.value = {
+    mode: 'bulk',
+    ds: list[0].dataSourceName || 'Local', // 后端 batch 端点单 ds；跨源勾选由抽屉内提示拦下
+    bulkIds: list.map((s) => s.id),
+    bulkServers: list,
+  }
+}
+
 // 保存成功：SSE 已自动刷新列表；这里收敛抽屉状态 + 清理指向旧行的选中态（名称/协议可能已变）
+// bulk 模式目标是一个 id 集，不涉及树叶选中回退。
 function onSaved({ id, mode }) {
   if (mode === 'edit' && selection.value?.serverId && selection.value.serverId !== id) {
     // 编辑目标的树叶选中态与保存对象不符（多选中残留）——保守回退，避免错误高亮
@@ -256,12 +273,13 @@ function onSaved({ id, mode }) {
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"
+        @bulk-edit="openBulkEdit"
         @edit="openEdit"
         @duplicate="openDuplicate"
         @delete="onDelete"
       />
 
-      <!-- 连接编辑抽屉（Plan 2 Task 8）：新建/编辑/复制入口共用；fixed 覆盖层，不参与 flex 布局 -->
+      <!-- 连接编辑抽屉（Plan 2 Task 8/10）：新建/编辑/复制/批量入口共用；fixed 覆盖层，不参与 flex 布局 -->
       <EditorDrawer
         v-if="editor"
         :mode="editor.mode"
@@ -270,6 +288,8 @@ function onSaved({ id, mode }) {
         :protocol="editor.protocol || ''"
         :initial-server="editor.initial || null"
         :duplicate-from="editor.duplicateFrom || ''"
+        :bulk-ids="editor.bulkIds || []"
+        :bulk-servers="editor.bulkServers || []"
         @close="editor = null"
         @saved="onSaved"
       />

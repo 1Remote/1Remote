@@ -50,7 +50,9 @@ export const api = {
   createServer: (json, ds) => request('/api/servers', { method: 'POST', body: { dataSourceName: ds ?? 'Local', json } }),
   updateServer: (id, json, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'PUT', body: { json } }),
   deleteServer: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
-  batchUpdate: (ids, patch) => request('/api/servers/batch', { method: 'POST', body: { ids, patch } }),
+  // 批量补丁：patch 键为 camelCase（列表 DTO 域，与后端 allow-list 对应）；ds 省略 = Local
+  batchUpdate: (ids, patch, ds) =>
+    request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
   icons: () => request('/api/icons'),
   credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),
   extractIcon: (path) => request('/api/icons/extract-from-exe', { method: 'POST', body: { path } }),
