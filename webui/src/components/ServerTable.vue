@@ -204,6 +204,9 @@ function onGlobalKey(e) {
   if (!tableFocused.value) return
   // 表格内的可交互控件（表头复选框/批量条按钮等）聚焦时不抢按键：Enter/空格留给原生行为
   if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return
+  // 按住不放的自动重复：Enter 会重复 emit connect（桌面端每个 invoke 各起一个会话任务，无去重），
+  // Ctrl+A 重复全选也无意义——直接忽略；↑↓ 保留重复（按住快速导航是预期行为）
+  if (e.repeat && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault() // 阻止页面/滚动容器滚动，光标移动优先
     moveCursor(e.key === 'ArrowDown' ? 1 : -1)

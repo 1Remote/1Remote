@@ -134,7 +134,8 @@ function onRowClick(row) {
 }
 
 function onRowDblclick(row) {
-  if (row.kind === 'server') emit('connect', row.server.id) // 实际连接动作 Task 18 接线（父级暂可忽略）
+  // 双击服务器叶 = 连接：emit 到父级（ServerListView）经 api.connect 发起，桌面端接管会话（Task 18 已接线）
+  if (row.kind === 'server') emit('connect', row.server.id)
 }
 
 // ---- 展示辅助
