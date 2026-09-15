@@ -91,6 +91,17 @@ jobs:
       #     echo ${{env.BuildVersion}}
       #     echo ${{env.PreRelease}}
 
+      # Build the Web UI before publishing: Ui.csproj copies webui/dist/** into the
+      # publish output wwwroot/, so both net9 publish steps below ship the web ui.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build webui
+        run: |
+          cd webui
+          npm ci
+          npm run build
+
       ## Publish the application Net4.8
       #- name: Publish the application Net4.8
       #  run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
