@@ -1,6 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using _1RM.Model;
+using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.Model;
 
 namespace _1RM.Service.WebUi
 {
@@ -15,7 +20,8 @@ namespace _1RM.Service.WebUi
         /// Address/Port/UserName 分属不同基类层级，按实际类型模式匹配取值，
         /// 不具备该层级的协议（如 Dummy）对应字段留空串。
         /// </summary>
-        public static ServerDto FromServer(ProtocolBase server, string dataSourceName)
+        /// <param name="lastConnectTime">来自 ProtocolBaseViewModel.LastConnectTime（LocalityConnectRecorder 缓存），默认 MinValue 映射为 0</param>
+        public static ServerDto FromServer(ProtocolBase server, string dataSourceName, DateTime lastConnectTime = default)
         {
             string address = string.Empty;
             string port = string.Empty;
@@ -45,9 +51,56 @@ namespace _1RM.Service.WebUi
                 IconBase64 = server.IconBase64 ?? string.Empty,
                 DataSourceName = dataSourceName ?? string.Empty,
                 FolderPath = server.TreeNodes != null ? string.Join("/", server.TreeNodes) : string.Empty,
-                LastConnectTime = 0, // Task 4 从 LocalityConnectRecorder 填充
-                ConnectionState = "disconnected",
+                LastConnectTime = lastConnectTime <= DateTime.MinValue
+                    ? 0
+                    : new DateTimeOffset(lastConnectTime).ToUnixTimeSeconds(),
+                ConnectionState = WebUiConstants.StatusDisconnected,
             };
+        }
+
+        /// <summary>
+        /// 数据源 → <see cref="DataSourceDto"/>；ServerCount 按缓存的服务器列表统计（剔除分组头与临时会话）。
+        /// </summary>
+        public static DataSourceDto FromDataSource(DataSourceBase ds)
+        {
+            return new DataSourceDto
+            {
+                Name = ds.DataSourceName ?? string.Empty,
+                Type = ds.DatabaseType switch
+                {
+                    DatabaseType.Sqlite => "sqlite",
+                    DatabaseType.MySql => "mysql",
+                    DatabaseType.PostgreSQL => "pgsql",
+                    _ => ds.DatabaseType.ToString().ToLowerInvariant(),
+                },
+                Status = ds.Status switch
+                {
+                    EnumDatabaseStatus.OK => WebUiConstants.StatusConnected,
+                    EnumDatabaseStatus.LostConnection => WebUiConstants.StatusReconnecting,
+                    _ => WebUiConstants.StatusDisconnected,
+                },
+                Writable = ds.IsWritable,
+                ReconnectInfo = ds.ReconnectInfo ?? string.Empty,
+                ServerCount = ds.CachedProtocols.Count(x => x.Server is not Dummy && !x.Server.IsTmpSession()),
+            };
+        }
+
+        /// <summary>
+        /// 标签聚合快照：GlobalData.TagList 由 ReloadTagsFromServers 维护（含 IsPinned/计数）。
+        /// </summary>
+        public static List<TagDto> BuildTags(GlobalData gd)
+        {
+            lock (gd) // 对齐 GlobalData 的锁策略
+            {
+                return gd.TagList
+                    .Select(t => new TagDto
+                    {
+                        Name = t.Name,
+                        Count = t.ItemsCount,
+                        IsPinned = t.IsPinned,
+                    })
+                    .ToList();
+            }
         }
     }
 }
