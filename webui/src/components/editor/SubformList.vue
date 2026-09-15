@@ -26,6 +26,8 @@ const props = defineProps({
   modelValue: { type: Array, default: null },
   /** 新行初值（subform.rowDefaults，如 AppArgument 的 Type:'Normal' 等） */
   rowDefaults: { type: Object, default: () => ({}) },
+  /** credential 字段的凭据库数据源（透传给行内 FormField/CredentialPicker） */
+  dataSourceName: { type: String, default: '' },
   /** 可选行 key 生成器 (row, index) => string；缺省用索引（无稳定业务键） */
   rowKey: { type: Function, default: null },
 })
@@ -67,6 +69,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
           :key="f.key"
           :field="f"
           :model-value="row[f.key]"
+          :data-source-name="dataSourceName"
           @update:model-value="(v) => updateRowField(i, f.key, v)"
         />
       </div>

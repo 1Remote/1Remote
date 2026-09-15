@@ -187,6 +187,11 @@ function onKey(e) {
     e.preventDefault() // 抢在浏览器「保存网页」前
     save()
   } else if (e.key === 'Escape') {
+    // 字段内下拉（协议切换/凭据选择等 n-select 菜单）打开时，Esc 只关下拉：naive 只标记
+    // 事件不阻断冒泡（Select.mjs 的 markEventEffectPerformed），到达此处时菜单可能已被其
+    // 关闭但 DOM 要到本事件结束后才卸下——存在性即「刚刚有下拉在开」，此时不消费 Esc。
+    // IconPicker 弹窗的 Esc 由其自身捕获阶段拦截（见 IconPicker.vue），不会走到这里。
+    if (document.querySelector('.n-base-select-menu')) return
     e.preventDefault()
     requestClose()
   }
@@ -329,6 +334,7 @@ onBeforeUnmount(() => {
               :key="f.key"
               :field="f"
               :model-value="json[f.key]"
+              :data-source-name="dataSourceName"
               @update:model-value="(v) => setField(f.key, v)"
             />
           </div>
