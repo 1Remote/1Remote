@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Shawn.Utils.Wpf.Image;
 using _1RM.Model;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
+using _1RM.Resources.Icons;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.Locality;
@@ -212,6 +218,70 @@ namespace _1RM.Service.WebUi
                 };
             });
 
+            // 内置图标列表：ServerIcons 单例（Ui 程序集 .g.resources 内嵌 PNG，有序 base64，无名称）。
+            // 装载在单例构造的 Task.Factory.StartNew 后台执行——只依赖程序集资源与 GDI/WPF 位图转换，
+            // 不需要 WPF Application（测试宿主同样可用）；桌面进程在启动期（LauncherWindowView）已调
+            // ServerIcons.Init() 预热，通常早已就绪。本端点对首访竞态做有界等待（空列表最多等 3s），
+            // 随后快照返回——拷贝期间后台仍可能并发 Add（抛 InvalidOperationException），重试一次吸收。
+            app.MapGet("/api/icons", () =>
+            {
+                var icons = ServerIcons.Instance.IconsBase64;
+                var deadline = Environment.TickCount64 + 3000;
+                while (icons.Count == 0 && Environment.TickCount64 < deadline)
+                {
+                    Thread.Sleep(50);
+                }
+                return Results.Json(new { icons = CopyListWithRetry(icons) });
+            });
+
+            // 凭据库名称列表：供编辑器「继承凭据」下拉。GetCredentials 自带缓存判定
+            // （NeedRead 时读库）与 lock(this)（数据源实例锁，与 GlobalData 的锁无关），无需 lock(gd)。
+            // 未知数据源 → 404（只读名称清单，读库失败语义与 WPF 一致：状态异常时返回缓存）。
+            app.MapGet("/api/credentials/names", (string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var dataSource = IoC.Get<DataSourceService>().GetDataSource(dataSourceName);
+                if (dataSource == null)
+                    return Results.NotFound();
+                var names = dataSource.GetCredentials().Select(x => x.Name).ToList();
+                return Results.Json(new { names });
+            });
+
+            // exe 图标提取：与 WPF 图标选择器同一路径（IconPopupDialogViewModel.CmdSelectImage 的
+            // .exe 分支：ExtractAssociatedIcon → CreateBitmapSourceFromHIcon），base64 转换复用
+            // 编辑器保存时的 BitmapSource.ToBase64()（→ System.Drawing Bitmap → PNG）。
+            // 路径缺失/非 .exe → 404（与 VM 分支语义一致：仅 .exe 受理）；其余失败（提取/转换异常）→ 500。
+            app.MapPost("/api/icons/extract-from-exe", (ExtractIconRequest? body) =>
+            {
+                var path = body?.Path?.Trim();
+                if (string.IsNullOrWhiteSpace(path))
+                    return Results.BadRequest(new { error = "body must contain a 'path' string" });
+                if (!path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) || !File.Exists(path))
+                    return Results.NotFound();
+                try
+                {
+                    using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
+                    if (icon == null)
+                        return Results.NotFound();
+                    var img = Imaging.CreateBitmapSourceFromHIcon(
+                        icon.Handle,
+                        new Int32Rect(0, 0, icon.Width, icon.Height),
+                        BitmapSizeOptions.FromEmptyOptions());
+                    img.Freeze(); // Kestrel 线程上创建即用；Freeze 解除 Dispatcher 线程亲和，转换可安全进行
+                    return Results.Json(new { iconBase64 = img.ToBase64() });
+                }
+                catch (FileNotFoundException)
+                {
+                    return Results.NotFound(); // 检查与提取之间文件被删：按缺失语义 404
+                }
+                catch (Exception)
+                {
+                    return Results.Json(new { error = "failed to extract icon from exe" }, statusCode: 500);
+                }
+            });
+
             // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
             // data 为本连接内重载次数（每连接独立从 0 起计）——前端收到后重新拉取 /api/servers 等即可，
             // 无重载时每 15s 写一行注释心跳保活；断开（RequestAborted）在 finally 中退订。
@@ -368,6 +438,23 @@ namespace _1RM.Service.WebUi
                 EditorSaveStatus.NotFound => Results.NotFound(),
                 _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
             };
+        }
+
+        /// <summary>
+        /// 拷贝静态图标缓存列表：ServerIcons 后台装载任务会向 IconsBase64 原地 Add，
+        /// 并发拷贝（构造器枚举）可能因集合被修改抛 InvalidOperationException，重拷一次；
+        /// 再失败说明持续装载中，让异常冒泡交由上层 500（与 CopyDictionaryWithRetry 同款语义）。
+        /// </summary>
+        private static List<string> CopyListWithRetry(List<string> source)
+        {
+            try
+            {
+                return new List<string>(source);
+            }
+            catch (InvalidOperationException)
+            {
+                return new List<string>(source);
+            }
         }
 
         /// <summary>

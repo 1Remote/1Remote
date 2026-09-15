@@ -101,4 +101,13 @@ namespace _1RM.Service.WebUi
         public string? Ds { get; set; }
         public JsonElement? Patch { get; set; }
     }
+
+    /// <summary>
+    /// POST /api/icons/extract-from-exe 请求体：{path}。path 为 exe 的绝对路径；
+    /// 与 WPF 图标选择器同一分支语义（IconPopupDialogViewModel：仅 .exe 走 ExtractAssociatedIcon）。
+    /// </summary>
+    public class ExtractIconRequest
+    {
+        public string? Path { get; set; }
+    }
 }

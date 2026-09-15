@@ -32,6 +32,9 @@ export const api = {
   getTreeState: () => request('/api/ui-state/tree'),
   saveTreeState: (s) => request('/api/ui-state/tree', { method: 'PUT', body: s }),
   batchUpdate: (ids, patch) => request('/api/servers/batch', { method: 'POST', body: { ids, patch } }),
+  icons: () => request('/api/icons'),
+  credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),
+  extractIcon: (path) => request('/api/icons/extract-from-exe', { method: 'POST', body: { path } }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */
