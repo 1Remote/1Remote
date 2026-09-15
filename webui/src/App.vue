@@ -4,7 +4,7 @@ const naive = useNaiveTheme()
 </script>
 
 <template>
-  <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides" style="height: 100vh">
+  <n-config-provider :theme="naive.theme" :theme-overrides="naive.overrides">
     <n-message-provider>
       <div class="shell">
         <header class="topbar">
@@ -12,7 +12,7 @@ const naive = useNaiveTheme()
           <!-- Task 13 先放只读搜索框占位；Task 17 接线防抖搜索与 Ctrl K -->
           <div class="searchbox">⌕ 搜索服务器、标签…</div>
           <div class="topbar-actions">
-            <n-button quaternary size="small">＋</n-button>
+            <n-button quaternary size="small" title="Task 14">＋</n-button>
             <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
           </div>
         </header>
@@ -59,5 +59,6 @@ const naive = useNaiveTheme()
 .main {
   display: flex;
   min-height: 0;
+  min-width: 0; /* 防止内容区宽内容（Tasks 15-18）横向撑破外壳 */
 }
 </style>

@@ -10,5 +10,6 @@ export const router = createRouter({
     { path: '/', name: 'servers', component: ServerListView },
     { path: '/settings', name: 'settings', component: PlaceholderView, props: { title: 'Settings' } },
     { path: '/editor', name: 'editor', component: PlaceholderView, props: { title: 'Editor' } },
+    { path: '/:pathMatch(.*)*', redirect: '/' }, // 兜底：未知路径回服务器列表
   ],
 })
