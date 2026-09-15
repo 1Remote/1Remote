@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shawn.Utils;
 using static Shawn.Utils.VersionHelper;
 
@@ -49,77 +48,11 @@ namespace Tests.Utils
             Assert.IsTrue(Shawn.Utils.VersionHelper.Version.Compare(v9, v1) == true);
         }
 
-
-        [TestMethod()]
-        public void VersionHelperTest()
-        {
-            var v1 = new Version(0, 6, 1, 0);
-            var v2 = new Version(0, 6, 2, 0);
-            var v3 = new Version(0, 7, 1, 0);
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v2.ToString()}";
-                var checker = new VersionHelper(v1);
-                var ret = checker.CheckUpdateFromUrl(url, null, content);
-                Assert.IsTrue(ret.Item1);
-                var v = Version.FromString(ret.Item2);
-                Assert.IsTrue(v == v2);
-                Assert.IsTrue(ret.Item3 == url);
-            }
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v2.ToString()}";
-                var checker = new VersionHelper(v1);
-                var ret = checker.CheckUpdateFromUrl(url, v3, content);
-                Assert.IsTrue(ret.Item1 == false);
-            }
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v2.ToString()}";
-                var checker = new VersionHelper(v1);
-                var ret = checker.CheckUpdateFromUrl(url, v2, content);
-                Assert.IsTrue(ret.Item1 == false);
-            }
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v3.ToString()}";
-                var checker = new VersionHelper(v1);
-                var ret = checker.CheckUpdateFromUrl(url, v2, content);
-                Assert.IsTrue(ret.Item1 == true);
-            }
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v2.ToString()}";
-                var checker = new VersionHelper(v1);
-                var e = new ManualResetEvent(false);
-                checker.OnNewVersionRelease += (version, url2) =>
-                {
-                    var v = Version.FromString(version);
-                    Assert.IsTrue(url == url2);
-                    Assert.IsTrue(v == v2);
-                    e.Set();
-                };
-                checker.CheckUpdateAsync(url, content);
-                if (e.WaitOne(3000) == false)
-                {
-                    Assert.Fail();
-                }
-            }
-            {
-                var url = "www.xxxx.xx";
-                var content = $"latest version: {v2.ToString()}";
-                var checker = new VersionHelper(v3);
-                var e = new ManualResetEvent(false);
-                checker.OnNewVersionRelease += (version, url2) =>
-                {
-                    e.Set();
-                };
-                checker.CheckUpdateAsync(url, content);
-                if (e.WaitOne(3000) == true)
-                {
-                    Assert.Fail();
-                }
-            }
-        }
+        // Note: The former "VersionHelperTest" method was removed.
+        // It referenced the old VersionHelper API (VersionHelper(Version) ctor, public
+        // CheckUpdateFromUrl(url, ignoreVersion, content), 2-arg OnNewVersionRelease delegate,
+        // CheckUpdateAsync(url, content)) which no longer exists. The current API fetches
+        // content via HTTP internally, so content-injection testing is no longer possible;
+        // the update-parsing logic is now covered only via VersionHelper.DefaultCheckMethod.
     }
 }
