@@ -10,6 +10,7 @@
                          xmlns:service="clr-namespace:_1RM.Service"
                          xmlns:Rm="clr-namespace:_1RM"
                          xmlns:locality="clr-namespace:_1RM.Service.Locality"
+                         xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                          mc:Ignorable="d"
                          BorderThickness="0"
                          BorderBrush="Transparent"
@@ -603,6 +604,10 @@
                 </ContentControl>
             </Grid>
         </Grid>
+
+        <!-- Web 界面引擎壳：覆盖内容区（避开顶部 40px 标题栏），
+             放在 TopLevel 遮罩层之前以保证等待/弹窗动画仍然可见 -->
+        <wpf:WebView2 x:Name="WebUI" Margin="0,40,0,0" Visibility="Collapsed" />
 
         <Grid Background="Transparent">
             <Grid.Style>
