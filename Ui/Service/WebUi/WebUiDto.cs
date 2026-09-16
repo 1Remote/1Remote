@@ -40,6 +40,11 @@ namespace _1RM.Service.WebUi
         public bool Writable { get; set; } = true;
         public string ReconnectInfo { get; set; } = string.Empty;
         public int ServerCount { get; set; }
+        /// <summary>
+        /// 连接参数视图（camelCase 序列化）：sqlite = {path}；mysql/pgsql = {host, port, databaseName, userName}。
+        /// 安全红线：绝不包含密码（明文密码只在 POST/PUT 请求方向存在，读方向无）。
+        /// </summary>
+        public object? Config { get; set; }
     }
 
     public class TagDto
@@ -240,5 +245,48 @@ namespace _1RM.Service.WebUi
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public string? PrivateKeyPath { get; set; }
+    }
+
+    /// <summary>
+    /// POST /api/datasources 请求体（Plan 3 Task 3）。type: sqlite|mysql|pgsql（postgresql 同义）；
+    /// name 缺省时 sqlite 从 config.path 文件名推导；重名（忽略 CurrentCulture 大小写，WPF 同款）→ 409。
+    /// config.password 仅 mysql/pgsql：POST 为新建语义传明文（必填，WPF 弹窗同款）；PUT 空/缺失 = 保持。
+    /// </summary>
+    public class DataSourceSaveRequest
+    {
+        public string? Type { get; set; }
+        public string? Name { get; set; }
+        public DataSourceConfigInput? Config { get; set; }
+    }
+
+    /// <summary>PUT /api/datasources/{name} 请求体：{config:{...}}（字段缺失 = 保持不变）。</summary>
+    public class DataSourceConfigRequest
+    {
+        public DataSourceConfigInput? Config { get; set; }
+    }
+
+    /// <summary>
+    /// 数据源连接参数（camelCase 绑定）。port 1-65535；password 仅写方向存在——
+    /// PUT 语义：null/空串 = 保持原密码（Mysql/Pgsql Password setter 收 "" 会清空）。
+    /// </summary>
+    public class DataSourceConfigInput
+    {
+        public string? Path { get; set; }            // sqlite
+        public string? Host { get; set; }            // mysql/pgsql
+        public int? Port { get; set; }               // mysql/pgsql
+        public string? DatabaseName { get; set; }    // mysql/pgsql
+        public string? UserName { get; set; }        // mysql/pgsql
+        public string? Password { get; set; }        // mysql/pgsql（明文，写方向）
+    }
+
+    /// <summary>
+    /// PUT /api/settings/runners 请求体：{protocols:{SSH:{selectedRunnerName, runners:[...]}}, ...}。
+    /// protocols 值的顶层键 camelCase（selectedRunnerName/runners，反序列化大小写不敏感）；
+    /// runners 数组为 Newtonsoft PascalCase + $type 直通域（与 GET 原样往返，勿做命名转换）。
+    /// 缺失的协议 = 保持不变；未知协议键 → 400。
+    /// </summary>
+    public class RunnersSaveRequest
+    {
+        public JsonElement? Protocols { get; set; }
     }
 }

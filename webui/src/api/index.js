@@ -83,6 +83,23 @@ export const api = {
     request('/api/tags/rename', { method: 'POST', body: { ds: ds ?? 'Local', from, to } }),
   deleteTag: (name, ds) =>
     request(`/api/tags/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
+  // 数据源管理（Plan 3 Task 3）：type = sqlite|mysql|pgsql（postgresql 同义）；name 缺省时 sqlite 由
+  // 后端从 path 文件名推导；config.password 仅写方向（新建必填、PUT 空=保持原密码），任何读接口无密码。
+  // POST 保存后即返回实际 status（连接失败不回滚，与 WPF 一致——先 testDataSource 验证再保存）。
+  // DELETE：数据源下仍有服务器时返回 409 {serverCount}，keepServers=true 确认后按 WPF 语义移除
+  //（服务器留在库文件中，不迁移不删除）。
+  addDataSource: (type, config, name) =>
+    request('/api/datasources', { method: 'POST', body: { type, name, config } }),
+  updateDataSource: (name, config) =>
+    request(`/api/datasources/${encodeURIComponent(name)}`, { method: 'PUT', body: { config } }),
+  deleteDataSource: (name, keepServers = false) =>
+    request(`/api/datasources/${encodeURIComponent(name)}${keepServers ? '?keepServers=true' : ''}`, { method: 'DELETE' }),
+  testDataSource: (name, config) =>
+    request(`/api/datasources/${encodeURIComponent(name)}/test`, { method: 'POST', body: { config } }),
+  // 运行器配置：整体往返 {protocols:{SSH:{selectedRunnerName, runners:[...]}}}——runners 数组为
+  // PascalCase + $type 直通域（与 GET 原样往返，勿做命名转换）；PUT 缺失协议=保持，未知协议 400
+  getRunners: () => request('/api/settings/runners'),
+  saveRunners: (protocols) => request('/api/settings/runners', { method: 'PUT', body: { protocols } }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */
