@@ -309,14 +309,18 @@ namespace _1RM.View
 
         /// <summary>
         /// 网页 topbar 请求拖动窗口：WebView2 是 HwndHost（airspace），WPF 覆盖条无法浮于其上
-        /// 接收鼠标，故由页面在“按住左键并移动超过阈值”后发来 'window-drag'，此处接管 DragMove。
-        /// DragMove 要求左键按下（消息往返期间可能已松开）；最大化状态先还原并让窗口中心跟随光标
-        /// （与 WindowBase.WinTitleBar_OnPreviewMouseMove 行为一致）；ReleaseCapture 先解除
-        /// WebView2 子窗口的鼠标捕获，使 SC_DRAG 模态移动循环接管输入。
+        /// 接收鼠标，故由页面在“按住左键并移动超过阈值”后发来 'window-drag'，此处接管拖动。
+        /// 关键：不能用 WPF 的 <see cref="Mouse"/>.LeftButton 判定（Window.DragMove 内部同款检查）——
+        /// 按下发生在 WebView2 子 HWND，其消息不进入 WPF 输入栈，MouseDevice 状态对 HwndHost 内
+        /// 的按下不可靠（可能仍报 Released → 守卫静默返回 / DragMove 抛 InvalidOperationException
+        /// 被吞，表现为“完全拖不动”）。改用 Win32 GetKeyState(VK_LBUTTON) 取物理键态，并以
+        /// SendMessage(WM_SYSCOMMAND, SC_DRAG) 进入系统移动循环（DragMove 的裸实现，无 WPF 态检查）。
+        /// 最大化状态先还原并让窗口中心跟随光标（与 WindowBase.WinTitleBar_OnPreviewMouseMove 一致）；
+        /// ReleaseCapture 先解除 WebView2 子窗口的鼠标捕获，使 SC_DRAG 模态移动循环接管输入。
         /// </summary>
         private void DragWindowFromWeb()
         {
-            if (Mouse.LeftButton != MouseButtonState.Pressed)
+            if (IsLeftButtonPressed() != true)
                 return;
             if (this.WindowState == WindowState.Maximized)
             {
@@ -330,13 +334,30 @@ namespace _1RM.View
             try
             {
                 ReleaseCapture();
-                this.DragMove();
+                // SC_DRAG(0xF012) = DragMove 的底层实现（WM_SYSCOMMAND DefWindowProc 移动循环），
+                // 绕过 Window.DragMove 的 Mouse.LeftButton 检查（该状态对 HwndHost 内按下不可靠）
+                SendMessage(new System.Runtime.InteropServices.HandleRef(this, new System.Windows.Interop.WindowInteropHelper(this).Handle),
+                    0x0112 /*WM_SYSCOMMAND*/, (IntPtr)0xF012 /*SC_DRAG*/, IntPtr.Zero);
             }
-            catch (InvalidOperationException)
+            catch (Exception e)
             {
                 // 左键在消息往返期间已松开等，忽略本次拖拽
+                SimpleLogHelper.Warning($"web drag failed: {e.Message}");
             }
         }
+
+        /// <summary>Win32 VK_LBUTTON 物理键态（高位=按下）：与 WPF MouseDevice 不同，
+        /// 不依赖消息进入 WPF 输入栈，对 WebView2（HwndHost）内的按下同样准确。</summary>
+        private static bool IsLeftButtonPressed()
+        {
+            return (GetKeyState(0x01 /*VK_LBUTTON*/) & 0x8000) != 0;
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern short GetKeyState(int nVirtKey);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(System.Runtime.InteropServices.HandleRef hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         /// <summary>
         /// 推送当前最大化状态给网页（window.__setWinState，页面侧切换 max/restore 图标）。

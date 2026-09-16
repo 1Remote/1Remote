@@ -148,6 +148,15 @@ namespace Tests.Service.WebUi
                 Assert.IsTrue(on.Dto!.RequireSecondaryVerification, "写入已 await 完成，响应回读值应为 true");
                 Assert.IsTrue(await SecondaryVerificationHelper.GetEnabled(), "GetEnabled（VerifyAsyncUi 判定源）应返回 true——reveal 将触发验证");
 
+                // fix-batch2 #11：启用后同样做“进程重启”语义校验——缓存失效后按机器状态重读必须仍为
+                // true（三级写入若未真正落地，重启/重读后 GetEnabled 变 false，reveal 会重新直通：
+                // VerifyAsyncUi 在 GetEnabled()==false 时直接放行不弹验证）。
+                typeof(SecondaryVerificationHelper).GetField("_isEnabled",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+                    .SetValue(null, (bool?)null);
+                Assert.IsTrue(await SecondaryVerificationHelper.GetEnabled(),
+                    "启用后机器状态重读（重启语义）应为 true——否则进程重启后 reveal 仍直通");
+
                 // 关闭路径同验（也为还原做铺垫）：回读 false
                 var off = await WebUiSettingsService.ApplyGeneralAsync(cs,
                     new GeneralSettingsUpdateRequest { RequireSecondaryVerification = false });
