@@ -24,6 +24,7 @@ import { naturalIpCompare } from '../utils/compare'
 const props = defineProps({
   servers: { type: Array, default: () => [] },
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
+  query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：透传给行做命中高亮
 })
 const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted'])
 const { t } = useI18n()
@@ -513,6 +514,7 @@ onBeforeUnmount(() => {
           :cursor="s.id === cursorId"
           :show-folder="showFolder"
           :hidden-cols="hiddenCols"
+          :query="query"
           :data-id="s.id"
           :draggable="isCustom"
           :class="{
@@ -539,6 +541,7 @@ onBeforeUnmount(() => {
         :cursor="s.id === cursorId"
         :show-folder="showFolder"
         :hidden-cols="hiddenCols"
+        :query="query"
         :data-id="s.id"
         :draggable="isCustom"
         :class="{

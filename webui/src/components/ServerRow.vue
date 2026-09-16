@@ -4,17 +4,20 @@
 // 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
 // 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）。
 import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 import StatusDot from './StatusDot.vue'
 import ProtocolBadge from './ProtocolBadge.vue'
 import { formatRelativeTime } from '../utils/time'
+import { splitHighlight } from '../utils/highlight'
 
-defineProps({
+const props = defineProps({
   server: { type: Object, required: true },
   selected: { type: Boolean, default: false }, // 复选框勾选态（批量操作）
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
   cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
   hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/folder/time: bool}
+  query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：非空时名称/地址单元格做命中高亮
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
 const { t, locale } = useI18n()
@@ -28,6 +31,11 @@ const overflow = (s) => Math.max(0, s.tags.length - 2)
 // 从未连接 = formatRelativeTime 返回 null 时的占位文案；相对时间显式注入当前 i18n locale
 // （渲染期读 locale.value，语言切换即时重格式化，不再依赖 navigator.language）
 const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.value) || t('status.never')
+
+// 搜索命中高亮分段（fix-batch1 #1）：查询非空时名称/地址同时高亮；拼音等无法定位原文的
+// 命中不高亮（splitHighlight 内处理，见其文件头注释）
+const nameSegs = computed(() => splitHighlight(props.server.displayName, props.query))
+const addrSegs = computed(() => splitHighlight(addressText(props.server), props.query))
 </script>
 
 <template>
@@ -49,9 +57,9 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
         class="icon icon-fb"
         :style="server.color ? { background: server.color + '26', color: server.color } : null"
       >{{ initial(server.protocol) }}</span>
-      <span class="name">{{ server.displayName }}</span>
+      <span class="name"><template v-for="(seg, i) in nameSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></span>
     </div>
-    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)">{{ addressText(server) }}</div>
+    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)"><template v-for="(seg, i) in addrSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></div>
     <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
     <div class="cell cell-tags" :title="server.tags.join(t('row.tagSep'))">
       <!-- 循环变量命名 tag：避免遮蔽 i18n 的 t（title 属性在循环外也用到 t） -->
@@ -177,6 +185,12 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-1);
+}
+
+/* 搜索命中高亮（fix-batch1 #1）：mark 语义的强调底色（不加粗，保持行高一致） */
+.hl {
+  background: var(--accent-container);
+  border-radius: 2px;
 }
 
 .tag {

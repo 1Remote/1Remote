@@ -25,8 +25,9 @@ namespace Tests.Service.WebUi
     /// 关键约定：
     /// - general/launcher 为白名单部分更新（body 中缺失的键 = 保持不变），写后走 ConfigurationService.Save()；
     /// - language 归一小写（web 端 zh-CN → 存储值 zh-cn），校验 14 个内置语言码，非法 400 且零写入；
-    /// - requireSecondaryVerification 的写入走 SecondaryVerificationHelper.SetEnabled（async void，
-    ///   落注册表/凭据管理器——宿主机状态），测试只验证 GET 暴露，不 PUT 该字段；
+    /// - requireSecondaryVerification 的写入走 SecondaryVerificationHelper.SetEnabledAsync
+    ///   （可等待：写注册表/凭据管理器——宿主机状态，用例 finally 还原）；fix #13 用例
+    ///   经端点同款编排（ApplyGeneralAsync）断言 GetEnabled 判定源随写入同步翻转；
     /// - launcher 热键为 WPF 枚举：线格式 = 枚举成员名（"ControlAlt"/"M"），PUT 额外接受 "Ctrl+Alt"
     ///   显示形态；测试环境未注册 LauncherWindowViewModel → 重注册静默跳过（PUT 仍 200）；
     /// - 标签重命名/删除复刻 TagActionHelper.CmdTagRename/CmdTagDelete 的核心循环（大小写语义：
@@ -126,6 +127,43 @@ namespace Tests.Service.WebUi
                 cs.General.ConfirmBeforeClosingSession = origConfirm;
                 cs.General.CopyPortWhenCopyAddress = origCopyPort;
                 cs.Save();
+            }
+        }
+
+        [TestMethod]
+        public async Task PutGeneral_RequireSecondaryVerification_EndpointPathUpdatesFlagSource()
+        {
+            // fix #13：PUT requireSecondaryVerification 必须让 VerifyAsyncUi 的判定源
+            // （GetEnabled → _isEnabled 缓存/机器状态）同步翻转——否则勾选后 reveal 仍直通。
+            // 直接调用端点同款编排（WebUiSettingsService.ApplyGeneralAsync，PUT handler 内即此调用），
+            // 断言「写入返回时缓存已生效」+「缓存失效后按机器状态重读仍一致」。
+            // 注意：本用例会写宿主机状态（注册表 HKCU/凭据管理器），finally 还原为用例前取值。
+            var cs = _1RM.IoC.Get<ConfigurationService>();
+            var before = await SecondaryVerificationHelper.GetEnabled();
+            try
+            {
+                var on = await WebUiSettingsService.ApplyGeneralAsync(cs,
+                    new GeneralSettingsUpdateRequest { RequireSecondaryVerification = true });
+                Assert.AreEqual(SettingsApplyStatus.Ok, on.Status);
+                Assert.IsTrue(on.Dto!.RequireSecondaryVerification, "写入已 await 完成，响应回读值应为 true");
+                Assert.IsTrue(await SecondaryVerificationHelper.GetEnabled(), "GetEnabled（VerifyAsyncUi 判定源）应返回 true——reveal 将触发验证");
+
+                // 关闭路径同验（也为还原做铺垫）：回读 false
+                var off = await WebUiSettingsService.ApplyGeneralAsync(cs,
+                    new GeneralSettingsUpdateRequest { RequireSecondaryVerification = false });
+                Assert.AreEqual(SettingsApplyStatus.Ok, off.Status);
+                Assert.IsFalse(off.Dto!.RequireSecondaryVerification);
+                Assert.IsFalse(await SecondaryVerificationHelper.GetEnabled());
+
+                // 缓存失效后强制重读机器状态：与缓存一致（写入确实落了机器，重启后同值）
+                typeof(SecondaryVerificationHelper).GetField("_isEnabled",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+                    .SetValue(null, (bool?)null);
+                Assert.IsFalse(await SecondaryVerificationHelper.GetEnabled(), "机器状态重读应与写入值一致");
+            }
+            finally
+            {
+                await SecondaryVerificationHelper.SetEnabledAsync(before); // 还原宿主机状态（尽力而为）
             }
         }
 

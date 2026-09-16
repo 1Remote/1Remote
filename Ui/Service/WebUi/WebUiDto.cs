@@ -164,7 +164,7 @@ namespace _1RM.Service.WebUi
         public bool? TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow { get; set; }
         public bool? CopyPortWhenCopyAddress { get; set; }
         public bool? DoNotCheckNewVersion { get; set; }
-        /// <summary>写路径走 SecondaryVerificationHelper.SetEnabled（async void，注册表/凭据管理器机器状态）。</summary>
+        /// <summary>写路径走 SecondaryVerificationHelper.SetEnabledAsync（可等待，注册表/凭据管理器机器状态，返回前完成并刷新缓存）。</summary>
         public bool? RequireSecondaryVerification { get; set; }
     }
 
