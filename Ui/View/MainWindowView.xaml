@@ -51,7 +51,8 @@
                 </Style>
             </Grid.Style>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"></RowDefinition>
+                <!-- 标题行：Web 引擎时网页 topbar 接管标题栏，代码中（SetWebShellChrome）将此行收为 0 并折叠行内控件 -->
+                <RowDefinition x:Name="TitleRow" Height="40"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -67,7 +68,7 @@
             </Grid>
 
             <!-- System Button Area -->
-            <StackPanel Grid.Row="0"
+            <StackPanel x:Name="WinSysButtons" Grid.Row="0"
                         Orientation="Horizontal" HorizontalAlignment="Right">
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                     <TextBox Width="150" Height="25" FontSize="12"
@@ -605,7 +606,8 @@
             </Grid>
         </Grid>
 
-        <!-- Web 界面引擎壳：覆盖内容区（避开顶部 40px 标题栏）。
+        <!-- Web 界面引擎壳：XAML 默认为 Desktop 布局（避开顶部 40px 标题栏）；
+             Web 引擎时由 SetWebShellChrome 将标题行收 0 并令本控件铺满整窗。
              注意 WebView2 为 HwndHost（airspace）：其 HWND 恒浮于本窗口内所有 WPF 内容之上，
              XAML 层级对它无效，TopLevel 遮罩(等待动画/弹窗)显示期间须在代码中隐藏本控件，
              见 MainWindowView.xaml.cs 中对 TopLevelViewModel 的处理 -->
