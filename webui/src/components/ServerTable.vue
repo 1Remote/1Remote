@@ -1,6 +1,7 @@
 <script setup>
 // 行列表（spec §3.4，Task 16）：div+flex 自写轻量表格（列配置以 CSS 变量形式驱动表头/行对齐）。
-// - 过滤：selection 非空 → 数据源匹配 + 文件夹递归含子级（spec §3.2，根=整库）；serverId 仅作行高亮
+// - 过滤：selection 非空 → 数据源匹配 + 文件夹仅直接子级（fix-batch2 #2 资源管理器式浏览：
+//   子文件夹以文件夹行呈现，其内服务器进入后才可见；数据源根=整库递归）；搜索激活时树过滤整体让位；serverId 仅作行高亮
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化（列宽列显 Plan 4）
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选；视图变化剔除不可见勾选
 // - 键盘（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、
@@ -31,17 +32,22 @@ const props = defineProps({
 const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted', 'open-folder', 'create-folder', 'move-to-folder'])
 const { t } = useI18n()
 const message = useMessage()
-const { datasources } = useServers() // 文件夹新建菜单的只读判定（共享模块单例，无额外请求）
+const { datasources, searchedIds } = useServers() // 文件夹新建菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
 
 // ---- 过滤：搜索/标签过滤已由 ServerListView（applyServerFilters）收窄后经 servers prop 传入，
 // 此处仅剩树选中过滤（spec §3.2，根=整库）；两层交集自然复合 ----
 const filtered = computed(() => {
+  // 搜索激活（fix-batch2 #2）：列表已由 searchedIds 收窄，且搜索本就是全库递归语义
+  // （后端跨数据源/子文件夹匹配）——树选中过滤整体让位，子文件夹深处的命中一律可见
+  if (searchedIds.value != null) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 未选树节点 → 全部
   return props.servers.filter(s => {
     if (s.dataSourceName !== sel.dataSourceName) return false
-    if (!sel.folderPath) return true // 根视图 = 整库递归
-    return s.folderPath === sel.folderPath || s.folderPath.startsWith(sel.folderPath + '/')
+    if (!sel.folderPath) return true // 数据源根 = 该库全部（递归）
+    // 资源管理器式浏览（fix-batch2 #2）：选中文件夹仅列直接子级服务器；子文件夹由
+    // ServerListView currentFolders（holderAt.folders）以文件夹行呈现
+    return s.folderPath === sel.folderPath
   })
 })
 const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
