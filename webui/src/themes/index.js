@@ -110,9 +110,6 @@ export function useNaiveTheme() {
   }))
 }
 
-// 调试钩子（保留至 Plan 3 设置页落地（此前是唯一切换入口））：控制台可用
-// window.__theme.setAppearance(window.__theme.CLASSIC_THEMES.Wine) 实时切换并持久化。
-// 放在 themes 模块内而非 App.vue，避免 Task 13 重写 App.vue 时丢失
-if (typeof window !== 'undefined') {
-  window.__theme = { setAppearance, themeState, CLASSIC_THEMES, ACCENTS }
-}
+// window.__theme 调试钩子已随 Plan 3 Task 4 设置页（外观分组）移除：
+// 此前它是主题切换的唯一切板入口，现在 AppearanceGroup.vue 经 setAppearance
+// 提供正式 UI；控制台直改不再支持。
