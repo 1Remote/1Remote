@@ -45,7 +45,7 @@ async function onLanguageChange(webCode) {
   if (webCode === lang.value || saving.value) return
   const prev = lang.value
   lang.value = webCode
-  setLocale(webCode) // Web 端即时切换（未装配语言静默保持，见 locales/languages.js）
+  setLocale(webCode) // Web 端即时切换（14 语言全量装配，见 locales/index.js）
   saving.value = true
   try {
     await api.saveGeneralSettings({ language: webToBackend(webCode) })

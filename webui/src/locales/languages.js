@@ -2,8 +2,8 @@
 // （= 后端 WebUiSettingsService.SupportedLanguageCodes）一一对应；web locale 码
 // 为 BCP-47 形态（zh-CN），后端 GeneralConfig.CurrentLanguageCode 为小写码（zh-cn）。
 // native 名称不做 i18n（各语言用自身名字，与 WPF language_name 词条同语义）。
-// 注：Task 7 落地 14 个 locale JSON 前，setLocale 仅接受已装载语言的码，
-// 其余语言在 Web 端保持当前界面语言、仅同步桌面端（见 locales/index.js）。
+// 14 个 locale JSON 已由 Task 7 全量装配（scripts/convert-locales.mjs 生成 12 个，
+// zh-CN/en-US 手写），setLocale 接受全部 14 码（见 locales/index.js）。
 export const LANGUAGES = [
   { code: 'cs-CZ', native: 'Čeština' },
   { code: 'de-DE', native: 'Deutsch' },
