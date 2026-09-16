@@ -73,6 +73,10 @@ export const api = {
   saveAppearance: (a) => request('/api/settings/appearance', { method: 'PUT', body: a }),
   getTreeState: () => request('/api/ui-state/tree'),
   saveTreeState: (s) => request('/api/ui-state/tree', { method: 'PUT', body: s }),
+  // 列表自定义顺序（Plan 4 Task 4 行拖拽）：GET → {ids:按序 id 列表, order:{id:序号}}；
+  // POST {ids} = 整库新顺序全量替换（与 WPF 列表拖拽落点同语义），响应 {ids}=实际保存顺序
+  getListOrder: () => request('/api/ui-state/list-order'),
+  saveListOrder: (ids) => request('/api/ui-state/list-order', { method: 'POST', body: { ids } }),
   // 编辑器（Plan 2 Task 8）：config/POST/PUT 的内嵌 json 为 PascalCase 直通域（勿做命名转换），
   // DELETE 成功返回 204 → null（request 内已处理空体）
   getServerConfig: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}/config?ds=${encodeURIComponent(ds ?? 'Local')}`),

@@ -30,6 +30,10 @@
   "col.folder": "Folder",
   "col.lastConnect": "Last connected",
   "col.actions": "Actions",
+  "list.customOrder": "Custom order (drag rows to reorder)",
+  "toast.reorderFailed": "Failed to save custom order",
+  "toast.treeMoved": "Moved {n} servers",
+  "toast.treeMoveFailed": "Failed to move {n} servers",
   "col.selectAll": "Select all (Ctrl A)",
 
   "batch.selected": "{n} selected",

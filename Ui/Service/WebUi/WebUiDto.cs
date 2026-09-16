@@ -108,6 +108,17 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
+    /// POST /api/ui-state/list-order 请求体（Plan 4 Task 4 列表行拖拽排序）。
+    /// ids = 整库服务器 id 按新顺序排列（全量替换 LocalityListViewService.ServerCustomOrder，
+    /// 与 WPF ServerListPageView 拖拽落点调 ServerCustomOrderSave 传入完整可见列表同语义）；
+    /// 未知 id 逐个跳过（不整体失败）。响应 {ids} = 实际保存的顺序。
+    /// </summary>
+    public class ListOrderRequest
+    {
+        public List<string>? Ids { get; set; }
+    }
+
+    /// <summary>
     /// POST /api/icons/extract-from-exe 请求体：{path}。path 为 exe 的绝对路径；
     /// 与 WPF 图标选择器同一分支语义（IconPopupDialogViewModel：仅 .exe 走 ExtractAssociatedIcon）。
     /// </summary>

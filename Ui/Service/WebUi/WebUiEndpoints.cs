@@ -794,6 +794,41 @@ namespace _1RM.Service.WebUi
                     Order = CopyDictionaryWithRetry(s.CustomNodeOrder),
                 });
             });
+
+            // 列表自定义顺序（Plan 4 Task 4）：LocalityListViewService.ServerCustomOrder 的读写代理。
+            // GET 返回 {ids: 按序号升序的 id 列表, order: {id: 序号快照}}（静态缓存拷贝 + 重试，
+            // 与 /api/ui-state/tree 同款并发防护）；POST {ids} = 整库新顺序全量替换（复用 WPF 的
+            // ServerCustomOrderSave：清空重填 + 同步 vm.CustomOrder + 落盘 .locality/.list_view.json），
+            // 未知 id 跳过，响应 {ids} = 实际保存顺序。该字典是机器本地视图状态，不触发 SSE。
+            app.MapGet("/api/ui-state/list-order", () =>
+            {
+                var order = CopyDictionaryWithRetry(LocalityListViewService.Settings.ServerCustomOrder);
+                return Results.Json(new
+                {
+                    ids = order.OrderBy(kv => kv.Value).Select(kv => kv.Key).ToList(),
+                    order,
+                });
+            });
+
+            app.MapPost("/api/ui-state/list-order", (ListOrderRequest? body) =>
+            {
+                var ids = body?.Ids;
+                if (ids == null || ids.Count == 0)
+                    return Results.BadRequest(new { error = "body must contain a non-empty 'ids' array" });
+                var gd = IoC.Get<GlobalData>();
+                var vms = new List<ProtocolBaseViewModel>();
+                lock (gd) // 快照语义同 /api/servers：锁内只做查找
+                {
+                    foreach (var id in ids.Distinct())
+                    {
+                        var vm = gd.VmItemList.FirstOrDefault(x => x.Id == id && IsConnectable(x.Server));
+                        if (vm != null)
+                            vms.Add(vm);
+                    }
+                }
+                LocalityListViewService.ServerCustomOrderSave(vms); // 清空重填（WPF 同款全量替换）
+                return Results.Json(new { ids = vms.Select(v => v.Id).ToList() });
+            });
         }
 
         private static AppearanceDto ReadAppearance(ConfigurationService cs)
