@@ -15,7 +15,7 @@
  * - 删除 409 {serverCount}：二段确认——首段普通确认；409 后二段显示仍有的服务器数与
  *   keepServers 语义（服务器留在库文件，重新添加即可找回），确认后带 keepServers=true 重试。
  */
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
@@ -25,6 +25,12 @@ const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
 const { datasources, reload } = useServers()
+
+// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释；与 GeneralGroup 同款）
+const escShield = inject('settingsEscShield', null)
+function shield(show) {
+  if (escShield) escShield.open += show ? 1 : -1
+}
 
 // ---- 展示辅助 ----
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
@@ -59,6 +65,12 @@ const adding = ref(false)
 const addForm = reactive({ type: 'sqlite', name: '', path: '', host: '', port: 3306, databaseName: '', userName: '', password: '' })
 const addSaving = ref(false)
 const typeOptions = ['sqlite', 'mysql', 'pgsql'].map((v) => ({ value: v, label: computed(() => t('settings.d.type.' + v)) }))
+
+// 打开即重置（与 CredentialVaultGroup.openCreate 同款）：上次未提交的草稿不带入新会话
+function openAdd() {
+  Object.assign(addForm, { type: 'sqlite', name: '', path: '', host: '', port: 3306, databaseName: '', userName: '', password: '' })
+  adding.value = true
+}
 
 function onAddTypeChange(v) {
   addForm.type = v
@@ -198,8 +210,10 @@ function confirmKeepServers(d, serverCount) {
 }
 
 // ---- Esc 链：模态开着时捕获截停（SettingsView 返回导航让位）----
+// 下拉开着（shield>0）时让位：Esc 先由 naive 组件层消化关下拉，不动模态
 function onEscCapture(e) {
   if (e.key !== 'Escape') return
+  if (escShield && escShield.open > 0) return
   if (adding.value) {
     e.stopPropagation()
     adding.value = false
@@ -215,7 +229,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 <template>
   <div class="group">
     <div class="toolbar">
-      <n-button size="small" type="primary" @click="adding = true">{{ t('settings.d.add') }}</n-button>
+      <n-button size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
     </div>
 
     <div v-if="!datasources.length" class="empty">{{ t('tree.noDatasources') }}</div>
@@ -261,6 +275,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
             size="small"
             :value="addForm.type"
             :options="typeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+            @update:show="shield"
             @update:value="onAddTypeChange"
           />
         </div>

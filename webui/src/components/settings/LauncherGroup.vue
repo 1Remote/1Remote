@@ -161,9 +161,11 @@ async function save() {
   }
 }
 
+// key = 标签词条后缀（settings.l.*），field = 表单/PUT 载荷字段名（后端域是
+// allowSaveInfoInQuickConnect，而词条键简写为 allowSaveInfo——两者不同，分开声明）
 const SWITCHES = [
-  { key: 'showCredentials' },
-  { key: 'allowSaveInfoInQuickConnect' },
+  { key: 'showCredentials', field: 'showCredentials' },
+  { key: 'allowSaveInfo', field: 'allowSaveInfoInQuickConnect' },
 ]
 </script>
 
@@ -195,7 +197,7 @@ const SWITCHES = [
       <div class="row" v-for="s in SWITCHES" :key="s.key">
         <label class="row-label">{{ t('settings.l.' + s.key) }}</label>
         <div class="row-control">
-          <n-switch size="small" :value="form[s.key]" @update:value="form[s.key] = $event" />
+          <n-switch size="small" :value="form[s.field]" @update:value="form[s.field] = $event" />
         </div>
       </div>
 
