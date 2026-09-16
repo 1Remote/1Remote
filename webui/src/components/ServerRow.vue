@@ -51,6 +51,9 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
 // 命中不高亮（splitHighlight 内处理，见其文件头注释）
 const nameSegs = computed(() => splitHighlight(props.server.displayName, props.query))
 const addrSegs = computed(() => splitHighlight(addressText(props.server), props.query))
+// 行左色条（fix-batch2 #3）：服务器自定义色（C# #AARRGGBB → opaqueHex 归一为不透明 #RRGGBB）
+// 的实色竖条，对齐 WPF 列表行色条——列表中颜色直接可见；无色/全透明 → null 不渲染（无占位）
+const barColor = computed(() => opaqueHex(props.server.color))
 </script>
 
 <template>
@@ -61,6 +64,8 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
     @dblclick="emit('connect')"
     @contextmenu.prevent="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
   >
+    <!-- 左侧颜色条（fix-batch2 #3）：absolute 定位不占 flex 布局，列对齐零位移 -->
+    <span v-if="barColor" class="cbar" :style="{ background: barColor }"></span>
     <div class="cell cell-check">
       <input type="checkbox" class="cb" :checked="selected" :title="t('row.select')" @click.stop @change="emit('toggle-select')" />
     </div>
@@ -95,6 +100,7 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
 <style scoped>
 /* 列宽消费父级下发的 --c-*（见 ServerTable colVars），带独立使用时的兜底值 */
 .row {
+  position: relative; /* 行左色条（fix-batch2 #3）absolute 定位基准 */
   display: flex;
   align-items: center;
   height: 36px;
@@ -201,10 +207,24 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
   color: var(--text-1);
 }
 
-/* 搜索命中高亮（fix-batch1 #1）：mark 语义的强调底色（不加粗，保持行高一致） */
+/* 搜索命中高亮（fix-batch1 #1；fix-batch2 #9 提亮）：mark 语义的实心强调底 + 对比文字
+   （accent 底 + 面板底色文字——深色主题蓝底深字/浅色主题蓝底白字，均高对比；
+   不加粗，保持行高一致） */
 .hl {
-  background: var(--accent-container);
+  background: var(--accent);
+  color: var(--bg-panel);
   border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* 行左色条（fix-batch2 #3）：整行高 4px 实色竖条贴行左缘；checkbox 居中于 30px 列内，
+   4px 覆盖不触及。不占 flex 布局（absolute），列对齐与表头零位移 */
+.cbar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
 }
 
 .tag {
