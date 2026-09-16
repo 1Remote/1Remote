@@ -16,6 +16,7 @@ const props = defineProps({
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
   cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
+  showDs: { type: Boolean, default: false }, // 全部数据源根（fix-batch1 Task 2）：文件夹列前缀数据源名
   hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/folder/time: bool}
   query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：非空时名称/地址单元格做命中高亮
 })
@@ -26,6 +27,12 @@ const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 :
 const initial = (p) => (p || '?').charAt(0).toUpperCase()
 // 地址列：Serial 等无地址协议回退显示协议名；有端口拼 ':port'
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
+// 文件夹列（fix-batch1 Task 2）：根视图递归展示全库，列为「数据源 / 路径」定位信息；
+// 全部数据源根额外前缀数据源名（同名路径跨数据源区分），进入文件夹后列隐藏（面包屑承载路径）
+const folderText = (s) =>
+  props.showDs
+    ? s.dataSourceName + (s.folderPath ? ' / ' + s.folderPath : '')
+    : (s.folderPath || '—')
 // 标签胶囊：最多 2 个 + 溢出计数（完整列表见 title）
 const overflow = (s) => Math.max(0, s.tags.length - 2)
 // 从未连接 = formatRelativeTime 返回 null 时的占位文案；相对时间显式注入当前 i18n locale
@@ -66,7 +73,7 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
       <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
-    <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="server.folderPath">{{ server.folderPath || '—' }}</div>
+    <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">{{ folderText(server) }}</div>
     <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>

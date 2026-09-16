@@ -19,6 +19,9 @@ import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
+import { buildTree, countHolderServers, holderAt } from '../composables/folders'
+import { useTreeState } from '../composables/useTreeState'
+import { useFolderOps } from '../composables/folderOps'
 import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
 
@@ -37,15 +40,65 @@ watch(winWidth, (w, old) => {
 
 const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
 
+// tree-state 首载（fix-batch1 Task 2）：虚拟文件夹物化需要 expansion 键，侧栏收起
+//（SideTree 卸载）时也须可用；useTreeState 幂等（SideTree 挂载时同调不重复请求）
+const { folderPathsByDs, load: loadTreeState } = useTreeState()
+const folderOps = useFolderOps()
+onMounted(() => loadTreeState())
+
+// 树模型（含空文件夹物化）与「当前层级文件夹行」（fix-batch1 Task 2 #2）：
+// 全部数据源根 = 各数据源顶层文件夹并列（行上标注数据源名）；进入文件夹/数据源根 = 该层文件夹
+const treeModel = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
+const currentFolders = computed(() => {
+  const out = []
+  const sel = selection.value
+  if (!sel || !sel.dataSourceName) {
+    for (const root of treeModel.value) {
+      for (const f of root.folders) out.push({ name: f.name, path: f.path, dsName: root.name, count: countHolderServers(f) })
+    }
+  } else {
+    const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
+    if (holder) {
+      for (const f of holder.folders) out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
+    }
+  }
+  return out
+})
+
+// 双击文件夹行 = 进入（fix-batch1 Task 2）；树选中态与面包屑共用 selection
+function onOpenFolder(f) {
+  selection.value = { dataSourceName: f.dsName, folderPath: f.path }
+}
+function onCreateFolder(target) {
+  folderOps.createFolder(target.dsName, target.parentPath)
+}
+function onMoveToFolder({ server, dsName, path }) {
+  folderOps.moveServersToFolder([server], dsName, path)
+}
+
 // 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）
 const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
 const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
 
-// 面包屑（spec §3.2）：根=「数据源名 · 全部服务器」、文件夹=「数据源 / 路径」；右侧计数由 ServerTable 上报
-const breadcrumb = computed(() => {
+// 面包屑（fix-batch1 Task 2）：可点击逐级返回——全部数据源 › 数据源 · 全部服务器 › 路径段；
+// 末段=当前层级（强显示不可点）。hover title 给完整路径
+const crumbSegments = computed(() => {
   const sel = selection.value
-  if (!sel || !sel.dataSourceName) return t('crumb.allDataSources')
-  return sel.folderPath ? `${sel.dataSourceName} / ${sel.folderPath}` : `${sel.dataSourceName} · ${t('crumb.allServers')}`
+  const segs = [{ label: t('crumb.allDataSources'), sel: null }]
+  if (sel?.dataSourceName) {
+    segs.push({ label: sel.dataSourceName + ' · ' + t('crumb.allServers'), sel: { dataSourceName: sel.dataSourceName, folderPath: '' } })
+    if (sel.folderPath) {
+      const parts = sel.folderPath.split('/')
+      parts.forEach((p, i) =>
+        segs.push({ label: p, sel: { dataSourceName: sel.dataSourceName, folderPath: parts.slice(0, i + 1).join('/') } })
+      )
+    }
+  }
+  return segs
+})
+const crumbTitle = computed(() => {
+  const sel = selection.value
+  return sel?.dataSourceName ? sel.dataSourceName + (sel.folderPath ? ' / ' + sel.folderPath : '') : t('crumb.allDataSources')
 })
 const tableCount = ref(0)
 const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其暴露的菜单/勾选/光标回退方法
@@ -278,14 +331,21 @@ const importModal = ref(false)
         v-model:selection="selection"
         v-model:tag="activeTag"
         @update:collapsed="collapsed = $event"
-        @connect="onConnect"
         @manage-tags="openTagManager"
       />
       <button v-else class="expand-rail" :title="t('sidebar.expand')" @click="collapsed = false">»</button>
     </aside>
     <main class="content">
       <div class="crumb-row">
-        <div class="crumb" :title="breadcrumb">{{ breadcrumb }}<span class="crumb-count">{{ t('crumb.count', { n: listCount }) }}</span></div>
+        <!-- 可点击面包屑（fix-batch1 Task 2）：逐级返回；末段=当前层级 -->
+        <div class="crumb" :title="crumbTitle">
+          <template v-for="(seg, i) in crumbSegments" :key="i">
+            <button v-if="i < crumbSegments.length - 1" class="crumb-btn" @click="selection = seg.sel">{{ seg.label }}</button>
+            <span v-else class="crumb-cur">{{ seg.label }}</span>
+            <span v-if="i < crumbSegments.length - 1" class="crumb-sep">›</span>
+          </template>
+          <span class="crumb-count">{{ t('crumb.count', { n: listCount }) }}</span>
+        </div>
         <!-- 搜索过滤 chip（Task 17）：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
         <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
           <span class="sc-label">⌕ {{ searchQuery }}</span>
@@ -333,6 +393,7 @@ const importModal = ref(false)
         class="table-host"
         :servers="visibleServers"
         :selection="selection"
+        :folders="currentFolders"
         :query="searchQuery"
         @counted="tableCount = $event"
         @connect="onConnect"
@@ -342,6 +403,9 @@ const importModal = ref(false)
         @edit="openEdit"
         @duplicate="openDuplicate"
         @delete="onDelete"
+        @open-folder="onOpenFolder"
+        @create-folder="onCreateFolder"
+        @move-to-folder="onMoveToFolder"
       />
 
       <!-- 标签管理模态（Plan 3 Task 5）：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
@@ -452,6 +516,27 @@ const importModal = ref(false)
   white-space: nowrap;
   font-size: 12.5px;
   color: var(--text-2);
+}
+.crumb-cur {
+  color: var(--text-1);
+}
+.crumb-btn {
+  border: none;
+  background: transparent;
+  padding: 1px 2px;
+  color: var(--text-3);
+  font-size: 12.5px;
+  line-height: 1.4;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.crumb-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent-text);
+}
+.crumb-sep {
+  margin: 0 3px;
+  color: var(--text-4);
 }
 .crumb-count {
   color: var(--text-4);

@@ -29,6 +29,9 @@ const MAPPING = {
   // -- 树 / 列表 --
   'tree.reconnecting': 'Reconnecting',
   'tree.tags': 'Tags',
+  'tree.newFolder': 'Create a folder',
+  'tree.renameFolder': 'Rename',
+  'tree.deleteFolderConfirm': 'Delete folder XXXX and move its contents to parent folder',
   'col.name': 'Name',
   'col.protocol': 'Protocol',
   'col.tags': 'Tags',
@@ -247,9 +250,9 @@ const MAPPING = {
   'settings.r.f.env': 'Environment variables',
 }
 
-// WPF {0}/{1} → web 具名占位符（仅当目标 WPF 键的值含 {N} 时需要；当前映射未命中）
+// WPF {0}/{1} → web 具名占位符（仅当目标 WPF 键的值含 {N} 时需要）
 const PLACEHOLDERS = {
-  // 'web.key': ['{n}', '{m}'],  // {0}→第一个，{1}→第二个
+  'tree.deleteFolderConfirm': ['{name}', '{n}'], // {0}=文件夹名，{1}=服务器数
 }
 const FALLBACK_PARAMS = ['{n}', '{m}']
 
