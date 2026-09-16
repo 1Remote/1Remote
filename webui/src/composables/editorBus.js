@@ -4,15 +4,22 @@
  * 沿用 useServers 的模块级共享 ref 模式（spec §9.1：不引 Pinia）。
  * 语义：requestNewServer() 递增计数；ServerListView watch 计数变化打开新建抽屉
  * （归属数据源取其当前树选中，见 openCreate）。
+ * Plan 4 Task 3：顶栏「+」改为下拉（新建/导入）——requestImport() 同款计数递增，
+ * ServerListView watch 后打开导入模态。
  */
 import { ref } from 'vue'
 
 const createRequest = ref(0)
+const importRequest = ref(0)
 
 function requestNewServer() {
   createRequest.value++
 }
 
+function requestImport() {
+  importRequest.value++
+}
+
 export function useEditorBus() {
-  return { createRequest, requestNewServer }
+  return { createRequest, requestNewServer, importRequest, requestImport }
 }

@@ -1,6 +1,11 @@
 import { ref, watch } from 'vue'
 import { api, subscribeEvents } from '../api'
 
+// 批量连接确认阈值（Plan 4 Task 3，产品决策项——spec 无此要求）：一次连接超过该台数时
+// 前端先弹确认（显示 N 台）再逐台发起；ServerListView 批量条与 TagManagerModal
+// 「连接全部」共用，两处阈值必须一致，故收在共享模块导出。
+export const BATCH_CONNECT_THRESHOLD = 5
+
 // 模块级共享状态（spec §9.1：不用 Pinia；多组件调用 useServers() 共享同一份 refs）
 const servers = ref([])
 const datasources = ref([])

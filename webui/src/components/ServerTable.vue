@@ -3,10 +3,13 @@
 // - 过滤：selection 非空 → 数据源匹配 + 文件夹递归含子级（spec §3.2，根=整库）；serverId 仅作行高亮
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化（列宽列显 Plan 4）
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选；视图变化剔除不可见勾选
-// - 键盘（spec §8.2，Task 18）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见；
+// - 键盘（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、
+//   Ctrl+A 全选可见、E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行）；
 //   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
-// - 批量条：选中 ≥1 时渲染于表头上方；连接 emit 到父级执行，批量编辑/导出 Plan 2/4 占位禁用
-// - 右键菜单：连接/复制地址/复制用户名可用，其余 Plan 2/4 禁用占位（title 提示）；点击外部/Esc 关闭
+// - 批量条：选中 ≥1 时渲染于表头上方；连接/导出 emit 到父级执行（导出 Plan 4 Task 3 接线），
+//   批量编辑（Plan 2 Task 10）同
+// - 右键菜单：连接/编辑/复制/复制地址/复制用户名/删除可用，其余占位禁用（title 提示）；
+//   点击外部/Esc 关闭
 // - 空态：默认居中提示按「传入列表空=空库 / 非空但过滤后无行=无匹配」二分；
 //   具名插槽 empty 供父级覆写（ServerListView 的引导卡片/无匹配态在表格外层接管，见 Task 20）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
@@ -19,7 +22,7 @@ const props = defineProps({
   servers: { type: Array, default: () => [] },
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
 })
-const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'edit', 'duplicate', 'delete', 'counted'])
+const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted'])
 const { t } = useI18n()
 const message = useMessage()
 
@@ -120,10 +123,10 @@ watch(sorted, list => {
 })
 watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N 台」
 
-// ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2：Enter 连接已接线，E/Ctrl+D/Del 归 Plan 2）----
+// ---- 右键菜单（浮层；快捷键提示对齐 spec §8.2：Enter/E/Ctrl+D/Del 均已接线）----
 // 标签/提示走 i18n（computed：语言切换即时刷新）；未接线项的占位提示统一「即将推出」，
 // 内部计划号（Plan 2/4）只留在代码注释，不进 UI。
-// Plan 2 Task 8：编辑/复制/删除已接线（emit 至 ServerListView 打开编辑抽屉/确认删除）。
+// Plan 2 Task 8：编辑/复制/删除已接线；Plan 4 Task 3：E/Ctrl+D/Del 键盘与菜单同 emit 链路。
 const MENU = computed(() => [
   { key: 'connect', label: t('ctx.connect'), hint: 'Enter', on: true },
   { key: 'new-window', label: t('ctx.newWindow'), hint: t('common.comingSoon') },
@@ -185,7 +188,8 @@ function onGlobalDown(e) {
   if (menu.value && !e.target.closest?.('.ctx-menu')) menu.value = null
 }
 
-// ---- 键盘导航（spec §8.2，Task 18）：↑↓ 光标行、Enter 连接光标行、Ctrl+A 全选可见 ----
+// ---- 键盘导航（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 光标行、Enter 连接光标行、
+// Ctrl+A 全选可见、E 编辑 / Del 删除 / Ctrl+D 复制（keyTargetServer 取目标行）----
 // 光标（cursorId）是纯视觉焦点（行外框），与勾选（checked）相互独立，仅在排序后的可见列表内移动。
 // 表格焦点（tableFocused）：用户点过表格区域才算"焦点在表格"，避免抢走搜索框等处输入——
 // document focusin 追踪：焦点落到表格外可交互元素 → false；落到 body（点击了边栏/滚动条等
@@ -227,7 +231,31 @@ function onGlobalKey(e) {
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'a') {
     e.preventDefault() // 抢在浏览器文本全选前，全选当前视图（spec §8.2）
     checked.value = new Set(sorted.value.map(s => s.id))
+  } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'd') {
+    // Ctrl+D 复制（spec §8.2，Plan 4 Task 3）：preventDefault 阻断浏览器「添加书签」默认
+    e.preventDefault()
+    const s = keyTargetServer()
+    if (s) emit('duplicate', s)
+  } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === 'Delete') {
+    // Del 删除（spec §8.2）：只 emit server 对象，确认对话框由 ServerListView 的 onDelete 统一弹出
+    const s = keyTargetServer()
+    if (s) emit('delete', s)
+  } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key?.toLowerCase() === 'e') {
+    // E 编辑（spec §8.2，允许 Shift+e）
+    const s = keyTargetServer()
+    if (s) emit('edit', s)
   }
+}
+
+// 键盘操作目标行（E/Del/Ctrl+D 共用，spec §8.2「勾选优先单台」）：恰好勾选 1 台 → 该台；
+// 否则光标行（Enter 连接同源）；两者皆无 → null 不动作
+function keyTargetServer() {
+  if (checked.value.size === 1) {
+    const id = [...checked.value][0]
+    return sorted.value.find(s => s.id === id) || null
+  }
+  if (cursorId.value != null) return sorted.value.find(s => s.id === cursorId.value) || null
+  return null
 }
 
 // ---- 供 ServerListView 全局 Esc 链逐级回退调用：返回 true = 本次 Esc 消费在此级 ----
@@ -284,9 +312,10 @@ const colVars = computed(() => ({
     <div v-if="checked.size" class="batch-bar">
       <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
       <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶ {{ t('batch.connect') }}</button>
-      <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开；导出 Plan 4 占位 -->
+      <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
       <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit') }}</button>
-      <button class="bb-btn" disabled :title="t('common.comingSoon')">⤓ {{ t('batch.export') }}</button>
+      <!-- 导出（Plan 4 Task 3）：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
+      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export', [...checked])">⤓ {{ t('batch.export') }}</button>
       <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>
 

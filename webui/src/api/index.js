@@ -19,12 +19,27 @@ async function request(path, { method = 'GET', body } = {}) {
 }
 
 // 非 JSON 请求共用体（multipart 上传 / blob 下载）：不预设 Content-Type——
-// multipart 由浏览器补 boundary；blob=true 时返回 Blob（下载文件），否则仍解析 JSON
+// multipart 由浏览器补 boundary；blob=true 时返回 {blob, filename}（下载文件），
+// filename 取 Content-Disposition（RFC 5987 filename*= 优先，兼容裸 filename=；
+// 无头回退空串由调用方给默认名），否则仍解析 JSON
 async function requestRaw(path, { method = 'GET', body, timeout = 120_000, blob = false } = {}) {
   const headers = {}
   if (token) headers.Authorization = `Bearer ${token}`
   const resp = await fetch(path, { method, headers, body, signal: AbortSignal.timeout(timeout) })
-  if (blob && resp.ok) return resp.blob()
+  if (blob && resp.ok) {
+    const blob = await resp.blob()
+    const cd = resp.headers.get('Content-Disposition') || ''
+    const star = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(cd)
+    const plain = /filename=(?:"([^"]+)"|([^;]+))/i.exec(cd)
+    const raw = (star?.[1] || plain?.[1] || plain?.[2] || '').trim()
+    let filename = ''
+    try {
+      filename = decodeURIComponent(raw) // filename* 的百分号编码；裸 filename 含 % 时无害回退原串
+    } catch {
+      filename = raw
+    }
+    return { blob, filename }
+  }
   return handleResponse(resp, path)
 }
 
@@ -123,7 +138,7 @@ export const api = {
     return requestRaw(`/api/servers/import?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST', body: form })
   },
   // 导出 = 明文 JSON attachment（跨数据源，ids 逗号分隔）——blob 响应不能走 JSON request；
-  // 二次验证未通过抛 err.status=403；成功返回 Blob（调用方 object URL + a[download] 触发保存）
+  // 二次验证未通过抛 err.status=403；成功返回 {blob, filename}（调用方 object URL + a[download] 触发保存）
   exportServers: (ids) =>
     requestRaw(`/api/servers/export?ids=${ids.map(encodeURIComponent).join(',')}`, { blob: true }),
 }
