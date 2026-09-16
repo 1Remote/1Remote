@@ -56,6 +56,16 @@ export const api = {
   icons: () => request('/api/icons'),
   credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),
   extractIcon: (path) => request('/api/icons/extract-from-exe', { method: 'POST', body: { path } }),
+  // 凭据库管理（Plan 3 Task 1）：credential 字段与 WPF 模型一致（PascalCase），
+  // password/privateKeyPath 为明文（服务端加密落库）；reveal 受本地二次验证保护（30s 窗口）
+  getCredentials: (ds) => request('/api/credentials?ds=' + encodeURIComponent(ds ?? 'Local')),
+  createCredential: (credential, ds) => request('/api/credentials', { method: 'POST', body: { ds: ds ?? 'Local', credential } }),
+  updateCredential: (name, credential, ds) =>
+    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'PUT', body: { credential } }),
+  deleteCredential: (name, ds) =>
+    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
+  revealCredential: (name, ds) =>
+    request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST' }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */

@@ -207,7 +207,9 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             lock (this)
             {
                 OpenConnection();
-                var ret = base.DeleteCredential(names);
+                // fix: 必须把 relatedProtocols 透传给基类——此前被丢弃导致 SQLite（Free 版）删除凭据时
+                // 引用服务器的 InheritedCredentialName 清理事务从不执行（MySql/Pgsql 的 DapperDatabase 无此包装问题）
+                var ret = base.DeleteCredential(names, relatedProtocols);
                 CloseConnection();
                 return ret;
             }
