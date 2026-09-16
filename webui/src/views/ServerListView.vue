@@ -50,6 +50,10 @@ onMounted(() => loadTreeState())
 // 全部数据源根 = 各数据源顶层文件夹并列（行上标注数据源名）；进入文件夹/数据源根 = 该层文件夹
 const treeModel = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 const currentFolders = computed(() => {
+  // 搜索过滤激活时隐藏文件夹行（fix-batch1 Task 5 评审）：搜索只命中服务器（useServers
+  // searchedIds 为 server id 集），文件夹名不参与匹配——保留会在命中结果上方悬浮一层
+  // 与查询无关的文件夹，误导导航；空 Set（零命中）同样隐藏。
+  if (searchedIds.value != null) return []
   const out = []
   const sel = selection.value
   if (!sel || !sel.dataSourceName) {

@@ -119,6 +119,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--text-1);
 }
 .s-item {
+  /* fix-batch1 #12：一行一项——nowrap/ellipsis 骨架期已有，补 flex:none 杜绝被压缩
+     （flex 收缩曾致按钮变窄、配合换行表现为多项折行）；160px 内 7 组中英标签均单行可容纳 */
+  flex: none;
   height: 34px;
   padding: 0 10px;
   border: none;
