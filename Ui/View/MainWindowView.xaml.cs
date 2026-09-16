@@ -54,6 +54,8 @@ namespace _1RM.View
             this.StateChanged += (sender, args) =>
             {
                 localityService.MainWindowState = this.WindowState;
+                // 同步最大化状态给网页 topbar（max/restore 图标切换；页面未就绪时静默跳过）
+                PushWindowStateToWeb();
             };
 
             WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
@@ -78,8 +80,16 @@ namespace _1RM.View
                 {
                     SimpleLogHelper.Error(e.InitializationException);
                     WebUI.Visibility = Visibility.Collapsed;
+                    // WebView2 不可用时网页无法接管标题栏，恢复 WPF 自绘标题栏保证窗口可用
+                    SetWebShellChrome(false);
                 }
             };
+
+            // 网页 topbar 窗口控制桥：页面经 window.chrome.webview.postMessage 发送
+            // {cmd:'window-minimize'|'window-maximize'|'window-restore'|'window-close'|'window-drag'|'window-state'}
+            WebUI.WebMessageReceived += WebUI_OnWebMessageReceived;
+            // 页面就绪后回推一次最大化状态（max/restore 图标初始正确）
+            WebUI.NavigationCompleted += (_, _) => PushWindowStateToWeb();
 
             // WebView2 是 HwndHost（airspace）：其 HWND 恒渲染在本窗口所有 WPF 内容之上，
             // XAML 层级对它无效。因此 TopLevel 遮罩（等待动画/弹窗等）显示期间必须隐藏 WebUI，
@@ -101,37 +111,43 @@ namespace _1RM.View
                 this.Left = localityService.MainWindowLeft;
             }
 
-            BtnClose.Click += (sender, args) =>
-            {
-                if ((_configurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > _configurationService.Engagement.DoNotShowAgainVersion)
-                    && _configurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
-                    && _configurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
-                    && _configurationService.Engagement.ConnectCount > 100
-                   )
-                {
-                    // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
-                    MaskLayerController.ShowMask(IoC.Get<RequestRatingViewModel>(), Vm);
-                    return;
-                }
-                vm.HideMe();
-#if DEBUG
-                App.Close();
-#else
-                switch (IoC.Get<ConfigurationService>().General.CloseButtonBehavior)
-                {
-                    case (int)GeneralConfig.EnumCloseButtonBehavior.Exit:
-                        App.Close();
-                        break;
-                    case (int)GeneralConfig.EnumCloseButtonBehavior.Minimize:
-                        // Minimize to system tray - just hide
-                    default:
-                        break;
-                }
-#endif
-            };
+            BtnClose.Click += (sender, args) => ExecuteCloseButtonBehavior();
 
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+        }
+
+        /// <summary>
+        /// 关闭按钮行为（WPF BtnClose 与网页 topbar 关闭按钮共用）：
+        /// 先按 Engagement 规则弹“请求评分”遮罩，否则隐藏窗口并按 CloseButtonBehavior（退出/最小化到托盘）处理。
+        /// </summary>
+        private void ExecuteCloseButtonBehavior()
+        {
+            if ((_configurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > _configurationService.Engagement.DoNotShowAgainVersion)
+                && _configurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
+                && _configurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
+                && _configurationService.Engagement.ConnectCount > 100
+               )
+            {
+                // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
+                MaskLayerController.ShowMask(IoC.Get<RequestRatingViewModel>(), Vm);
+                return;
+            }
+            Vm.HideMe();
+#if DEBUG
+            App.Close();
+#else
+            switch (IoC.Get<ConfigurationService>().General.CloseButtonBehavior)
+            {
+                case (int)GeneralConfig.EnumCloseButtonBehavior.Exit:
+                    App.Close();
+                    break;
+                case (int)GeneralConfig.EnumCloseButtonBehavior.Minimize:
+                    // Minimize to system tray - just hide
+                default:
+                    break;
+            }
+#endif
         }
 
         public void ResetLocation()
@@ -194,6 +210,8 @@ namespace _1RM.View
                 {
                     // 已初始化完成：隐藏/显示不会销毁内容，直接恢复可见即可，避免重新导航丢状态
                     WebUI.Visibility = Visibility.Visible;
+                    SetWebShellChrome(true);
+                    PushWindowStateToWeb();
                     return;
                 }
 #if DEBUG
@@ -204,17 +222,20 @@ namespace _1RM.View
                 {
                     SimpleLogHelper.Warning("WebUiServer is not running, skip Web UI");
                     WebUI.Visibility = Visibility.Collapsed;
+                    SetWebShellChrome(false);
                     return;
                 }
                 WebUI.Source = new Uri($"http://127.0.0.1:{_1RM.Service.WebUi.WebUiServer.Port}/?token={_1RM.Service.WebUi.WebUiServer.Token}");
 #endif
                 WebUI.Visibility = Visibility.Visible;
+                SetWebShellChrome(true);
             }
             catch (Exception ex)
             {
                 // WebView2 运行时缺失等同步异常不阻断桌面版（异步失败见 CoreWebView2InitializationCompleted）
                 SimpleLogHelper.Error(ex);
                 WebUI.Visibility = Visibility.Collapsed;
+                SetWebShellChrome(false);
             }
         }
 
@@ -222,7 +243,122 @@ namespace _1RM.View
         {
             // 仅折叠即可；Source 置 null 在 WebView2 1.0.x 会抛 NotImplementedException
             WebUI.Visibility = Visibility.Collapsed;
+            SetWebShellChrome(false);
         }
+
+        /// <summary>
+        /// 切换“谁拥有标题栏”：Web 引擎时网页 topbar 接管（WPF 标题行收 0、WebView2 铺满整窗）；
+        /// Desktop 引擎或 Web 初始化失败时恢复 WPF 自绘标题栏（logo/搜索/系统按钮）+ 40px 顶部避让。
+        /// 遮罩层（TopLevel mask）在外层 Grid，恒为全窗尺寸，不受此切换影响。
+        /// </summary>
+        private void SetWebShellChrome(bool webTakesOverTitleBar)
+        {
+            TitleRow.Height = webTakesOverTitleBar ? new GridLength(0) : new GridLength(40);
+            WinTitleBar.Visibility = webTakesOverTitleBar ? Visibility.Collapsed : Visibility.Visible;
+            WinSysButtons.Visibility = webTakesOverTitleBar ? Visibility.Collapsed : Visibility.Visible;
+            WebUI.Margin = webTakesOverTitleBar ? new Thickness(0) : new Thickness(0, 40, 0, 0);
+        }
+
+        /// <summary>
+        /// 网页 topbar 窗口控制消息处理（见构造函数中 WebUI.WebMessageReceived 的挂接注释）。
+        /// </summary>
+        private void WebUI_OnWebMessageReceived(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
+        {
+            try
+            {
+                // 页面固定 postMessage(JSON.stringify(...))（字符串）；容错兼容对象型 post（WebMessageAsJson）
+                string? message;
+                try
+                {
+                    message = e.TryGetWebMessageAsString();
+                }
+                catch (InvalidOperationException)
+                {
+                    message = e.WebMessageAsJson;
+                }
+                if (string.IsNullOrWhiteSpace(message))
+                    return;
+                var cmd = (string?)Newtonsoft.Json.Linq.JObject.Parse(message)["cmd"];
+                switch (cmd)
+                {
+                    case "window-minimize":
+                        this.WindowState = WindowState.Minimized;
+                        break;
+                    case "window-maximize":
+                        this.WindowState = WindowState.Maximized;
+                        break;
+                    case "window-restore":
+                        this.WindowState = WindowState.Normal;
+                        break;
+                    case "window-close":
+                        ExecuteCloseButtonBehavior();
+                        break;
+                    case "window-drag":
+                        DragWindowFromWeb();
+                        break;
+                    case "window-state":
+                        PushWindowStateToWeb();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning($"unrecognized web message: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 网页 topbar 请求拖动窗口：WebView2 是 HwndHost（airspace），WPF 覆盖条无法浮于其上
+        /// 接收鼠标，故由页面在“按住左键并移动超过阈值”后发来 'window-drag'，此处接管 DragMove。
+        /// DragMove 要求左键按下（消息往返期间可能已松开）；最大化状态先还原并让窗口中心跟随光标
+        /// （与 WindowBase.WinTitleBar_OnPreviewMouseMove 行为一致）；ReleaseCapture 先解除
+        /// WebView2 子窗口的鼠标捕获，使 SC_DRAG 模态移动循环接管输入。
+        /// </summary>
+        private void DragWindowFromWeb()
+        {
+            if (Mouse.LeftButton != MouseButtonState.Pressed)
+                return;
+            if (this.WindowState == WindowState.Maximized)
+            {
+                var p = ScreenInfoEx.GetMouseVirtualPosition();
+                this.Top = p.Y - 15;
+                this.Left = p.X - this.Width / 2;
+                this.WindowState = WindowState.Normal;
+                this.Top = p.Y - 15;
+                this.Left = p.X - this.Width / 2;
+            }
+            try
+            {
+                ReleaseCapture();
+                this.DragMove();
+            }
+            catch (InvalidOperationException)
+            {
+                // 左键在消息往返期间已松开等，忽略本次拖拽
+            }
+        }
+
+        /// <summary>
+        /// 推送当前最大化状态给网页（window.__setWinState，页面侧切换 max/restore 图标）。
+        /// 页面可能尚未加载完成：脚本内自带 __setWinState 存在性判断，异常静默。
+        /// </summary>
+        private void PushWindowStateToWeb()
+        {
+            if (WebUI.Visibility != Visibility.Visible || WebUI.CoreWebView2 == null)
+                return;
+            try
+            {
+                var state = this.WindowState == WindowState.Maximized ? "maximized" : "normal";
+                _ = WebUI.CoreWebView2.ExecuteScriptAsync($"window.__setWinState && window.__setWinState('{state}');");
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning(ex);
+            }
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool ReleaseCapture();
 
         protected override void OnClosing(CancelEventArgs e)
         {
