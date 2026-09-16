@@ -84,11 +84,15 @@ async function doImport() {
     if (res?.added > 0) {
       message.success(t('import.done', { n: res.added }))
       if (res.skipped > 0) message.info(t('import.skipped', { n: res.skipped }))
+      // 部分失败（Ok 路径带回逐台 errors）：成功关模态，但失败明细以 warning 告知（后端原文英文）
+      if (Array.isArray(res.errors) && res.errors.length) message.warning(t('import.errors') + ' ' + res.errors.join('; '))
       showBind.value = false // 列表刷新：后端已 ReloadAll(true) → SSE；此处再补主动 reload 兜底
       reload()
     } else {
-      // 后端语义：解析出的条目全部插入失败才可能 added=0 且非 400——按失败呈现并保留模态供重试
-      message.error(t('import.failed'))
+      // 后端语义：解析出的条目全部插入失败才可能 added=0 且非 400——带逐台 errors 时内联展示，否则通用失败
+      const list = res?.errors
+      if (Array.isArray(list) && list.length) errors.value = list
+      else message.error(t('import.failed'))
     }
   } catch (e) {
     // 400 {errors}：解析失败/只读数据源/无有效条目——内联列出，模态保留
