@@ -173,8 +173,12 @@ function onTopbarDblClick(e) {
 
 <style scoped>
 .shell {
+  /* 顶栏高度变量（fix-batch3 Task A #2）：EditorDrawer 的 .ed-root（fixed 覆盖层）引用，
+     使编辑抽屉的蒙层/面板从顶栏下沿开始、顶栏（窗口拖拽区/最小化-最大化-关闭）保持可交互。
+     .ed-root 是 .shell 的 DOM 后代（ServerListView 内），自定义属性沿 DOM 树继承可达。 */
+  --topbar-h: 44px;
   display: grid;
-  grid-template-rows: 44px 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
   height: 100vh;
   background: var(--bg);
   color: var(--text-1);

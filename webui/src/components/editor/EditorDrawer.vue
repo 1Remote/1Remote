@@ -15,9 +15,12 @@
  * 协议切换 或 json 任一键与基准不一致（不再有分组页签/分组小圆点）。隐藏字段
  *（visibleWhen 不满足）只藏 UI 不删值，保存时随 json 原样回传。
  *
- * 凭据组（#7，owner 确认）：组顶「手动输入 ⇄ 从凭据库选择」二选一分段控件——
- * 模式初值由 InheritedCredentialName 派生（editor/credentialMode.js，非空=库）；
- * 手动 = 展示 UserName/Password/私钥等并清空库引用；库 = 只展示凭据库选择器 + 继承提示。
+ * 凭据组（#7，owner 确认；fix-batch3 Task A 对齐 WPF CredentialView 结构）：组内按
+ * 字段 credRole（schemas.js credentialGroup 注入）四段渲染——「凭据来源」二选一切换之前
+ * 是恒显的 pre 字段（RDP 的 Domain/LoadBalanceInfo）；切换下方 manual = 身份字段
+ * （UserName/Password/私钥）、vault = 凭据库选择器 + 继承提示行；AskPasswordWhenConnect
+ * 等两组开关（option）两模式恒显收尾。模式初值由 InheritedCredentialName 派生
+ * （editor/credentialMode.js，非空=库）；手动 = 清空库引用。
  *
  * 新建模式（#10，非复制）：头部数据源选择器（仅可写数据源；默认 = 当前树选中 ds），
  * 保存与凭据库选项跟随所选 ds；编辑/复制/批量仍用传入 ds（只读 pill 展示）。
@@ -124,28 +127,45 @@ function onCredModeSwitch(mode) {
   credentialMode.value = mode
   if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（owner 确认语义）
 }
-/** 组内应渲染的字段：visibleWhen 过滤 + 凭据组按模式裁剪（manual 隐库选择器 / vault 只留库选择器）。 */
-function groupFields(g) {
-  const credFilter = (f) =>
-    !isCredentialGroup(g) || (credentialMode.value === 'manual' ? f.key !== 'InheritedCredentialName' : f.key === 'InheritedCredentialName')
-  return g.fields.filter((f) => isVisible(f, json) && credFilter(f))
-}
-
 /**
- * 组内字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
+ * 组内可见字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
  * 字段聚成一个 'switch-run' 块（模板里按 3 列网格渲染，RDP 高级组的 9 个 Enable*
  * 自动成 3 行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格不变）。
- * 聚合基于过滤后的可见序列——凭据组 manual 模式裁掉库选择器后相邻的开关同样成段
- * （如 SSH 的 AskPasswordWhenConnect + UsePrivateKeyForConnect），属预期紧凑化。
  */
-function fieldBlocks(g) {
+function blocksOf(fields) {
   const blocks = []
-  for (const f of groupFields(g)) {
+  for (const f of fields) {
     const last = blocks[blocks.length - 1]
     if (f.type === 'switch' && last?.type === 'switch-run') last.fields.push(f)
     else blocks.push(f.type === 'switch' ? { type: 'switch-run', fields: [f] } : { type: 'single', field: f })
   }
   return blocks
+}
+
+/**
+ * 组 → 渲染块序列。非凭据组：整组可见字段走 blocksOf（同 Task C #7）。
+ * 凭据组（fix-batch3 Task A，对齐 WPF CredentialView.xaml 的区段顺序）四段：
+ *  ① 'pre'（RDP 的 Domain/LoadBalanceInfo）——二选一切换之前，两模式恒显；
+ *  ② 'cred-mode' 伪块（手动 ⇄ 凭据库切换；vault 态后随 'cred-hint' 提示行）；
+ *  ③ manual → 'identity'（UserName/Password/PrivateKey）；vault → 'picker'（库选择器）；
+ *  ④ 'option'（AskPasswordWhenConnect 等）——两模式恒显收尾，WPF 中开关行不在 manual
+ *    块内：vault 态下 Domain/LoadBalanceInfo/AskPasswordWhenConnect 依旧可见（owner
+ *    验收核心诉求）。credRole 由 schemas.js credentialGroup 注入；子表单行内字段无
+ *    credRole，不参与分段（localAppConnectionGroup 无 InheritedCredentialName，
+ *    isCredentialGroup 已排除，不受影响）。
+ */
+function groupBlocks(g) {
+  const visible = g.fields.filter((f) => isVisible(f, json))
+  if (!isCredentialGroup(g)) return blocksOf(visible)
+  const byRole = (role) => blocksOf(visible.filter((f) => f.credRole === role))
+  return [
+    ...byRole('pre'),
+    { type: 'cred-mode' },
+    ...(credentialMode.value === 'manual'
+      ? byRole('identity')
+      : [{ type: 'cred-hint' }, ...byRole('picker')]),
+    ...byRole('option'),
+  ]
 }
 
 // ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
@@ -564,34 +584,36 @@ onBeforeUnmount(() => {
                 <h3 class="ed-group-title">{{ g.labelKey ? t(g.labelKey) : g.id }}</h3>
                 <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
 
-                <!-- 凭据组（#7）：手动 ⇄ 凭据库 分段控件 + 库模式提示行 -->
-                <div v-if="isCredentialGroup(g)" class="ed-cred-mode">
-                  <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
-                  <div class="ed-seg" role="tablist">
-                    <button
-                      type="button"
-                      role="tab"
-                      :aria-selected="credentialMode === 'manual'"
-                      :class="{ on: credentialMode === 'manual' }"
-                      @click="onCredModeSwitch('manual')"
-                    >{{ t('editor.credMode.manual') }}</button>
-                    <button
-                      type="button"
-                      role="tab"
-                      :aria-selected="credentialMode === 'vault'"
-                      :class="{ on: credentialMode === 'vault' }"
-                      @click="onCredModeSwitch('vault')"
-                    >{{ t('editor.credMode.vault') }}</button>
+                <!-- 渲染块循环（fix-batch3 Task A）：switch-run 网格 / 整行字段 + 凭据组的
+                     cred-mode / cred-hint 伪块（分段顺序见 groupBlocks） -->
+                <template v-for="(b, bi) in groupBlocks(g)" :key="bi">
+                  <!-- 凭据组二选一（#7）：标签列对齐 FormField 的 148px 网格 -->
+                  <div v-if="b.type === 'cred-mode'" class="ed-cred-mode">
+                    <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
+                    <div class="ed-seg" role="tablist">
+                      <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="credentialMode === 'manual'"
+                        :class="{ on: credentialMode === 'manual' }"
+                        @click="onCredModeSwitch('manual')"
+                      >{{ t('editor.credMode.manual') }}</button>
+                      <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="credentialMode === 'vault'"
+                        :class="{ on: credentialMode === 'vault' }"
+                        @click="onCredModeSwitch('vault')"
+                      >{{ t('editor.credMode.vault') }}</button>
+                    </div>
                   </div>
-                </div>
-                <div v-if="isCredentialGroup(g) && credentialMode === 'vault'" class="ed-cred-hint-row">
-                  <span></span>
-                  <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
-                </div>
-
-                <!-- #7：连续 SWITCH 字段 3 列网格块 + 其余整行字段（fieldBlocks 聚合） -->
-                <template v-for="(b, bi) in fieldBlocks(g)" :key="bi">
-                  <div v-if="b.type === 'switch-run'" class="ed-switch-grid">
+                  <!-- vault 模式提示行（紧贴切换下方，现状语义保留） -->
+                  <div v-else-if="b.type === 'cred-hint'" class="ed-cred-hint-row">
+                    <span></span>
+                    <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
+                  </div>
+                  <!-- #7：连续 SWITCH 字段 3 列网格块（凭据组的 option 开关同样成段） -->
+                  <div v-else-if="b.type === 'switch-run'" class="ed-switch-grid">
                     <FormField
                       v-for="f in b.fields"
                       :key="f.key"
@@ -634,10 +656,18 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* 蒙层 + 右滑面板：width clamp(560px, 68vw, 900px)（Plan 2 Task 8 约定） */
+/* 蒙层 + 右滑面板：width clamp(560px, 68vw, 900px)（Plan 2 Task 8 约定）。
+   fix-batch3 Task A #2：覆盖范围从顶栏下沿开始（top: var(--topbar-h)）而非 inset:0——
+   抽屉打开时顶栏（窗口拖拽区/最小化-最大化-关闭）不再被蒙层盖住、保持可交互。
+   --topbar-h 定义于 App.vue 的 .shell（44px）；.ed-root 是 .shell 的 DOM 后代
+   （ServerListView 内），自定义属性沿 DOM 树继承；回退值与 .shell 保持一致。
+   滑入过渡/蒙层点击关闭/sticky 分组标题均为 .ed-root 内部相对定位，不受影响。 */
 .ed-root {
   position: fixed;
-  inset: 0;
+  top: var(--topbar-h, 44px);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 60;
 }
 .ed-scrim {
