@@ -141,6 +141,9 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* fix-batch1 #4：地址与协议徽章间舒适间距（原 .cell 通用 10px 视觉上仍贴住徽章，
+     提到 16px；.h-addr 同值保持表头/行同缩进） */
+  padding-right: 16px;
 }
 .cell-proto {
   flex: 0 0 var(--c-proto, 84px);
