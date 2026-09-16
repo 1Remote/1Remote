@@ -384,7 +384,11 @@ namespace _1RM.Service.WebUi
                 var tmpDir = Path.Combine(Path.GetTempPath(), "1rm-webui-import-" + Guid.NewGuid().ToString("N"));
                 var originalName = string.Join("_",
                     Path.GetFileName(file.FileName).Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
-                if (string.IsNullOrWhiteSpace(originalName)) originalName = "import" + Path.GetExtension(file.FileName) ?? "import";
+                if (string.IsNullOrWhiteSpace(originalName))
+                {
+                    var ext = Path.GetExtension(file.FileName);
+                    originalName = string.IsNullOrEmpty(ext) ? "import" : "import" + ext;
+                }
                 var tmpPath = Path.Combine(tmpDir, originalName);
                 try
                 {
