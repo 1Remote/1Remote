@@ -34,6 +34,9 @@
   "toast.reorderFailed": "保存自定义顺序失败",
   "toast.treeMoved": "已移动 {n} 台服务器",
   "toast.treeMoveFailed": "{n} 台服务器移动失败",
+  "cols.menu": "列",
+  "cols.fixed": "固定显示",
+  "cols.hint": "拖动列右缘调整宽度；双击重置",
   "col.selectAll": "全选（Ctrl A）",
 
   "batch.selected": "已选 {n} 台",
