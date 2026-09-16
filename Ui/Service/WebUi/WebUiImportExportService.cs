@@ -49,7 +49,7 @@ namespace _1RM.Service.WebUi
         /// <summary>解析阶段跳过的条目数（如 JSON 数组中 CreateFromJsonString 返回 null 的项——WPF 静默 continue，Web 计数上报）。</summary>
         public int Skipped { get; private init; }
         public List<string> Errors { get; private init; } = new();
-        public static ImportResult Ok(int added, int skipped) => new() { Status = ExportStatus.Ok, Added = added, Skipped = skipped };
+        public static ImportResult Ok(int added, int skipped, List<string>? errors = null) => new() { Status = ExportStatus.Ok, Added = added, Skipped = skipped, Errors = errors ?? new List<string>() };
         public static ImportResult BadRequest(List<string> errors) => new() { Status = ExportStatus.BadRequest, Errors = errors };
     }
 
@@ -191,7 +191,8 @@ namespace _1RM.Service.WebUi
             {
                 IoC.Get<GlobalData>().ReloadAll(true); // WPF 导入成功后 ReloadAll(true) 同款（联动 SSE）
             }
-            return ImportResult.Ok(added, skipped);
+            // 部分失败也走 Ok（已有 added>0 即成功语义），但逐台 errors 必须带回——端点已序列化 errors 字段
+            return ImportResult.Ok(added, skipped, errors);
         }
 
         /// <summary>1Remote 导出 JSON → List&lt;ProtocolBase&gt;（WPF CmdImportFromJson :380-388 平价）。</summary>
