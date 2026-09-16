@@ -118,9 +118,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   background: var(--bg-hover);
   color: var(--text-1);
 }
+.s-groups {
+  /* fix-batch3 Task C #5 真根因：nav 容器此前无布局规则，button 默认 inline-block
+     横向平铺换行（表现为多项挤在一行）；flex column 承载一行一项 */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .s-item {
-  /* fix-batch1 #12：一行一项——nowrap/ellipsis 骨架期已有，补 flex:none 杜绝被压缩
-     （flex 收缩曾致按钮变窄、配合换行表现为多项折行）；160px 内 7 组中英标签均单行可容纳 */
+  /* 一行一项由 .s-groups 的 flex column 承载（见上）；本规则的 nowrap/ellipsis 负责
+     文本不折行、超宽省略。flex:none 在非 flex 父容器上无效，现父级已是 flex column，
+     保留无害（占位语义：不被压缩）。160px 内 7 组中英标签均单行可容纳 */
   flex: none;
   height: 34px;
   padding: 0 10px;
