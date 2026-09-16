@@ -22,7 +22,7 @@ const props = defineProps({
   selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? }（v-model:selection）
   tag: { type: String, default: '' }, // 当前标签过滤（v-model:tag，仅用于 chip 高亮）
 })
-const emit = defineEmits(['update:selection', 'update:tag', 'connect', 'update:collapsed'])
+const emit = defineEmits(['update:selection', 'update:tag', 'connect', 'update:collapsed', 'manage-tags'])
 const { t } = useI18n()
 
 const { servers, datasources, tags } = useServers()
@@ -219,8 +219,8 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
         >
           <span v-if="tg.isPinned" class="pin">📌</span>{{ tg.name }}<span class="tag-count">{{ tg.count }}</span>
         </button>
-        <!-- 占位：标签管理模态（置顶/重命名/删除等）属 Plan 3；内部计划号不入 UI，tooltip 统一「即将推出」 -->
-        <button class="tag-chip tag-manage" :title="t('common.comingSoon')">{{ t('tree.manageTags') }}</button>
+        <!-- 标签管理：打开模态（TagManagerModal 由 ServerListView 挂载）——ds 取当前树选中 -->
+        <button class="tag-chip tag-manage" :title="t('tagm.title')" @click="emit('manage-tags')">{{ t('tree.manageTags') }}</button>
       </div>
     </div>
 
