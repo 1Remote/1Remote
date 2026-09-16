@@ -33,7 +33,8 @@ namespace _1RM.Model.Protocol.Base
         /// <summary>
         /// 批量编辑时，如果参数列表不同，禁用
         /// </summary>
-        [JsonIgnore] [DefaultValue(true)]
+        [JsonIgnore]
+        [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsEditable { get; }
 
@@ -235,7 +236,7 @@ namespace _1RM.Model.Protocol.Base
         {
             if (!string.IsNullOrEmpty(credential.PrivateKeyPath))
             {
-                Password = credential.PrivateKeyPath.Trim();
+                PrivateKeyPath = credential.PrivateKeyPath.Trim();
                 return true;
             }
             return false;
@@ -254,7 +255,7 @@ namespace _1RM.Model.Protocol.Base
 
         public string GetHash()
         {
-            var clone = (Credential) this.Clone();
+            var clone = (Credential)this.Clone();
             clone.DecryptToConnectLevel();
             string all = $"{clone.Address}|{clone.Port}|{clone.UserName}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(Password)}|{UnSafeStringEncipher.DecryptOrReturnOriginalString(PrivateKeyPath)}";
             Hash = MD5Helper.GetMd5Hash32BitString(all);

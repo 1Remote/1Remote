@@ -45,9 +45,9 @@ namespace _1RM.Service.DataSource.DAO.Dapper
             lock (this)
             {
                 _dbConnection?.Close();
-                if (DatabaseType == DatabaseType.Sqlite)
+                if (DatabaseType == DatabaseType.Sqlite && _dbConnection is SQLiteConnection sqliteConn)
                 {
-                    SQLiteConnection.ClearAllPools();
+                    SQLiteConnection.ClearPool(sqliteConn);
                 }
             }
         }
@@ -345,26 +345,14 @@ VALUES
                             var hash = credential.GetHash();
                             // check if already exists
                             if (credentialsInDb.Any(x => string.Equals(x.Hash, hash, StringComparison.OrdinalIgnoreCase))) continue;
-                            var name = credential.Name;
-                            // check name, append (1) or (2) or (3) if duplicate existed.
+                            string candidate = credential.Name;
+                            int i = 2;
+                            while (credentialsInDb.Any(x => x.Name == candidate) || credentialsToAdd.Any(x => x.Name == candidate))
                             {
-                                int i = 2;
-                                while (credentialsInDb.Any(x => x.Name == credential.Name))
-                                {
-                                    credential.Name = $"{name}({i})";
-                                    i++;
-                                }
+                                candidate = $"{credential.Name}({i})";
+                                i++;
                             }
-                            if (credentialsToAdd.Any(x => string.Equals(x.GetHash(), hash, StringComparison.OrdinalIgnoreCase))) continue;
-                            // check name, append (1) or (2) or (3) if duplicate existed.
-                            {
-                                int i = 2;
-                                while (credentialsToAdd.Any(x => x.Name == credential.Name))
-                                {
-                                    credential.Name = $"{name}({i})";
-                                    i++;
-                                }
-                            }
+                            credential.Name = candidate;
 
                             foreach (var ss in cred2Servers[hash])
                             {

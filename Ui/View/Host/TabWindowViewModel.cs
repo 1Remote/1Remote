@@ -25,12 +25,14 @@ namespace _1RM.View.Host
 
         private IntPtr _hWndTabContent = IntPtr.Zero;
         private readonly Timer _timer_ObserveTabSwitching = new Timer(5);
+        private ElapsedEventHandler _awaitTabSwitchingHandler;
         private int _timer_Count = 0;
 
         private void InitTabSwitchingTimer()
         {
             _timer_ObserveTabSwitching.AutoReset = false;
-            _timer_ObserveTabSwitching.Elapsed += (sender, args) => AwaitTabSwitching();
+            _awaitTabSwitchingHandler = (sender, args) => AwaitTabSwitching();
+            _timer_ObserveTabSwitching.Elapsed += _awaitTabSwitchingHandler;
         }
 
         public TabWindowViewModel(TabWindowView windowView)
@@ -52,7 +54,9 @@ namespace _1RM.View.Host
 
         public void Dispose()
         {
+            _timer_ObserveTabSwitching.Elapsed -= _awaitTabSwitchingHandler;
             _timer_ObserveTabSwitching.Stop();
+            _timer_ObserveTabSwitching.Dispose();
             Execute.OnUIThread(() =>
             {
                 SelectedItem = null;
@@ -109,7 +113,7 @@ namespace _1RM.View.Host
                 var old = _selectedItem;
                 if (SetAndNotifyIfChanged(ref _selectedItem, value))
                 {
-                    if(old != null)
+                    if (old != null)
                         old.PropertyChanged -= SelectedItemOnPropertyChanged;
                     if (_selectedItem != null)
                         _selectedItem.PropertyChanged += SelectedItemOnPropertyChanged;
@@ -167,15 +171,12 @@ namespace _1RM.View.Host
         {
             if (_timer_Count <= 0) return;
             _timer_Count--;
-            IntPtr hWnd = GetCurrentTabContentWindow();
-            if (hWnd == IntPtr.Zero || hWnd == _hWndTabContent)
+            Execute.OnUIThreadSync(() =>
             {
-                _timer_ObserveTabSwitching.Start();  // continue to observe
-            }
-            else
-            {
-                Win32Api.SetForegroundWindow(hWnd);
-            }
+                var hWnd = GetCurrentTabContentWindow();
+                if (hWnd == IntPtr.Zero || hWnd == _hWndTabContent) _timer_ObserveTabSwitching.Start();
+                else Win32Api.SetForegroundWindow(hWnd);
+            });
         }
 
         private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

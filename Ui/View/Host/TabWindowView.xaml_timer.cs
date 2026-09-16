@@ -274,8 +274,9 @@ namespace _1RM.View.Host
                 }
                 else
                 {
-                    //rdpHandle = ihfw.GetHostHwnd();
-                    throw new NotImplementedException();
+                    // rdpHandle = ihfw.GetHostHwnd();
+                    // throw new NotImplementedException();
+                    return;
                 }
 
                 if (IsMouseInside(this))

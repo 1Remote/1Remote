@@ -24,6 +24,8 @@ namespace _1RM.View.Host
         public string Token => Vm.Token;
 
         private IntPtr _myHandle = IntPtr.Zero;
+        private System.Windows.Interop.HwndSource? _hwndSource;
+        private System.Windows.Interop.HwndSourceHook? _wndProcHook;
 
 
 
@@ -45,8 +47,9 @@ namespace _1RM.View.Host
                 _myHandle = new WindowInteropHelper(this).Handle;
                 Keyboard.Focus(this);
 
-                var myHwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
-                myHwndSource?.AddHook(new HwndSourceHook(AdditionalWndProc));
+                _hwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
+                _wndProcHook = new System.Windows.Interop.HwndSourceHook(AdditionalWndProc);
+                _hwndSource?.AddHook(_wndProcHook);
 
                 // remember window size when size changed
                 SizeChanged += (_, _) =>
@@ -99,6 +102,7 @@ namespace _1RM.View.Host
 
                 Closed += (_, _) =>
                 {
+                    _hwndSource?.RemoveHook(_wndProcHook);
                     TimerDispose();
                     try
                     {

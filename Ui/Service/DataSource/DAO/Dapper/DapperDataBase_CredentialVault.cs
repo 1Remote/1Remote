@@ -119,22 +119,22 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                         // after credential is updated, the related protocols will also be updated with the new credential information.
                         if (ret && relatedProtocols?.Count > 0)
                         {
-                            credential.Address = "";
-                            credential.Port = "";
-                            foreach (var protocol in relatedProtocols)
-                            {
-                                protocol.InheritedCredentialName = tpv.Name;
-                                protocol.SetCredential(credential, true);
-                            }
                             ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
+                            if (ret)
+                            {
+                                transaction.Commit();
+                                credential.Address = "";
+                                credential.Port = "";
+                                foreach (var protocol in relatedProtocols)
+                                {
+                                    protocol.InheritedCredentialName = tpv.Name;
+                                    protocol.SetCredential(credential, true);
+                                }
+                            }
                         }
                         if (!ret)
                         {
                             transaction.Rollback();
-                        }
-                        else
-                        {
-                            transaction.Commit();
                         }
                     }
 
