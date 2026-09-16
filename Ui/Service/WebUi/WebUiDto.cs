@@ -112,6 +112,101 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
+    /// GET /api/settings/general 响应（camelCase 序列化）。
+    /// 安全白名单域：只暴露非破坏性字段——开机自启（注册表）、便携模式、SQLite 路径不在此列。
+    /// requireSecondaryVerification 不在 GeneralConfig（那是 XAML 控件名）：真实状态在
+    /// SecondaryVerificationHelper（凭据管理器/注册表/locality 文件），读 GetEnabled()、
+    /// 写 SetEnabled(bool)（async void，fire-and-forget）。
+    /// </summary>
+    public class GeneralSettingsDto
+    {
+        public string Language { get; set; } = string.Empty;      // GeneralConfig.CurrentLanguageCode，小写码（"zh-cn"）
+        public int CloseButtonBehavior { get; set; }              // GeneralConfig.EnumCloseButtonBehavior：0=Exit, 1=Minimize
+        public bool ConfirmBeforeClosingSession { get; set; }
+        public bool ShowSessionIconInSessionWindow { get; set; }
+        public int LogLevel { get; set; }                         // SimpleLogHelper.EnumLogLevel：0=Debug..5=Disabled
+        public bool TabWindowCloseButtonOnLeft { get; set; }
+        public bool TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow { get; set; }
+        public bool CopyPortWhenCopyAddress { get; set; }
+        public bool DoNotCheckNewVersion { get; set; }
+        public bool RequireSecondaryVerification { get; set; }    // SecondaryVerificationHelper.GetEnabled()
+    }
+
+    /// <summary>
+    /// PUT /api/settings/general 请求体：白名单部分更新——键出现（非 null）才写，缺失 = 保持不变；
+    /// 未知键静默忽略（白名单外不写）。language 大小写不敏感并归一小写（web 端 "zh-CN" → "zh-cn"）；
+    /// closeButtonBehavior/logLevel 校验枚举定义值，违例 400 且零写入。
+    /// </summary>
+    public class GeneralSettingsUpdateRequest
+    {
+        public string? Language { get; set; }
+        public int? CloseButtonBehavior { get; set; }
+        public bool? ConfirmBeforeClosingSession { get; set; }
+        public bool? ShowSessionIconInSessionWindow { get; set; }
+        public int? LogLevel { get; set; }
+        public bool? TabWindowCloseButtonOnLeft { get; set; }
+        public bool? TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow { get; set; }
+        public bool? CopyPortWhenCopyAddress { get; set; }
+        public bool? DoNotCheckNewVersion { get; set; }
+        /// <summary>写路径走 SecondaryVerificationHelper.SetEnabled（async void，注册表/凭据管理器机器状态）。</summary>
+        public bool? RequireSecondaryVerification { get; set; }
+    }
+
+    /// <summary>
+    /// GET /api/settings/launcher 响应。hotKeyModifiers/hotKeyKey 为 WPF 枚举：
+    /// 线格式 = 枚举成员名（"ControlAlt"、"Shift"、"M"、"F1"）；显示形态（"Ctrl + Alt"）由前端自行拼装。
+    /// </summary>
+    public class LauncherSettingsDto
+    {
+        public bool LauncherEnabled { get; set; }
+        public string HotKeyModifiers { get; set; } = string.Empty;   // HotkeyModifierKeys 成员名
+        public string HotKeyKey { get; set; } = string.Empty;         // System.Windows.Input.Key 成员名
+        public bool ShowCredentials { get; set; }
+        public bool AllowSaveInfoInQuickConnect { get; set; }
+    }
+
+    /// <summary>
+    /// PUT /api/settings/launcher 请求体：部分更新（非 null 才写）。hotKeyModifiers 除成员名外
+    /// 亦接受显示形态（"Ctrl+Alt"/"win + ctrl"，token 顺序无关）；hotKeyKey 接受 Key 成员名（大小写不敏感）；
+    /// None/未知取值 400 且零写入。
+    /// </summary>
+    public class LauncherSettingsUpdateRequest
+    {
+        public bool? LauncherEnabled { get; set; }
+        public string? HotKeyModifiers { get; set; }
+        public string? HotKeyKey { get; set; }
+        public bool? ShowCredentials { get; set; }
+        public bool? AllowSaveInfoInQuickConnect { get; set; }
+    }
+
+    /// <summary>GET /api/tags/manage?ds= 列表条目：数据源范围内的标签聚合。</summary>
+    public class TagManageItemDto
+    {
+        public string Name { get; set; } = string.Empty; // 规范化小写（与 GlobalData.TagList 约定一致）
+        public int Count { get; set; }                   // 该数据源下带此标签的服务器数
+        public bool Pinned { get; set; }                 // LocalityTagService 置顶状态（机器本地，跨数据源共享）
+    }
+
+    /// <summary>PUT /api/tags/manage 请求体：置顶/取消置顶（pinned = 目标值，幂等非翻转）。</summary>
+    public class TagPinRequest
+    {
+        public string? Ds { get; set; }
+        public string? Name { get; set; }
+        public bool? Pinned { get; set; }
+    }
+
+    /// <summary>
+    /// POST /api/tags/rename 请求体：{ds, from, to}。from/to 均经 RectifyTagName 规范化
+    /// （去 #、空格→-、小写）；to 为空/与 from 相同/该数据源下已存在 → 400；from 不存在 → 404。
+    /// </summary>
+    public class TagRenameRequest
+    {
+        public string? Ds { get; set; }
+        public string? From { get; set; }
+        public string? To { get; set; }
+    }
+
+    /// <summary>
     /// GET /api/credentials 列表条目（信封/列表域 camelCase 序列化）。
     /// 安全红线：绝不包含 Password/PrivateKeyPath——明文查看只能走 reveal 端点（二次验证）。
     /// refCount = 该数据源下引用此凭据名的服务器数（InheritedCredentialName + AlternateCredentials[].Name）。
