@@ -101,9 +101,13 @@ export const api = {
     request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST' }),
   // 设置中心（Plan 3 Task 2）：general/launcher 均为白名单部分更新（缺省键=保持不变）；
   // general.language 用小写码（zh-cn），web locale（zh-CN）由调用方转换；
-  // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态），仅在用户明确操作时随 PUT 提交
+  // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态）——开关点击立即生效
+  //（fix batch3 #6）：先 verifySettings 过 WPF 平价验证门，通过才单独 PUT 该键提交翻转
   getGeneralSettings: () => request('/api/settings/general'),
   saveGeneralSettings: (g) => request('/api/settings/general', { method: 'PUT', body: g }),
+  // 二次验证门（fix batch3 #6）：POST 触发 Windows 凭据/Hello 验证（未开启验证时后端直通 200）；
+  // 取消/失败 → 403（request 封装抛 err.status=403，调用方按状态码提示并回弹开关）
+  verifySettings: () => request('/api/settings/verify', { method: 'POST' }),
   // launcher 热键：hotKeyModifiers/hotKeyKey 线格式 = WPF 枚举成员名（"ControlAlt"/"M"）；
   // PUT 亦接受 "Ctrl+Alt" 显示形态；注册冲突（被其它程序占用）→ 409 {error:'hotkey conflict'}
   getLauncherSettings: () => request('/api/settings/launcher'),

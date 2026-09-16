@@ -128,6 +128,7 @@
   "settings.save": "Gravar",
   "settings.saved": "Settings saved",
   "settings.saveFailed": "Failed to save settings",
+  "settings.verifyCancelled": "Verification cancelled or failed, setting unchanged",
   "settings.dirtyHint": "Unsaved changes",
   "settings.nav.general": "Xeral",
   "settings.nav.launcher": "Lanzador",
