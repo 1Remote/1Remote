@@ -35,7 +35,7 @@ watch(winWidth, (w, old) => {
   if (w < 900 && (old === undefined || old >= 900)) collapsed.value = true
 }, { immediate: true })
 
-const { servers, datasources, tags, loading, connected, searchQuery, searchedIds } = useServers()
+const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
 
 // 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）
 const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
@@ -209,7 +209,8 @@ function openDuplicate(server) {
   editor.value = { mode: 'create', ds: server.dataSourceName || 'Local', duplicateFrom: server.id, initial: server }
 }
 
-// 删除：确认对话框（naive dialog）→ DELETE → toast；列表经 SSE reload 自动刷新
+// 删除：确认对话框（naive dialog）→ DELETE → toast；UpdateServer/DeleteServer 系不触发
+// SSE（已知后端行为），前端兜底 reload 刷新列表（fix-batch1 #5）
 function onDelete(server) {
   dialog.warning({
     title: t('editor.deleteTitle'),
@@ -222,6 +223,7 @@ function onDelete(server) {
         message.success(t('editor.deleteOk', { name: server.displayName }))
         // 选中态可能指向已删对象（树叶选中）：清理回退，避免高亮悬空
         if (selection.value?.serverId === server.id) selection.value = null
+        reload()
       } catch (e) {
         message.error(t('editor.deleteFailed') + (e?.message ? ` (${e.message})` : ''))
       }
@@ -245,14 +247,16 @@ function openBulkEdit(ids) {
   }
 }
 
-// 保存成功：SSE 已自动刷新列表；这里收敛抽屉状态 + 清理指向旧行的选中态（名称/协议可能已变）
-// bulk 模式目标是一个 id 集，不涉及树叶选中回退。
+// 保存成功（新建/编辑/复制/批量共用的 saved 事件）：UpdateServer 系不触发 SSE（已知后端
+// 行为），前端兜底 reload（fix-batch1 #5）；这里收敛抽屉状态 + 清理指向旧行的选中态
+// （名称/协议可能已变）。bulk 模式目标是一个 id 集，不涉及树叶选中回退。
 function onSaved({ id, mode }) {
   if (mode === 'edit' && selection.value?.serverId && selection.value.serverId !== id) {
     // 编辑目标的树叶选中态与保存对象不符（多选中残留）——保守回退，避免错误高亮
     selection.value = null
   }
   editor.value = null
+  reload()
 }
 
 // ---- 标签管理模态（Plan 3 Task 5）：SideTree「+ 管理」chip 打开；ds = 当前树选中的数据源 ----
@@ -329,6 +333,7 @@ const importModal = ref(false)
         class="table-host"
         :servers="visibleServers"
         :selection="selection"
+        :query="searchQuery"
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"

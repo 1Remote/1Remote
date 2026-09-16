@@ -21,8 +21,9 @@ namespace _1RM.Service.WebUi
     /// general 安全域：只暴露非破坏性字段（语言/关闭行为/确认开关/日志级别/tab 选项/复制选项）；
     /// 开机自启（写注册表）、便携模式、SQLite 路径不进白名单。requireSecondaryVerification 不在
     /// GeneralConfig：真实状态在 SecondaryVerificationHelper——读 await GetEnabled()，写
-    /// SetEnabled(bool)（async void，写注册表/凭据管理器机器状态，端点 fire-and-forget 后即返回，
-    /// 响应值回显请求值而非回读：SetEnabled 内部的静态缓存更新在 await 完成后才落地，立即回读会得到旧值）。
+    /// await SetEnabledAsync(bool)（写注册表/凭据管理器机器状态；可等待版本在返回前完成写入并
+    /// 使静态缓存与机器状态一致，响应值即回读 GetEnabled()，fix #13：原 async void
+    /// fire-and-forget 存在“响应已返回但缓存/机器状态尚未落地”的竞态窗口）。
     ///
     /// language 变更：归一小写码后校验 14 个内置语言（LanguagesResources.Files 同源），写配置后调
     /// LanguageService.SetLanguage 让 WPF 侧即时生效（GeneralSettingViewModel.Language 同款顺序：
@@ -132,14 +133,16 @@ namespace _1RM.Service.WebUi
             }
             if (input.RequireSecondaryVerification != null)
             {
-                // async void，fire-and-forget：写注册表/凭据管理器；返回值回显请求值（见类注释）
-                SecondaryVerificationHelper.SetEnabled(input.RequireSecondaryVerification.Value);
+                // 可等待写入（fix #13）：返回前完成机器状态写入 + 缓存一致性刷新，
+                // 消除 async void fire-and-forget 的竞态窗口
+                await SecondaryVerificationHelper.SetEnabledAsync(input.RequireSecondaryVerification.Value);
             }
 
             cs.Save();
             var dto = ReadGeneralConfig(cs);
-            dto.RequireSecondaryVerification = input.RequireSecondaryVerification
-                ?? await SecondaryVerificationHelper.GetEnabled();
+            // 写入已 await 完成，回读即为真值（部分写入失败时 SetEnabledAsync 已按机器
+            // 实际状态刷新缓存，回读与重启后的首读一致）
+            dto.RequireSecondaryVerification = await SecondaryVerificationHelper.GetEnabled();
             return GeneralSettingsResult.Ok(dto);
         }
 

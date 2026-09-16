@@ -53,6 +53,14 @@ namespace Tests.Service.WebUi
                 Address = "4.4.4.4",
                 Tags = new List<string>(),
             }, local);
+            // 地址匹配断言用：名称不含任何数字，地址含 192.168 —— 名称与地址命中可区分
+            gd.AddServer(new RDP
+            {
+                Id = "search-addr-1",
+                DisplayName = "addr-probe",
+                Address = "192.168.1.5",
+                Tags = new List<string>(),
+            }, local);
 
             var builder = WebApplication.CreateBuilder();
             builder.WebHost.UseTestServer();
@@ -105,6 +113,31 @@ namespace Tests.Service.WebUi
             var body2 = await resp2.Content.ReadAsStringAsync();
             StringAssert.Contains(body2, "search-cn-1");
             Assert.IsFalse(body2.Contains("seed-rdp"), "非中文服务器不应命中拼音查询");
+        }
+
+        [TestMethod]
+        public async Task Search_ByAddress_MatchesServerWhoseAddressContainsKeyword()
+        {
+            // WPF 主窗口过滤一致：关键字同时匹配 DisplayName 与 SubTitle(=Address:Port)。
+            // search-addr-1 名称 "addr-probe" 不含 "192"，地址 "192.168.1.5" 含 —— 仅地址命中也须返回
+            var resp = await _client.GetAsync("/api/search?q=192");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "search-addr-1");
+            Assert.IsFalse(body.Contains("search-ssh-1"), "地址不含关键字且名称不含关键字的服务器不应命中");
+            Assert.IsFalse(body.Contains("seed-rdp"), "地址不含关键字且名称不含关键字的服务器不应命中");
+        }
+
+        [TestMethod]
+        public async Task Search_NameAndAddressTokensCombined_AllKeywordsMustMatch()
+        {
+            // 多关键字（空格分隔）可分别命中名称与地址：name 含 "addr"、地址含 "168"
+            var resp = await _client.GetAsync("/api/search?q=addr%20168");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "search-addr-1");
+            Assert.IsFalse(body.Contains("search-ssh-1"), "两个关键字都须命中（名称或地址任一）");
+            Assert.IsFalse(body.Contains("seed-rdp"), "两个关键字都须命中（名称或地址任一）");
         }
 
         [TestMethod]

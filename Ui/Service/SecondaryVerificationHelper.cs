@@ -27,9 +27,30 @@ namespace _1RM.Service
 
         public static async void SetEnabled(bool enable)
         {
+            await SetEnabledAsync(enable);
+        }
+
+
+        /// <summary>
+        /// SetEnabled 的可等待版本（Web UI 端点用）：等待注册表/凭据管理器/文件三级写入完成，
+        /// 保证返回时 <see cref="_isEnabled"/> 缓存已与机器状态一致——
+        /// VerifyAsyncUi/GetEnabled 读的正是该缓存，fire-and-forget 版本存在
+        /// “端点已返回但缓存尚未更新”的窗口（fix #13）。
+        /// 写入未完全成功时不留旧缓存：失效后按机器实际状态重载（部分写入下机器状态
+        /// 即事实源，与进程重启后的首次读取一致）。
+        /// </summary>
+        public static async Task SetEnabledAsync(bool enable)
+        {
             var success = await SetEnabled(enable, _key);
             if (success)
+            {
                 _isEnabled = enable;
+            }
+            else
+            {
+                _isEnabled = null;
+                await GetEnabled();
+            }
         }
 
 
