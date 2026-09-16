@@ -14,10 +14,11 @@ import { useDialog, useMessage } from 'naive-ui'
 import { useWindowSize } from '@vueuse/core'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
+import ImportModal from '../components/ImportModal.vue'
 import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
-import { applyServerFilters, useServers } from '../composables/useServers'
+import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
 import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
 
@@ -103,6 +104,22 @@ async function onConnect(id) {
 
 async function onBatchConnect(ids) {
   if (!ids?.length) return
+  // 批量连接阈值（Plan 4 Task 3，产品决策项）：超过 BATCH_CONNECT_THRESHOLD 台先弹确认
+  //（TagManagerModal「连接全部」同款），防误点一次拉起整屏会话
+  if (ids.length > BATCH_CONNECT_THRESHOLD) {
+    dialog.warning({
+      title: t('batchConnect.confirmTitle'),
+      content: t('batchConnect.confirmText', { n: ids.length }),
+      positiveText: t('batch.connect'),
+      negativeText: t('editor.cancel'),
+      onPositiveClick: () => runBatchConnect(ids),
+    })
+    return
+  }
+  await runBatchConnect(ids)
+}
+
+async function runBatchConnect(ids) {
   let ok = 0
   for (const id of ids) {
     // 逐个串行 await：批量并发轰炸后端/桌面端连接管线不友好
@@ -117,6 +134,29 @@ async function onBatchConnect(ids) {
   if (ok < ids.length) message.error(t('toast.batchConnectFailed', { n: ids.length - ok }))
 }
 
+// ---- 导出（Plan 4 Task 3）：批量条「导出」→ blob 下载；403 = 桌面端已弹二次验证
+//（未通过/取消），提示引导重试（通过后 30s 窗口内重试免验证）----
+async function onExport(ids) {
+  if (!ids?.length) return
+  try {
+    const { blob, filename } = await api.exportServers(ids)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename || '1remote-export.json' // 后端 Content-Disposition 缺失时的兜底名
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url)) // 异步 revoke：同步 revoke 在个别浏览器会截断未开始的下载
+    message.success(t('toast.exportDone', { n: ids.length }))
+  } catch (e) {
+    if (e?.status === 403) {
+      message.error(t('toast.exportNeedVerify'))
+      return
+    }
+    const detail = e?.body?.errors?.[0]
+    message.error(t('toast.exportFailed') + (detail ? ` (${detail})` : ''))
+  }
+}
+
 // ---- 全局 Esc 链（spec §8.2）：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
 // 菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
 // 搜索归本组件（useServers 共享态）——三处状态在唯一的 window 级 handler 里按序裁决，
@@ -127,6 +167,7 @@ function onGlobalEsc(e) {
   if (e.key !== 'Escape') return
   if (editor.value) return // 抽屉在开：Esc 由抽屉处理
   if (tagManager.value) return // 标签管理模态在开：Esc 归 n-modal（关模态），不清搜索/光标
+  if (importModal.value) return // 导入模态在开：Esc 归 n-modal（关模态/其内下拉）
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
   else if (tb?.clearCheckedIfAny()) e.preventDefault()
@@ -144,9 +185,14 @@ const editor = ref(null)
 
 // App.vue 顶栏「+」经 editorBus 请求新建（跨层：顶栏在 router-view 之外无法向本视图 emit）。
 // 抽屉已开时忽略——替换状态会丢掉未保存编辑且绕过脏确认。
-const { createRequest } = useEditorBus()
+const { createRequest, importRequest } = useEditorBus()
 watch(createRequest, () => {
   if (!editor.value) openCreate()
+})
+// 「+ ▾ 导入」同款（Plan 4 Task 3）：打开导入模态（与编辑抽屉互不排斥——模态在其上层，
+// 但导入是明确的新任务入口，无需像 createRequest 那样守卫未保存编辑）
+watch(importRequest, () => {
+  importModal.value = true
 })
 
 function openCreate() {
@@ -214,6 +260,10 @@ const tagManager = ref(null) // null=关 | { ds }
 function openTagManager() {
   tagManager.value = { ds: selection.value?.dataSourceName || 'Local' }
 }
+
+// ---- 导入模态（Plan 4 Task 3）：空库引导卡「导入」与顶栏「+ ▾ 导入」两个入口共用；
+// 默认目标数据源 = 当前树选中（模态打开时取快照，关闭即销毁不跨次残留）----
+const importModal = ref(false)
 </script>
 
 <template>
@@ -256,12 +306,12 @@ function openTagManager() {
         <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
       </div>
 
-      <!-- 空库引导卡片（spec §8.5）：新建已接线（Plan 2 Task 8，打开编辑抽屉）；导入为 Plan 4 占位 -->
+      <!-- 空库引导卡片（spec §8.5）：新建（Plan 2 Task 8）与导入（Plan 4 Task 3）均已接线 -->
       <div v-else-if="showGuide" class="empty-guide">
         <div class="eg-title">{{ t('empty.none') }}</div>
         <div class="eg-actions">
           <button class="eg-btn eg-primary" @click="openCreate">+ {{ t('empty.newFirst') }}</button>
-          <button class="eg-btn" disabled :title="t('common.comingSoon')">⤓ {{ t('empty.importMremote') }}</button>
+          <button class="eg-btn" @click="importModal = true">⤓ {{ t('import.title') }}</button>
         </div>
         <div class="eg-hint">{{ t('empty.launcherHint') }}</div>
       </div>
@@ -283,6 +333,7 @@ function openTagManager() {
         @connect="onConnect"
         @batch-connect="onBatchConnect"
         @bulk-edit="openBulkEdit"
+        @export="onExport"
         @edit="openEdit"
         @duplicate="openDuplicate"
         @delete="onDelete"
@@ -294,6 +345,14 @@ function openTagManager() {
         :show="true"
         :ds="tagManager.ds"
         @update:show="tagManager = $event ? tagManager : null"
+      />
+
+      <!-- 导入模态（Plan 4 Task 3）：默认数据源取当前树选中；关闭即销毁（文件/错误不跨次残留） -->
+      <ImportModal
+        v-if="importModal"
+        :show="true"
+        :default-ds="selection?.dataSourceName || 'Local'"
+        @update:show="importModal = $event"
       />
 
       <!-- 连接编辑抽屉（Plan 2 Task 8/10）：新建/编辑/复制/批量入口共用；fixed 覆盖层，不参与 flex 布局 -->
@@ -486,7 +545,7 @@ function openTagManager() {
   .sk { animation: none; opacity: 0.7; }
 }
 
-/* ---- 空库引导卡片（spec §8.5）：居中；新建/导入为占位禁用，提示行指向桌面启动器热键 ---- */
+/* ---- 空库引导卡片（spec §8.5）：居中；新建/导入均已接线，提示行指向桌面启动器热键 ---- */
 .empty-guide {
   flex: 1;
   min-height: 0;

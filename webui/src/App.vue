@@ -7,7 +7,7 @@ import { useServers } from './composables/useServers'
 import { useEditorBus } from './composables/editorBus'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
-const { requestNewServer } = useEditorBus()
+const { requestNewServer, requestImport } = useEditorBus()
 // naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）
 const naiveLocale = computed(() => (locale.value === 'en-US' ? enUS : zhCN))
 const { searchQuery, searching } = useServers()
@@ -26,6 +26,17 @@ function onGlobalKey(e) {
 }
 onMounted(() => window.addEventListener('keydown', onGlobalKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
+
+// 「+」下拉（Plan 4 Task 3）：新建（原直达按钮）+ 导入（新模态入口）——服务器已存在时
+// 导入是自然入口；两动作都经 editorBus 计数通知 ServerListView（跨层，见 editorBus.js）
+const addOptions = computed(() => [
+  { label: t('topbar.newServer'), key: 'new' },
+  { label: t('import.title'), key: 'import' },
+])
+function onAddSelect(key) {
+  if (key === 'new') requestNewServer()
+  else if (key === 'import') requestImport()
+}
 </script>
 
 <template>
@@ -50,8 +61,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
               <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
             </div>
             <div class="topbar-actions">
-              <!-- 新建服务器（Plan 2 Task 8 接线）：经 editorBus 通知 ServerListView 打开编辑抽屉 -->
-              <n-button quaternary size="small" :title="t('topbar.newServer')" @click="requestNewServer()">+</n-button>
+              <!-- 「+」下拉（Plan 4 Task 3）：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView） -->
+              <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
+                <n-button quaternary size="small" :title="t('topbar.addServer')">+</n-button>
+              </n-dropdown>
               <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
             </div>
           </header>

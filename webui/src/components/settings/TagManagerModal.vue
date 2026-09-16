@@ -15,7 +15,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
-import { useServers } from '../../composables/useServers'
+import { BATCH_CONNECT_THRESHOLD, useServers } from '../../composables/useServers'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -144,7 +144,8 @@ function onDelete(tg) {
   })
 }
 
-// ---- 连接全部：该数据源下带此标签的服务器，逐个串行 connect（批量连接同款节流）----
+// ---- 连接全部：该数据源下带此标签的服务器，逐个串行 connect（批量连接同款节流）。
+// 超过 BATCH_CONNECT_THRESHOLD 台先弹确认（Plan 4 Task 3，与 ServerListView 批量条同款）----
 function connectAll(tg) {
   const target = tg.name.toLowerCase()
   const list = servers.value.filter(
@@ -154,6 +155,20 @@ function connectAll(tg) {
     message.warning(t('tagm.connectNone'))
     return
   }
+  if (list.length > BATCH_CONNECT_THRESHOLD) {
+    dialog.warning({
+      title: t('batchConnect.confirmTitle'),
+      content: t('batchConnect.confirmText', { n: list.length }),
+      positiveText: t('batch.connect'),
+      negativeText: t('editor.cancel'),
+      onPositiveClick: () => runConnectAll(list),
+    })
+    return
+  }
+  runConnectAll(list)
+}
+
+function runConnectAll(list) {
   ;(async () => {
     let ok = 0
     for (const s of list) {

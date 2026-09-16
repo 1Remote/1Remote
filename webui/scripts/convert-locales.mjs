@@ -49,10 +49,11 @@ const MAPPING = {
   'row.connect': 'Connect',
   'row.edit': 'Edit',
 
-  // -- 空态 / 页面 --
-  'empty.importMremote': 'import_from_mremoteng_csv',
+  // -- 空态 / 页面 / 导入 --
   'page.settings': 'Options',
   'topbar.newServer': 'New server',
+  'import.button': 'Import',
+  'import.done': 'import_done_0_items_added',
 
   // -- 设置框架 --
   'settings.back': 'Back',
