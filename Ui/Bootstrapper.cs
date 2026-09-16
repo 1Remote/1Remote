@@ -141,6 +141,22 @@ namespace _1RM
                 return;
             }
 
+            // Check if this is a transient "Desktop composition is disabled" error from WPF's
+            // WindowChromeWorker and ignore it if so.
+            // During RDP session lock/reconnect, GPU driver resets or display topology changes,
+            // DWM composition is transiently unavailable: WPF reacts to WM_DWMCOMPOSITIONCHANGED
+            // by re-applying the glass frame, but DwmExtendFrameIntoClientArea then throws
+            // COMException 0x80263001 (DWM_E_COMPOSITIONDISABLED) from inside a window message hook.
+            // The failed call is purely cosmetic - the glass frame is re-applied automatically when
+            // the next WM_DWMCOMPOSITIONCHANGED arrives after composition settles.
+            // See: https://github.com/dotnet/wpf/issues/11440
+            if (IsTransientDwmCompositionError(e.Exception))
+            {
+                SimpleLogHelper.Warning($"Transient DWM composition error suppressed: {e.Exception.Message}");
+                e.Handled = true;
+                return;
+            }
+
             if (!App.ExitingFlag)
             {
                 // Capture exception reference inside lock to prevent concurrent modifications
@@ -203,6 +219,32 @@ namespace _1RM
                         return true;
                     }
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the exception is a transient DWM composition error that can be safely ignored.
+        /// These errors occur when WPF's WindowChromeWorker handles WM_DWMCOMPOSITIONCHANGED during
+        /// session transitions (RDP lock/reconnect, GPU driver reset, display change): DwmIsCompositionEnabled()
+        /// reports composition as enabled, but DwmExtendFrameIntoClientArea fails with
+        /// 0x80263001 (DWM_E_COMPOSITIONDISABLED) moments later. The failure only skips re-applying
+        /// the glass frame for that message and is retried on the next composition change.
+        /// See: https://github.com/dotnet/wpf/issues/11440
+        /// </summary>
+        private static bool IsTransientDwmCompositionError(Exception ex)
+        {
+            // DWM_E_COMPOSITIONDISABLED: "{Desktop composition is disabled}"
+            const int DWM_E_COMPOSITIONDISABLED = unchecked((int)0x80263001);
+
+            if (ex is System.Runtime.InteropServices.COMException comEx &&
+                comEx.ErrorCode == DWM_E_COMPOSITIONDISABLED)
+            {
+                // Only swallow failures raised from WPF's chrome handling, never from app code
+                var stackTrace = ex.StackTrace ?? "";
+                return stackTrace.Contains("WindowChromeWorker", StringComparison.Ordinal) ||
+                       stackTrace.Contains("DwmExtendFrameIntoClientArea", StringComparison.Ordinal);
             }
 
             return false;
