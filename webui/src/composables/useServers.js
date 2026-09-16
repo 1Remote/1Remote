@@ -104,35 +104,9 @@ export function useServers() {
   return { servers, datasources, tags, loading, connected, reload: loadAll, searchQuery, searchedIds, searching }
 }
 
-/**
- * 扁平列表 → 边栏树结构（纯函数，不做懒计数/排序——Task 15 在此之上扩展）：
- * [{name, type, status, writable, reconnectInfo, serverCount, servers: [], folders: [{name, path, folders, servers}]}]
- * - 根节点 = 数据源（顺序以 /api/datasources 返回为准，展开其全部字段并挂 folders/servers）
- * - root.servers = folderPath 为空串的服务器；其余按 folderPath 以 "/" 逐级下沉（后端约定 "a/b"，根为空串）
- * - 不属于任何已知数据源的服务器（快照错配的孤儿）被丢弃
- */
-export function buildTree(servers, datasources) {
-  const roots = []
-  for (const ds of datasources) {
-    const dsServers = servers.filter(s => s.dataSourceName === ds.name)
-    const root = { ...ds, folders: [], servers: [] }
-    for (const s of dsServers) {
-      const parts = s.folderPath ? s.folderPath.split('/') : []
-      let node = root
-      for (const p of parts) {
-        let f = node.folders.find(x => x.name === p)
-        if (!f) {
-          f = { name: p, path: (node.path ? node.path + '/' : '') + p, folders: [], servers: [] }
-          node.folders.push(f)
-        }
-        node = f
-      }
-      node.servers.push(s)
-    }
-    roots.push(root)
-  }
-  return roots
-}
+// buildTree 迁至 ./folders（fix-batch1 Task 2：物化空文件夹需与键换算纯函数同居，
+// 且 node 断言要求模块无浏览器依赖）；此处转发保持既有 import 路径兼容
+export { buildTree } from './folders'
 
 /**
  * 组合应用边栏过滤（spec §3.1/§3.3，Task 17）：基础列表 → 标签过滤 → 搜索命中集逐层收窄。

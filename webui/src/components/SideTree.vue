@@ -1,70 +1,46 @@
 <script setup>
-// 边栏树 + 标签区（spec §3.2/§3.3，Task 15）：
-// - 数据源=根节点（🗄 名称 · 类型 + 状态点：绿=connected / 灰=disconnected / 红=reconnecting+倒计时 tooltip）
-// - 根下递归文件夹树，叶=服务器行（图标+名称；单击=选中、双击=连接[Task 18 接线]）
-// - 节点右侧子服务器计数（含全部后代，与根节点 serverCount 同语义）
-// - 树下方「标签」chips（置顶在前），点击 emit update:tag；「+ 管理」占位（Plan 3）
-// - 底部「« 收起边栏」emit update:collapsed
-// - 展开/折叠经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json
+// 边栏树 + 标签区（spec §3.2/§3.3，Task 15；fix-batch1 Task 2 重构 #2/#3）：
+// - 顶部常驻虚拟根「全部数据源」（点击=清除数据源过滤，列表显示全部库服务器）
+// - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
+// - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
+//   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
+// - 节点右侧子服务器计数（含全部后代）
+// - 树下方「标签」chips（置顶在前）；底部「« 收起边栏」emit update:collapsed
+// - 展开/折叠与拖拽经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json；
+//   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../api'
-import { buildTree, useServers } from '../composables/useServers'
-
-// ---- 持久化键格式（必须与 WPF 逐字符一致，见 Ui/View/ServerView/Tree/ServerTreeViewModel.cs）----
-// FullPathSeparator = " ]=+=+=+=>[ "；根节点 FullPath = 数据源名本身（SetParent: IsRootFolder → FullPath = _name），
-// 子节点 FullPath = 父 FullPath + SEP + 名。后端 folderPath 约定 "a/b"（DtoMapper: string.Join("/", TreeNodes)），
-// 故 a/b @ Local → "Local ]=+=+=+=>[ a ]=+=+=+=>[ b"
-const SEP = ' ]=+=+=+=>[ '
-const fullKey = (dsName, folderPath) => (folderPath ? dsName + SEP + folderPath.split('/').join(SEP) : dsName)
+import { useServers } from '../composables/useServers'
+import { buildTree, countHolderServers, fullKey, holderAt } from '../composables/folders'
+import { useTreeState } from '../composables/useTreeState'
+import { useFolderOps } from '../composables/folderOps'
 
 const props = defineProps({
-  selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? }（v-model:selection）
+  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据源（v-model:selection）
   tag: { type: String, default: '' }, // 当前标签过滤（v-model:tag，仅用于 chip 高亮）
 })
-const emit = defineEmits(['update:selection', 'update:tag', 'connect', 'update:collapsed', 'manage-tags'])
+const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 'manage-tags'])
 const { t } = useI18n()
 const message = useMessage()
 
 const { servers, datasources, tags, reload } = useServers()
-const tree = computed(() => buildTree(servers.value, datasources.value))
+const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist } = useTreeState()
+const folderOps = useFolderOps()
+const tree = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 
-// ---- 自定义顺序（Plan 4 Task 4）：键与 WPF CustomNodeOrder 一致 —— 服务器=其 id、
+// ---- 自定义顺序（Plan 4 Task 4）：键与 WPF CustomNodeOrder 一致 ——
 // 文件夹="%$TreeNode$%:"+名称（见 ServerTreeViewModel.TreeNode.Id；以名称为键、跨层级同名
-// 文件夹共用一键属 WPF 既有语义）。orderMap 是 GET 到的字典 + 本地拖拽编辑的工作副本，
-// 展示层每级子节点（文件夹+服务器合并，对齐 WPF Custom 排序的交错语义）按序号稳定排序；
-// 无序号者排末尾（WPF LoadLocalCaches 的 int.MaxValue 同义；Web 把新增服务器排末尾而
-// WPF 默认 0 排最前，是记录在案的有意偏差）
+// 文件夹共用一键属 WPF 既有语义）。无序号者排末尾（WPF LoadLocalCaches 的 int.MaxValue 同义）
 const FOLDER_ID = '%$TreeNode$%:' // 与 ServerTreeViewModel.FolderNodePrefix 逐字符一致
-const childId = (c) => (c.kind === 'folder' ? FOLDER_ID + c.folder.name : c.server.id)
-const orderMap = ref({})
-
-// ---- 展开状态：key → bool（true=展开）。缺失键=展开（对齐 WPF LoadExpansionStates 的 GetValueOrDefault(path, true)）
-const expandedMap = ref({})
-// 最近一次 GET 的两个字典：PUT 为全量替换，保存时必须以它们为基底——expanded 合并保留 web 树
-// 不认识的键（如 WPF 侧空文件夹）；order 原样回传（发 {} 会清掉 WPF 侧拖拽产生的 CustomNodeOrder）
-let fetchedExpanded = {}
-let fetchedOrder = {}
-let hydrated = false // 是否成功 GET 过——未取到基底前绝不 PUT，避免全量替换清空既有持久化
-
-const isExpanded = (key) => expandedMap.value[key] ?? true
-
-async function loadTreeState() {
-  try {
-    const st = await api.getTreeState()
-    fetchedExpanded = st?.expanded || {}
-    fetchedOrder = st?.order || {}
-    // 水合合并：仅补充内存中没有的键——GET 返回前用户已切换过的展开态（本地意图）优先，
-    // 不能被后到的旧快照覆盖。顺序字典同取服务端基底（未 GET 到前绝不 PUT，见 hydrated 守卫）
-    expandedMap.value = { ...fetchedExpanded, ...expandedMap.value }
-    orderMap.value = { ...fetchedOrder }
-    hydrated = true
-  } catch {
-    // 后端不可达：保持全展开默认；首次保存前会再试一次 GET
-  }
+const levelChildren = (holder) => {
+  const key = (f) => orderMap.value[FOLDER_ID + f.name]
+  return holder.folders.slice().sort((a, b) => (key(a) ?? Infinity) - (key(b) ?? Infinity))
 }
 
+// ---- 展开保存：防抖 500ms → 基于快照基底合并（只覆盖当前可见的根/文件夹键，
+// 其余键原样保留——PUT 全量替换，误删会让 WPF 侧空文件夹消失；详见 useTreeState.persist）
 let saveTimer = null
 let savePending = false
 function scheduleSave() {
@@ -77,75 +53,47 @@ function scheduleSave() {
 }
 
 async function flushSave() {
-  if (!hydrated) {
-    await loadTreeState()
-    if (!hydrated) return // 仍不可达：跳过保存，本次会话内状态由内存兜底
-  }
-  const merged = { ...fetchedExpanded }
-  // 只覆盖当前树中真实存在的根/文件夹键（WPF SaveExpansionStates 的"当前有效路径"重建语义），
-  // 其余键原样保留——PUT 是对两个字典的全量替换，误删会让 WPF 侧空文件夹消失
-  for (const row of rows.value) {
-    if (row.kind !== 'server') merged[row.key] = isExpanded(row.key)
-  }
-  try {
-    // order 发送 orderMap（= GET 基底 + 本地拖拽编辑的完整字典）——PUT 对两个字典都是
-    // 全量替换，发空字典会永久清掉 WPF 侧拖拽产生的 CustomNodeOrder
-    await api.saveTreeState({ expanded: merged, order: { ...orderMap.value } })
-    fetchedExpanded = merged
-    fetchedOrder = { ...orderMap.value }
-  } catch (e) {
-    console.warn('[SideTree] saveTreeState failed:', e?.message || e)
-  }
+  await persist((m) => {
+    for (const row of rows.value) {
+      if (row.kind === 'folder' || row.kind === 'root') m[row.key] = isExpanded(row.key)
+    }
+  })
 }
 
-onMounted(loadTreeState)
+onMounted(() => load()) // 共享存储幂等（ServerListView 亦会触发首载）
 onBeforeUnmount(() => {
   clearTimeout(saveTimer)
   if (savePending) flushSave() // 卸载时立即落盘防抖未到的变更（fire-and-forget）
 })
 
-function toggleExpand(key) {
-  expandedMap.value = { ...expandedMap.value, [key]: !isExpanded(key) }
+function onToggle(key) {
+  toggleExpand(key)
   scheduleSave()
 }
 
-// ---- 可见行扁平化（免递归组件；depth 控缩进）。每级子节点 = 文件夹+服务器合并后按自定义
-// 序号稳定排序（无序号=保持文件夹在前、其余按入序的自然顺序，见 orderMap 注释）；
-// 序号存在时文件夹/服务器按序交错（对齐 WPF SortNodes 的 Custom 分支）
-const levelChildren = (holder) => {
-  const out = []
-  for (const f of holder.folders) out.push({ kind: 'folder', folder: f })
-  for (const s of holder.servers) out.push({ kind: 'server', server: s })
-  const key = (c) => orderMap.value[childId(c)]
-  return out.sort((a, b) => (key(a) ?? Infinity) - (key(b) ?? Infinity))
-}
+// 「全部数据源」虚拟根的展开态：纯本地（WPF 无此节点，不落 tree-state 字典）
+const allOpen = ref(true)
+
+// ---- 可见行扁平化（免递归组件；depth 控缩进）：全部数据源 → 数据源根 → 文件夹（无服务器叶）
 const rows = computed(() => {
-  const countServers = (f) => f.servers.length + f.folders.reduce((n, x) => n + countServers(x), 0)
-  const out = []
+  const out = [{ kind: 'all', key: 'all', depth: 0, count: tree.value.reduce((n, r) => n + countHolderServers(r), 0) }]
+  if (!allOpen.value) return out
   const pushLevel = (holder, dsName, depth) => {
-    for (const c of levelChildren(holder)) {
-      if (c.kind === 'folder') {
-        const key = fullKey(dsName, c.folder.path)
-        out.push({ kind: 'folder', key, folder: c.folder, dsName, depth, count: countServers(c.folder) })
-        if (isExpanded(key)) pushLevel(c.folder, dsName, depth + 1)
-      } else {
-        out.push({ kind: 'server', key: 'srv:' + c.server.id, server: c.server, dsName, depth })
-      }
+    for (const f of levelChildren(holder)) {
+      const key = fullKey(dsName, f.path)
+      out.push({ kind: 'folder', key, folder: f, dsName, depth, count: countHolderServers(f) })
+      if (isExpanded(key)) pushLevel(f, dsName, depth + 1)
     }
   }
   for (const root of tree.value) {
-    out.push({ kind: 'root', key: root.name, ds: root, depth: 0, count: countServers(root) })
-    if (isExpanded(root.name)) pushLevel(root, root.name, 1)
+    out.push({ kind: 'root', key: root.name, ds: root, depth: 1, count: countHolderServers(root) })
+    if (isExpanded(root.name)) pushLevel(root, root.name, 2)
   }
   return out
 })
 
-// ---- 树拖拽（Plan 4 Task 4）：原生 HTML5 DnD——树需要「前插/后插/移入」三种落区语义，
-// vuedraggable 的扁平排序列表模型对层级命中区适配差，故自实现。
-// 落区判定：行内上 25% = 插到目标前（上方指示线）、下 25% = 插到目标后（下方指示线）、
-// 中部 = 移入（容器高亮；服务器行中部 = 移入其所在文件夹，与 WPF ServerMoveToFolder 的
-// targetFolder.ParentNode 回退同义）。计划中的 400ms 悬停切换简化为立即切换（指示线与
-// 容器高亮的视觉区分已足够表达两种语义），记录偏差。
+// ---- 树拖拽（Plan 4 Task 4；fix-batch1 后仅文件夹可拖）：原生 HTML5 DnD。
+// 落区判定：行内上 25% = 插到目标前、下 25% = 插到目标后、中部 = 移入。
 // 非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 / 只读数据源）
 // 不显示指示且不 preventDefault → drop 被浏览器拒绝。
 const dragRow = ref(null) // 被拖行的 rows 快照（drop 时树可能未变——快照够用）
@@ -156,8 +104,8 @@ const moving = ref(false) // 逐台 PUT 进行中（防重入拖拽）
 const isDescendantPath = (ancestor, path) => path === ancestor || path.startsWith(ancestor + '/')
 const dsWritable = (dsName) => datasources.value.find(d => d.name === dsName)?.writable !== false
 function isDraggable(row) {
-  if (row.kind === 'root' || moving.value) return false // 根（数据源）不可拖
-  return dsWritable(row.dsName) // 只读数据源（如他人共享的只读库）禁止改结构
+  if (row.kind !== 'folder' || moving.value) return false // 仅文件夹可拖（根/全部数据源不可）
+  return dsWritable(row.dsName) // 只读数据源禁止改结构
 }
 function zoneFor(row, e) {
   if (row.kind === 'root') return 'into' // 数据源根行只支持移入（顶层没有前后插语义）
@@ -172,13 +120,8 @@ function canDrop(row, zone) {
   const dstDs = row.kind === 'root' ? row.ds.name : row.dsName
   if (srcDs !== dstDs) return false // 跨数据源禁止（WPF GetDataBaseNode 同款）
   if (zone !== 'into' && row.kind === 'root') return false
-  // 不能移入自己的后代：目标无论文件夹行还是后代文件夹内的服务器行都拒绝——后者漏判会让
-  // 落点路径解析把子级拼回自身（A/B → A/B/B 嵌套重复）；WPF 先把服务器目标归一到其父
-  // 再 FindDescendant（ServerTreeViewModel.cs:622-626），拒绝语义一致
-  if (src.kind === 'folder') {
-    const targetPath = row.kind === 'folder' ? row.folder.path : row.kind === 'server' ? (row.server.folderPath || '') : ''
-    if (targetPath && isDescendantPath(src.folder.path, targetPath)) return false
-  }
+  // 不能移入自己的后代（WPF FindDescendant 同语义）
+  if (row.kind === 'folder' && isDescendantPath(src.folder.path, row.folder.path)) return false
   return true
 }
 function onRowDragStart(row, e) {
@@ -213,45 +156,27 @@ function onRowDrop(row, e) {
   applyTreeMove(src, row, zone)
 }
 
-// 目标父路径（文件夹路径段数组）：into 文件夹=其路径；into 根=空；into 服务器行=其所在文件夹；
+// 目标父路径（文件夹路径段数组）：into 文件夹=其路径；into 根=空；
 // before/after = 与目标同级（目标的父路径）
 function targetParentPath(row, zone) {
   if (zone === 'into') {
     if (row.kind === 'folder') return row.folder.path ? row.folder.path.split('/') : []
-    if (row.kind === 'root') return []
-    return row.server.folderPath ? row.server.folderPath.split('/') : []
+    return []
   }
-  if (row.kind === 'folder') {
-    const p = row.folder.path.split('/')
-    p.pop()
-    return p
-  }
-  return row.server.folderPath ? row.server.folderPath.split('/') : []
-}
-
-function holderAt(dsName, parentPath) {
-  let node = tree.value.find(r => r.name === dsName)
-  if (!node) return null
-  for (const seg of parentPath) {
-    node = node.folders.find(f => f.name === seg)
-    if (!node) return null
-  }
-  return node
+  const p = row.folder.path.split('/')
+  p.pop()
+  return p
 }
 
 // 落点执行：算受影响服务器集合的新 TreeNodes → 逐台 GET config → 改 TreeNodes → PUT
-//（config 往返每台一次即可，N 通常小；UpdateServer 路径不触发 ReloadAll/SSE——needRead
-// 在写库前判定为否，故由前端显式 reload() 刷新）。同级顺序：before/after 重排目标层
-// 兄弟节点的序号（1 起，键=node Id，含文件夹）；into 删除被拖节点的序号键（排末尾，
-// 与 WPF AddChild 后无序号即最后的语义一致）。写回经 PUT /api/ui-state/tree 全量替换。
+//（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。同级顺序：before/after 重排
+// 目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的序号键（排末尾，与 WPF AddChild 后语义一致）
 async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
-  const prefix = src.kind === 'folder' ? src.folder.path + '/' : ''
-  const affected = src.kind === 'server'
-    ? [{ server: src.server, rest: [] }]
-    : servers.value
-        .filter(s => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
-        .map(s => ({ server: s, rest: s.folderPath.slice(prefix.length).split('/').filter(Boolean) }))
+  const prefix = src.folder.path + '/'
+  const affected = servers.value
+    .filter(s => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
+    .map(s => ({ server: s, rest: s.folderPath.slice(prefix.length).split('/').filter(Boolean) }))
 
   let moved = 0
   const failed = []
@@ -274,25 +199,20 @@ async function applyTreeMove(src, row, zone) {
     // 同级顺序写回（仅 before/after 重排；into 清键排末尾）
     let orderChanged = false
     if (zone === 'before' || zone === 'after') {
-      const holder = holderAt(src.dsName, parentPath)
+      const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
       if (holder) {
-        const siblings = levelChildren(holder).filter(c =>
-          !(src.kind === 'server' && c.kind === 'server' && c.server.id === src.server.id)
-          && !(src.kind === 'folder' && c.kind === 'folder' && c.folder.path === src.folder.path))
-        const idx = siblings.findIndex(c =>
-          (row.kind === 'folder' && c.kind === 'folder' && c.folder.path === row.folder.path)
-          || (row.kind === 'server' && c.kind === 'server' && c.server.id === row.server.id))
+        const siblings = levelChildren(holder).filter(f => f.path !== src.folder.path)
+        const idx = siblings.findIndex(f => f.path === row.folder.path)
         if (idx >= 0) {
-          siblings.splice(zone === 'before' ? idx : idx + 1, 0,
-            src.kind === 'folder' ? { kind: 'folder', folder: src.folder } : { kind: 'server', server: src.server })
+          siblings.splice(zone === 'before' ? idx : idx + 1, 0, src.folder)
           const next = { ...orderMap.value }
-          siblings.forEach((c, i) => { next[childId(c)] = i + 1 })
+          siblings.forEach((f, i) => { next[FOLDER_ID + f.name] = i + 1 })
           orderMap.value = next
           orderChanged = true
         }
       }
     } else {
-      const id = src.kind === 'folder' ? FOLDER_ID + src.folder.name : src.server.id
+      const id = FOLDER_ID + src.folder.name
       if (orderMap.value[id] != null) {
         const next = { ...orderMap.value }
         delete next[id]
@@ -303,7 +223,7 @@ async function applyTreeMove(src, row, zone) {
 
     if (moved === 0 && failed.length === 0 && !orderChanged) return // 完全无变化（原位放下）
     if (orderChanged) await flushSave()
-    await reload() // UpdateServer 路径不触发 SSE（见方法头注释），显式刷新列表/树
+    await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
     if (failed.length) message.error(t('toast.treeMoveFailed', { n: failed.length }))
     else if (moved > 0) message.success(t('toast.treeMoved', { n: moved }))
   } finally {
@@ -311,41 +231,73 @@ async function applyTreeMove(src, row, zone) {
   }
 }
 
-// ---- 选中模型：根 → {ds,''}；文件夹 → {ds,path}；服务器叶 → {ds,其 folderPath,+serverId}
+// ---- 选中模型：全部数据源=null；根 → {ds,''}；文件夹 → {ds,path}
 function isSelected(row) {
   const sel = props.selection
+  if (row.kind === 'all') return !sel || !sel.dataSourceName
   if (!sel) return false
-  if (row.kind === 'server') return sel.serverId === row.server.id
-  if (row.kind === 'folder') return sel.serverId == null && sel.dataSourceName === row.dsName && sel.folderPath === row.folder.path
-  return sel.serverId == null && !sel.folderPath && sel.dataSourceName === row.ds.name
+  if (row.kind === 'folder') return sel.dataSourceName === row.dsName && sel.folderPath === row.folder.path
+  return !sel.folderPath && sel.dataSourceName === row.ds.name
 }
 
 function onRowClick(row) {
-  if (row.kind === 'server') {
-    emit('update:selection', { dataSourceName: row.dsName, folderPath: row.server.folderPath, serverId: row.server.id })
-  } else if (row.kind === 'folder') {
-    emit('update:selection', { dataSourceName: row.dsName, folderPath: row.folder.path })
-  } else {
-    emit('update:selection', { dataSourceName: row.ds.name, folderPath: '' })
-  }
+  if (row.kind === 'all') emit('update:selection', null)
+  else if (row.kind === 'folder') emit('update:selection', { dataSourceName: row.dsName, folderPath: row.folder.path })
+  else emit('update:selection', { dataSourceName: row.ds.name, folderPath: '' })
 }
 
-function onRowDblclick(row) {
-  // 双击服务器叶 = 连接：emit 到父级（ServerListView）经 api.connect 发起，桌面端接管会话（Task 18 已接线）
-  if (row.kind === 'server') emit('connect', row.server.id)
+// ---- 右键菜单（fix-batch1 Task 2）：新建文件夹（根/文件夹行）/ 重命名 / 删除（文件夹行）
+const ctx = ref(null) // { x, y, dsName, parentPath, folderPath? } —— folderPath 空=在根下新建
+const rootEl = ref(null)
+function onRowContext(row, e) {
+  if (row.kind === 'all') return
+  e.preventDefault()
+  const r = rootEl.value?.getBoundingClientRect()
+  const px = r ? e.clientX - r.left : e.clientX
+  const py = r ? e.clientY - r.top : e.clientY
+  ctx.value = {
+    x: r ? Math.max(0, Math.min(px, r.width - 150)) : px, // 防溢出内收（菜单约 140px 宽）
+    y: r ? Math.max(0, py) : py,
+    dsName: row.kind === 'root' ? row.ds.name : row.dsName,
+    parentPath: row.kind === 'folder' ? row.folder.path : '',
+    folderPath: row.kind === 'folder' ? row.folder.path : null,
+  }
+}
+const ctxWritable = computed(() => ctx.value && dsWritable(ctx.value.dsName))
+function closeCtx() {
+  ctx.value = null
+}
+function onGlobalDownCloseCtx(e) {
+  if (ctx.value && !e.target.closest?.('.tree-ctx')) ctx.value = null
+}
+onMounted(() => window.addEventListener('mousedown', onGlobalDownCloseCtx))
+onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseCtx))
+
+function ctxCreate() {
+  const c = ctx.value
+  closeCtx()
+  if (c) folderOps.createFolder(c.dsName, c.parentPath)
+}
+function ctxRename() {
+  const c = ctx.value
+  closeCtx()
+  if (c?.folderPath) folderOps.renameFolder(c.dsName, c.folderPath)
+}
+function ctxDelete() {
+  const c = ctx.value
+  closeCtx()
+  if (c?.folderPath) folderOps.deleteFolder(c.dsName, c.folderPath)
 }
 
 // ---- 展示辅助
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
-const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 : '')
-const protocolInitial = (p) => (p || '?').charAt(0).toUpperCase()
 
 // 置顶标签在前，组内保持 API 顺序（稳定排序；名称排序/管理归 Plan 3）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))
 </script>
 
 <template>
-  <div class="side-tree">
+  <div ref="rootEl" class="side-tree">
     <div class="tree-scroll">
       <div v-if="!rows.length" class="empty-hint">{{ t('tree.noDatasources') }}</div>
       <div
@@ -361,23 +313,28 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
         :style="{ paddingLeft: 6 + row.depth * 12 + 'px' }"
         :draggable="isDraggable(row)"
         @click="onRowClick(row)"
-        @dblclick="onRowDblclick(row)"
+        @contextmenu="onRowContext(row, $event)"
         @dragstart="onRowDragStart(row, $event)"
         @dragend="onRowDragEnd"
         @dragover="onRowDragOver(row, $event)"
         @drop="onRowDrop(row, $event)"
       >
-        <!-- 根/文件夹：展开箭头；服务器叶：占位对齐（无箭头） -->
+        <!-- 全部数据源 / 根 / 文件夹：展开箭头 -->
         <span
-          v-if="row.kind !== 'server'"
           class="chevron"
-          :class="{ open: isExpanded(row.key) }"
-          @click.stop="toggleExpand(row.key)"
+          :class="{ open: row.kind === 'all' ? allOpen : isExpanded(row.key) }"
+          @click.stop="row.kind === 'all' ? (allOpen = !allOpen) : onToggle(row.key)"
         >▸</span>
-        <span v-else class="chevron chevron-leaf"></span>
+
+        <!-- 全部数据源虚拟根（fix-batch1 #3）：常驻顶部，点击=清除数据源过滤 -->
+        <template v-if="row.kind === 'all'">
+          <span class="ds-icon">🗂</span>
+          <span class="label">{{ t('crumb.allDataSources') }}</span>
+          <span class="count">{{ row.count }}</span>
+        </template>
 
         <!-- 数据源根：🗄 名称 · 类型 + 状态点 + 计数 -->
-        <template v-if="row.kind === 'root'">
+        <template v-else-if="row.kind === 'root'">
           <span class="ds-icon">🗄</span>
           <span class="label" :title="row.ds.name">{{ row.ds.name }}</span>
           <span class="ds-type">{{ row.ds.type }}</span>
@@ -389,27 +346,16 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           <span class="count">{{ row.count }}</span>
         </template>
 
-        <!-- 文件夹：📁 名称 + 子服务器计数 -->
-        <template v-else-if="row.kind === 'folder'">
+        <!-- 文件夹：📁 名称 + 子服务器计数（虚拟文件夹可为 0） -->
+        <template v-else>
           <span class="folder-icon">📁</span>
           <span class="label" :title="row.folder.path">{{ row.folder.name }}</span>
           <span class="count">{{ row.count }}</span>
         </template>
-
-        <!-- 服务器叶：小图标（无自定义图标时协议首字母方块，底色=服务器自定义色）+ 名称 -->
-        <template v-else>
-          <img v-if="row.server.iconBase64" class="srv-icon" :src="iconSrc(row.server)" alt="" />
-          <span
-            v-else
-            class="srv-icon srv-icon-fb"
-            :style="row.server.color ? { background: row.server.color } : null"
-          >{{ protocolInitial(row.server.protocol) }}</span>
-          <span class="label srv-label" :title="row.server.displayName">{{ row.server.displayName }}</span>
-        </template>
       </div>
     </div>
 
-    <!-- 标签区（spec §3.3）：chips+计数，置顶在前；点击=过滤条件（Task 17 接线搜索交集） -->
+    <!-- 标签区（spec §3.3）：chips+计数，置顶在前；点击=过滤条件 -->
     <div class="tags">
       <div class="tags-head">{{ t('tree.tags') }}</div>
       <div class="tag-list">
@@ -430,12 +376,28 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
     </div>
 
     <button class="collapse-btn" :title="t('tree.collapseTitle')" @click="emit('update:collapsed', true)">« {{ t('tree.collapse') }}</button>
+
+    <!-- 文件夹操作右键菜单（新建/重命名/删除；只读数据源禁用） -->
+    <div v-if="ctx" class="tree-ctx" :style="{ left: ctx.x + 'px', top: ctx.y + 'px' }">
+      <button class="ctx-item" :disabled="!ctxWritable || folderOps.busy.value" @click="ctxCreate">
+        <span>{{ t('tree.newFolder') }}</span>
+      </button>
+      <template v-if="ctx.folderPath">
+        <button class="ctx-item" :disabled="!ctxWritable || folderOps.busy.value" @click="ctxRename">
+          <span>{{ t('tree.renameFolder') }}</span>
+        </button>
+        <button class="ctx-item" :disabled="!ctxWritable || folderOps.busy.value" @click="ctxDelete">
+          <span>{{ t('tree.deleteFolder') }}</span>
+        </button>
+      </template>
+    </div>
   </div>
 </template>
 
 <style scoped>
 /* 全部取色走主题 CSS 变量（spec §4），行高紧凑 ~26px，hover --bg-hover */
 .side-tree {
+  position: relative; /* 右键菜单浮层定位基准 */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -497,9 +459,6 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .chevron.open {
   transform: rotate(90deg);
 }
-.chevron-leaf {
-  cursor: default;
-}
 
 .ds-icon,
 .folder-icon {
@@ -513,10 +472,6 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   text-overflow: ellipsis;
   font-size: 13px;
   color: var(--text-1);
-}
-.srv-label {
-  font-size: 12.5px;
-  color: var(--text-2);
 }
 .ds-type {
   flex: 0 0 auto;
@@ -545,22 +500,6 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   flex: 0 0 auto;
   color: var(--text-4);
   font-size: 11px;
-}
-
-.srv-icon {
-  flex: 0 0 14px;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  object-fit: cover;
-}
-.srv-icon-fb {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: 9px;
 }
 
 .tags {
@@ -624,5 +563,42 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .collapse-btn:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+
+/* 文件夹操作右键菜单浮层（对齐 ServerTable 的 .ctx-menu 视觉） */
+.tree-ctx {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  padding: 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1;
+  padding: 7px 10px;
+  cursor: pointer;
+  text-align: left;
+}
+.ctx-item:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.ctx-item:disabled {
+  color: var(--text-4);
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

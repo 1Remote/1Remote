@@ -19,16 +19,19 @@ import { useVirtualList } from '@vueuse/core'
 import ServerRow from './ServerRow.vue'
 import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
+import { useServers } from '../composables/useServers'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
   servers: { type: Array, default: () => [] },
-  selection: { type: Object, default: null }, // { dataSourceName, folderPath, serverId? } | null
+  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据源
   query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：透传给行做命中高亮
+  folders: { type: Array, default: () => [] }, // 当前层级文件夹行（fix-batch1 Task 2）：{name, path, dsName, count}
 })
-const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted'])
+const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted', 'open-folder', 'create-folder', 'move-to-folder'])
 const { t } = useI18n()
 const message = useMessage()
+const { datasources } = useServers() // 文件夹新建菜单的只读判定（共享模块单例，无额外请求）
 
 // ---- 过滤：搜索/标签过滤已由 ServerListView（applyServerFilters）收窄后经 servers prop 传入，
 // 此处仅剩树选中过滤（spec §3.2，根=整库）；两层交集自然复合 ----
@@ -42,6 +45,7 @@ const filtered = computed(() => {
   })
 })
 const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
+const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 全部数据源根：文件夹列前缀数据源名
 
 // ---- 排序 ----
 const SORTABLE = ['displayName', 'address', 'protocol', 'lastConnectTime']
@@ -107,18 +111,24 @@ const fullOrder = computed(() => {
   return props.servers.slice().sort(comparators.custom)
 })
 
-// ---- 行拖拽重排（仅 custom 模式；上/下半行 = 插到目标前/后，对齐 WPF 列表 Drop 的
-// height/2 判定；drop 后 POST 整库新顺序 → 以响应重建 Map → sorted 即时重排）----
+// ---- 行拖拽（fix-batch1 Task 2 起行恒可拖）：custom 模式内上/下半行 = 插到目标前/后，
+// 对齐 WPF 列表 Drop 的 height/2 判定；drop 后 POST 整库新顺序 → 以响应重建 Map → sorted 即时重排；
+// 任意模式拖到「文件夹行」= 移入该文件夹（onFolderDragOver/Drop，跨数据源拒绝）----
 const dragId = ref(null)
+const dragServer = ref(null) // 被拖服务器快照（drop 时列表可能已变）
 const dropHint = ref(null) // { id, before }
+const dropFolder = ref(null) // { dsName, path } 悬停中的文件夹行
 function onRowDragStart(server, e) {
   dragId.value = server.id
+  dragServer.value = server
   e.dataTransfer.effectAllowed = 'move'
   e.dataTransfer.setData('text/plain', server.id) // Firefox 需要非空 data
 }
 function onRowDragEnd() {
   dragId.value = null
+  dragServer.value = null
   dropHint.value = null
+  dropFolder.value = null
 }
 function onRowDragOver(server, e) {
   if (!isCustom.value || !dragId.value || dragId.value === server.id) return
@@ -150,11 +160,90 @@ async function onRowDrop(server, e) {
     message.error(t('toast.reorderFailed'))
   }
 }
+
+// 文件夹行落区（fix-batch1 Task 2）：同数据源且目标 ≠ 当前所在文件夹才接受
+//（跨源/原地 = 不 preventDefault → 浏览器拒绝 drop）
+function folderDropOk(f) {
+  const s = dragServer.value
+  return !!s && s.dataSourceName === f.dsName && (s.folderPath || '') !== f.path
+}
+function onFolderDragOver(f, e) {
+  if (!dragServer.value) return
+  if (!folderDropOk(f)) {
+    dropFolder.value = null
+    return
+  }
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  dropFolder.value = { dsName: f.dsName, path: f.path }
+}
+function onFolderDragLeave(f) {
+  if (dropFolder.value?.path === f.path && dropFolder.value?.dsName === f.dsName) dropFolder.value = null
+}
+function onFolderDrop(f, e) {
+  const hint = dropFolder.value
+  dropFolder.value = null
+  if (!hint || hint.path !== f.path || hint.dsName !== f.dsName || !folderDropOk(f)) return
+  e.preventDefault()
+  const s = dragServer.value
+  dragId.value = null
+  dragServer.value = null
+  if (s) emit('move-to-folder', { server: s, dsName: f.dsName, path: f.path })
+}
+
+// ---- 新建文件夹菜单（fix-batch1 Task 2）：文件夹行右键（在该文件夹内新建）/
+// 空白处右键（在当前层级新建；全部数据源根无确定数据源 → 禁用并提示先选数据源）----
+const nfMenu = ref(null) // { x, y, target: { dsName, parentPath } | null }
+const dsWritable = (dsName) => datasources.value.find(d => d.name === dsName)?.writable !== false
+const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName))
+const nfMenuTip = computed(() => {
+  if (!nfMenu.value?.target) return t('tree.selectDsFirst')
+  return dsWritable(nfMenu.value.target.dsName) ? '' : t('cv.readOnly')
+})
+function openNfMenu(target, e) {
+  const r = rootEl.value?.getBoundingClientRect()
+  const px = r ? e.clientX - r.left : e.clientX
+  const py = r ? e.clientY - r.top : e.clientY
+  nfMenu.value = { x: r ? Math.max(0, Math.min(px, r.width - 200)) : px, y: r ? Math.max(0, py) : py, target }
+}
+function onBlankContext(e) {
+  if (e.target.closest?.('.row') || e.target.closest?.('.thead')) return // 行/表头自带处理
+  e.preventDefault()
+  const sel = props.selection
+  openNfMenu(sel?.dataSourceName ? { dsName: sel.dataSourceName, parentPath: sel.folderPath || '' } : null, e)
+}
+function onFolderContext(f, e) {
+  e.preventDefault()
+  openNfMenu({ dsName: f.dsName, parentPath: f.path }, e)
+}
+function nfCreate() {
+  const m = nfMenu.value
+  nfMenu.value = null
+  if (m?.target) emit('create-folder', m.target)
+}
 const sorted = computed(() => {
   const c = comparators[sort.value.key]
   if (!c) return filtered.value // 未排序 = 保持树序
   return filtered.value.slice().sort((a, b) => c(a, b) * sort.value.dir)
 })
+
+// ---- 文件夹行（fix-batch1 Task 2 #2）：当前层级文件夹排前、服务器其后。
+// 文件夹间排序跟随当前排序方向，比较只用名称（地址/协议/最近连接对文件夹无意义）；
+// custom 顺序键 = 保持传入顺序（ServerListView 按树模型给出）。空文件夹（count 0）照常显示。
+const folderRows = computed(() => {
+  const list = props.folders.slice()
+  if (sort.value.key && sort.value.key !== 'custom') {
+    list.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }) * sort.value.dir)
+  }
+  return list.map((f) => ({ kind: 'folder', folder: f }))
+})
+// 统一渲染序列（虚拟滚动与直渲染共用）：srvIndex 保留服务器在 sorted 内的下标
+//（Shift 范围选择/锚点语义仍基于纯服务器列表）
+const renderRows = computed(() => [
+  ...folderRows.value,
+  ...sorted.value.map((s, i) => ({ kind: 'server', server: s, srvIndex: i })),
+])
+const rowKey = (row) => (row.kind === 'folder' ? 'f:' + row.folder.dsName + ':' + row.folder.path : row.server.id)
 
 // ---- 多选 ----
 const checked = ref(new Set())
@@ -270,6 +359,7 @@ async function copyText(text, what) {
 }
 function onGlobalDown(e) {
   if (menu.value && !e.target.closest?.('.ctx-menu')) menu.value = null
+  if (nfMenu.value && !e.target.closest?.('.nf-menu')) nfMenu.value = null
 }
 
 // ---- 键盘导航（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 光标行、Enter 连接光标行、
@@ -435,8 +525,8 @@ function onGlobalDownCloseColMenu(e) {
 // marginTop 偏移不会影响其吸顶）。≤500 行维持直渲染（性能开关常量化）。
 const VIRTUAL_THRESHOLD = 500
 const ROW_HEIGHT = 36
-const useVirtual = computed(() => sorted.value.length > VIRTUAL_THRESHOLD)
-const { list: virtualRows, containerProps, wrapperProps } = useVirtualList(sorted, {
+const useVirtual = computed(() => renderRows.value.length > VIRTUAL_THRESHOLD)
+const { list: virtualRows, containerProps, wrapperProps } = useVirtualList(renderRows, {
   itemHeight: ROW_HEIGHT,
   overscan: 8,
 })
@@ -467,7 +557,7 @@ onBeforeUnmount(() => {
       <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>
 
-    <div class="tbody" v-bind="useVirtual ? containerProps : undefined">
+    <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
       <!-- 表头工具簇（Plan 4）：浮于表头右端（.server-table 为定位基准）。
            ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4）；
            ▦ = 列菜单（显隐 + 列宽说明，Plan 4 Task 5） -->
@@ -503,64 +593,116 @@ onBeforeUnmount(() => {
         <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
       <!-- >500 行虚拟滚动（Plan 4 Task 5）：wrapper 撑总高 + marginTop 偏移窗口渲染；
-           拖拽/勾选/光标等行级绑定与非虚拟分支保持同一份 -->
+           拖拽/勾选/光标等行级绑定与非虚拟分支保持同一份。
+           fix-batch1 Task 2：序列 = 文件夹行（双击进入/右键新建/拖入移动）+ 服务器行 -->
       <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
+        <template v-for="{ data: row } in virtualRows" :key="rowKey(row)">
+          <div
+            v-if="row.kind === 'folder'"
+            class="row frow"
+            :class="{ 'drop-into': dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName }"
+            :title="row.folder.path"
+            @dblclick="emit('open-folder', row.folder)"
+            @contextmenu="onFolderContext(row.folder, $event)"
+            @dragover="onFolderDragOver(row.folder, $event)"
+            @dragleave="onFolderDragLeave(row.folder)"
+            @drop="onFolderDrop(row.folder, $event)"
+          >
+            <div class="cell cell-check"></div>
+            <div class="cell cell-status"></div>
+            <div class="cell cell-name f-name">
+              <span class="f-icon">📁</span>
+              <span class="name">{{ row.folder.name }}</span>
+              <span v-if="showDs" class="f-ds">{{ row.folder.dsName }}</span>
+            </div>
+            <div class="cell cell-count">{{ t('crumb.count', { n: row.folder.count }) }}</div>
+          </div>
+          <ServerRow
+            v-else
+            :server="row.server"
+            :selected="checked.has(row.server.id)"
+            :highlighted="!!selection && selection.serverId === row.server.id"
+            :cursor="row.server.id === cursorId"
+            :show-folder="showFolder"
+            :show-ds="showDs"
+            :hidden-cols="hiddenCols"
+            :query="query"
+            :data-id="row.server.id"
+            :draggable="true"
+            :class="{
+              'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
+              'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
+            }"
+            @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+            @row-click="onRowClick(row.server, $event, row.srvIndex)"
+            @connect="emit('connect', row.server.id)"
+            @edit="emit('edit', row.server)"
+            @context-menu="openMenu"
+            @dragstart="onRowDragStart(row.server, $event)"
+            @dragend="onRowDragEnd"
+            @dragover="onRowDragOver(row.server, $event)"
+            @drop="onRowDrop(row.server, $event)"
+          />
+        </template>
+      </div>
+      <template v-for="row in useVirtual ? [] : renderRows" :key="rowKey(row)">
+        <div
+          v-if="row.kind === 'folder'"
+          class="row frow"
+          :class="{ 'drop-into': dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName }"
+          :title="row.folder.path"
+          @dblclick="emit('open-folder', row.folder)"
+          @contextmenu="onFolderContext(row.folder, $event)"
+          @dragover="onFolderDragOver(row.folder, $event)"
+          @dragleave="onFolderDragLeave(row.folder)"
+          @drop="onFolderDrop(row.folder, $event)"
+        >
+          <div class="cell cell-check"></div>
+          <div class="cell cell-status"></div>
+          <div class="cell cell-name f-name">
+            <span class="f-icon">📁</span>
+            <span class="name">{{ row.folder.name }}</span>
+            <span v-if="showDs" class="f-ds">{{ row.folder.dsName }}</span>
+          </div>
+          <div class="cell cell-count">{{ t('crumb.count', { n: row.folder.count }) }}</div>
+        </div>
         <ServerRow
-          v-for="{ data: s, index: i } in virtualRows"
-          :key="s.id"
-          :server="s"
-          :selected="checked.has(s.id)"
-          :highlighted="!!selection && selection.serverId === s.id"
-          :cursor="s.id === cursorId"
+          v-else
+          :server="row.server"
+          :selected="checked.has(row.server.id)"
+          :highlighted="!!selection && selection.serverId === row.server.id"
+          :cursor="row.server.id === cursorId"
           :show-folder="showFolder"
+          :show-ds="showDs"
           :hidden-cols="hiddenCols"
           :query="query"
-          :data-id="s.id"
-          :draggable="isCustom"
+          :data-id="row.server.id"
+          :draggable="true"
           :class="{
-            'drop-before': dropHint && dropHint.id === s.id && dropHint.before,
-            'drop-after': dropHint && dropHint.id === s.id && !dropHint.before,
+            'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
+            'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
           }"
-          @toggle-select="onToggleSelect(s, i)"
-          @row-click="onRowClick(s, $event, i)"
-          @connect="emit('connect', s.id)"
-          @edit="emit('edit', s)"
+          @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+          @row-click="onRowClick(row.server, $event, row.srvIndex)"
+          @connect="emit('connect', row.server.id)"
+          @edit="emit('edit', row.server)"
           @context-menu="openMenu"
-          @dragstart="onRowDragStart(s, $event)"
+          @dragstart="onRowDragStart(row.server, $event)"
           @dragend="onRowDragEnd"
-          @dragover="onRowDragOver(s, $event)"
-          @drop="onRowDrop(s, $event)"
+          @dragover="onRowDragOver(row.server, $event)"
+          @drop="onRowDrop(row.server, $event)"
         />
-      </div>
-      <ServerRow
-        v-for="(s, i) in useVirtual ? [] : sorted"
-        :key="s.id"
-        :server="s"
-        :selected="checked.has(s.id)"
-        :highlighted="!!selection && selection.serverId === s.id"
-        :cursor="s.id === cursorId"
-        :show-folder="showFolder"
-        :hidden-cols="hiddenCols"
-        :query="query"
-        :data-id="s.id"
-        :draggable="isCustom"
-        :class="{
-          'drop-before': dropHint && dropHint.id === s.id && dropHint.before,
-          'drop-after': dropHint && dropHint.id === s.id && !dropHint.before,
-        }"
-        @toggle-select="onToggleSelect(s, i)"
-        @row-click="onRowClick(s, $event, i)"
-        @connect="emit('connect', s.id)"
-        @edit="emit('edit', s)"
-        @context-menu="openMenu"
-        @dragstart="onRowDragStart(s, $event)"
-        @dragend="onRowDragEnd"
-        @dragover="onRowDragOver(s, $event)"
-        @drop="onRowDrop(s, $event)"
-      />
-      <slot v-if="!sorted.length" name="empty">
+      </template>
+      <slot v-if="!renderRows.length" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
       </slot>
+    </div>
+
+    <!-- 新建文件夹菜单（fix-batch1 Task 2）：空白处/文件夹行右键 -->
+    <div v-if="nfMenu" class="ctx-menu nf-menu" :style="{ left: nfMenu.x + 'px', top: nfMenu.y + 'px' }">
+      <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfCreate">
+        <span class="ctx-label">{{ t('tree.newFolder') }}</span>
+      </button>
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">
@@ -822,6 +964,72 @@ onBeforeUnmount(() => {
 }
 .virtual-wrap :deep(.row) {
   box-sizing: border-box;
+}
+.virtual-wrap .frow {
+  box-sizing: border-box; /* 与 ServerRow 同款：虚拟分支 36px 几何精确一致 */
+}
+
+/* 文件夹行（fix-batch1 Task 2）：列对齐复用 --c-* 变量（ServerRow 的 .cell 样式
+   scoped 于彼组件，此处自带一份）；双击=进入、右键=新建文件夹、拖服务器入内=移动 */
+.frow {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px 0 0;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  cursor: default;
+}
+.frow:hover {
+  background: var(--bg-hover);
+}
+.frow.drop-into {
+  background: var(--accent-container);
+  outline: 1px dashed var(--accent);
+  outline-offset: -1px;
+}
+.frow .cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.frow .cell-check {
+  flex: 0 0 var(--c-check, 30px);
+}
+.frow .cell-status {
+  flex: 0 0 var(--c-status, 58px);
+}
+.frow .cell-name {
+  flex: 1 1 0;
+  gap: 8px;
+  min-width: 0;
+}
+.frow .f-icon {
+  flex: 0 0 22px;
+  text-align: center;
+  font-size: 14px;
+}
+.frow .name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-1);
+  font-size: 12.5px;
+}
+.frow .f-ds {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  color: var(--text-4);
+  font-size: 11px;
+}
+.frow .cell-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-right: 10px;
+  color: var(--text-4);
+  font-size: 11.5px;
+  white-space: nowrap;
 }
 .empty {
   display: flex;
