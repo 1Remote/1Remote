@@ -15,6 +15,7 @@ import { useWindowSize } from '@vueuse/core'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
 import EditorDrawer from '../components/editor/EditorDrawer.vue'
+import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { applyServerFilters, useServers } from '../composables/useServers'
 import { useEditorBus } from '../composables/editorBus'
@@ -125,6 +126,7 @@ async function onBatchConnect(ids) {
 function onGlobalEsc(e) {
   if (e.key !== 'Escape') return
   if (editor.value) return // 抽屉在开：Esc 由抽屉处理
+  if (tagManager.value) return // 标签管理模态在开：Esc 归 n-modal（关模态），不清搜索/光标
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
   else if (tb?.clearCheckedIfAny()) e.preventDefault()
@@ -206,6 +208,12 @@ function onSaved({ id, mode }) {
   }
   editor.value = null
 }
+
+// ---- 标签管理模态（Plan 3 Task 5）：SideTree「+ 管理」chip 打开；ds = 当前树选中的数据源 ----
+const tagManager = ref(null) // null=关 | { ds }
+function openTagManager() {
+  tagManager.value = { ds: selection.value?.dataSourceName || 'Local' }
+}
 </script>
 
 <template>
@@ -217,6 +225,7 @@ function onSaved({ id, mode }) {
         v-model:tag="activeTag"
         @update:collapsed="collapsed = $event"
         @connect="onConnect"
+        @manage-tags="openTagManager"
       />
       <button v-else class="expand-rail" :title="t('sidebar.expand')" @click="collapsed = false">»</button>
     </aside>
@@ -277,6 +286,14 @@ function onSaved({ id, mode }) {
         @edit="openEdit"
         @duplicate="openDuplicate"
         @delete="onDelete"
+      />
+
+      <!-- 标签管理模态（Plan 3 Task 5）：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
+      <TagManagerModal
+        v-if="tagManager"
+        :show="true"
+        :ds="tagManager.ds"
+        @update:show="tagManager = $event ? tagManager : null"
       />
 
       <!-- 连接编辑抽屉（Plan 2 Task 8/10）：新建/编辑/复制/批量入口共用；fixed 覆盖层，不参与 flex 布局 -->
