@@ -146,6 +146,19 @@ namespace _1RM.Service.WebUi
             return GeneralSettingsResult.Ok(dto);
         }
 
+        /// <summary>
+        /// POST /api/settings/verify：立即触发一次 Windows 凭据/Windows Hello 验证——
+        /// requireSecondaryVerification 开关翻转前的 WPF 平价安全门（GeneralSettingView.xaml.cs:36
+        /// 同款：翻转前先 VerifyAsyncUi；当前未开启验证时 VerifyAsyncUi 直通 true、无感知）。
+        /// verifier 可注入（测试桩，绝不触发真实 UI）；true=通过，null=用户取消/false=失败 → 均视为未通过。
+        /// </summary>
+        public static async Task<bool> VerifyAccessAsync(Func<Task<bool?>>? verifier = null)
+        {
+            // 注入模式与 WebUiImportExportService 导出验证门一致（?? () => VerifyAsyncUi()）
+            var verify = verifier ?? (() => SecondaryVerificationHelper.VerifyAsyncUi());
+            return await verify() == true;
+        }
+
         // ------------------------------------------------------------------
         // launcher
         // ------------------------------------------------------------------

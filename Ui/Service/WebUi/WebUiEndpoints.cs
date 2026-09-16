@@ -560,6 +560,18 @@ namespace _1RM.Service.WebUi
                 };
             });
 
+            // 验证开关翻转前的 WPF 平价安全门（fix batch3 #6）：POST /api/settings/verify。
+            // requireSecondaryVerification 开关前端改为点击立即生效——对齐 WPF GeneralSettingView
+            // （翻转前先过一次 Windows 凭据/Hello 验证）；此处触发该验证，当前未开启验证时
+            // VerifyAsyncUi 直通 true（无感知）。仅 true 放行 200；null=用户取消/false=失败 → 403
+            // （前端提示后开关回弹，不提交翻转）。
+            app.MapPost("/api/settings/verify", async () =>
+            {
+                return await WebUiSettingsService.VerifyAccessAsync()
+                    ? Results.Ok(new { verified = true })
+                    : Results.StatusCode(403);
+            });
+
             // 启动器设置：热键为 WPF 枚举，线格式 = 成员名（"ControlAlt"/"M"），PUT 亦接受 "Ctrl+Alt"
             // 显示形态。写后重注册热键：注册失败且 launcherEnabled → 409（配置已保存，与 WPF
             // “内存先行落值 + 警告”语义对齐，见 WebUiSettingsService.ApplyLauncher 注释）。

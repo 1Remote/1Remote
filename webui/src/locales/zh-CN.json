@@ -143,6 +143,7 @@
   "settings.save": "保存",
   "settings.saved": "设置已保存",
   "settings.saveFailed": "保存失败",
+  "settings.verifyCancelled": "已取消验证或验证未通过，设置未更改",
   "settings.dirtyHint": "有未保存的更改",
 
   "settings.nav.general": "常规",
