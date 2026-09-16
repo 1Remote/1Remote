@@ -199,6 +199,20 @@ function basicGroup({ withAddressPort = true } = {}) {
   }
 }
 
+/**
+ * 备用连接组（fix-batch1 Task 3 #7，owner 确认）：AlternateCredentials 子表单独立成组
+ * （此前挂在凭据组尾部）。每行 = 备用地址和/或登录身份的组合（行字段对照 Base/Credential.cs），
+ * 组描述行（descKey）向用户说明该语义。
+ */
+function alternateGroup() {
+  return {
+    id: 'alternate',
+    labelKey: 'editor.group.alternate',
+    descKey: 'editor.group.alternateDesc',
+    fields: [alternateCredentialsField()],
+  }
+}
+
 /** 备用凭据子表单（AlternateCredentials: Credential[]，行字段对照 Base/Credential.cs）。 */
 function alternateCredentialsField() {
   return {
@@ -222,7 +236,10 @@ function alternateCredentialsField() {
 }
 
 /**
- * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。
+ * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。fix-batch1 Task 3 #7：
+ * 组内由 EditorDrawer 渲染「手动输入 ⇄ 从凭据库选择」二选一切换（见 editor/credentialMode.js）——
+ * manual 模式展示除 InheritedCredentialName 外的全部字段，vault 模式只展示
+ * InheritedCredentialName（凭据库选择器）+ 提示行。AlternateCredentials 已移出本组（alternateGroup）。
  * @param {{withPrivateKey?: boolean, prepend?: object[]}} opts
  *   withPrivateKey: SSH/SFTP 覆写了 ShowPrivateKeyInput()=true，显示私钥两件套；RDP/FTP 不显示。
  *   prepend: 组首额外字段（RDP 的 Domain/LoadBalanceInfo，对齐 WPF Connection 组顺序）。
@@ -247,7 +264,6 @@ function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
       },
     )
   }
-  fields.push(alternateCredentialsField())
   return { id: 'credential', labelKey: 'editor.group.credential', fields }
 }
 
@@ -441,7 +457,8 @@ function serialGroup() {
  * ArgumentList 内容 → 决策：web 上始终显示这五个字段（简化），未使用的字段留空即等价
  * （后端只在宏替换时消费这些值）；与 WPF 的该显隐差异为有意简化，记录在案。
  * AlternateCredentials 跟随 WPF：LocalApp 继承 ProtocolBaseWithAddressPortUserPwd，
- * WPF 在 Connection 区尾部展示备用凭据列表（LocalAppFormView.xaml:163）。
+ * WPF 在 Connection 区尾部展示备用凭据列表（LocalAppFormView.xaml:163）→ web 移入独立
+ * 备用连接组（alternateGroup，fix-batch1 Task 3 #7）。
  */
 function localAppConnectionGroup() {
   return {
@@ -453,7 +470,6 @@ function localAppConnectionGroup() {
       { key: 'UserName', type: FIELD.TEXT },
       { key: 'Password', type: FIELD.PASSWORD },
       { key: 'PrivateKey', type: FIELD.TEXT },
-      alternateCredentialsField(),
     ],
   }
 }
@@ -503,6 +519,7 @@ export const PROTOCOLS = {
           { key: 'LoadBalanceInfo', type: FIELD.TEXT },
         ],
       }),
+      alternateGroup(),
       rdpDisplayGroup(),
       rdpMstscGroup(),
       rdpAdvancedGroup(),
@@ -531,6 +548,7 @@ export const PROTOCOLS = {
     groups: [
       basicGroup(),
       credentialGroup({ withPrivateKey: true }),
+      alternateGroup(),
       behaviorGroup([
         // SshVersion: int?（SSH.cs:20-27，非枚举非字符串），序列化为数字；
         // WPF 下拉 V1/V2（SshFormView.xaml:137-150，Tag=Int32 1/2）
@@ -564,6 +582,7 @@ export const PROTOCOLS = {
     groups: [
       basicGroup(),
       credentialGroup({ withPrivateKey: true }),
+      alternateGroup(),
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
       miscGroup(),
     ],
@@ -582,6 +601,7 @@ export const PROTOCOLS = {
       basicGroup(),
       // FTP 未覆写 ShowPrivateKeyInput()（基类默认 false），无私钥两件套
       credentialGroup(),
+      alternateGroup(),
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
       miscGroup(),
     ],
@@ -603,6 +623,7 @@ export const PROTOCOLS = {
       // VNC.ShowUserNameInput()=false 只影响凭据库新增弹窗的必填项，Vnc.cs:55）；
       // ShowPrivateKeyInput()=false（Vnc.cs:65）→ 无私钥两件套，与 FTP 同构
       credentialGroup(),
+      alternateGroup(),
       {
         id: 'display',
         labelKey: 'editor.group.display',
@@ -619,7 +640,8 @@ export const PROTOCOLS = {
    * Telnet：Ui/Model/Protocol/Telnet.cs，ctor 见 Telnet.cs:13-16。
    * 注意基类是 ProtocolBaseWithAddressPort（Telnet.cs:10）——模型里没有
    * UserName/Password/AskPasswordWhenConnect/InheritedCredentialName/PrivateKey，
-   * 凭据组只放 AlternateCredentials 子表单（WPF TelnetFormView.xaml:35 也只挂备用凭据列表）。
+   * 无凭据组（手动/库二选一无从谈起），备用凭据列表独立成备用连接组
+   *（WPF TelnetFormView.xaml:35 也只挂备用凭据列表）。
    */
   Telnet: {
     protocol: 'Telnet',
@@ -631,11 +653,7 @@ export const PROTOCOLS = {
     },
     groups: [
       basicGroup(),
-      {
-        id: 'credential',
-        labelKey: 'editor.group.credential',
-        fields: [alternateCredentialsField()],
-      },
+      alternateGroup(),
       // WPF 优势组只有 StartupAutoCommand（TelnetFormView.xaml:39-50）；
       // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传
       behaviorGroup([{ key: 'StartupAutoCommand', type: FIELD.TEXT }]),
@@ -691,6 +709,7 @@ export const PROTOCOLS = {
       basicGroup(),
       // WPF RdpAppFormView 挂 CredentialView + 备用凭据列表；ShowPrivateKeyInput 基类默认 false
       credentialGroup(),
+      alternateGroup(),
       {
         // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）
         id: 'remote',
@@ -764,6 +783,7 @@ export const PROTOCOLS = {
         fields: [appArgumentListField()],
       },
       localAppConnectionGroup(),
+      alternateGroup(),
       miscGroup(),
     ],
   },
