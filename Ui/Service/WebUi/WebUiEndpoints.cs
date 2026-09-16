@@ -44,6 +44,48 @@ namespace _1RM.Service.WebUi
             return server is not Dummy && !server.IsTmpSession();
         }
 
+        /// <summary>
+        /// 连接状态派生（纯函数，Plan 4 Task 1）：activeServerIds 为当前 1Remote 托管会话占用的
+        /// 服务器 Id 集合（<see cref="BuildActiveServerIdSet"/> 快照），serverId 命中 → connected。
+        /// 语义收窄：Unhosted 会话（外部 mstsc.exe、RunWithHosting=false 的 LocalApp）不进连接字典，
+        /// 显示 disconnected——状态含义是「该服务器是否有 1Remote 托管的活动会话」，不代表远端可达性。
+        /// </summary>
+        public static string DeriveConnectionState(IEnumerable<string> activeServerIds, string? serverId)
+        {
+            if (string.IsNullOrEmpty(serverId))
+                return WebUiConstants.StatusDisconnected;
+            foreach (var id in activeServerIds)
+            {
+                if (id == serverId)
+                    return WebUiConstants.StatusConnected;
+            }
+            return WebUiConstants.StatusDisconnected;
+        }
+
+        /// <summary>
+        /// 快照当前活动会话的服务器 Id 集合：遍历 SessionControlService.ConnectionId2Hosts
+        /// （ConcurrentDictionary，Kestrel 线程直接枚举安全），只读 host.ProtocolServer.Id 属性
+        /// （连接用 Clone() 是 MemberwiseClone，Id 保留，故与列表 vm.Server.Id 同源可匹配），
+        /// 绝不在 Host 对象上调用方法——Host 是 WPF UserControl，跨线程调用非法。
+        /// 测试宿主刻意不注册 SessionControlService（注册会令其订阅 OnRequestServerConnect，
+        /// /api/connect 集成测试会触发真实连接流程），TryGet 为 null → 空集 → 全部 disconnected，
+        /// 与「空连接字典」观测一致。
+        /// </summary>
+        private static HashSet<string> BuildActiveServerIdSet()
+        {
+            var set = new HashSet<string>();
+            var sessions = IoC.TryGet<SessionControlService>();
+            if (sessions == null)
+                return set;
+            foreach (var host in sessions.ConnectionId2Hosts.Values)
+            {
+                var id = host?.ProtocolServer?.Id;
+                if (!string.IsNullOrEmpty(id))
+                    set.Add(id);
+            }
+            return set;
+        }
+
         public static void MapAll(WebApplication app)
         {
             app.MapGet("/api/version", () => Results.Json(new
@@ -61,9 +103,12 @@ namespace _1RM.Service.WebUi
                 // 注意：加载数据的 GetServers 锁的是 DataSourceService/DataSourceBase 实例，不是 GlobalData。
                 lock (gd)
                 {
+                    // 活动会话 Id 快照：仅并发字典的属性读，无 IO，锁内安全（Plan 4 Task 1）
+                    var activeIds = BuildActiveServerIdSet();
                     var list = gd.VmItemList
                         .Where(vm => IsConnectable(vm.Server))
-                        .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime))
+                        .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime,
+                            DeriveConnectionState(activeIds, vm.Server.Id)))
                         .ToList();
                     return Results.Json(list); // 先物化快照再序列化，锁内不做 IO
                 }
@@ -193,8 +238,11 @@ namespace _1RM.Service.WebUi
                 }
 
                 var matched = FilterHelpers.MatchServers(source, q);
+                // 活动会话 Id 快照在锁外构建（语义同 /api/servers；仅并发字典属性读）
+                var activeIds = BuildActiveServerIdSet();
                 return Results.Json(matched
-                    .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime))
+                    .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime,
+                        DeriveConnectionState(activeIds, vm.Server.Id)))
                     .ToList());
             });
 

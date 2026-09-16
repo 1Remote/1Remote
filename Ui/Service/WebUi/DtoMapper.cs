@@ -20,7 +20,12 @@ namespace _1RM.Service.WebUi
         /// 不具备该层级的协议（如 Dummy）对应字段留空串。
         /// </summary>
         /// <param name="lastConnectTime">来自 ProtocolBaseViewModel.LastConnectTime（LocalityConnectRecorder 缓存），默认 MinValue 映射为 0</param>
-        public static ServerDto FromServer(ProtocolBase server, string dataSourceName, DateTime lastConnectTime = default)
+        /// <param name="connectionState">
+        /// 连接状态（Plan 4 Task 1）：由调用方从 SessionControlService.ConnectionId2Hosts 派生
+        /// （WebUiEndpoints.BuildActiveServerIdSet + DeriveConnectionState）；缺省 = disconnected。
+        /// </param>
+        public static ServerDto FromServer(ProtocolBase server, string dataSourceName, DateTime lastConnectTime = default,
+            string connectionState = WebUiConstants.StatusDisconnected)
         {
             string address = string.Empty;
             string port = string.Empty;
@@ -54,7 +59,7 @@ namespace _1RM.Service.WebUi
                     ? 0
                     // 假定本地墙上时钟（与 LocalityConnectRecorder 写入 DateTime.Now 一致）
                     : new DateTimeOffset(lastConnectTime).ToUnixTimeSeconds(),
-                ConnectionState = WebUiConstants.StatusDisconnected,
+                ConnectionState = connectionState,
             };
         }
 

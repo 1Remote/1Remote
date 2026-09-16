@@ -149,6 +149,8 @@ namespace _1RM.Service
             this.MoveSessionToFullScreen(host.ConnectionId);
             host.Conn();
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
+            // 会话已入连接字典（_dictLock 已退出）：通知 Web UI 点亮状态点
+            NotifyWebUiSessionChanged();
         }
 
         public string ConnectWithTab(in ProtocolBase protocolIn, in Runner runnerIn, string assignTabToken)
@@ -156,6 +158,7 @@ namespace _1RM.Service
             TabWindowView? tab = null;
             ProtocolBase protocol = protocolIn;
             Runner runner = runnerIn;
+            var hostAdded = false;
             Execute.OnUIThreadSync(() =>
             {
                 lock (_dictLock)
@@ -177,11 +180,15 @@ namespace _1RM.Service
                     host.OnFullScreen2Window += this.MoveSessionToTabWindow;
                     tab.GetViewModel().AddItem(new TabItemViewModel(host, protocol.DisplayName));
                     _connectionId2Hosts.TryAdd(host.ConnectionId, host);
+                    hostAdded = true;
                     host.Conn();
                     tab.WindowState = tab.WindowState == WindowState.Minimized ? WindowState.Normal : tab.WindowState;
                     tab.Activate();
                 }
             });
+            // UI 同步块与 _dictLock 均已退出且会话确已入字典：通知 Web UI 点亮状态点
+            if (hostAdded)
+                NotifyWebUiSessionChanged();
             return tab?.Token ?? "";
         }
         #endregion

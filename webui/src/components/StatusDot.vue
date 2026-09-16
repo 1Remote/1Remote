@@ -1,6 +1,8 @@
 <script setup>
-// 状态点（spec §3.4「状态」列，预留）：connectionState 是预留字段，后端功能就绪前恒 'disconnected'。
+// 状态点（spec §3.4「状态」列）：connectionState 由后端从 SessionControlService 活动会话派生
+// （Plan 4 Task 1 起随 /api/servers 下发，SSE reload 事件驱动前端自动刷新）。
 // connected → 绿点+光晕；connecting/reconnecting → 琥珀；disconnected/未知 → 灰空心圈 +「—」。
+// 语义：仅反映「1Remote 托管会话是否活跃」——外部 mstsc.exe 等 Unhosted 会话不点亮。
 import { computed } from 'vue'
 
 const props = defineProps({ state: { type: String, default: 'disconnected' } })
@@ -8,7 +10,7 @@ const props = defineProps({ state: { type: String, default: 'disconnected' } })
 const cls = computed(() =>
   props.state === 'connected' ? 'ok' : props.state === 'connecting' || props.state === 'reconnecting' ? 'warn' : 'idle'
 )
-// 仅离线态补「—」文本，锁定预留列视觉（数据恒 disconnected → 恒显示「—」）
+// 仅离线态补「—」文本（无活动会话是常态基线）
 const showDash = computed(() => cls.value === 'idle')
 </script>
 

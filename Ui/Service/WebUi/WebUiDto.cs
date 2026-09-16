@@ -29,7 +29,7 @@ namespace _1RM.Service.WebUi
         public string DataSourceName { get; set; } = string.Empty;
         public string FolderPath { get; set; } = string.Empty; // "a/b"，根为空串
         public long LastConnectTime { get; set; }              // Unix 秒，0=从未连接
-        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // 预留（spec §3.4）
+        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // connected/disconnected（spec §3.4，Plan 4 Task 1 起由活动会话派生）
     }
 
     public class DataSourceDto
