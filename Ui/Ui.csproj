@@ -518,6 +518,47 @@
         </Page>
     </ItemGroup>
 
+    <!-- Web UI dist 构建防护（Plan 4 Task 5）：dist/index.html 存在但 webui/src 下有更新文件时
+         给出 Warning（不 Error，避免开发摩擦——dist 未构建时静默通过）。内联任务做 UTC 时间戳
+         比较（MSBuild 元数据字符串比较跨文化不可靠），node_modules 不在 src 下、无需排除。 -->
+    <UsingTask TaskName="_1RMWebUiDistStaleCheck" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <DistIndex ParameterType="System.String" Required="true" />
+            <SrcDir ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System" />
+            <Using Namespace="System.IO" />
+            <Code Type="Fragment" Language="cs">
+<![CDATA[
+if (!File.Exists(DistIndex))
+{
+    return true; // dist 尚未构建（全新检出/纯后端开发）：Debug 通配符内容为空照常通过
+}
+var distStamp = File.GetLastWriteTimeUtc(DistIndex).AddSeconds(2); // 2s 容差：npm build 与最后编辑同秒不误报
+var stale = new System.Collections.Generic.List<string>();
+foreach (var f in Directory.GetFiles(SrcDir, "*", SearchOption.AllDirectories))
+{
+    if (File.GetLastWriteTimeUtc(f) > distStamp)
+    {
+        stale.Add(f);
+        if (stale.Count >= 5) break;
+    }
+}
+if (stale.Count > 0)
+{
+    Log.LogWarning(null, "WEBUI001", null, null, 0, 0, 0, 0,
+        $"webui/dist 可能过期（webui/src 有 {stale.Count}+ 个更新的文件，如 {Path.GetFileName(stale[0])}），请运行 npm run build（webui/ 目录）后再构建 / webui/dist may be stale, run `npm run build` in webui/");
+}
+return !Log.HasLoggedErrors;
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    <Target Name="WebUiDistStaleWarning" BeforeTargets="BeforeBuild">
+        <_1RMWebUiDistStaleCheck DistIndex="$(MSBuildThisFileDirectory)..\webui\dist\index.html" SrcDir="$(MSBuildThisFileDirectory)..\webui\src" />
+    </Target>
+
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)'!='Debug'">
         <Exec Command="powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_APP_CENTER_SECRET===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\APP_CENTER_SECRET_1REMOTE.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SENTRY_IO_DEN===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\SENTRY_IO_DEN.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-Secret.ps1 -filePath .\Ui\Assert.cs -Pattern &quot;===REPLACE_ME_WITH_SALT===&quot; -localSecretFilePath &quot;C:\1Remote_Secret\Salt.txt&quot;&#xD;&#xA;powershell.exe ..\scripts\Set-BuildDate.ps1 -filePath .\Ui\AppVersion.cs&#xD;&#xA;powershell.exe ..\scripts\Set-AssemblyVersion.ps1" />
     </Target>

@@ -14,6 +14,7 @@ defineProps({
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
   cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
+  hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/folder/time: bool}
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
 const { t, locale } = useI18n()
@@ -41,7 +42,7 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
       <input type="checkbox" class="cb" :checked="selected" :title="t('row.select')" @click.stop @change="emit('toggle-select')" />
     </div>
     <div class="cell cell-status"><StatusDot :state="server.connectionState" /></div>
-    <div class="cell cell-name" :title="server.displayName">
+    <div v-if="!hiddenCols || !hiddenCols.name" class="cell cell-name" :title="server.displayName">
       <img v-if="server.iconBase64" class="icon" :src="iconSrc(server)" alt="" />
       <span
         v-else
@@ -50,15 +51,15 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
       >{{ initial(server.protocol) }}</span>
       <span class="name">{{ server.displayName }}</span>
     </div>
-    <div class="cell cell-addr" :title="addressText(server)">{{ addressText(server) }}</div>
-    <div class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
+    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)">{{ addressText(server) }}</div>
+    <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
     <div class="cell cell-tags" :title="server.tags.join(t('row.tagSep'))">
       <!-- 循环变量命名 tag：避免遮蔽 i18n 的 t（title 属性在循环外也用到 t） -->
       <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
-    <div v-if="showFolder" class="cell cell-folder" :title="server.folderPath">{{ server.folderPath || '—' }}</div>
-    <div class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
+    <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="server.folderPath">{{ server.folderPath || '—' }}</div>
+    <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
       <!-- 编辑按钮（Plan 2 Task 8 接线）：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
@@ -113,11 +114,11 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
   flex: 0 0 var(--c-status, 58px);
 }
 .cell-name {
-  flex: var(--c-name, 2.3) 1 0;
+  flex: var(--c-name, 2.3) var(--c-name-grow, 1) 0;
   gap: 8px;
 }
 .cell-addr {
-  flex: var(--c-addr, 1.6) 1 0;
+  flex: var(--c-addr, 1.6) var(--c-addr-grow, 1) 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -131,7 +132,7 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
   overflow: hidden;
 }
 .cell-folder {
-  flex: var(--c-folder, 1.4) 1 0;
+  flex: var(--c-folder, 1.4) var(--c-folder-grow, 1) 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

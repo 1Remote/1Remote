@@ -15,8 +15,10 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
+import { useVirtualList } from '@vueuse/core'
 import ServerRow from './ServerRow.vue'
 import { api } from '../api'
+import { useColumns } from '../composables/useColumns'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -363,29 +365,93 @@ function clearCursorIfAny() {
 }
 defineExpose({ closeMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
 
+// ---- 列状态（Plan 4 Task 5）：列宽（拖右缘调整/双击重置）+ 列显隐（"列"下拉菜单），
+// 经 useColumns 持久化 localStorage '1r-cols'（仅本地）。flex 列有自定义宽时改为
+// 定宽（--c-*-grow=0，flex-basis=px），未设时保持默认比例；隐藏列在表头与行两侧同时 v-if。
+const { HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth } = useColumns()
+const hiddenCols = computed(() => {
+  const o = {}
+  for (const k of HIDEABLE_COLS) o[k] = isHidden(k)
+  return o
+})
+const colVars = computed(() => {
+  const px = (k, def) => {
+    const w = widthOf(k)
+    return w ? w + 'px' : def
+  }
+  const grow0 = (k) => (widthOf(k) ? { ['--c-' + k + '-grow']: '0' } : {})
+  return {
+    '--c-check': '30px',
+    '--c-status': '58px',
+    '--c-name': px('name', showFolder.value ? '2.3' : '2.8'),
+    '--c-addr': px('addr', '1.6'),
+    '--c-proto': px('proto', '84px'),
+    '--c-tags': showFolder.value ? '1.2' : '1.5',
+    '--c-folder': px('folder', '1.4'),
+    '--c-time': px('time', '104px'),
+    '--c-act': '100px',
+    ...grow0('name'),
+    ...grow0('addr'),
+    ...grow0('folder'),
+  }
+})
+
+// 列宽拖拽：表头右缘 5px 命中区（cursor col-resize），pointer capture 跟踪；
+// 双击 = 重置该列（回默认 flex 比例）
+const resizing = ref(null) // { k, startX, startW }
+function onResizeStart(k, e) {
+  const th = e.currentTarget.parentElement
+  resizing.value = { k, startX: e.clientX, startW: th.getBoundingClientRect().width }
+  e.currentTarget.setPointerCapture?.(e.pointerId)
+}
+function onResizeMove(e) {
+  const r = resizing.value
+  if (!r) return
+  setWidth(r.k, Math.max(40, r.startW + e.clientX - r.startX))
+}
+function onResizeEnd() {
+  resizing.value = null
+}
+
+// "列"下拉菜单（本任务新建控件）：勾选显隐 + 操作说明；点击外部/Esc 关闭
+const colMenu = ref(false)
+function toggleColMenu() {
+  colMenu.value = !colMenu.value
+}
+const COL_LABELS = computed(() => ({
+  name: t('col.name'),
+  addr: t('col.address'),
+  proto: t('col.protocol'),
+  folder: t('col.folder'),
+  time: t('col.lastConnect'),
+}))
+function onGlobalDownCloseColMenu(e) {
+  if (colMenu.value && !e.target.closest?.('.table-tools')) colMenu.value = false
+}
+
+// ---- 虚拟滚动（Plan 4 Task 5）：>500 行启用 useVirtualList（36px 定高，虚拟容器内行
+// 改 border-box 使几何高度与常量精确一致；sticky 表头保持滚动容器首行，wrapper 的
+// marginTop 偏移不会影响其吸顶）。≤500 行维持直渲染（性能开关常量化）。
+const VIRTUAL_THRESHOLD = 500
+const ROW_HEIGHT = 36
+const useVirtual = computed(() => sorted.value.length > VIRTUAL_THRESHOLD)
+const { list: virtualRows, containerProps, wrapperProps } = useVirtualList(sorted, {
+  itemHeight: ROW_HEIGHT,
+  overscan: 8,
+})
+
 onMounted(() => {
   window.addEventListener('mousedown', onGlobalDown)
+  window.addEventListener('mousedown', onGlobalDownCloseColMenu)
   window.addEventListener('keydown', onGlobalKey)
   document.addEventListener('focusin', onDocFocusin)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('mousedown', onGlobalDown)
+  window.removeEventListener('mousedown', onGlobalDownCloseColMenu)
   window.removeEventListener('keydown', onGlobalKey)
   document.removeEventListener('focusin', onDocFocusin)
 })
-
-// ---- 列宽（flex 比例，样张 v2；隐藏文件夹列时把宽度让给名称/标签）----
-const colVars = computed(() => ({
-  '--c-check': '30px',
-  '--c-status': '58px',
-  '--c-name': showFolder.value ? '2.3' : '2.8',
-  '--c-addr': '1.6',
-  '--c-proto': '84px',
-  '--c-tags': showFolder.value ? '1.2' : '1.5',
-  '--c-folder': '1.4',
-  '--c-time': '104px',
-  '--c-act': '100px',
-}))
 </script>
 
 <template>
@@ -400,35 +466,79 @@ const colVars = computed(() => ({
       <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>
 
-    <div class="tbody">
+    <div class="tbody" v-bind="useVirtual ? containerProps : undefined">
       <!-- 表头工具簇（Plan 4）：浮于表头右端（.server-table 为定位基准）。
-           ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4） -->
+           ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4）；
+           ▦ = 列菜单（显隐 + 列宽说明，Plan 4 Task 5） -->
       <div class="table-tools">
         <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')" @click="toggleCustomSort">≡</button>
+        <button class="tt-btn" :class="{ active: colMenu }" :title="t('cols.menu')" @click="toggleColMenu">▦</button>
+        <div v-if="colMenu" class="col-menu">
+          <label v-for="k in HIDEABLE_COLS" :key="k" class="col-item">
+            <input type="checkbox" :checked="!hiddenCols[k]" @change="setHidden(k, $event.target.checked ? false : true)" />
+            <span>{{ COL_LABELS[k] }}</span>
+          </label>
+          <label class="col-item col-item-fixed" :title="t('cols.fixed')">
+            <input type="checkbox" checked disabled />
+            <span>{{ t('col.status') }} · {{ t('col.tags') }} · {{ t('col.actions') }}</span>
+          </label>
+          <div class="col-hint">{{ t('cols.hint') }}</div>
+        </div>
       </div>
       <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
-           表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻 -->
+           表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻。
+           可隐藏列 v-if；每列右缘 5px 拖拽调宽（col-resize），双击重置 -->
       <div class="thead">
         <div class="hcell h-check">
           <input ref="allCb" type="checkbox" :checked="allChecked" :title="t('col.selectAll')" @click.stop @change="toggleAll" />
         </div>
         <div class="hcell h-status">{{ t('col.status') }}</div>
-        <div class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span></div>
-        <div class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span></div>
-        <div class="hcell h-proto sortable" @click="toggleSort('protocol')">{{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span></div>
+        <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span><span class="resizer" @pointerdown="onResizeStart('name', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('name', null)"></span></div>
+        <div v-if="!hiddenCols.addr" class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span><span class="resizer" @pointerdown="onResizeStart('addr', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('addr', null)"></span></div>
+        <div v-if="!hiddenCols.proto" class="hcell h-proto sortable" @click="toggleSort('protocol')">{{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span><span class="resizer" @pointerdown="onResizeStart('proto', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('proto', null)"></span></div>
         <div class="hcell h-tags">{{ t('col.tags') }}</div>
-        <div v-if="showFolder" class="hcell h-folder">{{ t('col.folder') }}</div>
-        <div class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span></div>
+        <div v-if="showFolder && !hiddenCols.folder" class="hcell h-folder">{{ t('col.folder') }}<span class="resizer" @pointerdown="onResizeStart('folder', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('folder', null)"></span></div>
+        <div v-if="!hiddenCols.time" class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span><span class="resizer" @pointerdown="onResizeStart('time', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('time', null)"></span></div>
         <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
+      <!-- >500 行虚拟滚动（Plan 4 Task 5）：wrapper 撑总高 + marginTop 偏移窗口渲染；
+           拖拽/勾选/光标等行级绑定与非虚拟分支保持同一份 -->
+      <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
+        <ServerRow
+          v-for="{ data: s, index: i } in virtualRows"
+          :key="s.id"
+          :server="s"
+          :selected="checked.has(s.id)"
+          :highlighted="!!selection && selection.serverId === s.id"
+          :cursor="s.id === cursorId"
+          :show-folder="showFolder"
+          :hidden-cols="hiddenCols"
+          :data-id="s.id"
+          :draggable="isCustom"
+          :class="{
+            'drop-before': dropHint && dropHint.id === s.id && dropHint.before,
+            'drop-after': dropHint && dropHint.id === s.id && !dropHint.before,
+          }"
+          @toggle-select="onToggleSelect(s, i)"
+          @row-click="onRowClick(s, $event, i)"
+          @connect="emit('connect', s.id)"
+          @edit="emit('edit', s)"
+          @context-menu="openMenu"
+          @dragstart="onRowDragStart(s, $event)"
+          @dragend="onRowDragEnd"
+          @dragover="onRowDragOver(s, $event)"
+          @drop="onRowDrop(s, $event)"
+        />
+      </div>
       <ServerRow
-        v-for="(s, i) in sorted"
+        v-for="(s, i) in useVirtual ? [] : sorted"
         :key="s.id"
         :server="s"
         :selected="checked.has(s.id)"
         :highlighted="!!selection && selection.serverId === s.id"
         :cursor="s.id === cursorId"
         :show-folder="showFolder"
+        :hidden-cols="hiddenCols"
         :data-id="s.id"
         :draggable="isCustom"
         :class="{
@@ -562,6 +672,53 @@ const colVars = computed(() => ({
   color: var(--accent-text);
 }
 
+/* 列菜单（Plan 4 Task 5）：工具簇 ▦ 下拉 */
+.col-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+  padding: 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+}
+.col-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 5px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.col-item:hover {
+  background: var(--bg-hover);
+}
+.col-item input {
+  accent-color: var(--accent);
+}
+.col-item-fixed {
+  color: var(--text-4);
+  cursor: default;
+}
+.col-item-fixed:hover {
+  background: transparent;
+}
+.col-hint {
+  margin-top: 4px;
+  padding: 4px 6px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-4);
+  font-size: 11px;
+}
+
 /* 行拖拽指示线（作用于 ServerRow 根节点；custom 模式行可抓取） */
 :deep(.row[draggable='true']) {
   cursor: grab;
@@ -604,10 +761,10 @@ const colVars = computed(() => ({
   flex: 0 0 var(--c-status);
 }
 .h-name {
-  flex: var(--c-name) 1 0;
+  flex: var(--c-name) var(--c-name-grow, 1) 0;
 }
 .h-addr {
-  flex: var(--c-addr) 1 0;
+  flex: var(--c-addr) var(--c-addr-grow, 1) 0;
 }
 .h-proto {
   flex: 0 0 var(--c-proto);
@@ -616,7 +773,7 @@ const colVars = computed(() => ({
   flex: var(--c-tags) 1 0;
 }
 .h-folder {
-  flex: var(--c-folder) 1 0;
+  flex: var(--c-folder) var(--c-folder-grow, 1) 0;
 }
 .h-time {
   flex: 0 0 var(--c-time);
@@ -625,6 +782,19 @@ const colVars = computed(() => ({
   flex: 0 0 var(--c-act);
   justify-content: flex-end;
   padding-right: 0;
+}
+/* 列宽拖拽命中区（右缘 5px）：不拦截表头排序点击（指针事件独立在 resizer 上） */
+.resizer {
+  flex: 0 0 5px;
+  align-self: stretch;
+  width: 5px;
+  height: 32px;
+  margin-right: -10px; /* 抵消 hcell 的 padding-right，命中区贴列右缘 */
+  cursor: col-resize;
+}
+.resizer:hover {
+  background: var(--accent);
+  opacity: 0.45;
 }
 .sortable {
   cursor: pointer;
@@ -641,6 +811,14 @@ const colVars = computed(() => ({
   flex: 1;
   min-height: 0;
   overflow: auto;
+}
+/* 虚拟滚动窗口：wrapper 由 useVirtualList 撑总高；行改 border-box 让几何高度
+   与 ROW_HEIGHT=36 精确一致（默认 content-box 下 36px+1px 边框=37px 会累积漂移） */
+.virtual-wrap {
+  contain: content;
+}
+.virtual-wrap :deep(.row) {
+  box-sizing: border-box;
 }
 .empty {
   display: flex;
