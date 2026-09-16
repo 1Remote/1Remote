@@ -172,7 +172,13 @@ function canDrop(row, zone) {
   const dstDs = row.kind === 'root' ? row.ds.name : row.dsName
   if (srcDs !== dstDs) return false // 跨数据源禁止（WPF GetDataBaseNode 同款）
   if (zone !== 'into' && row.kind === 'root') return false
-  if (src.kind === 'folder' && row.kind === 'folder' && isDescendantPath(src.folder.path, row.folder.path)) return false // 不能移入自己的后代
+  // 不能移入自己的后代：目标无论文件夹行还是后代文件夹内的服务器行都拒绝——后者漏判会让
+  // 落点路径解析把子级拼回自身（A/B → A/B/B 嵌套重复）；WPF 先把服务器目标归一到其父
+  // 再 FindDescendant（ServerTreeViewModel.cs:622-626），拒绝语义一致
+  if (src.kind === 'folder') {
+    const targetPath = row.kind === 'folder' ? row.folder.path : row.kind === 'server' ? (row.server.folderPath || '') : ''
+    if (targetPath && isDescendantPath(src.folder.path, targetPath)) return false
+  }
   return true
 }
 function onRowDragStart(row, e) {
