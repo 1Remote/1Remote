@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using _1RM.Service;
 
 namespace _1RM.Service.DataSource.DAO
 {
@@ -49,7 +48,6 @@ namespace _1RM.Service.DataSource.DAO
     {
         public static string GetErrorInfo(this EnumDatabaseStatus result)
         {
-            var lang = IoC.Get<LanguageService>();
             switch (result)
             {
                 case EnumDatabaseStatus.AccessDenied:

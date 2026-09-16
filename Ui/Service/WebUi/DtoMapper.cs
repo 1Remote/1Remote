@@ -60,9 +60,18 @@ namespace _1RM.Service.WebUi
 
         /// <summary>
         /// 数据源 → <see cref="DataSourceDto"/>；ServerCount 按缓存的服务器列表统计（剔除分组头与临时会话）。
+        /// config = 连接参数视图（camelCase 匿名对象）：sqlite {path}；mysql/pgsql {host, port, databaseName, userName}
+        /// ——绝不包含密码（读方向无明文/密文密码字段，安全红线）。
         /// </summary>
         public static DataSourceDto FromDataSource(DataSourceBase ds)
         {
+            object? config = ds switch
+            {
+                SqliteSource sqlite => new { path = sqlite.Path },
+                MysqlSource mysql => new { host = mysql.Host, port = mysql.Port, databaseName = mysql.DatabaseName, userName = mysql.UserName },
+                PgsqlSource pgsql => new { host = pgsql.Host, port = pgsql.Port, databaseName = pgsql.DatabaseName, userName = pgsql.UserName },
+                _ => null,
+            };
             return new DataSourceDto
             {
                 Name = ds.DataSourceName ?? string.Empty,
@@ -81,9 +90,13 @@ namespace _1RM.Service.WebUi
                 },
                 Writable = ds.IsWritable,
                 ReconnectInfo = ds.ReconnectInfo ?? string.Empty,
-                ServerCount = CountCachedServers(ds),
+                ServerCount = CountServers(ds),
+                Config = config,
             };
         }
+
+        /// <summary>数据源缓存的服务器计数（剔除分组头与临时会话）；DELETE 守卫等复用。</summary>
+        public static int CountServers(DataSourceBase ds) => CountCachedServers(ds);
 
         /// <summary>
         /// 数据源缓存的服务器计数（剔除分组头与临时会话）。

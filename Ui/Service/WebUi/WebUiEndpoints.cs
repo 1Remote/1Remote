@@ -69,7 +69,7 @@ namespace _1RM.Service.WebUi
                 }
             });
 
-            // 数据源列表：本地 + 附加数据源
+            // 数据源列表：本地 + 附加数据源（config = 连接参数视图，无密码）
             app.MapGet("/api/datasources", () =>
             {
                 var dss = IoC.Get<DataSourceService>();
@@ -80,6 +80,94 @@ namespace _1RM.Service.WebUi
                 }
                 all.AddRange(dss.AdditionalSources.Values);
                 return Results.Json(all.Select(DtoMapper.FromDataSource).ToList());
+            });
+
+            // 新建数据源（Plan 3 Task 3）：WPF-parity 持久化 = ConfigurationService.AdditionalDataSource
+            // .Add + Save() + DataSourceService.AddOrUpdateDataSource（连接失败不回滚，WPF CmdAdd 同款——
+            // 返回 201 + 实际 status，前端可先调 /test 验证）。重名 → 409；校验失败 → 400 零写入。
+            app.MapPost("/api/datasources", (DataSourceSaveRequest? body) =>
+            {
+                var result = WebUiDataSourceService.Create(body);
+                return result.Status switch
+                {
+                    DataSourceMutationStatus.Ok => Results.Json(new
+                    {
+                        dataSource = result.Dto,
+                        connectError = result.ConnectError,
+                    }, statusCode: 201),
+                    DataSourceMutationStatus.Conflict => Results.Json(new { errors = result.Errors }, statusCode: 409),
+                    DataSourceMutationStatus.NotFound => Results.NotFound(),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            // 更新数据源连接参数：Local → 400（SQLite 路径不暴露）；字段缺失 = 保持；password 空 = 保持
+            // （Mysql/Pgsql Password setter 收 "" 会清空）；保存后 AddOrUpdateDataSource 重连。
+            app.MapPut("/api/datasources/{name}", (string name, DataSourceConfigRequest? body) =>
+            {
+                var result = WebUiDataSourceService.Update(name, body?.Config);
+                return result.Status switch
+                {
+                    DataSourceMutationStatus.Ok => Results.Json(new
+                    {
+                        dataSource = result.Dto,
+                        connectError = result.ConnectError,
+                    }),
+                    DataSourceMutationStatus.NotFound => Results.NotFound(),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            // 删除数据源：Local → 400；serverCount>0 且未确认 → 409 {serverCount}（Web 侧守卫，WPF
+            // CmdDelete 无检查直接删）；keepServers=true = 用户已确认，镜像 WPF：移除数据源，
+            // 服务器不迁移留在库文件中（重新添加该数据源即可找回）。
+            app.MapDelete("/api/datasources/{name}", (string name, bool? keepServers) =>
+            {
+                var result = WebUiDataSourceService.Delete(name, keepServers == true);
+                return result.Status switch
+                {
+                    DataSourceMutationStatus.Ok => Results.NoContent(),
+                    DataSourceMutationStatus.Conflict => Results.Json(
+                        new { error = result.Errors.FirstOrDefault(), serverCount = result.ServerCount }, statusCode: 409),
+                    DataSourceMutationStatus.NotFound => Results.NotFound(),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            // 测试连接：sqlite = Database_SelfCheck（含错误详情）；mysql/pgsql = 静态 TestConnection，
+            // config 未带密码时沿用已存密码。带 config = 按 config 测试（保存前验证向导流程）。
+            app.MapPost("/api/datasources/{name}/test", (string name, DataSourceConfigRequest? body) =>
+            {
+                var result = WebUiDataSourceService.Test(name, body?.Config);
+                return result.Status switch
+                {
+                    DataSourceMutationStatus.Ok => Results.Json(new
+                    {
+                        ok = result.IsOk,
+                        status = result.StatusText,
+                        detail = result.Detail,
+                    }),
+                    DataSourceMutationStatus.NotFound => Results.NotFound(),
+                    _ => Results.BadRequest(new { errors = new[] { result.Detail } }),
+                };
+            });
+
+            // 运行器配置（Plan 3 Task 3）：整体往返 ProtocolSettings（含 SelectedRunnerName），
+            // runners 数组 PascalCase + $type 直通（与 ProtocolConfigurationService 的 Newtonsoft
+            // 持久化同一路径）。GET 6 协议；PUT 缺失协议 = 保持，未知协议键/runners 空 → 400 零写入。
+            app.MapGet("/api/settings/runners", () =>
+            {
+                var pcs = IoC.Get<ProtocolConfigurationService>();
+                return Results.Json(new { protocols = WebUiDataSourceService.ReadRunners(pcs) });
+            });
+
+            app.MapPut("/api/settings/runners", (RunnersSaveRequest? body) =>
+            {
+                var pcs = IoC.Get<ProtocolConfigurationService>();
+                var result = WebUiDataSourceService.ApplyRunners(pcs, body?.Protocols);
+                if (!result.IsOk)
+                    return Results.BadRequest(new { errors = result.Errors });
+                return Results.Json(new { protocols = WebUiDataSourceService.ReadRunners(pcs) });
             });
 
             // 标签聚合（含计数与置顶状态）

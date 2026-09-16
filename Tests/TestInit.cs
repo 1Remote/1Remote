@@ -93,6 +93,18 @@ namespace Tests
                 var globalData = new GlobalData(configurationService);
                 Register(globalData);
 
+                // 运行器读写端点（/api/settings/runners）需要 ProtocolConfigurationService。
+                // PuttyRunner 构造依赖 WPF pack 资源（PuttyThemes：pack://application URI 在测试宿主
+                // 不可用，UriFormatException）——预置主题缓存占位（SetBrush 对空条目安全），绕开资源装载。
+                var themesField = typeof(_1RM.Utils.PuTTY.PuttyThemes).GetField("_themes",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                themesField?.SetValue(null,
+                    new Dictionary<string, List<_1RM.Utils.PuTTY.Model.PuttyConfigKeyValuePair>>
+                    {
+                        { "Default", new List<_1RM.Utils.PuTTY.Model.PuttyConfigKeyValuePair>() },
+                    });
+                Register(new ProtocolConfigurationService());
+
                 // GlobalData.UpdateServer 成功路径会调用 IoC.Get<ServerListPageViewModel>().ClearSelection()
                 // （编辑保存后清除列表选中态），测试环境必须注册同型实例；其构造仅依赖上述已注册服务，
                 // View 永不附加（OnViewLoaded 不触发），ClearSelection 在未构建的空列表上是空操作。

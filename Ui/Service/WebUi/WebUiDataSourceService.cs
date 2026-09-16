@@ -1,0 +1,550 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using _1RM.Model;
+using _1RM.Model.ProtocolRunner;
+using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
+using _1RM.Service.DataSource.Model;
+using _1RM.View;
+
+namespace _1RM.Service.WebUi
+{
+    /// <summary>
+    /// 数据源 CRUD/测试 与运行器读写编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦）。
+    ///
+    /// 数据源持久化双集合（最大陷阱，WPF 正确模式 DataSourceViewModel.CmdAdd/CmdEdit/CmdDelete）：
+    /// DataSourceService.AddOrUpdateDataSource/RemoveDataSource 只改运行时字典（AdditionalSources）；
+    /// 落盘必须同步 ConfigurationService.AdditionalDataSource（独立集合，Save() 时写
+    /// ProfileAdditionalDataSourceJsonPath）+ Save()。顺序 = WPF：先改 AdditionalDataSource（同一实例）
+    /// → Save() → 再 AddOrUpdateDataSource（触发连接尝试 + ReloadAll）/ RemoveDataSource。
+    ///
+    /// 新建失败语义 = WPF：CmdAdd 无条件保存（连接失败仅弹错误提示，数据源保留），端点镜像为
+    /// 保存后返回 201 + 实际 status（connected/disconnected），前端可用 /test 端点先行验证。
+    ///
+    /// 密码"空=保持"：Mysql/Pgsql Password setter 收 "" 会清空（EncryptPassword 置 ""），
+    /// PUT 端点必须条件赋值（null/空串跳过 = 保持原密码）；POST 为新建语义，明文直传。
+    ///
+    /// 删除守卫（与 WPF 的有意差异）：WPF CmdDelete 不检查数据源下是否有服务器，直接移除
+    /// （服务器仍留在库文件里，只是从界面消失）。Web 端为防误删增加 serverCount>0 时 409 前置确认；
+    /// keepServers=true 表示用户已确认 = 按 WPF 原样删除（不迁移服务器，数据留在库文件中）。
+    ///
+    /// TestConnection：仅 MysqlSource/PgsqlSource 有静态 TestConnection（返回 bool）；
+    /// SqliteSource 无——sqlite 走 Database_SelfCheck（返回 DatabaseStatus 含错误详情，
+    /// 即 AddOrUpdateDataSource 内部同款自检）。mysql/pgsql 测试时未提供密码则沿用已存密码
+    /// （EncryptPassword 解密），避免"测试连接"把密码置空。
+    ///
+    /// 运行器读写：整体往返 ProtocolSettings（含 SelectedRunnerName），与
+    /// ProtocolConfigurationService 自身的持久化共用同一条 Newtonsoft 序列化路径
+    /// （JsonKnownTypesConverter&lt;Runner&gt; 的 $type 判别 + [JsonConstructor] 参数化构造，
+    /// LoadConfig 启动装载即此路径——InternalDefaultRunner/PuttyRunner 等内置运行器可完整往返，
+    /// 无需回退到"仅合并外部运行器"策略，测试 Runners_Put_RoundTrip 验证）。PUT 在既有
+    /// ProtocolSettings 实例上原位替换 SelectedRunnerName + Runners（保持对象身份，
+    /// 编辑器 VM 等持有的引用不失效），并重放 Load 的后处理（OwnerProtocolName 回填 +
+    /// ExternalRunner.MarcoNames 宏补全）后 Save()。
+    /// </summary>
+    public static class WebUiDataSourceService
+    {
+        /// <summary>
+        /// POST /api/datasources：新建数据源。type: sqlite|mysql|pgsql（postgresql 同义归一）。
+        /// name 缺省时 sqlite 从路径文件名推导（WPF 弹窗由用户填写，web 向导省一步）；
+        /// 与现有数据源重名（CurrentCultureIgnoreCase，WPF 编辑器同款判重）→ 409。
+        /// mysql/pgsql 校验 = WPF Mysql/PgsqlSettingViewModel IDataErrorInfo：host/port(1-65535)/
+        /// databaseName/userName/password 均必填（password 为空 → 400，与 WPF CanSave 一致）；
+        /// sqlite 仅需 path 非空。校验全过才落库（零写入）。
+        /// </summary>
+        public static DataSourceMutationResult Create(DataSourceSaveRequest? input)
+        {
+            if (input == null)
+                return DataSourceMutationResult.BadRequest("body must be a JSON object");
+
+            var type = NormalizeType(input.Type);
+            if (type == null)
+                return DataSourceMutationResult.BadRequest(
+                    $"type: '{input.Type}' is not supported, expected one of: sqlite, mysql, pgsql");
+
+            var cfg = input.Config ?? new DataSourceConfigInput();
+            var errors = new List<string>();
+            var name = input.Name?.Trim() ?? string.Empty;
+
+            // 先校验后构造（SqliteSource.Path setter 会 new FileInfo：空路径直接抛异常，不能先建后验）
+            DataSourceBase source;
+            switch (type)
+            {
+                case "sqlite":
+                {
+                    var path = cfg.Path?.Trim() ?? string.Empty;
+                    if (path.Length == 0)
+                        errors.Add("config.path: can not be empty");
+                    if (name.Length == 0)
+                    {
+                        // sqlite 名缺省 = 路径文件名（不含扩展名）
+                        name = Path.GetFileNameWithoutExtension(path);
+                    }
+                    if (name.Length == 0)
+                        errors.Add("name: can not be empty and could not be derived from config.path");
+                    if (errors.Count > 0)
+                        return DataSourceMutationResult.BadRequest(errors);
+                    // SqliteSource 构造只写 readonly Name 字段（数据库名），DataSourceName 须显式赋值
+                    // （Local 由 InitLocalDataSource 赋值；WPF 编辑弹窗直接改 org 的属性——Web 侧补齐）
+                    source = new SqliteSource(name) { Path = path };
+                    source.DataSourceName = name;
+                    break;
+                }
+                case "mysql":
+                case "pgsql":
+                {
+                    var host = cfg.Host?.Trim() ?? string.Empty;
+                    var databaseName = cfg.DatabaseName?.Trim() ?? string.Empty;
+                    var userName = cfg.UserName?.Trim() ?? string.Empty;
+                    var password = cfg.Password ?? string.Empty;
+                    var port = cfg.Port ?? (type == "mysql" ? 3306 : 5432);
+                    if (host.Length == 0) errors.Add("config.host: can not be empty");
+                    if (port < 1 || port > 65535) errors.Add("config.port: must be 1 - 65535");
+                    if (databaseName.Length == 0) errors.Add("config.databaseName: can not be empty");
+                    if (userName.Length == 0) errors.Add("config.userName: can not be empty");
+                    if (password.Length == 0) errors.Add("config.password: can not be empty (WPF 新建弹窗同款必填)");
+                    if (name.Length == 0) errors.Add("name: can not be empty");
+                    if (errors.Count > 0)
+                        return DataSourceMutationResult.BadRequest(errors);
+                    if (type == "mysql")
+                    {
+                        source = new MysqlSource
+                        {
+                            DataSourceName = name, Host = host, Port = port,
+                            DatabaseName = databaseName, UserName = userName, Password = password,
+                        };
+                    }
+                    else
+                    {
+                        source = new PgsqlSource
+                        {
+                            DataSourceName = name, Host = host, Port = port,
+                            DatabaseName = databaseName, UserName = userName, Password = password,
+                        };
+                    }
+                    break;
+                }
+                default:
+                    return DataSourceMutationResult.BadRequest($"type: '{input.Type}' is not supported");
+            }
+
+            var conflict = FindNameConflict(name);
+            if (conflict != null)
+                return DataSourceMutationResult.Conflict($"name: data source '{name}' already exists", serverCount: 0);
+
+            // WPF CmdAdd 顺序（DataSourceViewModel.cs:105-112）：AdditionalDataSource.Add → Save → AddOrUpdate
+            var cs = IoC.Get<ConfigurationService>();
+            var dss = IoC.Get<DataSourceService>();
+            cs.AdditionalDataSource.Add(source);
+            cs.Save();
+            var ret = dss.AddOrUpdateDataSource(source); // 连接尝试（超时 2s）；失败不回滚（WPF 同款）
+            return DataSourceMutationResult.Ok(DtoMapper.FromDataSource(source), ret.GetErrorMessage);
+        }
+
+        /// <summary>
+        /// PUT /api/datasources/{name}：更新连接参数并重连。Local → 400（SQLite 路径不暴露，
+        /// plan 全局约定安全域）；未知名 → 404。字段缺失 = 保持不变；password null/空串 = 保持
+        /// （Mysql/Pgsql Password setter 收 "" 会清空，必须条件赋值）。落库顺序 = WPF CmdEdit：
+        /// Save() → AddOrUpdateDataSource（断开旧连接重连）。
+        /// </summary>
+        public static DataSourceMutationResult Update(string name, DataSourceConfigInput? input)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name == DataSourceService.LOCAL_DATA_SOURCE_NAME)
+                return DataSourceMutationResult.BadRequest($"data source 'Local' can not be modified via web ui");
+
+            var source = FindAdditionalSource(name);
+            if (source == null)
+                return DataSourceMutationResult.NotFound();
+
+            var cfg = input ?? new DataSourceConfigInput();
+            var errors = new List<string>();
+            switch (source)
+            {
+                case SqliteSource sqlite:
+                {
+                    var path = cfg.Path?.Trim();
+                    if (path != null)
+                    {
+                        if (path.Length == 0) errors.Add("config.path: can not be empty");
+                        else sqlite.Path = path;
+                    }
+                    break;
+                }
+                case MysqlSource mysql:
+                {
+                    ApplyServerConfig(cfg, errors,
+                        (v) => mysql.Host = v, (v) => mysql.Port = v,
+                        (v) => mysql.DatabaseName = v, (v) => mysql.UserName = v,
+                        (v) => mysql.Password = v);
+                    break;
+                }
+                case PgsqlSource pgsql:
+                {
+                    ApplyServerConfig(cfg, errors,
+                        (v) => pgsql.Host = v, (v) => pgsql.Port = v,
+                        (v) => pgsql.DatabaseName = v, (v) => pgsql.UserName = v,
+                        (v) => pgsql.Password = v);
+                    break;
+                }
+                default:
+                    return DataSourceMutationResult.BadRequest($"data source type '{source.GetType().Name}' is not supported");
+            }
+            if (errors.Count > 0)
+                return DataSourceMutationResult.BadRequest(errors);
+
+            var cs = IoC.Get<ConfigurationService>();
+            var dss = IoC.Get<DataSourceService>();
+            cs.Save(); // WPF CmdEdit：先 Save 再重连
+            var ret = dss.AddOrUpdateDataSource(source);
+            return DataSourceMutationResult.Ok(DtoMapper.FromDataSource(source), ret.GetErrorMessage);
+        }
+
+        /// <summary>
+        /// DELETE /api/datasources/{name}?keepServers=。Local → 400；未知名 → 404。
+        /// serverCount&gt;0 且未带 keepServers=true → 409 {serverCount}（Web 侧前置确认；
+        /// WPF CmdDelete 无此检查直接删——keepServers=true 即用户已确认，镜像 WPF 原样删除：
+        /// AdditionalDataSource.Remove → Save → RemoveDataSource，不迁移/不删服务器，
+        /// 数据留在库文件中，重新添加该数据源即可找回）。
+        /// </summary>
+        public static DataSourceMutationResult Delete(string name, bool keepServers)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name == DataSourceService.LOCAL_DATA_SOURCE_NAME)
+                return DataSourceMutationResult.BadRequest($"data source 'Local' can not be deleted");
+
+            var source = FindAdditionalSource(name);
+            if (source == null)
+                return DataSourceMutationResult.NotFound();
+
+            var serverCount = DtoMapper.CountServers(source);
+            if (serverCount > 0 && !keepServers)
+            {
+                return DataSourceMutationResult.Conflict(
+                    $"data source '{name}' still contains {serverCount} server(s); pass keepServers=true to remove it anyway (servers stay in the database file, mirroring the WPF delete behavior)",
+                    serverCount);
+            }
+
+            // WPF CmdDelete 顺序（DataSourceViewModel.cs:182-191）
+            var cs = IoC.Get<ConfigurationService>();
+            if (cs.AdditionalDataSource.Contains(source))
+            {
+                cs.AdditionalDataSource.Remove(source);
+                cs.Save();
+            }
+            IoC.Get<DataSourceService>().RemoveDataSource(source.DataSourceName);
+            return DataSourceMutationResult.Ok(null, string.Empty);
+        }
+
+        /// <summary>
+        /// POST /api/datasources/{name}/test：测试连接。sqlite：Database_SelfCheck（即
+        /// AddOrUpdateDataSource 内部同款自检，返回错误详情）；mysql/pgsql：静态 TestConnection，
+        /// 请求 config 中未提供/空密码时沿用已存密码（解密）。带 config 时按 config 测试
+        /// （字段缺省回退已存值）——支持"保存前先测"的向导流程。未知数据源 → 404。
+        /// </summary>
+        public static DataSourceTestResult Test(string name, DataSourceConfigInput? input)
+        {
+            var dss = IoC.Get<DataSourceService>();
+            var resolvedName = string.IsNullOrWhiteSpace(name) ? DataSourceService.LOCAL_DATA_SOURCE_NAME : name;
+            var source = dss.GetDataSource(resolvedName);
+            if (source == null)
+                return DataSourceTestResult.NotFound();
+
+            switch (source)
+            {
+                case SqliteSource:
+                {
+                    // sqlite 无静态 TestConnection：自检 = 连接 + 建表/校验（同 Local 初始化路径）
+                    var ret = source.Database_SelfCheck();
+                    return DataSourceTestResult.Ok(ret.Status == EnumDatabaseStatus.OK,
+                        MapStatus(ret.Status), ret.Status == EnumDatabaseStatus.OK ? string.Empty : ret.GetErrorMessage);
+                }
+                case MysqlSource mysql:
+                {
+                    var ok = TestServerConnection(mysql, input,
+                        (host, port, db, user, pwd) => MysqlSource.TestConnection(host, port, db, user, pwd));
+                    return DataSourceTestResult.FromBool(ok, DtoMapper.FromDataSource(mysql).Status);
+                }
+                case PgsqlSource pgsql:
+                {
+                    var ok = TestServerConnection(pgsql, input,
+                        (host, port, db, user, pwd) => PgsqlSource.TestConnection(host, port, db, user, pwd));
+                    return DataSourceTestResult.FromBool(ok, DtoMapper.FromDataSource(pgsql).Status);
+                }
+                default:
+                    return DataSourceTestResult.BadRequest($"data source type '{source.GetType().Name}' is not supported");
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // runners
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// GET /api/settings/runners：{protocols:{SSH:{selectedRunnerName, runners:[...]}}}。
+        /// 每协议序列化 ProtocolSettings（Newtonsoft，与 ProtocolConfigurationService.Save 同路径），
+        /// 顶层键改写为 camelCase（selectedRunnerName/runners），runners 数组内容 PascalCase +
+        /// $type 判别直通（内置/外部运行器结构完整保留；无循环引用——Save() 早已验证）。
+        /// </summary>
+        public static Dictionary<string, JsonElement> ReadRunners(ProtocolConfigurationService pcs)
+        {
+            var protocols = new Dictionary<string, JsonElement>();
+            foreach (var kv in pcs.ProtocolConfigs)
+            {
+                var jObj = JObject.Parse(JsonConvert.SerializeObject(kv.Value));
+                var renamed = new JObject
+                {
+                    ["selectedRunnerName"] = jObj["SelectedRunnerName"] ?? JValue.CreateString(""),
+                    ["runners"] = jObj["Runners"] ?? new JArray(),
+                };
+                using var doc = JsonDocument.Parse(renamed.ToString(Formatting.None));
+                protocols[kv.Key] = doc.RootElement.Clone(); // Clone 脱离文档生命周期（STJ 内嵌安全，同 /api/servers/{id}/config）
+            }
+            return protocols;
+        }
+
+        /// <summary>
+        /// PUT /api/settings/runners：整体替换提供的协议配置（body 中缺失的协议 = 保持不变）。
+        /// 入参为请求体的 protocols 元素本身（端点已解包 RunnersSaveRequest.Protocols）。
+        /// 未知协议键 → 400（列出合法键，仅 6 个：SSH/Telnet/Serial/VNC/SFTP/FTP）；
+        /// runners 空/缺失 → 400（InitProtocol 不变量：首项必须为内置默认运行器，空表会破坏
+        /// GetRunner/协议页签）；反序列化异常（$type 未知等）→ 400。全量预校验通过才应用（零写入）。
+        /// 应用 = 原位替换既有 ProtocolSettings 实例的 SelectedRunnerName + Runners（保持对象身份），
+        /// 重放 Load 后处理（OwnerProtocolName 回填 + ExternalRunner.MarcoNames 宏补全）后 Save()。
+        /// </summary>
+        public static RunnerApplyResult ApplyRunners(ProtocolConfigurationService pcs, JsonElement? protocols)
+        {
+            if (protocols == null || protocols.Value.ValueKind != JsonValueKind.Object)
+                return RunnerApplyResult.BadRequest("body must contain a 'protocols' object");
+
+            var validKeys = pcs.ProtocolConfigs.Keys.ToList();
+            var parsed = new List<(string key, ProtocolSettings settings)>();
+            var errors = new List<string>();
+            foreach (var prop in protocols.Value.EnumerateObject())
+            {
+                var key = validKeys.FirstOrDefault(k => string.Equals(k, prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (key == null)
+                {
+                    errors.Add($"protocols.{prop.Name}: unknown protocol, expected one of: {string.Join(", ", validKeys.OrderBy(x => x))}");
+                    continue;
+                }
+                ProtocolSettings? settings;
+                try
+                {
+                    // Newtonsoft 大小写不敏感匹配：selectedRunnerName → SelectedRunnerName，runners → Runners；
+                    // runners 元素经 JsonKnownTypesConverter<Runner> 的 $type 判别还原为具体运行器子类
+                    settings = JsonConvert.DeserializeObject<ProtocolSettings>(prop.Value.GetRawText());
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"protocols.{prop.Name}: failed to deserialize ({e.Message})");
+                    continue;
+                }
+                if (settings == null || settings.Runners == null || settings.Runners.Count == 0)
+                {
+                    errors.Add($"protocols.{prop.Name}: 'runners' must be a non-empty array");
+                    continue;
+                }
+                parsed.Add((key, settings));
+            }
+            if (errors.Count > 0)
+                return RunnerApplyResult.BadRequest(errors);
+            if (parsed.Count == 0)
+                return RunnerApplyResult.BadRequest("body.protocols must contain at least one protocol entry");            foreach (var (key, settings) in parsed)
+            {
+                var existing = pcs.ProtocolConfigs[key];
+                existing.SelectedRunnerName = settings.SelectedRunnerName ?? string.Empty;
+                existing.Runners = settings.Runners;
+                // Load 同款后处理（ProtocolConfigurationService.Load）：Owner 协议名回填 + 宏补全。
+                // OwnerProtocolName 仅在缺失时回填：LoadConfig 落盘/装载会归一大写（TELNET），而字典键
+                // 是原始大小写（Telnet）——非空即保留，保证 GET→PUT→GET 逐字节稳定
+                foreach (var runner in existing.Runners)
+                {
+                    if (string.IsNullOrEmpty(runner.OwnerProtocolName))
+                        runner.OwnerProtocolName = key;
+                    if (runner is ExternalRunner er)
+                        er.MarcoNames = existing.MarcoNames;
+                }
+            }
+            pcs.Save();
+            return RunnerApplyResult.Ok();
+        }
+
+        // ------------------------------------------------------------------
+        // 辅助
+        // ------------------------------------------------------------------
+
+        private static string? NormalizeType(string? type)
+        {
+            return (type?.Trim().ToLowerInvariant()) switch
+            {
+                "sqlite" => "sqlite",
+                "mysql" => "mysql",
+                "pgsql" => "pgsql",
+                "postgresql" => "pgsql", // WPF CmdAdd 的类型串（DataSourceViewModel switch 分支名）
+                _ => null,
+            };
+        }
+
+        /// <summary>重名检查：Local + ConfigurationService.AdditionalDataSource + 运行时字典，CurrentCultureIgnoreCase（WPF 编辑器同款）。</summary>
+        private static DataSourceBase? FindNameConflict(string name)
+        {
+            var dss = IoC.Get<DataSourceService>();
+            if (dss.LocalDataSource != null
+                && string.Equals(dss.LocalDataSource.DataSourceName.Trim(), name.Trim(), StringComparison.CurrentCultureIgnoreCase))
+                return dss.LocalDataSource;
+            return IoC.Get<ConfigurationService>().AdditionalDataSource
+                .Concat(dss.AdditionalSources.Values)
+                .FirstOrDefault(x => string.Equals(x.DataSourceName.Trim(), name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        /// <summary>按名查找附加数据源（ConfigurationService.AdditionalDataSource 与运行时字典同实例）。</summary>
+        private static DataSourceBase? FindAdditionalSource(string name)
+        {
+            return IoC.Get<ConfigurationService>().AdditionalDataSource
+                .FirstOrDefault(x => string.Equals(x.DataSourceName, name, StringComparison.Ordinal));
+        }
+
+        /// <summary>mysql/pgsql 更新的字段级应用：非 null 才写；password 空=保持（条件赋值）。</summary>
+        private static void ApplyServerConfig(DataSourceConfigInput cfg, List<string> errors,
+            Action<string> setHost, Action<int> setPort, Action<string> setDatabase,
+            Action<string> setUser, Action<string> setPassword)
+        {
+            var host = cfg.Host?.Trim();
+            if (host != null)
+            {
+                if (host.Length == 0) errors.Add("config.host: can not be empty");
+                else setHost(host);
+            }
+            if (cfg.Port != null)
+            {
+                if (cfg.Port.Value < 1 || cfg.Port.Value > 65535) errors.Add("config.port: must be 1 - 65535");
+                else setPort(cfg.Port.Value);
+            }
+            var database = cfg.DatabaseName?.Trim();
+            if (database != null)
+            {
+                if (database.Length == 0) errors.Add("config.databaseName: can not be empty");
+                else setDatabase(database);
+            }
+            var user = cfg.UserName?.Trim();
+            if (user != null)
+            {
+                if (user.Length == 0) errors.Add("config.userName: can not be empty");
+                else setUser(user);
+            }
+            // 空=保持：Mysql/Pgsql Password setter 收 "" 会清空 EncryptPassword，必须跳过
+            if (!string.IsNullOrEmpty(cfg.Password))
+                setPassword(cfg.Password);
+        }
+
+        /// <summary>mysql/pgsql 测试连接：请求 config 覆盖 + 缺省回退已存值（密码空 = 沿用已存密码）。</summary>
+        private static bool TestServerConnection(DataSourceBase source, DataSourceConfigInput? input,
+            Func<string, int, string, string, string, bool> test)
+        {
+            string host;
+            int port;
+            string database;
+            string user;
+            string password;
+            switch (source)
+            {
+                case MysqlSource m:
+                    host = input?.Host?.Trim() is { Length: > 0 } h1 ? h1 : m.Host;
+                    port = input?.Port ?? m.Port;
+                    database = input?.DatabaseName?.Trim() is { Length: > 0 } d1 ? d1 : m.DatabaseName;
+                    user = input?.UserName?.Trim() is { Length: > 0 } u1 ? u1 : m.UserName;
+                    password = !string.IsNullOrEmpty(input?.Password) ? input!.Password! : m.Password;
+                    break;
+                case PgsqlSource p:
+                    host = input?.Host?.Trim() is { Length: > 0 } h2 ? h2 : p.Host;
+                    port = input?.Port ?? p.Port;
+                    database = input?.DatabaseName?.Trim() is { Length: > 0 } d2 ? d2 : p.DatabaseName;
+                    user = input?.UserName?.Trim() is { Length: > 0 } u2 ? u2 : p.UserName;
+                    password = !string.IsNullOrEmpty(input?.Password) ? input!.Password! : p.Password;
+                    break;
+                default:
+                    return false;
+            }
+            try
+            {
+                return test(host, port, database, user, password);
+            }
+            catch (Exception)
+            {
+                return false; // TestConnection 内部 OpenNewConnection 异常按失败语义处理
+            }
+        }
+
+        private static string MapStatus(EnumDatabaseStatus status)
+        {
+            return status switch
+            {
+                EnumDatabaseStatus.OK => WebUiConstants.StatusConnected,
+                EnumDatabaseStatus.LostConnection => WebUiConstants.StatusReconnecting,
+                _ => WebUiConstants.StatusDisconnected,
+            };
+        }
+    }
+
+    /// <summary>数据源写操作（POST/PUT/DELETE）结果分类，由端点映射 HTTP 状态码。</summary>
+    public enum DataSourceMutationStatus
+    {
+        Ok,
+        BadRequest, // 校验失败（零写入）
+        NotFound,   // 数据源不存在
+        Conflict,   // 重名（POST）/ 有服务器未确认（DELETE）
+    }
+
+    public sealed class DataSourceMutationResult
+    {
+        public DataSourceMutationStatus Status { get; private init; }
+        public List<string> Errors { get; private init; } = new();
+        public DataSourceDto? Dto { get; private init; }
+        /// <summary>连接尝试的错误详情（Ok 时也可能非空：保存成功但连接失败，WPF 同款语义）。</summary>
+        public string ConnectError { get; private init; } = string.Empty;
+        /// <summary>DELETE 409 分支携带的剩余服务器数。</summary>
+        public int ServerCount { get; private init; }
+
+        public static DataSourceMutationResult Ok(DataSourceDto? dto, string connectError = "")
+            => new() { Status = DataSourceMutationStatus.Ok, Dto = dto, ConnectError = connectError };
+        public static DataSourceMutationResult BadRequest(params string[] errors)
+            => new() { Status = DataSourceMutationStatus.BadRequest, Errors = errors.ToList() };
+        public static DataSourceMutationResult BadRequest(List<string> errors)
+            => new() { Status = DataSourceMutationStatus.BadRequest, Errors = errors };
+        public static DataSourceMutationResult NotFound() => new() { Status = DataSourceMutationStatus.NotFound };
+        public static DataSourceMutationResult Conflict(string error, int serverCount)
+            => new() { Status = DataSourceMutationStatus.Conflict, Errors = new List<string> { error }, ServerCount = serverCount };
+    }
+
+    /// <summary>POST /api/datasources/{name}/test 结果。</summary>
+    public sealed class DataSourceTestResult
+    {
+        public DataSourceMutationStatus Status { get; private init; }
+        public bool IsOk { get; private init; }
+        public string StatusText { get; private init; } = string.Empty;
+        public string Detail { get; private init; } = string.Empty;
+
+        public static DataSourceTestResult Ok(bool ok, string status, string detail)
+            => new() { Status = DataSourceMutationStatus.Ok, IsOk = ok, StatusText = status, Detail = detail };
+        public static DataSourceTestResult FromBool(bool ok, string status)
+            => Ok(ok, status, ok ? string.Empty : "connection failed (check host/port/credentials/firewall)");
+        public static DataSourceTestResult NotFound() => new() { Status = DataSourceMutationStatus.NotFound };
+        public static DataSourceTestResult BadRequest(string error)
+            => new() { Status = DataSourceMutationStatus.BadRequest, Detail = error };
+    }
+
+    /// <summary>PUT /api/settings/runners 结果。</summary>
+    public sealed class RunnerApplyResult
+    {
+        public bool IsOk { get; private init; }
+        public List<string> Errors { get; private init; } = new();
+
+        public static RunnerApplyResult Ok() => new() { IsOk = true };
+        public static RunnerApplyResult BadRequest(params string[] errors) => new() { Errors = errors.ToList() };
+        public static RunnerApplyResult BadRequest(List<string> errors) => new() { Errors = errors };
+    }
+}
