@@ -16,6 +16,7 @@ import { useI18n } from 'vue-i18n'
 import SubformList from './SubformList.vue'
 import IconPicker from './IconPicker.vue'
 import CredentialPicker from './CredentialPicker.vue'
+import MarkdownField from './MarkdownField.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { opaqueHex } from '../../utils/color.js'
 
@@ -205,6 +206,14 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:value="emit('update:modelValue', $event)"
       />
 
+      <!-- markdown：编辑 ⇄ 预览（MarkdownField，fix-batch2 Task C #4；值域同 textarea） -->
+      <MarkdownField
+        v-else-if="field.type === FIELD_TYPE.MARKDOWN"
+        :model-value="String(modelValue ?? '')"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
+
       <!-- icon：IconPicker（内置网格/本地上传/exe 提取/清除）；tint = 当前 ColorHex 低饱和底色 -->
       <IconPicker
         v-else-if="field.type === FIELD_TYPE.ICON"
@@ -318,18 +327,20 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 /* tags：chips 输入（沿用 Plan 1 标签 chips 样式模式）；fix-batch1 #6 单行化——
-   chips 不换行、行内横向溢出滚动，输入框固定收尾（不做聚焦展开） */
+   chips 不换行、行内横向溢出滚动，输入框固定收尾（不做聚焦展开）。
+   fix-batch2 Task C #5：外框对齐名称输入框观感——border-strong / 圆角 7px / 固定高
+   34px / 水平内边距，chips 间 6px 间距；仍处 value 列（148px 标签列布局不变） */
 .ff-tags {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 4px;
-  min-height: 34px;
-  padding: 3px 6px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
+  gap: 6px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
   background: var(--bg-elevated);
   overflow-x: auto;
   scrollbar-width: thin;

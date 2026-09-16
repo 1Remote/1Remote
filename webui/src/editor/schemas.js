@@ -190,7 +190,9 @@ function basicGroup({ withAddressPort = true } = {}) {
     { key: 'Tags', type: FIELD.TAGS },
     { key: 'IconBase64', type: FIELD.ICON },
     { key: 'ColorHex', type: FIELD.COLOR },
-    { key: 'Note', type: FIELD.TEXTAREA },
+    // 备注：MARKDOWN 特化（fix-batch2 Task C #4）——编辑 ⇄ 预览切换（MarkdownField）。
+    // 批量编辑的 note 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与本次特化）
+    { key: 'Note', type: FIELD.MARKDOWN },
   )
   return {
     id: 'basic',

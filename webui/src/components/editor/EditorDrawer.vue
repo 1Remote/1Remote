@@ -131,6 +131,23 @@ function groupFields(g) {
   return g.fields.filter((f) => isVisible(f, json) && credFilter(f))
 }
 
+/**
+ * 组内字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
+ * 字段聚成一个 'switch-run' 块（模板里按 3 列网格渲染，RDP 高级组的 9 个 Enable*
+ * 自动成 3 行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格不变）。
+ * 聚合基于过滤后的可见序列——凭据组 manual 模式裁掉库选择器后相邻的开关同样成段
+ * （如 SSH 的 AskPasswordWhenConnect + UsePrivateKeyForConnect），属预期紧凑化。
+ */
+function fieldBlocks(g) {
+  const blocks = []
+  for (const f of groupFields(g)) {
+    const last = blocks[blocks.length - 1]
+    if (f.type === 'switch' && last?.type === 'switch-run') last.fields.push(f)
+    else blocks.push(f.type === 'switch' ? { type: 'switch-run', fields: [f] } : { type: 'single', field: f })
+  }
+  return blocks
+}
+
 // ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
 // bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
 //  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
@@ -572,15 +589,27 @@ onBeforeUnmount(() => {
                   <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
                 </div>
 
-                <FormField
-                  v-for="f in groupFields(g)"
-                  :key="f.key"
-                  :field="f"
-                  :model-value="json[f.key]"
-                  :data-source-name="ds"
-                  :tint="iconTint"
-                  @update:model-value="(v) => setField(f.key, v)"
-                />
+                <!-- #7：连续 SWITCH 字段 3 列网格块 + 其余整行字段（fieldBlocks 聚合） -->
+                <template v-for="(b, bi) in fieldBlocks(g)" :key="bi">
+                  <div v-if="b.type === 'switch-run'" class="ed-switch-grid">
+                    <FormField
+                      v-for="f in b.fields"
+                      :key="f.key"
+                      class="ed-sw-cell"
+                      :field="f"
+                      :model-value="json[f.key]"
+                      @update:model-value="(v) => setField(f.key, v)"
+                    />
+                  </div>
+                  <FormField
+                    v-else
+                    :field="b.field"
+                    :model-value="json[b.field.key]"
+                    :data-source-name="ds"
+                    :tint="iconTint"
+                    @update:model-value="(v) => setField(b.field.key, v)"
+                  />
+                </template>
               </section>
             </div>
           </template>
@@ -848,6 +877,29 @@ onBeforeUnmount(() => {
   color: var(--text-4);
   font-size: 11.5px;
   line-height: 1.5;
+}
+
+/* 连续 SWITCH 字段网格（#7）：3 列打包（RDP 高级组 9 个 Enable* = 3 行）；
+   网格内 FormField 压缩为「标签左 + 开关右」行内排布（覆写 .form-field 的
+   148px 两列网格——两类选择器提升特异性，规避组件样式加载顺序不定的问题） */
+.ed-switch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 16px;
+  row-gap: 2px;
+  align-items: center;
+}
+.ed-switch-grid .ed-sw-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ed-switch-grid .ed-sw-cell :deep(.ff-label) {
+  flex: 1 1 auto;
+}
+.ed-switch-grid .ed-sw-cell :deep(.ff-control) {
+  flex: 0 0 auto;
 }
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
