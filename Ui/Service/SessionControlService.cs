@@ -16,6 +16,7 @@ using ProtocolHostStatus = _1RM.View.Host.ProtocolHosts.ProtocolHostStatus;
 using _1RM.Service.DataSource;
 using _1RM.Service.Locality;
 using _1RM.Service.DataSource.DAO.Dapper;
+using _1RM.Service.WebUi;
 
 namespace _1RM.Service
 {
@@ -77,6 +78,36 @@ namespace _1RM.Service
         }
 
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
+
+        /// <summary>
+        /// Web UI 连接状态刷新通知（Plan 4 Task 1）：会话进入/移出 _connectionId2Hosts 后调用，
+        /// 触发 GlobalData.ReloadAll(force) → OnReloadAll → /api/events（SSE）推送 reload →
+        /// 前端重新拉取 /api/servers，connectionState 状态点随之点亮/熄灭。
+        /// force=true 是必须的：连接/断开不写数据库，无 force 的 ReloadAll 会因 NeedRead 判定
+        /// 「数据未变」而静默返回，OnReloadAll 不触发（见 GlobalData.ReloadAll）；代价是 Web UI
+        /// 运行期每次连接/断开多一次全库重读，可接受。
+        /// 门控：仅 WebUiServer.IsRunning（静态属性检查，近零开销）时触发——桌面单机使用（Web UI
+        /// 未开启）不应因本通知而在每次会话建立/断开后多付一次全库重读，行为与性能均保持原状。
+        /// 纪律：绝不在 _dictLock 持锁区内调用（ReloadAll 含 DB IO 与 UI 同步派发，与
+        /// _dictLock+OnUIThreadSync 组合可致死锁，见 WebUiServer.cs 头注释）；调用点必须已在锁外，
+        /// 内部再经后台任务二次隔离。
+        /// </summary>
+        private static void NotifyWebUiSessionChanged()
+        {
+            if (!WebUiServer.IsRunning)
+                return;
+            Task.Run(() =>
+            {
+                try
+                {
+                    IoC.Get<GlobalData>().ReloadAll(true);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning(e); // 通知是尽力而为：失败不影响会话本身
+                }
+            });
+        }
 
 
         private void OnRequestOpenConnection(in ProtocolBase serverOrg, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
@@ -225,12 +256,14 @@ namespace _1RM.Service
             // Full-screen windows to ShowOrHide after the lock (ShowOrHide must run on the UI thread,
             // and dispatching while holding _dictLock has the same deadlock risk).
             var fullScreensToShowOrHide = new List<FullScreenWindowView>();
+            var removedHostCount = 0;
 
             lock (_dictLock)
             {
                 foreach (var connectionId in connectionIds)
                 {
                     if (!_connectionId2Hosts.TryRemove(connectionId, out var host)) continue;
+                    ++removedHostCount;
 
                     SimpleLogHelper.Debug($@"MarkProtocolHostToClose: marking to close: {host.GetType().Name}(id = {connectionId}, hash = {host.GetHashCode()})");
 
@@ -302,6 +335,7 @@ namespace _1RM.Service
                     // host not in either tab or full-screen
                     if (unhandledFlag && _connectionId2Hosts.TryRemove(id, out var host))
                     {
+                        ++removedHostCount;
                         SimpleLogHelper.Warning($@"MarkUnhandledProtocolToClose: marking to close: {host.GetType().Name}(id = {id}, hash = {host.GetHashCode()})");
                         host.OnClosed -= OnRequestCloseConnection;
                         host.OnFullScreen2Window -= this.MoveSessionToTabWindow;
@@ -311,6 +345,11 @@ namespace _1RM.Service
                     }
                 }
             }
+
+            // 会话已移出连接字典且 _dictLock 已退出：通知 Web UI 熄灭状态点（锁外触发是纪律，
+            // 见 NotifyWebUiSessionChanged；removedHostCount 兼收两处移除：显式关闭 + 未挂载孤儿）
+            if (removedHostCount > 0)
+                NotifyWebUiSessionChanged();
 
             // perform UI operations outside the lock
             foreach (var (key, tab, connectionId) in tabsToRemoveItem)
