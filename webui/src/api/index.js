@@ -15,6 +15,20 @@ async function request(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
   const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30_000) })
+  return handleResponse(resp, path)
+}
+
+// 非 JSON 请求共用体（multipart 上传 / blob 下载）：不预设 Content-Type——
+// multipart 由浏览器补 boundary；blob=true 时返回 Blob（下载文件），否则仍解析 JSON
+async function requestRaw(path, { method = 'GET', body, timeout = 120_000, blob = false } = {}) {
+  const headers = {}
+  if (token) headers.Authorization = `Bearer ${token}`
+  const resp = await fetch(path, { method, headers, body, signal: AbortSignal.timeout(timeout) })
+  if (blob && resp.ok) return resp.blob()
+  return handleResponse(resp, path)
+}
+
+async function handleResponse(resp, path) {
   if (resp.status === 401) throw new Error('unauthorized')
   if (!resp.ok) {
     // 错误体尽量带回：编辑器保存 400 的 {errors} 列表要在抽屉内联展示（err.status/err.body）
@@ -100,6 +114,18 @@ export const api = {
   // PascalCase + $type 直通域（与 GET 原样往返，勿做命名转换）；PUT 缺失协议=保持，未知协议 400
   getRunners: () => request('/api/settings/runners'),
   saveRunners: (protocols) => request('/api/settings/runners', { method: 'PUT', body: { protocols } }),
+  // 导入/导出（Plan 4 Task 2）：
+  // 导入 = multipart 上传（FormData 由浏览器补 boundary，勿设 Content-Type）；格式按扩展名嗅探
+  //（.json=1Remote 导出、.csv=mRemoteNG、.rdp、.db=PRemoteM/1Remote 双探测）→ {added, skipped, errors}
+  importServers: (file, ds) => {
+    const form = new FormData()
+    form.append('file', file)
+    return requestRaw(`/api/servers/import?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST', body: form })
+  },
+  // 导出 = 明文 JSON attachment（跨数据源，ids 逗号分隔）——blob 响应不能走 JSON request；
+  // 二次验证未通过抛 err.status=403；成功返回 Blob（调用方 object URL + a[download] 触发保存）
+  exportServers: (ids) =>
+    requestRaw(`/api/servers/export?ids=${ids.map(encodeURIComponent).join(',')}`, { blob: true }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */
