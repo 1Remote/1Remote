@@ -16,6 +16,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'v
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import ServerRow from './ServerRow.vue'
+import { api } from '../api'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -50,7 +51,8 @@ const comparators = {
 function readSort() {
   try {
     const s = JSON.parse(localStorage.getItem('1r-sort') || 'null')
-    if (s && (!s.key || SORTABLE.includes(s.key))) return { key: s.key || '', dir: s.dir === -1 ? -1 : 1 }
+    if (s && (!s.key || s.key === 'custom' || SORTABLE.includes(s.key)))
+      return { key: s.key || '', dir: s.dir === -1 ? -1 : 1 }
   } catch {
     /* 损坏数据当未排序 */
   }
@@ -66,6 +68,85 @@ function toggleSort(key) {
   }
 }
 const arrow = (k) => (sort.value.key === k ? (sort.value.dir > 0 ? '▲' : '▼') : '↕')
+
+// ---- 自定义顺序（Plan 4 Task 4，spec §3.4 行拖拽）：sort.key==='custom'（工具条 ≡ 切换）
+// 时行可拖拽重排，顺序 = /api/ui-state/list-order 的 ServerCustomOrder（与 WPF 列表视图
+// 共用同一字典；未知 id 排末尾、稳定保持自然序——WPF 默认 0 排最前，记录偏差）。
+// 非 custom 模式拖拽禁用（draggable=false + 光标默认）。
+const isCustom = computed(() => sort.value.key === 'custom')
+const customOrder = ref(null) // Map<serverId, int> | null（null=尚未加载）
+const customKey = (id) => (customOrder.value ? customOrder.value.get(id) : undefined)
+async function loadCustomOrder() {
+  try {
+    const st = await api.getListOrder()
+    customOrder.value = new Map(Object.entries(st?.order || {}).map(([k, v]) => [k, Number(v)]))
+  } catch {
+    customOrder.value = new Map() // 后端不可达：自然顺序兜底（保存会在 drop 时报错 toast）
+  }
+}
+watch(isCustom, on => {
+  if (on) loadCustomOrder()
+}, { immediate: true })
+function toggleCustomSort() {
+  sort.value = isCustom.value ? { key: '', dir: 1 } : { key: 'custom', dir: 1 }
+  try {
+    localStorage.setItem('1r-sort', JSON.stringify(sort.value))
+  } catch {
+    /* 写入失败可忽略 */
+  }
+}
+// custom 比较器挂在 comparators 上（sorted 统一经 comparators[key] 分发）
+comparators.custom = (a, b) => (customKey(a.id) ?? Infinity) - (customKey(b.id) ?? Infinity)
+// 整库自定义序（拖拽重排的基准列表：树选中/标签/搜索过滤只是它的子序列，
+// POST 全量整库顺序与 WPF ServerCustomOrderSave 存完整列表同语义）
+const fullOrder = computed(() => {
+  if (!customOrder.value) return props.servers.slice()
+  return props.servers.slice().sort(comparators.custom)
+})
+
+// ---- 行拖拽重排（仅 custom 模式；上/下半行 = 插到目标前/后，对齐 WPF 列表 Drop 的
+// height/2 判定；drop 后 POST 整库新顺序 → 以响应重建 Map → sorted 即时重排）----
+const dragId = ref(null)
+const dropHint = ref(null) // { id, before }
+function onRowDragStart(server, e) {
+  dragId.value = server.id
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', server.id) // Firefox 需要非空 data
+}
+function onRowDragEnd() {
+  dragId.value = null
+  dropHint.value = null
+}
+function onRowDragOver(server, e) {
+  if (!isCustom.value || !dragId.value || dragId.value === server.id) return
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  const r = e.currentTarget.getBoundingClientRect()
+  dropHint.value = { id: server.id, before: e.clientY - r.top < r.height / 2 }
+}
+async function onRowDrop(server, e) {
+  const hint = dropHint.value
+  dropHint.value = null
+  if (!isCustom.value || !dragId.value || !hint || hint.id !== server.id || dragId.value === server.id) return
+  e.preventDefault()
+  const dragged = dragId.value
+  dragId.value = null
+  const ids = fullOrder.value.map(s => s.id)
+  const from = ids.indexOf(dragged)
+  if (from >= 0) ids.splice(from, 1)
+  const idx = ids.indexOf(server.id)
+  if (idx < 0) return
+  ids.splice(hint.before ? idx : idx + 1, 0, dragged)
+  try {
+    const saved = await api.saveListOrder(ids)
+    const map = new Map()
+    ;(saved?.ids || ids).forEach((id, i) => map.set(id, i))
+    customOrder.value = map
+  } catch (err) {
+    console.warn('[ServerTable] saveListOrder failed:', err?.message || err)
+    message.error(t('toast.reorderFailed'))
+  }
+}
 const sorted = computed(() => {
   const c = comparators[sort.value.key]
   if (!c) return filtered.value // 未排序 = 保持树序
@@ -320,6 +401,11 @@ const colVars = computed(() => ({
     </div>
 
     <div class="tbody">
+      <!-- 表头工具簇（Plan 4）：浮于表头右端（.server-table 为定位基准）。
+           ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4） -->
+      <div class="table-tools">
+        <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')" @click="toggleCustomSort">≡</button>
+      </div>
       <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
            表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻 -->
       <div class="thead">
@@ -344,11 +430,20 @@ const colVars = computed(() => ({
         :cursor="s.id === cursorId"
         :show-folder="showFolder"
         :data-id="s.id"
+        :draggable="isCustom"
+        :class="{
+          'drop-before': dropHint && dropHint.id === s.id && dropHint.before,
+          'drop-after': dropHint && dropHint.id === s.id && !dropHint.before,
+        }"
         @toggle-select="onToggleSelect(s, i)"
         @row-click="onRowClick(s, $event, i)"
         @connect="emit('connect', s.id)"
         @edit="emit('edit', s)"
         @context-menu="openMenu"
+        @dragstart="onRowDragStart(s, $event)"
+        @dragend="onRowDragEnd"
+        @dragover="onRowDragOver(s, $event)"
+        @drop="onRowDrop(s, $event)"
       />
       <slot v-if="!sorted.length" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
@@ -430,6 +525,52 @@ const colVars = computed(() => ({
 .bb-x:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+
+/* 表头工具簇：浮于表头行右端（.server-table relative 定位基准），z 高于 sticky 表头 */
+.table-tools {
+  position: absolute;
+  top: 0;
+  right: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+}
+.tt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-panel);
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+.tt-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.tt-btn.active {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* 行拖拽指示线（作用于 ServerRow 根节点；custom 模式行可抓取） */
+:deep(.row[draggable='true']) {
+  cursor: grab;
+}
+:deep(.row.drop-before) {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+:deep(.row.drop-after) {
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 /* 表头：列宽与 ServerRow 的 --c-* 同源；sticky 于滚动容器内首行（背景必须不透明，防行内容透出） */

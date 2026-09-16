@@ -30,6 +30,10 @@
   "col.folder": "文件夹",
   "col.lastConnect": "最近连接",
   "col.actions": "操作",
+  "list.customOrder": "自定义顺序（拖动行重排）",
+  "toast.reorderFailed": "保存自定义顺序失败",
+  "toast.treeMoved": "已移动 {n} 台服务器",
+  "toast.treeMoveFailed": "{n} 台服务器移动失败",
   "col.selectAll": "全选（Ctrl A）",
 
   "batch.selected": "已选 {n} 台",
