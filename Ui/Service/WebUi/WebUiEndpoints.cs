@@ -249,6 +249,83 @@ namespace _1RM.Service.WebUi
                 return Results.Json(new { names });
             });
 
+            // 凭据库列表（Plan 3 Task 1）：{credentials:[{name,address,port,userName,refCount}]}。
+            // 安全红线：绝不包含密码/私钥路径——明文查看只能走 reveal 端点（本地二次验证）。
+            // 引用计数按该数据源下的服务器扫描（InheritedCredentialName + AlternateCredentials[].Name）。
+            // 未知数据源 → 404（与 /api/credentials/names 语义一致）。
+            app.MapGet("/api/credentials", (string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var dataSource = IoC.Get<DataSourceService>().GetDataSource(dataSourceName);
+                if (dataSource == null)
+                    return Results.NotFound();
+                return Results.Json(new { credentials = WebUiCredentialService.List(dataSource) });
+            });
+
+            // 新建凭据：body {ds?, credential:{Name*,Address,Port,UserName,Password,PrivateKeyPath}}。
+            // credential 域 Password/PrivateKeyPath 为明文——加密由 Database_InsertCredential 在内部
+            // 克隆上完成；Name 非空+唯一（忽略大小写，WPF 编辑器同款）+长度≤100，违例 400 {errors}；
+            // 只读数据源前置 400（InsertCredential 对只读库静默返回 Success，必须先查 IsWritable）。
+            app.MapPost("/api/credentials", (CredentialSaveRequest? body) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(body?.Ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : body!.Ds!;
+                return MapCredentialSaveResult(WebUiCredentialService.Create(dataSourceName, body?.Credential));
+            });
+
+            // 更新凭据（按名寻址，与 WPF 凭据编辑一致）：整体替换语义；nameBefore=路由名驱动
+            // 引用服务器联动改名/字段同步（Dapper 事务）；重命名目标名做与新建相同的唯一校验。
+            app.MapPut("/api/credentials/{name}", (string name, string? ds, CredentialSaveRequest? body) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                return MapCredentialSaveResult(WebUiCredentialService.Update(dataSourceName, name, body?.Credential));
+            });
+
+            // 删除凭据：引用服务器的 InheritedCredentialName 由 Dapper 事务联动清空（WPF 既有行为）；
+            // 成功 204；未知名 → 404；只读 → 400（DeleteCredential 对只读库自身会 Fail，此处前置拦截统一语义）。
+            app.MapDelete("/api/credentials/{name}", (string name, string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var result = WebUiCredentialService.Delete(dataSourceName, name);
+                return result.Status switch
+                {
+                    EditorSaveStatus.Ok => Results.NoContent(),
+                    EditorSaveStatus.NotFound => Results.NotFound(),
+                    EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                    _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
+            // 明文查看凭据：本地二次验证（未开启时 VerifyAsyncUi 直通 true，与 WPF 一致）→
+            // 通过后克隆+解密返回 {password, privateKeyPath}；同一数据源 30s 内免再次验证
+            // （服务端静态时间戳）。验证失败/用户取消 → 403；未知名 → 404；未知数据源 → 400。
+            // 注意 async 端点直接 await（二次验证是 async Task<bool?>，不能用同步 dispatch 包裹）。
+            app.MapPost("/api/credentials/{name}/reveal", async (string name, string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var result = await WebUiCredentialService.Reveal(dataSourceName, name);
+                return result.Status switch
+                {
+                    CredentialRevealStatus.Ok => Results.Json(new
+                    {
+                        password = result.Password,
+                        privateKeyPath = result.PrivateKeyPath,
+                    }),
+                    CredentialRevealStatus.NotFound => Results.NotFound(),
+                    CredentialRevealStatus.Forbidden => Results.StatusCode(403),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
             // exe 图标提取：与 WPF 图标选择器同一路径（IconPopupDialogViewModel.CmdSelectImage 的
             // .exe 分支：ExtractAssociatedIcon → CreateBitmapSourceFromHIcon），base64 转换复用
             // 编辑器保存时的 BitmapSource.ToBase64()（→ System.Drawing Bitmap → PNG）。
@@ -434,6 +511,21 @@ namespace _1RM.Service.WebUi
             return result.Status switch
             {
                 EditorSaveStatus.Ok => Results.Json(new { id = result.ServerId }),
+                EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                EditorSaveStatus.NotFound => Results.NotFound(),
+                _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+            };
+        }
+
+        /// <summary>
+        /// 凭据保存（POST/PUT）结果 → HTTP 映射：与 MapSaveResult 同款分类，
+        /// 但 Ok 载荷为凭据名（按名寻址资源）：Ok→200 {name}；其余同上。
+        /// </summary>
+        private static IResult MapCredentialSaveResult(EditorSaveResult result)
+        {
+            return result.Status switch
+            {
+                EditorSaveStatus.Ok => Results.Json(new { name = result.ServerId }),
                 EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
                 EditorSaveStatus.NotFound => Results.NotFound(),
                 _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),

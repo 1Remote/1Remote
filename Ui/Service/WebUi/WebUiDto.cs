@@ -110,4 +110,40 @@ namespace _1RM.Service.WebUi
     {
         public string? Path { get; set; }
     }
+
+    /// <summary>
+    /// GET /api/credentials 列表条目（信封/列表域 camelCase 序列化）。
+    /// 安全红线：绝不包含 Password/PrivateKeyPath——明文查看只能走 reveal 端点（二次验证）。
+    /// refCount = 该数据源下引用此凭据名的服务器数（InheritedCredentialName + AlternateCredentials[].Name）。
+    /// </summary>
+    public class CredentialListItemDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string Port { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public int RefCount { get; set; }
+    }
+
+    /// <summary>
+    /// POST/PUT /api/credentials 请求体。ds 仅 POST 使用（PUT/DELETE/reveal 经 ?ds= 查询参数）。
+    /// credential 域字段与 WPF Credential 模型一致（PascalCase，绑定大小写不敏感）；
+    /// Password/PrivateKeyPath 为明文——加密由 DataSourceBase.Database_Insert/UpdateCredential
+    /// 在内部克隆上完成；PUT 为整体替换语义（空字段=清空，与 WPF 编辑弹窗一致，非“保持不变”）。
+    /// </summary>
+    public class CredentialSaveRequest
+    {
+        public string? Ds { get; set; }
+        public CredentialInputDto? Credential { get; set; }
+    }
+
+    public class CredentialInputDto
+    {
+        public string? Name { get; set; }
+        public string? Address { get; set; }
+        public string? Port { get; set; }
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
+        public string? PrivateKeyPath { get; set; }
+    }
 }
