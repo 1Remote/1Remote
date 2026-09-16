@@ -75,19 +75,14 @@ const selectValue = computed(() => (props.modelValue === null || props.modelValu
 // ---- password：明文/密文切换（眼睛按钮，i18n 提示）----
 const showPassword = ref(false)
 
-// ---- tags：轻量 chips 输入（沿用 Plan 1 标签 chips + ✕ 的样式模式：Enter 添加、✕ 移除）----
-const tagDraft = ref('')
-function addTag() {
-  const v = tagDraft.value.trim()
-  if (!v) return
-  const arr = Array.isArray(props.modelValue) ? props.modelValue.slice() : []
-  if (!arr.includes(v)) arr.push(v)
-  tagDraft.value = ''
-  emit('update:modelValue', arr)
-}
-function removeTag(i) {
-  const arr = (Array.isArray(props.modelValue) ? props.modelValue : []).slice()
-  arr.splice(i, 1)
+// ---- tags：n-dynamic-tags（fix-batch3 Task A #3，owner 反馈自绘 chips 位置/宽度/
+// 边框与其他输入框不一致 → 换 naive 原生组件；chips 的添加/删除/回车确认由组件自带）。
+// 值归一不依赖后端静默处理（C# Tags setter 自带 Distinct+Trim+去空格，ProtocolBase.cs:115）：
+// update handler 里 Trim + 去空串 + 去重后回传，防 n-dynamic-tags 允许的重复输入原样入 json。
+function onTagsUpdate(v) {
+  const arr = (Array.isArray(v) ? v : [])
+    .map((s) => String(s).trim())
+    .filter((s, i, a) => s !== '' && a.indexOf(s) === i)
   emit('update:modelValue', arr)
 }
 
@@ -179,20 +174,14 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         </template>
       </n-input>
 
-      <!-- tags：chips + 回车添加 -->
-      <div v-else-if="field.type === FIELD_TYPE.TAGS" class="ff-tags" :class="{ disabled }">
-        <span v-for="(tg, i) in (Array.isArray(modelValue) ? modelValue : [])" :key="tg + ':' + i" class="ff-tag-chip">
-          {{ tg }}<button class="ff-tag-x" type="button" :title="t('editor.removeTag')" @click="removeTag(i)">✕</button>
-        </span>
-        <input
-          class="ff-tag-input"
-          type="text"
-          spellcheck="false"
-          :disabled="disabled"
-          v-model="tagDraft"
-          @keydown.enter.prevent="addTag"
-        />
-      </div>
+      <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传） -->
+      <n-dynamic-tags
+        v-else-if="field.type === FIELD_TYPE.TAGS"
+        size="small"
+        :value="Array.isArray(modelValue) ? modelValue : []"
+        :disabled="disabled"
+        @update:value="onTagsUpdate"
+      />
 
       <!-- textarea -->
       <n-input
@@ -326,67 +315,9 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   color: var(--text-1);
 }
 
-/* tags：chips 输入（沿用 Plan 1 标签 chips 样式模式）；fix-batch1 #6 单行化——
-   chips 不换行、行内横向溢出滚动，输入框固定收尾（不做聚焦展开）。
-   fix-batch2 Task C #5：外框对齐名称输入框观感——border-strong / 圆角 7px / 固定高
-   34px / 水平内边距，chips 间 6px 间距；仍处 value 列（148px 标签列布局不变） */
-.ff-tags {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 8px;
-  border: 1px solid var(--border-strong);
-  border-radius: 7px;
-  background: var(--bg-elevated);
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-.ff-tags.disabled {
-  opacity: 0.55;
-}
-.ff-tag-chip {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  max-width: 160px;
-  overflow: hidden;
-  white-space: nowrap;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-hover);
-  color: var(--text-2);
-  font-size: 11px;
-  line-height: 1;
-  padding: 3px 4px 3px 8px;
-}
-.ff-tag-x {
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-4);
-  font-size: 9px;
-  line-height: 1;
-  padding: 2px;
-  cursor: pointer;
-}
-.ff-tag-x:hover {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-.ff-tag-input {
-  flex: 1 1 80px;
-  min-width: 56px;
-  border: none;
-  background: transparent;
-  color: var(--text-1);
-  font-size: 12px;
-  outline: none;
-}
+/* tags：n-dynamic-tags（Task A #3）——宽度由上方 .ff-control > :deep(*) 的 100% 规则
+   撑满控件列（与 n-input 同宽，owner 要的效果），chips 换行/删除/禁用态均组件自带，
+   不再需要自绘 chips 样式 */
 
 /* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */
 

@@ -238,30 +238,46 @@ function alternateCredentialsField() {
 }
 
 /**
- * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。fix-batch1 Task 3 #7：
- * 组内由 EditorDrawer 渲染「手动输入 ⇄ 从凭据库选择」二选一切换（见 editor/credentialMode.js）——
- * manual 模式展示除 InheritedCredentialName 外的全部字段，vault 模式只展示
- * InheritedCredentialName（凭据库选择器）+ 提示行。AlternateCredentials 已移出本组（alternateGroup）。
+ * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。fix-batch1 Task 3 #7 + fix-batch3
+ * Task A 重构：组内由 EditorDrawer 按 `credRole` 四段渲染（对齐 WPF CredentialView.xaml
+ * 的区段顺序，见 EditorDrawer 的 groupBlocks）：
+ *  - 'pre'：prepend 字段（RDP 的 Domain/LoadBalanceInfo），位于「凭据来源」二选一切换
+ *    之前，manual/vault 两模式恒显（WPF 中它们是凭据区之前的 Connection 组字段，不属于
+ *    手动输入凭据块）；
+ *  - 'identity'：manual 态的身份字段（UserName/Password/PrivateKey）；
+ *  - 'picker'：vault 态的 InheritedCredentialName（凭据库选择器，配提示行）；
+ *  - 'option'：AskPasswordWhenConnect（+ 私钥协议的 UsePrivateKeyForConnect），两模式
+ *    恒显、排在凭据区最后——WPF 中两个开关行不在 manual 块内，vault 态依旧可见。
+ * AlternateCredentials 已移出本组（alternateGroup）。子表单行内字段无 credRole，
+ * 不参与凭据组分段。
  * @param {{withPrivateKey?: boolean, prepend?: object[]}} opts
- *   withPrivateKey: SSH/SFTP 覆写了 ShowPrivateKeyInput()=true，显示私钥两件套；RDP/FTP 不显示。
- *   prepend: 组首额外字段（RDP 的 Domain/LoadBalanceInfo，对齐 WPF Connection 组顺序）。
+ *   withPrivateKey: SSH/SFTP 覆写了 ShowPrivateKeyInput()=true，显示私钥两件套；RDP/FTP
+ *     等不显示。私钥协议的 Password 额外挂 visibleWhen（UsePrivateKeyForConnect=true 时
+ *     隐藏，对齐 WPF CredentialView.xaml 的 IsUsePrivateKey=True → Password 行 Collapsed）；
+ *     无私钥协议的 Password 不挂条件（依赖开关不存在，恒显）。
+ *   prepend: 组首额外字段（自动标 'pre'，RDP 的 Domain/LoadBalanceInfo）。
  */
 function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
+  const password = { key: 'Password', type: FIELD.PASSWORD, credRole: 'identity' }
+  if (withPrivateKey) {
+    password.visibleWhen = { field: 'UsePrivateKeyForConnect', notIn: [true] }
+  }
   const fields = [
-    ...prepend,
-    { key: 'UserName', type: FIELD.TEXT },
-    { key: 'Password', type: FIELD.PASSWORD },
-    { key: 'AskPasswordWhenConnect', type: FIELD.SWITCH },
-    { key: 'InheritedCredentialName', type: FIELD.CREDENTIAL },
+    ...prepend.map((f) => ({ ...f, credRole: 'pre' })),
+    { key: 'UserName', type: FIELD.TEXT, credRole: 'identity' },
+    password,
+    { key: 'AskPasswordWhenConnect', type: FIELD.SWITCH, credRole: 'option' },
+    { key: 'InheritedCredentialName', type: FIELD.CREDENTIAL, credRole: 'picker' },
   ]
   if (withPrivateKey) {
     // C# 侧 Password 与 PrivateKey 互斥（写其一会清另一并联动 UsePrivateKeyForConnect），
     // 这里只按开关控制显示，值语义交给后端属性 setter
     fields.push(
-      { key: 'UsePrivateKeyForConnect', type: FIELD.SWITCH },
+      { key: 'UsePrivateKeyForConnect', type: FIELD.SWITCH, credRole: 'option' },
       {
         key: 'PrivateKey',
         type: FIELD.TEXT,
+        credRole: 'identity',
         visibleWhen: { field: 'UsePrivateKeyForConnect', in: [true] },
       },
     )
