@@ -26,6 +26,9 @@ export const FIELD = {
   TAGS: 'tags',
   PASSWORD: 'password',
   TEXTAREA: 'textarea',
+  /** MARKDOWN：TEXTAREA 的备注特化——渲染 MarkdownField（编辑 ⇄ 预览，marked 渲染，
+   *  fix-batch2 Task C #4）。值域与 TEXTAREA 相同（字符串原样存取，存储格式不因预览改变）。 */
+  MARKDOWN: 'markdown',
   ICON: 'icon',
   COLOR: 'color',
   CREDENTIAL: 'credential',

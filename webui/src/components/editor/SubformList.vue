@@ -10,12 +10,15 @@
  * AppArgument.Selections 字典）原样保留（schemas.js 的透传保真约定）。
  * 增删行之外无重排（拖拽排序归 Plan 4）。
  *
+ * 行折叠（fix-batch2 Task C #6）：行默认折叠——表头只显示行名（Name 值，缺失 →
+ *（未命名））+ 展开箭头 + 删除；点表头切换展开整行编辑；新增行自动展开。
+ *
  * ArgumentList 的 Value 按描述符统一渲染为文本框：WPF 按 Type 逐行切换渲染
  * （Secret=密码框/Flag=勾选/Selection=下拉，见 ArgumentListControl.xaml:126-145），
  * 静态 schema 无法按行内另一字段取值切换控件类型，掩码/控件特化留作 Plan 3+ 润色
  * （schemas.js appArgumentListField 注释同述；值语义如 Flag 存 "1"/"" 不受影响）。
  */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FormField from './FormField.vue'
 
@@ -36,13 +39,43 @@ const { t } = useI18n()
 
 const rows = computed(() => (Array.isArray(props.modelValue) ? props.modelValue : []))
 
+/**
+ * 行折叠态（fix-batch2 Task C #6）：默认折叠——表头只显示行名 + 展开箭头 + 删除，
+ * 点表头展开整行编辑器；新增行自动展开（用户刚创建，立即填写）。
+ * 状态按行索引记录（keyOf 无稳定业务键时的同一口径）：删行后索引位移只影响
+ * 折叠展示态（瞬态 UI 状态），不影响值；属可接受的简化。
+ */
+const expandedRows = ref(new Set())
+const isExpanded = (i) => expandedRows.value.has(i)
+function toggleRow(i) {
+  if (expandedRows.value.has(i)) expandedRows.value.delete(i)
+  else expandedRows.value.add(i)
+}
+
+/**
+ * 折叠表头的行名：取行内 Name 字段值（AlternateCredentials 与 ArgumentList 均有），
+ * 无 Name 字段的 schema 回退首字段值；空值 →（未命名）。
+ * （任务描述按 fields[0]，此处优先 Name：ArgumentList 的 fields[0] 是 Type（'Normal' 等
+ * 技术字面量），作行名无辨识度——AlternateCredentials 的 fields[0] 恰为 Name，结果不变。）
+ */
+const titleKey = computed(() => (props.fields.some((f) => f.key === 'Name') ? 'Name' : props.fields[0]?.key))
+function rowTitle(row) {
+  const v = row?.[titleKey.value]
+  return v != null && String(v).trim() !== '' ? String(v) : t('editor.unnamedRow')
+}
+
 function addRow() {
+  expandedRows.value.add(rows.value.length) // 新行索引 = 当前行数（追加位），自动展开
   emit('update:modelValue', [...rows.value, { ...props.rowDefaults }])
 }
 
 function removeRow(index) {
   const next = rows.value.slice()
   next.splice(index, 1)
+  // 折叠态按索引重排：删除行之后的展开标记随索引前移，保持已展开的行仍展开
+  const shifted = new Set()
+  for (const i of expandedRows.value) shifted.add(i > index ? i - 1 : i)
+  expandedRows.value = shifted
   emit('update:modelValue', next)
 }
 
@@ -58,12 +91,24 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
 
 <template>
   <div class="subform-list">
-    <div v-for="(row, i) in rows" :key="keyOf(row, i)" class="sf-row">
-      <div class="sf-row-head">
-        <span class="sf-row-title">#{{ i + 1 }}</span>
-        <button class="sf-del" type="button" :title="t('editor.removeRow')" @click="removeRow(i)">✕</button>
+    <div
+      v-for="(row, i) in rows"
+      :key="keyOf(row, i)"
+      class="sf-row"
+      :class="{ collapsed: !isExpanded(i) }"
+    >
+      <!-- 表头（#6）：默认折叠只显示 行名 + 展开箭头 + 删除；点表头任意处切换展开 -->
+      <div class="sf-row-head" role="button" :aria-expanded="isExpanded(i)" @click="toggleRow(i)">
+        <span class="sf-chev" aria-hidden="true">{{ isExpanded(i) ? '▾' : '▸' }}</span>
+        <span class="sf-row-title" :title="rowTitle(row)">{{ rowTitle(row) }}</span>
+        <button
+          class="sf-del"
+          type="button"
+          :title="t('editor.removeRow')"
+          @click.stop="removeRow(i)"
+        >✕</button>
       </div>
-      <div class="sf-row-body">
+      <div v-if="isExpanded(i)" class="sf-row-body">
         <FormField
           v-for="f in fields"
           :key="f.key"
@@ -93,17 +138,40 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
   background: var(--bg-elevated);
   padding: 8px 10px;
 }
+/* 折叠行（#6）：只剩表头一行，内距收紧 */
+.sf-row.collapsed {
+  padding: 4px 10px;
+}
 .sf-row-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 1px 0;
+}
+.sf-row-head:hover .sf-row-title {
+  color: var(--text-1);
+}
+/* 展开箭头（#6）：折叠 ▸ / 展开 ▾，随状态切换（无需 i18n 的纯方向指示） */
+.sf-chev {
+  flex: 0 0 auto;
+  color: var(--text-4);
+  font-size: 10px;
+  line-height: 1;
 }
 .sf-row-title {
-  font-size: 11px;
-  color: var(--text-4);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
 }
 .sf-del {
+  flex: 0 0 auto;
   border: none;
   border-radius: 50%;
   background: transparent;
@@ -121,6 +189,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 8px;
 }
 .sf-add {
   align-self: flex-start;

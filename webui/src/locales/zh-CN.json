@@ -195,6 +195,10 @@
   "editor.removeTag": "移除标签",
   "editor.showPassword": "显示密码",
   "editor.hidePassword": "隐藏密码",
+  "editor.mdEdit": "编辑",
+  "editor.mdPreview": "预览",
+  "editor.mdEmptyPreview": "（空）",
+  "editor.unnamedRow": "（未命名）",
 
   "editor.pickIcon": "选择图标",
   "editor.iconBuiltin": "内置图标",
