@@ -4,8 +4,9 @@
  *  - 不读 visibleWhen（可见性由父级抽屉用 editor/visibility.js 的 isVisible 求值并隐藏整行）；
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
- * 字段描述符形状见 editor/fieldTypes.js；i18n 回退约定：labelKey 缺失显示 key 原样
- * （PascalCase），SELECT 选项 labelKey 缺失显示 String(value)（Task 11 补齐全部文案）。
+ * 字段描述符形状见 editor/fieldTypes.js；i18n：字段 labelKey 由 schemas.js 兜底注入
+ * （editor.f.*，Task 11）；SELECT 选项 labelKey 缺失显示 String(value)——Serial 的
+ * 技术字面量选项（'8'/'NONE'…）依赖该回退（有意不译）。
  * icon → IconPicker、credential → CredentialPicker（Task 9）：credential 的选项按数据源隔离，
  * dataSourceName 由父级（EditorDrawer）逐层传入（SubformList 透传，保持行内同数据源）。
  */
