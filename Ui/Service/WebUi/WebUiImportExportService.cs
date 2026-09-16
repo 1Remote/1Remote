@@ -252,37 +252,48 @@ namespace _1RM.Service.WebUi
         /// .db 双格式探测（WPF CmdImportFromDatabase :427-474 平价 + 连接缺陷修正，见类注释）：
         /// PRemoteM 旧库（Config+Server 表）→ PRemoteMTransferHelper；1Remote 库（Configs+Servers 表）→
         /// SqliteSource 读出后 DecryptToConnectLevel（库内是密文）。两分支可共存于同一文件（WPF 顺序追加同款）。
+        /// 连接纪律：OpenNewConnection 与 Database_OpenConnection 都是长连接（持有 _dbConnection），
+        /// 必须在 finally 关闭——否则 Windows 上未释放的文件句柄会让端点的临时目录删除失败
+        ///（Directory.Delete 抛 IOException 被吞），每次 .db 导入都在 %TEMP% 残留一个目录。
         /// </summary>
         private static List<ProtocolBase> ParseDatabase(string path)
         {
             var list = new List<ProtocolBase>();
             var dataBase = new DapperDatabaseFree("PRemoteM", DatabaseType.Sqlite);
-            var open = dataBase.OpenNewConnection(DbExtensions.GetSqliteConnectionString(path));
-            if (!open.IsSuccess)
-                throw new InvalidDataException("can not open sqlite database: " + open.ErrorInfo);
-
-            // PRemoteM db
-            if (dataBase.TableExists("Config").IsSuccess && dataBase.TableExists("Server").IsSuccess)
+            SqliteSource? source = null;
+            try
             {
-                var ss = PRemoteMTransferHelper.GetServers(dataBase);
-                if (ss != null)
+                var open = dataBase.OpenNewConnection(DbExtensions.GetSqliteConnectionString(path));
+                if (!open.IsSuccess)
+                    throw new InvalidDataException("can not open sqlite database: " + open.ErrorInfo);
+
+                // PRemoteM db
+                if (dataBase.TableExists("Config").IsSuccess && dataBase.TableExists("Server").IsSuccess)
                 {
-                    list.AddRange(ss);
+                    var ss = PRemoteMTransferHelper.GetServers(dataBase);
+                    if (ss != null)
+                    {
+                        list.AddRange(ss);
+                    }
+                }
+
+                // 1Remote db
+                if (dataBase.TableExists("Configs").IsSuccess && dataBase.TableExists("Servers").IsSuccess)
+                {
+                    source = new SqliteSource("1Remote") { Path = path };
+                    source.Database_OpenConnection(); // WPF 缺失的连接步骤（否则 Status!=OK，GetServers 恒返回空缓存）
+                    foreach (var s in source.GetServers(true).Select(x => x.Server))
+                    {
+                        s.DecryptToConnectLevel(); // 库内密文 → 明文（WPF :462 同款）
+                        list.Add(s);
+                    }
                 }
             }
-
-            // 1Remote db
-            if (dataBase.TableExists("Configs").IsSuccess && dataBase.TableExists("Servers").IsSuccess)
+            finally
             {
-                var ds = new SqliteSource("1Remote") { Path = path };
-                ds.Database_OpenConnection(); // WPF 缺失的连接步骤（否则 Status!=OK，GetServers 恒返回空缓存）
-                foreach (var s in ds.GetServers(true).Select(x => x.Server))
-                {
-                    s.DecryptToConnectLevel(); // 库内密文 → 明文（WPF :462 同款）
-                    list.Add(s);
-                }
+                dataBase.CloseConnection();          // null 安全（_dbConnection?.Close + ClearAllPools）
+                source?.Database_CloseConnection();  // 内部 IsConnected 判定后才关
             }
-
             return list;
         }
 
