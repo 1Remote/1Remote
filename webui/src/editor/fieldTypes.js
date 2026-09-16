@@ -8,11 +8,15 @@
  *    jObj.Protocol / jObj.ClassVersion 访问大小写敏感）。
  *  因此字段描述符的 `key` 一律为 C# 属性名的逐字拷贝（PascalCase），前端不做任何命名转换。
  *
- * i18n 约定（本阶段 schemas.js 不携带 labelKey，Task 11 统一补齐）：
- *  - 全部文案键使用 editor.* 命名空间（如 'editor.rdp.width'）；
- *  - labelKey / placeholderKey / 分组 labelKey 均为可选，缺失时 FormField 回退显示：
- *    字段 → key 原样（PascalCase）；SELECT 选项 → String(value)；分组 → group.id；
- *  - locales JSON 条目由 Task 11 创建（双语平价），在此之前编辑器显示回退文案属预期行为。
+ * i18n 约定（Task 11 已落地）：
+ *  - 全部文案键使用 editor.* 命名空间：字段 → editor.f.{PascalCaseKey}（schemas.js
+ *    加载时对缺省者统一兜底注入，见其「字段 labelKey 兜底」段）；分组 → editor.group.*；
+ *    SELECT 选项 → editor.o.{枚举短名}.{成员名}（schemas.js 选项常量逐项标注）。
+ *  - labelKey / placeholderKey 均为可选，缺失时 FormField 回退显示：字段 → key 原样
+ *    （PascalCase）；SELECT 选项 → String(value)；分组 → group.id。
+ *  - 有意不译的选项：Serial 的 DataBits/StopBits/Parity/FlowControl 选项值本身即
+ *    技术字面量（'8'/'NONE'/'XON/XOFF'…，C# string 集合原样直通），保留 String(value)。
+ *  - locales 双语平价（zh/en 键集一致，见 i18n 校验脚本）。
  */
 export const FIELD = {
   TEXT: 'text',

@@ -52,64 +52,66 @@
 import { FIELD } from './fieldTypes.js'
 
 // ---------------------------------------------------------------------------
-// SELECT 选项表（value = C# 枚举成员整数值，注释标注枚举定义位置）
+// SELECT 选项表（value = C# 枚举成员整数值，labelKey → editor.o.*（Task 11，
+// 双语键见 locales；文案对齐 WPF zh-cn.xaml 的 server_editor_* 系列）。
+// 注释标注枚举定义位置。
 // ---------------------------------------------------------------------------
 
 /** ERdpFullScreenFlag（RDP.cs:30）Disable=0 / EnableFullScreen=1 / EnableFullAllScreens=2 */
 const RDP_FULL_SCREEN_FLAG_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
+  { value: 0, labelKey: 'editor.o.fullScreen.Disable' },
+  { value: 1, labelKey: 'editor.o.fullScreen.EnableFullScreen' },
+  { value: 2, labelKey: 'editor.o.fullScreen.EnableFullAllScreens' },
 ]
 
 /** ERdpWindowResizeMode（RDP.cs:21）AutoResize=0 / Stretch=1 / Fixed=2 / StretchFullScreen=3 / FixedFullScreen=4 */
 const RDP_WINDOW_RESIZE_MODE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
-  { value: 3 },
-  { value: 4 },
+  { value: 0, labelKey: 'editor.o.resize.AutoResize' },
+  { value: 1, labelKey: 'editor.o.resize.Stretch' },
+  { value: 2, labelKey: 'editor.o.resize.Fixed' },
+  { value: 3, labelKey: 'editor.o.resize.StretchFullScreen' },
+  { value: 4, labelKey: 'editor.o.resize.FixedFullScreen' },
 ]
 
 /** EDisplayPerformance（RDP.cs:37）Auto=0 / Low=1 / Middle=2 / High=3 */
 const RDP_DISPLAY_PERFORMANCE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
-  { value: 3 },
+  { value: 0, labelKey: 'editor.o.performance.Auto' },
+  { value: 1, labelKey: 'editor.o.performance.Low' },
+  { value: 2, labelKey: 'editor.o.performance.Middle' },
+  { value: 3, labelKey: 'editor.o.performance.High' },
 ]
 
 /** EAudioRedirectionMode（RDP.cs:74）RedirectToLocal=0 / LeaveOnRemote=1 / Disabled=2 */
 const RDP_AUDIO_REDIRECTION_MODE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
+  { value: 0, labelKey: 'editor.o.audioMode.RedirectToLocal' },
+  { value: 1, labelKey: 'editor.o.audioMode.LeaveOnRemote' },
+  { value: 2, labelKey: 'editor.o.audioMode.Disabled' },
 ]
 
 /** EAudioQualityMode（RDP.cs:81）Dynamic=0 / Medium=1 / High=2 */
 const RDP_AUDIO_QUALITY_MODE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
+  { value: 0, labelKey: 'editor.o.audioQuality.Dynamic' },
+  { value: 1, labelKey: 'editor.o.audioQuality.Medium' },
+  { value: 2, labelKey: 'editor.o.audioQuality.High' },
 ]
 
 /** EGatewayMode（RDP.cs:60）AutomaticallyDetectGatewayServerSettings=0 / UseTheseGatewayServerSettings=1 / DoNotUseGateway=2 */
 const RDP_GATEWAY_MODE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
-  { value: 2 },
+  { value: 0, labelKey: 'editor.o.gatewayMode.AutoDetect' },
+  { value: 1, labelKey: 'editor.o.gatewayMode.UseThese' },
+  { value: 2, labelKey: 'editor.o.gatewayMode.DoNotUse' },
 ]
 
 /** EGatewayLogonMethod（RDP.cs:67）Password=0 / SmartCard=1 */
 const RDP_GATEWAY_LOGON_METHOD_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
+  { value: 0, labelKey: 'editor.o.gatewayLogon.Password' },
+  { value: 1, labelKey: 'editor.o.gatewayLogon.SmartCard' },
 ]
 
 /** EVncWindowResizeMode（Vnc.cs:11）Stretch=0 / Fixed=1（ctor 初始化器 Stretch） */
 const VNC_WINDOW_RESIZE_MODE_OPTIONS = [
-  { value: 0 },
-  { value: 1 },
+  { value: 0, labelKey: 'editor.o.vncResize.Stretch' },
+  { value: 1, labelKey: 'editor.o.vncResize.Fixed' },
 ]
 
 // Serial 的下列选项不是枚举：Serial.cs 的 DataBits/StopBits/Parity/FlowControl 均为
@@ -153,14 +155,14 @@ const SERIAL_FLOW_CONTROL_OPTIONS = [
  * 的字符串枚举序列化点，json 里是成员名而非整数，选项 value 用字符串。
  */
 const APP_ARGUMENT_TYPE_OPTIONS = [
-  { value: 'Normal' },
-  { value: 'Int' },
-  { value: 'Float' },
-  { value: 'File' },
-  { value: 'Secret' },
-  { value: 'Flag' },
-  { value: 'Selection' },
-  { value: 'Const' },
+  { value: 'Normal', labelKey: 'editor.o.appArgType.Normal' },
+  { value: 'Int', labelKey: 'editor.o.appArgType.Int' },
+  { value: 'Float', labelKey: 'editor.o.appArgType.Float' },
+  { value: 'File', labelKey: 'editor.o.appArgType.File' },
+  { value: 'Secret', labelKey: 'editor.o.appArgType.Secret' },
+  { value: 'Flag', labelKey: 'editor.o.appArgType.Flag' },
+  { value: 'Selection', labelKey: 'editor.o.appArgType.Selection' },
+  { value: 'Const', labelKey: 'editor.o.appArgType.Const' },
 ]
 
 // ---------------------------------------------------------------------------
@@ -535,7 +537,10 @@ export const PROTOCOLS = {
         {
           key: 'SshVersion',
           type: FIELD.SELECT,
-          options: [{ value: 1 }, { value: 2 }],
+          options: [
+            { value: 1, labelKey: 'editor.o.sshVersion.V1' },
+            { value: 2, labelKey: 'editor.o.sshVersion.V2' },
+          ],
         },
         { key: 'StartupAutoCommand', type: FIELD.TEXT },
         { key: 'OpenSftpOnConnected', type: FIELD.SWITCH },
@@ -762,6 +767,26 @@ export const PROTOCOLS = {
       miscGroup(),
     ],
   },
+}
+
+// ---------------------------------------------------------------------------
+// 字段 labelKey 兜底（Task 11 i18n 收尾）：加载时统一补齐，builder 不必逐个写。
+// 规则：字段（含 subform 行字段）缺 labelKey 时默认 'editor.f.' + key；显式提供者
+// 不覆盖。locales 的 editor.f.* 共 73 键与去重后的字段 key 集合一一对应（9 协议共享
+// 基类字段，同名 key 语义一致——如各协议的 UserName 均为「用户名」；子表单行字段与
+// 顶层同名字段同键共用：Address/Port/UserName/Password/Name 两处文案相同）。
+// 仅遍历 PROTOCOLS（编辑器 json 域）；BULK_FIELDS 属列表 DTO 域，自带
+// editor.bulkField.* 键，不在此列。
+// ---------------------------------------------------------------------------
+for (const schema of Object.values(PROTOCOLS)) {
+  for (const group of schema.groups) {
+    for (const field of group.fields) {
+      if (!field.labelKey) field.labelKey = 'editor.f.' + field.key
+      for (const rowField of field.subform?.fields || []) {
+        if (!rowField.labelKey) rowField.labelKey = 'editor.f.' + rowField.key
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
