@@ -2,7 +2,8 @@
 // 单行（spec §3.4，对齐已确认样张 v2）：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
 // 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
-// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）。
+// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）、
+// ▤=悬停看备注（fix-batch3 Task C #4，Markdown 渲染弹层，对齐 WPF）。
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import StatusDot from './StatusDot.vue'
@@ -10,6 +11,7 @@ import ProtocolBadge from './ProtocolBadge.vue'
 import { formatRelativeTime } from '../utils/time'
 import { splitHighlight } from '../utils/highlight'
 import { opaqueHex } from '../utils/color'
+import { renderMarkdown } from '../utils/markdown'
 
 const props = defineProps({
   server: { type: Object, required: true },
@@ -74,6 +76,20 @@ const barColor = computed(() => opaqueHex(props.server.color))
       <img v-if="server.iconBase64" class="icon" :src="iconSrc(server)" alt="" />
       <span v-else class="icon icon-fb" :style="tileStyle(server)">{{ initial(server.protocol) }}</span>
       <span class="name"><template v-for="(seg, i) in nameSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></span>
+      <!-- 备注悬停预览（fix-batch3 Task C #4，对齐 WPF 悬停备注图标弹备注窗）：note 非空才渲染图标；
+           n-popover 的 trigger 即 .note-ic 本身（naive 不加包装 DOM），flex 0 0 auto 不被 .name 的 ellipsis 吞 -->
+      <n-popover
+        v-if="server.note"
+        trigger="hover"
+        placement="top-start"
+        :content-style="{ maxWidth: '380px', maxHeight: '280px', overflow: 'auto' }"
+      >
+        <template #trigger>
+          <span class="note-ic" :title="t('row.note')">▤</span>
+        </template>
+        <!-- eslint-disable-next-line vue/no-v-html — Note 为用户本人配置的 Markdown，已过轻量净化（utils/markdown.js） -->
+        <div class="note-md" v-html="renderMarkdown(server.note)"></div>
+      </n-popover>
     </div>
     <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)"><template v-for="(seg, i) in addrSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></div>
     <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
@@ -205,6 +221,94 @@ const barColor = computed(() => opaqueHex(props.server.color))
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-1);
+}
+
+/* 备注悬停图标（fix-batch3 Task C #4）：名称尾部低调字形（与行内 ▸/✎/⋯ 文字字形同风格），
+   hover 变亮提示可悬停；flex 0 0 auto 保证不被 .name 的 ellipsis 挤压吞掉 */
+.note-ic {
+  flex: 0 0 auto;
+  color: var(--text-4);
+  font-size: 12px;
+  line-height: 1;
+  cursor: default;
+}
+.note-ic:hover {
+  color: var(--text-2);
+}
+/* 弹层内 Markdown 排版：内容 teleport 到 body，但 slot 元素携带本组件 scope 属性（scoped 可达），
+   主题变量定义在 html[data-theme] 上对 body 全局生效；v-html 子元素不带 scope 属性需 :deep。
+   规则集与编辑器预览（MarkdownField .md-body）对齐，尺寸略收敛 */
+.note-md {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-1);
+  word-break: break-word;
+}
+.note-md :deep(h1),
+.note-md :deep(h2),
+.note-md :deep(h3),
+.note-md :deep(h4) {
+  margin: 0.5em 0 0.3em;
+  color: var(--text-1);
+  line-height: 1.3;
+}
+.note-md :deep(h1:first-child),
+.note-md :deep(h2:first-child),
+.note-md :deep(h3:first-child) {
+  margin-top: 0;
+}
+.note-md :deep(p) {
+  margin: 0.3em 0;
+}
+.note-md :deep(ul),
+.note-md :deep(ol) {
+  margin: 0.3em 0;
+  padding-left: 1.4em;
+}
+.note-md :deep(code) {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-hover);
+  padding: 0 3px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11.5px;
+}
+.note-md :deep(pre) {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-hover);
+  padding: 6px 8px;
+}
+.note-md :deep(pre code) {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.note-md :deep(blockquote) {
+  margin: 0.4em 0;
+  border-left: 3px solid var(--border-strong);
+  padding-left: 8px;
+  color: var(--text-3);
+}
+.note-md :deep(a) {
+  color: var(--accent-text);
+}
+.note-md :deep(img) {
+  max-width: 100%;
+}
+.note-md :deep(table) {
+  border-collapse: collapse;
+}
+.note-md :deep(th),
+.note-md :deep(td) {
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+}
+.note-md :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.6em 0;
 }
 
 /* 搜索命中高亮（fix-batch1 #1；fix-batch2 #9 提亮）：mark 语义的实心强调底 + 对比文字

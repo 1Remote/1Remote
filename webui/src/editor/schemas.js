@@ -839,15 +839,16 @@ for (const schema of Object.values(PROTOCOLS)) {
  *
  * 扩展属性（批量专用，FormField 不读取）：
  *  - dtoKey：列表 DTO（/api/servers，camelCase）中对应字段名，用于计算 N 台共享值；
- *    null = 列表 DTO 无此字段（note/password/inheritedCredentialName/askPasswordWhenConnect
- *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值；
+ *    null = 列表 DTO 无此字段（password/inheritedCredentialName/askPasswordWhenConnect
+ *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值
+ *    （note 已随 fix-batch3 Task C #4 加入列表 DTO，可显示共享备注值）；
  *  - protocols：协议专属字段（startupAutoCommand/startupPath/rdpFileAdditionalSettings）
  *    的适用协议集（对照 BatchPatchFieldMap 注释）；所选服务器全部适用才显示该字段，
  *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。
  */
 export const BULK_FIELDS = [
   { key: 'displayName', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.displayName', dtoKey: 'displayName' },
-  { key: 'note', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.note', dtoKey: null },
+  { key: 'note', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.note', dtoKey: 'note' },
   { key: 'tags', type: FIELD.TAGS, labelKey: 'editor.bulkField.tags', dtoKey: 'tags' },
   { key: 'colorHex', type: FIELD.COLOR, labelKey: 'editor.bulkField.colorHex', dtoKey: 'color' },
   { key: 'iconBase64', type: FIELD.ICON, labelKey: 'editor.bulkField.iconBase64', dtoKey: 'iconBase64' },

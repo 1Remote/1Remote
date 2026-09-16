@@ -94,5 +94,20 @@ namespace Tests.Service.WebUi
             var dto2 = _1RM.Service.WebUi.DtoMapper.FromServer(rdp, "Local", time);
             Assert.AreEqual(new DateTimeOffset(time).ToUnixTimeSeconds(), dto2.LastConnectTime);
         }
+
+        [TestMethod]
+        public void Map_Note_EmptyAndNonEmpty()
+        {
+            // fix-batch3 Task C #4：列表行备注悬停预览需要 DTO 携带 Note（Markdown 源文本）。
+            // 未设置时 ProtocolBase.Note 默认空串 → DTO 空串（前端以空判隐藏备注图标）
+            var noNote = new RDP { Id = "n0", DisplayName = "no-note", Address = "1.1.1.1" };
+            var dto0 = _1RM.Service.WebUi.DtoMapper.FromServer(noNote, "Local");
+            Assert.AreEqual(string.Empty, dto0.Note);
+
+            var withNote = new RDP { Id = "n1", DisplayName = "with-note", Address = "1.1.1.1" };
+            withNote.Note = "**prod** jump host\n- idrac: 10.0.0.9";
+            var dto1 = _1RM.Service.WebUi.DtoMapper.FromServer(withNote, "Local");
+            Assert.AreEqual("**prod** jump host\n- idrac: 10.0.0.9", dto1.Note);
+        }
     }
 }

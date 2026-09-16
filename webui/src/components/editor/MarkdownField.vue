@@ -9,16 +9,16 @@
  * （如 <img src=x onerror=… 的属性拆分混淆、data: URL、CSS 注入等极端构造不保证覆盖）；
  * 编辑器内容来自用户自己的服务器配置（单机自托管场景，无多租户互攻击面），加上后端
  * 保存的也是这份纯文本，故轻量清洗已覆盖常见意外注入面。若未来引入多用户共享库，
- * 应换 DOMPurify 等完整净化器（v-html + 本组件 sanitize 的替换点集中在此）。
+ * 应换 DOMPurify 等完整净化器（v-html + sanitize 的替换点集中在 utils/markdown.js）。
  *
  * 组件形状对齐 FormField 约定：modelValue = 字符串（null 容忍），emit update:modelValue；
  * 由 FormField 按 field.type === 'markdown' 分发（schemas.js 的 basic 组 Note 字段）。
+ * 渲染管线（marked + 轻量净化）抽至 utils/markdown.js（fix-batch3 Task C #4，
+ * 与列表行备注悬停弹层共用），本组件只保留编辑/预览切换与排版样式。
  */
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { marked } from 'marked'
-
-marked.setOptions({ breaks: true, gfm: true })
+import { renderMarkdown } from '../../utils/markdown'
 
 const props = defineProps({
   /** 当前值（Markdown 源文本；null/undefined 容忍按空串处理） */
@@ -30,16 +30,7 @@ const { t } = useI18n()
 
 const mode = ref('edit') // 'edit' | 'preview'（切换仅影响展示，不改值）
 
-/** 轻量净化（局限见文件头注释）：剥 script 块 / 危险标签 / on* 属性 / javascript: URL */
-function sanitize(html) {
-  return String(html)
-    .replace(/<script[\s\S]*?<\/script\s*>/gi, '')
-    .replace(/<\/?(iframe|object|embed|style|link|meta|base|form)\b[^>]*>/gi, '')
-    .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-    .replace(/((?:href|src|xlink:href)\s*=\s*)(?:"\s*javascript:[^"]*"|'\s*javascript:[^']*'|javascript:\S+)/gi, '$1""')
-}
-
-const rendered = computed(() => sanitize(marked.parse(props.modelValue ?? '')))
+const rendered = computed(() => renderMarkdown(props.modelValue ?? ''))
 const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 </script>
 

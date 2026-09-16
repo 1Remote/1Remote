@@ -171,7 +171,7 @@ function groupBlocks(g) {
 // ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
 // bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
 //  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
-//  - dtoKey=null（note/password 等列表 DTO 不携带）→ known=false，只提示、不展示值。
+//  - dtoKey=null（password 等列表 DTO 不携带；note 已于 fix-batch3 Task C #4 加入）→ known=false，只提示、不展示值。
 // 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
 const bulkFields = computed(() =>
   BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol))),

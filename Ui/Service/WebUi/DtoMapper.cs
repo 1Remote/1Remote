@@ -50,6 +50,7 @@ namespace _1RM.Service.WebUi
                 Address = address,
                 Port = port,
                 UserName = userName,
+                Note = server.Note ?? string.Empty,
                 Tags = server.Tags?.ToList() ?? new List<string>(),
                 Color = server.ColorHex ?? string.Empty,
                 IconBase64 = server.IconBase64 ?? string.Empty,

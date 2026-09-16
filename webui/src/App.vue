@@ -13,12 +13,14 @@ const naiveLocale = computed(() => (locale.value === 'en-US' ? enUS : zhCN))
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
-// Ctrl+K / Cmd+K 全局聚焦搜索框（spec §8）：keydown 于 window（冒泡），preventDefault 让位
-// 浏览器默认（如地址栏搜索）；再次按下全选已有内容，方便直接覆盖输入。
+// Ctrl+K / Cmd+K 与 Ctrl+F / Cmd+F 全局聚焦搜索框（spec §8；fix-batch3 Task C #8 加 F）：
+// keydown 于 window（冒泡），preventDefault 让位浏览器默认（如地址栏搜索 / 页内查找栏）；
+// 再次按下全选已有内容，方便直接覆盖输入。
 // Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——
 // 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度（Task 18）。
 function onGlobalKey(e) {
-  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'k') {
+  const key = e.key?.toLowerCase()
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (key === 'k' || key === 'f')) {
     e.preventDefault()
     searchInput.value?.focus()
     searchInput.value?.select()
@@ -110,16 +112,12 @@ function onTopbarDblClick(e) {
       <n-dialog-provider>
         <div class="shell">
           <header class="topbar" @mousedown="onTopbarMouseDown" @dblclick="onTopbarDblClick">
-            <!-- LOGO：显示器+播放三角（远程连接），着色随强调色 -->
+            <!-- LOGO：程序真实图标（Ui/LOGO.ico 提取的 256px PNG，public/logo.png） -->
             <div class="logo">
-              <svg class="logo-mark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                <rect x="2.5" y="4" width="19" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" />
-                <path d="M9 20.5h6M12 17.2v3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                <path d="M10 7.7 14.9 10.5 10 13.3Z" fill="currentColor" />
-              </svg>
+              <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
               1Remote
             </div>
-            <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K 聚焦全选 / Esc 由全局链清空（见 setup） -->
+            <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup） -->
             <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
               <span class="sb-icon">⌕</span>
               <input
@@ -199,8 +197,7 @@ function onTopbarDblClick(e) {
   font-weight: 600;
 }
 .logo-mark {
-  color: var(--accent); /* LOGO 着色随强调色 */
-  flex: 0 0 auto;
+  flex: 0 0 auto; /* 真实彩色图标（fix-batch3 Task C #7），不再随强调色着色 */
 }
 .searchbox {
   flex: 0 1 420px;
