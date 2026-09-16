@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
@@ -351,6 +352,79 @@ namespace _1RM.Service.WebUi
                     EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
                     EditorSaveStatus.NotFound => Results.NotFound(),
                     _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
+            // 导入（Plan 4 Task 2）：multipart/form-data（file + ?ds=，ds 缺省 Local）。
+            // 格式按上传文件扩展名嗅探（.json/.csv/.rdp/.db）→ 解析 → 逐台插入（凭据提取走 Dapper
+            // 批量重载的按 Hash 自动提取，见 WebUiImportExportService 类注释）→ {added, skipped, errors}。
+            // 未知格式/未知数据源/只读数据源/解析失败 → 400 {errors}；上传文件落临时目录，处理完即删。
+            app.MapPost("/api/servers/import", async (HttpContext ctx, string? ds) =>
+            {
+                if (!ctx.Request.HasFormContentType)
+                    return Results.BadRequest(new { errors = new[] { "request must be multipart/form-data with a 'file' part" } });
+                IFormFile? file;
+                try
+                {
+                    file = (await ctx.Request.ReadFormAsync()).Files.FirstOrDefault(f => f.Name == "file");
+                }
+                catch (Exception)
+                {
+                    file = null; // malformed multipart body
+                }
+                if (file == null || file.Length == 0)
+                    return Results.BadRequest(new { errors = new[] { "multipart body must contain a non-empty 'file' part" } });
+
+                var kind = WebUiImportExportService.DetectImportKind(file.FileName);
+                if (kind == ImportFileKind.Unknown)
+                    return Results.BadRequest(new { errors = new[] { $"unsupported file type '{file.FileName}' (expected .json/.csv/.rdp/.db)" } });
+
+                // 各解析器按“路径”工作（mRemoteNG/RdpConfig/sqlite 连接串），先落临时目录再处理；
+                // 目录内保留上传文件原名——RdpConfig.FromRdpFile 用文件名作服务器 DisplayName（WPF 平价）
+                var tmpDir = Path.Combine(Path.GetTempPath(), "1rm-webui-import-" + Guid.NewGuid().ToString("N"));
+                var originalName = string.Join("_",
+                    Path.GetFileName(file.FileName).Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+                if (string.IsNullOrWhiteSpace(originalName)) originalName = "import" + Path.GetExtension(file.FileName) ?? "import";
+                var tmpPath = Path.Combine(tmpDir, originalName);
+                try
+                {
+                    Directory.CreateDirectory(tmpDir);
+                    await using (var fs = File.Create(tmpPath))
+                    {
+                        await file.CopyToAsync(fs);
+                    }
+                    var result = WebUiImportExportService.Import(ds, kind, tmpPath);
+                    return result.Status switch
+                    {
+                        ExportStatus.Ok => Results.Json(new { added = result.Added, skipped = result.Skipped, errors = result.Errors }),
+                        _ => Results.BadRequest(new { errors = result.Errors }),
+                    };
+                }
+                finally
+                {
+                    try { Directory.Delete(tmpDir, true); } catch (Exception) { /* 随临时目录清理 */ }
+                }
+            });
+
+            // 导出（Plan 4 Task 2）：?ids=a,b,c（跨数据源，按每台自身数据源取）。
+            // 验证门与 WPF 导出平价：任一涉及数据源在 30s 窗口外 → VerifyAsyncUi（未开启时直通 true），
+            // 非 true → 403（窗口与凭据 reveal 共用，见 WebUiImportExportService.ExportAsync）。
+            // 通过 → 解密克隆列表的 Indented JSON，UTF8 attachment 下载（Content-Disposition）。
+            // ids 空/含未知 id/含只读数据源服务器 → 400（WPF CanExecute 要求全部可编辑同语义）。
+            app.MapGet("/api/servers/export", async (string? ids) =>
+            {
+                var idList = (ids ?? string.Empty)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .ToList();
+                var result = await WebUiImportExportService.ExportAsync(idList);
+                return result.Status switch
+                {
+                    ExportStatus.Ok => Results.File(
+                        Encoding.UTF8.GetBytes(result.Json),
+                        "application/json",
+                        result.FileName),
+                    ExportStatus.Forbidden => Results.StatusCode(403),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
                 };
             });
 
