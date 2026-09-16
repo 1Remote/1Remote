@@ -326,6 +326,94 @@ namespace _1RM.Service.WebUi
                 };
             });
 
+            // 常规设置（Plan 3 Task 2）：读 GeneralConfig 白名单字段 + SecondaryVerificationHelper
+            // （requireSecondaryVerification 的真实状态不在 GeneralConfig，见 WebUiSettingsService 类注释）。
+            // PUT 为部分更新（缺失键=保持不变），任一键非法 400 零写入；language 变更同步调
+            // LanguageService.SetLanguage 让 WPF 即时生效（未注册时静默跳过）。
+            app.MapGet("/api/settings/general", async () =>
+            {
+                var cs = IoC.Get<ConfigurationService>();
+                return Results.Json(await WebUiSettingsService.ReadGeneralAsync(cs));
+            });
+
+            app.MapPut("/api/settings/general", async (GeneralSettingsUpdateRequest? body) =>
+            {
+                var result = await WebUiSettingsService.ApplyGeneralAsync(IoC.Get<ConfigurationService>(), body);
+                return result.Status switch
+                {
+                    SettingsApplyStatus.Ok => Results.Json(result.Dto),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            // 启动器设置：热键为 WPF 枚举，线格式 = 成员名（"ControlAlt"/"M"），PUT 亦接受 "Ctrl+Alt"
+            // 显示形态。写后重注册热键：注册失败且 launcherEnabled → 409（配置已保存，与 WPF
+            // “内存先行落值 + 警告”语义对齐，见 WebUiSettingsService.ApplyLauncher 注释）。
+            app.MapGet("/api/settings/launcher", () =>
+            {
+                var cs = IoC.Get<ConfigurationService>();
+                return Results.Json(WebUiSettingsService.ReadLauncher(cs));
+            });
+
+            app.MapPut("/api/settings/launcher", (LauncherSettingsUpdateRequest? body) =>
+            {
+                var result = WebUiSettingsService.ApplyLauncher(IoC.Get<ConfigurationService>(), body);
+                return result.Status switch
+                {
+                    SettingsApplyStatus.Ok => Results.Json(result.Dto),
+                    SettingsApplyStatus.HotkeyConflict => Results.Json(new { error = "hotkey conflict", settings = result.Dto }, statusCode: 409),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            // 标签管理（Plan 3 Task 2）：列表（该数据源聚合）/ 置顶 / 重命名 / 删除。
+            // rename/delete 复刻 TagActionHelper 的核心循环（详见 WebUiSettingsService）。
+            app.MapGet("/api/tags/manage", (string? ds) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : ds;
+                var dataSource = IoC.Get<DataSourceService>().GetDataSource(dataSourceName);
+                if (dataSource == null)
+                    return Results.NotFound();
+                return Results.Json(WebUiSettingsService.ListManageTags(dataSource));
+            });
+
+            app.MapPut("/api/tags/manage", (TagPinRequest? body) =>
+            {
+                var result = WebUiSettingsService.SetTagPinned(body?.Ds, body?.Name, body?.Pinned);
+                return result.Status switch
+                {
+                    TagManageStatus.Ok => Results.Json(result.Item),
+                    TagManageStatus.NotFound => Results.NotFound(),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
+
+            app.MapPost("/api/tags/rename", (TagRenameRequest? body) =>
+            {
+                var result = WebUiSettingsService.RenameTag(body?.Ds, body?.From, body?.To);
+                return result.Status switch
+                {
+                    TagManageStatus.Ok => Results.Json(result.Rename),
+                    TagManageStatus.NotFound => Results.NotFound(),
+                    TagManageStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                    _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
+            app.MapDelete("/api/tags/{name}", (string name, string? ds) =>
+            {
+                var result = WebUiSettingsService.DeleteTag(ds, name);
+                return result.Status switch
+                {
+                    TagManageStatus.Ok => Results.NoContent(),
+                    TagManageStatus.NotFound => Results.NotFound(),
+                    TagManageStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                    _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+
             // exe 图标提取：与 WPF 图标选择器同一路径（IconPopupDialogViewModel.CmdSelectImage 的
             // .exe 分支：ExtractAssociatedIcon → CreateBitmapSourceFromHIcon），base64 转换复用
             // 编辑器保存时的 BitmapSource.ToBase64()（→ System.Drawing Bitmap → PNG）。

@@ -66,6 +66,23 @@ export const api = {
     request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
   revealCredential: (name, ds) =>
     request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST' }),
+  // 设置中心（Plan 3 Task 2）：general/launcher 均为白名单部分更新（缺省键=保持不变）；
+  // general.language 用小写码（zh-cn），web locale（zh-CN）由调用方转换；
+  // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态），仅在用户明确操作时随 PUT 提交
+  getGeneralSettings: () => request('/api/settings/general'),
+  saveGeneralSettings: (g) => request('/api/settings/general', { method: 'PUT', body: g }),
+  // launcher 热键：hotKeyModifiers/hotKeyKey 线格式 = WPF 枚举成员名（"ControlAlt"/"M"）；
+  // PUT 亦接受 "Ctrl+Alt" 显示形态；注册冲突（被其它程序占用）→ 409 {error:'hotkey conflict'}
+  getLauncherSettings: () => request('/api/settings/launcher'),
+  saveLauncherSettings: (l) => request('/api/settings/launcher', { method: 'PUT', body: l }),
+  // 标签管理：列表按数据源聚合 {name,count,pinned}；pin 幂等置目标值；rename/delete 限定数据源范围
+  getTagsManage: (ds) => request('/api/tags/manage?ds=' + encodeURIComponent(ds ?? 'Local')),
+  saveTagPin: (name, pinned, ds) =>
+    request('/api/tags/manage', { method: 'PUT', body: { ds: ds ?? 'Local', name, pinned } }),
+  renameTag: (from, to, ds) =>
+    request('/api/tags/rename', { method: 'POST', body: { ds: ds ?? 'Local', from, to } }),
+  deleteTag: (name, ds) =>
+    request(`/api/tags/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
 }
 
 /** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */
