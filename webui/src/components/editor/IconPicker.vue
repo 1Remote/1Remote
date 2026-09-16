@@ -22,6 +22,8 @@ import { api } from '../../api'
 const props = defineProps({
   /** 当前图标：裸 base64 字符串（json 的 IconBase64），空串 = 无图标 */
   modelValue: { type: String, default: '' },
+  /** 预览底色（#RRGGBB，EditorDrawer 由 ColorHex 派生；fix-batch1 #6 颜色即时联动） */
+  tint: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue'])
@@ -113,8 +115,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 
 <template>
   <div class="icon-picker">
-    <img v-if="modelValue" class="ip-thumb" :src="'data:image/png;base64,' + modelValue" alt="" />
-    <span v-else class="ip-thumb ip-empty"></span>
+    <!-- 48px 预览瓦片（fix-batch1 #6）：点击即开选择器；tint = 当前 ColorHex 低饱和底色，
+         无图标时 tint 仍生效（空瓦片也即时反映所选颜色） -->
+    <button
+      type="button"
+      class="ip-thumb"
+      :class="{ empty: !modelValue }"
+      :style="tint ? { background: tint + '26' } : null"
+      :disabled="disabled"
+      :title="t('editor.pickIcon')"
+      @click="open"
+    >
+      <img v-if="modelValue" :src="'data:image/png;base64,' + modelValue" alt="" />
+    </button>
     <button class="ip-btn" type="button" :disabled="disabled" :title="t('editor.pickIcon')" @click="open">…</button>
 
     <n-modal
@@ -180,13 +193,32 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   gap: 8px;
 }
 .ip-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 3px;
-  object-fit: cover;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  padding: 3px;
 }
-.ip-empty {
-  border: 1px dashed var(--border-strong);
+.ip-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ip-thumb.empty {
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+.ip-thumb:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.ip-thumb:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
 }
 .ip-btn {
   border: 1px solid var(--border);

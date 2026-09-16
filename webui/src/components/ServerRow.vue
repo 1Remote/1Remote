@@ -9,6 +9,7 @@ import StatusDot from './StatusDot.vue'
 import ProtocolBadge from './ProtocolBadge.vue'
 import { formatRelativeTime } from '../utils/time'
 import { splitHighlight } from '../utils/highlight'
+import { opaqueHex } from '../utils/color'
 
 const props = defineProps({
   server: { type: Object, required: true },
@@ -25,6 +26,13 @@ const { t, locale } = useI18n()
 
 const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 : '')
 const initial = (p) => (p || '?').charAt(0).toUpperCase()
+// 回退瓦片配色（fix-batch1 #9）：列表 DTO 的 color 是 C# ColorHex（#AARRGGBB，'#00000000'=无色）——
+// 先经 opaqueHex 归一为 #RRGGBB（alpha 在前直接当 CSS 用会得到非法值/全透明，暗色下不可见），
+// 无色/非法 → null → 走 .icon-fb 中性样式
+const tileStyle = (s) => {
+  const rgb = opaqueHex(s.color)
+  return rgb ? { background: rgb + '26', color: rgb } : null
+}
 // 地址列：Serial 等无地址协议回退显示协议名；有端口拼 ':port'
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
 // 文件夹列（fix-batch1 Task 2）：根视图递归展示全库，列为「数据源 / 路径」定位信息；
@@ -59,11 +67,7 @@ const addrSegs = computed(() => splitHighlight(addressText(props.server), props.
     <div class="cell cell-status"><StatusDot :state="server.connectionState" /></div>
     <div v-if="!hiddenCols || !hiddenCols.name" class="cell cell-name" :title="server.displayName">
       <img v-if="server.iconBase64" class="icon" :src="iconSrc(server)" alt="" />
-      <span
-        v-else
-        class="icon icon-fb"
-        :style="server.color ? { background: server.color + '26', color: server.color } : null"
-      >{{ initial(server.protocol) }}</span>
+      <span v-else class="icon icon-fb" :style="tileStyle(server)">{{ initial(server.protocol) }}</span>
       <span class="name"><template v-for="(seg, i) in nameSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></span>
     </div>
     <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)"><template v-for="(seg, i) in addrSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></div>

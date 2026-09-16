@@ -1,7 +1,9 @@
 <script setup>
 /**
- * 连接编辑器抽屉（Plan 2 Task 8）：右侧滑入（clamp(560px, 68vw, 900px)，CSS 过渡），
- * schema 驱动表单——分组页签（未保存分组带小圆点）+ FormField 渲染 + 保存流。
+ * 连接编辑器抽屉（Plan 2 Task 8，fix-batch1 Task 3 重构）：右侧滑入
+ * （clamp(560px, 68vw, 900px)，CSS 过渡），schema 驱动表单——单页垂直滚动：
+ * 全部分组自上而下铺在一个滚动区（分区标题 sticky），无分组页签；底部 取消/保存 恒定可见
+ *（flex 列布局：body flex:1 内滚动，footer 恒贴底）。
  *
  * 数据纪律（计划全局约定 #3，两个 casing 域）：
  *  - 抽屉内的 json 是编辑器配置域：PascalCase 键原样直通（GET /config 回读、POST/PUT 回传），
@@ -9,9 +11,16 @@
  *  - 加载 = GET config → 整体深拷贝入响应式 json；schema 未列字段原样保留（透传保真），
  *    保存 = 整个 json 克隆回传（PUT 整体替换 / POST 新建）。
  *
- * 脏检测：加载完成时留 initialSnapshot（非响应式深拷贝）作基准；分组小圆点按「组内任一
- * 字段值与基准不一致」判定；整体 dirty 额外覆盖协议切换（Protocol/ClassVersion 不属于任何组）。
- * 隐藏字段（visibleWhen 不满足）只藏 UI 不删值，保存时随 json 原样回传。
+ * 脏检测（#8 简化）：加载完成时留 initialSnapshot（非响应式深拷贝）作基准，整体 dirty =
+ * 协议切换 或 json 任一键与基准不一致（不再有分组页签/分组小圆点）。隐藏字段
+ *（visibleWhen 不满足）只藏 UI 不删值，保存时随 json 原样回传。
+ *
+ * 凭据组（#7，owner 确认）：组顶「手动输入 ⇄ 从凭据库选择」二选一分段控件——
+ * 模式初值由 InheritedCredentialName 派生（editor/credentialMode.js，非空=库）；
+ * 手动 = 展示 UserName/Password/私钥等并清空库引用；库 = 只展示凭据库选择器 + 继承提示。
+ *
+ * 新建模式（#10，非复制）：头部数据源选择器（仅可写数据源；默认 = 当前树选中 ds），
+ * 保存与凭据库选项跟随所选 ds；编辑/复制/批量仍用传入 ds（只读 pill 展示）。
  *
  * 快捷键（抽屉打开期间，window 级）：Ctrl/Cmd+S 保存；Esc 关闭（脏则先确认，naive dialog）。
  * ServerListView 的全局 Esc 链在抽屉打开时不消费 Esc（见其 onGlobalEsc 的 editor 守卫）。
@@ -34,7 +43,9 @@ import FormField from './FormField.vue'
 import { PROTOCOLS, BULK_FIELDS } from '../../editor/schemas.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
+import { deriveCredentialMode } from '../../editor/credentialMode.js'
 import { diffPatch } from '../../editor/patch.js'
+import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
 
 const props = defineProps({
@@ -73,7 +84,26 @@ const loadError = ref('')
 const saving = ref(false)
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
-const activeGroup = ref('') // 当前页签 group.id
+
+// ---- 数据源（#10）：新建（非复制）可在头部改选，其余模式恒用传入 ds ----
+const ds = ref(props.dataSourceName || 'Local')
+const dsOptions = ref([]) // 可写数据源选项（新建模式拉取）
+const showDsSelect = computed(() => isCreate.value && !props.duplicateFrom)
+async function loadDsOptions() {
+  if (!showDsSelect.value) return
+  try {
+    const list = await api.datasources()
+    const names = (Array.isArray(list) ? list : [])
+      .filter((d) => d.writable !== false)
+      .map((d) => d.name)
+    // 当前树选中的 ds 保持默认选中（即使只读也列出：默认值即现状，改选权在用户）
+    if (!names.includes(ds.value)) names.unshift(ds.value)
+    dsOptions.value = names.map((n) => ({ label: n, value: n }))
+  } catch (e) {
+    // 拉取失败不阻断表单：退化为只有当前 ds 的单选项（等价旧的静态 pill）
+    dsOptions.value = [{ label: ds.value, value: ds.value }]
+  }
+}
 
 // ---- 派生：协议 schema ----
 const protocolKey = computed(() => {
@@ -82,11 +112,24 @@ const protocolKey = computed(() => {
 })
 const schema = computed(() => PROTOCOLS[protocolKey.value] || null)
 const groups = computed(() => schema.value?.groups || [])
-const activeFields = computed(() => {
-  const g = groups.value.find((x) => x.id === activeGroup.value)
-  return (g?.fields || []).filter((f) => isVisible(f, json))
-})
 const protocolOptions = Object.keys(PROTOCOLS).map((k) => ({ value: k, label: k }))
+
+// ---- 凭据组二选一（#7）：模式初值派生 + 切换清引用 ----
+const credentialMode = ref('manual') // 'manual' | 'vault'（load/协议切换时按 json 派生）
+function isCredentialGroup(g) {
+  return g.id === 'credential' && g.fields.some((f) => f.key === 'InheritedCredentialName')
+}
+function onCredModeSwitch(mode) {
+  if (mode === credentialMode.value) return
+  credentialMode.value = mode
+  if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（owner 确认语义）
+}
+/** 组内应渲染的字段：visibleWhen 过滤 + 凭据组按模式裁剪（manual 隐库选择器 / vault 只留库选择器）。 */
+function groupFields(g) {
+  const credFilter = (f) =>
+    !isCredentialGroup(g) || (credentialMode.value === 'manual' ? f.key !== 'InheritedCredentialName' : f.key === 'InheritedCredentialName')
+  return g.fields.filter((f) => isVisible(f, json) && credFilter(f))
+}
 
 // ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
 // bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
@@ -221,11 +264,11 @@ async function load() {
     replaceJson(raw)
     initialSnapshot = deepClone(raw)
     loadedProtocol = raw.Protocol || ''
+    credentialMode.value = deriveCredentialMode(raw.InheritedCredentialName) // #7 模式初值派生
     if (!PROTOCOLS[loadedProtocol]) {
       // 未来版本新增协议（schema 未收录）：json 可透传但无法渲染表单，明确告知而非渲染空表单
       loadError.value = t('editor.unsupportedProtocol', { p: loadedProtocol || '?' })
     }
-    activeGroup.value = groups.value[0]?.id || ''
   } catch (e) {
     loadError.value = e?.message || String(e)
   } finally {
@@ -233,22 +276,16 @@ async function load() {
   }
 }
 
-// ---- 脏检测：分组小圆点 + 整体 dirty ----
+// ---- 脏检测（#8 简化）：整体 dirty = 协议切换 或 json 任一键与基准不一致 ----
 function valueChanged(cur, init) {
   const a = cur === undefined ? undefined : JSON.stringify(cur)
   const b = init === undefined ? undefined : JSON.stringify(init)
   return a !== b
 }
-const groupDirty = computed(() => {
-  const map = {}
-  for (const g of groups.value) {
-    map[g.id] = g.fields.some((f) => valueChanged(json[f.key], initialSnapshot[f.key]))
-  }
-  return map
-})
 const dirty = computed(() => {
   if (isBulk.value) return bulkDirty.value // 覆盖态字段数即脏态（值变化不退出覆盖，无需更细）
-  return protocolKey.value !== loadedProtocol || Object.values(groupDirty.value).some(Boolean)
+  if (protocolKey.value !== loadedProtocol) return true
+  return Object.keys(json).some((k) => valueChanged(json[k], initialSnapshot[k]))
 })
 
 // ---- 协议切换（编辑/新建/复制均可；字段携带规则见 protocolSwitch.js）----
@@ -258,7 +295,7 @@ function onProtocolSwitch(next) {
   const to = PROTOCOLS[next]
   if (!from || !to) return
   replaceJson(switchProtocol(json, from, to))
-  activeGroup.value = groups.value[0]?.id || '' // 目标分组序列可能不同，回到首个页签
+  credentialMode.value = deriveCredentialMode(json.InheritedCredentialName) // 携带后的值重派生
   saveErrors.value = []
   missingRequired.value = []
 }
@@ -349,11 +386,11 @@ async function save() {
     }
     let savedId = props.serverId
     if (props.mode === 'create') {
-      const resp = await api.createServer(payload, props.dataSourceName)
+      const resp = await api.createServer(payload, ds.value) // #10：新建可改选数据源
       savedId = resp?.id || ''
       message.success(t('editor.created', { name: displayName() }))
     } else {
-      await api.updateServer(props.serverId, payload, props.dataSourceName)
+      await api.updateServer(props.serverId, payload, ds.value)
       message.success(t('editor.saved', { name: displayName() }))
     }
     emit('saved', { id: savedId, mode: props.mode, protocol: payload.Protocol })
@@ -379,17 +416,19 @@ const title = computed(() => {
   if (isCreate.value) return t('editor.title.create', { protocol: protocolKey.value || props.protocol || '?' })
   return t('editor.title.edit', { name: props.initialServer?.displayName || json.DisplayName || props.serverId })
 })
-// 协议字母瓦片配色：ColorHex（#AARRGGBB）有效时低饱和底 + 同色字（样式模式对齐 ServerRow 回退瓦片）
+// 协议字母瓦片配色（#9）：ColorHex（#AARRGGBB）不透明时低饱和底 + 同色字；透明/缺失 → null
+// → 回退 .ed-tile 中性样式（--bg-elevated + 边框，暗色下可见；样式模式对齐 ServerRow 回退瓦片）
 const tileStyle = computed(() => {
-  const hex = typeof json.ColorHex === 'string' && /^#[0-9a-fA-F]{8}$/.test(json.ColorHex) ? json.ColorHex : ''
-  if (!hex) return null
-  const rgb = '#' + hex.slice(3)
-  return { background: rgb + '33', color: rgb }
+  const rgb = opaqueHex(json.ColorHex)
+  return rgb ? { background: rgb + '33', color: rgb } : null
 })
+// 图标预览底色（#6）：当前 ColorHex 的低饱和 tint，即时联动基本信息组的图标缩略图
+const iconTint = computed(() => opaqueHex(json.ColorHex) || '')
 
 onMounted(() => {
   requestAnimationFrame(() => (show.value = true)) // 首帧后再置开 → 进场过渡生效
   load()
+  loadDsOptions() // #10：仅新建（非复制）实际拉取（内部按 showDsSelect 守卫）
   window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => {
@@ -402,12 +441,26 @@ onBeforeUnmount(() => {
   <div class="ed-root" :class="{ open: show }">
     <div class="ed-scrim" @click="requestClose"></div>
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="title">
-      <!-- 头部：协议瓦片 + 标题/归属 + 协议切换 + 关闭（bulk：无协议切换，瓦片为批量符号） -->
+      <!-- 头部：协议瓦片 + 标题/归属 + 协议切换 + 关闭（bulk：无协议切换，瓦片为批量符号）。
+           #10：新建（非复制）以数据源选择器替换静态 pill（仅可写源，默认=传入 ds）；
+           编辑/复制/批量保持只读 pill。 -->
       <header class="ed-head">
         <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
         <div class="ed-head-main">
           <div class="ed-title" :title="title">{{ title }}</div>
-          <div class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : dataSourceName)">{{ isBulk ? bulkDs : dataSourceName }}</div>
+          <n-select
+            v-if="showDsSelect && dsOptions.length > 1"
+            v-model:value="ds"
+            class="ed-ds-select"
+            size="small"
+            :options="dsOptions"
+            :title="t('editor.dataSourceLabel')"
+          />
+          <div
+            v-else
+            class="ed-ds"
+            :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)"
+          >{{ isBulk ? bulkDs : ds }}</div>
         </div>
         <n-select
           v-if="!isBulk"
@@ -422,7 +475,7 @@ onBeforeUnmount(() => {
         <button class="ed-close" type="button" :title="t('editor.close')" @click="requestClose">✕</button>
       </header>
 
-      <!-- 主体：加载/错误态 或 分组页签 + 字段 -->
+      <!-- 主体：加载/错误态 或 表单（批量=扁平覆盖列表；单机=单页分区滚动） -->
       <div class="ed-body">
         <div v-if="loading" class="ed-state">{{ t('editor.loading') }}</div>
         <div v-else-if="loadError" class="ed-state">
@@ -430,7 +483,7 @@ onBeforeUnmount(() => {
           <div class="ed-state-detail">{{ loadError }}</div>
         </div>
         <template v-else>
-          <!-- 批量模式（Task 10）：无分组页签，BULK_FIELDS 扁平列表 + 逐字段「保持不变/覆盖」 -->
+          <!-- 批量模式（Task 10）：BULK_FIELDS 扁平列表 + 逐字段「保持不变/覆盖」 -->
           <div v-if="isBulk" class="ed-fields">
             <div v-if="bulkDsMixed" class="ed-banner">{{ t('editor.bulkMixedDs') }}</div>
             <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
@@ -481,21 +534,8 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <!-- 单机模式：分组页签 + 字段 -->
+          <!-- 单机模式（#8 单页）：全部分组垂直铺开 + 分区标题（sticky），整体一个滚动区 -->
           <template v-else>
-            <nav class="ed-tabs">
-              <button
-                v-for="g in groups"
-                :key="g.id"
-                class="ed-tab"
-                :class="{ active: g.id === activeGroup }"
-                type="button"
-                @click="activeGroup = g.id"
-              >
-                {{ g.labelKey ? t(g.labelKey) : g.id }}
-                <span v-if="groupDirty[g.id]" class="ed-dot" :title="t('editor.unsavedTab')"></span>
-              </button>
-            </nav>
             <div class="ed-fields">
               <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
                 {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
@@ -503,14 +543,45 @@ onBeforeUnmount(() => {
               <div v-if="saveErrors.length" class="ed-banner">
                 <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
               </div>
-              <FormField
-                v-for="f in activeFields"
-                :key="f.key"
-                :field="f"
-                :model-value="json[f.key]"
-                :data-source-name="dataSourceName"
-                @update:model-value="(v) => setField(f.key, v)"
-              />
+              <section v-for="g in groups" :key="g.id" class="ed-group">
+                <h3 class="ed-group-title">{{ g.labelKey ? t(g.labelKey) : g.id }}</h3>
+                <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
+
+                <!-- 凭据组（#7）：手动 ⇄ 凭据库 分段控件 + 库模式提示行 -->
+                <div v-if="isCredentialGroup(g)" class="ed-cred-mode">
+                  <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
+                  <div class="ed-seg" role="tablist">
+                    <button
+                      type="button"
+                      role="tab"
+                      :aria-selected="credentialMode === 'manual'"
+                      :class="{ on: credentialMode === 'manual' }"
+                      @click="onCredModeSwitch('manual')"
+                    >{{ t('editor.credMode.manual') }}</button>
+                    <button
+                      type="button"
+                      role="tab"
+                      :aria-selected="credentialMode === 'vault'"
+                      :class="{ on: credentialMode === 'vault' }"
+                      @click="onCredModeSwitch('vault')"
+                    >{{ t('editor.credMode.vault') }}</button>
+                  </div>
+                </div>
+                <div v-if="isCredentialGroup(g) && credentialMode === 'vault'" class="ed-cred-hint-row">
+                  <span></span>
+                  <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
+                </div>
+
+                <FormField
+                  v-for="f in groupFields(g)"
+                  :key="f.key"
+                  :field="f"
+                  :model-value="json[f.key]"
+                  :data-source-name="ds"
+                  :tint="iconTint"
+                  @update:model-value="(v) => setField(f.key, v)"
+                />
+              </section>
             </div>
           </template>
         </template>
@@ -591,6 +662,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 7px;
+  border: 1px solid var(--border); /* #9：无色/透明色回退瓦片在暗色下也可见 */
   background: var(--bg-elevated);
   color: var(--text-3);
   font-size: 14px;
@@ -621,6 +693,11 @@ onBeforeUnmount(() => {
   background: var(--bg-elevated);
   color: var(--text-4);
   font-size: 10.5px;
+}
+/* #10 新建模式的数据源选择器：行高贴近 pill（对齐标题下方的二级信息位） */
+.ed-ds-select {
+  margin-top: 2px;
+  max-width: 220px;
 }
 .ed-proto {
   flex: 0 1 150px;
@@ -667,54 +744,15 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-/* 分组页签（水平滚动）：未保存分组带小圆点 */
-.ed-tabs {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 2px;
-  padding: 6px 12px 0;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-}
-.ed-tab {
-  position: relative;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: transparent;
-  color: var(--text-3);
-  font-size: 12.5px;
-  line-height: 1;
-  padding: 8px 10px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.ed-tab:hover {
-  color: var(--text-1);
-}
-.ed-tab.active {
-  color: var(--accent-text);
-  border-bottom-color: var(--accent);
-}
-.ed-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* 字段区 */
+/* 字段区（#8 单页）：唯一滚动容器，全部分组垂直铺开 */
 .ed-fields {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 18px 20px;
+  gap: 14px;
+  padding: 8px 18px 20px;
 }
 .ed-banner {
   border: 1px solid var(--danger);
@@ -728,6 +766,88 @@ onBeforeUnmount(() => {
 }
 .ed-banner-required {
   border-color: var(--danger);
+}
+
+/* 分组区块（#8）：分区标题 sticky 于滚动区顶部（滚动时贴顶，不遮字段） */
+.ed-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ed-group-title {
+  position: sticky;
+  top: 0; /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
+  z-index: 1;
+  margin: 0;
+  padding: 6px 0 5px;
+  background: var(--bg-panel); /* 滚动内容从标题下穿过时不透底 */
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.ed-group-desc {
+  margin: -4px 0 0;
+  color: var(--text-4);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+/* 凭据组二选一（#7）：标签列对齐 FormField 的 148px 网格 */
+.ed-cred-mode {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: center;
+}
+.ed-cred-mode-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.ed-seg {
+  display: inline-flex;
+  align-self: start;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.ed-seg button {
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ed-seg button + button {
+  border-left: 1px solid var(--border);
+}
+.ed-seg button:hover:not(.on) {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.ed-seg button.on {
+  background: var(--accent-container);
+  color: var(--accent-text);
+}
+.ed-cred-hint-row {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: center;
+  margin-top: -6px;
+}
+.ed-cred-hint {
+  color: var(--text-4);
+  font-size: 11.5px;
+  line-height: 1.5;
 }
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
