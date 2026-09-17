@@ -1,13 +1,13 @@
 <script setup>
-// 两栏布局（spec §3.1：边栏 216px + 内容区）。边栏承载 SideTree（数据源树+标签区）；
-// 内容区 = 面包屑行 + 行列表（Task 16）。selection/tag 状态由本组件持有；
-// tag 与搜索过滤在此取交集（Task 17）：基础列表 → 标签 → 搜索命中集 → 传 ServerTable。
-// 连接动作与全局键盘流（spec §8.2，Task 18）也在此汇聚：所有连接入口（行双击/hover ▸/
+// 两栏布局（边栏 216px + 内容区）。边栏承载 SideTree（数据源树+标签区）；
+// 内容区 = 面包屑行 + 行列表。selection/tag 状态由本组件持有；
+// tag 与搜索过滤在此取交集：基础列表 → 标签 → 搜索命中集 → 传 ServerTable。
+// 连接动作与全局键盘流也在此汇聚：所有连接入口（行双击/hover ▸/
 // 右键菜单/树叶双击/批量条/Enter 光标行）emit 到本组件统一走 api.connect；
 // 全局 Esc 链是唯一的 window 级 Esc 处理器（App.vue 搜索框与 ServerTable 均不本地拦截，
 // 避免焦点位置不同导致链序漂移或双触发）。
-// Task 20：内容区三态（骨架屏/空库引导/无匹配）+ 底部状态栏（数据源状态点/统计/SSE/语言切换）
-// + <900px 自动收起边栏（spec §8.7）。
+// 内容区三态（骨架屏/空库引导/无匹配）+ 底部状态栏（数据源状态点/统计/SSE/语言切换）
+// + <900px 自动收起边栏。
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
@@ -31,7 +31,7 @@ const message = useMessage()
 const dialog = useDialog()
 const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）
 const activeTag = ref('') // ''=未按标签过滤
-// 收起状态仅本地内存（持久化暂缓）。窄窗适配（spec §8.7）：<900px 自动收起，只收不展——
+// 收起状态仅本地内存（持久化暂缓）。窄窗适配：<900px 自动收起，只收不展——
 // 仅在跨过 900 阈值时收起（窄窗内用户手动展开后，同侧宽度微调不反复打回），≥900 不自动展开
 const collapsed = ref(false)
 const { width: winWidth } = useWindowSize()
@@ -41,23 +41,23 @@ watch(winWidth, (w, old) => {
 
 const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
 
-// tree-state 首载（fix-batch1 Task 2）：虚拟文件夹物化需要 expansion 键，侧栏收起
+// tree-state 首载：虚拟文件夹物化需要 expansion 键，侧栏收起
 //（SideTree 卸载）时也须可用；useTreeState 幂等（SideTree 挂载时同调不重复请求）
 const { folderPathsByDs, load: loadTreeState } = useTreeState()
 const folderOps = useFolderOps()
 onMounted(() => loadTreeState())
 
-// 树模型（含空文件夹物化）与「当前层级文件夹行」（fix-batch1 Task 2 #2）：
-// 数据源根/文件夹 = 该层文件夹行；「全部数据」根（fix-batch5 Task B）不显示文件夹行——
+// 树模型（含空文件夹物化）与「当前层级文件夹行」：
+// 数据源根/文件夹 = 该层文件夹行；「全部数据」根不显示文件夹行——
 // 全库服务器总览里文件夹行只添噪音，来源上下文由行内 folder 列（数据源 / 路径前缀）承担
 const treeModel = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 const currentFolders = computed(() => {
-  // 搜索过滤激活时隐藏文件夹行（fix-batch1 Task 5 评审）：搜索只命中服务器（useServers
+  // 搜索过滤激活时隐藏文件夹行：搜索只命中服务器（useServers
   // searchedIds 为 server id 集），文件夹名不参与匹配——保留会在命中结果上方悬浮一层
   // 与查询无关的文件夹，误导导航；空 Set（零命中）同样隐藏。
   if (searchedIds.value != null) return []
   const sel = selection.value
-  // 「全部数据」根（selection=null，fix-batch5 Task B）：只列服务器行（全库递归，
+  // 「全部数据」根（selection=null）：只列服务器行（全库递归，
   // ServerTable 对 null selection 不过滤），不生成文件夹行
   if (!sel || !sel.dataSourceName) return []
   const out = []
@@ -68,7 +68,7 @@ const currentFolders = computed(() => {
   return out
 })
 
-// 双击文件夹行 = 进入（fix-batch1 Task 2）；树选中态与面包屑共用 selection
+// 双击文件夹行 = 进入；树选中态与面包屑共用 selection
 function onOpenFolder(f) {
   selection.value = { dataSourceName: f.dsName, folderPath: f.path }
 }
@@ -83,7 +83,7 @@ function onMoveToFolder({ server, dsName, path }) {
 const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
 const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
 
-// 面包屑（fix-batch1 Task 2）：可点击逐级返回——全部数据 › 数据源 · 全部服务器 › 路径段；
+// 面包屑：可点击逐级返回——全部数据 › 数据源 · 全部服务器 › 路径段；
 // 末段=当前层级（强显示不可点）。hover title 给完整路径
 const crumbSegments = computed(() => {
   const sel = selection.value
@@ -106,7 +106,7 @@ const crumbTitle = computed(() => {
 const tableCount = ref(0)
 const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其暴露的菜单/勾选/光标回退方法
 
-// ---- 内容区三态（spec §8.5 + 骨架屏，Task 20）：互斥地取代 ServerTable（表格隐藏时 ref 为 null，
+// ---- 内容区三态 + 骨架屏：互斥地取代 ServerTable（表格隐藏时 ref 为 null，
 // Esc 链的 tb?. 守卫天然兼容）。SSE 重载时列表已有数据，不闪骨架 ----
 const showSkeleton = computed(() => loading.value && !servers.value.length) // 首载进行中
 // 后端不可达（拉取失败且无任何数据）：优先于空库引导展示——引导卡的「新建/导入」会把用户带向
@@ -129,7 +129,7 @@ function clearFilters() {
   selection.value = null
 }
 
-// ---- 状态栏（spec §3.1 内容区底部 26px）：左=数据源状态点+名称（最多 3 个，超出 +N），
+// ---- 状态栏（内容区底部 26px）：左=数据源状态点+名称（最多 3 个，超出 +N），
 // 右=统计 + SSE 可达性 + 语言切换。状态点语义与 SideTree 根节点一致（绿=connected /
 // 红=reconnecting·title 带重连信息 / 灰=其余）----
 const MAX_DS = 3
@@ -141,7 +141,7 @@ const dsTitle = (ds) =>
 function toggleLocale() {
   setLocale(locale.value === 'en-US' ? nonEnglishLocale : 'en-US')
 }
-// 语言切换（fix-batch Task C）：当前语言 ⇄ English——选了日语就按日语⇄英语切，不再硬编码
+// 语言切换：当前语言 ⇄ English——选了日语就按日语⇄英语切，不再硬编码
 // 中英。nonEnglishLocale 记住最近使用的非英语界面语言：locale 初值来自 localStorage/浏览器
 // 探测，且设置页选语言也会 setLocale（可能落到任一非英语码），用 watch 跟踪而非只读一次；
 // 首启即英语（从未见过非英语界面）回落 zh-CN——与旧版 en↔zh 行为一致，避免按钮空操作。
@@ -155,7 +155,7 @@ watch(locale, (l) => {
 const langNative = (code) => LANGUAGES.find((l) => l.code === code)?.native || 'English'
 const nextLang = computed(() => (locale.value === 'en-US' ? langNative(nonEnglishLocale) : 'English'))
 
-// ---- 连接动作（spec §8.2）：api.connect → 后端触发 OnRequestServerConnect（fromView="WebUi"），
+// ---- 连接动作：api.connect → 后端触发 OnRequestServerConnect（fromView="WebUi"），
 // 密码交互与会话窗口由桌面端既有管线处理（Web 侧不感知，spec 约定凭据留在本地）----
 async function onConnect(id) {
   const name = servers.value.find(s => s.id === id)?.displayName || id
@@ -170,7 +170,7 @@ async function onConnect(id) {
 
 async function onBatchConnect(ids) {
   if (!ids?.length) return
-  // 批量连接阈值（Plan 4 Task 3，产品决策项）：超过 BATCH_CONNECT_THRESHOLD 台先弹确认
+  // 批量连接阈值（产品决策项）：超过 BATCH_CONNECT_THRESHOLD 台先弹确认
   //（TagManagerModal「连接全部」同款），防误点一次拉起整屏会话
   if (ids.length > BATCH_CONNECT_THRESHOLD) {
     dialog.warning({
@@ -200,7 +200,7 @@ async function runBatchConnect(ids) {
   if (ok < ids.length) message.error(t('toast.batchConnectFailed', { n: ids.length - ok }))
 }
 
-// ---- 导出（Plan 4 Task 3）：批量条「导出」→ blob 下载；403 = 桌面端已弹二次验证
+// ---- 导出：批量条「导出」→ blob 下载；403 = 桌面端已弹二次验证
 //（未通过/取消），提示引导重试（通过后 30s 窗口内重试免验证）----
 async function onExport(ids) {
   if (!ids?.length) return
@@ -223,7 +223,7 @@ async function onExport(ids) {
   }
 }
 
-// ---- 全局 Esc 链（spec §8.2）：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
+// ---- 全局 Esc 链：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
 // 菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
 // 搜索归本组件（useServers 共享态）——三处状态在唯一的 window 级 handler 里按序裁决，
 // 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。
@@ -245,7 +245,7 @@ function onGlobalEsc(e) {
 onMounted(() => window.addEventListener('keydown', onGlobalEsc))
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalEsc))
 
-// ---- 编辑抽屉（Plan 2 Task 8）：状态 + 全部入口汇聚于此 ----
+// ---- 编辑抽屉：状态 + 全部入口汇聚于此 ----
 // editor = { mode:'create', ds, protocol?, duplicateFrom?, initial? } | { mode:'edit', serverId, ds, initial } | null
 const editor = ref(null)
 
@@ -255,7 +255,7 @@ const { createRequest, importRequest } = useEditorBus()
 watch(createRequest, () => {
   if (!editor.value) openCreate()
 })
-// 「+ ▾ 导入」同款（Plan 4 Task 3）：打开导入模态（与编辑抽屉互不排斥——模态在其上层，
+// 「+ ▾ 导入」同款：打开导入模态（与编辑抽屉互不排斥——模态在其上层，
 // 但导入是明确的新任务入口，无需像 createRequest 那样守卫未保存编辑）
 watch(importRequest, () => {
   importModal.value = true
@@ -276,7 +276,7 @@ function openDuplicate(server) {
 }
 
 // 删除：确认对话框（naive dialog）→ DELETE → toast；UpdateServer/DeleteServer 系不触发
-// SSE（已知后端行为），前端兜底 reload 刷新列表（fix-batch1 #5）
+// SSE（已知后端行为），前端兜底 reload 刷新列表
 function onDelete(server) {
   dialog.warning({
     title: t('editor.deleteTitle'),
@@ -297,7 +297,7 @@ function onDelete(server) {
   })
 }
 
-// ---- 批量编辑（Plan 2 Task 10）：批量条按钮 → 抽屉 bulk 模式 ----
+// ---- 批量编辑：批量条按钮 → 抽屉 bulk 模式 ----
 // 共享值计算需要列表 DTO：按勾选 id 从 servers 快照取（列表 DTO = camelCase 域，
 // 与批量 patch 同域）；快照里找不到的 id（列表恰在勾选后变化）直接跳过，以能取到的为准。
 function openBulkEdit(ids) {
@@ -314,7 +314,7 @@ function openBulkEdit(ids) {
 }
 
 // 保存成功（新建/编辑/复制/批量共用的 saved 事件）：UpdateServer 系不触发 SSE（已知后端
-// 行为），前端兜底 reload（fix-batch1 #5）；这里收敛抽屉状态 + 清理指向旧行的选中态
+// 行为），前端兜底 reload；这里收敛抽屉状态 + 清理指向旧行的选中态
 // （名称/协议可能已变）。bulk 模式目标是一个 id 集，不涉及树叶选中回退。
 function onSaved({ id, mode }) {
   if (mode === 'edit' && selection.value?.serverId && selection.value.serverId !== id) {
@@ -325,13 +325,13 @@ function onSaved({ id, mode }) {
   reload()
 }
 
-// ---- 标签管理模态（Plan 3 Task 5）：SideTree「+ 管理」chip 打开；ds = 当前树选中的数据源 ----
+// ---- 标签管理模态：SideTree「+ 管理」chip 打开；ds = 当前树选中的数据源 ----
 const tagManager = ref(null) // null=关 | { ds }
 function openTagManager() {
   tagManager.value = { ds: selection.value?.dataSourceName || 'Local' }
 }
 
-// ---- 导入模态（Plan 4 Task 3）：空库引导卡「导入」与顶栏「+ ▾ 导入」两个入口共用；
+// ---- 导入模态：空库引导卡「导入」与顶栏「+ ▾ 导入」两个入口共用；
 // 默认目标数据源 = 当前树选中（模态打开时取快照，关闭即销毁不跨次残留）----
 const importModal = ref(false)
 </script>
@@ -350,7 +350,7 @@ const importModal = ref(false)
     </aside>
     <main class="content">
       <div class="crumb-row">
-        <!-- 可点击面包屑（fix-batch1 Task 2）：逐级返回；末段=当前层级 -->
+        <!-- 可点击面包屑：逐级返回；末段=当前层级 -->
         <div class="crumb" :title="crumbTitle">
           <template v-for="(seg, i) in crumbSegments" :key="i">
             <button v-if="i < crumbSegments.length - 1" class="crumb-btn" @click="selection = seg.sel">{{ seg.label }}</button>
@@ -359,19 +359,19 @@ const importModal = ref(false)
           </template>
           <span class="crumb-count">{{ t('crumb.count', { n: listCount }) }}</span>
         </div>
-        <!-- 搜索过滤 chip（Task 17）：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
+        <!-- 搜索过滤 chip：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
         <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
           <span class="sc-label">⌕ {{ searchQuery }}</span>
           <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
         </span>
-        <!-- 批量条 + 表头工具簇宿主（fix-batch Task C）：ServerTable 把勾选批量操作与
+        <!-- 批量条 + 表头工具簇宿主：ServerTable 把勾选批量操作与
              ≡ 自定义顺序 / ▦ 列菜单 Teleport 进来，与面包屑同行右侧对齐。容器位于
              骨架屏/空态 v-if 链之外恒存在（Teleport 目标必须先于 ServerTable 挂载），
              内容随表格卸载自动消失 -->
         <div id="crumb-actions" class="crumb-actions"></div>
       </div>
 
-      <!-- 首载骨架屏（spec §8.4）：6 行灰块脉动（状态点 + 图标圆 + 名称/地址两横条，行高对齐真实行），
+      <!-- 首载骨架屏：6 行灰块脉动（状态点 + 图标圆 + 名称/地址两横条，行高对齐真实行），
            数据到达后被表格原地替换（同布局高度，无跳动） -->
       <div v-if="showSkeleton" class="skeleton-host" aria-hidden="true">
         <div v-for="i in 6" :key="i" class="sk-row" :style="{ '--d': (i - 1) * 120 + 'ms' }">
@@ -382,13 +382,13 @@ const importModal = ref(false)
         </div>
       </div>
 
-      <!-- 后端不可达（Task 21）：居中提示，取代空库引导卡——后端未运行时引导用户新建/导入会误导 -->
+      <!-- 后端不可达：居中提示，取代空库引导卡——后端未运行时引导用户新建/导入会误导 -->
       <div v-else-if="showOffline" class="empty-offline">
         <div class="eo-title">{{ t('empty.offline') }}</div>
         <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
       </div>
 
-      <!-- 空库引导卡片（spec §8.5）：新建（Plan 2 Task 8）与导入（Plan 4 Task 3）均已接线 -->
+      <!-- 空库引导卡片：新建与导入均已接线 -->
       <div v-else-if="showGuide" class="empty-guide">
         <div class="eg-title">{{ t('empty.none') }}</div>
         <div class="eg-actions">
@@ -426,7 +426,7 @@ const importModal = ref(false)
         @move-to-folder="onMoveToFolder"
       />
 
-      <!-- 标签管理模态（Plan 3 Task 5）：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
+      <!-- 标签管理模态：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
       <TagManagerModal
         v-if="tagManager"
         :show="true"
@@ -434,7 +434,7 @@ const importModal = ref(false)
         @update:show="tagManager = $event ? tagManager : null"
       />
 
-      <!-- 导入模态（Plan 4 Task 3）：默认数据源取当前树选中；关闭即销毁（文件/错误不跨次残留） -->
+      <!-- 导入模态：默认数据源取当前树选中；关闭即销毁（文件/错误不跨次残留） -->
       <ImportModal
         v-if="importModal"
         :show="true"
@@ -442,7 +442,7 @@ const importModal = ref(false)
         @update:show="importModal = $event"
       />
 
-      <!-- 连接编辑抽屉（Plan 2 Task 8/10）：新建/编辑/复制/批量入口共用；fixed 覆盖层，不参与 flex 布局 -->
+      <!-- 连接编辑抽屉：新建/编辑/复制/批量入口共用；fixed 覆盖层，不参与 flex 布局 -->
       <EditorDrawer
         v-if="editor"
         :mode="editor.mode"
@@ -457,7 +457,7 @@ const importModal = ref(false)
         @saved="onSaved"
       />
 
-      <!-- 底部状态栏（spec §3.1）：数据源状态点 · 台数/标签数 · SSE 可达性 · 语言切换 -->
+      <!-- 底部状态栏：数据源状态点 · 台数/标签数 · SSE 可达性 · 语言切换 -->
       <footer class="status-bar">
         <span v-for="ds in dsShown" :key="ds.name" class="sb-ds" :title="dsTitle(ds)">
           <span class="sb-dot" :class="dsDotClass(ds.status)"></span>
@@ -597,7 +597,7 @@ const importModal = ref(false)
   background: var(--bg-hover);
   color: var(--text-1);
 }
-/* ServerTable Teleport 内容宿主（fix-batch Task C）：批量条 + ≡/▦ 工具簇靠右与面包屑同行；
+/* ServerTable Teleport 内容宿主：批量条 + ≡/▦ 工具簇靠右与面包屑同行；
    gap 由内容自带（batch-bar 8px / table-tools 4px），此处只管整体右贴与纵向居中 */
 .crumb-actions {
   flex: 0 0 auto;
@@ -662,7 +662,7 @@ const importModal = ref(false)
   .sk { animation: none; opacity: 0.7; }
 }
 
-/* ---- 空库引导卡片（spec §8.5）：居中；新建/导入均已接线，提示行指向桌面启动器热键 ---- */
+/* ---- 空库引导卡片：居中；新建/导入均已接线，提示行指向桌面启动器热键 ---- */
 .empty-guide {
   flex: 1;
   min-height: 0;
@@ -762,7 +762,7 @@ const importModal = ref(false)
   color: var(--text-1);
 }
 
-/* ---- 底部状态栏（spec §3.1）：26px 单行，左=数据源状态点（≤3 个 + 溢出 +N），右=统计/SSE/语言 ---- */
+/* ---- 底部状态栏：26px 单行，左=数据源状态点（≤3 个 + 溢出 +N），右=统计/SSE/语言 ---- */
 .status-bar {
   flex: 0 0 26px;
   display: flex;

@@ -73,11 +73,11 @@ export const api = {
   saveAppearance: (a) => request('/api/settings/appearance', { method: 'PUT', body: a }),
   getTreeState: () => request('/api/ui-state/tree'),
   saveTreeState: (s) => request('/api/ui-state/tree', { method: 'PUT', body: s }),
-  // 列表自定义顺序（Plan 4 Task 4 行拖拽）：GET → {ids:按序 id 列表, order:{id:序号}}；
+  // 列表自定义顺序（列表行拖拽）：GET → {ids:按序 id 列表, order:{id:序号}}；
   // POST {ids} = 整库新顺序全量替换（与 WPF 列表拖拽落点同语义），响应 {ids}=实际保存顺序
   getListOrder: () => request('/api/ui-state/list-order'),
   saveListOrder: (ids) => request('/api/ui-state/list-order', { method: 'POST', body: { ids } }),
-  // 编辑器（Plan 2 Task 8）：config/POST/PUT 的内嵌 json 为 PascalCase 直通域（勿做命名转换），
+  // 编辑器：config/POST/PUT 的内嵌 json 为 PascalCase 直通域（勿做命名转换），
   // DELETE 成功返回 204 → null（request 内已处理空体）
   getServerConfig: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}/config?ds=${encodeURIComponent(ds ?? 'Local')}`),
   createServer: (json, ds) => request('/api/servers', { method: 'POST', body: { dataSourceName: ds ?? 'Local', json } }),
@@ -87,12 +87,12 @@ export const api = {
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
   icons: () => request('/api/icons'),
-  // Serial 编辑器可输入下拉建议（fix batch4 Task B）：后端机器 COM 口 + 波特率表
+  // Serial 编辑器可输入下拉建议：后端机器 COM 口 + 波特率表
   //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）
   serialOptions: () => request('/api/serial/options'),
   credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),
   extractIcon: (path) => request('/api/icons/extract-from-exe', { method: 'POST', body: { path } }),
-  // 凭据库管理（Plan 3 Task 1）：credential 字段与 WPF 模型一致（PascalCase），
+  // 凭据库管理：credential 字段与 WPF 模型一致（PascalCase），
   // password/privateKeyPath 为明文（服务端加密落库）；reveal 受本地二次验证保护（30s 窗口）
   getCredentials: (ds) => request('/api/credentials?ds=' + encodeURIComponent(ds ?? 'Local')),
   createCredential: (credential, ds) => request('/api/credentials', { method: 'POST', body: { ds: ds ?? 'Local', credential } }),
@@ -102,13 +102,13 @@ export const api = {
     request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
   revealCredential: (name, ds) =>
     request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST' }),
-  // 设置中心（Plan 3 Task 2）：general/launcher 均为白名单部分更新（缺省键=保持不变）；
+  // 设置中心：general/launcher 均为白名单部分更新（缺省键=保持不变）；
   // general.language 用小写码（zh-cn），web locale（zh-CN）由调用方转换；
-  // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态）——开关点击立即生效
-  //（fix batch3 #6）：先 verifySettings 过 WPF 平价验证门，通过才单独 PUT 该键提交翻转
+  // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态）——开关点击立即生效：
+  // 先 verifySettings 过 WPF 平价验证门，通过才单独 PUT 该键提交翻转
   getGeneralSettings: () => request('/api/settings/general'),
   saveGeneralSettings: (g) => request('/api/settings/general', { method: 'PUT', body: g }),
-  // 二次验证门（fix batch3 #6）：POST 触发 Windows 凭据/Hello 验证（未开启验证时后端直通 200）；
+  // 二次验证门：POST 触发 Windows 凭据/Hello 验证（未开启验证时后端直通 200）；
   // 取消/失败 → 403（request 封装抛 err.status=403，调用方按状态码提示并回弹开关）
   verifySettings: () => request('/api/settings/verify', { method: 'POST' }),
   // launcher 热键：hotKeyModifiers/hotKeyKey 线格式 = WPF 枚举成员名（"ControlAlt"/"M"）；
@@ -123,7 +123,7 @@ export const api = {
     request('/api/tags/rename', { method: 'POST', body: { ds: ds ?? 'Local', from, to } }),
   deleteTag: (name, ds) =>
     request(`/api/tags/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
-  // 数据源管理（Plan 3 Task 3）：type = sqlite|mysql|pgsql（postgresql 同义）；name 缺省时 sqlite 由
+  // 数据源管理：type = sqlite|mysql|pgsql（postgresql 同义）；name 缺省时 sqlite 由
   // 后端从 path 文件名推导；config.password 仅写方向（新建必填、PUT 空=保持原密码），任何读接口无密码。
   // POST 保存后即返回实际 status（连接失败不回滚，与 WPF 一致——先 testDataSource 验证再保存）。
   // DELETE：数据源下仍有服务器时返回 409 {serverCount}，keepServers=true 确认后按 WPF 语义移除
@@ -140,7 +140,7 @@ export const api = {
   // PascalCase + $type 直通域（与 GET 原样往返，勿做命名转换）；PUT 缺失协议=保持，未知协议 400
   getRunners: () => request('/api/settings/runners'),
   saveRunners: (protocols) => request('/api/settings/runners', { method: 'PUT', body: { protocols } }),
-  // 导入/导出（Plan 4 Task 2）：
+  // 导入/导出：
   // 导入 = multipart 上传（FormData 由浏览器补 boundary，勿设 Content-Type）；格式按扩展名嗅探
   //（.json=1Remote 导出、.csv=mRemoteNG、.rdp、.db=PRemoteM/1Remote 双探测）→ {added, skipped, errors}
   importServers: (file, ds) => {

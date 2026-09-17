@@ -1,10 +1,9 @@
 <script setup>
-// 单行（spec §3.4，对齐已确认样张 v2）：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
+// 单行：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
-// 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
-// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）。
-// 备注列（fix-batch5 Task B，取代 fix-batch3 名称旁 ▤ 图标）：文本直显（一行 ellipsis），
-// 整格悬停弹 Markdown 预览（对齐 WPF 悬停备注弹层）。
+// 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接、
+// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（与菜单「编辑」同链路）。
+// 备注列：文本直显（一行 ellipsis），整格悬停弹 Markdown 预览（对齐 WPF 悬停备注弹层）。
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import StatusDot from './StatusDot.vue'
@@ -18,18 +17,18 @@ const props = defineProps({
   server: { type: Object, required: true },
   selected: { type: Boolean, default: false }, // 复选框勾选态（批量操作）
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
-  cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
-  showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
-  showDs: { type: Boolean, default: false }, // 「全部数据」根（fix-batch1 Task 2）：文件夹列前缀数据源名
-  hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/note/folder/time: bool}
-  query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：非空时名称/地址单元格做命中高亮
+  cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接）
+  showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列
+  showDs: { type: Boolean, default: false }, // 「全部数据」根视图：文件夹列前缀数据源名
+  hiddenCols: { type: Object, default: null }, // 列显隐：{name/addr/proto/note/folder/time: bool}
+  query: { type: String, default: '' }, // 搜索过滤词：非空时名称/地址单元格做命中高亮
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
 const { t, locale } = useI18n()
 
 const iconSrc = (s) => (s.iconBase64 ? 'data:image/png;base64,' + s.iconBase64 : '')
 const initial = (p) => (p || '?').charAt(0).toUpperCase()
-// 回退瓦片配色（fix-batch1 #9）：列表 DTO 的 color 是 C# ColorHex（#AARRGGBB，'#00000000'=无色）——
+// 回退瓦片配色：列表 DTO 的 color 是 C# ColorHex（#AARRGGBB，'#00000000'=无色）——
 // 先经 opaqueHex 归一为 #RRGGBB（alpha 在前直接当 CSS 用会得到非法值/全透明，暗色下不可见），
 // 无色/非法 → null → 走 .icon-fb 中性样式
 const tileStyle = (s) => {
@@ -38,7 +37,7 @@ const tileStyle = (s) => {
 }
 // 地址列：Serial 等无地址协议回退显示协议名；有端口拼 ':port'
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
-// 文件夹列（fix-batch1 Task 2）：「全部数据」根视图无文件夹行（fix-batch5 Task B），此列是
+// 文件夹列：「全部数据」根视图无文件夹行，此列是
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）
 const folderText = (s) =>
@@ -51,11 +50,11 @@ const overflow = (s) => Math.max(0, s.tags.length - 2)
 // （渲染期读 locale.value，语言切换即时重格式化，不再依赖 navigator.language）
 const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.value) || t('status.never')
 
-// 搜索命中高亮分段（fix-batch1 #1）：查询非空时名称/地址同时高亮；拼音等无法定位原文的
+// 搜索命中高亮分段：查询非空时名称/地址同时高亮；拼音等无法定位原文的
 // 命中不高亮（splitHighlight 内处理，见其文件头注释）
 const nameSegs = computed(() => splitHighlight(props.server.displayName, props.query))
 const addrSegs = computed(() => splitHighlight(addressText(props.server), props.query))
-// 行左色条（fix-batch2 #3）：服务器自定义色（C# #AARRGGBB → opaqueHex 归一为不透明 #RRGGBB）
+// 行左色条：服务器自定义色（C# #AARRGGBB → opaqueHex 归一为不透明 #RRGGBB）
 // 的实色竖条，对齐 WPF 列表行色条——列表中颜色直接可见；无色/全透明 → null 不渲染（无占位）
 const barColor = computed(() => opaqueHex(props.server.color))
 </script>
@@ -68,7 +67,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
     @dblclick="emit('connect')"
     @contextmenu.prevent="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
   >
-    <!-- 左侧颜色条（fix-batch2 #3）：absolute 定位不占 flex 布局，列对齐零位移 -->
+    <!-- 左侧颜色条：absolute 定位不占 flex 布局，列对齐零位移 -->
     <span v-if="barColor" class="cbar" :style="{ background: barColor }"></span>
     <div class="cell cell-check">
       <input type="checkbox" class="cb" :checked="selected" :title="t('row.select')" @click.stop @change="emit('toggle-select')" />
@@ -86,7 +85,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
       <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
-    <!-- 备注列（fix-batch5 Task B）：note 非空 = 纯文本一行直显（title 原文），整格作为
+    <!-- 备注列：note 非空 = 纯文本一行直显（title 原文），整格作为
          n-popover 的 trigger（naive 不加包装 DOM）悬停弹 Markdown 预览；空 note = 空单元格
          （与 tags 列空态一致，不用「—」占位） -->
     <template v-if="!hiddenCols || !hiddenCols.note">
@@ -110,7 +109,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
     <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
-      <!-- 编辑按钮（Plan 2 Task 8 接线）：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
+      <!-- 编辑按钮：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
       <button class="act" :title="t('row.edit')" @click="emit('edit')">✎</button>
       <button
         class="act"
@@ -124,7 +123,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
 <style scoped>
 /* 列宽消费父级下发的 --c-*（见 ServerTable colVars），带独立使用时的兜底值 */
 .row {
-  position: relative; /* 行左色条（fix-batch2 #3）absolute 定位基准 */
+  position: relative; /* 行左色条 absolute 定位基准 */
   display: flex;
   align-items: center;
   height: 36px;
@@ -171,7 +170,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  /* fix-batch1 #4：地址与协议徽章间舒适间距（原 .cell 通用 10px 视觉上仍贴住徽章，
+  /* 地址与协议徽章间舒适间距（.cell 通用 10px 视觉上仍贴住徽章，
      提到 16px；.h-addr 同值保持表头/行同缩进） */
   padding-right: 16px;
 }
@@ -183,7 +182,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   gap: 4px;
   overflow: hidden;
 }
-/* 备注列（fix-batch5 Task B）：一行纯文本直显，弱化色 + ellipsis；整格为悬停弹层 trigger */
+/* 备注列：一行纯文本直显，弱化色 + ellipsis；整格为悬停弹层 trigger */
 .cell-note {
   flex: var(--c-note, 1.2) var(--c-note-grow, 1) 0;
   overflow: hidden;
@@ -212,7 +211,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   gap: 2px;
   justify-content: flex-end;
   padding-right: 0;
-  opacity: 0; /* hover 操作浮现（spec §3.4） */
+  opacity: 0; /* hover 操作浮现 */
 }
 .row:hover .cell-act,
 .row.selected .cell-act {
@@ -319,7 +318,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   margin: 0.6em 0;
 }
 
-/* 搜索命中高亮（fix-batch1 #1；fix-batch2 #9 提亮）：mark 语义的实心强调底 + 对比文字
+/* 搜索命中高亮：mark 语义的实心强调底 + 对比文字
    （accent 底 + 面板底色文字——深色主题蓝底深字/浅色主题蓝底白字，均高对比；
    不加粗，保持行高一致） */
 .hl {
@@ -329,7 +328,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   padding: 0 1px;
 }
 
-/* 行左色条（fix-batch2 #3）：整行高 4px 实色竖条贴行左缘；checkbox 居中于 30px 列内，
+/* 行左色条：整行高 4px 实色竖条贴行左缘；checkbox 居中于 30px 列内，
    4px 覆盖不触及。不占 flex 布局（absolute），列对齐与表头零位移 */
 .cbar {
   position: absolute;

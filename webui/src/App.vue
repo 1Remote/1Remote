@@ -11,7 +11,7 @@ const { requestNewServer, requestImport } = useEditorBus()
 // naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）。
 // Input/Select 的默认 placeholder（enUS "Please Input"/"Please Select"、zhCN "请输入"/"请选择"）
 // 清空为 ''：WPF 表单无 Tag 的输入框不显示任何提示文本，web 未提供 placeholderKey 的字段
-// 同样应为空才对齐；有键的字段由 FormField 显式传 :placeholder，不受该默认影响（fix-batch4 Task C）。
+// 同样应为空才对齐；有键的字段由 FormField 显式传 :placeholder，不受该默认影响。
 const naiveLocale = computed(() => {
   const base = locale.value === 'en-US' ? enUS : zhCN
   return {
@@ -23,11 +23,11 @@ const naiveLocale = computed(() => {
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
-// Ctrl+K / Cmd+K 与 Ctrl+F / Cmd+F 全局聚焦搜索框（spec §8；fix-batch3 Task C #8 加 F）：
+// Ctrl+K / Cmd+K 与 Ctrl+F / Cmd+F 全局聚焦搜索框：
 // keydown 于 window（冒泡），preventDefault 让位浏览器默认（如地址栏搜索 / 页内查找栏）；
 // 再次按下全选已有内容，方便直接覆盖输入。
 // Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——
-// 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度（Task 18）。
+// 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度。
 function onGlobalKey(e) {
   const key = e.key?.toLowerCase()
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (key === 'k' || key === 'f')) {
@@ -39,8 +39,8 @@ function onGlobalKey(e) {
 onMounted(() => window.addEventListener('keydown', onGlobalKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 
-// 「+」下拉（Plan 4 Task 3）：新建（原直达按钮）+ 导入（新模态入口）——服务器已存在时
-// 导入是自然入口；两动作都经 editorBus 计数通知 ServerListView（跨层，见 editorBus.js）
+// 「+」下拉：新建 + 导入——服务器已存在时导入是自然入口；两动作都经 editorBus
+// 计数通知 ServerListView（跨层，见 editorBus.js）
 const addOptions = computed(() => [
   { label: t('topbar.newServer'), key: 'new' },
   { label: t('import.title'), key: 'import' },
@@ -50,7 +50,7 @@ function onAddSelect(key) {
   else if (key === 'import') requestImport()
 }
 
-// ===== 窗口控制（fix-batch Task 4）：仅 WebView2 宿主可见/生效 =====
+// ===== 窗口控制：仅 WebView2 宿主可见/生效 =====
 // window.chrome.webview 只存在于 WebView2：普通浏览器打开时整套窗口控制隐藏，
 // 且所有 postMessage 调用短路（守卫宿主存在），页面行为不变。
 const isHosted = !!window.chrome?.webview?.postMessage
@@ -66,7 +66,7 @@ function postToHost(cmd) {
 window.__setWinState = (s) => {
   if (s === 'maximized' || s === 'normal') winState.value = s
 }
-// WPF 壳 Ctrl+F 转发入口（fix-batch4 Task D，ExecuteScriptAsync 调用）：焦点不在 WebView2
+// WPF 壳 Ctrl+F 转发入口（ExecuteScriptAsync 调用）：焦点不在 WebView2
 //（如启动后未点进页面）时，WPF 窗口级 KeyBinding 抢先把命令派给 CommandFocusFilter，
 // MainWindowView 转而调用本函数——聚焦并全选搜索框，与页面内 Ctrl+K/Ctrl+F handler
 //（onGlobalKey）等效；焦点在网页内时网页自己的 handler 生效，不走此路径
@@ -136,7 +136,7 @@ function onTopbarDblClick(e) {
               <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
               1Remote
             </div>
-            <!-- 顶栏搜索框（spec §3.1）：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup） -->
+            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup） -->
             <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
               <span class="sb-icon">⌕</span>
               <input
@@ -150,7 +150,7 @@ function onTopbarDblClick(e) {
               <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
             </div>
             <div class="topbar-actions">
-              <!-- 「+」下拉（Plan 4 Task 3）：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView） -->
+              <!-- 「+」下拉：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView） -->
               <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
                 <n-button quaternary size="small" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
@@ -190,7 +190,7 @@ function onTopbarDblClick(e) {
 
 <style scoped>
 .shell {
-  /* 顶栏高度变量（fix-batch3 Task A #2）：EditorDrawer 的 .ed-root（fixed 覆盖层）引用，
+  /* 顶栏高度变量：EditorDrawer 的 .ed-root（fixed 覆盖层）引用，
      使编辑抽屉的蒙层/面板从顶栏下沿开始、顶栏（窗口拖拽区/最小化-最大化-关闭）保持可交互。
      .ed-root 是 .shell 的 DOM 后代（ServerListView 内），自定义属性沿 DOM 树继承可达。 */
   --topbar-h: 44px;
@@ -201,7 +201,7 @@ function onTopbarDblClick(e) {
   color: var(--text-1);
 }
 .topbar {
-  position: relative; /* 搜索框绝对定位居中（fix-batch Task C）的定位基准 */
+  position: relative; /* 搜索框绝对定位居中的定位基准 */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -217,16 +217,16 @@ function onTopbarDblClick(e) {
   font-weight: 600;
 }
 .logo-mark {
-  flex: 0 0 auto; /* 真实彩色图标（fix-batch3 Task C #7），不再随强调色着色 */
+  flex: 0 0 auto; /* 真实彩色图标，不随强调色着色 */
 }
-/* 视觉居中（fix-batch Task C）：绝对定位脱离 flex 流，logo 与右侧动作/窗口按钮布局不受影响。
+/* 视觉居中：绝对定位脱离 flex 流，logo 与右侧动作/窗口按钮布局不受影响。
    窄窗保护：100vw-360px ≈ 左 logo + 右侧动作/窗口按钮/内边距所占宽度；内层 max(…,160px)
    兜底——视口 <360px 时 calc 为负会使整条 max-width 失效退回 420px，反而更容易压到 logo */
 .searchbox {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 420px; /* absolute+left 定位下 width:auto 会 shrink-to-fit（收官评审问题1），须显式定宽 */
+  width: 420px; /* absolute+left 定位下 width:auto 会 shrink-to-fit，须显式定宽 */
   max-width: min(420px, max(calc(100vw - 360px), 160px));
   display: flex;
   align-items: center;
@@ -324,6 +324,6 @@ function onTopbarDblClick(e) {
 .main {
   display: flex;
   min-height: 0;
-  min-width: 0; /* 防止内容区宽内容（Tasks 15-18）横向撑破外壳 */
+  min-width: 0; /* 防止内容区宽内容横向撑破外壳 */
 }
 </style>

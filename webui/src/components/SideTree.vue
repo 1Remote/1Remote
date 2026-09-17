@@ -1,6 +1,6 @@
 <script setup>
-// 边栏树 + 标签区（spec §3.2/§3.3，Task 15；fix-batch1 Task 2 重构 #2/#3）：
-// - 顶部常驻虚拟根「全部数据」（点击=清除数据源过滤，列表显示全部库服务器，fix-batch5 Task B 更名）
+// 边栏树 + 标签区：
+// - 顶部常驻虚拟根「全部数据」（点击=清除数据源过滤，列表显示全部库服务器）
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
@@ -30,7 +30,7 @@ const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist } = u
 const folderOps = useFolderOps()
 const tree = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 
-// ---- 自定义顺序（Plan 4 Task 4）：键与 WPF CustomNodeOrder 一致 ——
+// ---- 自定义顺序：键与 WPF CustomNodeOrder 一致 ——
 // 文件夹="%$TreeNode$%:"+名称（见 ServerTreeViewModel.TreeNode.Id；以名称为键、跨层级同名
 // 文件夹共用一键属 WPF 既有语义）。无序号者排末尾（WPF LoadLocalCaches 的 int.MaxValue 同义）
 const FOLDER_ID = '%$TreeNode$%:' // 与 ServerTreeViewModel.FolderNodePrefix 逐字符一致
@@ -92,7 +92,7 @@ const rows = computed(() => {
   return out
 })
 
-// ---- 树拖拽（Plan 4 Task 4；fix-batch1 后仅文件夹可拖）：原生 HTML5 DnD。
+// ---- 树拖拽（仅文件夹可拖）：原生 HTML5 DnD。
 // 落区判定：行内上 25% = 插到目标前、下 25% = 插到目标后、中部 = 移入。
 // 非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 / 只读数据源）
 // 不显示指示且不 preventDefault → drop 被浏览器拒绝。
@@ -246,7 +246,7 @@ function onRowClick(row) {
   else emit('update:selection', { dataSourceName: row.ds.name, folderPath: '' })
 }
 
-// ---- 右键菜单（fix-batch1 Task 2）：新建文件夹（根/文件夹行）/ 重命名 / 删除（文件夹行）
+// ---- 右键菜单：新建文件夹（根/文件夹行）/ 重命名 / 删除（文件夹行）
 const ctx = ref(null) // { x, y, dsName, parentPath, folderPath? } —— folderPath 空=在根下新建
 const rootEl = ref(null)
 function onRowContext(row, e) {
@@ -292,7 +292,7 @@ function ctxDelete() {
 // ---- 展示辅助
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
 
-// 置顶标签在前，组内保持 API 顺序（稳定排序；名称排序/管理归 Plan 3）
+// 置顶标签在前，组内保持 API 顺序（稳定排序；重命名/删除等管理操作走标签管理模态）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))
 </script>
 
@@ -326,7 +326,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           @click.stop="row.kind === 'all' ? (allOpen = !allOpen) : onToggle(row.key)"
         >▸</span>
 
-        <!-- 全部数据虚拟根（fix-batch1 #3；fix-batch5 Task B 更名）：常驻顶部，点击=清除数据源过滤 -->
+        <!-- 全部数据虚拟根：常驻顶部，点击=清除数据源过滤 -->
         <template v-if="row.kind === 'all'">
           <span class="ds-icon">🗂</span>
           <span class="label">{{ t('crumb.allDataSources') }}</span>
@@ -355,7 +355,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
       </div>
     </div>
 
-    <!-- 标签区（spec §3.3）：chips+计数，置顶在前；点击=过滤条件 -->
+    <!-- 标签区：chips+计数，置顶在前；点击=过滤条件 -->
     <div class="tags">
       <div class="tags-head">{{ t('tree.tags') }}</div>
       <div class="tag-list">
@@ -395,7 +395,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 </template>
 
 <style scoped>
-/* 全部取色走主题 CSS 变量（spec §4），行高紧凑 ~26px，hover --bg-hover */
+/* 全部取色走主题 CSS 变量，行高紧凑 ~26px，hover --bg-hover */
 .side-tree {
   position: relative; /* 右键菜单浮层定位基准 */
   display: flex;
@@ -431,7 +431,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .row.selected {
   background: var(--accent-container);
 }
-/* 拖拽（Plan 4 Task 4）：可拖行 grab；指示线/容器高亮用主题强调色，与选中底色区分 */
+/* 拖拽：可拖行 grab；指示线/容器高亮用主题强调色，与选中底色区分 */
 .row[draggable='true'] {
   cursor: grab;
 }
