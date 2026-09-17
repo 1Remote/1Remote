@@ -1,59 +1,42 @@
 <script setup>
 /**
- * 连接编辑器抽屉（Plan 2 Task 8，fix-batch1 Task 3 重构）：右侧滑入
- * （clamp(560px, 68vw, 900px)，CSS 过渡），schema 驱动表单——单页垂直滚动：
- * 全部分组自上而下铺在一个滚动区（分区标题 sticky），无分组页签；底部 取消/保存 恒定可见
- *（flex 列布局：body flex:1 内滚动，footer 恒贴底）。
+ * 连接编辑器抽屉：右侧滑入（clamp(560px, 68vw, 900px)，CSS 过渡）。承载抽屉骨架
+ *（头部/滚动体/底部按钮）与单机编辑（create/edit/复制）的 schema 驱动单页表单——
+ * 全部分组垂直铺开在一个滚动区（分区标题 sticky），底部 取消/保存 恒贴底。头部展示
+ * 拆分至 EditorHead，批量编辑（mode='bulk'）拆分至 BulkEditForm（接缝见两文件头）。
  *
- * 数据纪律（计划全局约定 #3，两个 casing 域）：
- *  - 抽屉内的 json 是编辑器配置域：PascalCase 键原样直通（GET /config 回读、POST/PUT 回传），
- *    不做任何命名转换（后端 CreateFromJsonString 的 Protocol/ClassVersion 访问大小写敏感）；
- *  - 加载 = GET config → 整体深拷贝入响应式 json；schema 未列字段原样保留（透传保真），
- *    保存 = 整个 json 克隆回传（PUT 整体替换 / POST 新建）。
+ * 数据纪律（两个 casing 域）：抽屉内的 json 是编辑器配置域——PascalCase 键原样直通
+ *（GET /config 回读、POST/PUT 回传，不做命名转换：后端 CreateFromJsonString 的
+ * Protocol/ClassVersion 访问大小写敏感）；加载 = 深拷贝入响应式 json，schema 未列
+ * 字段原样保留（透传保真），保存 = 整个 json 克隆回传。批量 patch 则是 camelCase 域。
  *
- * 脏检测（#8 简化）：加载完成时留 initialSnapshot（非响应式深拷贝）作基准，整体 dirty =
- * 协议切换 或 json 任一键与基准不一致（不再有分组页签/分组小圆点）。隐藏字段
+ * 脏检测：加载完成时留 initialSnapshot（非响应式深拷贝）作基准，dirty = 协议切换或
+ * json 任一键与基准不一致（批量 = 有覆盖态字段，BulkEditForm 暴露）。隐藏字段
  *（visibleWhen 不满足）只藏 UI 不删值，保存时随 json 原样回传。
  *
- * 凭据组（#7，owner 确认；fix-batch3 Task A 对齐 WPF CredentialView 结构）：组内按
- * 字段 credRole（schemas.js credentialGroup 注入）四段渲染——「凭据来源」二选一切换之前
- * 是恒显的 pre 字段（RDP 的 Domain/LoadBalanceInfo）；切换下方 manual = 身份字段
- * （UserName/Password/私钥）、vault = 凭据库选择器 + 继承提示行；AskPasswordWhenConnect
- * 等两组开关（option）两模式恒显收尾。模式初值由 InheritedCredentialName 派生
- * （editor/credentialMode.js，非空=库）；手动 = 清空库引用。
- *
- * 新建模式（#10，非复制）：头部数据源选择器（仅可写数据源；默认 = 当前树选中 ds），
- * 保存与凭据库选项跟随所选 ds；编辑/复制/批量仍用传入 ds（只读 pill 展示）。
- *
- * 快捷键（抽屉打开期间，window 级）：Ctrl/Cmd+S 保存；Esc 关闭（脏则先确认，naive dialog）。
- * ServerListView 的全局 Esc 链在抽屉打开时不消费 Esc（见其 onGlobalEsc 的 editor 守卫）。
- *
- * 复制（duplicateFrom）：create 语义 + 预填来源服务器 config；Id 为 [JsonIgnore] 本就不在
- * json 中（防御性 delete），后端 Create 路径也会清 Id 并生成新 ULID；TreeNodes（文件夹归属）
- * 随 json 携带 → 复制品与来源同文件夹（与 WPF 复制一致）。
- *
- * 批量模式（Plan 2 Task 10，mode='bulk'）：不加载单台 config——共享值由父级传入的列表 DTO
- * （camelCase 域，bulkServers）逐字段计算：全同 → 只读展示；不同/列表 DTO 无此字段 →
- * 「‹N 台各不相同›」/「未读取」占位。每字段默认「保持不变」（不进 patch），点「覆盖」后
- * 从共享值（已知且全同）或空值起编辑；保存 = diffPatch(共享初值, 当前值) 仅取被覆盖字段
- * → POST /api/servers/batch（patch 键 camelCase，缺失 = 保持不变）。表单字段限于后端
- * BatchPatchFieldMap 的 allow-list（schemas.js BULK_FIELDS），深层/子表单字段不参与批量。
+ * 凭据组对齐 WPF CredentialView（分段细节见 groupBlocks）；新建模式可在头部改选数据
+ * 源（EditorHead 持有，经 ds-change 镜像到本组件，保存与凭据库选项跟随），编辑/复制/
+ * 批量仍用传入 ds。快捷键（window 级）：Ctrl/Cmd+S 保存；Esc 关闭（脏则先确认），
+ * ServerListView 的全局 Esc 链在抽屉打开时不消费。复制（duplicateFrom）：create 语义
+ * + 预填来源 config（Id 防御性 delete，TreeNodes 随 json 携带 → 同文件夹，与 WPF
+ * 复制一致）。保存成功后列表刷新由 SSE reload 自动完成，无需手动拉取。
  */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
 import SwitchItem from './SwitchItem.vue'
-import { PROTOCOLS, BULK_FIELDS } from '../../editor/schemas.js'
+import EditorHead from './EditorHead.vue'
+import BulkEditForm from './BulkEditForm.vue'
+import { PROTOCOLS } from '../../editor/schemas.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
 import { deriveCredentialMode } from '../../editor/credentialMode.js'
-import { diffPatch } from '../../editor/patch.js'
 import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
 
 const props = defineProps({
-  /** 'create' | 'edit'（create + duplicateFrom = 复制预填，保存走 POST 新建）| 'bulk'（Task 10 批量） */
+  /** 'create' | 'edit'（create + duplicateFrom = 复制预填，保存走 POST 新建）| 'bulk' */
   mode: { type: String, required: true },
   /** edit 模式目标服务器 id */
   serverId: { type: String, default: '' },
@@ -65,9 +48,9 @@ const props = defineProps({
   initialServer: { type: Object, default: null },
   /** 复制来源服务器 id（create 语义预填） */
   duplicateFrom: { type: String, default: '' },
-  /** bulk 模式：目标服务器 id 列表（父级去重后的勾选集） */
+  /** bulk 模式：目标服务器 id 列表（父级去重后的勾选集；透传 BulkEditForm） */
   bulkIds: { type: Array, default: () => [] },
-  /** bulk 模式：与 bulkIds 对应的列表 DTO（camelCase 域，共享值计算来源） */
+  /** bulk 模式：与 bulkIds 对应的列表 DTO（camelCase 域；透传 BulkEditForm/EditorHead） */
   bulkServers: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['close', 'saved'])
@@ -85,28 +68,17 @@ let initialSnapshot = {} // 加载完成时的深拷贝基准（脏检测；非�
 let loadedProtocol = '' // 加载时的 json.Protocol（协议切换脏判定）
 const loading = ref(false)
 const loadError = ref('')
-const saving = ref(false)
+const saving = ref(false) // 单机保存中（批量保存中在 BulkEditForm，经 bulkFormRef 同步）
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
 
-// ---- 数据源（#10）：新建（非复制）可在头部改选，其余模式恒用传入 ds ----
+// ---- 头部接缝：EditorHead 实例（title 暴露给 aria-label）与数据源镜像 ----
+const headRef = ref(null)
+// 数据源选择值由 EditorHead 持有（n-select），用户改选经 ds-change 上抛到本镜像——
+// 保存（create 的 ds 参数）与表单字段（凭据库选项按 ds 隔离）读这份镜像
 const ds = ref(props.dataSourceName || 'Local')
-const dsOptions = ref([]) // 可写数据源选项（新建模式拉取）
-const showDsSelect = computed(() => isCreate.value && !props.duplicateFrom)
-async function loadDsOptions() {
-  if (!showDsSelect.value) return
-  try {
-    const list = await api.datasources()
-    const names = (Array.isArray(list) ? list : [])
-      .filter((d) => d.writable !== false)
-      .map((d) => d.name)
-    // 当前树选中的 ds 保持默认选中（即使只读也列出：默认值即现状，改选权在用户）
-    if (!names.includes(ds.value)) names.unshift(ds.value)
-    dsOptions.value = names.map((n) => ({ label: n, value: n }))
-  } catch (e) {
-    // 拉取失败不阻断表单：退化为只有当前 ds 的单选项（等价旧的静态 pill）
-    dsOptions.value = [{ label: ds.value, value: ds.value }]
-  }
+function onHeadDsChange(v) {
+  ds.value = v
 }
 
 // ---- 派生：协议 schema ----
@@ -116,9 +88,8 @@ const protocolKey = computed(() => {
 })
 const schema = computed(() => PROTOCOLS[protocolKey.value] || null)
 const groups = computed(() => schema.value?.groups || [])
-const protocolOptions = Object.keys(PROTOCOLS).map((k) => ({ value: k, label: k }))
 
-// ---- 凭据组二选一（#7）：模式初值派生 + 切换清引用 ----
+// ---- 凭据组二选一：模式初值派生 + 切换清引用 ----
 const credentialMode = ref('manual') // 'manual' | 'vault'（load/协议切换时按 json 派生）
 function isCredentialGroup(g) {
   return g.id === 'credential' && g.fields.some((f) => f.key === 'InheritedCredentialName')
@@ -129,13 +100,12 @@ function onCredModeSwitch(mode) {
   if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（owner 确认语义）
 }
 /**
- * 组内可见字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
- * 字段聚成一个 'switch-run' 块（fix-batch5 Task A #3：渲染为单个 form-field 行——空
- * 标签列 + 控件列内所有开关项水平排列、flex-wrap 自动换行，RDP 高级组的 9 个
- * Enable* 同聚一行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格
- * 不变）。fix-batch4 Task A #6：switchWithLabel 字段（IsPingBeforeConnect 可用性
- * 检测行）例外——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），
- * 不进聚合行，一律按 'single' 整行渲染（也据此打断连续 switch 段）。
+ * 组内可见字段 → 渲染块序列：visibleWhen 过滤后，连续 SWITCH 字段聚成一个 'switch-run'
+ * 块（渲染为单个 form-field 行——空标签列 + 控件列内所有开关项水平排列、flex-wrap 自动
+ * 换行，RDP 高级组的 9 个 Enable* 同聚一行）；非 SWITCH 字段打断连续段、按单字段整行
+ * 渲染（维持 148px 网格不变）。switchWithLabel 字段（IsPingBeforeConnect 可用性检测行）
+ * 例外——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），不进聚合行，一律
+ * 按 'single' 整行渲染（也据此打断连续 switch 段）。
  */
 function blocksOf(fields) {
   const blocks = []
@@ -149,8 +119,8 @@ function blocksOf(fields) {
 }
 
 /**
- * 组 → 渲染块序列。非凭据组：整组可见字段走 blocksOf（同 Task C #7）。
- * 凭据组（fix-batch3 Task A，对齐 WPF CredentialView.xaml 的区段顺序）四段：
+ * 组 → 渲染块序列。非凭据组：整组可见字段走 blocksOf。
+ * 凭据组（对齐 WPF CredentialView.xaml 的区段顺序）四段：
  *  ① 'pre'（RDP 的 Domain/LoadBalanceInfo）——二选一切换之前，两模式恒显；
  *  ② 'cred-mode' 伪块（手动 ⇄ 凭据库切换；vault 态后随 'cred-hint' 提示行）；
  *  ③ manual → 'identity'（UserName/Password/PrivateKey）；vault → 'picker'（库选择器）；
@@ -174,104 +144,6 @@ function groupBlocks(g) {
   ]
 }
 
-// ---- 批量模式（Task 10）：共享值计算 + 逐字段「保持不变/覆盖」状态 ----
-// bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
-//  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
-//  - dtoKey=null（password 等列表 DTO 不携带；note 已于 fix-batch3 Task C #4 加入）→ known=false，只提示、不展示值。
-// 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
-const bulkFields = computed(() =>
-  BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol))),
-)
-const bulkShared = computed(() => {
-  const out = {}
-  for (const f of BULK_FIELDS) {
-    if (!f.dtoKey) {
-      out[f.key] = { known: false, same: false, value: undefined }
-      continue
-    }
-    const vals = props.bulkServers.map((s) => s?.[f.dtoKey])
-    const first = JSON.stringify(vals[0])
-    const same = vals.every((v) => JSON.stringify(v) === first)
-    out[f.key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
-  }
-  return out
-})
-const bulkOverwrite = reactive({}) // key → true（已切到覆盖编辑）；缺省 = 保持不变
-const bulkValues = reactive({}) // key → 覆盖态下的当前值（仅覆盖态有意义）
-const bulkCount = computed(() => props.bulkServers.length)
-const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
-// 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
-const bulkDsMixed = computed(() => isBulk.value && bulkDsNames.value.size > 1)
-const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.dataSourceName || 'Local')
-
-function emptyValueFor(field) {
-  if (field.type === 'tags') return []
-  if (field.type === 'switch') return false
-  return ''
-}
-function toggleOverwrite(field) {
-  const key = field.key
-  if (bulkOverwrite[key]) {
-    bulkOverwrite[key] = false // 回到「保持不变」：该字段退出 patch
-    return
-  }
-  const shared = bulkShared.value[key]
-  bulkValues[key] = shared.known && shared.same ? deepClone(shared.value) : emptyValueFor(field)
-  bulkOverwrite[key] = true
-}
-const bulkDirty = computed(() => Object.values(bulkOverwrite).some(Boolean))
-// 覆盖态字段的共享初值/当前值对 → diffPatch 仅产出真正变化的键（值与共享值相同的覆盖不产生写入）
-function buildBulkPatch() {
-  const initial = {}
-  const current = {}
-  for (const f of bulkFields.value) {
-    if (!bulkOverwrite[f.key]) continue
-    const shared = bulkShared.value[f.key]
-    if (shared.known && shared.same) initial[f.key] = shared.value
-    current[f.key] = bulkValues[f.key]
-  }
-  return diffPatch(initial, current)
-}
-function validateBulkRequired() {
-  const missing = []
-  for (const f of bulkFields.value) {
-    if (!f.required || !bulkOverwrite[f.key]) continue
-    const v = bulkValues[f.key]
-    if (v == null || (typeof v === 'string' && v.trim() === '')) {
-      missing.push(f.labelKey ? t(f.labelKey) : f.key)
-    }
-  }
-  return missing
-}
-async function saveBulk() {
-  if (saving.value || bulkDsMixed.value) return
-  missingRequired.value = validateBulkRequired()
-  if (missingRequired.value.length) return
-  const patch = buildBulkPatch()
-  if (!Object.keys(patch).length) {
-    // 后端空 patch 400（"patch must contain at least one field"）——前端先行提示
-    message.warning(t('editor.bulkNoChanges'))
-    return
-  }
-  saveErrors.value = []
-  saving.value = true
-  try {
-    await api.batchUpdate(props.bulkIds, patch, bulkDs.value)
-    message.success(t('editor.bulkUpdated', { n: bulkCount.value }))
-    emit('saved', { mode: 'bulk', ids: props.bulkIds })
-    doClose() // 列表刷新由 SSE reload 自动完成
-  } catch (e) {
-    if (e?.status === 400) {
-      const errs = e.body?.errors || (e.body?.error ? [e.body.error] : [])
-      saveErrors.value = errs.length ? errs : [`${e.message}`]
-    } else {
-      message.error(t('editor.saveFailed') + (e?.message ? ` (${e.message})` : ''))
-    }
-  } finally {
-    saving.value = false
-  }
-}
-
 // ---- 深拷贝（JSON 往返：与 snapshot 基准的序列化语义一致， reactive 代理脱钩）----
 function deepClone(o) {
   return JSON.parse(JSON.stringify(o ?? {}))
@@ -286,7 +158,7 @@ function setField(key, v) {
 
 // ---- 加载 ----
 async function load() {
-  if (isBulk.value) return // 批量模式不加载单台 config（共享值来自 bulkServers prop，同步计算）
+  if (isBulk.value) return // 批量模式不加载单台 config（共享值来自 bulkServers prop，BulkEditForm 同步计算）
   loading.value = true
   loadError.value = ''
   try {
@@ -307,7 +179,7 @@ async function load() {
     replaceJson(raw)
     initialSnapshot = deepClone(raw)
     loadedProtocol = raw.Protocol || ''
-    credentialMode.value = deriveCredentialMode(raw.InheritedCredentialName) // #7 模式初值派生
+    credentialMode.value = deriveCredentialMode(raw.InheritedCredentialName) // 模式初值派生
     if (!PROTOCOLS[loadedProtocol]) {
       // 未来版本新增协议（schema 未收录）：json 可透传但无法渲染表单，明确告知而非渲染空表单
       loadError.value = t('editor.unsupportedProtocol', { p: loadedProtocol || '?' })
@@ -319,14 +191,23 @@ async function load() {
   }
 }
 
-// ---- 脏检测（#8 简化）：整体 dirty = 协议切换 或 json 任一键与基准不一致 ----
+// ---- 批量表单接缝：保存入口/按钮态/脏态经模板 ref 走 BulkEditForm 的 defineExpose ----
+const bulkFormRef = ref(null)
+const bulkSaving = computed(() => !!bulkFormRef.value?.saving) // 批量保存中（底部按钮禁用/文案）
+const bulkDsMixed = computed(() => !!bulkFormRef.value?.dsMixed) // 跨数据源勾选禁存
+function onBulkSaved(e) {
+  emit('saved', e) // { mode:'bulk', ids } 原样转发父级（外部事件序与拆分前一致）
+  doClose() // 关闭动画属本组件；列表刷新由 SSE reload 自动完成
+}
+
+// ---- 脏检测：整体 dirty = 协议切换 或 json 任一键与基准不一致 ----
 function valueChanged(cur, init) {
   const a = cur === undefined ? undefined : JSON.stringify(cur)
   const b = init === undefined ? undefined : JSON.stringify(init)
   return a !== b
 }
 const dirty = computed(() => {
-  if (isBulk.value) return bulkDirty.value // 覆盖态字段数即脏态（值变化不退出覆盖，无需更细）
+  if (isBulk.value) return !!bulkFormRef.value?.dirty // 覆盖态字段数即脏态（值变化不退出覆盖，无需更细）
   if (protocolKey.value !== loadedProtocol) return true
   return Object.keys(json).some((k) => valueChanged(json[k], initialSnapshot[k]))
 })
@@ -412,7 +293,7 @@ function displayName() {
 }
 async function save() {
   if (isBulk.value) {
-    await saveBulk()
+    bulkFormRef.value?.save() // 批量保存流在 BulkEditForm（含 saving 防重入/校验/错误展示）
     return
   }
   if (saving.value || loading.value || loadError.value) return
@@ -429,7 +310,7 @@ async function save() {
     }
     let savedId = props.serverId
     if (props.mode === 'create') {
-      const resp = await api.createServer(payload, ds.value) // #10：新建可改选数据源
+      const resp = await api.createServer(payload, ds.value) // 新建可改选数据源（头部镜像值）
       savedId = resp?.id || ''
       message.success(t('editor.created', { name: displayName() }))
     } else {
@@ -452,26 +333,12 @@ async function save() {
   }
 }
 
-// ---- 头部 ----
-const title = computed(() => {
-  if (isBulk.value) return t('editor.bulkTitle', { n: bulkCount.value })
-  if (isDuplicate.value) return t('editor.title.duplicate', { name: props.initialServer?.displayName || json.DisplayName || '' })
-  if (isCreate.value) return t('editor.title.create', { protocol: protocolKey.value || props.protocol || '?' })
-  return t('editor.title.edit', { name: props.initialServer?.displayName || json.DisplayName || props.serverId })
-})
-// 协议字母瓦片配色（#9）：ColorHex（#AARRGGBB）不透明时低饱和底 + 同色字；透明/缺失 → null
-// → 回退 .ed-tile 中性样式（--bg-elevated + 边框，暗色下可见；样式模式对齐 ServerRow 回退瓦片）
-const tileStyle = computed(() => {
-  const rgb = opaqueHex(json.ColorHex)
-  return rgb ? { background: rgb + '33', color: rgb } : null
-})
-// 图标预览底色（#6）：当前 ColorHex 的低饱和 tint，即时联动基本信息组的图标缩略图
+// 图标预览底色：当前 ColorHex 的低饱和 tint，即时联动基本信息组的图标缩略图
 const iconTint = computed(() => opaqueHex(json.ColorHex) || '')
 
 onMounted(() => {
   requestAnimationFrame(() => (show.value = true)) // 首帧后再置开 → 进场过渡生效
-  load()
-  loadDsOptions() // #10：仅新建（非复制）实际拉取（内部按 showDsSelect 守卫）
+  load() // 数据源选项由 EditorHead 自行拉取（其 onMounted 内按 showDsSelect 守卫）
   window.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => {
@@ -483,25 +350,16 @@ onBeforeUnmount(() => {
 <template>
   <div class="ed-root" :class="{ open: show }">
     <div class="ed-scrim" @click="requestClose"></div>
-    <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="title">
-      <!-- 头部（fix-batch5 Task A #1 单行重排）：协议瓦片 + 标题 + 协议切换 + 数据源 +
-           关闭，五个元素一行（标题 flex:1 省略让位，窄抽屉 560px 下拉不换行）。
-           #10：新建（非复制）以数据源选择器替换静态 pill（仅可写源，默认=传入 ds）；
-           编辑/复制/批量保持只读 pill；bulk：无协议切换，瓦片为批量符号。 -->
-      <header class="ed-head">
-        <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
-        <div class="ed-title" :title="title">{{ title }}</div>
-        <n-select v-if="!isBulk" class="ed-proto" size="small" :value="protocolKey || undefined"
-          :options="protocolOptions" :disabled="loading || !!loadError" :title="t('editor.protocol')"
-          @update:value="onProtocolSwitch" />
-        <n-select v-if="showDsSelect && dsOptions.length > 1" v-model:value="ds" class="ed-ds-select" size="small"
-          :options="dsOptions" :title="t('editor.dataSourceLabel')" />
-        <div v-else class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)">{{ isBulk ? bulkDs :
-          ds }}</div>
-        <button class="ed-close" type="button" :title="t('editor.close')" @click="requestClose">✕</button>
-      </header>
+    <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="headRef?.title">
+      <!-- 头部（EditorHead）：瓦片/标题/协议切换/数据源/关闭；协议切换与关闭确认的
+           状态机在本组件（经 protocol-change / close 上抛执行） -->
+      <EditorHead ref="headRef" :mode="mode" :duplicate-from="duplicateFrom" :protocol="protocol"
+        :protocol-key="protocolKey" :color-hex="json.ColorHex || ''" :display-name="json.DisplayName || ''"
+        :initial-server="initialServer" :server-id="serverId" :bulk-servers="bulkServers" :loading="loading"
+        :load-error="loadError" :data-source-name="dataSourceName" @close="requestClose"
+        @protocol-change="onProtocolSwitch" @ds-change="onHeadDsChange" />
 
-      <!-- 主体：加载/错误态 或 表单（批量=扁平覆盖列表；单机=单页分区滚动） -->
+      <!-- 主体：加载/错误态 或 表单（批量=BulkEditForm 覆盖列表；单机=单页分区滚动） -->
       <div class="ed-body">
         <div v-if="loading" class="ed-state">{{ t('editor.loading') }}</div>
         <div v-else-if="loadError" class="ed-state">
@@ -509,42 +367,11 @@ onBeforeUnmount(() => {
           <div class="ed-state-detail">{{ loadError }}</div>
         </div>
         <template v-else>
-          <!-- 批量模式（Task 10）：BULK_FIELDS 扁平列表 + 逐字段「保持不变/覆盖」 -->
-          <div v-if="isBulk" class="ed-fields">
-            <div v-if="bulkDsMixed" class="ed-banner">{{ t('editor.bulkMixedDs') }}</div>
-            <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
-              {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
-            </div>
-            <div v-if="saveErrors.length" class="ed-banner">
-              <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
-            </div>
-            <div v-for="f in bulkFields" :key="f.key" class="bulk-field">
-              <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
-              <FormField v-if="bulkOverwrite[f.key]" class="bulk-control" :field="f" :model-value="bulkValues[f.key]"
-                :data-source-name="bulkDs" @update:model-value="(v) => (bulkValues[f.key] = v)" />
-              <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
-              <FormField v-else-if="bulkShared[f.key].known && bulkShared[f.key].same" class="bulk-control" :field="f"
-                :model-value="bulkShared[f.key].value" disabled />
-              <!-- 保持不变 + 各不相同/未读取：占位行（标签列对齐 FormField 的 148px） -->
-              <div v-else class="bulk-keep bulk-control">
-                <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
-                  {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
-                </div>
-                <div class="bulk-hint"
-                  :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')">
-                  {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')
-                  }}
-                </div>
-              </div>
-              <button class="bulk-toggle" :class="{ on: bulkOverwrite[f.key] }" type="button"
-                :title="bulkOverwrite[f.key] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })"
-                @click="toggleOverwrite(f)">
-                {{ bulkOverwrite[f.key] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
-              </button>
-            </div>
-          </div>
+          <!-- 批量模式：BULK_FIELDS 覆盖列表 + 保存流（接缝见 BulkEditForm 文件头） -->
+          <BulkEditForm v-if="isBulk" ref="bulkFormRef" :bulk-ids="bulkIds" :bulk-servers="bulkServers"
+            :data-source-name="dataSourceName" @saved="onBulkSaved" />
 
-          <!-- 单机模式（#8 单页）：全部分组垂直铺开 + 分区标题（sticky），整体一个滚动区 -->
+          <!-- 单机模式：全部分组垂直铺开 + 分区标题（sticky），整体一个滚动区 -->
           <template v-else>
             <div class="ed-fields">
               <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
@@ -557,10 +384,10 @@ onBeforeUnmount(() => {
                 <h3 class="ed-group-title">{{ g.labelKey ? t(g.labelKey) : g.id }}</h3>
                 <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
 
-                <!-- 渲染块循环（fix-batch3 Task A）：switch-run 聚合行 / 整行字段 + 凭据组的
-                     cred-mode / cred-hint 伪块（分段顺序见 groupBlocks） -->
+                <!-- 渲染块循环：switch-run 聚合行 / 整行字段 + 凭据组的 cred-mode /
+                     cred-hint 伪块（分段顺序见 groupBlocks） -->
                 <template v-for="(b, bi) in groupBlocks(g)" :key="bi">
-                  <!-- 凭据组二选一（#7）：标签列对齐 FormField 的 148px 网格 -->
+                  <!-- 凭据组二选一：标签列对齐 FormField 的 148px 网格 -->
                   <div v-if="b.type === 'cred-mode'" class="ed-cred-mode">
                     <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
                     <div class="ed-seg" role="tablist">
@@ -577,8 +404,7 @@ onBeforeUnmount(() => {
                     <span></span>
                     <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
                   </div>
-                  <!-- #7：连续 SWITCH 聚合行（fix-batch5 Task A #3 单行形态）：一个
-                       form-field 行 = 空标签列（148px，批次4 开关行留空的延续）+ 控件列，
+                  <!-- 连续 SWITCH 聚合行：一个 form-field 行 = 空标签列（148px）+ 控件列，
                        所有开关项（SwitchItem，与单字段开关行同款渲染）在控件列水平排列、
                        flex-wrap 自动换行（凭据组 option 开关 / RDP 高级组 9 个 Enable* 同理） -->
                   <div v-else-if="b.type === 'switch-run'" class="form-field ed-switch-row">
@@ -597,14 +423,15 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <!-- 底部：快捷键提示 + 取消/保存 -->
+      <!-- 底部：快捷键提示 + 取消/保存（批量保存中/跨源禁存态经 bulkFormRef 同步） -->
       <footer class="ed-foot">
         <span class="ed-hint">{{ t('editor.saveHint') }}</span>
         <div class="ed-foot-btns">
-          <button class="ed-btn" type="button" :disabled="saving" @click="requestClose">{{ t('editor.cancel')
+          <button class="ed-btn" type="button" :disabled="saving || bulkSaving" @click="requestClose">{{ t('editor.cancel')
             }}</button>
-          <button class="ed-btn ed-primary" type="button" :disabled="saving || loading || !!loadError || bulkDsMixed"
-            @click="save">{{ saving ? t('editor.saving') : t('editor.save') }}</button>
+          <button class="ed-btn ed-primary" type="button"
+            :disabled="saving || bulkSaving || loading || !!loadError || bulkDsMixed"
+            @click="save">{{ saving || bulkSaving ? t('editor.saving') : t('editor.save') }}</button>
         </div>
       </footer>
     </section>
@@ -612,12 +439,12 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* 蒙层 + 右滑面板：width clamp(560px, 68vw, 900px)（Plan 2 Task 8 约定）。
-   fix-batch3 Task A #2：覆盖范围从顶栏下沿开始（top: var(--topbar-h)）而非 inset:0——
-   抽屉打开时顶栏（窗口拖拽区/最小化-最大化-关闭）不再被蒙层盖住、保持可交互。
-   --topbar-h 定义于 App.vue 的 .shell（44px）；.ed-root 是 .shell 的 DOM 后代
-   （ServerListView 内），自定义属性沿 DOM 树继承；回退值与 .shell 保持一致。
-   滑入过渡/蒙层点击关闭/sticky 分组标题均为 .ed-root 内部相对定位，不受影响。 */
+/* 蒙层 + 右滑面板：width clamp(560px, 68vw, 900px)。覆盖范围从顶栏下沿开始
+   （top: var(--topbar-h)）而非 inset:0——抽屉打开时顶栏（窗口拖拽区/最小化-最大化-
+   关闭）不再被蒙层盖住、保持可交互。--topbar-h 定义于 App.vue 的 .shell（44px）；
+   .ed-root 是 .shell 的 DOM 后代（ServerListView 内），自定义属性沿 DOM 树继承；
+   回退值与 .shell 保持一致。滑入过渡/蒙层点击关闭/sticky 分组标题均为 .ed-root
+   内部相对定位，不受影响。 */
 .ed-root {
   position: fixed;
   top: var(--topbar-h, 44px);
@@ -666,89 +493,6 @@ onBeforeUnmount(() => {
   }
 }
 
-/* 头部（fix-batch5 Task A #1 单行重排）：瓦片/标题/协议/数据源/关闭 五元素一行——
-   标题 flex:1 占中段（超长省略，title 属性悬浮全文），两下拉固定槽位不换行，
-   窄抽屉（560px）由标题让位 */
-.ed-head {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.ed-tile {
-  flex: 0 0 30px;
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  /* #9：无色/透明色回退瓦片在暗色下也可见 */
-  background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.ed-title {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-1);
-}
-
-/* 数据源只读 pill（编辑/复制/批量）：行内元素（不再堆叠于标题下方第二行）——
-   固定 170px 槽位与新建模式选择器对齐（border-box，padding 计入），超长 ds 名省略 */
-.ed-ds {
-  flex: 0 0 170px;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 2px 10px;
-  background: var(--bg-elevated);
-  color: var(--text-4);
-  font-size: 10.5px;
-  line-height: 1.4;
-}
-
-/* #10 新建模式的数据源选择器：与只读 pill 同一 170px 行内槽位（原“标题下方二级
-   信息位”随单行头部取消） */
-.ed-ds-select {
-  flex: 0 0 170px;
-}
-
-.ed-proto {
-  flex: 0 1 150px;
-}
-
-.ed-close {
-  flex: 0 0 auto;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text-3);
-  font-size: 13px;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-}
-
-.ed-close:hover {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-
 /* 主体 */
 .ed-body {
   flex: 1;
@@ -777,7 +521,8 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-/* 字段区（#8 单页）：唯一滚动容器，全部分组垂直铺开 */
+/* 字段区：唯一滚动容器，全部分组垂直铺开（批量分支的同名容器/横幅样式由
+   BulkEditForm 自持一份） */
 .ed-fields {
   flex: 1;
   min-height: 0;
@@ -803,7 +548,7 @@ onBeforeUnmount(() => {
   border-color: var(--danger);
 }
 
-/* 分组区块（#8）：分区标题 sticky 于滚动区顶部（滚动时贴顶，不遮字段） */
+/* 分组区块：分区标题 sticky 于滚动区顶部（滚动时贴顶，不遮字段） */
 .ed-group {
   display: flex;
   flex-direction: column;
@@ -833,7 +578,7 @@ onBeforeUnmount(() => {
   line-height: 1.5;
 }
 
-/* 凭据组二选一（#7）：标签列对齐 FormField 的 148px 网格 */
+/* 凭据组二选一：标签列对齐 FormField 的 148px 网格 */
 .ed-cred-mode {
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr);
@@ -897,8 +642,7 @@ onBeforeUnmount(() => {
   line-height: 1.5;
 }
 
-/* 连续 SWITCH 聚合行（fix-batch5 Task A #3）：单个 form-field 形态——空标签列占位
-   148px（批次4“开关行标签留空”的延续，新形态下标签列天然空）+ 控件列（.ff-control
+/* 连续 SWITCH 聚合行：单个 form-field 形态——空标签列占位 148px + 控件列（.ff-control
    同款右列）内所有开关项水平排列、flex-wrap 自动换行（1280 宽 RDP 高级组 9 个
    Enable* 约 3-4 项一行）；项内 [开关][6px][文字] 由 SwitchItem 自带（与单字段
    开关行共用同一渲染） */
@@ -915,74 +659,6 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
-}
-
-/* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
-.bulk-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bulk-control {
-  flex: 1;
-  min-width: 0;
-}
-
-.bulk-toggle {
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: 11.5px;
-  line-height: 1;
-  padding: 5px 9px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.bulk-toggle:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-
-.bulk-toggle.on {
-  border-color: var(--accent);
-  color: var(--accent-text);
-}
-
-/* 「各不相同/未读取」占位行：布局对齐 FormField（148px 标签列 + 控件列） */
-.bulk-keep {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  gap: 4px 10px;
-  align-items: center;
-}
-
-.bulk-keep-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12.5px;
-  color: var(--text-2);
-}
-
-.ff-required-like {
-  margin-left: 2px;
-  color: var(--danger);
-}
-
-.bulk-hint {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-4);
-  font-size: 12px;
-  font-style: italic;
 }
 
 /* 底部 */
