@@ -101,6 +101,12 @@ export const FIELD = {
  * @property {string} [switchTextKey]
  *   仅 SWITCH 使用：控件列描述文字（紧跟开关右侧）的 i18n 键；缺省回退 labelKey 文案。
  *   与 switchWithLabel 搭配时 = 「标签列文字之外的开关说明文字」。
+ * @property {string} [runTitleKey]
+ *   仅 SWITCH 使用：switch-run 聚合行的行标题 i18n 键（EditorDrawer 的 blocksOf 把
+ *   连续 SWITCH 字段聚成一行，该行标签列的标题文字）。挂在连续开关段的第一个字段上
+ *   （EditorDrawer 只读段首字段的值作整行标题，段内后续字段不读取）。对齐 WPF 资源
+ *   重定向区的行标题列（server_editor_advantage_resources，RdpFormView.xaml:427）。
+ *   缺省 = 该行标签列留空（其余开关组的 WPF 无行标题，维持空列）。
  */
 
 /**

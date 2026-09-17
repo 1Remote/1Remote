@@ -99,11 +99,15 @@ function onCredModeSwitch(mode) {
 }
 /**
  * 组内可见字段 → 渲染块序列：visibleWhen 过滤后，连续 SWITCH 字段聚成一个 'switch-run'
- * 块（渲染为单个 form-field 行——空标签列 + 控件列内所有开关项水平排列、flex-wrap 自动
+ * 块（渲染为单个 form-field 行——标签列 + 控件列内所有开关项水平排列、flex-wrap 自动
  * 换行，RDP 高级组的 9 个 Enable* 同聚一行）；非 SWITCH 字段打断连续段、按单字段整行
  * 渲染（维持 148px 网格不变）。switchWithLabel 字段（IsPingBeforeConnect 可用性检测行）
  * 例外——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），不进聚合行，一律
  * 按 'single' 整行渲染（也据此打断连续 switch 段）。
+ * 行标题：块的 titleKey 取段首字段的 runTitleKey（schemas.js 挂在连续开关段第一个
+ * 字段上）——有值时聚合行标签列渲染标题文字（RDP 资源重定向区对齐 WPF 的行标题列
+ * server_editor_advantage_resources「共享到远程桌面」，RdpFormView.xaml:427-444）；
+ * 无值（其余开关组 WPF 无行标题）标签列保持空占位。
  */
 function blocksOf(fields) {
   const blocks = []
@@ -111,7 +115,8 @@ function blocksOf(fields) {
     const asRun = f.type === 'switch' && !f.switchWithLabel
     const last = blocks[blocks.length - 1]
     if (asRun && last?.type === 'switch-run') last.fields.push(f)
-    else blocks.push(asRun ? { type: 'switch-run', fields: [f] } : { type: 'single', field: f })
+    else
+      blocks.push(asRun ? { type: 'switch-run', fields: [f], titleKey: f.runTitleKey } : { type: 'single', field: f })
   }
   return blocks
 }
@@ -439,11 +444,16 @@ onBeforeUnmount(() => {
                     <span></span>
                     <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
                   </div>
-                  <!-- 连续 SWITCH 聚合行：一个 form-field 行 = 空标签列（148px）+ 控件列，
-                       所有开关项（SwitchItem，与单字段开关行同款渲染）在控件列水平排列、
-                       flex-wrap 自动换行（凭据组 option 开关 / RDP 高级组 9 个 Enable* 同理） -->
+                  <!-- 连续 SWITCH 聚合行：一个 form-field 行 = 标签列（148px，段首字段带
+                       runTitleKey 时渲染行标题，否则空占位）+ 控件列，所有开关项
+                       （SwitchItem，与单字段开关行同款渲染）在控件列水平排列、flex-wrap
+                       自动换行（RDP 高级组 9 个 Enable* 带行标题「共享到远程桌面」；
+                       凭据组 option 开关 / 显示组附属开关无行标题，标签列留空） -->
                   <div v-else-if="b.type === 'switch-run'" class="form-field ed-switch-row">
-                    <span></span>
+                    <span v-if="b.titleKey" class="ed-switch-row-title" :title="t(b.titleKey)">
+                      {{ t(b.titleKey) }}
+                    </span>
+                    <span v-else></span>
                     <div class="ed-switch-row-control">
                       <SwitchItem
                         v-for="f in b.fields"
@@ -693,15 +703,26 @@ onBeforeUnmount(() => {
   line-height: 1.5;
 }
 
-/* 连续 SWITCH 聚合行：单个 form-field 形态——空标签列占位 148px + 控件列（.ff-control
-   同款右列）内所有开关项水平排列、flex-wrap 自动换行（1280 宽 RDP 高级组 9 个
-   Enable* 约 3-4 项一行）；项内 [开关][6px][文字] 由 SwitchItem 自带（与单字段
-   开关行共用同一渲染） */
+/* 连续 SWITCH 聚合行：单个 form-field 形态——标签列占位 148px（段首字段带 runTitleKey
+   时渲染行标题，样式对齐 FormField 的 .ff-label-text）+ 控件列（.ff-control 同款右列）
+   内所有开关项水平排列、flex-wrap 自动换行（1280 宽 RDP 高级组 9 个 Enable* 约 3-4 项
+   一行）；项内 [开关][6px][文字] 由 SwitchItem 自带（与单字段开关行共用同一渲染） */
 .ed-switch-row {
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr);
   gap: 4px 10px;
   align-items: start;
+}
+
+/* 聚合行行标题：与 .ff-label-text 同款排版（12.5px/--text-2/超长省略，title 属性悬浮
+   全文）；对齐 WPF 资源重定向区的行标题列（server_editor_advantage_resources） */
+.ed-switch-row-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--text-2);
 }
 
 .ed-switch-row-control {
