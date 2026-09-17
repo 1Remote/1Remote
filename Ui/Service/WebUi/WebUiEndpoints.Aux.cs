@@ -24,7 +24,7 @@ namespace _1RM.Service.WebUi
 {
     /// <summary>
     /// WebUiEndpoints 分域：辅助域（版本/图标/串口建议/本地视图状态，均为小而独立的只读或代理端点）。
-    /// ─ GET  /api/version               应用与 API 版本
+    /// ─ GET  /api/version               应用与 API 版本 + 构建日期 + 新版本检测状态（update 域）
     /// ─ GET  /api/icons                 内置图标列表（ServerIcons 单例快照）
     /// ─ POST /api/icons/extract-from-exe 从 .exe 提取图标（与 WPF 图标选择器同路径）
     /// ─ GET  /api/serial/options        Serial 编辑器下拉建议（端口/波特率）
@@ -36,11 +36,29 @@ namespace _1RM.Service.WebUi
     {
         internal static void MapVersion(WebApplication app)
         {
-            app.MapGet("/api/version", () => Results.Json(new
+            // fix batch6 Task D #12：除既有 version/api 外，增补 buildDate（AppVersion.BuildDate
+            // 原文，前端按 WPF AboutPageViewModel:98 语义自行去时区后缀显示）与 update 域
+            // （WebUiUpdateService 缓存快照；DoNotCheckNewVersion 时 available 恒 false）。
+            // 首次命中 EnsureStarted() 幂等触发检查 + 每小时复查 Timer（端点线程不等网络）。
+            app.MapGet("/api/version", () =>
             {
-                version = _1RM.AppVersion.Version,
-                api = 1,
-            }));
+                WebUiUpdateService.EnsureStarted();
+                var u = WebUiUpdateService.GetStatus();
+                return Results.Json(new
+                {
+                    version = _1RM.AppVersion.Version,
+                    api = 1,
+                    buildDate = _1RM.AppVersion.BuildDate,
+                    update = new
+                    {
+                        available = u.Available,
+                        checking = u.Checking,
+                        newVersion = u.NewVersion,
+                        newVersionUrl = u.NewVersionUrl,
+                        breaking = u.Breaking,
+                    },
+                });
+            });
         }
 
         internal static void MapIcons(WebApplication app)
