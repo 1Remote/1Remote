@@ -2,8 +2,9 @@
 // 单行（spec §3.4，对齐已确认样张 v2）：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
 // 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接（Task 18 接线）、
-// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）、
-// ▤=悬停看备注（fix-batch3 Task C #4，Markdown 渲染弹层，对齐 WPF）。
+// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（Plan 2 Task 8 接线，与菜单「编辑」同链路）。
+// 备注列（fix-batch5 Task B，取代 fix-batch3 名称旁 ▤ 图标）：文本直显（一行 ellipsis），
+// 整格悬停弹 Markdown 预览（对齐 WPF 悬停备注弹层）。
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import StatusDot from './StatusDot.vue'
@@ -19,8 +20,8 @@ const props = defineProps({
   highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
   cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接，spec §8.2）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列（spec §3.2）
-  showDs: { type: Boolean, default: false }, // 全部数据源根（fix-batch1 Task 2）：文件夹列前缀数据源名
-  hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/folder/time: bool}
+  showDs: { type: Boolean, default: false }, // 「全部数据」根（fix-batch1 Task 2）：文件夹列前缀数据源名
+  hiddenCols: { type: Object, default: null }, // 列显隐（Plan 4 Task 5）：{name/addr/proto/note/folder/time: bool}
   query: { type: String, default: '' }, // 搜索过滤词（fix-batch1 #1）：非空时名称/地址单元格做命中高亮
 })
 const emit = defineEmits(['toggle-select', 'row-click', 'connect', 'edit', 'context-menu'])
@@ -37,8 +38,9 @@ const tileStyle = (s) => {
 }
 // 地址列：Serial 等无地址协议回退显示协议名；有端口拼 ':port'
 const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
-// 文件夹列（fix-batch1 Task 2）：根视图递归展示全库，列为「数据源 / 路径」定位信息；
-// 全部数据源根额外前缀数据源名（同名路径跨数据源区分），进入文件夹后列隐藏（面包屑承载路径）
+// 文件夹列（fix-batch1 Task 2）：「全部数据」根视图无文件夹行（fix-batch5 Task B），此列是
+// 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
+// 进入文件夹后列隐藏（面包屑承载路径）
 const folderText = (s) =>
   props.showDs
     ? s.dataSourceName + (s.folderPath ? ' / ' + s.folderPath : '')
@@ -76,20 +78,6 @@ const barColor = computed(() => opaqueHex(props.server.color))
       <img v-if="server.iconBase64" class="icon" :src="iconSrc(server)" alt="" />
       <span v-else class="icon icon-fb" :style="tileStyle(server)">{{ initial(server.protocol) }}</span>
       <span class="name"><template v-for="(seg, i) in nameSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></span>
-      <!-- 备注悬停预览（fix-batch3 Task C #4，对齐 WPF 悬停备注图标弹备注窗）：note 非空才渲染图标；
-           n-popover 的 trigger 即 .note-ic 本身（naive 不加包装 DOM），flex 0 0 auto 不被 .name 的 ellipsis 吞 -->
-      <n-popover
-        v-if="server.note"
-        trigger="hover"
-        placement="top-start"
-        :content-style="{ maxWidth: '380px', maxHeight: '280px', overflow: 'auto' }"
-      >
-        <template #trigger>
-          <span class="note-ic" :title="t('row.note')">▤</span>
-        </template>
-        <!-- eslint-disable-next-line vue/no-v-html — Note 为用户本人配置的 Markdown，已过轻量净化（utils/markdown.js） -->
-        <div class="note-md" v-html="renderMarkdown(server.note)"></div>
-      </n-popover>
     </div>
     <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)"><template v-for="(seg, i) in addrSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></div>
     <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
@@ -98,6 +86,26 @@ const barColor = computed(() => opaqueHex(props.server.color))
       <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
       <span v-if="overflow(server)" class="tag tag-more">+{{ overflow(server) }}</span>
     </div>
+    <!-- 备注列（fix-batch5 Task B）：note 非空 = 纯文本一行直显（title 原文），整格作为
+         n-popover 的 trigger（naive 不加包装 DOM）悬停弹 Markdown 预览；空 note = 空单元格
+         （与 tags 列空态一致，不用「—」占位） -->
+    <template v-if="!hiddenCols || !hiddenCols.note">
+      <n-popover
+        v-if="server.note"
+        trigger="hover"
+        placement="top-start"
+        :content-style="{ maxWidth: '380px', maxHeight: '280px', overflow: 'auto' }"
+      >
+        <template #trigger>
+          <div class="cell cell-note">
+            <span class="note-text" :title="server.note">{{ server.note }}</span>
+          </div>
+        </template>
+        <!-- eslint-disable-next-line vue/no-v-html — Note 为用户本人配置的 Markdown，已过轻量净化（utils/markdown.js） -->
+        <div class="note-md" v-html="renderMarkdown(server.note)"></div>
+      </n-popover>
+      <div v-else class="cell cell-note"></div>
+    </template>
     <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">{{ folderText(server) }}</div>
     <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
     <div class="cell cell-act" @click.stop>
@@ -175,6 +183,18 @@ const barColor = computed(() => opaqueHex(props.server.color))
   gap: 4px;
   overflow: hidden;
 }
+/* 备注列（fix-batch5 Task B）：一行纯文本直显，弱化色 + ellipsis；整格为悬停弹层 trigger */
+.cell-note {
+  flex: var(--c-note, 1.2) var(--c-note-grow, 1) 0;
+  overflow: hidden;
+}
+.note-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-3);
+}
 .cell-folder {
   flex: var(--c-folder, 1.4) var(--c-folder-grow, 1) 0;
   overflow: hidden;
@@ -223,18 +243,6 @@ const barColor = computed(() => opaqueHex(props.server.color))
   color: var(--text-1);
 }
 
-/* 备注悬停图标（fix-batch3 Task C #4）：名称尾部低调字形（与行内 ▸/✎/⋯ 文字字形同风格），
-   hover 变亮提示可悬停；flex 0 0 auto 保证不被 .name 的 ellipsis 挤压吞掉 */
-.note-ic {
-  flex: 0 0 auto;
-  color: var(--text-4);
-  font-size: 12px;
-  line-height: 1;
-  cursor: default;
-}
-.note-ic:hover {
-  color: var(--text-2);
-}
 /* 弹层内 Markdown 排版：内容 teleport 到 body，但 slot 元素携带本组件 scope 属性（scoped 可达），
    主题变量定义在 html[data-theme] 上对 body 全局生效；v-html 子元素不带 scope 属性需 :deep。
    规则集与编辑器预览（MarkdownField .md-body）对齐，尺寸略收敛 */

@@ -8,7 +8,7 @@
   "search.title": "Ctrl+K to focus · Esc to clear",
   "search.searching": "Searching…",
 
-  "crumb.allDataSources": "All data sources",
+  "crumb.allDataSources": "All data",
   "crumb.allServers": "All servers",
   "crumb.count": " · {n} servers",
   "crumb.searchChip": "Search filter active",
@@ -42,6 +42,7 @@
   "col.address": "Address",
   "col.protocol": "Protocol",
   "col.tags": "Tags",
+  "col.note": "Note",
   "col.folder": "Folder",
   "col.lastConnect": "Last connected",
   "col.actions": "Actions",

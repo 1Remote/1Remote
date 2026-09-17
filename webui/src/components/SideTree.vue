@@ -1,6 +1,6 @@
 <script setup>
 // 边栏树 + 标签区（spec §3.2/§3.3，Task 15；fix-batch1 Task 2 重构 #2/#3）：
-// - 顶部常驻虚拟根「全部数据源」（点击=清除数据源过滤，列表显示全部库服务器）
+// - 顶部常驻虚拟根「全部数据」（点击=清除数据源过滤，列表显示全部库服务器，fix-batch5 Task B 更名）
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
@@ -18,7 +18,7 @@ import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 
 const props = defineProps({
-  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据源（v-model:selection）
+  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据（v-model:selection）
   tag: { type: String, default: '' }, // 当前标签过滤（v-model:tag，仅用于 chip 高亮）
 })
 const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 'manage-tags'])
@@ -71,10 +71,10 @@ function onToggle(key) {
   scheduleSave()
 }
 
-// 「全部数据源」虚拟根的展开态：纯本地（WPF 无此节点，不落 tree-state 字典）
+// 「全部数据」虚拟根的展开态：纯本地（WPF 无此节点，不落 tree-state 字典）
 const allOpen = ref(true)
 
-// ---- 可见行扁平化（免递归组件；depth 控缩进）：全部数据源 → 数据源根 → 文件夹（无服务器叶）
+// ---- 可见行扁平化（免递归组件；depth 控缩进）：全部数据 → 数据源根 → 文件夹（无服务器叶）
 const rows = computed(() => {
   const out = [{ kind: 'all', key: 'all', depth: 0, count: tree.value.reduce((n, r) => n + countHolderServers(r), 0) }]
   if (!allOpen.value) return out
@@ -231,7 +231,7 @@ async function applyTreeMove(src, row, zone) {
   }
 }
 
-// ---- 选中模型：全部数据源=null；根 → {ds,''}；文件夹 → {ds,path}
+// ---- 选中模型：全部数据=null；根 → {ds,''}；文件夹 → {ds,path}
 function isSelected(row) {
   const sel = props.selection
   if (row.kind === 'all') return !sel || !sel.dataSourceName
@@ -326,7 +326,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           @click.stop="row.kind === 'all' ? (allOpen = !allOpen) : onToggle(row.key)"
         >▸</span>
 
-        <!-- 全部数据源虚拟根（fix-batch1 #3）：常驻顶部，点击=清除数据源过滤 -->
+        <!-- 全部数据虚拟根（fix-batch1 #3；fix-batch5 Task B 更名）：常驻顶部，点击=清除数据源过滤 -->
         <template v-if="row.kind === 'all'">
           <span class="ds-icon">🗂</span>
           <span class="label">{{ t('crumb.allDataSources') }}</span>

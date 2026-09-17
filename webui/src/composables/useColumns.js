@@ -1,11 +1,12 @@
 // 列状态（Plan 4 Task 5）：ServerTable 列宽 + 显隐的持久化。
 // localStorage '1r-cols' = { colKey: { w: px数|null, hidden: bool } }——仅本地（有意简化：
 // 不入后端，WPF 侧 GridSplitter 宽度存 LocalityListViewService 也是机器本地视图状态）。
-// 可隐藏列：name/addr/proto/folder/time；固定最小集：check/status/tags/act（复选/状态/
-// 标签/操作列不允许隐藏——勾选与行内操作是列表交互的地基）。
+// 可隐藏列：name/addr/proto/note/folder/time（note 为备注列，fix-batch5 Task B）；
+// 固定最小集：check/status/tags/act（复选/状态/标签/操作列不允许隐藏——勾选与行内操作
+// 是列表交互的地基）。
 import { ref } from 'vue'
 
-export const HIDEABLE_COLS = ['name', 'addr', 'proto', 'folder', 'time']
+export const HIDEABLE_COLS = ['name', 'addr', 'proto', 'note', 'folder', 'time']
 
 const state = ref(readAll())
 
