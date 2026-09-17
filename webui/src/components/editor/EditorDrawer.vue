@@ -43,6 +43,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
+import SwitchItem from './SwitchItem.vue'
 import { PROTOCOLS, BULK_FIELDS } from '../../editor/schemas.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
@@ -129,11 +130,12 @@ function onCredModeSwitch(mode) {
 }
 /**
  * 组内可见字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
- * 字段聚成一个 'switch-run' 块（模板里按 3 列网格渲染，RDP 高级组的 9 个 Enable*
- * 自动成 3 行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格不变）。
- * fix-batch4 Task A #6：switchWithLabel 字段（IsPingBeforeConnect 可用性检测行）例外
- * ——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），不进 3 列网格，
- * 一律按 'single' 整行渲染（也据此打断连续 switch 段）。
+ * 字段聚成一个 'switch-run' 块（fix-batch5 Task A #3：渲染为单个 form-field 行——空
+ * 标签列 + 控件列内所有开关项水平排列、flex-wrap 自动换行，RDP 高级组的 9 个
+ * Enable* 同聚一行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格
+ * 不变）。fix-batch4 Task A #6：switchWithLabel 字段（IsPingBeforeConnect 可用性
+ * 检测行）例外——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），
+ * 不进聚合行，一律按 'single' 整行渲染（也据此打断连续 switch 段）。
  */
 function blocksOf(fields) {
   const blocks = []
@@ -482,37 +484,20 @@ onBeforeUnmount(() => {
   <div class="ed-root" :class="{ open: show }">
     <div class="ed-scrim" @click="requestClose"></div>
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="title">
-      <!-- 头部：协议瓦片 + 标题/归属 + 协议切换 + 关闭（bulk：无协议切换，瓦片为批量符号）。
+      <!-- 头部（fix-batch5 Task A #1 单行重排）：协议瓦片 + 标题 + 协议切换 + 数据源 +
+           关闭，五个元素一行（标题 flex:1 省略让位，窄抽屉 560px 下拉不换行）。
            #10：新建（非复制）以数据源选择器替换静态 pill（仅可写源，默认=传入 ds）；
-           编辑/复制/批量保持只读 pill。 -->
+           编辑/复制/批量保持只读 pill；bulk：无协议切换，瓦片为批量符号。 -->
       <header class="ed-head">
         <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
-        <div class="ed-head-main">
-          <div class="ed-title" :title="title">{{ title }}</div>
-          <n-select
-            v-if="showDsSelect && dsOptions.length > 1"
-            v-model:value="ds"
-            class="ed-ds-select"
-            size="small"
-            :options="dsOptions"
-            :title="t('editor.dataSourceLabel')"
-          />
-          <div
-            v-else
-            class="ed-ds"
-            :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)"
-          >{{ isBulk ? bulkDs : ds }}</div>
-        </div>
-        <n-select
-          v-if="!isBulk"
-          class="ed-proto"
-          size="small"
-          :value="protocolKey || undefined"
-          :options="protocolOptions"
-          :disabled="loading || !!loadError"
-          :title="t('editor.protocol')"
-          @update:value="onProtocolSwitch"
-        />
+        <div class="ed-title" :title="title">{{ title }}</div>
+        <n-select v-if="!isBulk" class="ed-proto" size="small" :value="protocolKey || undefined"
+          :options="protocolOptions" :disabled="loading || !!loadError" :title="t('editor.protocol')"
+          @update:value="onProtocolSwitch" />
+        <n-select v-if="showDsSelect && dsOptions.length > 1" v-model:value="ds" class="ed-ds-select" size="small"
+          :options="dsOptions" :title="t('editor.dataSourceLabel')" />
+        <div v-else class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)">{{ isBulk ? bulkDs :
+          ds }}</div>
         <button class="ed-close" type="button" :title="t('editor.close')" @click="requestClose">✕</button>
       </header>
 
@@ -535,41 +520,25 @@ onBeforeUnmount(() => {
             </div>
             <div v-for="f in bulkFields" :key="f.key" class="bulk-field">
               <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
-              <FormField
-                v-if="bulkOverwrite[f.key]"
-                class="bulk-control"
-                :field="f"
-                :model-value="bulkValues[f.key]"
-                :data-source-name="bulkDs"
-                @update:model-value="(v) => (bulkValues[f.key] = v)"
-              />
+              <FormField v-if="bulkOverwrite[f.key]" class="bulk-control" :field="f" :model-value="bulkValues[f.key]"
+                :data-source-name="bulkDs" @update:model-value="(v) => (bulkValues[f.key] = v)" />
               <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
-              <FormField
-                v-else-if="bulkShared[f.key].known && bulkShared[f.key].same"
-                class="bulk-control"
-                :field="f"
-                :model-value="bulkShared[f.key].value"
-                disabled
-              />
+              <FormField v-else-if="bulkShared[f.key].known && bulkShared[f.key].same" class="bulk-control" :field="f"
+                :model-value="bulkShared[f.key].value" disabled />
               <!-- 保持不变 + 各不相同/未读取：占位行（标签列对齐 FormField 的 148px） -->
               <div v-else class="bulk-keep bulk-control">
                 <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
                   {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
                 </div>
-                <div
-                  class="bulk-hint"
-                  :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')"
-                >
-                  {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown') }}
+                <div class="bulk-hint"
+                  :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')">
+                  {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')
+                  }}
                 </div>
               </div>
-              <button
-                class="bulk-toggle"
-                :class="{ on: bulkOverwrite[f.key] }"
-                type="button"
+              <button class="bulk-toggle" :class="{ on: bulkOverwrite[f.key] }" type="button"
                 :title="bulkOverwrite[f.key] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })"
-                @click="toggleOverwrite(f)"
-              >
+                @click="toggleOverwrite(f)">
                 {{ bulkOverwrite[f.key] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
               </button>
             </div>
@@ -588,27 +557,19 @@ onBeforeUnmount(() => {
                 <h3 class="ed-group-title">{{ g.labelKey ? t(g.labelKey) : g.id }}</h3>
                 <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
 
-                <!-- 渲染块循环（fix-batch3 Task A）：switch-run 网格 / 整行字段 + 凭据组的
+                <!-- 渲染块循环（fix-batch3 Task A）：switch-run 聚合行 / 整行字段 + 凭据组的
                      cred-mode / cred-hint 伪块（分段顺序见 groupBlocks） -->
                 <template v-for="(b, bi) in groupBlocks(g)" :key="bi">
                   <!-- 凭据组二选一（#7）：标签列对齐 FormField 的 148px 网格 -->
                   <div v-if="b.type === 'cred-mode'" class="ed-cred-mode">
                     <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
                     <div class="ed-seg" role="tablist">
-                      <button
-                        type="button"
-                        role="tab"
-                        :aria-selected="credentialMode === 'manual'"
-                        :class="{ on: credentialMode === 'manual' }"
-                        @click="onCredModeSwitch('manual')"
-                      >{{ t('editor.credMode.manual') }}</button>
-                      <button
-                        type="button"
-                        role="tab"
-                        :aria-selected="credentialMode === 'vault'"
-                        :class="{ on: credentialMode === 'vault' }"
-                        @click="onCredModeSwitch('vault')"
-                      >{{ t('editor.credMode.vault') }}</button>
+                      <button type="button" role="tab" :aria-selected="credentialMode === 'manual'"
+                        :class="{ on: credentialMode === 'manual' }" @click="onCredModeSwitch('manual')">{{
+                          t('editor.credMode.manual') }}</button>
+                      <button type="button" role="tab" :aria-selected="credentialMode === 'vault'"
+                        :class="{ on: credentialMode === 'vault' }" @click="onCredModeSwitch('vault')">{{
+                          t('editor.credMode.vault') }}</button>
                     </div>
                   </div>
                   <!-- vault 模式提示行（紧贴切换下方，现状语义保留） -->
@@ -616,25 +577,19 @@ onBeforeUnmount(() => {
                     <span></span>
                     <span class="ed-cred-hint">{{ t('editor.credMode.vaultHint') }}</span>
                   </div>
-                  <!-- #7：连续 SWITCH 字段 3 列网格块（凭据组的 option 开关同样成段） -->
-                  <div v-else-if="b.type === 'switch-run'" class="ed-switch-grid">
-                    <FormField
-                      v-for="f in b.fields"
-                      :key="f.key"
-                      class="ed-sw-cell"
-                      :field="f"
-                      :model-value="json[f.key]"
-                      @update:model-value="(v) => setField(f.key, v)"
-                    />
+                  <!-- #7：连续 SWITCH 聚合行（fix-batch5 Task A #3 单行形态）：一个
+                       form-field 行 = 空标签列（148px，批次4 开关行留空的延续）+ 控件列，
+                       所有开关项（SwitchItem，与单字段开关行同款渲染）在控件列水平排列、
+                       flex-wrap 自动换行（凭据组 option 开关 / RDP 高级组 9 个 Enable* 同理） -->
+                  <div v-else-if="b.type === 'switch-run'" class="form-field ed-switch-row">
+                    <span></span>
+                    <div class="ed-switch-row-control">
+                      <SwitchItem v-for="f in b.fields" :key="f.key" :field="f" :model-value="json[f.key]"
+                        @update:model-value="(v) => setField(f.key, v)" />
+                    </div>
                   </div>
-                  <FormField
-                    v-else
-                    :field="b.field"
-                    :model-value="json[b.field.key]"
-                    :data-source-name="ds"
-                    :tint="iconTint"
-                    @update:model-value="(v) => setField(b.field.key, v)"
-                  />
+                  <FormField v-else :field="b.field" :model-value="json[b.field.key]" :data-source-name="ds"
+                    :tint="iconTint" @update:model-value="(v) => setField(b.field.key, v)" />
                 </template>
               </section>
             </div>
@@ -646,13 +601,10 @@ onBeforeUnmount(() => {
       <footer class="ed-foot">
         <span class="ed-hint">{{ t('editor.saveHint') }}</span>
         <div class="ed-foot-btns">
-          <button class="ed-btn" type="button" :disabled="saving" @click="requestClose">{{ t('editor.cancel') }}</button>
-          <button
-            class="ed-btn ed-primary"
-            type="button"
-            :disabled="saving || loading || !!loadError || bulkDsMixed"
-            @click="save"
-          >{{ saving ? t('editor.saving') : t('editor.save') }}</button>
+          <button class="ed-btn" type="button" :disabled="saving" @click="requestClose">{{ t('editor.cancel')
+            }}</button>
+          <button class="ed-btn ed-primary" type="button" :disabled="saving || loading || !!loadError || bulkDsMixed"
+            @click="save">{{ saving ? t('editor.saving') : t('editor.save') }}</button>
         </div>
       </footer>
     </section>
@@ -674,6 +626,7 @@ onBeforeUnmount(() => {
   left: 0;
   z-index: 60;
 }
+
 .ed-scrim {
   position: absolute;
   inset: 0;
@@ -681,6 +634,7 @@ onBeforeUnmount(() => {
   opacity: 0;
   transition: opacity 0.17s ease;
 }
+
 .ed-panel {
   position: absolute;
   top: 0;
@@ -695,20 +649,26 @@ onBeforeUnmount(() => {
   transform: translateX(100%);
   transition: transform 0.17s ease;
 }
+
 .ed-root.open .ed-scrim {
   opacity: 1;
 }
+
 .ed-root.open .ed-panel {
   transform: none;
 }
+
 @media (prefers-reduced-motion: reduce) {
+
   .ed-scrim,
   .ed-panel {
     transition: none;
   }
 }
 
-/* 头部 */
+/* 头部（fix-batch5 Task A #1 单行重排）：瓦片/标题/协议/数据源/关闭 五元素一行——
+   标题 flex:1 占中段（超长省略，title 属性悬浮全文），两下拉固定槽位不换行，
+   窄抽屉（560px）由标题让位 */
 .ed-head {
   flex: 0 0 auto;
   display: flex;
@@ -717,6 +677,7 @@ onBeforeUnmount(() => {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
 }
+
 .ed-tile {
   flex: 0 0 30px;
   width: 30px;
@@ -725,17 +686,17 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 7px;
-  border: 1px solid var(--border); /* #9：无色/透明色回退瓦片在暗色下也可见 */
+  border: 1px solid var(--border);
+  /* #9：无色/透明色回退瓦片在暗色下也可见 */
   background: var(--bg-elevated);
   color: var(--text-3);
   font-size: 14px;
   font-weight: 600;
 }
-.ed-head-main {
+
+.ed-title {
   flex: 1 1 auto;
   min-width: 0;
-}
-.ed-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -743,28 +704,34 @@ onBeforeUnmount(() => {
   font-weight: 600;
   color: var(--text-1);
 }
+
+/* 数据源只读 pill（编辑/复制/批量）：行内元素（不再堆叠于标题下方第二行）——
+   固定 170px 槽位与新建模式选择器对齐（border-box，padding 计入），超长 ds 名省略 */
 .ed-ds {
-  display: inline-block;
-  margin-top: 2px;
-  max-width: 100%;
+  flex: 0 0 170px;
+  box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 1px 8px;
+  padding: 2px 10px;
   background: var(--bg-elevated);
   color: var(--text-4);
   font-size: 10.5px;
+  line-height: 1.4;
 }
-/* #10 新建模式的数据源选择器：行高贴近 pill（对齐标题下方的二级信息位） */
+
+/* #10 新建模式的数据源选择器：与只读 pill 同一 170px 行内槽位（原“标题下方二级
+   信息位”随单行头部取消） */
 .ed-ds-select {
-  margin-top: 2px;
-  max-width: 220px;
+  flex: 0 0 170px;
 }
+
 .ed-proto {
   flex: 0 1 150px;
 }
+
 .ed-close {
   flex: 0 0 auto;
   border: none;
@@ -776,6 +743,7 @@ onBeforeUnmount(() => {
   height: 28px;
   cursor: pointer;
 }
+
 .ed-close:hover {
   background: var(--bg-hover);
   color: var(--text-1);
@@ -788,6 +756,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
 }
+
 .ed-state {
   flex: 1;
   display: flex;
@@ -799,6 +768,7 @@ onBeforeUnmount(() => {
   font-size: 13px;
   padding: 24px;
 }
+
 .ed-state-detail {
   max-width: 80%;
   color: var(--text-4);
@@ -817,6 +787,7 @@ onBeforeUnmount(() => {
   gap: 14px;
   padding: 8px 18px 20px;
 }
+
 .ed-banner {
   border: 1px solid var(--danger);
   border-radius: 6px;
@@ -827,6 +798,7 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   word-break: break-word;
 }
+
 .ed-banner-required {
   border-color: var(--danger);
 }
@@ -837,19 +809,23 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 10px;
 }
+
 .ed-group-title {
   position: sticky;
-  top: 0; /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
+  top: 0;
+  /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
   z-index: 1;
   margin: 0;
   padding: 6px 0 5px;
-  background: var(--bg-panel); /* 滚动内容从标题下穿过时不透底 */
+  background: var(--bg-panel);
+  /* 滚动内容从标题下穿过时不透底 */
   border-bottom: 1px solid var(--border);
   color: var(--text-2);
   font-size: 12.5px;
   font-weight: 600;
   line-height: 1.2;
 }
+
 .ed-group-desc {
   margin: -4px 0 0;
   color: var(--text-4);
@@ -864,6 +840,7 @@ onBeforeUnmount(() => {
   gap: 4px 10px;
   align-items: center;
 }
+
 .ed-cred-mode-label {
   min-width: 0;
   overflow: hidden;
@@ -872,6 +849,7 @@ onBeforeUnmount(() => {
   font-size: 12.5px;
   color: var(--text-2);
 }
+
 .ed-seg {
   display: inline-flex;
   align-self: start;
@@ -879,6 +857,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   overflow: hidden;
 }
+
 .ed-seg button {
   border: none;
   background: var(--bg-elevated);
@@ -889,17 +868,21 @@ onBeforeUnmount(() => {
   cursor: pointer;
   white-space: nowrap;
 }
-.ed-seg button + button {
+
+.ed-seg button+button {
   border-left: 1px solid var(--border);
 }
+
 .ed-seg button:hover:not(.on) {
   background: var(--bg-hover);
   color: var(--text-1);
 }
+
 .ed-seg button.on {
   background: var(--accent-container);
   color: var(--accent-text);
 }
+
 .ed-cred-hint-row {
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr);
@@ -907,34 +890,31 @@ onBeforeUnmount(() => {
   align-items: center;
   margin-top: -6px;
 }
+
 .ed-cred-hint {
   color: var(--text-4);
   font-size: 11.5px;
   line-height: 1.5;
 }
 
-/* 连续 SWITCH 字段网格（#7）：3 列打包（RDP 高级组 9 个 Enable* = 3 行）。
-   fix-batch4 Task A #3/#4：单元格改为 [switch][描述文字]（FormField 内部结构），
-   标签列不再渲染文字（网格内覆写隐藏 .ff-label，规避 148px 两列网格）——开关起点
-   对齐各列左缘、文字紧跟其后；两类选择器提升特异性，规避组件样式加载顺序不定 */
-.ed-switch-grid {
+/* 连续 SWITCH 聚合行（fix-batch5 Task A #3）：单个 form-field 形态——空标签列占位
+   148px（批次4“开关行标签留空”的延续，新形态下标签列天然空）+ 控件列（.ff-control
+   同款右列）内所有开关项水平排列、flex-wrap 自动换行（1280 宽 RDP 高级组 9 个
+   Enable* 约 3-4 项一行）；项内 [开关][6px][文字] 由 SwitchItem 自带（与单字段
+   开关行共用同一渲染） */
+.ed-switch-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px 16px;
-  row-gap: 2px;
-  align-items: center;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: start;
 }
-.ed-switch-grid .ed-sw-cell {
+
+.ed-switch-row-control {
+  min-width: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  min-width: 0;
-}
-.ed-switch-grid .ed-sw-cell :deep(.ff-label) {
-  display: none; /* switch 行标签留空（#4），文字由控件列 .ff-switch-text 呈现 */
-}
-.ed-switch-grid .ed-sw-cell :deep(.ff-control) {
-  flex: 1 1 auto;
-  min-width: 0;
+  gap: 8px 16px;
 }
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
@@ -943,10 +923,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
 }
+
 .bulk-control {
   flex: 1;
   min-width: 0;
 }
+
 .bulk-toggle {
   flex: 0 0 auto;
   border: 1px solid var(--border);
@@ -959,15 +941,18 @@ onBeforeUnmount(() => {
   cursor: pointer;
   white-space: nowrap;
 }
+
 .bulk-toggle:hover {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);
 }
+
 .bulk-toggle.on {
   border-color: var(--accent);
   color: var(--accent-text);
 }
+
 /* 「各不相同/未读取」占位行：布局对齐 FormField（148px 标签列 + 控件列） */
 .bulk-keep {
   display: grid;
@@ -975,6 +960,7 @@ onBeforeUnmount(() => {
   gap: 4px 10px;
   align-items: center;
 }
+
 .bulk-keep-label {
   min-width: 0;
   overflow: hidden;
@@ -983,10 +969,12 @@ onBeforeUnmount(() => {
   font-size: 12.5px;
   color: var(--text-2);
 }
+
 .ff-required-like {
   margin-left: 2px;
   color: var(--danger);
 }
+
 .bulk-hint {
   min-width: 0;
   overflow: hidden;
@@ -1007,6 +995,7 @@ onBeforeUnmount(() => {
   border-top: 1px solid var(--border);
   background: var(--bg-panel);
 }
+
 .ed-hint {
   flex: 1 1 auto;
   min-width: 0;
@@ -1016,10 +1005,12 @@ onBeforeUnmount(() => {
   color: var(--text-4);
   font-size: 11.5px;
 }
+
 .ed-foot-btns {
   display: flex;
   gap: 8px;
 }
+
 .ed-btn {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -1030,19 +1021,23 @@ onBeforeUnmount(() => {
   padding: 7px 14px;
   cursor: pointer;
 }
+
 .ed-btn:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);
 }
+
 .ed-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
 .ed-primary {
   border-color: var(--accent);
   color: var(--accent-text);
 }
+
 .ed-primary:hover:not(:disabled) {
   background: var(--bg-hover);
   border-color: var(--accent);
