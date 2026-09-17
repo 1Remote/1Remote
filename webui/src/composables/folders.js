@@ -1,4 +1,4 @@
-// 虚拟文件夹纯函数模块（fix-batch1 Task 2，#2/#3）：
+// 虚拟文件夹纯函数模块：
 // 无 Vue/浏览器依赖（node 断言直接 import 本文件）。两类职责：
 // 1. tree-state 键 ↔ 数据源/路径 的换算与重写（键格式与 WPF 逐字符一致）；
 // 2. 树/文件夹模型（buildTree 自 useServers 迁入——物化空文件夹需在此做）。
@@ -106,7 +106,7 @@ const ensureFolder = (holder, name) => {
  * [{name, type, status, writable, reconnectInfo, serverCount, servers: [], folders: [...]}]
  * - 根节点 = 数据源；root.servers = folderPath 为空串的服务器，其余按 "/" 逐级下沉
  * - folderPathsByDs（可选，Map<ds, Set<'a/b'>>，来自 tree-state 键）先行物化空文件夹
- *   （fix-batch1 Task 2 虚拟文件夹：键即存在，与 WPF BuildView 物化循环一致）
+ *   （虚拟文件夹：键即存在，与 WPF BuildView 物化循环一致）
  * - 不属于任何已知数据源的服务器（快照错配的孤儿）被丢弃
  */
 export function buildTree(servers, datasources, folderPathsByDs) {

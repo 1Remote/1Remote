@@ -1,7 +1,6 @@
-// tree-state 共享存储（fix-batch1 Task 2 虚拟文件夹）：
-// 原先展开/顺序字典只在 SideTree 内部持有；虚拟文件夹（空文件夹物化）后，
-// 列表（ServerTable 的文件夹行）与 ServerListView（新建文件夹）也需要这些键，
-// 且侧栏收起（SideTree 卸载）时键不能丢——故提为模块级共享 composable（同 useServers 模式）。
+// tree-state 共享存储（虚拟文件夹物化的数据源）：展开/顺序字典的模块级共享
+// composable（同 useServers 模式）——除 SideTree 外，列表（ServerTable 的文件夹行）
+// 与 ServerListView（新建文件夹）也消费这些键，且侧栏收起（SideTree 卸载）时键不能丢。
 // PUT /api/ui-state/tree 对两个字典都是全量替换：保存必须以最近一次 GET/PUT 快照
 // （persistedExpanded）为基底合并，未取到基底前绝不 PUT（清空 WPF 侧空文件夹/顺序）。
 import { computed, ref } from 'vue'

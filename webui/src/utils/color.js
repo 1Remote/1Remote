@@ -1,7 +1,7 @@
 /**
  * ColorHex（C# 侧 #AARRGGBB，Newtonsoft 序列化）→ CSS 颜色的归一化纯函数。
  *
- * 两个域的差异（fix-batch1 Task 3 #9/#6 的根因）：
+ * 两个域的差异：
  *  - C# ColorHex 是 #AARRGGBB（alpha 在前），默认值 '#00000000' = 全透明；
  *  - CSS 的 8 位 hex 是 #RRGGBBAA（alpha 在后）。
  * 因此把 C# 值直接当 CSS 颜色用会得到「非法值（被浏览器丢弃）」或「全透明（暗色下不可见）」。

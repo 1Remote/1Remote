@@ -1,6 +1,6 @@
-// 虚拟文件夹操作（fix-batch1 Task 2）：新建/重命名/删除/移入的统一入口，
+// 虚拟文件夹操作：新建/重命名/删除/移入的统一入口，
 // SideTree（树右键菜单）与 ServerListView（列表右键/拖拽入文件夹）共用。
-// 机制（owner 确认方案甲）：
+// 机制（owner 确认）：
 // - 新建 = PUT /api/ui-state/tree 向 expansion 字典增键（键即存在，值 true=展开且存在，
 //   与 WPF 物化循环 ServerTreeViewModel.cs:873-889 一致，WPF 树自动可见空文件夹）；
 // - 重命名 = 受影响服务器逐台 config GET → TreeNodes 前缀重写 → PUT（复用树拖拽循环）

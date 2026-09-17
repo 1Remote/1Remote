@@ -1,5 +1,5 @@
 /**
- * 相对时间格式化（spec §3.4「最近连接」列；spec §7：相对时间用浏览器 Intl 按当前语言格式化）。
+ * 相对时间格式化（「最近连接」列；相对时间用浏览器 Intl 按当前语言格式化）。
  * 语言取 navigator.language（取不到的环境如单测回退 'zh'）。
  * @param {number} unixSeconds Unix 秒；0/非法 = 从未连接，返回 null（由调用方渲染「从未」）
  * @param {number} nowMs 当前毫秒时间戳（默认 Date.now()；单测可注入）

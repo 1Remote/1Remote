@@ -1,17 +1,17 @@
 import { ref, watch } from 'vue'
 import { api, subscribeEvents } from '../api'
 
-// 批量连接确认阈值（Plan 4 Task 3，产品决策项——spec 无此要求）：一次连接超过该台数时
-// 前端先弹确认（显示 N 台）再逐台发起；ServerListView 批量条与 TagManagerModal
-// 「连接全部」共用，两处阈值必须一致，故收在共享模块导出。
+// 批量连接确认阈值（产品决策项）：一次连接超过该台数时前端先弹确认（显示 N 台）
+// 再逐台发起；ServerListView 批量条与 TagManagerModal「连接全部」共用，
+// 两处阈值必须一致，故收在共享模块导出。
 export const BATCH_CONNECT_THRESHOLD = 5
 
-// 模块级共享状态（spec §9.1：不用 Pinia；多组件调用 useServers() 共享同一份 refs）
+// 模块级共享状态（不引 Pinia；多组件调用 useServers() 共享同一份 refs）
 const servers = ref([])
 const datasources = ref([])
 const tags = ref([])
 const loading = ref(false)
-const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true，供状态栏指示，Task 20 用）
+const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true，供状态栏指示）
 let unsubscribe = null
 let pollTimer = null
 let gen = 0 // 乱序完成保护：SSE 事件风暴下多个 loadAll 并发，晚发起的批次可能先返回
@@ -36,7 +36,7 @@ async function loadAll() {
   }
 }
 
-// ---- 搜索（spec §3.1/§8，Task 17）：模块级共享搜索态，App.vue 顶栏输入框与列表过滤共同消费 ----
+// ---- 搜索：模块级共享搜索态，App.vue 顶栏输入框与列表过滤共同消费 ----
 const searchQuery = ref('')
 const searchedIds = ref(null) // Set<serverId> | null；null=未启用搜索过滤（区别于空集=搜了但零命中）
 const searching = ref(false)
@@ -104,12 +104,12 @@ export function useServers() {
   return { servers, datasources, tags, loading, connected, reload: loadAll, searchQuery, searchedIds, searching }
 }
 
-// buildTree 迁至 ./folders（fix-batch1 Task 2：物化空文件夹需与键换算纯函数同居，
-// 且 node 断言要求模块无浏览器依赖）；此处转发保持既有 import 路径兼容
+// buildTree 定义在 ./folders（物化空文件夹需与键换算纯函数同居，且 node 断言
+// 要求模块无浏览器依赖）；此处转发保持既有 import 路径兼容
 export { buildTree } from './folders'
 
 /**
- * 组合应用边栏过滤（spec §3.1/§3.3，Task 17）：基础列表 → 标签过滤 → 搜索命中集逐层收窄。
+ * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集逐层收窄。
  * 纯函数（ServerListView 的 computed 与 node 断言共用；调用方负责传入响应式值以维持依赖追踪）：
  * - activeTag 非空 → 仅保留 tags 含该标签的服务器（后端标签名大小写无统一保证，按小写比较）
  * - searchedIds 非 null → 仅保留命中搜索的服务器（null=未启用搜索过滤，全通过）

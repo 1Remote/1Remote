@@ -31,7 +31,7 @@
  *    为 false 时（RDP.cs 的 EnableDiskDrives/EnableRedirectDrivesPlugIn/EnableRedirectCameras），
  *    json 缺失该字段会被 Populate 语义改写为 DefaultValue(true)——与 WPF 新建（false）相悖，
  *    因此这三个开关必须显式写入 defaults 为 false。
- *    Task 6 的 DefaultValue 审计结论（新增 5 类 + AppArgument，逐类 grep [DefaultValue]）：
+ *    DefaultValue 审计结论（逐类 grep [DefaultValue]）：
  *      Vnc.cs / Telnet.cs / Serial.cs / RdpApp.cs / AppProtocol.cs(LocalApp) 自身均无
  *      [DefaultValue] 特性；继承链上与本批协议相关的有两处，均已落入 defaults：
  *      ① LocalApp ctor 显式 IsPingBeforeConnect=false（AppProtocol.cs:24），而基类该属性
@@ -43,13 +43,13 @@
  *        （同文件 Key=[DefaultValue("")]+Populate 与初始化器一致、AddBlankAfterValue=
  *        [DefaultValue(true)]+Populate 与初始化器 true 一致，均无分歧。）
  *
- * TreeNodes（所属文件夹路径）有意不入 schema：Plan 2 网页端的文件夹归属仍由左侧树
- * 拖拽完成（与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失；树选择器归 Plan 4。
+ * TreeNodes（所属文件夹路径）有意不入 schema：网页端的文件夹归属由左侧树拖拽完成
+ * （与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失。
  * IsAutoAlternateAddressSwitching（ProtocolBaseWithAddressPort.cs:83-90，备用地址自动切换）
  * 同样有意不入 schema：WPF 在备用地址 UI 暴露该开关，web 子表单暂未等价实现，
  * 值原样透传不丢失；待后续任务补备用地址 UI 时一并接入。
  *
- * placeholderKey（fix-batch4 Task C）：对齐 WPF 编辑器各表单 XAML 输入框的 Tag 属性
+ * placeholderKey：对齐 WPF 编辑器各表单 XAML 输入框的 Tag 属性
  * （WPF 的 placeholder 机制——Tag 即提示文本，无 Tag = 无提示）。键名 editor.ph.<字段
  * key 驼峰>，locales 端 editor.ph.*；全量对照清单（Ui/View/Editor/Forms/ 逐一复核）：
  *  - 字面量英文（WPF 所有语言同显英文 → 14 locale 同值）：
@@ -63,7 +63,7 @@
  *        SSH 同名 Tag 文案不同（SshFormView:158 带 ";./build.sh;" 示例）→ 独立键
  *        editor.ph.sshStartupAutoCommand；Serial 表单该行 WPF 已注释隐藏（字段透传不编辑）
  *      ExePath（LocalAppFormView:30）→ editor.ph.exePath
- *      SerialPort/BitRate（"e.g. COM1"/"e.g. 9600"，上一提交已做）
+ *      SerialPort/BitRate（"e.g. COM1"/"e.g. 9600"）
  *  - DynamicResource（WPF 14 语言有译文 → convert-locales.mjs MAPPING 移植）：
  *      RemoteApplicationName/Program（RdpAppFormView:65/77）→ editor.ph.remoteAppName /
  *        editor.ph.remoteAppProgram（WPF 键 server_editor_remote_app_name_tag /
@@ -87,9 +87,8 @@
 import { FIELD } from './fieldTypes.js'
 
 // ---------------------------------------------------------------------------
-// SELECT 选项表（value = C# 枚举成员整数值，labelKey → editor.o.*（Task 11，
-// 双语键见 locales；文案对齐 WPF zh-cn.xaml 的 server_editor_* 系列）。
-// 注释标注枚举定义位置。
+// SELECT 选项表（value = C# 枚举成员整数值，labelKey → editor.o.*
+//（文案对齐 WPF zh-cn.xaml 的 server_editor_* 系列））。注释标注枚举定义位置。
 // ---------------------------------------------------------------------------
 
 /** ERdpFullScreenFlag（RDP.cs:30）Disable=0 / EnableFullScreen=1 / EnableFullAllScreens=2 */
@@ -201,7 +200,7 @@ const APP_ARGUMENT_TYPE_OPTIONS = [
 ]
 
 // ---------------------------------------------------------------------------
-// 共享分组构造器（协议间复用；Task 6 其余协议同样复用）
+// 共享分组构造器（协议间复用）
 // ---------------------------------------------------------------------------
 
 /**
@@ -221,10 +220,9 @@ function basicGroup({ withAddressPort = true } = {}) {
       { key: 'Address', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.address' },
       // C# Port 是 string（ProtocolBaseWithAddressPort.cs:49），数字输入但按字符串写回
       { key: 'Port', type: FIELD.NUMBER, required: true, asString: true },
-      // 可用性检测开关紧跟地址/端口正下方（对齐 WPF HostView.xaml:29-38 的行序，
-      // fix-batch4 Task A #6 从 misc 组移来）。switchWithLabel：该行标签列有文字
-      // （「Availability detection」）、控件列 [switch][说明文字]，与普通开关行
-      // （标签列留空）不同，见 FormField 的 #3/#4 处理。
+      // 可用性检测开关紧跟地址/端口正下方（对齐 WPF HostView.xaml:29-38 的行序）。
+      // switchWithLabel：该行标签列有文字（「Availability detection」）、控件列
+      // [switch][说明文字]，与普通开关行（标签列留空）不同，见 FormField 的处理。
       pingBeforeConnectField(),
     )
   }
@@ -232,8 +230,8 @@ function basicGroup({ withAddressPort = true } = {}) {
     { key: 'Tags', type: FIELD.TAGS },
     { key: 'IconBase64', type: FIELD.ICON },
     { key: 'ColorHex', type: FIELD.COLOR },
-    // 备注：MARKDOWN 特化（fix-batch2 Task C #4）——编辑 ⇄ 预览切换（MarkdownField）。
-    // 批量编辑的 note 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与本次特化）
+    // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑的 note
+    // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）
     { key: 'Note', type: FIELD.MARKDOWN },
   )
   return {
@@ -244,7 +242,7 @@ function basicGroup({ withAddressPort = true } = {}) {
 }
 
 /**
- * IsPingBeforeConnect 开关（ProtocolBaseWithAddressPort.cs:76，fix-batch4 Task A #6）：
+ * IsPingBeforeConnect 开关（ProtocolBaseWithAddressPort.cs:76）：
  * 地址/端口正下方的「可用性检测」行（对齐 WPF HostView.xaml:29-38——标签列
  * 'Availability detection' + 输入列 [CheckBox 'Check if address is available before connect']）。
  * 两键均为 WPF 14 语言 xaml 原文移植（Ui/Resources/Languages/*.xaml:263-264）。
@@ -260,8 +258,8 @@ function pingBeforeConnectField() {
 }
 
 /**
- * 备用连接组（fix-batch1 Task 3 #7，owner 确认）：AlternateCredentials 子表单独立成组
- * （此前挂在凭据组尾部）。每行 = 备用地址和/或登录身份的组合（行字段对照 Base/Credential.cs），
+ * 备用连接组（owner 确认独立成组）：AlternateCredentials 子表单独立成组。
+ * 每行 = 备用地址和/或登录身份的组合（行字段对照 Base/Credential.cs），
  * 组描述行（descKey）向用户说明该语义。
  */
 function alternateGroup() {
@@ -282,7 +280,7 @@ function alternateCredentialsField() {
       fields: [
         // required：WPF 备用凭据弹窗 IDataErrorInfo 强制 Name 非空（AlternativeCredentialEditViewModel.cs:275）。
         // 子表单内 UI 只标 *，非空校验由保存流/后端把关（AlternateCredentials 数组反序列化不逐行校验，
-        // 空名行会在保存时被整体拒绝或按后端行为处理——Task 8 保存错误提示承接）
+        // 空名行会在保存时被整体拒绝或按后端行为处理——保存错误提示由抽屉承接）
         // placeholder：WPF 备用凭据弹窗 5 个可继承字段同 Tag（AlternativeCredentialEditView，
         // 文件头清单）；Name 无 Tag 不加
         { key: 'Name', type: FIELD.TEXT, required: true },
@@ -298,9 +296,9 @@ function alternateCredentialsField() {
 }
 
 /**
- * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。fix-batch1 Task 3 #7 + fix-batch3
- * Task A 重构：组内由 EditorDrawer 按 `credRole` 四段渲染（对齐 WPF CredentialView.xaml
- * 的区段顺序，见 EditorDrawer 的 groupBlocks）：
+ * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。组内由 EditorDrawer 按
+ * `credRole` 四段渲染（对齐 WPF CredentialView.xaml 的区段顺序，见 EditorDrawer 的
+ * groupBlocks）：
  *  - 'pre'：prepend 字段（RDP 的 Domain/LoadBalanceInfo），位于「凭据来源」二选一切换
  *    之前，manual/vault 两模式恒显（WPF 中它们是凭据区之前的 Connection 组字段，不属于
  *    手动输入凭据块）；
@@ -347,10 +345,9 @@ function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
 }
 
 /**
- * 杂项组（fix-batch4 Task A #6 调整）：extraFields 直接成组——IsPingBeforeConnect
- * 已移至地址/端口正下方（basicGroup / localAppConnectionGroup，对齐 WPF 行序），
- * misc 不再固定追加该开关。SSH/SFTP/FTP/VNC/Telnet/RemoteApp/APP 的 misc 因此变空、
- * 已从各自 groups 删除；现仅 RDP（RdpControlAdditionalSettings）使用本组。
+ * 杂项组：extraFields 直接成组。IsPingBeforeConnect 位于地址/端口正下方
+ * （basicGroup / localAppConnectionGroup，对齐 WPF 行序），misc 不固定追加该开关；
+ * 现仅 RDP（RdpControlAdditionalSettings）使用本组。
  */
 function miscGroup(extraFields = []) {
   return {
@@ -471,18 +468,18 @@ function rdpGatewayGroup() {
 }
 
 // ---------------------------------------------------------------------------
-// Task 6 协议专属分组/字段（VNC/Telnet/Serial/RdpApp/LocalApp）
+// 协议专属分组/字段（VNC/Telnet/Serial/RdpApp/LocalApp）
 // ---------------------------------------------------------------------------
 
 /**
  * ArgumentList 子表单（LocalApp.ArgumentList: AppArgument[]，行字段对照 AppArgument.cs:36）。
  *  - Type 选项为字符串成员名（StringEnumConverter，见常量注释）。
  *  - 行内未列字段（Selections: Dictionary<string,string>，Selection/Const 型参数的取值表）
- *    无法用静态字段描述符表达 → 由 SubformList 行编辑原样保留（Task 7 约定：行对象原地
+ *    无法用静态字段描述符表达 → 由 SubformList 行编辑原样保留（约定：行对象原地
  *    修改，不重建），本 schema 只列出可安全编辑的标量字段。
  *  - Value 在 WPF 里按 Type 切换渲染（Secret=密码框/Flag=勾选/Selection=下拉，见
  *    ArgumentListControl.xaml:126-145）；静态描述符无法按行内另一字段的值切换控件类型，
- *    web 统一按 TEXT 渲染（Task 11/后续可由 SubformList 按 row.Type==='Secret' 特判加掩码），
+ *    web 统一按 TEXT 渲染（可由 SubformList 按 row.Type==='Secret' 特判加掩码），
  *    值语义（Flag 存 "1"/"" 等）不受影响。
  *  - rowDefaults：SubformList 新增行初值，对照 AppArgument 字段初始化器；
  *    AddBlankAfterKey 显式 false —— [DefaultValue(true)]+Populate 陷阱（见文件头审计②）。
@@ -520,7 +517,7 @@ function serialGroup() {
     fields: [
       // WPF SerialFormView 的 SerialPort 是 AutoCompleteComboBox：下拉=后端机器的
       // SerialPort.GetPortNames()（Serial.cs:157），经 /api/serial/options 枚举
-      // （fix batch4 Task B）——可输入可下拉；IDataErrorInfo 要求非空
+      // ——可输入可下拉；IDataErrorInfo 要求非空
       { key: 'SerialPort', type: FIELD.AUTOCOMPLETE, suggestionsSource: 'serial-ports', required: true, placeholderKey: 'editor.ph.serialPort' },
       // WPF 为 BitRates 列表的可输入组合框（Serial.cs:71），允许自定义波特率（非标准值直接键入）；
       // C# 属性是 string → asString 标注；IDataErrorInfo 要求非空且可 long.Parse
@@ -543,7 +540,7 @@ function serialGroup() {
  * （后端只在宏替换时消费这些值）；与 WPF 的该显隐差异为有意简化，记录在案。
  * AlternateCredentials 跟随 WPF：LocalApp 继承 ProtocolBaseWithAddressPortUserPwd，
  * WPF 在 Connection 区尾部展示备用凭据列表（LocalAppFormView.xaml:163）→ web 移入独立
- * 备用连接组（alternateGroup，fix-batch1 Task 3 #7）。
+ * 备用连接组（alternateGroup）。
  * placeholder：本组五字段的 WPF Tag 是 {Binding HintHostName} 等动态宏推导提示
  * （依赖 ArgumentList 的宏引用，静态 schema 无法表达）→ 不加 placeholderKey（文件头清单）。
  */
@@ -554,7 +551,7 @@ function localAppConnectionGroup() {
     fields: [
       { key: 'Address', type: FIELD.TEXT },
       { key: 'Port', type: FIELD.NUMBER, asString: true },
-      // 可用性检测紧跟 Port 下方（WPF LocalAppFormView 同款行序，fix-batch4 Task A #6；
+      // 可用性检测紧跟 Port 下方（WPF LocalAppFormView 同款行序；
       // APP 的 basic 组 withAddressPort=false，该字段只能在此暴露）
       pingBeforeConnectField(),
       { key: 'UserName', type: FIELD.TEXT },
@@ -891,7 +888,7 @@ export const PROTOCOLS = {
 }
 
 // ---------------------------------------------------------------------------
-// 字段 labelKey 兜底（Task 11 i18n 收尾）：加载时统一补齐，builder 不必逐个写。
+// 字段 labelKey 兜底：加载时统一补齐，builder 不必逐个写。
 // 规则：字段（含 subform 行字段）缺 labelKey 时默认 'editor.f.' + key；显式提供者
 // 不覆盖。locales 的 editor.f.* 共 73 键与去重后的字段 key 集合一一对应（9 协议共享
 // 基类字段，同名 key 语义一致——如各协议的 UserName 均为「用户名」；子表单行字段与
@@ -911,7 +908,7 @@ for (const schema of Object.values(PROTOCOLS)) {
 }
 
 // ---------------------------------------------------------------------------
-// 批量编辑字段（Plan 2 Task 10）
+// 批量编辑字段
 // ---------------------------------------------------------------------------
 
 /**
@@ -924,7 +921,7 @@ for (const schema of Object.values(PROTOCOLS)) {
  *  - dtoKey：列表 DTO（/api/servers，camelCase）中对应字段名，用于计算 N 台共享值；
  *    null = 列表 DTO 无此字段（password/inheritedCredentialName/askPasswordWhenConnect
  *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值
- *    （note 已随 fix-batch3 Task C #4 加入列表 DTO，可显示共享备注值）；
+ *    （note 在列表 DTO 中存在，可显示共享备注值）；
  *  - protocols：协议专属字段（startupAutoCommand/startupPath/rdpFileAdditionalSettings）
  *    的适用协议集（对照 BatchPatchFieldMap 注释）；所选服务器全部适用才显示该字段，
  *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。

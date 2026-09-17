@@ -1,8 +1,8 @@
 /**
- * 公共 Markdown 渲染（fix-batch3 Task C #4 抽自 MarkdownField.vue，行为零变化）：
- * marked.parse（gfm + breaks）+ 轻量净化，返回可直接交给 v-html 的 HTML 字符串。
- * 现有两处消费：编辑器备注字段预览（MarkdownField.vue）、服务器列表行备注悬停
- * 弹层（ServerRow.vue）——两处输入同源（用户自己的服务器 Note 字段）。
+ * 公共 Markdown 渲染：marked.parse（gfm + breaks）+ 轻量净化，
+ * 返回可直接交给 v-html 的 HTML 字符串。两处消费：编辑器备注字段预览
+ * （MarkdownField.vue）、服务器列表行备注悬停弹层（ServerRow.vue）
+ * ——两处输入同源（用户自己的服务器 Note 字段）。
  *
  * XSS 处理（有意轻量，注意局限）：渲染后做一次正则清洗——剥 <script> 块、危险嵌资源
  * 标签（iframe/object/embed/...）、on* 事件属性、javascript: URL。这不是完整净化器
