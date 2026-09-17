@@ -296,6 +296,11 @@ const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconn
 
 // 置顶标签在前，组内保持 API 顺序（稳定排序；重命名/删除等管理操作走标签管理模态）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))
+
+// 超长标签名显示截断阈值（字符数，阈值可调）：超过截断加 …；title 恒为全名。
+// JS 截断之外 CSS ellipsis 再兜一层视觉宽度（侧栏窄于 50 字符，截断后仍可能放不下）
+const TAG_MAX_LEN = 50
+const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN) + '…' : name)
 </script>
 
 <template>
@@ -358,7 +363,8 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
       </div>
     </div>
 
-    <!-- 标签区：chips+计数，置顶在前；点击=过滤条件 -->
+    <!-- 标签区：标题行恒定不随列表滚动（.tags 拆 head 固定 + .tag-list 独占滚动）；
+         chips+计数，置顶在前；点击=过滤条件；超长名截断（title 恒为全名） -->
     <div class="tags">
       <div class="tags-head">{{ t('tree.tags') }}</div>
       <div class="tag-list">
@@ -371,7 +377,8 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           :title="tg.name"
           @click="emit('update:tag', tg.name === tag ? '' : tg.name)"
         >
-          <span v-if="tg.isPinned" class="pin">📌</span>{{ tg.name }}<span class="tag-count">{{ tg.count }}</span>
+          <span v-if="tg.isPinned" class="pin">📌</span><span class="tag-name">{{ tagName(tg.name) }}</span
+          ><span class="tag-count">{{ tg.count }}</span>
         </button>
         <!-- 标签管理：打开模态（TagManagerModal 由 ServerListView 挂载）——ds 取当前树选中 -->
         <button class="tag-chip tag-manage" :title="t('tagm.title')" @click="emit('manage-tags')">
@@ -509,22 +516,30 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   font-size: 0.8462rem;
 }
 
+/* 标签区容器：标题行 + 滚动区拆分（fix batch6 Task E #11）——「标签」标题恒定可见，
+   只有 .tag-list 滚动；max-height 兜底防超多标签挤压树区 */
 .tags {
   flex-shrink: 0;
   max-height: 35%;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid var(--border);
   padding: 8px 10px 6px;
 }
 .tags-head {
+  flex: 0 0 auto;
   color: var(--text-4);
   font-size: 0.8462rem;
   margin-bottom: 6px;
 }
 .tag-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  align-content: flex-start; /* 高度受限时行簇顶对齐，不被 flex 行均分拉伸 */
 }
 .tag-chip {
   display: inline-flex;
@@ -550,7 +565,16 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .tag-chip .pin {
   font-size: 0.6923rem;
 }
+/* 标签名：单行 + CSS ellipsis 兜底（配合 JS 截断 TAG_MAX_LEN，见 script 注释）；
+   min-width:0 放行 flex 收缩，pin/计数不参与压缩 */
+.tag-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .tag-count {
+  flex: 0 0 auto;
   color: var(--text-4);
 }
 .tag-manage {
