@@ -9,7 +9,8 @@
 // - 键盘（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、
 //   Ctrl+A 全选可见、E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行）；
 //   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
-// - 批量条：选中 ≥1 时渲染于表头上方；连接/导出 emit 到父级执行（导出 Plan 4 Task 3 接线），
+// - 批量条：选中 ≥1 时经 Teleport 呈现于 ServerListView 面包屑行右侧（#crumb-actions，
+//   状态不上提，见模板注释）；连接/导出 emit 到父级执行（导出 Plan 4 Task 3 接线），
 //   批量编辑（Plan 2 Task 10）同
 // - 右键菜单：连接/编辑/复制/复制地址/复制用户名/删除可用，其余占位禁用（title 提示）；
 //   点击外部/Esc 关闭
@@ -559,23 +560,27 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="rootEl" class="server-table" :style="colVars" @mousedown="onTableMousedown">
-    <div v-if="checked.size" class="batch-bar">
-      <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
-      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶
-        {{ t('batch.connect') }}</button>
-      <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
-      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit')
-        }}</button>
-      <!-- 导出（Plan 4 Task 3）：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
-      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export', [...checked])">⤓ {{
-        t('batch.export') }}</button>
-      <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
-    </div>
-
-    <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
-      <!-- 表头工具簇（Plan 4）：浮于表头右端（.server-table 为定位基准）。
+    <!-- 批量条 + 表头工具簇（fix-batch Task C）：Teleport 到 ServerListView 面包屑行右侧
+         （容器 #crumb-actions 在骨架屏/空态 v-if 链之外恒存在，先于本组件挂载可用），
+         勾选/列状态仍归本组件，不上提。内容随本组件卸载（骨架屏/离线/引导/无匹配态）
+         一并消失，与迁入前同样只在表格可见时出现 -->
+    <Teleport to="#crumb-actions">
+      <!-- 批量条：勾选 ≥1 时出现；连接/批量编辑/导出 emit 到父级执行 -->
+      <div v-if="checked.size" class="batch-bar">
+        <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
+        <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶
+          {{ t('batch.connect') }}</button>
+        <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
+        <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit')
+          }}</button>
+        <!-- 导出（Plan 4 Task 3）：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
+        <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export', [...checked])">⤓ {{
+          t('batch.export') }}</button>
+        <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
+      </div>
+      <!-- 表头工具簇（Plan 4）：随批量条同宿面包屑行右侧。
            ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4）；
-           ▦ = 列菜单（显隐 + 列宽说明，Plan 4 Task 5） -->
+           ▦ = 列菜单（显隐 + 列宽说明，Plan 4 Task 5），下拉以本簇为锚向下展开 -->
       <div class="table-tools">
         <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')"
           @click="toggleCustomSort">≡</button>
@@ -593,6 +598,9 @@ onBeforeUnmount(() => {
           <div class="col-hint">{{ t('cols.hint') }}</div>
         </div>
       </div>
+    </Teleport>
+
+    <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
       <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
            表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻。
            可隐藏列 v-if；每列右缘 5px 拖拽调宽（col-resize），双击重置 -->
@@ -718,15 +726,12 @@ onBeforeUnmount(() => {
   min-height: 0;
 }
 
-/* 批量操作条（spec §3.4：选中 ≥1 展开；spec §3.1 面包屑行的简化落位） */
+/* 批量操作条（fix-batch Task C）：Teleport 至面包屑行右侧（#crumb-actions），与面包屑/
+   工具簇同行内联——不再自带整条背景/边框（宿主行自有 34px 高与底边线） */
 .batch-bar {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 36px;
-  padding: 0 10px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-elevated);
 }
 
 .bb-count {
@@ -777,16 +782,13 @@ onBeforeUnmount(() => {
   color: var(--text-1);
 }
 
-/* 表头工具簇：浮于表头行右端（.server-table relative 定位基准），z 高于 sticky 表头 */
+/* 表头工具簇（fix-batch Task C）：随批量条 Teleport 至面包屑行右侧，正常流内联排布
+   （不再浮于表头右端）；relative 仅作 ▦ 下拉（.col-menu）的定位锚点 */
 .table-tools {
-  position: absolute;
-  top: 0;
-  right: 14px;
-  z-index: 6;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 32px;
 }
 
 .tt-btn {
@@ -815,10 +817,12 @@ onBeforeUnmount(() => {
   color: var(--accent-text);
 }
 
-/* 列菜单（Plan 4 Task 5）：工具簇 ▦ 下拉 */
+/* 列菜单（Plan 4 Task 5）：工具簇 ▦ 下拉。锚点随迁（fix-batch Task C）：以 .table-tools
+   为定位基准，整块悬于其下方 3px，右缘对齐；z 高于表格 sticky 表头（同根堆叠上下文），
+   面包屑行无 overflow 裁剪，跨行悬于表头上方完整可见 */
 .col-menu {
   position: absolute;
-  top: 30px;
+  top: calc(100% + 3px);
   right: 0;
   z-index: 30;
   display: flex;

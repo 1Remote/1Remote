@@ -50,7 +50,7 @@
   "toast.reorderFailed": "Failed to save custom order",
   "toast.treeMoved": "Moved {n} servers",
   "toast.treeMoveFailed": "Failed to move {n} servers",
-  "cols.menu": "Columns",
+  "cols.menu": "Column visibility & width",
   "cols.fixed": "Always shown",
   "cols.hint": "Drag a column edge to resize; double-click the edge to reset",
   "col.selectAll": "Select all (Ctrl A)",
