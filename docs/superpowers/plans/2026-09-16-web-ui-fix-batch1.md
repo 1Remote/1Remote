@@ -77,3 +77,12 @@
 - **Task E（风格统一，owner 2026-09-17 追加）**：引入 Prettier（.prettierrc 按主流风格：单引号/无分号/2 空格/printWidth 120——以最小化 churn 为准实测选定；trailing comma 等按现状抽样）+ `npm run format`/`format:check` 脚本；全量机械格式化一个独立提交（diff 应全部为空白/引号/换行，无逻辑变化）；owner IDE 重排版问题此后由 format 脚本终结。
 - **Task F（错误修复，owner 追加"发现错误需要修复"）**：重构中发现的错误以独立 `fix(webui)` 提交（与纯重构提交区分，可回溯）。已累积待修清单：①EditorDrawer credRole 漏标字段静默不渲染（dev console.warn 兜底）②convert-locales.mjs WRAP⊆MAPPING fail-fast 断言 ③.ff-switch-text 缺 overflow-wrap:break-word ④ServerTable :519 "Esc 关闭列菜单"失实注释改写（接 Esc 属行为变化不在重构批做）。
 - 基线：npm build 0；i18n 473×14（Task D 后 470×14）；dotnet 不涉及（纯前端）。顺序 A→B→C→D→E→F（F 可穿插在发现时即修）。owner WIP 禁触惯例不变。
+
+## 后端重构批次（2026-09-17 goal：WebUi 相关 C# 零功能变化重构，不碰无关 C#）
+
+范围：仅 `Ui/Service/WebUi/**`（后端注释考古噪音≈0，重构主战场是结构拆分）。**禁触**：SecondaryVerificationHelper（WPF 设置页共用）、MainWindowView（混合壳层）、owner 全部 WIP、webui/ 前端。验证门禁：`dotnet test Tests/Tests.csproj`（基线 161/5，5 败=owner WIP 逐条一致）+ 评审机械 diff（搬移/注释-only）。
+
+- **Task A**：WebUiEndpoints.cs（930 行/45 路由）→ `partial static class` 按域拆文件：主文件保留 MapAll（按**原注册顺序**调用各 Map*）+ 共享助手（IsConnectable/DeriveConnectionState/BuildActiveServerIdSet…）；分域文件 Servers(+connect/search/events)、Credentials、DataSources、Settings(general/verify/launcher/runners/appearance)、Tags、Aux(version/icons/serial/ui-state)。lambda 体逐字搬移（仅包进方法+缩进）；注释顺带重写为现状描述。
+- **Task B**：WebUiSettingsService.cs（619 行 30 方法）→ partial 按域拆（General/Launcher/Appearance/Tags/UiState）；EditorService/ImportExportService/DataSourceService/CredentialService 注释 pass（单域内聚不拆）。
+- **Task C**：小文件（WebUiServer/DtoMapper/WebUiDto/FilterHelpers/TokenMiddleware）注释/组织梳理；Tests 注释仅修失实处（不动断言）。
+- 顺序 A→B→C，每任务独立提交 + 评审；发现错误独立 fix 提交。

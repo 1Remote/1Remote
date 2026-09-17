@@ -20,7 +20,7 @@ namespace _1RM.Service.WebUi
     /// ─ GET/PUT /api/settings/launcher 启动器开关/热键/凭据显示/快速连接保存信息，写后重注册热键
     ///
     /// 热键线格式 = 枚举成员名（"ControlAlt"/"M"），PUT 额外接受 "Ctrl+Alt" 显示形态
-    /// （token 顺序无关）。写后经 IoC.TryGet&lt;LauncherWindowViewModel&gt;()?.SetHotKey(4 参)
+    /// （token 顺序无关）。写后经 IoC.TryGet&lt;LauncherWindowViewModel&gt;()?.SetHotKey(3 参)
     /// 重注册（与 SettingsPageViewModel.CmdSaveAndGoBack 同一线程语义：UI 线程执行；
     /// TryGet 为 null 的测试环境静默跳过）。
     ///
@@ -82,7 +82,7 @@ namespace _1RM.Service.WebUi
 
             cs.Save();
 
-            // 重注册：与 WPF 设置页同一 4 参调用；HwndSource/Hook 有 WPF 线程亲和，与 WPF 一致在
+            // 重注册：与 WPF 设置页同一 3 参调用；HwndSource/Hook 有 WPF 线程亲和，与 WPF 一致在
             // UI 线程执行。IoC.TryGet 为 null（测试环境未注册）→ 静默跳过。
             var launcher = IoC.TryGet<LauncherWindowViewModel>();
             if (launcher != null)
