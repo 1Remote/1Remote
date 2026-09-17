@@ -174,9 +174,62 @@ export const api = {
     requestRaw(`/api/servers/export?ids=${ids.map(encodeURIComponent).join(',')}`, { blob: true }),
 }
 
-/** 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。 */
+/**
+ * 订阅数据版本；返回取消函数。onReload 在每次 reload 事件时回调。
+ * SSE 断线自愈（实测根因）：后端重启窗口内（dev 形态下 Kestrel 随应用重建，页面由 Vite 继续服务
+ * 而存活），重连请求经 Vite 代理会得到 502——按 SSE 规范 EventSource 随即永久失败
+ * （readyState=CLOSED）且浏览器不再自动重连，页面从此静默失去全部推送（连接状态点不点亮、
+ * 列表不跟随变更），直到手动刷新页面。两层自愈：
+ * 1) onerror 且 CLOSED → 退避重建（1s 起倍增、15s 封顶；链路恢复即复位）；
+ * 2) 服务端每 15s 一拍心跳（ping/reload 事件，见 /api/events），45s 无任何一拍 → 强制重建——
+ *    扑杀无差错事件的半开静默连接（休眠恢复等 TCP 黑洞：EventSource 对静默不会自行超时）。
+ */
 export function subscribeEvents(onReload) {
-  const es = new EventSource('/api/events' + (token ? `?token=${token}` : ''))
-  es.addEventListener('reload', onReload)
-  return () => es.close()
+  const url = '/api/events' + (token ? `?token=${token}` : '')
+  const IDLE_LIMIT = 45_000 // 15s 一拍 × 3 拍无声 = 连接已死
+  let es = null
+  let closed = false
+  let retryTimer = null
+  let watchdog = null
+  let retryDelay = 1000
+  const armWatchdog = () => {
+    clearTimeout(watchdog)
+    watchdog = setTimeout(connect, IDLE_LIMIT) // 走 connect：内部先关闭旧 socket 再重建
+  }
+  const beat = () => {
+    retryDelay = 1000 // 收到服务端数据 = 链路健康，重置退避
+    armWatchdog()
+  }
+  const scheduleRetry = () => {
+    if (closed) return
+    clearTimeout(retryTimer)
+    retryTimer = setTimeout(connect, retryDelay)
+    retryDelay = Math.min(retryDelay * 2, 15_000)
+  }
+  const connect = () => {
+    if (closed) return
+    clearTimeout(retryTimer)
+    es?.close()
+    es = new EventSource(url)
+    es.onopen = beat
+    es.addEventListener('reload', () => {
+      beat()
+      onReload()
+    })
+    es.addEventListener('ping', beat)
+    es.onerror = () => {
+      if (closed) return
+      // CLOSED = 永久失败（后端重启窗口内代理 502 等）：规范不再自动重连，必须自主重建；
+      // CONNECTING = 浏览器自动重连中，不干预（长时间卡在 CONNECTING 的场景由看门狗兜底）
+      if (es.readyState === EventSource.CLOSED) scheduleRetry()
+    }
+    armWatchdog()
+  }
+  connect()
+  return () => {
+    closed = true
+    clearTimeout(retryTimer)
+    clearTimeout(watchdog)
+    es?.close()
+  }
 }
