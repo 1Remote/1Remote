@@ -21,11 +21,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import GeneralGroup from '../components/settings/GeneralGroup.vue'
 import AppearanceGroup from '../components/settings/AppearanceGroup.vue'
-import LanguageAboutGroup from '../components/settings/LanguageAboutGroup.vue'
+import AboutGroup from '../components/settings/AboutGroup.vue'
 import LauncherGroup from '../components/settings/LauncherGroup.vue'
 import DataSourceGroup from '../components/settings/DataSourceGroup.vue'
 import CredentialVaultGroup from '../components/settings/CredentialVaultGroup.vue'
 import RunnerGroup from '../components/settings/RunnerGroup.vue'
+import { useVersionInfo } from '../composables/useVersionInfo'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,8 +41,14 @@ const GROUPS = [
   { id: 'g-credentials', labelKey: 'settings.nav.credentials', component: markRaw(CredentialVaultGroup) },
   { id: 'g-appearance', labelKey: 'settings.nav.appearance', component: markRaw(AppearanceGroup) },
   { id: 'g-runners', labelKey: 'settings.nav.runners', component: markRaw(RunnerGroup) },
-  { id: 'g-langabout', labelKey: 'settings.nav.langAbout', component: markRaw(LanguageAboutGroup) },
+  // fix batch6 Task D #7：原「语言与关于」更名「关于」（语言选择行已并入常规组），
+  // 分组 id 同步 g-langabout → g-about（深链 ?g= 引用仅在本文件）
+  { id: 'g-about', labelKey: 'settings.nav.about', component: markRaw(AboutGroup) },
 ]
+
+// 「关于」导航项红点（fix batch6 Task D #12）：数据源 = 进设置页时自行拉一次 /api/version
+//（简单方案：端点轻量读后端静态缓存，免去与 App.vue 共享状态的跨组件契约，见 useVersionInfo 头注释）
+const { update: updateInfo } = useVersionInfo()
 
 const activeId = ref('g-general')
 {
@@ -109,6 +116,8 @@ onBeforeUnmount(() => {
           @click="selectGroup(g.id)"
         >
           {{ t(g.labelKey) }}
+          <!-- 「关于」项红点：仅 updateAvailable（fix batch6 Task D #12） -->
+          <span v-if="g.id === 'g-about' && updateInfo?.available" class="s-dot"></span>
         </button>
       </nav>
     </aside>
@@ -173,7 +182,9 @@ onBeforeUnmount(() => {
 .s-item {
   /* 一行一项由 .s-groups 的 flex column 承载（见上）；本规则的 nowrap/ellipsis 负责
      文本不折行、超宽省略。flex:none 在非 flex 父容器上无效，现父级已是 flex column，
-     保留无害（占位语义：不被压缩）。160px 内 7 组中英标签均单行可容纳 */
+     保留无害（占位语义：不被压缩）。160px 内 7 组中英标签均单行可容纳。
+     position:relative 为「关于」项红点（.s-dot）的定位基准（fix batch6 Task D #12） */
+  position: relative;
   flex: none;
   height: 34px;
   padding: 0 10px;
@@ -195,6 +206,17 @@ onBeforeUnmount(() => {
 .s-item.active {
   background: var(--accent-container);
   color: var(--accent-text);
+}
+/* 「关于」导航项红点（fix batch6 Task D #12）：8px 圆点绝对定位在文字右上，
+   仅 updateAvailable 时渲染（与 App.vue ⚙ 红点同一形态） */
+.s-dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: red;
 }
 .s-main {
   flex: 1;

@@ -5,6 +5,7 @@ import { enUS, zhCN } from 'naive-ui'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 import { useEditorBus } from './composables/editorBus'
+import { useVersionInfo } from './composables/useVersionInfo'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
 const { requestNewServer, requestImport } = useEditorBus()
@@ -49,6 +50,11 @@ function onAddSelect(key) {
   if (key === 'new') requestNewServer()
   else if (key === 'import') requestImport()
 }
+
+// ⚙ 设置按钮红点（fix batch6 Task D #12）：检测到新版本时右上角 8px 红点。
+// 数据源 = App 挂载即拉一次 /api/version（首检未完成时 30s 重拉至定论，见组合式函数头注释）；
+// 简单方案，刻意不与设置页共享状态（后端读静态缓存，请求轻量）
+const { update: updateInfo } = useVersionInfo()
 
 // ===== 窗口控制：仅 WebView2 宿主可见/生效 =====
 // window.chrome.webview 只存在于 WebView2：普通浏览器打开时整套窗口控制隐藏，
@@ -154,7 +160,11 @@ function onTopbarDblClick(e) {
               <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
                 <n-button quaternary size="small" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
-              <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
+              <span class="gear-wrap">
+                <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
+                <!-- 更新红点：仅 updateAvailable（fix batch6 Task D #12） -->
+                <span v-if="updateInfo?.available" class="gear-dot"></span>
+              </span>
             </div>
             <!-- 窗口控制（仅 WebView2 宿主）：Windows 风格 46×44，close hover 红。消息见 postToHost -->
             <div v-if="isHosted" class="win-controls">
@@ -289,6 +299,21 @@ function onTopbarDblClick(e) {
   margin-left: auto;
   display: flex;
   gap: 4px;
+}
+/* ⚙ 更新红点：8px 圆点绝对定位在按钮右上（fix batch6 Task D #12，与设置导航红点同形态） */
+.gear-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.gear-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: red;
+  pointer-events: none; /* 红点不吞点击，落点始终是 ⚙ 按钮 */
 }
 /* 窗口控制（Windows 风格）：46×44、hover --bg-hover、close hover #e81123 白图标。
  * margin-right 负值抵消 topbar 右内边距，按钮贴到窗口右缘（Windows 惯例）。 */
