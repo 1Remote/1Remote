@@ -570,14 +570,14 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 6px;
   color: var(--text-3);
-  font-size: 13px;
+  font-size: 1rem;
   padding: 24px;
 }
 
 .ed-state-detail {
   max-width: 80%;
   color: var(--text-4);
-  font-size: 12px;
+  font-size: 0.9231rem;
   word-break: break-all;
   text-align: center;
 }
@@ -599,7 +599,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1.6;
   padding: 8px 10px;
   word-break: break-word;
@@ -627,7 +627,7 @@ onBeforeUnmount(() => {
   /* 滚动内容从标题下穿过时不透底 */
   border-bottom: 1px solid var(--border);
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -635,7 +635,7 @@ onBeforeUnmount(() => {
 .ed-group-desc {
   margin: -4px 0 0;
   color: var(--text-4);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   line-height: 1.5;
 }
 
@@ -652,7 +652,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 
@@ -668,7 +668,7 @@ onBeforeUnmount(() => {
   border: none;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 6px 12px;
   cursor: pointer;
@@ -699,7 +699,7 @@ onBeforeUnmount(() => {
 
 .ed-cred-hint {
   color: var(--text-4);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   line-height: 1.5;
 }
 
@@ -721,7 +721,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 
@@ -751,7 +751,7 @@ onBeforeUnmount(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-4);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
 }
 
 .ed-foot-btns {
@@ -764,7 +764,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1;
   padding: 7px 14px;
   cursor: pointer;

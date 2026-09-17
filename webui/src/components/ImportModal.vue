@@ -203,7 +203,7 @@ function fmtSize(n) {
 }
 .f-row label {
   flex: 0 0 auto;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .f-row .n-select {
@@ -232,16 +232,16 @@ function fmtSize(n) {
   background: var(--bg-hover);
 }
 .dz-icon {
-  font-size: 20px;
+  font-size: 1.5385rem;
   color: var(--text-3);
   line-height: 1;
 }
 .dz-hint {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .dz-formats {
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 
@@ -256,7 +256,7 @@ function fmtSize(n) {
 }
 .f-icon {
   flex: 0 0 auto;
-  font-size: 14px;
+  font-size: 1.0769rem;
   color: var(--text-3);
 }
 .f-name {
@@ -265,12 +265,12 @@ function fmtSize(n) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-1);
 }
 .f-size {
   flex: 0 0 auto;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .f-x {
@@ -281,7 +281,7 @@ function fmtSize(n) {
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 10px;
+  font-size: 0.7692rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -303,13 +303,13 @@ function fmtSize(n) {
   overflow: auto;
 }
 .err-title {
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-weight: 600;
   color: var(--danger);
   margin-bottom: 4px;
 }
 .err-item {
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-3);
   word-break: break-all;
   line-height: 1.5;

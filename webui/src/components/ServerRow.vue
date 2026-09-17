@@ -173,7 +173,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   align-items: center;
   min-width: 0;
   padding-right: 10px;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .cell-check {
@@ -254,7 +254,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   justify-content: center;
   background: var(--bg-elevated); /* 无自定义色 → 中性瓦片；有色 → 内联低饱和底+同色字 */
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-weight: 600;
 }
 .name {
@@ -269,7 +269,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
    主题变量定义在 html[data-theme] 上对 body 全局生效；v-html 子元素不带 scope 属性需 :deep。
    规则集与编辑器预览（MarkdownField .md-body）对齐，尺寸略收敛 */
 .note-md {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1.6;
   color: var(--text-1);
   word-break: break-word;
@@ -301,7 +301,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   background: var(--bg-hover);
   padding: 0 3px;
   font-family: ui-monospace, Consolas, monospace;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
 }
 .note-md :deep(pre) {
   overflow-x: auto;
@@ -371,7 +371,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 10.5px;
+  font-size: 0.8077rem;
   line-height: 1;
   padding: 2.5px 8px;
 }
@@ -386,7 +386,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 13px;
+  font-size: 1rem;
   line-height: 1;
   width: 26px;
   height: 24px;

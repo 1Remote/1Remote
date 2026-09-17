@@ -819,7 +819,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--border-strong);
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   user-select: none;
 }
 
@@ -893,7 +893,7 @@ onBeforeUnmount(() => {
 }
 
 .arrow {
-  font-size: 9px;
+  font-size: 0.6923rem;
   opacity: 0.7;
 }
 
@@ -925,7 +925,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   height: 160px;
   color: var(--text-4);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
 }
 
 /* 右键菜单浮层 */
@@ -951,7 +951,7 @@ onBeforeUnmount(() => {
   border-radius: 5px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1;
   padding: 7px 10px;
   cursor: pointer;
@@ -971,6 +971,6 @@ onBeforeUnmount(() => {
 
 .ctx-hint {
   color: var(--text-4);
-  font-size: 10.5px;
+  font-size: 0.8077rem;
 }
 </style>

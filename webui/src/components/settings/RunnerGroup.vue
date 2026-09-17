@@ -209,7 +209,7 @@ async function save() {
   max-width: 720px;
 }
 .hint {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-3);
 }
 .hint.err {
@@ -228,7 +228,7 @@ async function save() {
   border-radius: 6px;
   background: transparent;
   color: var(--text-3);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   padding: 5px 12px;
   cursor: pointer;
 }
@@ -248,7 +248,7 @@ async function save() {
   margin-bottom: 12px;
 }
 .sel-row label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .r-cards {
@@ -276,7 +276,7 @@ async function save() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-1);
 }
 .r-badge {
@@ -284,7 +284,7 @@ async function save() {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 5px;
-  font-size: 10.5px;
+  font-size: 0.8077rem;
   color: var(--text-4);
 }
 .r-badge.ext {
@@ -293,7 +293,7 @@ async function save() {
 }
 .r-internal-hint {
   margin: 0;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .f-row {
@@ -303,12 +303,12 @@ async function save() {
   align-items: center;
 }
 .f-row label {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-2);
 }
 .f-hint {
   margin: 4px 0 0;
-  font-size: 11px;
+  font-size: 0.8462rem;
   color: var(--text-4);
 }
 .actions {
@@ -320,7 +320,7 @@ async function save() {
   border-top: 1px solid var(--border);
 }
 .dirty {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--warning);
 }
 </style>

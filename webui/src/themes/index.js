@@ -93,6 +93,11 @@ export async function initTheme() {
   applyTheme()
 }
 
+/** px → rem（基准 13px = M 档根字号），保留 4 位小数 */
+function px2rem(px) {
+  return `${Math.round((px / 13) * 10000) / 10000}rem`
+}
+
 /** Naive UI 主题（含 overrides），供 n-config-provider 绑定 —— computed 保持响应式 */
 export function useNaiveTheme() {
   return computed(() => ({
@@ -103,6 +108,27 @@ export function useNaiveTheme() {
         primaryColorHover: ACCENT_HOVER_HEX[themeState.accent],
         primaryColorPressed: ACCENT_HEX[themeState.accent],
         primaryColorSuppl: ACCENT_HOVER_HEX[themeState.accent],
+        // 组件字号改用 rem：applyTheme 改 documentElement.fontSize 时 naive 组件文字
+        // 同步缩放。默认值取自 naive common（_common.mjs），仅换单位
+        fontSize: px2rem(14),
+        fontSizeMini: px2rem(12),
+        fontSizeTiny: px2rem(12),
+        fontSizeSmall: px2rem(14),
+        fontSizeMedium: px2rem(14),
+        fontSizeLarge: px2rem(15),
+        fontSizeHuge: px2rem(16),
+      },
+      // primary 实心/secondary 按钮文字固定白色（键名以 naive Button self 变量为准，见
+      // node_modules/naive-ui/es/button/styles/light.mjs）：暗色基底的 baseColor=#000 使
+      // textColorPrimary 系派生为黑字（naive 暗色以 baseColor 反差取字色），在蓝/紫等
+      // 强调色上不可读；亮色基底本就是 #FFF，覆盖后行为不变。ghost/text 型保持强调色
+      // 文字（透明底白字不可读），不在覆盖范围
+      Button: {
+        textColorPrimary: '#FFFFFF',
+        textColorHoverPrimary: '#FFFFFF',
+        textColorPressedPrimary: '#FFFFFF',
+        textColorFocusPrimary: '#FFFFFF',
+        textColorDisabledPrimary: '#FFFFFF',
       },
     },
   }))

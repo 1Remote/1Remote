@@ -83,7 +83,7 @@ const { t } = useI18n()
 .frow .f-icon {
   flex: 0 0 22px;
   text-align: center;
-  font-size: 14px;
+  font-size: 1.0769rem;
 }
 
 .frow .name {
@@ -92,14 +92,14 @@ const { t } = useI18n()
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-1);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
 }
 
 .frow .f-ds {
   flex: 0 0 auto;
   margin-left: 6px;
   color: var(--text-4);
-  font-size: 11px;
+  font-size: 0.8462rem;
 }
 
 .frow .cell-count {
@@ -107,7 +107,7 @@ const { t } = useI18n()
   margin-left: auto;
   padding-right: 10px;
   color: var(--text-4);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   white-space: nowrap;
 }
 </style>

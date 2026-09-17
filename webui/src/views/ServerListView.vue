@@ -524,7 +524,7 @@ const importModal = ref(false)
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 14px;
+  font-size: 1.0769rem;
   cursor: pointer;
 }
 .expand-rail:hover {
@@ -552,7 +552,7 @@ const importModal = ref(false)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .crumb-cur {
@@ -563,7 +563,7 @@ const importModal = ref(false)
   background: transparent;
   padding: 1px 2px;
   color: var(--text-3);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1.4;
   cursor: pointer;
   border-radius: 4px;
@@ -592,7 +592,7 @@ const importModal = ref(false)
   border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   line-height: 1.4;
 }
 .sc-label {
@@ -609,7 +609,7 @@ const importModal = ref(false)
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 10px;
+  font-size: 0.7692rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -702,7 +702,7 @@ const importModal = ref(false)
   padding: 24px;
 }
 .eg-title {
-  font-size: 14px;
+  font-size: 1.0769rem;
   font-weight: 600;
   color: var(--text-2);
 }
@@ -715,7 +715,7 @@ const importModal = ref(false)
   border-radius: 7px;
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1;
   padding: 8px 14px;
   cursor: pointer;
@@ -729,7 +729,7 @@ const importModal = ref(false)
   color: var(--accent-text);
 }
 .eg-hint {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 
@@ -745,12 +745,12 @@ const importModal = ref(false)
   padding: 24px;
 }
 .eo-title {
-  font-size: 14px;
+  font-size: 1.0769rem;
   font-weight: 600;
   color: var(--text-2);
 }
 .eo-hint {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 
@@ -766,11 +766,11 @@ const importModal = ref(false)
   padding: 24px;
 }
 .en-title {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-3);
 }
 .en-detail {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 .en-clear {
@@ -779,7 +779,7 @@ const importModal = ref(false)
   border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 6px 12px;
   cursor: pointer;
@@ -800,7 +800,7 @@ const importModal = ref(false)
   border-top: 1px solid var(--border);
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   white-space: nowrap;
   overflow: hidden; /* 数据源名过长时截断而非把右侧统计挤出可视区 */
 }
@@ -853,7 +853,7 @@ const importModal = ref(false)
   border-radius: 5px;
   background: transparent;
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 0.8462rem;
   line-height: 1;
   padding: 3px 7px;
   cursor: pointer;

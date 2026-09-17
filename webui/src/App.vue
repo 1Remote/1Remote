@@ -241,7 +241,7 @@ function onTopbarDblClick(e) {
   padding: 0 9px;
   border: 1px solid var(--border-strong);
   border-radius: 7px;
-  font-size: 12px;
+  font-size: 0.9231rem;
   cursor: text;
 }
 .searchbox:focus-within {
@@ -250,7 +250,7 @@ function onTopbarDblClick(e) {
 .sb-icon {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 13px;
+  font-size: 1rem;
   line-height: 1;
 }
 .sb-input {
@@ -260,7 +260,7 @@ function onTopbarDblClick(e) {
   outline: none;
   background: transparent;
   color: var(--text-1);
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-family: inherit;
   padding: 0;
 }

@@ -49,7 +49,7 @@ const switchText = computed(() => (props.field.switchTextKey ? t(props.field.swi
 .sw-item-text {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1.4;
   color: var(--text-2);
   overflow-wrap: break-word; /* 无空格长词（如德语复合词）在窄聚合行内不溢出 */

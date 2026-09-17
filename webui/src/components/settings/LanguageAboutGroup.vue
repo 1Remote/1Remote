@@ -119,7 +119,7 @@ const LINKS = computed(() => [
   padding: 7px 0;
 }
 .row-label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .row-control {
@@ -132,15 +132,15 @@ const LINKS = computed(() => [
   flex: 0 1 280px;
 }
 .value {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-1);
 }
 .hint {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 .links a {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--accent-text);
   text-decoration: none;
   margin-right: 14px;

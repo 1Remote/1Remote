@@ -221,7 +221,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   border-radius: 6px;
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1.6;
   padding: 8px 10px;
   word-break: break-word;
@@ -249,7 +249,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   border-radius: 5px;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   line-height: 1;
   padding: 5px 9px;
   cursor: pointer;
@@ -280,7 +280,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 
@@ -295,7 +295,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-4);
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-style: italic;
 }
 </style>
