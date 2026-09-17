@@ -155,6 +155,7 @@ const MAPPING = {
   'editor.f.RdpWindowResizeMode': 'Resolution',
   'editor.f.RemoteApplicationName': 'server_editor_remote_app_name',
   'editor.f.RemoteApplicationProgram': 'server_editor_remote_app_fullname',
+  'editor.f.resources': 'server_editor_advantage_resources',
   'editor.f.RunWithHosting': 'Hosting',
   'editor.f.ScaleFactorCustomValue': 'Custom',
   'editor.f.SshVersion': 'server_editor_advantage_ssh_version',

@@ -114,7 +114,7 @@ defineExpose({ title })
       :value="protocolKey || undefined"
       :options="protocolOptions"
       :disabled="loading || !!loadError"
-      :title="t('editor.protocol')"
+      :title="t('editor.headProtocolTip')"
       @update:value="onProtocolSwitch"
     />
     <n-select
@@ -123,9 +123,9 @@ defineExpose({ title })
       class="ed-ds-select"
       size="small"
       :options="dsOptions"
-      :title="t('editor.dataSourceLabel')"
+      :title="t('editor.headDsTip')"
     />
-    <div v-else class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)">
+    <div v-else class="ed-ds" :title="t('editor.headDsTip') + ': ' + (isBulk ? bulkDs : ds)">
       {{ isBulk ? bulkDs : ds }}
     </div>
     <button class="ed-close" type="button" :title="t('editor.close')" @click="emit('close')">✕</button>

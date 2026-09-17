@@ -428,8 +428,10 @@ function rdpAdvancedGroup() {
         options: RDP_AUDIO_QUALITY_MODE_OPTIONS,
         visibleWhen: { field: 'AudioRedirectionMode', in: [0] },
       },
-      // 9 个 Enable* 开关（RDP.cs resource switch 区段，顺序对齐 RdpFormView.xaml:433-441）
-      { key: 'EnableClipboard', type: FIELD.SWITCH },
+      // 9 个 Enable* 开关（RDP.cs resource switch 区段，顺序对齐 RdpFormView.xaml:433-441）。
+      // runTitleKey 挂段首字段：聚合行的行标题（WPF 该区行标题列 server_editor_advantage_resources
+      // 「共享到远程桌面」，RdpFormView.xaml:427-444 的标题列 + 3×3 UniformGrid 布局）
+      { key: 'EnableClipboard', type: FIELD.SWITCH, runTitleKey: 'editor.f.resources' },
       { key: 'EnableKeyCombinations', type: FIELD.SWITCH },
       { key: 'EnableAudioCapture', type: FIELD.SWITCH },
       { key: 'EnablePorts', type: FIELD.SWITCH },
@@ -629,7 +631,9 @@ export const PROTOCOLS = {
       rdpAdvancedGroup(),
       rdpGatewayGroup(),
       miscGroup([
-        // mstsc 模式下该控件高级设置不生效，WPF 整组隐藏（RdpFormView.xaml:525）
+        // WPF 出处：RDP 表单 MISC 组行标题 'Additional settings'（RdpFormView.xaml:526-532，
+        // 带 AvalonEdit 键名补全的文本域）；mstsc 模式下该控件高级设置不生效，
+        // WPF 整组隐藏（RdpFormView.xaml:525）
         {
           key: 'RdpControlAdditionalSettings',
           type: FIELD.TEXTAREA,
