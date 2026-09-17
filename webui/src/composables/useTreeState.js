@@ -74,8 +74,15 @@ async function persist(mutate) {
 
 export function useTreeState() {
   return {
-    expandedMap, orderMap, loaded, load,
-    isExpanded, toggleExpand, setLocalKeys,
-    knownExpanded, folderPathsByDs, persist,
+    expandedMap,
+    orderMap,
+    loaded,
+    load,
+    isExpanded,
+    toggleExpand,
+    setLocalKeys,
+    knownExpanded,
+    folderPathsByDs,
+    persist,
   }
 }

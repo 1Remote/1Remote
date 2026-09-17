@@ -4,7 +4,12 @@
  * 亮色基底下 accent-container 为浅色底，需配套更深的 accent-text 保证可读性 */
 
 /* 固定视口外壳（.shell 100vh）：清 UA 边距，页面级滚动关闭，滚动发生在内容区内部 */
-html, body { margin: 0; height: 100%; overflow: hidden; }
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
 
 :root {
   --accent: #2c5aff;

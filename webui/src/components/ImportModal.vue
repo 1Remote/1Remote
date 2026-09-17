@@ -39,7 +39,7 @@ const showBind = computed({
 // ---- 数据源：可写优先（无可写时全列，避免空下拉——此时导入必然 400，由内联错误兜底）----
 const writableDs = computed(() => datasources.value.filter((d) => d.writable !== false))
 const dsOptions = computed(() =>
-  (writableDs.value.length ? writableDs.value : datasources.value).map((d) => ({ label: d.name, value: d.name })),
+  (writableDs.value.length ? writableDs.value : datasources.value).map((d) => ({ label: d.name, value: d.name }))
 )
 const ds = ref('Local')
 
@@ -85,7 +85,8 @@ async function doImport() {
       message.success(t('import.done', { n: res.added }))
       if (res.skipped > 0) message.info(t('import.skipped', { n: res.skipped }))
       // 部分失败（Ok 路径带回逐台 errors）：成功关模态，但失败明细以 warning 告知（后端原文英文）
-      if (Array.isArray(res.errors) && res.errors.length) message.warning(t('import.errors') + ' ' + res.errors.join('; '))
+      if (Array.isArray(res.errors) && res.errors.length)
+        message.warning(t('import.errors') + ' ' + res.errors.join('; '))
       showBind.value = false // 列表刷新：后端已 ReloadAll(true) → SSE；此处再补主动 reload 兜底
       reload()
     } else {
@@ -120,8 +121,8 @@ watch(
       ? props.defaultDs
       : names.includes('Local')
         ? 'Local'
-        : (names[0] || 'Local')
-  },
+        : names[0] || 'Local'
+  }
 )
 
 function fmtSize(n) {
@@ -221,7 +222,9 @@ function fmtSize(n) {
   background: var(--bg-elevated);
   cursor: pointer;
   user-select: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 .dropzone:hover,
 .dropzone.drag {

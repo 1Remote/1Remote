@@ -82,7 +82,7 @@ function removeRow(index) {
 function updateRowField(index, key, value) {
   emit(
     'update:modelValue',
-    rows.value.map((row, i) => (i === index ? { ...row, [key]: value } : row)),
+    rows.value.map((row, i) => (i === index ? { ...row, [key]: value } : row))
   )
 }
 
@@ -91,22 +91,12 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
 
 <template>
   <div class="subform-list">
-    <div
-      v-for="(row, i) in rows"
-      :key="keyOf(row, i)"
-      class="sf-row"
-      :class="{ collapsed: !isExpanded(i) }"
-    >
+    <div v-for="(row, i) in rows" :key="keyOf(row, i)" class="sf-row" :class="{ collapsed: !isExpanded(i) }">
       <!-- 表头（#6）：默认折叠只显示 行名 + 展开箭头 + 删除；点表头任意处切换展开 -->
       <div class="sf-row-head" role="button" :aria-expanded="isExpanded(i)" @click="toggleRow(i)">
         <span class="sf-chev" aria-hidden="true">{{ isExpanded(i) ? '▾' : '▸' }}</span>
         <span class="sf-row-title" :title="rowTitle(row)">{{ rowTitle(row) }}</span>
-        <button
-          class="sf-del"
-          type="button"
-          :title="t('editor.removeRow')"
-          @click.stop="removeRow(i)"
-        >✕</button>
+        <button class="sf-del" type="button" :title="t('editor.removeRow')" @click.stop="removeRow(i)">✕</button>
       </div>
       <div v-if="isExpanded(i)" class="sf-row-body">
         <FormField

@@ -22,11 +22,9 @@ const color = computed(() => PROTOCOL_COLORS[props.protocol] || '')
 </script>
 
 <template>
-  <span
-    v-if="color"
-    class="badge"
-    :style="{ background: color + '22', color: color, borderColor: color + '33' }"
-  >{{ protocol }}</span>
+  <span v-if="color" class="badge" :style="{ background: color + '22', color: color, borderColor: color + '33' }">{{
+    protocol
+  }}</span>
   <span v-else class="badge badge-unknown">{{ protocol || '?' }}</span>
 </template>
 

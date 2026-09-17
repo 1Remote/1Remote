@@ -47,9 +47,7 @@ export const themeState = reactive({ themeMode: 'dark', accent: 'blue', fontSize
 
 /** themeMode === 'system' 时按系统偏好解析出实际生效的 'dark' | 'light' */
 function resolvedMode() {
-  return themeState.themeMode === 'system'
-    ? (themeState.systemDark ? 'dark' : 'light')
-    : themeState.themeMode
+  return themeState.themeMode === 'system' ? (themeState.systemDark ? 'dark' : 'light') : themeState.themeMode
 }
 
 export function applyTheme() {

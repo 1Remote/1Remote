@@ -172,7 +172,13 @@ function onTopbarDblClick(e) {
                   <path d="M2.5 2.5v-2h7v7h-2" fill="none" stroke="currentColor" stroke-width="1" />
                 </svg>
               </button>
-              <button class="wc-btn wc-close" type="button" aria-label="Close" @mousedown.stop @click="onWinBtn('close')">
+              <button
+                class="wc-btn wc-close"
+                type="button"
+                aria-label="Close"
+                @mousedown.stop
+                @click="onWinBtn('close')"
+              >
                 <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true">
                   <path d="M0 0l10 10M10 0L0 10" stroke="currentColor" stroke-width="1" />
                 </svg>

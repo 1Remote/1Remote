@@ -62,13 +62,34 @@ async function onTest(d) {
 
 // ---- 添加模态：类型三选 + 动态表单（sqlite: name?/path；mysql/pgsql: name/host/port/db/user/password）----
 const adding = ref(false)
-const addForm = reactive({ type: 'sqlite', name: '', path: '', host: '', port: 3306, databaseName: '', userName: '', password: '' })
+const addForm = reactive({
+  type: 'sqlite',
+  name: '',
+  path: '',
+  host: '',
+  port: 3306,
+  databaseName: '',
+  userName: '',
+  password: '',
+})
 const addSaving = ref(false)
-const typeOptions = ['sqlite', 'mysql', 'pgsql'].map((v) => ({ value: v, label: computed(() => t('settings.d.type.' + v)) }))
+const typeOptions = ['sqlite', 'mysql', 'pgsql'].map((v) => ({
+  value: v,
+  label: computed(() => t('settings.d.type.' + v)),
+}))
 
 // 打开即重置（与 CredentialVaultGroup.openCreate 同款）：上次未提交的草稿不带入新会话
 function openAdd() {
-  Object.assign(addForm, { type: 'sqlite', name: '', path: '', host: '', port: 3306, databaseName: '', userName: '', password: '' })
+  Object.assign(addForm, {
+    type: 'sqlite',
+    name: '',
+    path: '',
+    host: '',
+    port: 3306,
+    databaseName: '',
+    userName: '',
+    password: '',
+  })
   adding.value = true
 }
 
@@ -82,21 +103,28 @@ function onAddTypeChange(v) {
 
 const addValid = computed(() => {
   if (addForm.type === 'sqlite') return !!addForm.path.trim() // name 可缺省（按 path 文件名推导）
-  return !!(addForm.name.trim() && addForm.host.trim() && addForm.databaseName.trim() && addForm.userName.trim() && addForm.password)
+  return !!(
+    addForm.name.trim() &&
+    addForm.host.trim() &&
+    addForm.databaseName.trim() &&
+    addForm.userName.trim() &&
+    addForm.password
+  )
 })
 
 async function addSave() {
   if (!addValid.value || addSaving.value) return
   addSaving.value = true
-  const config = addForm.type === 'sqlite'
-    ? { path: addForm.path.trim() }
-    : {
-        host: addForm.host.trim(),
-        port: Number(addForm.port) || 0,
-        databaseName: addForm.databaseName.trim(),
-        userName: addForm.userName.trim(),
-        password: addForm.password,
-      }
+  const config =
+    addForm.type === 'sqlite'
+      ? { path: addForm.path.trim() }
+      : {
+          host: addForm.host.trim(),
+          port: Number(addForm.port) || 0,
+          databaseName: addForm.databaseName.trim(),
+          userName: addForm.userName.trim(),
+          password: addForm.password,
+        }
   const name = addForm.name.trim() || undefined // sqlite 缺省由后端从 path 文件名推导
   try {
     const r = await api.addDataSource(addForm.type, config, name)
@@ -140,15 +168,16 @@ function openEdit(d) {
 async function editSave() {
   if (!editing.value || editSaving.value) return
   editSaving.value = true
-  const config = editing.value.type === 'sqlite'
-    ? { path: editForm.path.trim() }
-    : {
-        host: editForm.host.trim(),
-        port: Number(editForm.port) || 0,
-        databaseName: editForm.databaseName.trim(),
-        userName: editForm.userName.trim(),
-        password: editForm.password, // 空 = 保持原密码（后端语义）
-      }
+  const config =
+    editing.value.type === 'sqlite'
+      ? { path: editForm.path.trim() }
+      : {
+          host: editForm.host.trim(),
+          port: Number(editForm.port) || 0,
+          databaseName: editForm.databaseName.trim(),
+          userName: editForm.userName.trim(),
+          password: editForm.password, // 空 = 保持原密码（后端语义）
+        }
   try {
     const r = await api.updateDataSource(editing.value.name, config)
     editing.value = null
@@ -192,9 +221,12 @@ function onDelete(d) {
 function confirmKeepServers(d, serverCount) {
   dialog.warning({
     title: t('settings.d.deleteTitle'),
-    content: t('settings.d.deleteConfirm', { name: d.name }) + ' '
-      + t('settings.d.deleteHasServers', { n: serverCount }) + ' '
-      + t('settings.d.keepServersHint'),
+    content:
+      t('settings.d.deleteConfirm', { name: d.name }) +
+      ' ' +
+      t('settings.d.deleteHasServers', { n: serverCount }) +
+      ' ' +
+      t('settings.d.keepServersHint'),
     positiveText: t('settings.d.keepServers'),
     negativeText: t('editor.cancel'),
     onPositiveClick: async () => {
@@ -248,10 +280,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
             {{ testing === d.name ? t('settings.d.testing') : t('settings.d.test') }}
           </button>
           <!-- Local 只读：路径/删除不开放（title 说明） -->
-          <button class="act" type="button" :disabled="isLocal(d)" :title="isLocal(d) ? t('settings.d.localHint') : t('settings.d.edit')" @click="openEdit(d)">
+          <button
+            class="act"
+            type="button"
+            :disabled="isLocal(d)"
+            :title="isLocal(d) ? t('settings.d.localHint') : t('settings.d.edit')"
+            @click="openEdit(d)"
+          >
             {{ t('settings.d.edit') }}
           </button>
-          <button class="act" type="button" :disabled="isLocal(d)" :title="isLocal(d) ? t('settings.d.localHint') : t('editor.deleteYes')" @click="onDelete(d)">
+          <button
+            class="act"
+            type="button"
+            :disabled="isLocal(d)"
+            :title="isLocal(d) ? t('settings.d.localHint') : t('editor.deleteYes')"
+            @click="onDelete(d)"
+          >
             {{ t('editor.deleteYes') }}
           </button>
         </div>
@@ -309,7 +353,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           </div>
           <div class="f-row">
             <label>{{ t('settings.d.f.password') }}</label>
-            <n-input size="small" type="password" show-password-on="click" v-model:value="addForm.password" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              type="password"
+              show-password-on="click"
+              v-model:value="addForm.password"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
         </template>
         <p class="f-note">{{ t('settings.d.saveFirstHint') }}</p>
@@ -359,7 +409,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           <div class="f-row">
             <label>{{ t('settings.d.f.password') }}</label>
             <div>
-              <n-input size="small" type="password" show-password-on="click" v-model:value="editForm.password" :input-props="{ spellcheck: false }" />
+              <n-input
+                size="small"
+                type="password"
+                show-password-on="click"
+                v-model:value="editForm.password"
+                :input-props="{ spellcheck: false }"
+              />
               <p class="f-hint">{{ t('settings.d.f.passwordKeep') }}</p>
             </div>
           </div>

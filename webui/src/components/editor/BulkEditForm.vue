@@ -53,7 +53,7 @@ function deepClone(o) {
 //  - dtoKey=null（password 等列表 DTO 不携带）→ known=false，只提示、不展示值。
 // 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
 const bulkFields = computed(() =>
-  BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol))),
+  BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol)))
 )
 const bulkShared = computed(() => {
   const out = {}
@@ -162,25 +162,41 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
     </div>
     <div v-for="f in bulkFields" :key="f.key" class="bulk-field">
       <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
-      <FormField v-if="bulkOverwrite[f.key]" class="bulk-control" :field="f" :model-value="bulkValues[f.key]"
-        :data-source-name="bulkDs" @update:model-value="(v) => (bulkValues[f.key] = v)" />
+      <FormField
+        v-if="bulkOverwrite[f.key]"
+        class="bulk-control"
+        :field="f"
+        :model-value="bulkValues[f.key]"
+        :data-source-name="bulkDs"
+        @update:model-value="(v) => (bulkValues[f.key] = v)"
+      />
       <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
-      <FormField v-else-if="bulkShared[f.key].known && bulkShared[f.key].same" class="bulk-control" :field="f"
-        :model-value="bulkShared[f.key].value" disabled />
+      <FormField
+        v-else-if="bulkShared[f.key].known && bulkShared[f.key].same"
+        class="bulk-control"
+        :field="f"
+        :model-value="bulkShared[f.key].value"
+        disabled
+      />
       <!-- 保持不变 + 各不相同/未读取：占位行（标签列对齐 FormField 的 148px） -->
       <div v-else class="bulk-keep bulk-control">
         <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
           {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
         </div>
-        <div class="bulk-hint"
-          :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')">
-          {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')
-          }}
+        <div
+          class="bulk-hint"
+          :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')"
+        >
+          {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown') }}
         </div>
       </div>
-      <button class="bulk-toggle" :class="{ on: bulkOverwrite[f.key] }" type="button"
+      <button
+        class="bulk-toggle"
+        :class="{ on: bulkOverwrite[f.key] }"
+        type="button"
         :title="bulkOverwrite[f.key] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })"
-        @click="toggleOverwrite(f)">
+        @click="toggleOverwrite(f)"
+      >
         {{ bulkOverwrite[f.key] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
       </button>
     </div>

@@ -1,0 +1,5 @@
+# Generated locale JSON files have their own formatting discipline (scripts/convert-locales.mjs)
+src/locales/
+dist/
+node_modules/
+package-lock.json

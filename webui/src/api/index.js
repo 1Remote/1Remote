@@ -14,7 +14,12 @@ let token = ''
 async function request(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
-  const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30_000) })
+  const resp = await fetch(path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(30_000),
+  })
   return handleResponse(resp, path)
 }
 
@@ -79,10 +84,17 @@ export const api = {
   saveListOrder: (ids) => request('/api/ui-state/list-order', { method: 'POST', body: { ids } }),
   // 编辑器：config/POST/PUT 的内嵌 json 为 PascalCase 直通域（勿做命名转换），
   // DELETE 成功返回 204 → null（request 内已处理空体）
-  getServerConfig: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}/config?ds=${encodeURIComponent(ds ?? 'Local')}`),
-  createServer: (json, ds) => request('/api/servers', { method: 'POST', body: { dataSourceName: ds ?? 'Local', json } }),
-  updateServer: (id, json, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'PUT', body: { json } }),
-  deleteServer: (id, ds) => request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
+  getServerConfig: (id, ds) =>
+    request(`/api/servers/${encodeURIComponent(id)}/config?ds=${encodeURIComponent(ds ?? 'Local')}`),
+  createServer: (json, ds) =>
+    request('/api/servers', { method: 'POST', body: { dataSourceName: ds ?? 'Local', json } }),
+  updateServer: (id, json, ds) =>
+    request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, {
+      method: 'PUT',
+      body: { json },
+    }),
+  deleteServer: (id, ds) =>
+    request(`/api/servers/${encodeURIComponent(id)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
   // 批量补丁：patch 键为 camelCase（列表 DTO 域，与后端 allow-list 对应）；ds 省略 = Local
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
@@ -95,13 +107,21 @@ export const api = {
   // 凭据库管理：credential 字段与 WPF 模型一致（PascalCase），
   // password/privateKeyPath 为明文（服务端加密落库）；reveal 受本地二次验证保护（30s 窗口）
   getCredentials: (ds) => request('/api/credentials?ds=' + encodeURIComponent(ds ?? 'Local')),
-  createCredential: (credential, ds) => request('/api/credentials', { method: 'POST', body: { ds: ds ?? 'Local', credential } }),
+  createCredential: (credential, ds) =>
+    request('/api/credentials', { method: 'POST', body: { ds: ds ?? 'Local', credential } }),
   updateCredential: (name, credential, ds) =>
-    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'PUT', body: { credential } }),
+    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, {
+      method: 'PUT',
+      body: { credential },
+    }),
   deleteCredential: (name, ds) =>
-    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
+    request(`/api/credentials/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, {
+      method: 'DELETE',
+    }),
   revealCredential: (name, ds) =>
-    request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST' }),
+    request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, {
+      method: 'POST',
+    }),
   // 设置中心：general/launcher 均为白名单部分更新（缺省键=保持不变）；
   // general.language 用小写码（zh-cn），web locale（zh-CN）由调用方转换；
   // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态）——开关点击立即生效：
@@ -119,8 +139,7 @@ export const api = {
   getTagsManage: (ds) => request('/api/tags/manage?ds=' + encodeURIComponent(ds ?? 'Local')),
   saveTagPin: (name, pinned, ds) =>
     request('/api/tags/manage', { method: 'PUT', body: { ds: ds ?? 'Local', name, pinned } }),
-  renameTag: (from, to, ds) =>
-    request('/api/tags/rename', { method: 'POST', body: { ds: ds ?? 'Local', from, to } }),
+  renameTag: (from, to, ds) => request('/api/tags/rename', { method: 'POST', body: { ds: ds ?? 'Local', from, to } }),
   deleteTag: (name, ds) =>
     request(`/api/tags/${encodeURIComponent(name)}?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'DELETE' }),
   // 数据源管理：type = sqlite|mysql|pgsql（postgresql 同义）；name 缺省时 sqlite 由
@@ -128,12 +147,13 @@ export const api = {
   // POST 保存后即返回实际 status（连接失败不回滚，与 WPF 一致——先 testDataSource 验证再保存）。
   // DELETE：数据源下仍有服务器时返回 409 {serverCount}，keepServers=true 确认后按 WPF 语义移除
   //（服务器留在库文件中，不迁移不删除）。
-  addDataSource: (type, config, name) =>
-    request('/api/datasources', { method: 'POST', body: { type, name, config } }),
+  addDataSource: (type, config, name) => request('/api/datasources', { method: 'POST', body: { type, name, config } }),
   updateDataSource: (name, config) =>
     request(`/api/datasources/${encodeURIComponent(name)}`, { method: 'PUT', body: { config } }),
   deleteDataSource: (name, keepServers = false) =>
-    request(`/api/datasources/${encodeURIComponent(name)}${keepServers ? '?keepServers=true' : ''}`, { method: 'DELETE' }),
+    request(`/api/datasources/${encodeURIComponent(name)}${keepServers ? '?keepServers=true' : ''}`, {
+      method: 'DELETE',
+    }),
   testDataSource: (name, config) =>
     request(`/api/datasources/${encodeURIComponent(name)}/test`, { method: 'POST', body: { config } }),
   // 运行器配置：整体往返 {protocols:{SSH:{selectedRunnerName, runners:[...]}}}——runners 数组为

@@ -27,8 +27,12 @@ const switchText = computed(() => (props.field.switchTextKey ? t(props.field.swi
 
 <template>
   <div class="sw-item">
-    <n-switch size="small" :value="!!modelValue" :disabled="disabled"
-      @update:value="emit('update:modelValue', $event)" />
+    <n-switch
+      size="small"
+      :value="!!modelValue"
+      :disabled="disabled"
+      @update:value="emit('update:modelValue', $event)"
+    />
     <span class="sw-item-text">{{ switchText }}</span>
   </div>
 </template>

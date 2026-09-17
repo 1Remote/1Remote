@@ -153,18 +153,10 @@ const VNC_WINDOW_RESIZE_MODE_OPTIONS = [
 // json 里就是这些字符串原文，因此 SELECT 的 value 必须是字符串而非枚举整数。
 
 /** Serial.DataBitsCollection（Serial.cs:84） */
-const SERIAL_DATA_BITS_OPTIONS = [
-  { value: '5' },
-  { value: '6' },
-  { value: '7' },
-  { value: '8' },
-]
+const SERIAL_DATA_BITS_OPTIONS = [{ value: '5' }, { value: '6' }, { value: '7' }, { value: '8' }]
 
 /** Serial.StopBitsCollection（Serial.cs:93） */
-const SERIAL_STOP_BITS_OPTIONS = [
-  { value: '1' },
-  { value: '2' },
-]
+const SERIAL_STOP_BITS_OPTIONS = [{ value: '1' }, { value: '2' }]
 
 /** Serial.ParityCollection（Serial.cs:101） */
 const SERIAL_PARITY_OPTIONS = [
@@ -211,9 +203,7 @@ const APP_ARGUMENT_TYPE_OPTIONS = [
  *   （见 APP schema 注释与 localAppConnectionGroup）。
  */
 function basicGroup({ withAddressPort = true } = {}) {
-  const fields = [
-    { key: 'DisplayName', type: FIELD.TEXT, required: true },
-  ]
+  const fields = [{ key: 'DisplayName', type: FIELD.TEXT, required: true }]
   if (withAddressPort) {
     fields.push(
       // placeholder：各协议表单的 Address Tag 均为 "e.g. 192.168.0.101"（文件头清单）
@@ -223,7 +213,7 @@ function basicGroup({ withAddressPort = true } = {}) {
       // 可用性检测开关紧跟地址/端口正下方（对齐 WPF HostView.xaml:29-38 的行序）。
       // switchWithLabel：该行标签列有文字（「Availability detection」）、控件列
       // [switch][说明文字]，与普通开关行（标签列留空）不同，见 FormField 的处理。
-      pingBeforeConnectField(),
+      pingBeforeConnectField()
     )
   }
   fields.push(
@@ -232,7 +222,7 @@ function basicGroup({ withAddressPort = true } = {}) {
     { key: 'ColorHex', type: FIELD.COLOR },
     // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑的 note
     // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）
-    { key: 'Note', type: FIELD.MARKDOWN },
+    { key: 'Note', type: FIELD.MARKDOWN }
   )
   return {
     id: 'basic',
@@ -338,7 +328,7 @@ function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
         type: FIELD.TEXT,
         credRole: 'identity',
         visibleWhen: { field: 'UsePrivateKeyForConnect', in: [true] },
-      },
+      }
     )
   }
   return { id: 'credential', labelKey: 'editor.group.credential', fields }
@@ -459,10 +449,23 @@ function rdpGatewayGroup() {
     fields: [
       { key: 'GatewayMode', type: FIELD.SELECT, options: RDP_GATEWAY_MODE_OPTIONS },
       { key: 'GatewayHostName', type: FIELD.TEXT, visibleWhen: VISIBLE_WHEN_GATEWAY_DETAIL },
-      { key: 'GatewayLogonMethod', type: FIELD.SELECT, options: RDP_GATEWAY_LOGON_METHOD_OPTIONS, visibleWhen: VISIBLE_WHEN_GATEWAY_DETAIL },
+      {
+        key: 'GatewayLogonMethod',
+        type: FIELD.SELECT,
+        options: RDP_GATEWAY_LOGON_METHOD_OPTIONS,
+        visibleWhen: VISIBLE_WHEN_GATEWAY_DETAIL,
+      },
       // 用户名/密码：登录方式 != SmartCard 时可见（RdpFormView.xaml:503/512）
-      { key: 'GatewayUserName', type: FIELD.TEXT, visibleWhen: [...VISIBLE_WHEN_GATEWAY_DETAIL, { field: 'GatewayLogonMethod', notIn: [1] }] },
-      { key: 'GatewayPassword', type: FIELD.PASSWORD, visibleWhen: [...VISIBLE_WHEN_GATEWAY_DETAIL, { field: 'GatewayLogonMethod', notIn: [1] }] },
+      {
+        key: 'GatewayUserName',
+        type: FIELD.TEXT,
+        visibleWhen: [...VISIBLE_WHEN_GATEWAY_DETAIL, { field: 'GatewayLogonMethod', notIn: [1] }],
+      },
+      {
+        key: 'GatewayPassword',
+        type: FIELD.PASSWORD,
+        visibleWhen: [...VISIBLE_WHEN_GATEWAY_DETAIL, { field: 'GatewayLogonMethod', notIn: [1] }],
+      },
     ],
   }
 }
@@ -518,10 +521,23 @@ function serialGroup() {
       // WPF SerialFormView 的 SerialPort 是 AutoCompleteComboBox：下拉=后端机器的
       // SerialPort.GetPortNames()（Serial.cs:157），经 /api/serial/options 枚举
       // ——可输入可下拉；IDataErrorInfo 要求非空
-      { key: 'SerialPort', type: FIELD.AUTOCOMPLETE, suggestionsSource: 'serial-ports', required: true, placeholderKey: 'editor.ph.serialPort' },
+      {
+        key: 'SerialPort',
+        type: FIELD.AUTOCOMPLETE,
+        suggestionsSource: 'serial-ports',
+        required: true,
+        placeholderKey: 'editor.ph.serialPort',
+      },
       // WPF 为 BitRates 列表的可输入组合框（Serial.cs:71），允许自定义波特率（非标准值直接键入）；
       // C# 属性是 string → asString 标注；IDataErrorInfo 要求非空且可 long.Parse
-      { key: 'BitRate', type: FIELD.AUTOCOMPLETE, suggestionsSource: 'serial-baud-rates', required: true, asString: true, placeholderKey: 'editor.ph.bitRate' },
+      {
+        key: 'BitRate',
+        type: FIELD.AUTOCOMPLETE,
+        suggestionsSource: 'serial-baud-rates',
+        required: true,
+        asString: true,
+        placeholderKey: 'editor.ph.bitRate',
+      },
       { key: 'DataBits', type: FIELD.SELECT, options: SERIAL_DATA_BITS_OPTIONS },
       { key: 'StopBits', type: FIELD.SELECT, options: SERIAL_STOP_BITS_OPTIONS },
       { key: 'Parity', type: FIELD.SELECT, options: SERIAL_PARITY_OPTIONS },
@@ -779,7 +795,9 @@ export const PROTOCOLS = {
       serialGroup(),
       // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）；
       // placeholder = kitty session tip（SerialFormView:97，14 语言 DynamicResource）
-      behaviorGroup([{ key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' }]),
+      behaviorGroup([
+        { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' },
+      ]),
     ],
   },
 
@@ -812,7 +830,12 @@ export const PROTOCOLS = {
         labelKey: 'editor.group.remote',
         fields: [
           { key: 'RemoteApplicationName', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.remoteAppName' },
-          { key: 'RemoteApplicationProgram', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.remoteAppProgram' },
+          {
+            key: 'RemoteApplicationProgram',
+            type: FIELD.TEXT,
+            required: true,
+            placeholderKey: 'editor.ph.remoteAppProgram',
+          },
         ],
       },
       {
@@ -927,18 +950,59 @@ for (const schema of Object.values(PROTOCOLS)) {
  *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。
  */
 export const BULK_FIELDS = [
-  { key: 'displayName', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.displayName', dtoKey: 'displayName' },
+  {
+    key: 'displayName',
+    type: FIELD.TEXT,
+    required: true,
+    labelKey: 'editor.bulkField.displayName',
+    dtoKey: 'displayName',
+  },
   { key: 'note', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.note', dtoKey: 'note' },
   { key: 'tags', type: FIELD.TAGS, labelKey: 'editor.bulkField.tags', dtoKey: 'tags' },
   { key: 'colorHex', type: FIELD.COLOR, labelKey: 'editor.bulkField.colorHex', dtoKey: 'color' },
   { key: 'iconBase64', type: FIELD.ICON, labelKey: 'editor.bulkField.iconBase64', dtoKey: 'iconBase64' },
   { key: 'address', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.address', dtoKey: 'address' },
-  { key: 'port', type: FIELD.NUMBER, required: true, asString: true, labelKey: 'editor.bulkField.port', dtoKey: 'port' },
+  {
+    key: 'port',
+    type: FIELD.NUMBER,
+    required: true,
+    asString: true,
+    labelKey: 'editor.bulkField.port',
+    dtoKey: 'port',
+  },
   { key: 'userName', type: FIELD.TEXT, labelKey: 'editor.bulkField.userName', dtoKey: 'userName' },
   { key: 'password', type: FIELD.PASSWORD, labelKey: 'editor.bulkField.password', dtoKey: null },
-  { key: 'inheritedCredentialName', type: FIELD.CREDENTIAL, labelKey: 'editor.bulkField.inheritedCredentialName', dtoKey: null },
-  { key: 'askPasswordWhenConnect', type: FIELD.SWITCH, labelKey: 'editor.bulkField.askPasswordWhenConnect', dtoKey: null },
-  { key: 'startupAutoCommand', type: FIELD.TEXT, labelKey: 'editor.bulkField.startupAutoCommand', dtoKey: null, protocols: ['SSH', 'Telnet', 'Serial'] },
-  { key: 'startupPath', type: FIELD.TEXT, labelKey: 'editor.bulkField.startupPath', dtoKey: null, protocols: ['SFTP', 'FTP'] },
-  { key: 'rdpFileAdditionalSettings', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.rdpFileAdditionalSettings', dtoKey: null, protocols: ['RDP', 'RemoteApp'] },
+  {
+    key: 'inheritedCredentialName',
+    type: FIELD.CREDENTIAL,
+    labelKey: 'editor.bulkField.inheritedCredentialName',
+    dtoKey: null,
+  },
+  {
+    key: 'askPasswordWhenConnect',
+    type: FIELD.SWITCH,
+    labelKey: 'editor.bulkField.askPasswordWhenConnect',
+    dtoKey: null,
+  },
+  {
+    key: 'startupAutoCommand',
+    type: FIELD.TEXT,
+    labelKey: 'editor.bulkField.startupAutoCommand',
+    dtoKey: null,
+    protocols: ['SSH', 'Telnet', 'Serial'],
+  },
+  {
+    key: 'startupPath',
+    type: FIELD.TEXT,
+    labelKey: 'editor.bulkField.startupPath',
+    dtoKey: null,
+    protocols: ['SFTP', 'FTP'],
+  },
+  {
+    key: 'rdpFileAdditionalSettings',
+    type: FIELD.TEXTAREA,
+    labelKey: 'editor.bulkField.rdpFileAdditionalSettings',
+    dtoKey: null,
+    protocols: ['RDP', 'RemoteApp'],
+  },
 ]

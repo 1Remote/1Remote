@@ -76,7 +76,7 @@ watch(
     if (raw !== '' && String(Number(raw)) === s) return
     numberRaw.value = s
   },
-  { immediate: true },
+  { immediate: true }
 )
 function onNumberInput(v) {
   numberRaw.value = v
@@ -91,9 +91,11 @@ function onNumberInput(v) {
 
 // ---- select：选项 label 回退 String(value)；值缺失时传 undefined 交由 n-select 置空 ----
 const selectOptions = computed(() =>
-  (props.field.options || []).map((o) => ({ value: o.value, label: o.labelKey ? t(o.labelKey) : String(o.value) })),
+  (props.field.options || []).map((o) => ({ value: o.value, label: o.labelKey ? t(o.labelKey) : String(o.value) }))
 )
-const selectValue = computed(() => (props.modelValue === null || props.modelValue === undefined || props.modelValue === '' ? undefined : props.modelValue))
+const selectValue = computed(() =>
+  props.modelValue === null || props.modelValue === undefined || props.modelValue === '' ? undefined : props.modelValue
+)
 
 // ---- autocomplete：可输入下拉 = n-auto-complete。naive 默认空输入不弹菜单
 //（getShow 缺省 = !!value）——get-show 恒 true 让聚焦即显示。下拉恒展示全部建议
@@ -104,7 +106,9 @@ const selectValue = computed(() => (props.modelValue === null || props.modelValu
 const acOptions = computed(() => {
   const list = props.field.suggestionsSource
     ? serialSuggestions(props.field.suggestionsSource)
-    : Array.isArray(props.field.suggestions) ? props.field.suggestions : []
+    : Array.isArray(props.field.suggestions)
+      ? props.field.suggestions
+      : []
   // 恒全量：不按输入过滤，下拉始终展示所有建议
   return list.map((s) => String(s))
 })
@@ -129,14 +133,25 @@ function onTagsUpdate(v) {
 // 选中环；选色即时联动图标预览 tint（EditorDrawer 的 iconTint）。
 // 整体收进一个与 n-input 同观的边框容器（见模板/样式），语义（disabled /
 // toCssColor / isSwatchActive / title 提示）不变。
-const COLOR_SWATCHES = ['#00000000', '#FF565A63', '#FFEF6A6A', '#FFF0B25F', '#FF26A269', '#FF2C5AFF', '#FF8B5CF6', '#FFEC4899']
+const COLOR_SWATCHES = [
+  '#00000000',
+  '#FF565A63',
+  '#FFEF6A6A',
+  '#FFF0B25F',
+  '#FF26A269',
+  '#FF2C5AFF',
+  '#FF8B5CF6',
+  '#FFEC4899',
+]
 function toCssColor(hex) {
   return typeof hex === 'string' && /^#[0-9a-fA-F]{8}$/.test(hex) ? '#' + hex.slice(3) + hex.slice(1, 3) : hex
 }
 // 当前色（#RRGGBB）：全透明/格式非法 → ''（无色，swatch 用斜线示意；utils/color.js 同口径）
 const currentColor = computed(() => opaqueHex(props.modelValue) || '')
 const currentColorTitle = computed(() =>
-  currentColor.value ? t('editor.colorCurrent') + ': ' + props.modelValue : t('editor.colorCurrent') + ': ' + t('editor.colorNone'),
+  currentColor.value
+    ? t('editor.colorCurrent') + ': ' + props.modelValue
+    : t('editor.colorCurrent') + ': ' + t('editor.colorNone')
 )
 const isSwatchActive = (sw) => typeof props.modelValue === 'string' && sw === props.modelValue
 
@@ -147,69 +162,145 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   <div class="form-field" :class="'ff-' + field.type">
     <div class="ff-label" :title="label">
       <!-- switch 行标签列默认留空（控件列 [开关][文字] 自解释）；switchWithLabel 例外 -->
-      <span v-if="showLabelInColumn" class="ff-label-text">{{ label }}<span v-if="field.required"
-          class="ff-required">*</span></span>
+      <span v-if="showLabelInColumn" class="ff-label-text"
+        >{{ label }}<span v-if="field.required" class="ff-required">*</span></span
+      >
       <!-- MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
-      <button v-if="field.type === FIELD_TYPE.MARKDOWN" class="ff-md-toggle" type="button" :disabled="disabled"
-        :title="mdPreview ? t('editor.mdEdit') : t('editor.mdPreview')" @click="mdPreview = !mdPreview">{{ mdPreview ?
-          '✎' : '👁' }}</button>
+      <button
+        v-if="field.type === FIELD_TYPE.MARKDOWN"
+        class="ff-md-toggle"
+        type="button"
+        :disabled="disabled"
+        :title="mdPreview ? t('editor.mdEdit') : t('editor.mdPreview')"
+        @click="mdPreview = !mdPreview"
+      >
+        {{ mdPreview ? '✎' : '👁' }}
+      </button>
     </div>
 
     <div class="ff-control">
       <!-- text -->
-      <n-input v-if="field.type === FIELD_TYPE.TEXT" size="small" :value="modelValue ?? ''" :placeholder="placeholder"
-        :disabled="disabled" :input-props="{ spellcheck: false }" @update:value="emit('update:modelValue', $event)" />
+      <n-input
+        v-if="field.type === FIELD_TYPE.TEXT"
+        size="small"
+        :value="modelValue ?? ''"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :input-props="{ spellcheck: false }"
+        @update:value="emit('update:modelValue', $event)"
+      />
 
       <!-- number：inputmode 引导数字键盘；值语义见 onNumberInput -->
-      <n-input v-else-if="field.type === FIELD_TYPE.NUMBER" size="small" :value="numberRaw" :placeholder="placeholder"
-        :disabled="disabled" :input-props="{ inputmode: 'decimal', spellcheck: false }" @update:value="onNumberInput" />
+      <n-input
+        v-else-if="field.type === FIELD_TYPE.NUMBER"
+        size="small"
+        :value="numberRaw"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :input-props="{ inputmode: 'decimal', spellcheck: false }"
+        @update:value="onNumberInput"
+      />
 
       <!-- select -->
-      <n-select v-else-if="field.type === FIELD_TYPE.SELECT" size="small" :value="selectValue" :options="selectOptions"
-        :disabled="disabled" :placeholder="placeholder" @update:value="emit('update:modelValue', $event)" />
+      <n-select
+        v-else-if="field.type === FIELD_TYPE.SELECT"
+        size="small"
+        :value="selectValue"
+        :options="selectOptions"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        @update:value="emit('update:modelValue', $event)"
+      />
 
       <!-- autocomplete（Serial 的端口/波特率）：可输入下拉——下拉始终显示全部建议
           （acOptions 不按输入过滤、get-show 恒 true）；选中与直接键入均为字符串值
            直通 json（建议只是候选，不约束取值） -->
-      <n-auto-complete v-else-if="field.type === FIELD_TYPE.AUTOCOMPLETE" size="small" :value="modelValue ?? ''"
-        :options="acOptions" :placeholder="placeholder" :disabled="disabled" :input-props="{ spellcheck: false }"
-        :get-show="() => true" @update:value="emit('update:modelValue', $event ?? '')" />
+      <n-auto-complete
+        v-else-if="field.type === FIELD_TYPE.AUTOCOMPLETE"
+        size="small"
+        :value="modelValue ?? ''"
+        :options="acOptions"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :input-props="{ spellcheck: false }"
+        :get-show="() => true"
+        @update:value="emit('update:modelValue', $event ?? '')"
+      />
 
       <!-- switch：控件在前、描述文字紧跟（标签列留空见上方 showLabelInColumn）；
            json 值可能为 null，组件内显示按 false、写回真实布尔 -->
-      <SwitchItem v-else-if="field.type === FIELD_TYPE.SWITCH" :field="field" :model-value="modelValue"
-        :disabled="disabled" @update:model-value="emit('update:modelValue', $event)" />
+      <SwitchItem
+        v-else-if="field.type === FIELD_TYPE.SWITCH"
+        :field="field"
+        :model-value="modelValue"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- password：眼睛切换明文/密文 -->
-      <n-input v-else-if="field.type === FIELD_TYPE.PASSWORD" size="small" :type="showPassword ? 'text' : 'password'"
-        :value="modelValue ?? ''" :placeholder="placeholder" :disabled="disabled" :input-props="{ spellcheck: false }"
-        @update:value="emit('update:modelValue', $event)">
+      <n-input
+        v-else-if="field.type === FIELD_TYPE.PASSWORD"
+        size="small"
+        :type="showPassword ? 'text' : 'password'"
+        :value="modelValue ?? ''"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :input-props="{ spellcheck: false }"
+        @update:value="emit('update:modelValue', $event)"
+      >
         <template #suffix>
-          <button class="ff-eye" type="button"
+          <button
+            class="ff-eye"
+            type="button"
             :title="showPassword ? t('editor.hidePassword') : t('editor.showPassword')"
-            @click="showPassword = !showPassword">👁</button>
+            @click="showPassword = !showPassword"
+          >
+            👁
+          </button>
         </template>
       </n-input>
 
       <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传） -->
-      <n-dynamic-tags v-else-if="field.type === FIELD_TYPE.TAGS" size="small"
-        :value="Array.isArray(modelValue) ? modelValue : []" :disabled="disabled" @update:value="onTagsUpdate" />
+      <n-dynamic-tags
+        v-else-if="field.type === FIELD_TYPE.TAGS"
+        size="small"
+        :value="Array.isArray(modelValue) ? modelValue : []"
+        :disabled="disabled"
+        @update:value="onTagsUpdate"
+      />
 
       <!-- textarea -->
-      <n-input v-else-if="field.type === FIELD_TYPE.TEXTAREA" type="textarea" size="small" :rows="3"
-        :value="modelValue ?? ''" :placeholder="placeholder" :disabled="disabled"
-        @update:value="emit('update:modelValue', $event)" />
+      <n-input
+        v-else-if="field.type === FIELD_TYPE.TEXTAREA"
+        type="textarea"
+        size="small"
+        :rows="3"
+        :value="modelValue ?? ''"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        @update:value="emit('update:modelValue', $event)"
+      />
 
       <!-- markdown：编辑 ⇄ 预览（MarkdownField，值域同 textarea；受控：preview 状态由
            本组件持有，切换按钮在标签列右侧）；placeholder 透传编辑态 textarea（同
            placeholderKey，当前 Note 字段无键 → 空） -->
-      <MarkdownField v-else-if="field.type === FIELD_TYPE.MARKDOWN" :model-value="String(modelValue ?? '')"
-        :disabled="disabled" :preview="mdPreview" :placeholder="placeholder"
-        @update:model-value="emit('update:modelValue', $event)" />
+      <MarkdownField
+        v-else-if="field.type === FIELD_TYPE.MARKDOWN"
+        :model-value="String(modelValue ?? '')"
+        :disabled="disabled"
+        :preview="mdPreview"
+        :placeholder="placeholder"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- icon：IconPicker（内置网格/本地上传/exe 提取/清除）；tint = 当前 ColorHex 低饱和底色 -->
-      <IconPicker v-else-if="field.type === FIELD_TYPE.ICON" :model-value="modelValue || ''" :tint="tint"
-        :disabled="disabled" @update:model-value="emit('update:modelValue', $event)" />
+      <IconPicker
+        v-else-if="field.type === FIELD_TYPE.ICON"
+        :model-value="modelValue || ''"
+        :tint="tint"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- color（单输入组）：与 n-input small 同观的边框容器内
            [当前色块 16×16][hex 文本（透明无边框）][竖分隔线][8 色板小点 14×14]；
@@ -218,25 +309,51 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
            同名会经"同级特异性后者胜"把容器样式泄漏到根行（.ff-color 的
            display:flex 覆写根行 148px 网格正是颜色行错位的根因） -->
       <div v-else-if="field.type === FIELD_TYPE.COLOR" class="ff-color-box">
-        <span class="ff-cur" :class="{ none: !currentColor }"
-          :style="currentColor ? { background: currentColor } : null" :title="currentColorTitle"></span>
-        <input class="ff-hex" type="text" spellcheck="false" :value="modelValue ?? ''" :disabled="disabled"
-          @input="emit('update:modelValue', $event.target.value)" />
+        <span
+          class="ff-cur"
+          :class="{ none: !currentColor }"
+          :style="currentColor ? { background: currentColor } : null"
+          :title="currentColorTitle"
+        ></span>
+        <input
+          class="ff-hex"
+          type="text"
+          spellcheck="false"
+          :value="modelValue ?? ''"
+          :disabled="disabled"
+          @input="emit('update:modelValue', $event.target.value)"
+        />
         <span class="ff-color-sep" aria-hidden="true"></span>
-        <button v-for="sw in COLOR_SWATCHES" :key="sw" class="ff-sw"
-          :class="{ none: sw === '#00000000', active: isSwatchActive(sw) }" :style="{ background: toCssColor(sw) }"
-          :title="sw" :disabled="disabled" @click="emit('update:modelValue', sw)"></button>
+        <button
+          v-for="sw in COLOR_SWATCHES"
+          :key="sw"
+          class="ff-sw"
+          :class="{ none: sw === '#00000000', active: isSwatchActive(sw) }"
+          :style="{ background: toCssColor(sw) }"
+          :title="sw"
+          :disabled="disabled"
+          @click="emit('update:modelValue', sw)"
+        ></button>
       </div>
 
       <!-- credential：CredentialPicker（选项按数据源隔离；清空 = 手动输入） -->
-      <CredentialPicker v-else-if="field.type === FIELD_TYPE.CREDENTIAL" :model-value="modelValue || ''"
-        :data-source-name="dataSourceName" :disabled="disabled"
-        @update:model-value="emit('update:modelValue', $event)" />
+      <CredentialPicker
+        v-else-if="field.type === FIELD_TYPE.CREDENTIAL"
+        :model-value="modelValue || ''"
+        :data-source-name="dataSourceName"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- subform -->
-      <SubformList v-else-if="field.type === FIELD_TYPE.SUBFORM" :fields="field.subform?.fields || []"
-        :row-defaults="field.subform?.rowDefaults || {}" :data-source-name="dataSourceName" :model-value="modelValue"
-        @update:model-value="emit('update:modelValue', $event)" />
+      <SubformList
+        v-else-if="field.type === FIELD_TYPE.SUBFORM"
+        :fields="field.subform?.fields || []"
+        :row-defaults="field.subform?.rowDefaults || {}"
+        :data-source-name="dataSourceName"
+        :model-value="modelValue"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
 
       <!-- 未知类型（schema 约定之外）：兜底只读呈现，避免整个表单渲染失败 -->
       <span v-else class="ff-unknown">{{ modelValue == null ? '' : String(modelValue) }}</span>
@@ -305,7 +422,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   align-items: center;
 }
 
-.ff-control> :deep(*) {
+.ff-control > :deep(*) {
   width: 100%;
 }
 

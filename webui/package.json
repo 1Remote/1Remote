@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write src scripts *.js",
+    "format:check": "prettier --check src scripts *.js"
   },
   "dependencies": {
     "@vueuse/core": "^14.4.0",
@@ -19,6 +21,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
+    "prettier": "^3.9.7",
     "vite": "^8.3.0"
   },
   "engines": {

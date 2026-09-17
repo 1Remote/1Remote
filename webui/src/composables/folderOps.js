@@ -12,7 +12,15 @@ import { h, ref } from 'vue'
 import { NInput, useDialog, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api'
-import { buildTree, countHolderServers, fullKey, holderAt, parentPath, rewriteServerPath, rewriteTreeStateKeys } from './folders'
+import {
+  buildTree,
+  countHolderServers,
+  fullKey,
+  holderAt,
+  parentPath,
+  rewriteServerPath,
+  rewriteTreeStateKeys,
+} from './folders'
 import { useServers } from './useServers'
 import { useTreeState } from './useTreeState'
 
@@ -45,7 +53,9 @@ export function useFolderOps() {
             value: name.value,
             placeholder: t('tree.folderNamePlaceholder'),
             autofocus: true,
-            'onUpdate:value': (v) => { name.value = v },
+            'onUpdate:value': (v) => {
+              name.value = v
+            },
           }),
         positiveText: t('common.ok'),
         negativeText: t('editor.cancel'),
@@ -76,7 +86,9 @@ export function useFolderOps() {
     }
     const key = fullKey(dsName, parent ? parent + '/' + name : name)
     setLocalKeys({ [key]: true }) // 键即存在且展开 → 树/列表即时物化，不等 PUT 往返
-    const ok = await persist((m) => { m[key] = true })
+    const ok = await persist((m) => {
+      m[key] = true
+    })
     if (!ok) {
       setLocalKeys({}, [key]) // 回滚本地物化
       message.error(t('tree.folderCreateFailed'))

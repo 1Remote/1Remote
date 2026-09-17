@@ -143,9 +143,7 @@ function groupBlocks(g) {
   return [
     ...byRole('pre'),
     { type: 'cred-mode' },
-    ...(credentialMode.value === 'manual'
-      ? byRole('identity')
-      : [{ type: 'cred-hint' }, ...byRole('picker')]),
+    ...(credentialMode.value === 'manual' ? byRole('identity') : [{ type: 'cred-hint' }, ...byRole('picker')]),
     ...byRole('option'),
   ]
 }
@@ -359,11 +357,24 @@ onBeforeUnmount(() => {
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="headRef?.title">
       <!-- 头部（EditorHead）：瓦片/标题/协议切换/数据源/关闭；协议切换与关闭确认的
            状态机在本组件（经 protocol-change / close 上抛执行） -->
-      <EditorHead ref="headRef" :mode="mode" :duplicate-from="duplicateFrom" :protocol="protocol"
-        :protocol-key="protocolKey" :color-hex="json.ColorHex || ''" :display-name="json.DisplayName || ''"
-        :initial-server="initialServer" :server-id="serverId" :bulk-servers="bulkServers" :loading="loading"
-        :load-error="loadError" :data-source-name="dataSourceName" @close="requestClose"
-        @protocol-change="onProtocolSwitch" @ds-change="onHeadDsChange" />
+      <EditorHead
+        ref="headRef"
+        :mode="mode"
+        :duplicate-from="duplicateFrom"
+        :protocol="protocol"
+        :protocol-key="protocolKey"
+        :color-hex="json.ColorHex || ''"
+        :display-name="json.DisplayName || ''"
+        :initial-server="initialServer"
+        :server-id="serverId"
+        :bulk-servers="bulkServers"
+        :loading="loading"
+        :load-error="loadError"
+        :data-source-name="dataSourceName"
+        @close="requestClose"
+        @protocol-change="onProtocolSwitch"
+        @ds-change="onHeadDsChange"
+      />
 
       <!-- 主体：加载/错误态 或 表单（批量=BulkEditForm 覆盖列表；单机=单页分区滚动） -->
       <div class="ed-body">
@@ -374,8 +385,14 @@ onBeforeUnmount(() => {
         </div>
         <template v-else>
           <!-- 批量模式：BULK_FIELDS 覆盖列表 + 保存流（接缝见 BulkEditForm 文件头） -->
-          <BulkEditForm v-if="isBulk" ref="bulkFormRef" :bulk-ids="bulkIds" :bulk-servers="bulkServers"
-            :data-source-name="dataSourceName" @saved="onBulkSaved" />
+          <BulkEditForm
+            v-if="isBulk"
+            ref="bulkFormRef"
+            :bulk-ids="bulkIds"
+            :bulk-servers="bulkServers"
+            :data-source-name="dataSourceName"
+            @saved="onBulkSaved"
+          />
 
           <!-- 单机模式：全部分组垂直铺开 + 分区标题（sticky），整体一个滚动区 -->
           <template v-else>
@@ -397,12 +414,24 @@ onBeforeUnmount(() => {
                   <div v-if="b.type === 'cred-mode'" class="ed-cred-mode">
                     <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
                     <div class="ed-seg" role="tablist">
-                      <button type="button" role="tab" :aria-selected="credentialMode === 'manual'"
-                        :class="{ on: credentialMode === 'manual' }" @click="onCredModeSwitch('manual')">{{
-                          t('editor.credMode.manual') }}</button>
-                      <button type="button" role="tab" :aria-selected="credentialMode === 'vault'"
-                        :class="{ on: credentialMode === 'vault' }" @click="onCredModeSwitch('vault')">{{
-                          t('editor.credMode.vault') }}</button>
+                      <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="credentialMode === 'manual'"
+                        :class="{ on: credentialMode === 'manual' }"
+                        @click="onCredModeSwitch('manual')"
+                      >
+                        {{ t('editor.credMode.manual') }}
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="credentialMode === 'vault'"
+                        :class="{ on: credentialMode === 'vault' }"
+                        @click="onCredModeSwitch('vault')"
+                      >
+                        {{ t('editor.credMode.vault') }}
+                      </button>
                     </div>
                   </div>
                   <!-- vault 模式提示行（紧贴切换下方，现状语义保留） -->
@@ -416,12 +445,23 @@ onBeforeUnmount(() => {
                   <div v-else-if="b.type === 'switch-run'" class="form-field ed-switch-row">
                     <span></span>
                     <div class="ed-switch-row-control">
-                      <SwitchItem v-for="f in b.fields" :key="f.key" :field="f" :model-value="json[f.key]"
-                        @update:model-value="(v) => setField(f.key, v)" />
+                      <SwitchItem
+                        v-for="f in b.fields"
+                        :key="f.key"
+                        :field="f"
+                        :model-value="json[f.key]"
+                        @update:model-value="(v) => setField(f.key, v)"
+                      />
                     </div>
                   </div>
-                  <FormField v-else :field="b.field" :model-value="json[b.field.key]" :data-source-name="ds"
-                    :tint="iconTint" @update:model-value="(v) => setField(b.field.key, v)" />
+                  <FormField
+                    v-else
+                    :field="b.field"
+                    :model-value="json[b.field.key]"
+                    :data-source-name="ds"
+                    :tint="iconTint"
+                    @update:model-value="(v) => setField(b.field.key, v)"
+                  />
                 </template>
               </section>
             </div>
@@ -433,11 +473,17 @@ onBeforeUnmount(() => {
       <footer class="ed-foot">
         <span class="ed-hint">{{ t('editor.saveHint') }}</span>
         <div class="ed-foot-btns">
-          <button class="ed-btn" type="button" :disabled="saving || bulkSaving" @click="requestClose">{{ t('editor.cancel')
-            }}</button>
-          <button class="ed-btn ed-primary" type="button"
+          <button class="ed-btn" type="button" :disabled="saving || bulkSaving" @click="requestClose">
+            {{ t('editor.cancel') }}
+          </button>
+          <button
+            class="ed-btn ed-primary"
+            type="button"
             :disabled="saving || bulkSaving || loading || !!loadError || bulkDsMixed"
-            @click="save">{{ saving || bulkSaving ? t('editor.saving') : t('editor.save') }}</button>
+            @click="save"
+          >
+            {{ saving || bulkSaving ? t('editor.saving') : t('editor.save') }}
+          </button>
         </div>
       </footer>
     </section>
@@ -492,7 +538,6 @@ onBeforeUnmount(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .ed-scrim,
   .ed-panel {
     transition: none;
@@ -620,7 +665,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
-.ed-seg button+button {
+.ed-seg button + button {
   border-left: 1px solid var(--border);
 }
 

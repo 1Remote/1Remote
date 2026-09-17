@@ -83,7 +83,14 @@ function openCreate() {
 }
 
 function openEdit(c) {
-  Object.assign(form, { name: c.name, address: c.address, port: c.port, userName: c.userName, password: '', privateKeyPath: '' })
+  Object.assign(form, {
+    name: c.name,
+    address: c.address,
+    port: c.port,
+    userName: c.userName,
+    password: '',
+    privateKeyPath: '',
+  })
   showPwd.value = false
   editing.value = { mode: 'edit', name: c.name }
 }
@@ -118,9 +125,10 @@ async function save() {
 function onDelete(c) {
   dialog.warning({
     title: t('cv.deleteTitle'),
-    content: c.refCount > 0
-      ? t('cv.deleteConfirm', { name: c.name }) + ' ' + t('cv.deleteRefWarning', { n: c.refCount })
-      : t('cv.deleteConfirm', { name: c.name }),
+    content:
+      c.refCount > 0
+        ? t('cv.deleteConfirm', { name: c.name }) + ' ' + t('cv.deleteRefWarning', { n: c.refCount })
+        : t('cv.deleteConfirm', { name: c.name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
     onPositiveClick: async () => {
@@ -130,7 +138,8 @@ function onDelete(c) {
         if (revealState.value?.name === c.name) clearReveal()
         load()
       } catch (e) {
-        if (e?.status === 404) load() // 已被其它端删除：静默刷新
+        if (e?.status === 404)
+          load() // 已被其它端删除：静默刷新
         else message.error(t('cv.deleteFailed'))
       }
     },
@@ -151,7 +160,14 @@ function clearReveal() {
 function onReveal(c) {
   if (revealState.value?.waiting) return // 已有一个验证在途：防连点重复弹本地验证
   clearReveal()
-  revealState.value = { name: c.name, waiting: true, password: '', privateKeyPath: '', unmasked: false, left: REVEAL_SECONDS }
+  revealState.value = {
+    name: c.name,
+    waiting: true,
+    password: '',
+    privateKeyPath: '',
+    unmasked: false,
+    left: REVEAL_SECONDS,
+  }
   api
     .revealCredential(c.name, ds.value)
     .then((r) => {
@@ -173,7 +189,8 @@ function onReveal(c) {
     })
     .catch((e) => {
       if (revealState.value?.name === c.name) clearReveal()
-      if (e?.status === 404 || e?.status === 400) load() // 凭据/数据源已不存在：静默刷新
+      if (e?.status === 404 || e?.status === 400)
+        load() // 凭据/数据源已不存在：静默刷新
       else message.error(t('cv.revealFailed')) // 403=验证失败/取消；网络异常同文案（避免明文相关细节泄漏）
     })
 }
@@ -229,12 +246,33 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
                   type="button"
                   :title="revealState.unmasked ? t('editor.hidePassword') : t('editor.showPassword')"
                   @click="revealState.unmasked = !revealState.unmasked"
-                >{{ revealState.unmasked ? '🙈' : '👁' }}</button>
+                >
+                  {{ revealState.unmasked ? '🙈' : '👁' }}
+                </button>
                 <button class="act" type="button" @click="clearReveal">{{ t('cv.revealHide') }}</button>
               </template>
-              <button v-else class="act" type="button" :disabled="revealState?.waiting" :title="t('cv.reveal')" @click="onReveal(c)">👁</button>
-              <button class="act" type="button" :disabled="isReadOnly" :title="t('cv.edit')" @click="openEdit(c)">✎</button>
-              <button class="act" type="button" :disabled="isReadOnly" :title="t('editor.deleteYes')" @click="onDelete(c)">🗑</button>
+              <button
+                v-else
+                class="act"
+                type="button"
+                :disabled="revealState?.waiting"
+                :title="t('cv.reveal')"
+                @click="onReveal(c)"
+              >
+                👁
+              </button>
+              <button class="act" type="button" :disabled="isReadOnly" :title="t('cv.edit')" @click="openEdit(c)">
+                ✎
+              </button>
+              <button
+                class="act"
+                type="button"
+                :disabled="isReadOnly"
+                :title="t('editor.deleteYes')"
+                @click="onDelete(c)"
+              >
+                🗑
+              </button>
             </span>
           </div>
           <!-- 明文详情行（reveal 展开态）：等待桌面验证 / 密码+私钥路径（掩码可切）+ 倒计时 -->
@@ -245,11 +283,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
             <template v-else>
               <div class="rv-line">
                 <label>{{ t('editor.f.Password') }}</label>
-                <code>{{ revealState.unmasked ? (revealState.password || '—') : '••••••••' }}</code>
+                <code>{{ revealState.unmasked ? revealState.password || '—' : '••••••••' }}</code>
               </div>
               <div class="rv-line">
                 <label>{{ t('editor.f.PrivateKeyPath') }}</label>
-                <code>{{ revealState.unmasked ? (revealState.privateKeyPath || '—') : '••••••••' }}</code>
+                <code>{{ revealState.unmasked ? revealState.privateKeyPath || '—' : '••••••••' }}</code>
               </div>
               <span class="rv-count">{{ t('cv.autoHide', { n: revealState.left }) }}</span>
             </template>
@@ -287,9 +325,21 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         </div>
         <div class="f-row">
           <label>{{ t('editor.f.Password') }}</label>
-          <n-input size="small" :type="showPwd ? 'text' : 'password'" v-model:value="form.password" :input-props="{ spellcheck: false }">
+          <n-input
+            size="small"
+            :type="showPwd ? 'text' : 'password'"
+            v-model:value="form.password"
+            :input-props="{ spellcheck: false }"
+          >
             <template #suffix>
-              <button class="eye" type="button" :title="showPwd ? t('editor.hidePassword') : t('editor.showPassword')" @click="showPwd = !showPwd">👁</button>
+              <button
+                class="eye"
+                type="button"
+                :title="showPwd ? t('editor.hidePassword') : t('editor.showPassword')"
+                @click="showPwd = !showPwd"
+              >
+                👁
+              </button>
             </template>
           </n-input>
         </div>

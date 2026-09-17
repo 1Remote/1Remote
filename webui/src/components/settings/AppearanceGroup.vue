@@ -102,7 +102,8 @@ function applyClassic(name) {
         class="pill"
         :class="{
           active:
-            themeState.themeMode === CLASSIC_THEMES[name].themeMode && themeState.accent === CLASSIC_THEMES[name].accent,
+            themeState.themeMode === CLASSIC_THEMES[name].themeMode &&
+            themeState.accent === CLASSIC_THEMES[name].accent,
         }"
         @click="applyClassic(name)"
       >

@@ -44,7 +44,8 @@ function initEnvTexts() {
   if (!protocols.value) return
   for (const [p, cfg] of Object.entries(protocols.value)) {
     ;(cfg.runners || []).forEach((r, i) => {
-      if (isExternal(r)) envTexts[p + ':' + i] = (r.EnvironmentVariables || []).map((kv) => `${kv.Key}=${kv.Value}`).join('\n')
+      if (isExternal(r))
+        envTexts[p + ':' + i] = (r.EnvironmentVariables || []).map((kv) => `${kv.Key}=${kv.Value}`).join('\n')
     })
   }
 }
@@ -72,9 +73,7 @@ const protocolKeys = computed(() => Object.keys(protocols.value || {}))
 const activeCfg = computed(() => protocols.value?.[active.value] || null)
 const dirty = computed(() => !!protocols.value && stateJson() !== snapshotJson)
 
-const runnerOptions = computed(() =>
-  (activeCfg.value?.runners || []).map((r) => ({ value: r.Name, label: r.Name })),
-)
+const runnerOptions = computed(() => (activeCfg.value?.runners || []).map((r) => ({ value: r.Name, label: r.Name })))
 
 // 行文本 → 数组（保存时同步回 runner 对象）：空行与无 = 的行丢弃；= 后可空
 function parseEnvText(text) {
@@ -125,7 +124,9 @@ async function save() {
           class="r-tab"
           :class="{ active: p === active }"
           @click="active = p"
-        >{{ p }}</button>
+        >
+          {{ p }}
+        </button>
       </div>
 
       <!-- 默认运行器 -->
