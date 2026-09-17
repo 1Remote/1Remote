@@ -86,3 +86,12 @@
 - **Task B**：WebUiSettingsService.cs（619 行 30 方法）→ partial 按域拆（General/Launcher/Appearance/Tags/UiState）；EditorService/ImportExportService/DataSourceService/CredentialService 注释 pass（单域内聚不拆）。
 - **Task C**：小文件（WebUiServer/DtoMapper/WebUiDto/FilterHelpers/TokenMiddleware）注释/组织梳理；Tests 注释仅修失实处（不动断言）。
 - 顺序 A→B→C，每任务独立提交 + 评审；发现错误独立 fix 提交。
+
+## 修复批次 6（owner 六次验收，13 项，2026-09-17）
+
+- **Task A（编辑器）**：#1 资源重定向 9 开关行标题——WPF 该行有标题 `server_editor_advantage_resources`（zh"共享到远程桌面"，RdpFormView.xaml:429），schemas 增 switch-run 标题机制（首字段 `runTitleKey` → blocksOf 产出带 title 的 run 块 → 渲染于 148px 标签列）；键从 WPF 14 语言移植。#2 ed-head 协议/数据库下拉框加描述性 tooltip+aria（新 i18n 键）。#3 RdpControlAdditionalSettings **确认对应 WPF MISC 组 "Additional settings"**（RdpFormView:526-532，非 mstsc 模式显示，WPF 为带补全的 AvalonEdit）——标签从"RDP 控件附加设置"改为对齐 WPF 的"附加设置"（'Additional settings' 资源 14 语言）。
+- **Task B（连接状态实时）**：#4 连接后指示器不变、手动刷新才绿——排查链路：SessionControlService_OpenConnection.cs:153/191 的 NotifyWebUiSessionChanged（时序：通知时主机是否已入 ConnectionId2Hosts）→ ReloadAll(true)→OnReloadAll→SSE reload→前端 useServers 是否监听并 reload。修根因（时序错位则调整调用点/或在主机挂载完成处补通知；前端缺监听则补）。
+- **Task C（设置小项）**：#5 "添加数据源"等同款 `n-button type=primary` 按钮文字白色（themeOverrides Button primary textColor 白）。#6 外观字号选择即时生效（AppearanceGroup onChange 即调 themes 的字号应用——themes/index.js:57 已有 documentElement.style.fontSize 路径，缺的是即时触发）。#8 设置页 ESC 失效排查（escShield 疑卡死：naive 下拉经 Esc 关闭时 update:show 配对性）——可修则修，不可修则去提示；返回按钮加醒目（accent 边框/图标）。
+- **Task D（关于页+更新红点）**：#7 "语言与关于"→"关于"，删语言选择（常规已有）；AboutGroup 内容对齐 WPF AboutPageView（logo+应用名+标语/版本+构建日期/Update 行（新版本链接+红点）/作者 Shawn+GitHub+邮箱/Support 使用文档链接/Make contributions 三按钮（issues/打赏/商店评价）/Included Components 10 组件链接/关闭即返回）；#12 更新检测——后端 WebUiUpdateService（自持 VersionHelper+同款 CustomCheckMethod，尊重 DoNotCheckNewVersion，缓存结果），GET /api/version 扩展 `{updateAvailable,newVersion,newVersionUrl,breaking}`；前端 ⚙ 按钮与设置导航"关于"项红点。
+- **Task E（列表杂项）**：#9 最近连接列 title 精确到秒（Intl.DateTimeFormat 完整格式）。#10 编辑器打开时禁用 topbar 搜索/+下拉/设置（editorBus 增 editorOpen 状态，App.vue 消费禁用）。#11 侧栏标签区："标签"标题恒定不随滚动（sticky）；tag 超长省略（阈值常量 TAG_MAX_LEN=50，title 全名）。
+- 基线：dotnet 161/5（owner WIP 固定名单）；npm build 0；i18n 473×14（预计 +若干键）。顺序 A→B→C→D→E。
