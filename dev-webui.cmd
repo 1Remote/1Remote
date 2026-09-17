@@ -20,7 +20,7 @@ echo ×¢Òâ: ÈôÒÑÓĞÒ»¸ö 1Remote ÔÚÔËĞĞ, ÇëÏÈ¹Ø±ÕËü, ·ñÔò 17321 ¶Ë¿Ú±»Õ¼ÓÃ, Ç°¶ËÒ³Ã
 echo.
 
 rem [²½Öè1] ĞÂ¿ª´°¿ÚÆô¶¯ Vite Ç°¶Ë·şÎñÆ÷(webui\node_modules È±Ê§Ê±ÏÈ×Ô¶¯°²×°ÒÀÀµ)
-start "webui - vite dev" cmd /k "cd /d %~dp0webui && (if not exist node_modules npm install) && npm run dev"
+start "webui - vite dev" cmd /k "cd /d %~dp0webui && (if not exist node_modules npm install) && npm run build && npm run dev"
 
 rem [²½Öè2] µÈÔ¼ 5 ÃëÈÃ Vite ÏÈÆğÀ´¡£ÓÃ ping ´úÌæ timeout: timeout ÔÚ stdin ±»ÖØ¶¨ÏòµÄ
 rem        ·Ç½»»¥»·¾³(Èç¹ÜµÀ/CI)ÏÂ»á±¨´í, ping ÎŞ´ËÏŞÖÆ, Ë«»÷ÔËĞĞÊ±Á½ÕßµÈĞ§
@@ -33,7 +33,8 @@ echo ÕıÔÚÆô¶¯ºó¶Ë Debug(dotnet run --project Ui -c Debug), ¹¹½¨´íÎó»áÏÔÊ¾ÔÚ±¾´°¿
 echo.
 
 rem [²½Öè4] ±¾´°¿ÚÔËĞĞºó¶Ë; dotnet run »á×èÈûÖ±µ½Ó¦ÓÃÍË³ö, Òò´Ë±ØĞë·ÅÔÚ×îºó
-dotnet run --project Ui -c Debug
+rem dotnet run --project Ui -c Debug
+cd .\Ui\bin\Debug\net9.0-windows10.0.19041.0 && .\1Remote.exe
 
 rem ºó¶ËÒÑÍË³ö, ÔİÍ£ÒÔÃâ´°¿ÚÉÁÍË, ±ãÓÚ²é¿´´íÎóĞÅÏ¢
 pause
