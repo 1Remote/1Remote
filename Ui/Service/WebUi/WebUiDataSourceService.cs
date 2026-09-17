@@ -355,7 +355,8 @@ namespace _1RM.Service.WebUi
             if (errors.Count > 0)
                 return RunnerApplyResult.BadRequest(errors);
             if (parsed.Count == 0)
-                return RunnerApplyResult.BadRequest("body.protocols must contain at least one protocol entry");            foreach (var (key, settings) in parsed)
+                return RunnerApplyResult.BadRequest("body.protocols must contain at least one protocol entry");
+            foreach (var (key, settings) in parsed)
             {
                 var existing = pcs.ProtocolConfigs[key];
                 existing.SelectedRunnerName = settings.SelectedRunnerName ?? string.Empty;
