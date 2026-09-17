@@ -24,6 +24,7 @@ import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
+import { LANGUAGES } from '../locales/languages.js'
 
 const { t, locale } = useI18n()
 const message = useMessage()
@@ -138,11 +139,21 @@ const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reco
 const dsTitle = (ds) =>
   ds.status === 'reconnecting' ? ds.name + ' · ' + (ds.reconnectInfo || t('tree.reconnecting')) : ds.name
 function toggleLocale() {
-  setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
+  setLocale(locale.value === 'en-US' ? nonEnglishLocale : 'en-US')
 }
-// 按钮显示目标语言自称
-// （「中/EN」为语言名，两语言环境下取值一致，经 i18n 键下发以保持代码内零硬编码文案）
-const nextLang = computed(() => (locale.value === 'zh-CN' ? t('statusbar.langEn') : t('statusbar.langZh')))
+// 语言切换（fix-batch Task C）：当前语言 ⇄ English——选了日语就按日语⇄英语切，不再硬编码
+// 中英。nonEnglishLocale 记住最近使用的非英语界面语言：locale 初值来自 localStorage/浏览器
+// 探测，且设置页选语言也会 setLocale（可能落到任一非英语码），用 watch 跟踪而非只读一次；
+// 首启即英语（从未见过非英语界面）回落 zh-CN——与旧版 en↔zh 行为一致，避免按钮空操作。
+// 不落库（与旧版一致，语言持久化由设置页负责）。
+let nonEnglishLocale = 'zh-CN'
+watch(locale, (l) => {
+  if (l !== 'en-US') nonEnglishLocale = l
+}, { immediate: true })
+// 按钮显示将要切到的语言的自称（语言名不做 i18n，与 LANGUAGES 清单/WPF language_name
+// 同语义）；旧键 statusbar.langEn/langZh 不再使用，locale JSON 中保留不删（避免动生成映射）
+const langNative = (code) => LANGUAGES.find((l) => l.code === code)?.native || 'English'
+const nextLang = computed(() => (locale.value === 'en-US' ? langNative(nonEnglishLocale) : 'English'))
 
 // ---- 连接动作（spec §8.2）：api.connect → 后端触发 OnRequestServerConnect（fromView="WebUi"），
 // 密码交互与会话窗口由桌面端既有管线处理（Web 侧不感知，spec 约定凭据留在本地）----
@@ -353,6 +364,11 @@ const importModal = ref(false)
           <span class="sc-label">⌕ {{ searchQuery }}</span>
           <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
         </span>
+        <!-- 批量条 + 表头工具簇宿主（fix-batch Task C）：ServerTable 把勾选批量操作与
+             ≡ 自定义顺序 / ▦ 列菜单 Teleport 进来，与面包屑同行右侧对齐。容器位于
+             骨架屏/空态 v-if 链之外恒存在（Teleport 目标必须先于 ServerTable 挂载），
+             内容随表格卸载自动消失 -->
+        <div id="crumb-actions" class="crumb-actions"></div>
       </div>
 
       <!-- 首载骨架屏（spec §8.4）：6 行灰块脉动（状态点 + 图标圆 + 名称/地址两横条，行高对齐真实行），
@@ -580,6 +596,15 @@ const importModal = ref(false)
 .sc-x:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+/* ServerTable Teleport 内容宿主（fix-batch Task C）：批量条 + ≡/▦ 工具簇靠右与面包屑同行；
+   gap 由内容自带（batch-bar 8px / table-tools 4px），此处只管整体右贴与纵向居中 */
+.crumb-actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .table-host {
   flex: 1;

@@ -201,6 +201,7 @@ function onTopbarDblClick(e) {
   color: var(--text-1);
 }
 .topbar {
+  position: relative; /* 搜索框绝对定位居中（fix-batch Task C）的定位基准 */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -218,8 +219,14 @@ function onTopbarDblClick(e) {
 .logo-mark {
   flex: 0 0 auto; /* 真实彩色图标（fix-batch3 Task C #7），不再随强调色着色 */
 }
+/* 视觉居中（fix-batch Task C）：绝对定位脱离 flex 流，logo 与右侧动作/窗口按钮布局不受影响。
+   窄窗保护：100vw-360px ≈ 左 logo + 右侧动作/窗口按钮/内边距所占宽度；内层 max(…,160px)
+   兜底——视口 <360px 时 calc 为负会使整条 max-width 失效退回 420px，反而更容易压到 logo */
 .searchbox {
-  flex: 0 1 420px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(420px, max(calc(100vw - 360px), 160px));
   display: flex;
   align-items: center;
   gap: 6px;
