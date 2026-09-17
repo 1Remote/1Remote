@@ -334,6 +334,8 @@
   "editor.o.appArgType.Selection": "Выбор",
   "editor.o.appArgType.Const": "Константное значение",
   "editor.o.checkAddressAvailable": "Перед подключением проверить, доступен ли адрес",
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
   "editor.group.basic": "Общие",
   "editor.group.credential": "Реквизиты для входа",
   "editor.group.alternate": "Alternate connections",

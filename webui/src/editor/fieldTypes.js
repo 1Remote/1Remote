@@ -35,6 +35,10 @@ export const FIELD = {
   COLOR: 'color',
   CREDENTIAL: 'credential',
   SUBFORM: 'subform',
+  /** AUTOCOMPLETE：可输入下拉（fix batch4 Task B）——对齐 WPF AutoCompleteComboBox：
+   *  既能从建议列表选择，也能直接键入任意自定义值（如非标准波特率）。值域与 TEXT
+   *  相同（字符串原样存取）。建议来源见 FieldDescriptor 的 suggestions/suggestionsSource。 */
+  AUTOCOMPLETE: 'autocomplete',
 }
 
 /**
@@ -74,6 +78,15 @@ export const FIELD = {
  * @property {boolean} [asString]
  *   仅 NUMBER 使用：C# 属性实为 string（如 Port='3389'）——按数字输入渲染，
  *   写回 json 时转为字符串，保持 WPF 的存储格式。
+ *   （AUTOCOMPLETE 上仅作标注保留——该类型值域本就是字符串，无行为差异。）
+ * @property {Array<string>} [suggestions]
+ *   仅 AUTOCOMPLETE 使用：静态建议数组（可输入下拉的候选，按输入包含匹配过滤，
+ *   空输入显示全部；建议不约束取值——任意输入仍可保存，对齐 WPF 平价校验在后端）。
+ * @property {string} [suggestionsSource]
+ *   仅 AUTOCOMPLETE 使用：远程建议源标识，当前取值 'serial-ports'（后端机器 COM 口）
+ *   | 'serial-baud-rates'（Serial.cs BitRates 常量表）——经 /api/serial/options
+ *   模块级缓存拉取一次（FormField.vue，两字段共享）；失败静默退化为空建议=纯文本输入。
+ *   与 suggestions 二选一（suggestionsSource 优先）。
  * @property {string} [credRole]
  *   仅凭据组（credentialGroup）字段有值，由 schemas.js 注入，EditorDrawer 的
  *   groupBlocks 按此四段渲染（对齐 WPF CredentialView.xaml 的区段顺序）：

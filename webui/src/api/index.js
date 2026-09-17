@@ -87,6 +87,9 @@ export const api = {
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
   icons: () => request('/api/icons'),
+  // Serial 编辑器可输入下拉建议（fix batch4 Task B）：后端机器 COM 口 + 波特率表
+  //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）
+  serialOptions: () => request('/api/serial/options'),
   credentialNames: (ds) => request('/api/credentials/names?ds=' + encodeURIComponent(ds)),
   extractIcon: (path) => request('/api/icons/extract-from-exe', { method: 'POST', body: { path } }),
   // 凭据库管理（Plan 3 Task 1）：credential 字段与 WPF 模型一致（PascalCase），
