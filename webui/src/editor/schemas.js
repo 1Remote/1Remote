@@ -54,8 +54,9 @@
  * key 驼峰>，locales 端 editor.ph.*；全量对照清单（Ui/View/Editor/Forms/ 逐一复核）：
  *  - 字面量英文（WPF 所有语言同显英文 → 14 locale 同值）：
  *      Address（HostView/各 FormView 均为 "e.g. 192.168.0.101"）→ editor.ph.address
- *      Password（CredentialView.xaml:148 "leave it blank and it will prompt..."，RdpFormView
- *        同文本的行已整块注释）→ editor.ph.password
+ *      Password（生效 Tag 在 CredentialView.xaml:148 "leave it blank and it will
+ *        prompt..."，各 FormView 经内嵌的 CredentialViewModel 共用；RdpFormView.xaml:45-46
+ *        有同文本行，但位于该文件 31-51 行的注释块内，不生效）→ editor.ph.password
  *      LoadBalanceInfo（RdpFormView.xaml:58 tsv:// 前缀）→ editor.ph.loadBalanceInfo
  *      StartupPath（FtpFormView:72 / SftpFormView:24 "e.g. /home/user/Desktop"）→ editor.ph.startupPath
  *      StartupAutoCommand（TelnetFormView:46 "e.g. cd /home/user/Desktop/"）→ editor.ph.startupAutoCommand

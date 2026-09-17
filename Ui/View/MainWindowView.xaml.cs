@@ -398,6 +398,23 @@ namespace _1RM.View
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
+            // Web 引擎：转发给网页搜索框（App.vue 注册的 window.__focusSearch）。焦点不在 WebView2
+            //（如启动后未点进页面）时，窗口级 KeyBinding 会把 Ctrl+F 先派到这里——WPF 侧过滤控件
+            // 已随标题栏折叠，直接走下方原逻辑对 web 无感；焦点在 WebView2 内时网页自己的
+            // Ctrl+K/F handler 已生效，不会进入本路径。CoreWebView2 未初始化（初始化中/失败）时
+            // 回退原 WPF 行为。脚本自带 __focusSearch 存在性判断，页面未就绪时静默无操作
+            if (WebUI.Visibility == Visibility.Visible && WebUI.CoreWebView2 != null)
+            {
+                try
+                {
+                    _ = WebUI.CoreWebView2.ExecuteScriptAsync("window.__focusSearch && window.__focusSearch();");
+                }
+                catch (Exception ex)
+                {
+                    SimpleLogHelper.Warning(ex);
+                }
+                return;
+            }
             if (Vm.IsShownList)
             {
                 if (Vm.ActiveServerViewModel.TagListViewModel == null)

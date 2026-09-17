@@ -1,7 +1,8 @@
 <script setup>
 // 行列表（spec §3.4，Task 16）：div+flex 自写轻量表格（列配置以 CSS 变量形式驱动表头/行对齐）。
-// - 过滤：selection 非空 → 数据源匹配 + 文件夹仅直接子级（fix-batch2 #2 资源管理器式浏览：
-//   子文件夹以文件夹行呈现，其内服务器进入后才可见；数据源根=整库递归）；搜索激活时树过滤整体让位；serverId 仅作行高亮
+// - 过滤：selection 非空 → 数据源匹配 + 仅直接子级（fix-batch2 #2 / fix-batch4 Task D 资源
+//   管理器式浏览：子文件夹以文件夹行呈现，其内服务器进入后才可见；数据源根同样只列根级服务器，
+//   「全部数据源」虚拟根保持跨库递归总览）；搜索激活时树过滤整体让位；serverId 仅作行高亮
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化（列宽列显 Plan 4）
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选；视图变化剔除不可见勾选
 // - 键盘（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、
@@ -41,14 +42,14 @@ const filtered = computed(() => {
   // （后端跨数据源/子文件夹匹配）——树选中过滤整体让位，子文件夹深处的命中一律可见
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
-  if (!sel || !sel.dataSourceName) return props.servers // 未选树节点 → 全部
-  return props.servers.filter(s => {
-    if (s.dataSourceName !== sel.dataSourceName) return false
-    if (!sel.folderPath) return true // 数据源根 = 该库全部（递归）
-    // 资源管理器式浏览（fix-batch2 #2）：选中文件夹仅列直接子级服务器；子文件夹由
-    // ServerListView currentFolders（holderAt.folders）以文件夹行呈现
-    return s.folderPath === sel.folderPath
-  })
+  if (!sel || !sel.dataSourceName) return props.servers // 「全部数据源」虚拟根 = 跨库总览（递归）
+  // 资源管理器式浏览（fix-batch2 #2 文件夹 / fix-batch4 Task D 数据源根）：选中节点一律仅列
+  // 直接子级服务器（根 = folderPath 空串），子文件夹由 ServerListView currentFolders
+  //（holderAt.folders）以文件夹行呈现。旧设计数据源根显示整库递归——拖服务器入文件夹后
+  // 根列表仍见该服务器，违背 Explorer 语义，故改。folderPath 两侧归一化（根选中/根级服务器
+  // 的 folderPath 可能是 '' 或 undefined）
+  return props.servers.filter(s => s.dataSourceName === sel.dataSourceName
+    && (s.folderPath || '') === (sel.folderPath || ''))
 })
 const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
 const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 全部数据源根：文件夹列前缀数据源名
