@@ -16,7 +16,7 @@ using _1RM.Service.WebUi;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// 编辑器辅助端点集成测试（Plan 2 Task 4）：
+    /// 编辑器辅助端点集成测试：
     /// - GET /api/icons：内置图标 base64 列表（ServerIcons 单例，程序集内嵌 PNG，装载不依赖 WPF Application）；
     /// - GET /api/credentials/names：凭据库名称列表（GetCredentials 缓存判定 → 读库），未知数据源 404；
     /// - POST /api/icons/extract-from-exe：exe 关联图标提取为 PNG base64（与 WPF 图标选择器同一路径），

@@ -23,14 +23,14 @@ namespace _1RM.Service.WebUi
         public string Address { get; set; } = string.Empty;
         public string Port { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
-        public string Note { get; set; } = string.Empty;      // 备注（Markdown 源文本，fix-batch3 Task C #4 列表行悬停预览）
+        public string Note { get; set; } = string.Empty;      // 备注（Markdown 源文本，供列表行悬停预览）
         public List<string> Tags { get; set; } = new();
         public string Color { get; set; } = string.Empty;      // 服务器自定义色 hex
         public string IconBase64 { get; set; } = string.Empty;
         public string DataSourceName { get; set; } = string.Empty;
         public string FolderPath { get; set; } = string.Empty; // "a/b"，根为空串
         public long LastConnectTime { get; set; }              // Unix 秒，0=从未连接
-        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // connected/disconnected（spec §3.4，Plan 4 Task 1 起由活动会话派生）
+        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // connected/disconnected，由活动会话派生（WebUiEndpoints.DeriveConnectionState）
     }
 
     public class DataSourceDto
@@ -56,7 +56,7 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// /api/settings/appearance DTO（Web UI 专属外观，独立于 WPF ThemeConfig，spec §4）。
+    /// /api/settings/appearance DTO（Web UI 专属外观，独立于 WPF ThemeConfig）。
     /// themeMode: dark|light|system；accent: blue|violet|pink|red|orange|green|slate；fontSize: S|M|L|XL；
     /// font: 字体族名（自由取值不枚举，空串 = 跟随系统，非空存储前 trim）。
     /// </summary>
@@ -109,7 +109,7 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// POST /api/ui-state/list-order 请求体（Plan 4 Task 4 列表行拖拽排序）。
+    /// POST /api/ui-state/list-order 请求体（列表行拖拽排序）。
     /// ids = 整库服务器 id 按新顺序排列（全量替换 LocalityListViewService.ServerCustomOrder，
     /// 与 WPF ServerListPageView 拖拽落点调 ServerCustomOrderSave 传入完整可见列表同语义）；
     /// 未知 id 逐个跳过（不整体失败）。响应 {ids} = 实际保存的顺序。
@@ -260,7 +260,7 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// POST /api/datasources 请求体（Plan 3 Task 3）。type: sqlite|mysql|pgsql（postgresql 同义）；
+    /// POST /api/datasources 请求体。type: sqlite|mysql|pgsql（postgresql 同义）；
     /// name 缺省时 sqlite 从 config.path 文件名推导；重名（忽略 CurrentCulture 大小写，WPF 同款）→ 409。
     /// config.password 仅 mysql/pgsql：POST 为新建语义传明文（必填，WPF 弹窗同款）；PUT 空/缺失 = 保持。
     /// </summary>

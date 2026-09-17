@@ -7,7 +7,7 @@ using _1RM.View;
 namespace _1RM.Service.WebUi
 {
     /// <summary>
-    /// 服务端服务器过滤：/api/search 与 WPF 主窗口共用同一套过滤语义（spec §3.1）。
+    /// 服务端服务器过滤：/api/search 与 WPF 主窗口共用同一套过滤语义。
     /// 匹配核心直接复用 <see cref="TagAndKeywordEncodeHelper"/>（#tag 解码 + 多关键字匹配，
     /// 内部经 IoC 使用 <c>KeywordMatchService</c>，拼音/首字母等能力随应用配置自动生效），
     /// 与 ServerPageViewModelBase.CalcServerVisibleAndRefresh 的过滤路径一致。

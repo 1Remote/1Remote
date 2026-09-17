@@ -35,7 +35,7 @@ namespace Tests.Service.WebUi
             Assert.AreEqual("生产环境/Web 集群", dto.FolderPath);
             Assert.AreEqual("Local", dto.DataSourceName);
             Assert.AreEqual("disconnected", dto.ConnectionState); // 预留字段默认值
-            Assert.AreEqual(0L, dto.LastConnectTime); // Task 4 从 LocalityConnectRecorder 填充
+            Assert.AreEqual(0L, dto.LastConnectTime); // 缺省 0；真实列表由调用方从 LocalityConnectRecorder 传入
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace Tests.Service.WebUi
         [TestMethod]
         public void Map_Note_EmptyAndNonEmpty()
         {
-            // fix-batch3 Task C #4：列表行备注悬停预览需要 DTO 携带 Note（Markdown 源文本）。
+            // 列表行备注悬停预览需要 DTO 携带 Note（Markdown 源文本）。
             // 未设置时 ProtocolBase.Note 默认空串 → DTO 空串（前端以空判隐藏备注图标）
             var noNote = new RDP { Id = "n0", DisplayName = "no-note", Address = "1.1.1.1" };
             var dto0 = _1RM.Service.WebUi.DtoMapper.FromServer(noNote, "Local");

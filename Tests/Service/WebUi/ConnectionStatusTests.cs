@@ -11,7 +11,7 @@ using _1RM.Service.WebUi;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// 连接状态派生测试（Plan 4 Task 1）：
+    /// 连接状态派生测试：
     /// - 纯函数 WebUiEndpoints.DeriveConnectionState：空活动集 / 命中 / 多会话同服务器 / 他人活跃 / null serverId。
     /// - /api/servers、/api/search 端点接线：测试宿主刻意不注册 SessionControlService
     ///   （注册会令其订阅 OnRequestServerConnect，/api/connect 集成测试将触发真实连接流程），

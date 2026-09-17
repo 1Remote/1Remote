@@ -14,7 +14,7 @@ using _1RM.Service.WebUi;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// Serial 编辑器建议端点（fix batch4 Task B）：GET /api/serial/options 提供
+    /// Serial 编辑器建议端点：GET /api/serial/options 提供
     /// SerialPort/BitRate 可输入下拉的数据源，对齐 WPF SerialFormView 的
     /// AutoCompleteComboBox（端口 = 后端机器 GetPortNames()，波特率 = Serial.cs
     /// BitRates 常量表）。端点只 new Serial() 直读属性，不依赖 IoC/数据库。
