@@ -42,3 +42,38 @@
 - **Task B（列表/树行为+视觉）**：#2 资源管理器式文件夹（选中文件夹=仅直接子级；搜索=递归子孙，已确认）；#3 行左侧色条恢复（opaqueHex 实色，类似 WPF 色条）；#9 高亮改实心强调色背景+对比文字。
 - **Task C（编辑器）**：#4 备注 Markdown（引入 marked，编辑⇄预览切换，已确认）；#5 标签输入框与名称框同宽同位带边框；#6 备用连接行默认折叠只显示名称；#7 连续 SWITCH 字段一行 3 个网格。
 - 基线：dotnet 154/5（owner WIP）；npm build 0；i18n 451×14。Owner WIP 文件禁触。
+
+## 修复批次 3（owner 三次验收，9 项，已确认设计）
+
+- **Task A（编辑器，#1/#2/#3）**：#1 凭据组对齐 WPF（CredentialView.xaml 实证结构）：`credRole` 元数据分四档——`pre`（RDP Domain/LoadBalanceInfo，凭据来源切换之前恒显）/`identity`（UserName/Password/PrivateKey，仅 manual 模式；Password 在 UsePrivateKeyForConnect=true 时隐藏，WPF 同）/`option`（AskPasswordWhenConnect、SSH/SFTP UsePrivateKeyForConnect，两模式恒显）/`picker`（InheritedCredentialName，仅 vault 模式）；EditorDrawer 渲染顺序 pre→二选一→(identity|picker)→option；9 协议全部核查（Telnet/Serial 无凭据组、APP 的 connection 组不动）。#2 抽屉让位顶栏：全局 `--topbar-h:44px`（App.vue .shell 消费），`.ed-root` 从 inset:0 改 top:var(--topbar-h)，蒙层/面板不再遮挡窗口按钮与拖拽。#3 FormField TAGS 自绘 chips 换 `n-dynamic-tags`（small，与 n-input 视觉天然一致；editor Tags 与 BULK tags 两处同享）。
+- **Task B（验证开关 #6）**：根因=开关混入"点保存才提交"表单（WPF 是点击立即生效 + 翻转前先过 Windows 验证，GeneralSettingView.xaml.cs:31-43）。后端新增 `POST /api/settings/verify`（VerifyAsyncUi，200/403；verifier 可注入便于 MSTest，参照 WebUiImportExportService.cs:350 模式）；前端 GeneralGroup 该开关改拨动即生效：先 verify（未开启验证时自动通过）→ 成功后单键 PUT {requireSecondaryVerification} → 失败/取消回弹；退出 Save 差量逻辑（其余字段不变）。
+- **Task C（列表/设置/杂项 #4/#5/#7/#8）**：#4 ServerDto+DtoMapper 增 Note 字段（+测试）；ServerRow 名称后有备注时显示 📄 图标，n-popover 悬浮渲染 Markdown（marked+净化抽 utils/markdown.js，与 MarkdownField 共用）；BULK note dtoKey 顺手接 'note'。#5 `.s-groups` 加 `display:flex;flex-direction:column;gap:2px`（真根因：button 默认 inline-block 横向平铺，上批 .s-item flex:none 无效）。#7 顶栏 logo 换真图：Ui/LOGO.ico 256px PNG 已提取至 webui/public/logo_src_256.png（重命名/瘦身 logo.png），App.vue 替换自绘 SVG，favicon.svg 同步替换。#8 App.vue 全局快捷键 Ctrl+K 扩为 K/F。
+- **Task D（#9 一键启动）**：仓库根 `dev-webui.cmd`：起 Vite（node_modules 缺失先 npm install）+ dotnet run Debug（net9.0-windows10.0.19041.0）；提示 DEBUG 下 WebView2（UiEngine=Web）直连 localhost:5173 热重载、WPF 引擎时浏览器开 5173。
+- 基线：dotnet 154/5（owner WIP：Credential.cs/DapperDataBase*.cs/RdpConfigTests.cs）；npm build 0；i18n 455×14。Owner WIP 文件禁触；顺序执行 A→B→C→D（App.vue/EditorDrawer 有跨任务触碰，禁止并行）。
+
+## 修复批次 4（owner 四次验收，10 项，2026-09-17）
+
+- **Task A（编辑器视觉/结构）**：#1 颜色行重构为单个标准输入组（当前色块+hex 输入+色板收进一个与 n-input 同观的边框容器，对齐其他输入框）；#2 备注预览按钮移到"备注"标签右侧（省垂直空间，mode 状态上提至 FormField）；#3+#4 开关行重构——所有 SWITCH 字段渲染为「ff-label 留空 + 控件列 [开关][紧跟文字描述]」，网格与单行一致，对齐 WPF 复选框行（CredentialView.xaml:193 空 title+checkbox 在输入列）；#6 IsPingBeforeConnect 从 misc 组移到 Address/Port 行正下方（HostView.xaml:29-38 同构：标签列"Availability detection"+开关文字"Check if address is available before connect"，两键从 WPF 14 语言 xaml 移植；7 个带地址协议进 basicGroup、APP 进 connection 组、Telnet 清掉空 misc）；#5 IsAdministrativePurposes zh 文案补 /admini 术语前缀（owner 点名）。
+- **Task B（Serial 下拉）**：GET /api/serial/options（ports=SerialPort.GetPortNames()、baudRates=Serial.cs:71 BitRates，注入可测）+ 前端新字段类型 AUTOCOMPLETE（n-auto-complete，可输入可选）用于 SerialPort/BitRate + MSTest。
+- **Task C（placeholder 全量对齐 WPF）**：根因=web 未设 placeholder，"Please Input" 是 naive-ui enUS Input 默认值；扫全部表单 XAML 的 Tag=（字面量照抄：Address "e.g. 192.168.0.101"、Password "leave it blank..."、LoadBalanceInfo "tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses"、Serial "e.g. COM1"/"e.g. 9600"、StartupPath/StartupAutoCommand "e.g. /home/user/Desktop..."、ExePath "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe" 等；DynamicResource 键从 WPF 14 语言 xaml 移植真翻译：'Leave blank to inherit the default value'、server_editor_remote_app_name_tag 等）→ schemas placeholderKey + FormField 已有 placeholder 通道 + 14 locales。
+- **Task D（主界面）**：#1 根路径 Explorer 语义——数据源根选中=仅直接子级（folderPath==='' 服务器+文件夹行；全部数据源根保持全库视图）；行拖入文件夹的移动完成后 reload 列表（即时消失）；#2 Ctrl+F 焦点在 WPF 层时转发——MainWindowView.CommandFocusFilter_OnExecuted（xaml.cs:398）检测 WebUI 可见→ExecuteScriptAsync 调 window.__focusSearch（App.vue 暴露，focus+select），否则走原 WPF 逻辑。
+- 基线：dotnet 162/2（2 败=owner RdpConfigTests.cs WIP）；npm build 0；i18n 457×14。顺序 A→B→C→D（schemas.js/FormField 跨任务触碰）。
+
+## 修复批次 5（owner 五次验收，9 项，2026-09-17；备注列已确认"一列兼顾"）
+
+- **Task A（编辑器）**：①ed-head 单行重排：[ed-tile][标题文字][协议 n-select][数据库 n-select/只读 pill][关闭]，标题不再两行堆叠；②Serial/BitRate 建议列表恒显示全部选项（移除输入过滤，保留 get-show 恒 true）；③连续 SWITCH 不再 3 列网格平铺多个 form-field——聚合为**一个** form-field 行（ff-label 留空，全部 [switch][文字] 项在同一个 ff-control 内水平排列 flex-wrap）。
+- **Task B（列表语义）**：④"全部数据源"更名"全部数据"（crumb.allDataSources 值更新：zh 全部数据/zh-TW 全部數據/en All data，其余回落 en）；全部数据根=全库递归所有服务器且**不显示文件夹行**（currentFolders 对 all-root 返回空；数据源根/文件夹/搜索语义不变）。⑤备注列（owner 确认一列兼顾）：新"备注"列=纯文本直显（超长省略号）+ 有备注时悬停 n-popover 渲染 markdown（renderMarkdown 复用）；删除批次3加在名称旁的小图标；接入 HIDEABLE_COLS/COL_LABELS 列菜单；文件夹行两处模板（虚拟/非虚拟）补空 cell 对齐。
+- **Task C（布局/杂项）**：⑥批量条+表头工具簇（已选 N 台/▶连接/✎批量编辑/⤓导出/≡自定义顺序/▦列菜单）从 ServerTable 移入面包屑行（Teleport 到 crumb-row 内容器，状态留在 ServerTable；▦ tooltip 文案改进）；⑦搜索框 topbar 居中（absolute 居中）；⑧状态栏语言切换按钮改为 当前语言⇄英文（模块级记住非英语选择，按钮显示目标语言名，languageOptions 取名）。
+- 基线：dotnet 161/5（5 败=owner WIP）；npm build 0；i18n 472×14。顺序 A→B→C。
+
+## 重构批次（2026-09-17 goal：零功能变化，代码更易维护、注释更清晰）
+
+硬约束：**不改变任何功能/行为**——纯结构搬移与注释重写；每任务门禁 npm build 0 错 + i18n 平价 + 评审逐 hunk 核实"verbatim 搬移/仅注释"。CSS 148px 网格四处重复不做跨文件合并（scoped 限制+风险>收益，记录）。死 i18n 键清理（editor.removeTag/row.note/statusbar.langEn/langZh，零引用核实后删，473→470）。
+
+- **Task A（EditorDrawer 1046 行分解+注释重写）**：批量编辑模式（模板+bulk 脚本 ~260 行）抽为 `components/editor/BulkEditForm.vue`（defineExpose save 或 emit 请求保存，抽屉底部保存按钮经薄缝调用）；ed-head 抽为 `EditorHead.vue`（~80 行）；文件头 37 行批次考古注释重写为现状行为描述 ~15 行；其余注释去批次号噪音、保留 WPF 对齐依据。
+- **Task B（ServerTable 1133 行分解+注释重写）**：文件夹行模板（虚拟/非虚拟两份 verbatim 重复）抽为 `FolderRow.vue` 去重；批量条+工具簇 Teleport 块抽为 `TableToolbar.vue`；注释重写（含 :519 "Esc 关闭列菜单"失实注释）；19 处批次引用清理。
+- **Task C（FormField 476 行清理）**：serial options 模块级缓存抽 `composables/useSerialOptions.js`；17 处批次引用注释重写。
+- **Task D（全局注释清理+死键）**：ServerListView/SideTree/App/ServerRow/schemas/fieldTypes/composables 注释重写（fieldTypes "分组页签"过时描述等）；死 i18n 键 ×14 locales 删除；收尾门禁+全量评审。
+- **Task E（风格统一，owner 2026-09-17 追加）**：引入 Prettier（.prettierrc 按主流风格：单引号/无分号/2 空格/printWidth 120——以最小化 churn 为准实测选定；trailing comma 等按现状抽样）+ `npm run format`/`format:check` 脚本；全量机械格式化一个独立提交（diff 应全部为空白/引号/换行，无逻辑变化）；owner IDE 重排版问题此后由 format 脚本终结。
+- **Task F（错误修复，owner 追加"发现错误需要修复"）**：重构中发现的错误以独立 `fix(webui)` 提交（与纯重构提交区分，可回溯）。已累积待修清单：①EditorDrawer credRole 漏标字段静默不渲染（dev console.warn 兜底）②convert-locales.mjs WRAP⊆MAPPING fail-fast 断言 ③.ff-switch-text 缺 overflow-wrap:break-word ④ServerTable :519 "Esc 关闭列菜单"失实注释改写（接 Esc 属行为变化不在重构批做）。
+- 基线：npm build 0；i18n 473×14（Task D 后 470×14）；dotnet 不涉及（纯前端）。顺序 A→B→C→D→E→F（F 可穿插在发现时即修）。owner WIP 禁触惯例不变。
