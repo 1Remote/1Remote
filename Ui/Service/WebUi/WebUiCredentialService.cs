@@ -13,6 +13,9 @@ namespace _1RM.Service.WebUi
 {
     /// <summary>
     /// 凭据库编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦）。
+    /// 职责：GET /api/credentials 列表（含被引用数）、POST/PUT/DELETE /api/credentials*
+    /// 凭据 CRUD、POST /api/credentials/{name}/reveal 明文查看（30s 窗口二次验证门）。
+    ///
     /// 加密纪律：与服务器编辑器一致——调用方传明文，加密由
     /// DataSourceBase.Database_InsertCredential / Database_UpdateCredential 在内部克隆上完成
     /// （EncryptToDatabaseLevel）；GetCredentials 读回的缓存为加密态，

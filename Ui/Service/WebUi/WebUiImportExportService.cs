@@ -67,7 +67,9 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// 服务器导入/导出编排（Plan 4 Task 2，与 HTTP 层解耦）。
+    /// 服务器导入/导出编排（与 HTTP 层解耦）。导入按上传文件扩展名嗅探四种格式
+    /// （1Remote JSON / mRemoteNG CSV / .rdp / .db 双库），逐台插入目标数据源；
+    /// 导出为解密克隆列表的 Indented JSON，前置 WPF 平价的二次验证门。
     /// WPF 平价来源：ServerPageViewModelBase.cs CmdImportFromJson(:365)/CmdImportFromCsv(:505)/
     /// CmdImportFromRdp(:550)/CmdImportFromDatabase(:417) 与 CmdExportSelectedToJson(:272)。
     ///
