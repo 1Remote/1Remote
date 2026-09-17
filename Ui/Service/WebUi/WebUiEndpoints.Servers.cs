@@ -342,8 +342,10 @@ namespace _1RM.Service.WebUi
                         }
                         else
                         {
-                            // 心跳具名事件（见方法头注释：前端看门狗判活依据；注释行对 EventSource 不可见）
-                            await ctx.Response.WriteAsync("event: ping\n\n", ctx.RequestAborted);
+                            // 心跳具名事件（见方法头注释：前端看门狗判活依据；注释行对 EventSource 不可见）。
+                            // data 行不可省：SSE 规范 dispatch 步骤对空 data buffer 直接 return 不派发事件——
+                            // 只有 event 行的心跳前端永远收不到，看门狗会误杀健康连接（评审 E1）
+                            await ctx.Response.WriteAsync("event: ping\ndata: 1\n\n", ctx.RequestAborted);
                         }
                     }
                 }
