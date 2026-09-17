@@ -112,6 +112,7 @@ const MAPPING = {
   'editor.f.AskPasswordWhenConnect': 'Ask for password when open connect',
   'editor.f.AudioQualityMode': 'server_editor_advantage_sound_quality',
   'editor.f.AudioRedirectionMode': 'server_editor_advantage_sounds',
+  'editor.f.availabilityDetection': 'Availability detection',
   'editor.f.ColorHex': 'Color',
   'editor.f.Description': 'Description',
   'editor.f.DisplayName': 'Name',
@@ -137,7 +138,6 @@ const MAPPING = {
   'editor.f.IsFullScreenWithConnectionBar': 'Display the connection bar when use the full screen',
   'editor.f.IsNullable': 'Nullable',
   'editor.f.IsPinTheConnectionBarByDefault': 'Pin the connection bar by default',
-  'editor.f.IsPingBeforeConnect': 'Check if address is available before connect',
   'editor.f.IsScaleFactorFollowSystem': 'Follow system',
   'editor.f.Key': 'Prefix',
   'editor.f.MstscModeEnabled': 'mstsc.exe mode',
@@ -191,6 +191,8 @@ const MAPPING = {
   'editor.o.appArgType.Normal': 'Normal',
   'editor.o.appArgType.Selection': 'Selections',
   'editor.o.appArgType.Const': 'Const value',
+  // fix-batch4 Task A #6：IsPingBeforeConnect（可用性检测行）的控件列说明文字
+  'editor.o.checkAddressAvailable': 'Check if address is available before connect',
 
   // -- 编辑器：分组 / 窗口 --
   'editor.group.basic': 'server_editor_group_title_common',
@@ -255,6 +257,14 @@ const PLACEHOLDERS = {
   'tree.deleteFolderConfirm': ['{name}', '{n}'], // {0}=文件夹名，{1}=服务器数
 }
 const FALLBACK_PARAMS = ['{n}', '{m}']
+
+// web 键 → WPF 译文的固定包装 [前缀, 后缀]（fix-batch4 Task A #5）：web 文案在 WPF
+// 原文之外还带 web 专有固定字面量时使用。IsAdministrativePurposes 的 WPF 表单里实际
+// 展示为 "/admini" 前缀 + server_editor_advantage_admin 说明（RdpFormView），纯映射
+// 无法表达 → 包装器补齐，保证再生成不丢失该格式。
+const WRAP = {
+  'editor.f.IsAdministrativePurposes': ['/admini (', ')'],
+}
 
 // ---------------------------------------------------------------------------
 
@@ -360,7 +370,8 @@ for (const lang of GENERATE) {
     const wpfKey = MAPPING[k]
     const wpfVal = wpfKey ? (dict[wpfKey] || '').trim() : ''
     if (wpfVal) {
-      out[k] = toI18nMessage(k, dict[wpfKey])
+      const [pre, post] = WRAP[k] || ['', '']
+      out[k] = toI18nMessage(k, pre + dict[wpfKey] + post)
       filled++
     } else {
       out[k] = enUS[k]

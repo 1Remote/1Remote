@@ -11,7 +11,9 @@
  * i18n 约定（Task 11 已落地）：
  *  - 全部文案键使用 editor.* 命名空间：字段 → editor.f.{PascalCaseKey}（schemas.js
  *    加载时对缺省者统一兜底注入，见其「字段 labelKey 兜底」段）；分组 → editor.group.*；
- *    SELECT 选项 → editor.o.{枚举短名}.{成员名}（schemas.js 选项常量逐项标注）。
+ *    SELECT 选项 → editor.o.{枚举短名}.{成员名}（schemas.js 选项常量逐项标注）；
+ *    SWITCH 的控件列说明文字 → switchTextKey（editor.o.*，fix-batch4 Task A #6 的
+ *    availabilityDetection/checkAddressAvailable 例外命名，见 FieldDescriptor）。
  *  - labelKey / placeholderKey 均为可选，缺失时 FormField 回退显示：字段 → key 原样
  *    （PascalCase）；SELECT 选项 → String(value)；分组 → group.id。
  *  - 有意不译的选项：Serial 的 DataBits/StopBits/Parity/FlowControl 选项值本身即
@@ -72,6 +74,20 @@ export const FIELD = {
  * @property {boolean} [asString]
  *   仅 NUMBER 使用：C# 属性实为 string（如 Port='3389'）——按数字输入渲染，
  *   写回 json 时转为字符串，保持 WPF 的存储格式。
+ * @property {string} [credRole]
+ *   仅凭据组（credentialGroup）字段有值，由 schemas.js 注入，EditorDrawer 的
+ *   groupBlocks 按此四段渲染（对齐 WPF CredentialView.xaml 的区段顺序）：
+ *   'pre'（二选一切换之前恒显，RDP 的 Domain/LoadBalanceInfo）| 'identity'（manual
+ *   态身份字段）| 'picker'（vault 态库选择器）| 'option'（两态恒显的收尾开关）。
+ *   其他组字段缺省；子表单行内字段不参与凭据组分段。
+ * @property {boolean} [switchWithLabel]
+ *   仅 SWITCH 使用（fix-batch4 Task A #3/#4/#6）：默认开关行标签列留空、控件列为
+ *   [switch][描述文字]（对齐 WPF 复选框行 CredentialView.xaml:191-215）；置 true 时
+ *   标签列显示 labelKey 文案（例外行——如 IsPingBeforeConnect「可用性检测」，
+ *   WPF HostView.xaml:29-38 该行标签列有文字）。
+ * @property {string} [switchTextKey]
+ *   仅 SWITCH 使用：控件列描述文字（紧跟开关右侧）的 i18n 键；缺省回退 labelKey 文案。
+ *   与 switchWithLabel 搭配时 = 「标签列文字之外的开关说明文字」。
  */
 
 /**

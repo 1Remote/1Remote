@@ -37,6 +37,21 @@ const { t } = useI18n()
 const label = computed(() => (props.field.labelKey ? t(props.field.labelKey) : props.field.key))
 const placeholder = computed(() => (props.field.placeholderKey ? t(props.field.placeholderKey) : undefined))
 
+// ---- switch 行式重构（fix-batch4 Task A #3/#4，对齐 WPF 复选框行
+// CredentialView.xaml:191-215：空标题列 + 输入列 [CheckBox+文字]）----
+// 默认标签列留空（开关起点即其他输入框的左缘，宽度对齐），描述文字紧跟开关右侧
+// （6px 间隔、可换行）；switchWithLabel=true 的字段例外（IsPingBeforeConnect 可用性
+// 检测行，WPF HostView.xaml:29-38 该行标签列有文字）：标签列显示 labelKey 文案，
+// 控件列描述文字改用 switchTextKey。
+const isSwitch = computed(() => props.field.type === FIELD.SWITCH)
+const showLabelInColumn = computed(() => !isSwitch.value || !!props.field.switchWithLabel)
+const switchText = computed(() => (props.field.switchTextKey ? t(props.field.switchTextKey) : label.value))
+
+// ---- markdown：编辑 ⇄ 预览状态上提（fix-batch4 Task A #2，owner 反馈省垂直空间）----
+// 切换按钮移到标签列右侧，MarkdownField 改为受控（props.preview 二选一渲染、不再自持
+// mode）；每字段独立一份状态（当前仅 basic 组 Note 一个 MARKDOWN 字段，无递归场景）。
+const mdPreview = ref(false)
+
 // ---- number：本地原文态 + asString 语义（fieldTypes.js）----
 // C# int 属性存数字、string 属性（Port/BitRate）asString 存字符串；清空按 asString
 // 存 '' 或 null。非数字输入（如 '33a'）原样存字符串交给保存校验（后端 400，对齐
@@ -91,6 +106,8 @@ function onTagsUpdate(v) {
 // 色块预览需转 CSS 的 #RRGGBBAA 顺序；文本输入原样存取不做归一化（透传保真）。
 // fix-batch1 #6：当前色独立 swatch（不透明才有色，透明/无效 = 无色斜线示意），
 // 色板命中项带选中环；选色即时联动图标预览 tint（EditorDrawer 的 iconTint）。
+// fix-batch4 Task A #1：整体收进一个与 n-input 同观的边框容器（见模板/样式），
+// 语义（disabled / toCssColor / isSwatchActive / title 提示）不变。
 const COLOR_SWATCHES = ['#00000000', '#FF565A63', '#FFEF6A6A', '#FFF0B25F', '#FF26A269', '#FF2C5AFF', '#FF8B5CF6', '#FFEC4899']
 function toCssColor(hex) {
   return typeof hex === 'string' && /^#[0-9a-fA-F]{8}$/.test(hex) ? '#' + hex.slice(3) + hex.slice(1, 3) : hex
@@ -108,7 +125,17 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 <template>
   <div class="form-field" :class="'ff-' + field.type">
     <div class="ff-label" :title="label">
-      {{ label }}<span v-if="field.required" class="ff-required">*</span>
+      <!-- #3/#4：switch 行标签列默认留空（控件列 [开关][文字] 自解释）；switchWithLabel 例外 -->
+      <span v-if="showLabelInColumn" class="ff-label-text">{{ label }}<span v-if="field.required" class="ff-required">*</span></span>
+      <!-- #2：MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
+      <button
+        v-if="field.type === FIELD_TYPE.MARKDOWN"
+        class="ff-md-toggle"
+        type="button"
+        :disabled="disabled"
+        :title="mdPreview ? t('editor.mdEdit') : t('editor.mdPreview')"
+        @click="mdPreview = !mdPreview"
+      >{{ mdPreview ? '✎' : '👁' }}</button>
     </div>
 
     <div class="ff-control">
@@ -145,14 +172,17 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:value="emit('update:modelValue', $event)"
       />
 
-      <!-- switch：json 值可能为 null——显示按 false，写回真实布尔 -->
-      <n-switch
-        v-else-if="field.type === FIELD_TYPE.SWITCH"
-        size="small"
-        :value="!!modelValue"
-        :disabled="disabled"
-        @update:value="emit('update:modelValue', $event)"
-      />
+      <!-- switch（#3/#4）：控件在前、描述文字紧跟（标签列留空见上方 showLabelInColumn）；
+           json 值可能为 null——显示按 false，写回真实布尔 -->
+      <template v-else-if="field.type === FIELD_TYPE.SWITCH">
+        <n-switch
+          size="small"
+          :value="!!modelValue"
+          :disabled="disabled"
+          @update:value="emit('update:modelValue', $event)"
+        />
+        <span class="ff-switch-text">{{ switchText }}</span>
+      </template>
 
       <!-- password：眼睛切换明文/密文 -->
       <n-input
@@ -195,11 +225,13 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:value="emit('update:modelValue', $event)"
       />
 
-      <!-- markdown：编辑 ⇄ 预览（MarkdownField，fix-batch2 Task C #4；值域同 textarea） -->
+      <!-- markdown：编辑 ⇄ 预览（MarkdownField，fix-batch2 Task C #4；值域同 textarea；
+           fix-batch4 #2 受控化：preview 状态由本组件持有，切换按钮在标签列右侧） -->
       <MarkdownField
         v-else-if="field.type === FIELD_TYPE.MARKDOWN"
         :model-value="String(modelValue ?? '')"
         :disabled="disabled"
+        :preview="mdPreview"
         @update:model-value="emit('update:modelValue', $event)"
       />
 
@@ -212,34 +244,38 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:model-value="emit('update:modelValue', $event)"
       />
 
-      <!-- color：当前色 swatch + 色板 + 原始 hex -->
-      <div v-else-if="field.type === FIELD_TYPE.COLOR" class="ff-color">
+      <!-- color（#1 单输入组）：与 n-input small 同观的边框容器内
+           [当前色块 16×16][hex 文本（透明无边框）][竖分隔线][8 色板小点 14×14]；
+           容器撑满控件列 → 与其他输入框左对齐同宽（owner：旧的松散摆放不像输入框）。
+           类名用 ff-color-box 而非 ff-color：根行已有 'ff-' + type 的 ff-color，
+           同名会经"同级特异性后者胜"把容器样式泄漏到根行（旧版 .ff-color 的
+           display:flex 覆写根行 148px 网格正是颜色行错位的根因） -->
+      <div v-else-if="field.type === FIELD_TYPE.COLOR" class="ff-color-box">
         <span
-          class="ff-swatch ff-cur"
+          class="ff-cur"
           :class="{ none: !currentColor }"
           :style="currentColor ? { background: currentColor } : null"
           :title="currentColorTitle"
         ></span>
-        <div class="ff-swatches">
-          <button
-            v-for="sw in COLOR_SWATCHES"
-            :key="sw"
-            class="ff-swatch"
-            :class="{ none: sw === '#00000000', active: isSwatchActive(sw) }"
-            :style="{ background: toCssColor(sw) }"
-            :title="sw"
-            :disabled="disabled"
-            @click="emit('update:modelValue', sw)"
-          ></button>
-        </div>
-        <n-input
-          size="small"
+        <input
           class="ff-hex"
+          type="text"
+          spellcheck="false"
           :value="modelValue ?? ''"
           :disabled="disabled"
-          :input-props="{ spellcheck: false }"
-          @update:value="emit('update:modelValue', $event)"
+          @input="emit('update:modelValue', $event.target.value)"
         />
+        <span class="ff-color-sep" aria-hidden="true"></span>
+        <button
+          v-for="sw in COLOR_SWATCHES"
+          :key="sw"
+          class="ff-sw"
+          :class="{ none: sw === '#00000000', active: isSwatchActive(sw) }"
+          :style="{ background: toCssColor(sw) }"
+          :title="sw"
+          :disabled="disabled"
+          @click="emit('update:modelValue', sw)"
+        ></button>
       </div>
 
       <!-- credential：CredentialPicker（选项按数据源隔离；清空 = 手动输入） -->
@@ -275,7 +311,14 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   gap: 4px 10px;
   align-items: center;
 }
+/* 标签列：flex 行（文字 + 可选的 MARKDOWN 切换按钮，#2），文字省略、按钮恒右贴 */
 .ff-label {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ff-label-text {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -287,6 +330,27 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   margin-left: 2px;
   color: var(--danger);
 }
+/* MARKDOWN 编辑 ⇄ 预览切换（#2）：低调图标文字按钮，标签列内右贴 */
+.ff-md-toggle {
+  margin-left: auto;
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  color: var(--text-4);
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.ff-md-toggle:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.ff-md-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .ff-control {
   min-width: 0;
   display: flex;
@@ -296,9 +360,20 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   width: 100%;
 }
 
-/* switch 行：控件不占满（对齐 WPF 开关行） */
+/* switch 行（#3/#4）：控件在前、文字紧跟；标签列留空（见模板），开关起点即
+   其他输入框的左缘（.ff-control 的 148px 列起点） */
 .ff-switch .ff-control > :deep(*) {
   width: auto;
+}
+.ff-switch .ff-control {
+  gap: 6px;
+}
+.ff-switch-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-2);
 }
 
 /* password 眼睛按钮 */
@@ -321,39 +396,77 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 
 /* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */
 
-/* color：当前色 swatch + 色板 + hex 输入（fix-batch1 #6） */
-.ff-color {
+/* color（#1 单输入组，fix-batch4 Task A）：与 n-input small 同观的边框容器——高 28px、
+   1px 边框、3px 圆角、focus-within 亮边（naive 的 --n-* 变量不外泄到兄弟节点，用主题
+   变量近似即可）；内部 [当前色块][hex 文本][竖分隔线][8 色板小点]。容器由上方
+   .ff-control > :deep(*) 的 100% 规则撑满控件列 → 与其他输入框左对齐同宽。
+   类名避开根行的 ff-color（见模板注释） */
+.ff-color-box {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-elevated);
 }
+.ff-color-box:focus-within {
+  border-color: var(--accent);
+}
+/* 当前色块 16×16（常显边框，title 提示当前值/无色；语义与旧 swatch 相同） */
 .ff-cur {
   flex: 0 0 auto;
-  border-color: var(--text-4); /* 当前色与色板区分：常显边框 */
-  border-radius: 50%;
-  cursor: default;
-}
-.ff-swatches {
-  display: flex;
-  gap: 4px;
-  flex: 0 0 auto;
-}
-.ff-swatch {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 1px solid var(--border-strong);
   border-radius: 4px;
+  cursor: default;
+}
+/* hex 文本：透明无边框原生输入（原样存取不归一化），等宽字体便于核对 #AARRGGBB */
+.ff-hex {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 26px;
+  border: none;
+  outline: none;
+  padding: 0;
+  background: transparent;
+  color: var(--text-1);
+  font-size: 12px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
+}
+.ff-hex:disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+/* 色板与 hex 之间的竖分隔线 */
+.ff-color-sep {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+}
+/* 色板小点 14×14：点击 = 设值；命中当前值带选中环 */
+.ff-sw {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
   cursor: pointer;
   padding: 0;
 }
-.ff-swatch.active {
-  box-shadow: 0 0 0 2px var(--accent); /* 色板命中当前值的选中环 */
+.ff-sw.active {
+  box-shadow: 0 0 0 2px var(--accent);
 }
-.ff-swatch.none {
+.ff-cur.none,
+.ff-sw.none {
   background: transparent;
   position: relative;
 }
-.ff-swatch.none::after {
+.ff-cur.none::after,
+.ff-sw.none::after {
   /* 透明色：斜线示意（#00000000 = 无色，C# 默认） */
   content: '';
   position: absolute;
@@ -364,13 +477,9 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   background: var(--danger);
   transform: rotate(-45deg);
 }
-.ff-swatch:disabled {
+.ff-sw:disabled {
   opacity: 0.55;
   cursor: not-allowed;
-}
-.ff-hex {
-  flex: 1;
-  min-width: 0;
 }
 
 .ff-unknown {
