@@ -172,8 +172,9 @@ const APP_ARGUMENT_TYPE_OPTIONS = [
 /**
  * 基本信息组（字段来自 ProtocolBase + ProtocolBaseWithAddressPort）。
  * @param {{withAddressPort?: boolean}} opts
- *   withAddressPort=false 时去掉 Address/Port 两行：Serial 只继承 ProtocolBase（无此二属性），
- *   LocalApp 的地址端口在专属 connection 组中展示（见 APP schema 注释）。
+ *   withAddressPort=false 时去掉 Address/Port/可用性检测三行：Serial 只继承
+ *   ProtocolBase（无此组属性），LocalApp 的地址端口在专属 connection 组中展示
+ *   （见 APP schema 注释与 localAppConnectionGroup）。
  */
 function basicGroup({ withAddressPort = true } = {}) {
   const fields = [
@@ -184,6 +185,11 @@ function basicGroup({ withAddressPort = true } = {}) {
       { key: 'Address', type: FIELD.TEXT, required: true },
       // C# Port 是 string（ProtocolBaseWithAddressPort.cs:49），数字输入但按字符串写回
       { key: 'Port', type: FIELD.NUMBER, required: true, asString: true },
+      // 可用性检测开关紧跟地址/端口正下方（对齐 WPF HostView.xaml:29-38 的行序，
+      // fix-batch4 Task A #6 从 misc 组移来）。switchWithLabel：该行标签列有文字
+      // （「Availability detection」）、控件列 [switch][说明文字]，与普通开关行
+      // （标签列留空）不同，见 FormField 的 #3/#4 处理。
+      pingBeforeConnectField(),
     )
   }
   fields.push(
@@ -198,6 +204,22 @@ function basicGroup({ withAddressPort = true } = {}) {
     id: 'basic',
     labelKey: 'editor.group.basic',
     fields,
+  }
+}
+
+/**
+ * IsPingBeforeConnect 开关（ProtocolBaseWithAddressPort.cs:76，fix-batch4 Task A #6）：
+ * 地址/端口正下方的「可用性检测」行（对齐 WPF HostView.xaml:29-38——标签列
+ * 'Availability detection' + 输入列 [CheckBox 'Check if address is available before connect']）。
+ * 两键均为 WPF 14 语言 xaml 原文移植（Ui/Resources/Languages/*.xaml:263-264）。
+ */
+function pingBeforeConnectField() {
+  return {
+    key: 'IsPingBeforeConnect',
+    type: FIELD.SWITCH,
+    switchWithLabel: true,
+    labelKey: 'editor.f.availabilityDetection',
+    switchTextKey: 'editor.o.checkAddressAvailable',
   }
 }
 
@@ -285,12 +307,17 @@ function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
   return { id: 'credential', labelKey: 'editor.group.credential', fields }
 }
 
-/** 杂项组：extraFields 在前，IsPingBeforeConnect（ProtocolBaseWithAddressPort.cs:76）收尾。 */
+/**
+ * 杂项组（fix-batch4 Task A #6 调整）：extraFields 直接成组——IsPingBeforeConnect
+ * 已移至地址/端口正下方（basicGroup / localAppConnectionGroup，对齐 WPF 行序），
+ * misc 不再固定追加该开关。SSH/SFTP/FTP/VNC/Telnet/RemoteApp/APP 的 misc 因此变空、
+ * 已从各自 groups 删除；现仅 RDP（RdpControlAdditionalSettings）使用本组。
+ */
 function miscGroup(extraFields = []) {
   return {
     id: 'misc',
     labelKey: 'editor.group.misc',
-    fields: [...extraFields, { key: 'IsPingBeforeConnect', type: FIELD.SWITCH }],
+    fields: extraFields,
   }
 }
 
@@ -485,6 +512,9 @@ function localAppConnectionGroup() {
     fields: [
       { key: 'Address', type: FIELD.TEXT },
       { key: 'Port', type: FIELD.NUMBER, asString: true },
+      // 可用性检测紧跟 Port 下方（WPF LocalAppFormView 同款行序，fix-batch4 Task A #6；
+      // APP 的 basic 组 withAddressPort=false，该字段只能在此暴露）
+      pingBeforeConnectField(),
       { key: 'UserName', type: FIELD.TEXT },
       { key: 'Password', type: FIELD.PASSWORD },
       { key: 'PrivateKey', type: FIELD.TEXT },
@@ -583,7 +613,7 @@ export const PROTOCOLS = {
         { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT },
       ]),
       // ExternalSessionConfigPath（ExternalKitty 的回退取值属性）透传不编辑
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -602,7 +632,7 @@ export const PROTOCOLS = {
       credentialGroup({ withPrivateKey: true }),
       alternateGroup(),
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -621,7 +651,7 @@ export const PROTOCOLS = {
       credentialGroup(),
       alternateGroup(),
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -650,7 +680,7 @@ export const PROTOCOLS = {
           { key: 'VncWindowResizeMode', type: FIELD.SELECT, options: VNC_WINDOW_RESIZE_MODE_OPTIONS },
         ],
       },
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -675,7 +705,7 @@ export const PROTOCOLS = {
       // WPF 优势组只有 StartupAutoCommand（TelnetFormView.xaml:39-50）；
       // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传
       behaviorGroup([{ key: 'StartupAutoCommand', type: FIELD.TEXT }]),
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -756,7 +786,7 @@ export const PROTOCOLS = {
         labelKey: 'editor.group.mstsc',
         fields: [{ key: 'RdpFileAdditionalSettings', type: FIELD.TEXTAREA }],
       },
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
 
@@ -802,7 +832,7 @@ export const PROTOCOLS = {
       },
       localAppConnectionGroup(),
       alternateGroup(),
-      miscGroup(),
+      //（misc 组已删：IsPingBeforeConnect 移入 connection 组后无剩余字段）
     ],
   },
 }

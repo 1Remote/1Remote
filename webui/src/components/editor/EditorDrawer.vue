@@ -131,13 +131,17 @@ function onCredModeSwitch(mode) {
  * 组内可见字段 → 渲染块序列（fix-batch2 Task C #7）：visibleWhen 过滤后，连续 SWITCH
  * 字段聚成一个 'switch-run' 块（模板里按 3 列网格渲染，RDP 高级组的 9 个 Enable*
  * 自动成 3 行）；非 SWITCH 字段打断连续段、按单字段整行渲染（维持 148px 网格不变）。
+ * fix-batch4 Task A #6：switchWithLabel 字段（IsPingBeforeConnect 可用性检测行）例外
+ * ——它需要标签列文字的整行形态（对齐 WPF HostView.xaml:29-38），不进 3 列网格，
+ * 一律按 'single' 整行渲染（也据此打断连续 switch 段）。
  */
 function blocksOf(fields) {
   const blocks = []
   for (const f of fields) {
+    const asRun = f.type === 'switch' && !f.switchWithLabel
     const last = blocks[blocks.length - 1]
-    if (f.type === 'switch' && last?.type === 'switch-run') last.fields.push(f)
-    else blocks.push(f.type === 'switch' ? { type: 'switch-run', fields: [f] } : { type: 'single', field: f })
+    if (asRun && last?.type === 'switch-run') last.fields.push(f)
+    else blocks.push(asRun ? { type: 'switch-run', fields: [f] } : { type: 'single', field: f })
   }
   return blocks
 }
@@ -909,9 +913,10 @@ onBeforeUnmount(() => {
   line-height: 1.5;
 }
 
-/* 连续 SWITCH 字段网格（#7）：3 列打包（RDP 高级组 9 个 Enable* = 3 行）；
-   网格内 FormField 压缩为「标签左 + 开关右」行内排布（覆写 .form-field 的
-   148px 两列网格——两类选择器提升特异性，规避组件样式加载顺序不定的问题） */
+/* 连续 SWITCH 字段网格（#7）：3 列打包（RDP 高级组 9 个 Enable* = 3 行）。
+   fix-batch4 Task A #3/#4：单元格改为 [switch][描述文字]（FormField 内部结构），
+   标签列不再渲染文字（网格内覆写隐藏 .ff-label，规避 148px 两列网格）——开关起点
+   对齐各列左缘、文字紧跟其后；两类选择器提升特异性，规避组件样式加载顺序不定 */
 .ed-switch-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -922,14 +927,14 @@ onBeforeUnmount(() => {
 .ed-switch-grid .ed-sw-cell {
   display: flex;
   align-items: center;
-  gap: 6px;
   min-width: 0;
 }
 .ed-switch-grid .ed-sw-cell :deep(.ff-label) {
-  flex: 1 1 auto;
+  display: none; /* switch 行标签留空（#4），文字由控件列 .ff-switch-text 呈现 */
 }
 .ed-switch-grid .ed-sw-cell :deep(.ff-control) {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */

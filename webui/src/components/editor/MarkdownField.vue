@@ -14,9 +14,12 @@
  * 组件形状对齐 FormField 约定：modelValue = 字符串（null 容忍），emit update:modelValue；
  * 由 FormField 按 field.type === 'markdown' 分发（schemas.js 的 basic 组 Note 字段）。
  * 渲染管线（marked + 轻量净化）抽至 utils/markdown.js（fix-batch3 Task C #4，
- * 与列表行备注悬停弹层共用），本组件只保留编辑/预览切换与排版样式。
+ * 与列表行备注悬停弹层共用），本组件只保留排版样式。
+ * fix-batch4 Task A #2（owner 反馈省垂直空间）：组件受控化——编辑/预览切换状态
+ * （preview prop）与切换按钮上提到 FormField 标签列右侧，本组件不再自持 mode、
+ * 不再渲染工具条；净化渲染逻辑不变。
  */
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { renderMarkdown } from '../../utils/markdown'
 
@@ -24,11 +27,11 @@ const props = defineProps({
   /** 当前值（Markdown 源文本；null/undefined 容忍按空串处理） */
   modelValue: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
+  /** 展示模式（受控）：false = 编辑态 textarea，true = 预览态渲染区（切换按钮在 FormField） */
+  preview: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
-
-const mode = ref('edit') // 'edit' | 'preview'（切换仅影响展示，不改值）
 
 const rendered = computed(() => renderMarkdown(props.modelValue ?? ''))
 const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
@@ -36,20 +39,9 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 
 <template>
   <div class="md-field">
-    <!-- 工具条：右侧「编辑 ⇄ 预览」切换（按钮文案 = 点击后进入的模式） -->
-    <div class="md-toolbar">
-      <button
-        class="md-toggle"
-        type="button"
-        :disabled="disabled"
-        :title="mode === 'edit' ? t('editor.mdPreview') : t('editor.mdEdit')"
-        @click="mode = mode === 'edit' ? 'preview' : 'edit'"
-      >{{ mode === 'edit' ? '👁 ' + t('editor.mdPreview') : '✎ ' + t('editor.mdEdit') }}</button>
-    </div>
-
     <!-- 编辑态：等宽 textarea -->
     <n-input
-      v-if="mode === 'edit'"
+      v-if="!preview"
       class="md-editor"
       type="textarea"
       size="small"
@@ -75,31 +67,6 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-.md-toolbar {
-  display: flex;
-  justify-content: flex-end; /* 切换按钮恒居字段容器右上 */
-}
-.md-toggle {
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: 11px;
-  line-height: 1;
-  padding: 4px 10px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.md-toggle:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-.md-toggle:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 /* 编辑态：等宽字体（Markdown 源文本） */
