@@ -18,7 +18,7 @@ using _1RM.Service.WebUi;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// /api/ui-state/list-order 集成测试（Plan 4 Task 4 列表行拖拽排序的读写端点）。
+    /// /api/ui-state/list-order 集成测试（列表行拖拽排序的读写端点）。
     /// POST 全量替换 LocalityListViewService.ServerCustomOrder（WPF ServerCustomOrderSave 同款：
     /// 清空重填 + 同步 vm.CustomOrder + 落盘 .locality/.list_view.json）；GET 返回按序升序的 id 列表。
     /// 未知 id 跳过不整体失败。测试写完即还原空顺序，保证与其它测试类及执行顺序无关。

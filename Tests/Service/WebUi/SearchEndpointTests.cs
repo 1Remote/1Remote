@@ -15,7 +15,7 @@ namespace Tests.Service.WebUi
 {
     /// <summary>
     /// /api/search 集成测试：过滤语义必须与 WPF 主窗口一致
-    /// （#tag / 空格分隔多关键字 / 拼音均由服务端执行，见 spec §3.1）。
+    /// （#tag / 空格分隔多关键字 / 拼音均由服务端执行）。
     /// 复用 TestInit 的 IoC 实例库与基础种子 seed-rdp（tag=seed-tag）。
     /// </summary>
     [TestClass]

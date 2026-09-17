@@ -26,9 +26,9 @@ namespace Tests.Service.WebUi
     /// - general/launcher 为白名单部分更新（body 中缺失的键 = 保持不变），写后走 ConfigurationService.Save()；
     /// - language 归一小写（web 端 zh-CN → 存储值 zh-cn），校验 14 个内置语言码，非法 400 且零写入；
     /// - requireSecondaryVerification 的写入走 SecondaryVerificationHelper.SetEnabledAsync
-    ///   （可等待：写注册表/凭据管理器——宿主机状态，用例 finally 还原）；fix #13 用例
+    ///   （可等待：写注册表/凭据管理器——宿主机状态，用例 finally 还原）；该用例
     ///   经端点同款编排（ApplyGeneralAsync）断言 GetEnabled 判定源随写入同步翻转；
-    /// - POST /api/settings/verify（fix batch3 #6）：开关翻转前的 WPF 平价验证门
+    /// - POST /api/settings/verify：开关翻转前的 WPF 平价验证门
     ///   （GeneralSettingView 翻转前先 VerifyAsyncUi）——VerifyAccessAsync 支持注入
     ///   verifier 桩，测试绝不触发真实凭据 UI；
     /// - launcher 热键为 WPF 枚举：线格式 = 枚举成员名（"ControlAlt"/"M"），PUT 额外接受 "Ctrl+Alt"
@@ -136,7 +136,7 @@ namespace Tests.Service.WebUi
         [TestMethod]
         public async Task PutGeneral_RequireSecondaryVerification_EndpointPathUpdatesFlagSource()
         {
-            // fix #13：PUT requireSecondaryVerification 必须让 VerifyAsyncUi 的判定源
+            // PUT requireSecondaryVerification 必须让 VerifyAsyncUi 的判定源
             // （GetEnabled → _isEnabled 缓存/机器状态）同步翻转——否则勾选后 reveal 仍直通。
             // 直接调用端点同款编排（WebUiSettingsService.ApplyGeneralAsync，PUT handler 内即此调用），
             // 断言「写入返回时缓存已生效」+「缓存失效后按机器状态重读仍一致」。
@@ -151,7 +151,7 @@ namespace Tests.Service.WebUi
                 Assert.IsTrue(on.Dto!.RequireSecondaryVerification, "写入已 await 完成，响应回读值应为 true");
                 Assert.IsTrue(await SecondaryVerificationHelper.GetEnabled(), "GetEnabled（VerifyAsyncUi 判定源）应返回 true——reveal 将触发验证");
 
-                // fix-batch2 #11：启用后同样做“进程重启”语义校验——缓存失效后按机器状态重读必须仍为
+                // 启用后同样做“进程重启”语义校验——缓存失效后按机器状态重读必须仍为
                 // true（三级写入若未真正落地，重启/重读后 GetEnabled 变 false，reveal 会重新直通：
                 // VerifyAsyncUi 在 GetEnabled()==false 时直接放行不弹验证）。
                 typeof(SecondaryVerificationHelper).GetField("_isEnabled",
@@ -185,7 +185,7 @@ namespace Tests.Service.WebUi
         [DataRow(false)]
         public async Task VerifyAccessAsync_MapsVerifierResult(bool? verifierResult)
         {
-            // fix batch3 #6：VerifyAccessAsync 是开关翻转前的验证门（WPF 平价，
+            // VerifyAccessAsync 是开关翻转前的验证门（WPF 平价，
             // GeneralSettingView.xaml.cs:36 同款语义）——注入 verifier 桩，绝不触发真实 UI：
             // true → true；null（用户取消）/ false（失败）→ 一律 false（未通过）
             var result = await WebUiSettingsService.VerifyAccessAsync(() => Task.FromResult(verifierResult));
@@ -196,7 +196,7 @@ namespace Tests.Service.WebUi
         [TestMethod]
         public async Task ToggleFlow_VerifyThenPut_AppliesImmediately()
         {
-            // fix batch3 #6 端到端语义：开关点击立即生效的前端时序 = 先 VerifyAccessAsync
+            // 端到端语义：开关点击立即生效的前端时序 = 先 VerifyAccessAsync
             // （验证门）→ 通过才 PUT requireSecondaryVerification（立即落地）。
             // 验证通过路径：GetEnabled 随写入同步翻转（无需点保存按钮——owner 三次反馈的根因）；
             // 验证取消/失败路径：VerifyAccessAsync==false，前端不提交、开关回弹。

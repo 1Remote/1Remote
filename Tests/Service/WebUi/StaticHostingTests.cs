@@ -13,7 +13,7 @@ using _1RM.Service.WebUi;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// 静态托管回归测试（Plan 4 Task 5）：复刻 WebUiServer.Start 的完整管线
+    /// 静态托管回归测试：复刻 WebUiServer.Start 的完整管线
     /// （UseDefaultFiles → UseStaticFiles → TokenMiddleware(空 token) → MapAll），
     /// 以临时 ContentRoot + wwwroot 验证：
     /// - GET / → 200 text/html（DefaultFiles 兜到 wwwroot/index.html）

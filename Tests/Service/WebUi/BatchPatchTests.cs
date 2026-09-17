@@ -119,7 +119,7 @@ namespace Tests.Service.WebUi
             Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode,
                 $"批量补丁失败: {await resp.Content.ReadAsStringAsync()}");
 
-            // Tags=显式覆盖语义（Plan 2 与 WPF 交集合并的有意偏差）：三台均恰为 ["x"]
+            // Tags=显式覆盖语义（与 WPF 交集合并的有意偏差）：三台均恰为 ["x"]
             foreach (var id in ids)
             {
                 var cfg = await GetConfigAsync(id);
@@ -205,7 +205,7 @@ namespace Tests.Service.WebUi
         [TestMethod]
         public async Task BatchPatch_DeepFieldAlternateCredentials_Returns400WithMessage()
         {
-            // Plan 2 简化（有意）：子表单/深层字段（alternateCredentials 等）不进批量 allow-list，
+            // 有意简化：子表单/深层字段（alternateCredentials 等）不进批量 allow-list，
             // 400 + 明确消息引导走单机编辑（PUT /api/servers/{id}）
             var resp = await PostBatchAsync(
                 "{\"ids\":[\"batch-1\"],\"patch\":{\"alternateCredentials\":[{\"Name\":\"a\"}]}}");

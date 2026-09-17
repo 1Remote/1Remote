@@ -18,7 +18,7 @@ namespace Tests.Service.WebUi
 {
     /// <summary>
     /// /api/settings/appearance 与 /api/ui-state/tree 集成测试。
-    /// appearance 持久化到 1Remote.json（Configuration 新增 WebUi* 字段，独立于 WPF ThemeConfig，spec §4）；
+    /// appearance 持久化到 1Remote.json（Configuration 新增 WebUi* 字段，独立于 WPF ThemeConfig）；
     /// tree 状态代理静态类 LocalityTreeViewService，落盘 .locality/.tree_view.json（测试 cwd 下生成，可接受）。
     /// 各测试写完即还原默认值/清空，保证与其它测试类及执行顺序无关。
     /// </summary>
