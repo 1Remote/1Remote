@@ -47,24 +47,22 @@ const folderOps = useFolderOps()
 onMounted(() => loadTreeState())
 
 // 树模型（含空文件夹物化）与「当前层级文件夹行」（fix-batch1 Task 2 #2）：
-// 全部数据源根 = 各数据源顶层文件夹并列（行上标注数据源名）；进入文件夹/数据源根 = 该层文件夹
+// 数据源根/文件夹 = 该层文件夹行；「全部数据」根（fix-batch5 Task B）不显示文件夹行——
+// 全库服务器总览里文件夹行只添噪音，来源上下文由行内 folder 列（数据源 / 路径前缀）承担
 const treeModel = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 const currentFolders = computed(() => {
   // 搜索过滤激活时隐藏文件夹行（fix-batch1 Task 5 评审）：搜索只命中服务器（useServers
   // searchedIds 为 server id 集），文件夹名不参与匹配——保留会在命中结果上方悬浮一层
   // 与查询无关的文件夹，误导导航；空 Set（零命中）同样隐藏。
   if (searchedIds.value != null) return []
-  const out = []
   const sel = selection.value
-  if (!sel || !sel.dataSourceName) {
-    for (const root of treeModel.value) {
-      for (const f of root.folders) out.push({ name: f.name, path: f.path, dsName: root.name, count: countHolderServers(f) })
-    }
-  } else {
-    const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
-    if (holder) {
-      for (const f of holder.folders) out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
-    }
+  // 「全部数据」根（selection=null，fix-batch5 Task B）：只列服务器行（全库递归，
+  // ServerTable 对 null selection 不过滤），不生成文件夹行
+  if (!sel || !sel.dataSourceName) return []
+  const out = []
+  const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
+  if (holder) {
+    for (const f of holder.folders) out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
   }
   return out
 })
@@ -84,7 +82,7 @@ function onMoveToFolder({ server, dsName, path }) {
 const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
 const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
 
-// 面包屑（fix-batch1 Task 2）：可点击逐级返回——全部数据源 › 数据源 · 全部服务器 › 路径段；
+// 面包屑（fix-batch1 Task 2）：可点击逐级返回——全部数据 › 数据源 · 全部服务器 › 路径段；
 // 末段=当前层级（强显示不可点）。hover title 给完整路径
 const crumbSegments = computed(() => {
   const sel = selection.value

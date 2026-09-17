@@ -37,6 +37,7 @@
   "col.address": "Address",
   "col.protocol": "Protokół",
   "col.tags": "Tagi",
+  "col.note": "Note",
   "col.folder": "Folder",
   "col.lastConnect": "Last connected",
   "col.actions": "Actions",

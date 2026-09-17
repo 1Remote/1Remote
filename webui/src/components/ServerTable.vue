@@ -2,7 +2,8 @@
 // 行列表（spec §3.4，Task 16）：div+flex 自写轻量表格（列配置以 CSS 变量形式驱动表头/行对齐）。
 // - 过滤：selection 非空 → 数据源匹配 + 仅直接子级（fix-batch2 #2 / fix-batch4 Task D 资源
 //   管理器式浏览：子文件夹以文件夹行呈现，其内服务器进入后才可见；数据源根同样只列根级服务器，
-//   「全部数据源」虚拟根保持跨库递归总览）；搜索激活时树过滤整体让位；serverId 仅作行高亮
+//   「全部数据」虚拟根保持跨库递归总览且不显示文件夹行——fix-batch5 Task B：全库总览的来源
+//   上下文由行内 folder 列承担）；搜索激活时树过滤整体让位；serverId 仅作行高亮
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化（列宽列显 Plan 4）
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选；视图变化剔除不可见勾选
 // - 键盘（spec §8.2，Task 18 + Plan 4 Task 3）：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、
@@ -42,7 +43,7 @@ const filtered = computed(() => {
   // （后端跨数据源/子文件夹匹配）——树选中过滤整体让位，子文件夹深处的命中一律可见
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
-  if (!sel || !sel.dataSourceName) return props.servers // 「全部数据源」虚拟根 = 跨库总览（递归）
+  if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
   // 资源管理器式浏览（fix-batch2 #2 文件夹 / fix-batch4 Task D 数据源根）：选中节点一律仅列
   // 直接子级服务器（根 = folderPath 空串），子文件夹由 ServerListView currentFolders
   //（holderAt.folders）以文件夹行呈现。旧设计数据源根显示整库递归——拖服务器入文件夹后
@@ -52,7 +53,7 @@ const filtered = computed(() => {
     && (s.folderPath || '') === (sel.folderPath || ''))
 })
 const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
-const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 全部数据源根：文件夹列前缀数据源名
+const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 「全部数据」根：文件夹列前缀数据源名
 
 // ---- 排序 ----
 const SORTABLE = ['displayName', 'address', 'protocol', 'lastConnectTime']
@@ -160,7 +161,7 @@ async function onRowDrop(server, e) {
   try {
     const saved = await api.saveListOrder(ids)
     const map = new Map()
-    ;(saved?.ids || ids).forEach((id, i) => map.set(id, i))
+      ; (saved?.ids || ids).forEach((id, i) => map.set(id, i))
     customOrder.value = map
   } catch (err) {
     console.warn('[ServerTable] saveListOrder failed:', err?.message || err)
@@ -485,11 +486,14 @@ const colVars = computed(() => {
     '--c-addr': px('addr', '1.6'),
     '--c-proto': px('proto', '84px'),
     '--c-tags': showFolder.value ? '1.2' : '1.5',
+    // 备注列（fix-batch5 Task B）：默认比例随 tags 联动（根视图让位给 folder 列），可拖拽定宽
+    '--c-note': px('note', showFolder.value ? '1.2' : '1.5'),
     '--c-folder': px('folder', '1.4'),
     '--c-time': px('time', '104px'),
     '--c-act': '100px',
     ...grow0('name'),
     ...grow0('addr'),
+    ...grow0('note'),
     ...grow0('folder'),
   }
 })
@@ -520,6 +524,7 @@ const COL_LABELS = computed(() => ({
   name: t('col.name'),
   addr: t('col.address'),
   proto: t('col.protocol'),
+  note: t('col.note'),
   folder: t('col.folder'),
   time: t('col.lastConnect'),
 }))
@@ -556,11 +561,14 @@ onBeforeUnmount(() => {
   <div ref="rootEl" class="server-table" :style="colVars" @mousedown="onTableMousedown">
     <div v-if="checked.size" class="batch-bar">
       <span class="bb-count">{{ t('batch.selected', { n: checked.size }) }}</span>
-      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶ {{ t('batch.connect') }}</button>
+      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect', [...checked])">▶
+        {{ t('batch.connect') }}</button>
       <!-- 批量编辑（Plan 2 Task 10）：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
-      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit') }}</button>
+      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit', [...checked])">✎ {{ t('batch.edit')
+        }}</button>
       <!-- 导出（Plan 4 Task 3）：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
-      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export', [...checked])">⤓ {{ t('batch.export') }}</button>
+      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export', [...checked])">⤓ {{
+        t('batch.export') }}</button>
       <button class="bb-x" :title="t('batch.clear')" @click="clearChecked">✕</button>
     </div>
 
@@ -569,11 +577,13 @@ onBeforeUnmount(() => {
            ≡ = 自定义顺序模式开关（开启后行可拖拽重排，Plan 4 Task 4）；
            ▦ = 列菜单（显隐 + 列宽说明，Plan 4 Task 5） -->
       <div class="table-tools">
-        <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')" @click="toggleCustomSort">≡</button>
+        <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')"
+          @click="toggleCustomSort">≡</button>
         <button class="tt-btn" :class="{ active: colMenu }" :title="t('cols.menu')" @click="toggleColMenu">▦</button>
         <div v-if="colMenu" class="col-menu">
           <label v-for="k in HIDEABLE_COLS" :key="k" class="col-item">
-            <input type="checkbox" :checked="!hiddenCols[k]" @change="setHidden(k, $event.target.checked ? false : true)" />
+            <input type="checkbox" :checked="!hiddenCols[k]"
+              @change="setHidden(k, $event.target.checked ? false : true)" />
             <span>{{ COL_LABELS[k] }}</span>
           </label>
           <label class="col-item col-item-fixed" :title="t('cols.fixed')">
@@ -588,15 +598,34 @@ onBeforeUnmount(() => {
            可隐藏列 v-if；每列右缘 5px 拖拽调宽（col-resize），双击重置 -->
       <div class="thead">
         <div class="hcell h-check">
-          <input ref="allCb" type="checkbox" :checked="allChecked" :title="t('col.selectAll')" @click.stop @change="toggleAll" />
+          <input ref="allCb" type="checkbox" :checked="allChecked" :title="t('col.selectAll')" @click.stop
+            @change="toggleAll" />
         </div>
         <div class="hcell h-status">{{ t('col.status') }}</div>
-        <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span><span class="resizer" @pointerdown="onResizeStart('name', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('name', null)"></span></div>
-        <div v-if="!hiddenCols.addr" class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span><span class="resizer" @pointerdown="onResizeStart('addr', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('addr', null)"></span></div>
-        <div v-if="!hiddenCols.proto" class="hcell h-proto sortable" @click="toggleSort('protocol')">{{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span><span class="resizer" @pointerdown="onResizeStart('proto', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('proto', null)"></span></div>
+        <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name')
+          }} <span class="arrow">{{ arrow('displayName') }}</span><span class="resizer"
+            @pointerdown="onResizeStart('name', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('name', null)"></span></div>
+        <div v-if="!hiddenCols.addr" class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }}
+          <span class="arrow">{{ arrow('address') }}</span><span class="resizer"
+            @pointerdown="onResizeStart('addr', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('addr', null)"></span></div>
+        <div v-if="!hiddenCols.proto" class="hcell h-proto sortable" @click="toggleSort('protocol')">{{
+          t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span><span class="resizer"
+            @pointerdown="onResizeStart('proto', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('proto', null)"></span></div>
         <div class="hcell h-tags">{{ t('col.tags') }}</div>
-        <div v-if="showFolder && !hiddenCols.folder" class="hcell h-folder">{{ t('col.folder') }}<span class="resizer" @pointerdown="onResizeStart('folder', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('folder', null)"></span></div>
-        <div v-if="!hiddenCols.time" class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span><span class="resizer" @pointerdown="onResizeStart('time', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd" @dblclick.stop="setWidth('time', null)"></span></div>
+        <!-- 备注列（fix-batch5 Task B）：文本直显（行内 ellipsis）+ 悬停 Markdown 弹层，不可排序 -->
+        <div v-if="!hiddenCols.note" class="hcell h-note">{{ t('col.note') }}<span class="resizer"
+            @pointerdown="onResizeStart('note', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('note', null)"></span></div>
+        <div v-if="showFolder && !hiddenCols.folder" class="hcell h-folder">{{ t('col.folder') }}<span class="resizer"
+            @pointerdown="onResizeStart('folder', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('folder', null)"></span></div>
+        <div v-if="!hiddenCols.time" class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{
+          t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span><span class="resizer"
+            @pointerdown="onResizeStart('time', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('time', null)"></span></div>
         <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
       <!-- >500 行虚拟滚动（Plan 4 Task 5）：wrapper 撑总高 + marginTop 偏移窗口渲染；
@@ -604,17 +633,11 @@ onBeforeUnmount(() => {
            fix-batch1 Task 2：序列 = 文件夹行（双击进入/右键新建/拖入移动）+ 服务器行 -->
       <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
         <template v-for="{ data: row } in virtualRows" :key="rowKey(row)">
-          <div
-            v-if="row.kind === 'folder'"
-            class="row frow"
+          <div v-if="row.kind === 'folder'" class="row frow"
             :class="{ 'drop-into': dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName }"
-            :title="row.folder.path"
-            @dblclick="emit('open-folder', row.folder)"
-            @contextmenu="onFolderContext(row.folder, $event)"
-            @dragover="onFolderDragOver(row.folder, $event)"
-            @dragleave="onFolderDragLeave(row.folder)"
-            @drop="onFolderDrop(row.folder, $event)"
-          >
+            :title="row.folder.path" @dblclick="emit('open-folder', row.folder)"
+            @contextmenu="onFolderContext(row.folder, $event)" @dragover="onFolderDragOver(row.folder, $event)"
+            @dragleave="onFolderDragLeave(row.folder)" @drop="onFolderDrop(row.folder, $event)">
             <div class="cell cell-check"></div>
             <div class="cell cell-status"></div>
             <div class="cell cell-name f-name">
@@ -624,46 +647,25 @@ onBeforeUnmount(() => {
             </div>
             <div class="cell cell-count">{{ t('crumb.count', { n: row.folder.count }) }}</div>
           </div>
-          <ServerRow
-            v-else
-            :server="row.server"
-            :selected="checked.has(row.server.id)"
-            :highlighted="!!selection && selection.serverId === row.server.id"
-            :cursor="row.server.id === cursorId"
-            :show-folder="showFolder"
-            :show-ds="showDs"
-            :hidden-cols="hiddenCols"
-            :query="query"
-            :data-id="row.server.id"
-            :draggable="true"
-            :class="{
+          <ServerRow v-else :server="row.server" :selected="checked.has(row.server.id)"
+            :highlighted="!!selection && selection.serverId === row.server.id" :cursor="row.server.id === cursorId"
+            :show-folder="showFolder" :show-ds="showDs" :hidden-cols="hiddenCols" :query="query"
+            :data-id="row.server.id" :draggable="true" :class="{
               'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
               'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
-            }"
-            @toggle-select="onToggleSelect(row.server, row.srvIndex)"
-            @row-click="onRowClick(row.server, $event, row.srvIndex)"
-            @connect="emit('connect', row.server.id)"
-            @edit="emit('edit', row.server)"
-            @context-menu="openMenu"
-            @dragstart="onRowDragStart(row.server, $event)"
-            @dragend="onRowDragEnd"
-            @dragover="onRowDragOver(row.server, $event)"
-            @drop="onRowDrop(row.server, $event)"
-          />
+            }" @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+            @row-click="onRowClick(row.server, $event, row.srvIndex)" @connect="emit('connect', row.server.id)"
+            @edit="emit('edit', row.server)" @context-menu="openMenu" @dragstart="onRowDragStart(row.server, $event)"
+            @dragend="onRowDragEnd" @dragover="onRowDragOver(row.server, $event)"
+            @drop="onRowDrop(row.server, $event)" />
         </template>
       </div>
       <template v-for="row in useVirtual ? [] : renderRows" :key="rowKey(row)">
-        <div
-          v-if="row.kind === 'folder'"
-          class="row frow"
+        <div v-if="row.kind === 'folder'" class="row frow"
           :class="{ 'drop-into': dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName }"
-          :title="row.folder.path"
-          @dblclick="emit('open-folder', row.folder)"
-          @contextmenu="onFolderContext(row.folder, $event)"
-          @dragover="onFolderDragOver(row.folder, $event)"
-          @dragleave="onFolderDragLeave(row.folder)"
-          @drop="onFolderDrop(row.folder, $event)"
-        >
+          :title="row.folder.path" @dblclick="emit('open-folder', row.folder)"
+          @contextmenu="onFolderContext(row.folder, $event)" @dragover="onFolderDragOver(row.folder, $event)"
+          @dragleave="onFolderDragLeave(row.folder)" @drop="onFolderDrop(row.folder, $event)">
           <div class="cell cell-check"></div>
           <div class="cell cell-status"></div>
           <div class="cell cell-name f-name">
@@ -673,32 +675,16 @@ onBeforeUnmount(() => {
           </div>
           <div class="cell cell-count">{{ t('crumb.count', { n: row.folder.count }) }}</div>
         </div>
-        <ServerRow
-          v-else
-          :server="row.server"
-          :selected="checked.has(row.server.id)"
-          :highlighted="!!selection && selection.serverId === row.server.id"
-          :cursor="row.server.id === cursorId"
-          :show-folder="showFolder"
-          :show-ds="showDs"
-          :hidden-cols="hiddenCols"
-          :query="query"
-          :data-id="row.server.id"
-          :draggable="true"
-          :class="{
+        <ServerRow v-else :server="row.server" :selected="checked.has(row.server.id)"
+          :highlighted="!!selection && selection.serverId === row.server.id" :cursor="row.server.id === cursorId"
+          :show-folder="showFolder" :show-ds="showDs" :hidden-cols="hiddenCols" :query="query" :data-id="row.server.id"
+          :draggable="true" :class="{
             'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
             'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
-          }"
-          @toggle-select="onToggleSelect(row.server, row.srvIndex)"
-          @row-click="onRowClick(row.server, $event, row.srvIndex)"
-          @connect="emit('connect', row.server.id)"
-          @edit="emit('edit', row.server)"
-          @context-menu="openMenu"
-          @dragstart="onRowDragStart(row.server, $event)"
-          @dragend="onRowDragEnd"
-          @dragover="onRowDragOver(row.server, $event)"
-          @drop="onRowDrop(row.server, $event)"
-        />
+          }" @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+          @row-click="onRowClick(row.server, $event, row.srvIndex)" @connect="emit('connect', row.server.id)"
+          @edit="emit('edit', row.server)" @context-menu="openMenu" @dragstart="onRowDragStart(row.server, $event)"
+          @dragend="onRowDragEnd" @dragover="onRowDragOver(row.server, $event)" @drop="onRowDrop(row.server, $event)" />
       </template>
       <slot v-if="!renderRows.length" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
@@ -713,14 +699,8 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">
-      <button
-        v-for="it in MENU"
-        :key="it.key"
-        class="ctx-item"
-        :disabled="!it.on"
-        :title="it.tip || it.hint || ''"
-        @click="onMenuAction(it)"
-      >
+      <button v-for="it in MENU" :key="it.key" class="ctx-item" :disabled="!it.on" :title="it.tip || it.hint || ''"
+        @click="onMenuAction(it)">
         <span class="ctx-label">{{ it.label }}</span>
         <span class="ctx-hint">{{ it.hint || '' }}</span>
       </button>
@@ -730,7 +710,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .server-table {
-  position: relative; /* 右键菜单浮层定位基准 */
+  position: relative;
+  /* 右键菜单浮层定位基准 */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -747,10 +728,12 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--border);
   background: var(--bg-elevated);
 }
+
 .bb-count {
   font-size: 12.5px;
   color: var(--text-2);
 }
+
 .bb-btn {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -761,18 +744,22 @@ onBeforeUnmount(() => {
   padding: 5px 10px;
   cursor: pointer;
 }
+
 .bb-btn:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: var(--bg-hover);
 }
+
 .bb-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 .bb-primary {
   border-color: var(--accent);
   color: var(--accent-text);
 }
+
 .bb-x {
   margin-left: auto;
   border: none;
@@ -784,6 +771,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .bb-x:hover {
   background: var(--bg-hover);
   color: var(--text-1);
@@ -800,6 +788,7 @@ onBeforeUnmount(() => {
   gap: 4px;
   height: 32px;
 }
+
 .tt-btn {
   display: inline-flex;
   align-items: center;
@@ -814,11 +803,13 @@ onBeforeUnmount(() => {
   line-height: 1;
   cursor: pointer;
 }
+
 .tt-btn:hover {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);
 }
+
 .tt-btn.active {
   border-color: var(--accent);
   color: var(--accent-text);
@@ -840,6 +831,7 @@ onBeforeUnmount(() => {
   background: var(--bg-elevated);
   box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
 }
+
 .col-item {
   display: flex;
   align-items: center;
@@ -850,19 +842,24 @@ onBeforeUnmount(() => {
   font-size: 12.5px;
   cursor: pointer;
 }
+
 .col-item:hover {
   background: var(--bg-hover);
 }
+
 .col-item input {
   accent-color: var(--accent);
 }
+
 .col-item-fixed {
   color: var(--text-4);
   cursor: default;
 }
+
 .col-item-fixed:hover {
   background: transparent;
 }
+
 .col-hint {
   margin-top: 4px;
   padding: 4px 6px 0;
@@ -875,9 +872,11 @@ onBeforeUnmount(() => {
 :deep(.row[draggable='true']) {
   cursor: grab;
 }
+
 :deep(.row.drop-before) {
   box-shadow: inset 0 2px 0 var(--accent);
 }
+
 :deep(.row.drop-after) {
   box-shadow: inset 0 -2px 0 var(--accent);
 }
@@ -897,6 +896,7 @@ onBeforeUnmount(() => {
   font-size: 11.5px;
   user-select: none;
 }
+
 .hcell {
   display: flex;
   align-items: center;
@@ -904,56 +904,75 @@ onBeforeUnmount(() => {
   padding-right: 10px;
   white-space: nowrap;
 }
+
 .h-check {
   flex: 0 0 var(--c-check);
   justify-content: center;
   padding-right: 0;
 }
+
 .h-status {
   flex: 0 0 var(--c-status);
 }
+
 .h-name {
   flex: var(--c-name) var(--c-name-grow, 1) 0;
 }
+
 .h-addr {
   flex: var(--c-addr) var(--c-addr-grow, 1) 0;
 }
+
 .h-proto {
   flex: 0 0 var(--c-proto);
 }
+
 .h-tags {
   flex: var(--c-tags) 1 0;
 }
+
+.h-note {
+  flex: var(--c-note) var(--c-note-grow, 1) 0;
+}
+
 .h-folder {
   flex: var(--c-folder) var(--c-folder-grow, 1) 0;
 }
+
 .h-time {
   flex: 0 0 var(--c-time);
 }
+
 .h-act {
   flex: 0 0 var(--c-act);
   justify-content: flex-end;
   padding-right: 0;
 }
+
 /* 列宽拖拽命中区（右缘 5px）：不拦截表头排序点击（指针事件独立在 resizer 上） */
 .resizer {
   flex: 0 0 5px;
   align-self: stretch;
   width: 5px;
   height: 32px;
-  margin-right: -10px; /* 抵消 hcell 的 padding-right，命中区贴列右缘 */
+  margin-right: -10px;
+  /* 抵消 hcell 的 padding-right，命中区贴列右缘 */
   cursor: col-resize;
 }
+
 .resizer:hover {
   background: var(--accent);
   opacity: 0.45;
 }
+
 .sortable {
   cursor: pointer;
 }
+
 .sortable:hover {
   color: var(--text-1);
 }
+
 .arrow {
   font-size: 9px;
   opacity: 0.7;
@@ -964,16 +983,20 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: auto;
 }
+
 /* 虚拟滚动窗口：wrapper 由 useVirtualList 撑总高；行改 border-box 让几何高度
    与 ROW_HEIGHT=36 精确一致（默认 content-box 下 36px+1px 边框=37px 会累积漂移） */
 .virtual-wrap {
   contain: content;
 }
+
 .virtual-wrap :deep(.row) {
   box-sizing: border-box;
 }
+
 .virtual-wrap .frow {
-  box-sizing: border-box; /* 与 ServerRow 同款：虚拟分支 36px 几何精确一致 */
+  box-sizing: border-box;
+  /* 与 ServerRow 同款：虚拟分支 36px 几何精确一致 */
 }
 
 /* 文件夹行（fix-batch1 Task 2）：列对齐复用 --c-* 变量（ServerRow 的 .cell 样式
@@ -987,35 +1010,43 @@ onBeforeUnmount(() => {
   user-select: none;
   cursor: default;
 }
+
 .frow:hover {
   background: var(--bg-hover);
 }
+
 .frow.drop-into {
   background: var(--accent-container);
   outline: 1px dashed var(--accent);
   outline-offset: -1px;
 }
+
 .frow .cell {
   display: flex;
   align-items: center;
   min-width: 0;
 }
+
 .frow .cell-check {
   flex: 0 0 var(--c-check, 30px);
 }
+
 .frow .cell-status {
   flex: 0 0 var(--c-status, 58px);
 }
+
 .frow .cell-name {
   flex: 1 1 0;
   gap: 8px;
   min-width: 0;
 }
+
 .frow .f-icon {
   flex: 0 0 22px;
   text-align: center;
   font-size: 14px;
 }
+
 .frow .name {
   min-width: 0;
   overflow: hidden;
@@ -1024,12 +1055,14 @@ onBeforeUnmount(() => {
   color: var(--text-1);
   font-size: 12.5px;
 }
+
 .frow .f-ds {
   flex: 0 0 auto;
   margin-left: 6px;
   color: var(--text-4);
   font-size: 11px;
 }
+
 .frow .cell-count {
   flex: 0 0 auto;
   margin-left: auto;
@@ -1038,6 +1071,7 @@ onBeforeUnmount(() => {
   font-size: 11.5px;
   white-space: nowrap;
 }
+
 .empty {
   display: flex;
   align-items: center;
@@ -1060,6 +1094,7 @@ onBeforeUnmount(() => {
   background: var(--bg-elevated);
   box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
 }
+
 .ctx-item {
   display: flex;
   align-items: center;
@@ -1075,15 +1110,18 @@ onBeforeUnmount(() => {
   cursor: pointer;
   text-align: left;
 }
+
 .ctx-item:hover:not(:disabled) {
   background: var(--bg-hover);
   color: var(--text-1);
 }
+
 .ctx-item:disabled {
   color: var(--text-4);
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .ctx-hint {
   color: var(--text-4);
   font-size: 10.5px;

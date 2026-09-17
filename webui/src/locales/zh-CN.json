@@ -8,7 +8,7 @@
   "search.title": "Ctrl+K 聚焦 · Esc 清空",
   "search.searching": "搜索中…",
 
-  "crumb.allDataSources": "全部数据源",
+  "crumb.allDataSources": "全部数据",
   "crumb.allServers": "全部服务器",
   "crumb.count": " · {n} 台",
   "crumb.searchChip": "搜索过滤中",
@@ -42,6 +42,7 @@
   "col.address": "地址",
   "col.protocol": "协议",
   "col.tags": "标签",
+  "col.note": "备注",
   "col.folder": "文件夹",
   "col.lastConnect": "最近连接",
   "col.actions": "操作",
