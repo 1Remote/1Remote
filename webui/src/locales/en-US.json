@@ -360,6 +360,9 @@
   "editor.o.appArgType.Const": "Constant",
   "editor.o.checkAddressAvailable": "Check if address is available before connect",
 
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
+
   "editor.group.basic": "Basic",
   "editor.group.credential": "Credentials",
   "editor.group.alternate": "Alternate connections",

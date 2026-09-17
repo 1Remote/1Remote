@@ -334,6 +334,8 @@
   "editor.o.appArgType.Selection": "Výběry",
   "editor.o.appArgType.Const": "Konstantní hodnota",
   "editor.o.checkAddressAvailable": "Před připojením zkontrolujte, zda je adresa dostupná",
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
   "editor.group.basic": "Společné",
   "editor.group.credential": "Pověření",
   "editor.group.alternate": "Alternate connections",

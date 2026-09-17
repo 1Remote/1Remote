@@ -448,6 +448,17 @@ namespace _1RM.Service.WebUi
                 return Results.Json(new { icons = CopyListWithRetry(icons) });
             });
 
+            // Serial 编辑器的可输入下拉建议（fix batch4 Task B）：对齐 WPF SerialFormView 的
+            // AutoCompleteComboBox 数据源——端口 = 后端机器 SerialPort.GetPortNames()（Serial.cs:157），
+            // 波特率 = Serial.cs BitRates 常量表（Serial.cs:71）。new Serial() 构造无副作用
+            // （ProtocolBase ctor 仅赋协议名/版本，Serial ctor 额外取首个端口名作默认值）。
+            // 前端拉取失败时静默退化为纯文本输入（见 FormField.vue 的建议缓存）。
+            app.MapGet("/api/serial/options", () =>
+            {
+                var serial = new Serial();
+                return Results.Json(new { ports = serial.SerialPorts, baudRates = serial.BitRates });
+            });
+
             // 凭据库名称列表：供编辑器「继承凭据」下拉。GetCredentials 自带缓存判定
             // （NeedRead 时读库）与 lock(this)（数据源实例锁，与 GlobalData 的锁无关），无需 lock(gd)。
             // 未知数据源 → 404（只读名称清单，读库失败语义与 WPF 一致：状态异常时返回缓存）。

@@ -1,3 +1,45 @@
+<script>
+/**
+ * AUTOCOMPLETE 的远程建议缓存（fix batch4 Task B）：模块级状态——Serial 编辑器的
+ * SerialPort/BitRate 是两个 FormField 实例，共享同一次 /api/serial/options 拉取
+ *（建议源是后端机器的 COM 口/波特率表，与表单数据无关，无需按数据源隔离或重拉）。
+ * shallowRef 保持响应式：数据到达后各实例的 acOptions 自动重算（数组只整组替换，
+ * 浅响应足够）；用 shallowRef 而非 ref 是为避免与下方 <script setup> 的 vue import
+ * 命名冲突（两块 script 编译到同一模块作用域，重复声明会报错）。
+ * 失败静默置空：空建议 = 纯文本输入，不阻断表单也不弹错误——建议只是便利功能，
+ * 与 CredentialPicker 的差异：此处无"必须从库中选择"的语义，退化后功能完整。
+ */
+import { shallowRef } from 'vue'
+import { api } from '../../api'
+
+const serialPortSuggestions = shallowRef([])
+const serialBaudRateSuggestions = shallowRef([])
+let serialOptionsRequested = false
+
+function ensureSerialOptionsLoaded() {
+  if (serialOptionsRequested) return
+  serialOptionsRequested = true
+  api.serialOptions()
+    .then((resp) => {
+      serialPortSuggestions.value = Array.isArray(resp?.ports) ? resp.ports : []
+      serialBaudRateSuggestions.value = Array.isArray(resp?.baudRates) ? resp.baudRates : []
+    })
+    .catch(() => {
+      // API 失败（含开发模式后端未起）：留空建议，字段退化为纯文本输入
+      serialPortSuggestions.value = []
+      serialBaudRateSuggestions.value = []
+    })
+}
+
+/** 按建议源取候选（'serial-ports' | 'serial-baud-rates'；未知源 = 空列表）。 */
+function serialSuggestions(source) {
+  ensureSerialOptionsLoaded()
+  if (source === 'serial-ports') return serialPortSuggestions.value
+  if (source === 'serial-baud-rates') return serialBaudRateSuggestions.value
+  return []
+}
+</script>
+
 <script setup>
 /**
  * 通用字段渲染器（Plan 2 Task 7）：按 field.type 分发到具体控件，纯展示组件——
@@ -87,6 +129,20 @@ const selectOptions = computed(() =>
 )
 const selectValue = computed(() => (props.modelValue === null || props.modelValue === undefined || props.modelValue === '' ? undefined : props.modelValue))
 
+// ---- autocomplete（fix batch4 Task B）：可输入下拉 = n-auto-complete ----
+// naive 的 AutoComplete 不做选项过滤（options 原样展示）且默认空输入不弹菜单
+// （getShow 缺省 = !!value，见 naive-ui AutoComplete.mjs 的 mergedShowOptions）——
+// 这里自行按输入做包含匹配（大小写不敏感），get-show 恒 true 让「空输入聚焦也显示
+// 全量建议」；建议不约束取值，任意键入仍原样进 json（校验交给后端 WPF 平价规则）。
+const acOptions = computed(() => {
+  const list = props.field.suggestionsSource
+    ? serialSuggestions(props.field.suggestionsSource)
+    : Array.isArray(props.field.suggestions) ? props.field.suggestions : []
+  const q = String(props.modelValue ?? '').trim().toLowerCase()
+  const source = q === '' ? list : list.filter((s) => String(s).toLowerCase().includes(q))
+  return source.map((s) => String(s))
+})
+
 // ---- password：明文/密文切换（眼睛按钮，i18n 提示）----
 const showPassword = ref(false)
 
@@ -170,6 +226,21 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         :disabled="disabled"
         :placeholder="placeholder"
         @update:value="emit('update:modelValue', $event)"
+      />
+
+      <!-- autocomplete（fix batch4 Task B）：可输入下拉（Serial 的端口/波特率）——选项按输入
+           包含匹配过滤（acOptions）、空输入聚焦显示全量建议（get-show 恒 true）；选中与直接
+           键入均为字符串值直通 json（建议只是候选，不约束取值） -->
+      <n-auto-complete
+        v-else-if="field.type === FIELD_TYPE.AUTOCOMPLETE"
+        size="small"
+        :value="modelValue ?? ''"
+        :options="acOptions"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :input-props="{ spellcheck: false }"
+        :get-show="() => true"
+        @update:value="emit('update:modelValue', $event ?? '')"
       />
 
       <!-- switch（#3/#4）：控件在前、描述文字紧跟（标签列留空见上方 showLabelInColumn）；

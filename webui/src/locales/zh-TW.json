@@ -334,6 +334,8 @@
   "editor.o.appArgType.Selection": "選集",
   "editor.o.appArgType.Const": "常數值",
   "editor.o.checkAddressAvailable": "連接前檢查地址是否可用",
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
   "editor.group.basic": "一般",
   "editor.group.credential": "證書",
   "editor.group.alternate": "Alternate connections",

@@ -334,6 +334,8 @@
   "editor.o.appArgType.Selection": "選択肢",
   "editor.o.appArgType.Const": "固定値",
   "editor.o.checkAddressAvailable": "接続前にホストをチェックする",
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
   "editor.group.basic": "一般",
   "editor.group.credential": "パスワード認証",
   "editor.group.alternate": "Alternate connections",

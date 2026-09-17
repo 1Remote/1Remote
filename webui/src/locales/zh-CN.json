@@ -360,6 +360,9 @@
   "editor.o.appArgType.Const": "常量",
   "editor.o.checkAddressAvailable": "连接前检测地址是否可用",
 
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
+
   "editor.group.basic": "基本信息",
   "editor.group.credential": "凭据",
   "editor.group.alternate": "备用连接",

@@ -334,6 +334,8 @@
   "editor.o.appArgType.Selection": "Selecciones",
   "editor.o.appArgType.Const": "Valor constante",
   "editor.o.checkAddressAvailable": "Verificar disponibilidad antes de conectar",
+  "editor.ph.serialPort": "e.g. COM1",
+  "editor.ph.bitRate": "e.g. 9600",
   "editor.group.basic": "Común",
   "editor.group.credential": "Credenciales",
   "editor.group.alternate": "Alternate connections",

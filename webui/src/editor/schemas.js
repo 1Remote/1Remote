@@ -479,12 +479,13 @@ function serialGroup() {
     id: 'serial',
     labelKey: 'editor.group.serial',
     fields: [
-      // WPF 下拉数据源是后端机器的 SerialPort.GetPortNames()（Serial.cs:157），
-      // web 无法枚举远端 COM 口 → 文本输入；IDataErrorInfo 要求非空
-      { key: 'SerialPort', type: FIELD.TEXT, required: true },
-      // WPF 为 BitRates 列表的可输入组合框（Serial.cs:71），允许自定义波特率 → 文本输入；
-      // IDataErrorInfo 要求非空且可 long.Parse
-      { key: 'BitRate', type: FIELD.NUMBER, required: true, asString: true },
+      // WPF SerialFormView 的 SerialPort 是 AutoCompleteComboBox：下拉=后端机器的
+      // SerialPort.GetPortNames()（Serial.cs:157），经 /api/serial/options 枚举
+      // （fix batch4 Task B）——可输入可下拉；IDataErrorInfo 要求非空
+      { key: 'SerialPort', type: FIELD.AUTOCOMPLETE, suggestionsSource: 'serial-ports', required: true, placeholderKey: 'editor.ph.serialPort' },
+      // WPF 为 BitRates 列表的可输入组合框（Serial.cs:71），允许自定义波特率（非标准值直接键入）；
+      // C# 属性是 string → asString 标注；IDataErrorInfo 要求非空且可 long.Parse
+      { key: 'BitRate', type: FIELD.AUTOCOMPLETE, suggestionsSource: 'serial-baud-rates', required: true, asString: true, placeholderKey: 'editor.ph.bitRate' },
       { key: 'DataBits', type: FIELD.SELECT, options: SERIAL_DATA_BITS_OPTIONS },
       { key: 'StopBits', type: FIELD.SELECT, options: SERIAL_STOP_BITS_OPTIONS },
       { key: 'Parity', type: FIELD.SELECT, options: SERIAL_PARITY_OPTIONS },
