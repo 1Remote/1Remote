@@ -294,9 +294,13 @@ namespace _1RM.Service.WebUi
         {
             // SSE 数据版本推送：连接期间订阅 GlobalData.OnReloadAll，每次重载推送 event: reload，
             // data 为本连接内重载次数（每连接独立从 0 起计）——前端收到后重新拉取 /api/servers 等即可，
-            // 无重载时每 15s 写一行注释心跳保活；断开（RequestAborted）在 finally 中退订。
+            // 无重载时每 15s 发一拍心跳保活；断开（RequestAborted）在 finally 中退订。
             // 即时性：用 SemaphoreSlim 唤醒替代固定 Task.Delay 轮询——若每轮睡满 15s，
             // 重载事件最迟要等满一个心跳周期才发出，无法满足前端"秒级自动刷新"的诉求。
+            // 心跳是具名 ping 事件而非注释行：SSE 注释对 EventSource API 不可见，前端看门狗需要
+            // 可观测的存活信号（静默 45s 判连接已死并强制重建——后端重启窗口内代理会返回 502，
+            // 按规范 EventSource 永久失败不再自动重连，须靠前端自愈 + 心跳监测兜底）；
+            // 未监听 ping 的消费方按规范忽略该事件，行为不受影响。
             app.MapGet("/api/events", async (HttpContext ctx) =>
             {
                 ctx.Response.Headers.ContentType = "text/event-stream";
@@ -338,7 +342,8 @@ namespace _1RM.Service.WebUi
                         }
                         else
                         {
-                            await ctx.Response.WriteAsync(": heartbeat\n\n", ctx.RequestAborted);
+                            // 心跳具名事件（见方法头注释：前端看门狗判活依据；注释行对 EventSource 不可见）
+                            await ctx.Response.WriteAsync("event: ping\n\n", ctx.RequestAborted);
                         }
                     }
                 }
