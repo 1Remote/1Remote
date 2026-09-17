@@ -66,8 +66,17 @@ function postToHost(cmd) {
 window.__setWinState = (s) => {
   if (s === 'maximized' || s === 'normal') winState.value = s
 }
+// WPF 壳 Ctrl+F 转发入口（fix-batch4 Task D，ExecuteScriptAsync 调用）：焦点不在 WebView2
+//（如启动后未点进页面）时，WPF 窗口级 KeyBinding 抢先把命令派给 CommandFocusFilter，
+// MainWindowView 转而调用本函数——聚焦并全选搜索框，与页面内 Ctrl+K/Ctrl+F handler
+//（onGlobalKey）等效；焦点在网页内时网页自己的 handler 生效，不走此路径
+window.__focusSearch = () => {
+  searchInput.value?.focus()
+  searchInput.value?.select()
+}
 onBeforeUnmount(() => {
   delete window.__setWinState
+  delete window.__focusSearch
   dragCleanup?.()
 })
 
