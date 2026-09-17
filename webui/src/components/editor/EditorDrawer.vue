@@ -58,8 +58,6 @@ const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
 
-const isCreate = computed(() => props.mode === 'create')
-const isDuplicate = computed(() => props.mode === 'create' && !!props.duplicateFrom)
 const isBulk = computed(() => props.mode === 'bulk')
 
 // ---- 状态 ----
@@ -133,6 +131,14 @@ function blocksOf(fields) {
 function groupBlocks(g) {
   const visible = g.fields.filter((f) => isVisible(f, json))
   if (!isCredentialGroup(g)) return blocksOf(visible)
+  if (import.meta.env.DEV) {
+    // 防御：凭据组内漏标 credRole 的字段会被下面的 byRole 分段静默丢弃（值仍随 json
+    // 透传，仅 UI 缺行）——dev 构建下告警，便于 schema 变更时及早发现
+    const untagged = visible.filter((f) => !f.credRole).map((f) => f.key)
+    if (untagged.length) {
+      console.warn('[EditorDrawer] credential group fields without credRole will not render:', untagged)
+    }
+  }
   const byRole = (role) => blocksOf(visible.filter((f) => f.credRole === role))
   return [
     ...byRole('pre'),

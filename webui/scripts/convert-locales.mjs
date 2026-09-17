@@ -339,6 +339,13 @@ if (badWeb.length || badWpf.length) {
   process.exit(1)
 }
 
+// WRAP 键必须同时在 MAPPING 中：未映射的键走 en-US 回退分支，前后缀会被静默丢弃
+const badWrap = Object.keys(WRAP).filter((k) => !(k in MAPPING))
+if (badWrap.length) {
+  console.error('WRAP 校验失败: 键不在 MAPPING 中（前后缀不会生效）:', badWrap)
+  process.exit(1)
+}
+
 const xamlFiles = readdirSync(XAML_DIR).filter((f) => f.endsWith('.xaml'))
 const langs = xamlFiles.map((f) => bcp47(f.replace(/\.xaml$/, '')))
 const GENERATE = langs.filter((l) => l !== 'zh-CN' && l !== 'en-US') // 12 个生成目标

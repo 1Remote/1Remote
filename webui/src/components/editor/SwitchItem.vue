@@ -48,5 +48,6 @@ const switchText = computed(() => (props.field.switchTextKey ? t(props.field.swi
   font-size: 12.5px;
   line-height: 1.4;
   color: var(--text-2);
+  overflow-wrap: break-word; /* 无空格长词（如德语复合词）在窄聚合行内不溢出 */
 }
 </style>
