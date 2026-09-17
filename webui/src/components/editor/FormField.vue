@@ -383,7 +383,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 
@@ -399,7 +399,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   border: none;
   background: transparent;
   color: var(--text-4);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 2px;
   border-radius: 3px;
@@ -436,7 +436,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   border: none;
   background: transparent;
   color: var(--text-4);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 2px;
   cursor: pointer;
@@ -492,7 +492,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   padding: 0;
   background: transparent;
   color: var(--text-1);
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
 }
 
@@ -549,7 +549,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-unknown {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 </style>

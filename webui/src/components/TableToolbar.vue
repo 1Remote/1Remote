@@ -91,7 +91,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 }
 
 .bb-count {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 
@@ -100,7 +100,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 5px 10px;
   cursor: pointer;
@@ -126,7 +126,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 13px;
+  font-size: 1rem;
   width: 26px;
   height: 26px;
   border-radius: 6px;
@@ -157,7 +157,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   border-radius: 5px;
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -199,7 +199,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   padding: 5px 6px;
   border-radius: 5px;
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   cursor: pointer;
 }
 
@@ -225,6 +225,6 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   padding: 4px 6px 0;
   border-top: 1px solid var(--border);
   color: var(--text-4);
-  font-size: 11px;
+  font-size: 0.8462rem;
 }
 </style>

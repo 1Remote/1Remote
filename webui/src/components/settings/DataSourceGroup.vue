@@ -443,7 +443,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .empty {
   padding: 24px 0;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-4);
 }
 .cards {
@@ -487,7 +487,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-1);
 }
 .type-badge,
@@ -496,7 +496,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 5px;
-  font-size: 10.5px;
+  font-size: 0.8077rem;
   color: var(--text-4);
 }
 .ro-badge {
@@ -505,7 +505,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .srv-count {
   flex: 0 0 auto;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .card-config {
@@ -514,7 +514,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .card-actions {
@@ -530,7 +530,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border-radius: 6px;
   background: transparent;
   color: var(--text-2);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -558,17 +558,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   align-items: center;
 }
 .f-row label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .f-hint {
   margin: 4px 0 0;
-  font-size: 11px;
+  font-size: 0.8462rem;
   color: var(--text-4);
 }
 .f-note {
   margin: 2px 0 0;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--warning);
 }
 .modal-actions {

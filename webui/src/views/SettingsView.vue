@@ -6,6 +6,15 @@
  * Esc / 「← 返回」回服务器列表：设置页是路由而非浮层，Esc 直接 router.push('/')。
  * Esc 与下拉的链序：n-select 展开时首次 Esc 只应关闭下拉（naive 在组件层消化），
  * 通过 escShield 计数（provide/inject，@update:show 维护）避免"关下拉误退设置页"。
+ * 计数的两处天真行为缺陷（fix batch6 #8，键序按事件派发实际顺序）：
+ * ① naive 在元素级 Esc handler 内**同步** emit update:show(false)（Select.mjs doUpdateShow
+ *   直接 call）——等事件冒泡到 window 时计数已归零，原先的 `open === 0` 守卫护不住
+ *   "关下拉"这一次按键，表现为关下拉的同时整页退出；
+ * ② 只增不减的卡死路径（下拉开着时宿主模态/分组组件被直接卸载，update:show 不再发出），
+ *   计数恒 >0 后 Esc 永远被吞（"按 Esc 无反应"）。
+ * 对策：capture 阶段先快照本次按键**开始时**的计数（早于组件层任何处理），bubble 阶段按
+ * 快照执行一次性语义：开始时有层开着（或计数已卡死）→ 本键视为已消费并把计数归零（自愈），
+ * 不返回；快照与计数均为 0 才返回列表。任何卡死计数至多吞一次 Esc 即恢复。
  */
 import { markRaw, onBeforeUnmount, onMounted, provide, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -48,21 +57,47 @@ function selectGroup(id) {
   router.replace({ query: { ...route.query, g: id } })
 }
 
-// Esc 返回（见文件头注释）：shield>0 说明有下拉/浮层开着，让组件层先消化
+// Esc 返回（缺陷分析见文件头注释）：capture 阶段快照按键开始时的计数（早于 naive 组件层
+// 的同步 update:show 归零），bubble 阶段按快照执行一次性语义并自愈卡死计数
 const escShield = reactive({ open: 0 })
 provide('settingsEscShield', escShield)
-function onKey(e) {
-  if (e.key === 'Escape' && !e.defaultPrevented && escShield.open === 0) router.push('/')
+let escShieldAtStart = 0
+function onEscCapture(e) {
+  if (e.key === 'Escape') escShieldAtStart = escShield.open
 }
-onMounted(() => window.addEventListener('keydown', onKey))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+function onKey(e) {
+  if (e.key !== 'Escape' || e.defaultPrevented) return
+  if (escShieldAtStart > 0 || escShield.open > 0) {
+    escShield.open = 0 // 本键用于关（或刚关掉）下拉/浮层：消费一次，计数归零自愈
+    return
+  }
+  router.push('/')
+}
+onMounted(() => {
+  window.addEventListener('keydown', onEscCapture, true)
+  window.addEventListener('keydown', onKey)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onEscCapture, true)
+  window.removeEventListener('keydown', onKey)
+})
 </script>
 
 <template>
   <div class="settings">
     <aside class="s-nav">
       <button class="s-back" type="button" :title="t('settings.backTitle')" @click="router.push('/')">
-        « {{ t('settings.back') }}
+        <svg class="s-back-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+          <path
+            d="M10 3 5 8l5 5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        {{ t('settings.back') }}
       </button>
       <nav class="s-groups">
         <button
@@ -103,20 +138,30 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   overflow-y: auto;
 }
 .s-back {
+  /* fix batch6 #8 醒目化：accent 容器底 + accent 描边/文字 + ← 图标（与 .s-item.active
+     同一视觉语系，暗/亮基底各自有低饱和容器变体，保持克制） */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
   height: 34px;
   padding: 0 10px;
   margin-bottom: 6px;
-  border: none;
+  border: 1px solid var(--accent);
   border-radius: 7px;
-  background: transparent;
-  color: var(--text-3);
-  font-size: 12.5px;
+  background: var(--accent-container);
+  color: var(--accent-text);
+  font-size: 0.9615rem;
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
 }
 .s-back:hover {
-  background: var(--bg-hover);
-  color: var(--text-1);
+  border-color: var(--accent-hover);
+  filter: brightness(1.06);
+}
+.s-back-arrow {
+  flex: 0 0 auto;
 }
 .s-groups {
   /* fix-batch3 Task C #5 真根因：nav 容器此前无布局规则，button 默认 inline-block
@@ -136,7 +181,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-radius: 7px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -160,7 +205,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .s-header {
   padding: 14px 24px 12px;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
+  font-size: 1.0769rem;
   font-weight: 600;
   color: var(--text-1);
 }

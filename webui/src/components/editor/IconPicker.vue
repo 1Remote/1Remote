@@ -225,7 +225,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border-radius: 5px;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 5px 10px;
   cursor: pointer;
@@ -243,7 +243,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 /* 弹窗内容（n-modal 传送门内渲染，仍属本组件 scoped 作用域） */
 .ip-section {
   margin: 10px 0 6px;
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-weight: 600;
   color: var(--text-2);
 }
@@ -251,7 +251,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   margin-top: 0;
 }
 .ip-hint {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
   padding: 8px 0;
 }
@@ -294,7 +294,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border-radius: 5px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 6px 12px;
   cursor: pointer;
@@ -319,7 +319,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 4px 2px;
   cursor: pointer;

@@ -147,7 +147,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
 .sf-chev {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 10px;
+  font-size: 0.7692rem;
   line-height: 1;
 }
 .sf-row-title {
@@ -156,7 +156,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-weight: 500;
   color: var(--text-2);
 }
@@ -166,7 +166,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 10px;
+  font-size: 0.7692rem;
   line-height: 1;
   padding: 3px;
   cursor: pointer;
@@ -187,7 +187,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
   border-radius: 5px;
   background: transparent;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   padding: 6px 12px;
   cursor: pointer;

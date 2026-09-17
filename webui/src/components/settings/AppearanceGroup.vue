@@ -120,7 +120,7 @@ function applyClassic(name) {
 }
 .sub {
   margin: 16px 0 8px;
-  font-size: 12px;
+  font-size: 0.9231rem;
   font-weight: 600;
   color: var(--text-3);
 }
@@ -129,7 +129,7 @@ function applyClassic(name) {
 }
 .hint {
   margin: 8px 0 0;
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-4);
 }
 
@@ -157,7 +157,7 @@ function applyClassic(name) {
   background: var(--accent-container);
 }
 .base-name {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-2);
 }
 .base-card.active .base-name {
@@ -241,7 +241,7 @@ function applyClassic(name) {
   border: none;
   background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 0.9231rem;
   cursor: pointer;
 }
 .seg-btn + .seg-btn {
@@ -268,7 +268,7 @@ function applyClassic(name) {
   border-radius: 999px;
   background: var(--bg-panel);
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 0.9231rem;
   cursor: pointer;
 }
 .pill:hover {

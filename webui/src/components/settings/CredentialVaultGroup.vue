@@ -366,7 +366,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   max-width: 760px;
 }
 .hint {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-3);
 }
 .hint.err {
@@ -386,11 +386,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .ds-label {
   flex: 0 0 auto;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .ro-flag {
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--warning);
 }
 .new-btn {
@@ -398,7 +398,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .empty {
   padding: 24px 0;
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-4);
 }
 
@@ -416,7 +416,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   min-height: 32px;
   padding: 0 10px;
   border-bottom: 1px solid var(--border);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .cv-row:last-child {
@@ -425,7 +425,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 .cv-row.head {
   background: var(--bg-panel);
   color: var(--text-4);
-  font-size: 11.5px;
+  font-size: 0.8846rem;
 }
 .cv-row.revealing {
   background: var(--accent-container);
@@ -464,7 +464,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border-radius: 5px;
   background: transparent;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -491,7 +491,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-2);
 }
 .spin {
@@ -520,18 +520,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .rv-line label {
   flex: 0 0 110px;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .rv-line code {
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--text-1);
 }
 .rv-count {
   align-self: flex-end;
-  font-size: 11px;
+  font-size: 0.8462rem;
   color: var(--text-4);
 }
 
@@ -548,19 +548,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   align-items: center;
 }
 .f-row label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .clear-hint {
   margin: 2px 0 0;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--warning);
 }
 .eye {
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   cursor: pointer;
   padding: 0 2px;
 }

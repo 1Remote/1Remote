@@ -45,7 +45,7 @@ const showDash = computed(() => cls.value === 'idle')
 }
 .dash {
   color: var(--text-4);
-  font-size: 11px;
+  font-size: 0.8462rem;
   line-height: 1;
 }
 </style>

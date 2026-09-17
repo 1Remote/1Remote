@@ -156,7 +156,7 @@ defineExpose({ title })
   /* 无色/透明色回退瓦片在暗色下也可见 */
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 14px;
+  font-size: 1.0769rem;
   font-weight: 600;
 }
 
@@ -166,7 +166,7 @@ defineExpose({ title })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 1.0769rem;
   font-weight: 600;
   color: var(--text-1);
 }
@@ -184,7 +184,7 @@ defineExpose({ title })
   padding: 2px 10px;
   background: var(--bg-elevated);
   color: var(--text-4);
-  font-size: 10.5px;
+  font-size: 0.8077rem;
   line-height: 1.4;
 }
 
@@ -203,7 +203,7 @@ defineExpose({ title })
   border-radius: 6px;
   background: transparent;
   color: var(--text-3);
-  font-size: 13px;
+  font-size: 1rem;
   width: 28px;
   height: 28px;
   cursor: pointer;

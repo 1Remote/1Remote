@@ -240,7 +240,7 @@ const SWITCHES_REST = [
   max-width: 640px;
 }
 .hint {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-3);
 }
 .hint.err {
@@ -254,7 +254,7 @@ const SWITCHES_REST = [
   padding: 7px 0;
 }
 .row-label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .row-control.slim {
@@ -269,7 +269,7 @@ const SWITCHES_REST = [
   border-top: 1px solid var(--border);
 }
 .dirty {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--warning);
 }
 </style>

@@ -418,7 +418,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 }
 .empty-hint {
   color: var(--text-4);
-  font-size: 12px;
+  font-size: 0.9231rem;
   padding: 10px 8px;
 }
 
@@ -457,7 +457,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .chevron {
   flex: 0 0 14px;
   color: var(--text-3);
-  font-size: 10px;
+  font-size: 0.7692rem;
   line-height: 1;
   text-align: center;
   cursor: pointer;
@@ -470,20 +470,20 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 .ds-icon,
 .folder-icon {
   flex: 0 0 16px;
-  font-size: 12px;
+  font-size: 0.9231rem;
   text-align: center;
 }
 .label {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-1);
 }
 .ds-type {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 10px;
+  font-size: 0.7692rem;
 }
 
 .dot {
@@ -506,7 +506,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   margin-left: auto;
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 11px;
+  font-size: 0.8462rem;
 }
 
 .tags {
@@ -518,7 +518,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
 }
 .tags-head {
   color: var(--text-4);
-  font-size: 11px;
+  font-size: 0.8462rem;
   margin-bottom: 6px;
 }
 .tag-list {
@@ -535,7 +535,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 11px;
+  font-size: 0.8462rem;
   line-height: 1;
   padding: 3px 8px;
   cursor: pointer;
@@ -548,7 +548,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   color: var(--accent-text);
 }
 .tag-chip .pin {
-  font-size: 9px;
+  font-size: 0.6923rem;
 }
 .tag-count {
   color: var(--text-4);
@@ -564,7 +564,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   border-top: 1px solid var(--border);
   background: transparent;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 0.9231rem;
   cursor: pointer;
 }
 .collapse-btn:hover {
@@ -593,7 +593,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
   border-radius: 5px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   line-height: 1;
   padding: 7px 10px;
   cursor: pointer;

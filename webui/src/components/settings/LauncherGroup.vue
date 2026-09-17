@@ -220,7 +220,7 @@ const SWITCHES = [
   max-width: 640px;
 }
 .hint {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-3);
 }
 .hint.err {
@@ -234,7 +234,7 @@ const SWITCHES = [
   padding: 7px 0;
 }
 .row-label {
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   color: var(--text-2);
 }
 .hk-wrap {
@@ -251,7 +251,7 @@ const SWITCHES = [
   border-radius: 6px;
   background: var(--bg-elevated);
   color: var(--text-1);
-  font-size: 12.5px;
+  font-size: 0.9615rem;
   font-family: inherit;
   text-align: center;
   cursor: pointer;
@@ -279,12 +279,12 @@ const SWITCHES = [
   }
 }
 .hk-hint {
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--text-4);
 }
 .hk-conflict {
   margin: 6px 0 0;
-  font-size: 11.5px;
+  font-size: 0.8846rem;
   color: var(--warning);
 }
 .actions {
@@ -296,7 +296,7 @@ const SWITCHES = [
   border-top: 1px solid var(--border);
 }
 .dirty {
-  font-size: 12px;
+  font-size: 0.9231rem;
   color: var(--warning);
 }
 </style>
