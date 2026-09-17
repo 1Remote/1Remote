@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import StatusDot from './StatusDot.vue'
 import ProtocolBadge from './ProtocolBadge.vue'
-import { formatRelativeTime } from '../utils/time'
+import { formatRelativeTime, formatAbsoluteTime } from '../utils/time'
 import { splitHighlight } from '../utils/highlight'
 import { opaqueHex } from '../utils/color'
 import { renderMarkdown } from '../utils/markdown'
@@ -47,6 +47,9 @@ const overflow = (s) => Math.max(0, s.tags.length - 2)
 // 从未连接 = formatRelativeTime 返回 null 时的占位文案；相对时间显式注入当前 i18n locale
 // （渲染期读 locale.value，语言切换即时重格式化，不再依赖 navigator.language）
 const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.value) || t('status.never')
+// 悬停 title 用绝对时间（精确到秒）：相对时间适合扫读，确切时刻需要完整时间戳；
+// 从未连接（0）返回 null 时回退到与显示文本相同的「从未连接」文案
+const absTime = (s) => formatAbsoluteTime(s.lastConnectTime, locale.value) || t('status.never')
 
 // 搜索命中高亮分段：查询非空时名称/地址同时高亮；拼音等无法定位原文的
 // 命中不高亮（splitHighlight 内处理，见其文件头注释）
@@ -125,7 +128,8 @@ const barColor = computed(() => opaqueHex(props.server.color))
     <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">
       {{ folderText(server) }}
     </div>
-    <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">
+    <!-- 时间列：显示保持相对时间，悬停 title 为绝对时间（精确到秒，随语言本地化） -->
+    <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="absTime(server)">
       {{ relTime(server) }}
     </div>
     <div class="cell cell-act" @click.stop>

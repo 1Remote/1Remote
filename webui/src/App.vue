@@ -8,7 +8,7 @@ import { useEditorBus } from './composables/editorBus'
 import { useVersionInfo } from './composables/useVersionInfo'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
-const { requestNewServer, requestImport } = useEditorBus()
+const { requestNewServer, requestImport, editorOpen } = useEditorBus()
 // naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）。
 // Input/Select 的默认 placeholder（enUS "Please Input"/"Please Select"、zhCN "请输入"/"请选择"）
 // 清空为 ''：WPF 表单无 Tag 的输入框不显示任何提示文本，web 未提供 placeholderKey 的字段
@@ -32,6 +32,7 @@ const searchInput = ref(null)
 function onGlobalKey(e) {
   const key = e.key?.toLowerCase()
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (key === 'k' || key === 'f')) {
+    if (editorOpen.value) return // 编辑抽屉打开：搜索框已锁定，不抢焦点（也不吞浏览器默认行为）
     e.preventDefault()
     searchInput.value?.focus()
     searchInput.value?.select()
@@ -77,6 +78,7 @@ window.__setWinState = (s) => {
 // MainWindowView 转而调用本函数——聚焦并全选搜索框，与页面内 Ctrl+K/Ctrl+F handler
 //（onGlobalKey）等效；焦点在网页内时网页自己的 handler 生效，不走此路径
 window.__focusSearch = () => {
+  if (editorOpen.value) return // 编辑抽屉打开时与页内 Ctrl+K/F 一致：不抢焦点
   searchInput.value?.focus()
   searchInput.value?.select()
 }
@@ -142,26 +144,35 @@ function onTopbarDblClick(e) {
               <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
               1Remote
             </div>
-            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup） -->
-            <div class="searchbox" :title="t('search.title')" @click="searchInput?.focus()">
+            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）。
+                 编辑抽屉打开时锁定（editorBus.editorOpen）：容器弱化 + input disabled（fix batch6 Task E #10） -->
+            <div
+              class="searchbox"
+              :class="{ disabled: editorOpen }"
+              :title="t('search.title')"
+              @click="searchInput?.focus()"
+            >
               <span class="sb-icon">⌕</span>
               <input
                 ref="searchInput"
                 v-model="searchQuery"
                 class="sb-input"
                 type="text"
+                :disabled="editorOpen"
                 :placeholder="t('search.placeholder')"
               />
               <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
               <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
             </div>
             <div class="topbar-actions">
-              <!-- 「+」下拉：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView） -->
+              <!-- 「+」下拉：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView）；
+                   编辑抽屉打开时禁用（fix batch6 Task E #10）——disabled 的原生 button 不派发
+                   click，n-dropdown 不再弹出 -->
               <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
-                <n-button quaternary size="small" :title="t('topbar.addServer')">+</n-button>
+                <n-button quaternary size="small" :disabled="editorOpen" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
               <span class="gear-wrap">
-                <n-button quaternary size="small" @click="$router.push('/settings')">⚙</n-button>
+                <n-button quaternary size="small" :disabled="editorOpen" @click="$router.push('/settings')">⚙</n-button>
                 <!-- 更新红点：仅 updateAvailable（fix batch6 Task D #12） -->
                 <span v-if="updateInfo?.available" class="gear-dot"></span>
               </span>
@@ -256,6 +267,14 @@ function onTopbarDblClick(e) {
 }
 .searchbox:focus-within {
   border-color: var(--accent);
+}
+/* 编辑器打开时的锁定态（fix batch6 Task E #10）：弱化 + 禁用光标（克制，不加边框变色等强提示） */
+.searchbox.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.searchbox.disabled .sb-input {
+  cursor: not-allowed; /* input 自身 cursor:text 需覆盖，整个框统一 not-allowed */
 }
 .sb-icon {
   flex: 0 0 auto;

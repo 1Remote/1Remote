@@ -268,7 +268,11 @@ const editor = ref(null)
 
 // App.vue 顶栏「+」经 editorBus 请求新建（跨层：顶栏在 router-view 之外无法向本视图 emit）。
 // 抽屉已开时忽略——替换状态会丢掉未保存编辑且绕过脏确认。
-const { createRequest, importRequest } = useEditorBus()
+const { createRequest, importRequest, setEditorOpen } = useEditorBus()
+// 占用态上抛：editor 的全部赋值/清空路径（open* 打开 / close / onSaved 清空）经 watch
+// 统一同步到 editorBus，App.vue 顶栏消费（编辑期间禁用搜索/「+」/⚙）。immediate
+// 覆盖首挂载（null → false，保证总线初值与本视图一致）
+watch(editor, (v) => setEditorOpen(!!v), { immediate: true })
 watch(createRequest, () => {
   if (!editor.value) openCreate()
 })
