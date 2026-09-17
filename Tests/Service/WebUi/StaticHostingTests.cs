@@ -30,6 +30,11 @@ namespace Tests.Service.WebUi
         [ClassInitialize]
         public static void Init(TestContext _)
         {
+            // 本类请求 /api/version，端点会触发 WebUiUpdateService.EnsureStarted()——装桩短路
+            // 后台更新检查，杜绝测试对 github.com 的真实联网（VersionUpdateTests 同款 DefaultStub；
+            // 该类 ClassCleanup 会还原 null，跨类不共享，须各自安装）
+            WebUiUpdateService.CheckOverrideForTest = () => Shawn.Utils.VersionHelper.CheckUpdateResult.False();
+
             _root = Path.Combine(Path.GetTempPath(), "1rm-webui-static-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(_root, "wwwroot", "assets"));
             File.WriteAllText(Path.Combine(_root, "wwwroot", "index.html"),
@@ -51,6 +56,7 @@ namespace Tests.Service.WebUi
         [ClassCleanup]
         public static void Cleanup()
         {
+            WebUiUpdateService.CheckOverrideForTest = null; // 还原生产语义（不残留桩给后续测试类）
             try
             {
                 Directory.Delete(_root, true);
