@@ -66,6 +66,7 @@ const MAPPING = {
   'settings.nav.data': 'system_options_data_security_database',
   'settings.nav.credentials': 'Credentials',
   'settings.nav.appearance': 'Themes',
+  'settings.nav.about': 'About',
 
   // -- 常规组字段（与 WPF Options 文案一一对应）--
   'settings.f.language': 'Language',
@@ -85,7 +86,6 @@ const MAPPING = {
   'settings.appearance.accent': 'Color',
   'settings.appearance.fontSize': 'Font size',
   'settings.appearance.classic': 'Themes',
-  'settings.langAbout.language': 'Language',
 
   // -- 编辑器：凭据/批量 --
   'editor.credSelectHint': 'Select credentials within the same database',
@@ -262,6 +262,17 @@ const MAPPING = {
   'settings.r.internal': 'Default',
   'settings.r.f.arguments': 'Cmd parameter',
   'settings.r.f.env': 'Environment variables',
+
+  // -- 关于页（fix batch6 Task D #7）：5 个有 WPF 词条的键，14 语言文案从
+  //    AboutPageView.xaml 的 DynamicResource 键移植；纯技术标签（Author/Support/
+  //    Make contributions/Included Components/Update/Version/标语）为 WPF 硬编码英文，
+  //    不映射——生成 locale 回退 en-US 原文，即 14 语言同值 --
+  'about.howToUse': 'about_page_how_to_use',
+  'about.contributeText':
+    'I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!',
+  'about.giveSuggestions': 'Give suggestions',
+  'about.buyCoffee': 'Buy a coffee',
+  'about.giveReview': 'Give nice review',
 }
 
 // WPF {0}/{1} → web 具名占位符（仅当目标 WPF 键的值含 {N} 时需要）
