@@ -39,11 +39,15 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// 连接编辑器的编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦；Task: create/update/delete/batch 同此后继）。
+    /// 连接编辑器的编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦）。
+    /// 职责：GET /api/servers/{id}/config 可编辑配置（克隆解密后的明文 JSON）、
+    /// POST/PUT/DELETE /api/servers*（新建/整体替换/删除）、POST /api/servers/batch
+    /// （allow-list 扁平字段补丁），以及保存前校验（复用 WPF 编辑器 IDataErrorInfo 规则）。
+    ///
     /// 加密纪律：VmItemList 内存缓存中的对象是加密态（DB 读路径不落解密），
     /// 一切对外的明文视图必须建立在 Clone() 副本上——WPF 编辑器对缓存原地解密是既有缺陷，Web 不复制。
     /// 保存路径与 WPF 编辑器一致（ServerEditorPageViewModel）：调用方传明文，
-    /// 加密由 DataSourceBase.Database_Insert/UpdateServer 在内部克隆上完成。
+    /// 加密由 DataSourceBase.Database_InsertServer/Database_UpdateServer 在内部克隆上完成。
     /// </summary>
     public static class WebUiEditorService
     {
@@ -198,7 +202,7 @@ namespace _1RM.Service.WebUi
         /// POST /api/servers/batch：补丁式批量编辑（patch 中缺失的字段 = 保持不变）。
         /// 原子性为「预校验原子性」：ids 全部查找成功 + 每台补丁应用与校验（WPF 平价）全部通过后，
         /// 才统一走 GlobalData.UpdateServer(IEnumerable)；任一环节失败 → 整批零执行。
-        /// （DB 层批量更新无事务，与 WPF 行为一致；预校验失败不写库，见计划全局约定 8。）
+        /// （DB 层批量更新无事务，与 WPF 行为一致；预校验失败不写库。）
         /// 返回 Ok(更新台数)；NotFound=任一 id 不存在；BadRequest=请求体/未知键/深层字段/只读/校验失败。
         /// </summary>
         public static EditorSaveResult ApplyBatchPatch(string? dataSourceName, List<string>? ids, string? patchJson)

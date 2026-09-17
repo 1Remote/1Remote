@@ -16,6 +16,8 @@ namespace _1RM.Service.WebUi
 {
     /// <summary>
     /// 数据源 CRUD/测试 与运行器读写编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦）。
+    /// 职责：POST/PUT/DELETE /api/datasources*（新建/更新/删除，删除带服务器数前置确认）、
+    /// POST /api/datasources/{name}/test（连接测试）、GET/PUT /api/settings/runners（运行器整体往返）。
     ///
     /// 数据源持久化双集合（最大陷阱，WPF 正确模式 DataSourceViewModel.CmdAdd/CmdEdit/CmdDelete）：
     /// DataSourceService.AddOrUpdateDataSource/RemoveDataSource 只改运行时字典（AdditionalSources）；
