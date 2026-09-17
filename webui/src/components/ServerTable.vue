@@ -37,7 +37,19 @@ const props = defineProps({
   query: { type: String, default: '' }, // 搜索过滤词：透传给行做命中高亮
   folders: { type: Array, default: () => [] }, // 当前层级文件夹行：{name, path, dsName, count}
 })
-const emit = defineEmits(['connect', 'batch-connect', 'bulk-edit', 'export', 'edit', 'duplicate', 'delete', 'counted', 'open-folder', 'create-folder', 'move-to-folder'])
+const emit = defineEmits([
+  'connect',
+  'batch-connect',
+  'bulk-edit',
+  'export',
+  'edit',
+  'duplicate',
+  'delete',
+  'counted',
+  'open-folder',
+  'create-folder',
+  'move-to-folder',
+])
 const { t } = useI18n()
 const message = useMessage()
 const { datasources, searchedIds } = useServers() // 文件夹新建菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
@@ -52,8 +64,9 @@ const filtered = computed(() => {
   // 资源管理器式浏览：选中节点一律仅列直接子级服务器（根 = folderPath 空串），子文件夹由
   // ServerListView currentFolders（holderAt.folders）以文件夹行呈现。folderPath 两侧归一化
   //（根选中/根级服务器的 folderPath 可能是 '' 或 undefined）
-  return props.servers.filter(s => s.dataSourceName === sel.dataSourceName
-    && (s.folderPath || '') === (sel.folderPath || ''))
+  return props.servers.filter(
+    (s) => s.dataSourceName === sel.dataSourceName && (s.folderPath || '') === (sel.folderPath || '')
+  )
 })
 const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
 const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 「全部数据」根：文件夹列前缀数据源名
@@ -101,9 +114,13 @@ async function loadCustomOrder() {
     customOrder.value = new Map() // 后端不可达：自然顺序兜底（保存会在 drop 时报错 toast）
   }
 }
-watch(isCustom, on => {
-  if (on) loadCustomOrder()
-}, { immediate: true })
+watch(
+  isCustom,
+  (on) => {
+    if (on) loadCustomOrder()
+  },
+  { immediate: true }
+)
 function toggleCustomSort() {
   sort.value = isCustom.value ? { key: '', dir: 1 } : { key: 'custom', dir: 1 }
   try {
@@ -155,7 +172,7 @@ async function onRowDrop(server, e) {
   e.preventDefault()
   const dragged = dragId.value
   dragId.value = null
-  const ids = fullOrder.value.map(s => s.id)
+  const ids = fullOrder.value.map((s) => s.id)
   const from = ids.indexOf(dragged)
   if (from >= 0) ids.splice(from, 1)
   const idx = ids.indexOf(server.id)
@@ -164,7 +181,7 @@ async function onRowDrop(server, e) {
   try {
     const saved = await api.saveListOrder(ids)
     const map = new Map()
-    ; (saved?.ids || ids).forEach((id, i) => map.set(id, i))
+    ;(saved?.ids || ids).forEach((id, i) => map.set(id, i))
     customOrder.value = map
   } catch (err) {
     console.warn('[ServerTable] saveListOrder failed:', err?.message || err)
@@ -205,7 +222,7 @@ function onFolderDrop(f, e) {
 // ---- 新建文件夹菜单：文件夹行右键（在该文件夹内新建）/ 空白处右键（在当前层级新建；
 // 全部数据源根无确定数据源 → 禁用并提示先选数据源）----
 const nfMenu = ref(null) // { x, y, target: { dsName, parentPath } | null }
-const dsWritable = (dsName) => datasources.value.find(d => d.name === dsName)?.writable !== false
+const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName))
 const nfMenuTip = computed(() => {
   if (!nfMenu.value?.target) return t('tree.selectDsFirst')
@@ -260,8 +277,8 @@ const rowKey = (row) => (row.kind === 'folder' ? 'f:' + row.folder.dsName + ':' 
 // ---- 多选 ----
 const checked = ref(new Set())
 let anchorIdx = -1
-const allChecked = computed(() => sorted.value.length > 0 && sorted.value.every(s => checked.value.has(s.id)))
-const someChecked = computed(() => !allChecked.value && sorted.value.some(s => checked.value.has(s.id)))
+const allChecked = computed(() => sorted.value.length > 0 && sorted.value.every((s) => checked.value.has(s.id)))
+const someChecked = computed(() => !allChecked.value && sorted.value.some((s) => checked.value.has(s.id)))
 const allCb = ref(null) // 三态复选框：indeterminate 需写 DOM 属性
 watchEffect(() => {
   if (allCb.value) allCb.value.indeterminate = someChecked.value
@@ -276,7 +293,7 @@ function onRowClick(server, ev, idx) {
   if (ev.shiftKey && anchorIdx >= 0) {
     const lo = Math.min(anchorIdx, idx)
     const hi = Math.max(anchorIdx, idx)
-    checked.value = new Set(sorted.value.slice(lo, hi + 1).map(s => s.id))
+    checked.value = new Set(sorted.value.slice(lo, hi + 1).map((s) => s.id))
   } else if (ev.ctrlKey || ev.metaKey) {
     toggleChecked(server.id)
     anchorIdx = idx
@@ -290,7 +307,7 @@ function onToggleSelect(server, idx) {
   anchorIdx = idx
 }
 function toggleAll() {
-  checked.value = allChecked.value ? new Set() : new Set(sorted.value.map(s => s.id))
+  checked.value = allChecked.value ? new Set() : new Set(sorted.value.map((s) => s.id))
 }
 function clearChecked() {
   checked.value = new Set()
@@ -298,12 +315,12 @@ function clearChecked() {
 }
 // 过滤/数据变化后剔除不可见行勾选，批量条计数始终对当前视图有效；同时作废 Shift 范围锚点
 // 与不可见的光标行（树切换/搜索过滤后旧行号已无意义，Shift 选区必须重新锚定）
-watch(sorted, list => {
+watch(sorted, (list) => {
   anchorIdx = -1
-  if (cursorId.value != null && !list.some(s => s.id === cursorId.value)) cursorId.value = null
+  if (cursorId.value != null && !list.some((s) => s.id === cursorId.value)) cursorId.value = null
   if (!checked.value.size) return
-  const ids = new Set(list.map(s => s.id))
-  const kept = [...checked.value].filter(id => ids.has(id))
+  const ids = new Set(list.map((s) => s.id))
+  const kept = [...checked.value].filter((id) => ids.has(id))
   if (kept.length !== checked.value.size) checked.value = new Set(kept)
 })
 watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N 台」
@@ -390,7 +407,7 @@ function onTableMousedown() {
 function moveCursor(delta) {
   const list = sorted.value
   if (!list.length) return
-  const cur = list.findIndex(s => s.id === cursorId.value)
+  const cur = list.findIndex((s) => s.id === cursorId.value)
   const next = cur < 0 ? (delta > 0 ? 0 : list.length - 1) : Math.min(list.length - 1, Math.max(0, cur + delta))
   cursorId.value = list[next].id
   // 光标行滚入可视区：行 DOM 均已存在（仅类名切换），无需等 nextTick
@@ -414,7 +431,7 @@ function onGlobalKey(e) {
     }
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'a') {
     e.preventDefault() // 抢在浏览器文本全选前，全选当前视图
-    checked.value = new Set(sorted.value.map(s => s.id))
+    checked.value = new Set(sorted.value.map((s) => s.id))
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'd') {
     // Ctrl+D 复制：preventDefault 阻断浏览器「添加书签」默认
     e.preventDefault()
@@ -436,9 +453,9 @@ function onGlobalKey(e) {
 function keyTargetServer() {
   if (checked.value.size === 1) {
     const id = [...checked.value][0]
-    return sorted.value.find(s => s.id === id) || null
+    return sorted.value.find((s) => s.id === id) || null
   }
-  if (cursorId.value != null) return sorted.value.find(s => s.id === cursorId.value) || null
+  if (cursorId.value != null) return sorted.value.find((s) => s.id === cursorId.value) || null
   return null
 }
 
@@ -536,7 +553,11 @@ function onResizeEnd() {
 const VIRTUAL_THRESHOLD = 500
 const ROW_HEIGHT = 36
 const useVirtual = computed(() => renderRows.value.length > VIRTUAL_THRESHOLD)
-const { list: virtualRows, containerProps, wrapperProps } = useVirtualList(renderRows, {
+const {
+  list: virtualRows,
+  containerProps,
+  wrapperProps,
+} = useVirtualList(renderRows, {
   itemHeight: ROW_HEIGHT,
   overscan: 8,
 })
@@ -557,11 +578,20 @@ onBeforeUnmount(() => {
   <div ref="rootEl" class="server-table" :style="colVars" @mousedown="onTableMousedown">
     <!-- 批量条 + 表头工具簇（TableToolbar）：Teleport 至 ServerListView 面包屑行右侧
          （#crumb-actions），勾选/列状态仍归本组件；连接/批量编辑/导出经此转发到父级执行 -->
-    <TableToolbar :checked-count="checked.size" :is-custom="isCustom" :col-menu="colMenu" :hidden-cols="hiddenCols"
-      :col-labels="COL_LABELS" @batch-connect="emit('batch-connect', [...checked])"
-      @bulk-edit="emit('bulk-edit', [...checked])" @export="emit('export', [...checked])"
-      @clear-checked="clearChecked" @toggle-custom="toggleCustomSort" @toggle-col-menu="toggleColMenu"
-      @set-hidden="setHidden" />
+    <TableToolbar
+      :checked-count="checked.size"
+      :is-custom="isCustom"
+      :col-menu="colMenu"
+      :hidden-cols="hiddenCols"
+      :col-labels="COL_LABELS"
+      @batch-connect="emit('batch-connect', [...checked])"
+      @bulk-edit="emit('bulk-edit', [...checked])"
+      @export="emit('export', [...checked])"
+      @clear-checked="clearChecked"
+      @toggle-custom="toggleCustomSort"
+      @toggle-col-menu="toggleColMenu"
+      @set-hidden="setHidden"
+    />
 
     <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
       <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
@@ -569,34 +599,78 @@ onBeforeUnmount(() => {
            可隐藏列 v-if；每列右缘 5px 拖拽调宽（col-resize），双击重置 -->
       <div class="thead">
         <div class="hcell h-check">
-          <input ref="allCb" type="checkbox" :checked="allChecked" :title="t('col.selectAll')" @click.stop
-            @change="toggleAll" />
+          <input
+            ref="allCb"
+            type="checkbox"
+            :checked="allChecked"
+            :title="t('col.selectAll')"
+            @click.stop
+            @change="toggleAll"
+          />
         </div>
         <div class="hcell h-status">{{ t('col.status') }}</div>
-        <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">{{ t('col.name')
-          }} <span class="arrow">{{ arrow('displayName') }}</span><span class="resizer"
-            @pointerdown="onResizeStart('name', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('name', null)"></span></div>
-        <div v-if="!hiddenCols.addr" class="hcell h-addr sortable" @click="toggleSort('address')">{{ t('col.address') }}
-          <span class="arrow">{{ arrow('address') }}</span><span class="resizer"
-            @pointerdown="onResizeStart('addr', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('addr', null)"></span></div>
-        <div v-if="!hiddenCols.proto" class="hcell h-proto sortable" @click="toggleSort('protocol')">{{
-          t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span><span class="resizer"
-            @pointerdown="onResizeStart('proto', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('proto', null)"></span></div>
+        <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">
+          {{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span
+          ><span
+            class="resizer"
+            @pointerdown="onResizeStart('name', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('name', null)"
+          ></span>
+        </div>
+        <div v-if="!hiddenCols.addr" class="hcell h-addr sortable" @click="toggleSort('address')">
+          {{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span
+          ><span
+            class="resizer"
+            @pointerdown="onResizeStart('addr', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('addr', null)"
+          ></span>
+        </div>
+        <div v-if="!hiddenCols.proto" class="hcell h-proto sortable" @click="toggleSort('protocol')">
+          {{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span
+          ><span
+            class="resizer"
+            @pointerdown="onResizeStart('proto', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('proto', null)"
+          ></span>
+        </div>
         <div class="hcell h-tags">{{ t('col.tags') }}</div>
         <!-- 备注列：文本直显（行内 ellipsis）+ 悬停 Markdown 弹层，不可排序 -->
-        <div v-if="!hiddenCols.note" class="hcell h-note">{{ t('col.note') }}<span class="resizer"
-            @pointerdown="onResizeStart('note', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('note', null)"></span></div>
-        <div v-if="showFolder && !hiddenCols.folder" class="hcell h-folder">{{ t('col.folder') }}<span class="resizer"
-            @pointerdown="onResizeStart('folder', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('folder', null)"></span></div>
-        <div v-if="!hiddenCols.time" class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">{{
-          t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span><span class="resizer"
-            @pointerdown="onResizeStart('time', $event)" @pointermove="onResizeMove" @pointerup="onResizeEnd"
-            @dblclick.stop="setWidth('time', null)"></span></div>
+        <div v-if="!hiddenCols.note" class="hcell h-note">
+          {{ t('col.note')
+          }}<span
+            class="resizer"
+            @pointerdown="onResizeStart('note', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('note', null)"
+          ></span>
+        </div>
+        <div v-if="showFolder && !hiddenCols.folder" class="hcell h-folder">
+          {{ t('col.folder')
+          }}<span
+            class="resizer"
+            @pointerdown="onResizeStart('folder', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('folder', null)"
+          ></span>
+        </div>
+        <div v-if="!hiddenCols.time" class="hcell h-time sortable" @click="toggleSort('lastConnectTime')">
+          {{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span
+          ><span
+            class="resizer"
+            @pointerdown="onResizeStart('time', $event)"
+            @pointermove="onResizeMove"
+            @pointerup="onResizeEnd"
+            @dblclick.stop="setWidth('time', null)"
+          ></span>
+        </div>
         <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
       <!-- >500 行虚拟滚动：wrapper 撑总高 + marginTop 偏移窗口渲染；
@@ -604,41 +678,83 @@ onBeforeUnmount(() => {
            序列 = 文件夹行（双击进入/右键新建/拖入移动）+ 服务器行 -->
       <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
         <template v-for="{ data: row } in virtualRows" :key="rowKey(row)">
-          <FolderRow v-if="row.kind === 'folder'" :folder="row.folder" :show-ds="showDs"
+          <FolderRow
+            v-if="row.kind === 'folder'"
+            :folder="row.folder"
+            :show-ds="showDs"
             :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
-            @open="emit('open-folder', $event)" @context="onFolderContext"
-            @dragover="onFolderDragOver(row.folder, $event)" @dragleave="onFolderDragLeave(row.folder)"
-            @drop="onFolderDrop(row.folder, $event)" />
-          <ServerRow v-else :server="row.server" :selected="checked.has(row.server.id)"
-            :highlighted="!!selection && selection.serverId === row.server.id" :cursor="row.server.id === cursorId"
-            :show-folder="showFolder" :show-ds="showDs" :hidden-cols="hiddenCols" :query="query"
-            :data-id="row.server.id" :draggable="true" :class="{
+            @open="emit('open-folder', $event)"
+            @context="onFolderContext"
+            @dragover="onFolderDragOver(row.folder, $event)"
+            @dragleave="onFolderDragLeave(row.folder)"
+            @drop="onFolderDrop(row.folder, $event)"
+          />
+          <ServerRow
+            v-else
+            :server="row.server"
+            :selected="checked.has(row.server.id)"
+            :highlighted="!!selection && selection.serverId === row.server.id"
+            :cursor="row.server.id === cursorId"
+            :show-folder="showFolder"
+            :show-ds="showDs"
+            :hidden-cols="hiddenCols"
+            :query="query"
+            :data-id="row.server.id"
+            :draggable="true"
+            :class="{
               'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
               'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
-            }" @toggle-select="onToggleSelect(row.server, row.srvIndex)"
-            @row-click="onRowClick(row.server, $event, row.srvIndex)" @connect="emit('connect', row.server.id)"
-            @edit="emit('edit', row.server)" @context-menu="openMenu" @dragstart="onRowDragStart(row.server, $event)"
-            @dragend="onRowDragEnd" @dragover="onRowDragOver(row.server, $event)"
-            @drop="onRowDrop(row.server, $event)" />
+            }"
+            @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+            @row-click="onRowClick(row.server, $event, row.srvIndex)"
+            @connect="emit('connect', row.server.id)"
+            @edit="emit('edit', row.server)"
+            @context-menu="openMenu"
+            @dragstart="onRowDragStart(row.server, $event)"
+            @dragend="onRowDragEnd"
+            @dragover="onRowDragOver(row.server, $event)"
+            @drop="onRowDrop(row.server, $event)"
+          />
         </template>
       </div>
       <template v-for="row in useVirtual ? [] : renderRows" :key="rowKey(row)">
-        <FolderRow v-if="row.kind === 'folder'" :folder="row.folder" :show-ds="showDs"
+        <FolderRow
+          v-if="row.kind === 'folder'"
+          :folder="row.folder"
+          :show-ds="showDs"
           :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
-          @open="emit('open-folder', $event)" @context="onFolderContext"
-          @dragover="onFolderDragOver(row.folder, $event)" @dragleave="onFolderDragLeave(row.folder)"
-          @drop="onFolderDrop(row.folder, $event)" />
-        <ServerRow v-else :server="row.server" :selected="checked.has(row.server.id)"
-          :highlighted="!!selection && selection.serverId === row.server.id" :cursor="row.server.id === cursorId"
-          :show-folder="showFolder" :show-ds="showDs" :hidden-cols="hiddenCols" :query="query" :data-id="row.server.id"
-          :draggable="true" :class="{
+          @open="emit('open-folder', $event)"
+          @context="onFolderContext"
+          @dragover="onFolderDragOver(row.folder, $event)"
+          @dragleave="onFolderDragLeave(row.folder)"
+          @drop="onFolderDrop(row.folder, $event)"
+        />
+        <ServerRow
+          v-else
+          :server="row.server"
+          :selected="checked.has(row.server.id)"
+          :highlighted="!!selection && selection.serverId === row.server.id"
+          :cursor="row.server.id === cursorId"
+          :show-folder="showFolder"
+          :show-ds="showDs"
+          :hidden-cols="hiddenCols"
+          :query="query"
+          :data-id="row.server.id"
+          :draggable="true"
+          :class="{
             'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
             'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
-          }" @toggle-select="onToggleSelect(row.server, row.srvIndex)"
-          @row-click="onRowClick(row.server, $event, row.srvIndex)" @connect="emit('connect', row.server.id)"
-          @edit="emit('edit', row.server)" @context-menu="openMenu" @dragstart="onRowDragStart(row.server, $event)"
-          @dragend="onRowDragEnd" @dragover="onRowDragOver(row.server, $event)"
-          @drop="onRowDrop(row.server, $event)" />
+          }"
+          @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+          @row-click="onRowClick(row.server, $event, row.srvIndex)"
+          @connect="emit('connect', row.server.id)"
+          @edit="emit('edit', row.server)"
+          @context-menu="openMenu"
+          @dragstart="onRowDragStart(row.server, $event)"
+          @dragend="onRowDragEnd"
+          @dragover="onRowDragOver(row.server, $event)"
+          @drop="onRowDrop(row.server, $event)"
+        />
       </template>
       <slot v-if="!renderRows.length" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
@@ -653,8 +769,14 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">
-      <button v-for="it in MENU" :key="it.key" class="ctx-item" :disabled="!it.on" :title="it.tip || it.hint || ''"
-        @click="onMenuAction(it)">
+      <button
+        v-for="it in MENU"
+        :key="it.key"
+        class="ctx-item"
+        :disabled="!it.on"
+        :title="it.tip || it.hint || ''"
+        @click="onMenuAction(it)"
+      >
         <span class="ctx-label">{{ it.label }}</span>
         <span class="ctx-hint">{{ it.hint || '' }}</span>
       </button>
@@ -716,14 +838,30 @@ onBeforeUnmount(() => {
 }
 
 /* 单声明列宽规则单行化：flex 比例列（--c-*-grow=0 时切定宽）与定宽列各一档 */
-.h-status { flex: 0 0 var(--c-status); }
-.h-name { flex: var(--c-name) var(--c-name-grow, 1) 0; }
-.h-addr { flex: var(--c-addr) var(--c-addr-grow, 1) 0; }
-.h-proto { flex: 0 0 var(--c-proto); }
-.h-tags { flex: var(--c-tags) 1 0; }
-.h-note { flex: var(--c-note) var(--c-note-grow, 1) 0; }
-.h-folder { flex: var(--c-folder) var(--c-folder-grow, 1) 0; }
-.h-time { flex: 0 0 var(--c-time); }
+.h-status {
+  flex: 0 0 var(--c-status);
+}
+.h-name {
+  flex: var(--c-name) var(--c-name-grow, 1) 0;
+}
+.h-addr {
+  flex: var(--c-addr) var(--c-addr-grow, 1) 0;
+}
+.h-proto {
+  flex: 0 0 var(--c-proto);
+}
+.h-tags {
+  flex: var(--c-tags) 1 0;
+}
+.h-note {
+  flex: var(--c-note) var(--c-note-grow, 1) 0;
+}
+.h-folder {
+  flex: var(--c-folder) var(--c-folder-grow, 1) 0;
+}
+.h-time {
+  flex: 0 0 var(--c-time);
+}
 .h-act {
   flex: 0 0 var(--c-act);
   justify-content: flex-end;
@@ -746,7 +884,9 @@ onBeforeUnmount(() => {
   opacity: 0.45;
 }
 
-.sortable { cursor: pointer; }
+.sortable {
+  cursor: pointer;
+}
 
 .sortable:hover {
   color: var(--text-1);
@@ -765,7 +905,9 @@ onBeforeUnmount(() => {
 
 /* 虚拟滚动窗口：wrapper 由 useVirtualList 撑总高；行改 border-box 让几何高度
    与 ROW_HEIGHT=36 精确一致（默认 content-box 下 36px+1px 边框=37px 会累积漂移） */
-.virtual-wrap { contain: content; }
+.virtual-wrap {
+  contain: content;
+}
 
 .virtual-wrap :deep(.row) {
   box-sizing: border-box;

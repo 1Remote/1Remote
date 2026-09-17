@@ -41,9 +41,7 @@ const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '')
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）
 const folderText = (s) =>
-  props.showDs
-    ? s.dataSourceName + (s.folderPath ? ' / ' + s.folderPath : '')
-    : (s.folderPath || '—')
+  props.showDs ? s.dataSourceName + (s.folderPath ? ' / ' + s.folderPath : '') : s.folderPath || '—'
 // 标签胶囊：最多 2 个 + 溢出计数（完整列表见 title）
 const overflow = (s) => Math.max(0, s.tags.length - 2)
 // 从未连接 = formatRelativeTime 返回 null 时的占位文案；相对时间显式注入当前 i18n locale
@@ -70,16 +68,35 @@ const barColor = computed(() => opaqueHex(props.server.color))
     <!-- 左侧颜色条：absolute 定位不占 flex 布局，列对齐零位移 -->
     <span v-if="barColor" class="cbar" :style="{ background: barColor }"></span>
     <div class="cell cell-check">
-      <input type="checkbox" class="cb" :checked="selected" :title="t('row.select')" @click.stop @change="emit('toggle-select')" />
+      <input
+        type="checkbox"
+        class="cb"
+        :checked="selected"
+        :title="t('row.select')"
+        @click.stop
+        @change="emit('toggle-select')"
+      />
     </div>
     <div class="cell cell-status"><StatusDot :state="server.connectionState" /></div>
     <div v-if="!hiddenCols || !hiddenCols.name" class="cell cell-name" :title="server.displayName">
       <img v-if="server.iconBase64" class="icon" :src="iconSrc(server)" alt="" />
       <span v-else class="icon icon-fb" :style="tileStyle(server)">{{ initial(server.protocol) }}</span>
-      <span class="name"><template v-for="(seg, i) in nameSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></span>
+      <span class="name"
+        ><template v-for="(seg, i) in nameSegs" :key="i"
+          ><span v-if="seg.hit" class="hl">{{ seg.text }}</span
+          ><template v-else>{{ seg.text }}</template></template
+        ></span
+      >
     </div>
-    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)"><template v-for="(seg, i) in addrSegs" :key="i"><span v-if="seg.hit" class="hl">{{ seg.text }}</span><template v-else>{{ seg.text }}</template></template></div>
-    <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto"><ProtocolBadge :protocol="server.protocol" /></div>
+    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)">
+      <template v-for="(seg, i) in addrSegs" :key="i"
+        ><span v-if="seg.hit" class="hl">{{ seg.text }}</span
+        ><template v-else>{{ seg.text }}</template></template
+      >
+    </div>
+    <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto">
+      <ProtocolBadge :protocol="server.protocol" />
+    </div>
     <div class="cell cell-tags" :title="server.tags.join(t('row.tagSep'))">
       <!-- 循环变量命名 tag：避免遮蔽 i18n 的 t（title 属性在循环外也用到 t） -->
       <span v-for="tag in server.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
@@ -105,8 +122,12 @@ const barColor = computed(() => opaqueHex(props.server.color))
       </n-popover>
       <div v-else class="cell cell-note"></div>
     </template>
-    <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">{{ folderText(server) }}</div>
-    <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">{{ relTime(server) }}</div>
+    <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">
+      {{ folderText(server) }}
+    </div>
+    <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="relTime(server)">
+      {{ relTime(server) }}
+    </div>
     <div class="cell cell-act" @click.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
       <!-- 编辑按钮：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
@@ -115,7 +136,9 @@ const barColor = computed(() => opaqueHex(props.server.color))
         class="act"
         :title="t('row.more')"
         @click="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
-      >⋯</button>
+      >
+        ⋯
+      </button>
     </div>
   </div>
 </template>

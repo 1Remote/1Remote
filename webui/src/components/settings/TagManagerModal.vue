@@ -50,12 +50,15 @@ async function load() {
   }
 }
 
-watch(() => props.show, (open) => {
-  if (open) {
-    renaming.value = null
-    load()
+watch(
+  () => props.show,
+  (open) => {
+    if (open) {
+      renaming.value = null
+      load()
+    }
   }
-})
+)
 onMounted(() => {
   if (props.show) load()
 })
@@ -149,7 +152,7 @@ function onDelete(tg) {
 function connectAll(tg) {
   const target = tg.name.toLowerCase()
   const list = servers.value.filter(
-    (s) => s.dataSourceName === props.ds && (s.tags || []).some((x) => x.toLowerCase() === target),
+    (s) => s.dataSourceName === props.ds && (s.tags || []).some((x) => x.toLowerCase() === target)
   )
   if (!list.length) {
     message.warning(t('tagm.connectNone'))
@@ -208,7 +211,9 @@ function runConnectAll(list) {
           :disabled="busy === tg.name"
           :title="tg.pinned ? t('tagm.unpin') : t('tagm.pin')"
           @click="togglePin(tg)"
-        >📌</button>
+        >
+          📌
+        </button>
 
         <!-- 名称：内联重命名（编辑态换输入框，回车/Esc/失焦收起） -->
         <template v-if="renaming?.from === tg.name">
@@ -229,9 +234,31 @@ function runConnectAll(list) {
         <span class="tag-count" :title="t('tagm.col.count')">{{ tg.count }}</span>
 
         <span class="tag-actions">
-          <button class="act" type="button" :disabled="busy === tg.name" :title="t('tagm.rename')" @click="startRename(tg)">✎</button>
-          <button class="act" type="button" :disabled="busy === tg.name" :title="t('editor.deleteYes')" @click="onDelete(tg)">🗑</button>
-          <button class="act connect" type="button" :disabled="busy === tg.name" :title="t('tagm.connectAll')" @click="connectAll(tg)">
+          <button
+            class="act"
+            type="button"
+            :disabled="busy === tg.name"
+            :title="t('tagm.rename')"
+            @click="startRename(tg)"
+          >
+            ✎
+          </button>
+          <button
+            class="act"
+            type="button"
+            :disabled="busy === tg.name"
+            :title="t('editor.deleteYes')"
+            @click="onDelete(tg)"
+          >
+            🗑
+          </button>
+          <button
+            class="act connect"
+            type="button"
+            :disabled="busy === tg.name"
+            :title="t('tagm.connectAll')"
+            @click="connectAll(tg)"
+          >
             ▸ {{ t('tagm.connectAll') }}
           </button>
         </span>

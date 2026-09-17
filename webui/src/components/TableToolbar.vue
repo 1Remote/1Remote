@@ -16,8 +16,13 @@ const props = defineProps({
   colLabels: { type: Object, default: () => ({}) }, // { colKey: i18n 标签 }
 })
 const emit = defineEmits([
-  'batch-connect', 'bulk-edit', 'export', 'clear-checked',
-  'toggle-custom', 'toggle-col-menu', 'set-hidden',
+  'batch-connect',
+  'bulk-edit',
+  'export',
+  'clear-checked',
+  'toggle-custom',
+  'toggle-col-menu',
+  'set-hidden',
 ])
 const { t } = useI18n()
 
@@ -35,26 +40,36 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
     <!-- 批量条：勾选 ≥1 时出现；连接/批量编辑/导出 emit 到 ServerTable 转发父级执行 -->
     <div v-if="checkedCount" class="batch-bar">
       <span class="bb-count">{{ t('batch.selected', { n: checkedCount }) }}</span>
-      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect')">▶
-        {{ t('batch.connect') }}</button>
+      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect')">
+        ▶ {{ t('batch.connect') }}
+      </button>
       <!-- 批量编辑：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
-      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit')">✎ {{ t('batch.edit')
-      }}</button>
+      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit')">✎ {{ t('batch.edit') }}</button>
       <!-- 导出：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
-      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{
-        t('batch.export') }}</button>
+      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{ t('batch.export') }}</button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>
     <!-- ≡ = 自定义顺序模式开关（开启后行可拖拽重排）；
          ▦ = 列菜单（显隐 + 列宽说明），下拉以本簇为锚向下展开 -->
     <div class="table-tools">
-      <button class="tt-btn" :class="{ active: isCustom }" :title="t('list.customOrder')"
-        @click="emit('toggle-custom')">≡</button>
-      <button class="tt-btn" :class="{ active: colMenu }" :title="t('cols.menu')" @click="emit('toggle-col-menu')">▦</button>
+      <button
+        class="tt-btn"
+        :class="{ active: isCustom }"
+        :title="t('list.customOrder')"
+        @click="emit('toggle-custom')"
+      >
+        ≡
+      </button>
+      <button class="tt-btn" :class="{ active: colMenu }" :title="t('cols.menu')" @click="emit('toggle-col-menu')">
+        ▦
+      </button>
       <div v-if="colMenu" class="col-menu">
         <label v-for="k in HIDEABLE_COLS" :key="k" class="col-item">
-          <input type="checkbox" :checked="!hiddenCols[k]"
-            @change="emit('set-hidden', k, $event.target.checked ? false : true)" />
+          <input
+            type="checkbox"
+            :checked="!hiddenCols[k]"
+            @change="emit('set-hidden', k, $event.target.checked ? false : true)"
+          />
           <span>{{ colLabels[k] }}</span>
         </label>
         <label class="col-item col-item-fixed" :title="t('cols.fixed')">

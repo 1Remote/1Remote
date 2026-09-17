@@ -14,8 +14,7 @@
 // 后端 folderPath 约定 "a/b"（DtoMapper: string.Join("/", TreeNodes)）。
 export const SEP = ' ]=+=+=+=>[ '
 
-export const fullKey = (dsName, folderPath) =>
-  folderPath ? dsName + SEP + folderPath.split('/').join(SEP) : dsName
+export const fullKey = (dsName, folderPath) => (folderPath ? dsName + SEP + folderPath.split('/').join(SEP) : dsName)
 
 /**
  * tree-state 键 → { ds, path }。单段键（数据源根）或无法解析（空）返回 null。
@@ -114,10 +113,11 @@ export function buildTree(servers, datasources, folderPathsByDs) {
   for (const ds of datasources) {
     const root = { ...ds, folders: [], servers: [] }
     const extra = folderPathsByDs?.get?.(ds.name)
-    if (extra) for (const p of extra) {
-      let node = root
-      for (const seg of p.split('/')) node = ensureFolder(node, seg)
-    }
+    if (extra)
+      for (const p of extra) {
+        let node = root
+        for (const seg of p.split('/')) node = ensureFolder(node, seg)
+      }
     for (const s of servers.filter((s) => s.dataSourceName === ds.name)) {
       let node = root
       for (const p of s.folderPath ? s.folderPath.split('/') : []) node = ensureFolder(node, p)

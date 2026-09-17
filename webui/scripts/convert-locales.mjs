@@ -74,7 +74,8 @@ const MAPPING = {
   'settings.f.showSessionIconInSessionWindow': 'Show current session icon instead of the app icon when connected',
   'settings.f.requireSecondaryVerification': 'Windows credentials verification is required to view passwords',
   'settings.f.tabWindowCloseButtonOnLeft': 'Place the close button on the left side to prevent accidental touches',
-  'settings.f.tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow': 'Set focus to local desktop when the mouse is moved out of RDP desktop',
+  'settings.f.tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow':
+    'Set focus to local desktop when the mouse is moved out of RDP desktop',
   'settings.f.copyPortWhenCopyAddress': 'Copy the port along with the address when copying',
   'settings.f.doNotCheckNewVersion': 'Do not check for new version',
   'settings.o.close.exit': 'Exit',
@@ -323,7 +324,11 @@ function toI18nMessage(webKey, v) {
   return out
 }
 
-const bcp47 = (lower) => lower.split('-').map((p, i) => (i === 0 ? p : p.toUpperCase())).join('-')
+const bcp47 = (lower) =>
+  lower
+    .split('-')
+    .map((p, i) => (i === 0 ? p : p.toUpperCase()))
+    .join('-')
 
 // ---------------------------------------------------------------------------
 
@@ -375,7 +380,9 @@ if (process.argv.includes('--check')) {
 }
 
 // ---------------------------------------------------------------------------
-console.log(`web 键总数 ${webKeys.length}，映射 WPF 键 ${Object.keys(MAPPING).length} 个（${(Object.keys(MAPPING).length / webKeys.length * 100).toFixed(1)}%）\n`)
+console.log(
+  `web 键总数 ${webKeys.length}，映射 WPF 键 ${Object.keys(MAPPING).length} 个（${((Object.keys(MAPPING).length / webKeys.length) * 100).toFixed(1)}%）\n`
+)
 console.log('语言      填充(映射命中且该语言有值)  填充率')
 
 for (const lang of GENERATE) {
@@ -395,7 +402,7 @@ for (const lang of GENERATE) {
     }
   }
   writeFileSync(path.join(OUT_DIR, `${lang}.json`), JSON.stringify(out, null, 2) + '\n')
-  const pct = (filled / webKeys.length * 100).toFixed(1)
+  const pct = ((filled / webKeys.length) * 100).toFixed(1)
   console.log(`${lang.padEnd(9)} ${String(filled).padStart(4)}/${webKeys.length}            ${pct}%`)
 }
 

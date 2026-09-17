@@ -10,7 +10,9 @@
  */
 export function splitHighlight(text, query) {
   const s = text == null ? '' : String(text)
-  const tokens = String(query || '').split(/\s+/).filter(Boolean)
+  const tokens = String(query || '')
+    .split(/\s+/)
+    .filter(Boolean)
   if (!tokens.length || !s) return [{ text: s, hit: false }]
 
   // 字符级命中掩码：所有 token 的所有出现（含跨 token 重叠）统一标记后切段

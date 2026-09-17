@@ -102,7 +102,7 @@ const ZONE_RATIO = 0.25
 const moving = ref(false) // 逐台 PUT 进行中（防重入拖拽）
 
 const isDescendantPath = (ancestor, path) => path === ancestor || path.startsWith(ancestor + '/')
-const dsWritable = (dsName) => datasources.value.find(d => d.name === dsName)?.writable !== false
+const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 function isDraggable(row) {
   if (row.kind !== 'folder' || moving.value) return false // 仅文件夹可拖（根/全部数据源不可）
   return dsWritable(row.dsName) // 只读数据源禁止改结构
@@ -175,8 +175,8 @@ async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
   const prefix = src.folder.path + '/'
   const affected = servers.value
-    .filter(s => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
-    .map(s => ({ server: s, rest: s.folderPath.slice(prefix.length).split('/').filter(Boolean) }))
+    .filter((s) => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
+    .map((s) => ({ server: s, rest: s.folderPath.slice(prefix.length).split('/').filter(Boolean) }))
 
   let moved = 0
   const failed = []
@@ -201,12 +201,14 @@ async function applyTreeMove(src, row, zone) {
     if (zone === 'before' || zone === 'after') {
       const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
       if (holder) {
-        const siblings = levelChildren(holder).filter(f => f.path !== src.folder.path)
-        const idx = siblings.findIndex(f => f.path === row.folder.path)
+        const siblings = levelChildren(holder).filter((f) => f.path !== src.folder.path)
+        const idx = siblings.findIndex((f) => f.path === row.folder.path)
         if (idx >= 0) {
           siblings.splice(zone === 'before' ? idx : idx + 1, 0, src.folder)
           const next = { ...orderMap.value }
-          siblings.forEach((f, i) => { next[FOLDER_ID + f.name] = i + 1 })
+          siblings.forEach((f, i) => {
+            next[FOLDER_ID + f.name] = i + 1
+          })
           orderMap.value = next
           orderChanged = true
         }
@@ -324,7 +326,8 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           class="chevron"
           :class="{ open: row.kind === 'all' ? allOpen : isExpanded(row.key) }"
           @click.stop="row.kind === 'all' ? (allOpen = !allOpen) : onToggle(row.key)"
-        >▸</span>
+          >▸</span
+        >
 
         <!-- 全部数据虚拟根：常驻顶部，点击=清除数据源过滤 -->
         <template v-if="row.kind === 'all'">
@@ -341,7 +344,7 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           <span
             class="dot"
             :class="dotClass(row.ds.status)"
-            :title="row.ds.status === 'reconnecting' ? (row.ds.reconnectInfo || t('tree.reconnecting')) : row.ds.status"
+            :title="row.ds.status === 'reconnecting' ? row.ds.reconnectInfo || t('tree.reconnecting') : row.ds.status"
           ></span>
           <span class="count">{{ row.count }}</span>
         </template>
@@ -371,11 +374,15 @@ const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isP
           <span v-if="tg.isPinned" class="pin">📌</span>{{ tg.name }}<span class="tag-count">{{ tg.count }}</span>
         </button>
         <!-- 标签管理：打开模态（TagManagerModal 由 ServerListView 挂载）——ds 取当前树选中 -->
-        <button class="tag-chip tag-manage" :title="t('tagm.title')" @click="emit('manage-tags')">{{ t('tree.manageTags') }}</button>
+        <button class="tag-chip tag-manage" :title="t('tagm.title')" @click="emit('manage-tags')">
+          {{ t('tree.manageTags') }}
+        </button>
       </div>
     </div>
 
-    <button class="collapse-btn" :title="t('tree.collapseTitle')" @click="emit('update:collapsed', true)">« {{ t('tree.collapse') }}</button>
+    <button class="collapse-btn" :title="t('tree.collapseTitle')" @click="emit('update:collapsed', true)">
+      « {{ t('tree.collapse') }}
+    </button>
 
     <!-- 文件夹操作右键菜单（新建/重命名/删除；只读数据源禁用） -->
     <div v-if="ctx" class="tree-ctx" :style="{ left: ctx.x + 'px', top: ctx.y + 'px' }">

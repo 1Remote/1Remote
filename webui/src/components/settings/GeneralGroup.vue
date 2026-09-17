@@ -77,7 +77,9 @@ onMounted(async () => {
   }
 })
 
-const dirty = computed(() => !!snapshot && (form.language !== snapshot.language || FIELD_KEYS.some((k) => form[k] !== snapshot[k])))
+const dirty = computed(
+  () => !!snapshot && (form.language !== snapshot.language || FIELD_KEYS.some((k) => form[k] !== snapshot[k]))
+)
 
 // 语言切换：选择即生效（Web 端无刷新；未装配语言静默保持当前界面语言）
 const langOptions = languageOptions()
@@ -143,10 +145,7 @@ async function onVerificationToggle(next) {
 
 // 开关行清单（模板循环渲染，避免逐个手写重复标记）。requireSecondaryVerification 不在列
 //（立即生效行单独渲染，位置保持在原第 3 个开关处），故拆两段循环夹住单独行
-const SWITCHES = [
-  { key: 'confirmBeforeClosingSession' },
-  { key: 'showSessionIconInSessionWindow' },
-]
+const SWITCHES = [{ key: 'confirmBeforeClosingSession' }, { key: 'showSessionIconInSessionWindow' }]
 const SWITCHES_REST = [
   { key: 'tabWindowCloseButtonOnLeft' },
   { key: 'tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow' },
@@ -163,7 +162,13 @@ const SWITCHES_REST = [
       <div class="row">
         <label class="row-label">{{ t('settings.f.language') }}</label>
         <div class="row-control slim">
-          <n-select size="small" :value="form.language" :options="langOptions" @update:show="shield" @update:value="onLanguageChange" />
+          <n-select
+            size="small"
+            :value="form.language"
+            :options="langOptions"
+            @update:show="shield"
+            @update:value="onLanguageChange"
+          />
         </div>
       </div>
 
@@ -191,7 +196,12 @@ const SWITCHES_REST = [
       <div class="row">
         <label class="row-label">{{ t('settings.f.requireSecondaryVerification') }}</label>
         <div class="row-control">
-          <n-switch size="small" :value="form.requireSecondaryVerification" :loading="verifying" @update:value="onVerificationToggle" />
+          <n-switch
+            size="small"
+            :value="form.requireSecondaryVerification"
+            :loading="verifying"
+            @update:value="onVerificationToggle"
+          />
         </div>
       </div>
 

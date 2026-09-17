@@ -44,7 +44,7 @@ let searchTimer = null
 let searchGen = 0 // 乱序完成保护（与 loadAll 的 gen 同思路）：防抖后连发多请求，晚发的可能先返回
 
 // 输入变化 → 200ms 防抖后才发请求；清空（含纯空白）立即撤销过滤并作废在途请求
-watch(searchQuery, q => {
+watch(searchQuery, (q) => {
   clearTimeout(searchTimer)
   if (!q || !q.trim()) {
     searchGen++ // 在途请求即使返回也因 gen 落后被丢弃，避免清空后旧结果闪回
@@ -61,7 +61,7 @@ async function doSearch(q) {
   try {
     const results = await api.search(q)
     if (my !== searchGen) return // 落后响应丢弃（乱序完成保护）
-    searchedIds.value = new Set(results.map(s => s.id))
+    searchedIds.value = new Set(results.map((s) => s.id))
   } catch (e) {
     if (my === searchGen) {
       console.warn('[useServers] search failed:', e?.message || e)
@@ -119,8 +119,8 @@ export function applyServerFilters(servers, activeTag, searchedIds) {
   let list = servers
   if (activeTag) {
     const t = activeTag.toLowerCase()
-    list = list.filter(s => (s.tags || []).some(tag => tag.toLowerCase() === t))
+    list = list.filter((s) => (s.tags || []).some((tag) => tag.toLowerCase() === t))
   }
-  if (searchedIds) list = list.filter(s => searchedIds.has(s.id))
+  if (searchedIds) list = list.filter((s) => searchedIds.has(s.id))
   return list
 }

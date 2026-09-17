@@ -16,10 +16,16 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="row frow" :class="{ 'drop-into': dropActive }" :title="folder.path"
+  <div
+    class="row frow"
+    :class="{ 'drop-into': dropActive }"
+    :title="folder.path"
     @dblclick="emit('open', folder)"
     @contextmenu.prevent="emit('context', { folder, x: $event.clientX, y: $event.clientY })"
-    @dragover="emit('dragover', $event)" @dragleave="emit('dragleave')" @drop="emit('drop', $event)">
+    @dragover="emit('dragover', $event)"
+    @dragleave="emit('dragleave')"
+    @drop="emit('drop', $event)"
+  >
     <div class="cell cell-check"></div>
     <div class="cell cell-status"></div>
     <div class="cell cell-name f-name">

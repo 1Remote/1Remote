@@ -73,21 +73,21 @@ onMounted(async () => {
   }
 })
 
-const dirty = computed(() =>
-  !!snapshot && (
-    form.launcherEnabled !== snapshot.launcherEnabled
-    || form.modifiersDisplay !== snapshot.modifiersDisplay
-    || form.keyName !== snapshot.keyName
-    || form.showCredentials !== snapshot.showCredentials
-    || form.allowSaveInfoInQuickConnect !== snapshot.allowSaveInfoInQuickConnect
-  ),
+const dirty = computed(
+  () =>
+    !!snapshot &&
+    (form.launcherEnabled !== snapshot.launcherEnabled ||
+      form.modifiersDisplay !== snapshot.modifiersDisplay ||
+      form.keyName !== snapshot.keyName ||
+      form.showCredentials !== snapshot.showCredentials ||
+      form.allowSaveInfoInQuickConnect !== snapshot.allowSaveInfoInQuickConnect)
 )
 
 // ---- 热键录制 ----
 const recording = ref(false)
 const recordInvalid = ref(false)
 const hotkeyText = computed(() =>
-  form.modifiersDisplay && form.keyName ? `${form.modifiersDisplay}+${form.keyName}` : '',
+  form.modifiersDisplay && form.keyName ? `${form.modifiersDisplay}+${form.keyName}` : ''
 )
 
 // 浏览器 e.key → WPF Key 枚举成员名（仅接受字母/数字/F1-F12，其余返回 ''）
@@ -139,13 +139,15 @@ async function save() {
   saving.value = true
   conflict.value = false
   try {
-    applyDto(await api.saveLauncherSettings({
-      launcherEnabled: form.launcherEnabled,
-      hotKeyModifiers: form.modifiersDisplay, // 显示形态直发（后端两种形态都接受）
-      hotKeyKey: form.keyName,
-      showCredentials: form.showCredentials,
-      allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
-    }))
+    applyDto(
+      await api.saveLauncherSettings({
+        launcherEnabled: form.launcherEnabled,
+        hotKeyModifiers: form.modifiersDisplay, // 显示形态直发（后端两种形态都接受）
+        hotKeyKey: form.keyName,
+        showCredentials: form.showCredentials,
+        allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
+      })
+    )
     message.success(t('settings.saved'))
   } catch (e) {
     if (e?.status === 409) {
@@ -188,7 +190,9 @@ const SWITCHES = [
             <button class="hk-box" type="button" :class="{ recording }" @click="toggleRecording">
               {{ recording ? t('settings.l.hotkeyRecording') : hotkeyText }}
             </button>
-            <span class="hk-hint">{{ recordInvalid ? t('settings.l.hotkeyInvalid') : t('settings.l.hotkeyHint') }}</span>
+            <span class="hk-hint">{{
+              recordInvalid ? t('settings.l.hotkeyInvalid') : t('settings.l.hotkeyHint')
+            }}</span>
           </div>
           <p v-if="conflict" class="hk-conflict">{{ t('settings.l.conflict') }}</p>
         </div>
@@ -261,8 +265,13 @@ const SWITCHES = [
   animation: hk-pulse 1.2s ease-in-out infinite;
 }
 @keyframes hk-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 transparent; }
-  50% { box-shadow: 0 0 0 3px var(--accent-container); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 0 3px var(--accent-container);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .hk-box.recording {

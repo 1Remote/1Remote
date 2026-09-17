@@ -35,9 +35,13 @@ const activeTag = ref('') // ''=未按标签过滤
 // 仅在跨过 900 阈值时收起（窄窗内用户手动展开后，同侧宽度微调不反复打回），≥900 不自动展开
 const collapsed = ref(false)
 const { width: winWidth } = useWindowSize()
-watch(winWidth, (w, old) => {
-  if (w < 900 && (old === undefined || old >= 900)) collapsed.value = true
-}, { immediate: true })
+watch(
+  winWidth,
+  (w, old) => {
+    if (w < 900 && (old === undefined || old >= 900)) collapsed.value = true
+  },
+  { immediate: true }
+)
 
 const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
 
@@ -63,7 +67,8 @@ const currentFolders = computed(() => {
   const out = []
   const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
   if (holder) {
-    for (const f of holder.folders) out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
+    for (const f of holder.folders)
+      out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
   }
   return out
 })
@@ -89,11 +94,17 @@ const crumbSegments = computed(() => {
   const sel = selection.value
   const segs = [{ label: t('crumb.allDataSources'), sel: null }]
   if (sel?.dataSourceName) {
-    segs.push({ label: sel.dataSourceName + ' · ' + t('crumb.allServers'), sel: { dataSourceName: sel.dataSourceName, folderPath: '' } })
+    segs.push({
+      label: sel.dataSourceName + ' · ' + t('crumb.allServers'),
+      sel: { dataSourceName: sel.dataSourceName, folderPath: '' },
+    })
     if (sel.folderPath) {
       const parts = sel.folderPath.split('/')
       parts.forEach((p, i) =>
-        segs.push({ label: p, sel: { dataSourceName: sel.dataSourceName, folderPath: parts.slice(0, i + 1).join('/') } })
+        segs.push({
+          label: p,
+          sel: { dataSourceName: sel.dataSourceName, folderPath: parts.slice(0, i + 1).join('/') },
+        })
       )
     }
   }
@@ -101,7 +112,9 @@ const crumbSegments = computed(() => {
 })
 const crumbTitle = computed(() => {
   const sel = selection.value
-  return sel?.dataSourceName ? sel.dataSourceName + (sel.folderPath ? ' / ' + sel.folderPath : '') : t('crumb.allDataSources')
+  return sel?.dataSourceName
+    ? sel.dataSourceName + (sel.folderPath ? ' / ' + sel.folderPath : '')
+    : t('crumb.allDataSources')
 })
 const tableCount = ref(0)
 const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其暴露的菜单/勾选/光标回退方法
@@ -147,9 +160,13 @@ function toggleLocale() {
 // 首启即英语（从未见过非英语界面）回落 zh-CN——与旧版 en↔zh 行为一致，避免按钮空操作。
 // 不落库（与旧版一致，语言持久化由设置页负责）。
 let nonEnglishLocale = 'zh-CN'
-watch(locale, (l) => {
-  if (l !== 'en-US') nonEnglishLocale = l
-}, { immediate: true })
+watch(
+  locale,
+  (l) => {
+    if (l !== 'en-US') nonEnglishLocale = l
+  },
+  { immediate: true }
+)
 // 按钮显示将要切到的语言的自称（语言名不做 i18n，与 LANGUAGES 清单/WPF language_name
 // 同语义）；旧键 statusbar.langEn/langZh 不再使用，locale JSON 中保留不删（避免动生成映射）
 const langNative = (code) => LANGUAGES.find((l) => l.code === code)?.native || 'English'
@@ -158,7 +175,7 @@ const nextLang = computed(() => (locale.value === 'en-US' ? langNative(nonEnglis
 // ---- 连接动作：api.connect → 后端触发 OnRequestServerConnect（fromView="WebUi"），
 // 密码交互与会话窗口由桌面端既有管线处理（Web 侧不感知，spec 约定凭据留在本地）----
 async function onConnect(id) {
-  const name = servers.value.find(s => s.id === id)?.displayName || id
+  const name = servers.value.find((s) => s.id === id)?.displayName || id
   try {
     await api.connect(id)
     message.success(t('toast.connectStarted', { name }))
@@ -301,9 +318,7 @@ function onDelete(server) {
 // 共享值计算需要列表 DTO：按勾选 id 从 servers 快照取（列表 DTO = camelCase 域，
 // 与批量 patch 同域）；快照里找不到的 id（列表恰在勾选后变化）直接跳过，以能取到的为准。
 function openBulkEdit(ids) {
-  const list = (ids || [])
-    .map((id) => servers.value.find((s) => s.id === id))
-    .filter(Boolean)
+  const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
   if (!list.length) return
   editor.value = {
     mode: 'bulk',
@@ -353,7 +368,9 @@ const importModal = ref(false)
         <!-- 可点击面包屑：逐级返回；末段=当前层级 -->
         <div class="crumb" :title="crumbTitle">
           <template v-for="(seg, i) in crumbSegments" :key="i">
-            <button v-if="i < crumbSegments.length - 1" class="crumb-btn" @click="selection = seg.sel">{{ seg.label }}</button>
+            <button v-if="i < crumbSegments.length - 1" class="crumb-btn" @click="selection = seg.sel">
+              {{ seg.label }}
+            </button>
             <span v-else class="crumb-cur">{{ seg.label }}</span>
             <span v-if="i < crumbSegments.length - 1" class="crumb-sep">›</span>
           </template>
@@ -467,7 +484,10 @@ const importModal = ref(false)
         <div class="sb-right">
           <!-- 计数用 vue-i18n 复数形式（en："{n} server | {n} servers"）；zh 无管道单形式同样兼容，
                {m} 需显式传命名参数 + 复数值（隐式仅绑定 n） -->
-          <span>{{ t('statusbar.serverCount', servers.length) }} · {{ t('statusbar.tagCount', { m: tags.length }, tags.length) }}</span>
+          <span
+            >{{ t('statusbar.serverCount', servers.length) }} ·
+            {{ t('statusbar.tagCount', { m: tags.length }, tags.length) }}</span
+          >
           <span class="sb-sse" :title="t('statusbar.sseTip')">
             <span class="sb-dot" :class="connected ? 'ok' : 'bad'"></span>
             {{ connected ? t('statusbar.sseOk') : t('statusbar.sseOff') }}
@@ -655,11 +675,19 @@ const importModal = ref(false)
   margin-left: 28px;
 }
 @keyframes sk-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sk { animation: none; opacity: 0.7; }
+  .sk {
+    animation: none;
+    opacity: 0.7;
+  }
 }
 
 /* ---- 空库引导卡片：居中；新建/导入均已接线，提示行指向桌面启动器热键 ---- */

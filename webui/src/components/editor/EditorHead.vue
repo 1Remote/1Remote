@@ -60,7 +60,8 @@ const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.data
 // ---- 标题 / 协议瓦片 ----
 const title = computed(() => {
   if (isBulk.value) return t('editor.bulkTitle', { n: bulkCount.value })
-  if (isDuplicate.value) return t('editor.title.duplicate', { name: props.initialServer?.displayName || props.displayName || '' })
+  if (isDuplicate.value)
+    return t('editor.title.duplicate', { name: props.initialServer?.displayName || props.displayName || '' })
   if (isCreate.value) return t('editor.title.create', { protocol: props.protocolKey || props.protocol || '?' })
   return t('editor.title.edit', { name: props.initialServer?.displayName || props.displayName || props.serverId })
 })
@@ -80,9 +81,7 @@ async function loadDsOptions() {
   if (!showDsSelect.value) return
   try {
     const list = await api.datasources()
-    const names = (Array.isArray(list) ? list : [])
-      .filter((d) => d.writable !== false)
-      .map((d) => d.name)
+    const names = (Array.isArray(list) ? list : []).filter((d) => d.writable !== false).map((d) => d.name)
     // 当前树选中的 ds 保持默认选中（即使只读也列出：默认值即现状，改选权在用户）
     if (!names.includes(ds.value)) names.unshift(ds.value)
     dsOptions.value = names.map((n) => ({ label: n, value: n }))
@@ -108,13 +107,27 @@ defineExpose({ title })
   <header class="ed-head">
     <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
     <div class="ed-title" :title="title">{{ title }}</div>
-    <n-select v-if="!isBulk" class="ed-proto" size="small" :value="protocolKey || undefined"
-      :options="protocolOptions" :disabled="loading || !!loadError" :title="t('editor.protocol')"
-      @update:value="onProtocolSwitch" />
-    <n-select v-if="showDsSelect && dsOptions.length > 1" v-model:value="ds" class="ed-ds-select" size="small"
-      :options="dsOptions" :title="t('editor.dataSourceLabel')" />
-    <div v-else class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)">{{ isBulk ? bulkDs :
-      ds }}</div>
+    <n-select
+      v-if="!isBulk"
+      class="ed-proto"
+      size="small"
+      :value="protocolKey || undefined"
+      :options="protocolOptions"
+      :disabled="loading || !!loadError"
+      :title="t('editor.protocol')"
+      @update:value="onProtocolSwitch"
+    />
+    <n-select
+      v-if="showDsSelect && dsOptions.length > 1"
+      v-model:value="ds"
+      class="ed-ds-select"
+      size="small"
+      :options="dsOptions"
+      :title="t('editor.dataSourceLabel')"
+    />
+    <div v-else class="ed-ds" :title="t('editor.dataSource') + ': ' + (isBulk ? bulkDs : ds)">
+      {{ isBulk ? bulkDs : ds }}
+    </div>
     <button class="ed-close" type="button" :title="t('editor.close')" @click="emit('close')">✕</button>
   </header>
 </template>

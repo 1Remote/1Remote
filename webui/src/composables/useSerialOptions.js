@@ -16,7 +16,8 @@ let serialOptionsRequested = false
 function ensureSerialOptionsLoaded() {
   if (serialOptionsRequested) return
   serialOptionsRequested = true
-  api.serialOptions()
+  api
+    .serialOptions()
     .then((resp) => {
       serialPortSuggestions.value = Array.isArray(resp?.ports) ? resp.ports : []
       serialBaudRateSuggestions.value = Array.isArray(resp?.baudRates) ? resp.baudRates : []
