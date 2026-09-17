@@ -6,7 +6,7 @@
   "search.placeholder": "Search servers, tags…",
   "search.title": "Ctrl+K to focus · Esc to clear",
   "search.searching": "Searching…",
-  "crumb.allDataSources": "All data sources",
+  "crumb.allDataSources": "All data",
   "crumb.allServers": "All servers",
   "crumb.count": " · {n} servers",
   "crumb.searchChip": "Search filter active",
