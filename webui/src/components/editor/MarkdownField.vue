@@ -29,6 +29,8 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   /** 展示模式（受控）：false = 编辑态 textarea，true = 预览态渲染区（切换按钮在 FormField） */
   preview: { type: Boolean, default: false },
+  /** 编辑态 textarea 的占位文案（FormField 的 placeholderKey 解析值；缺省无占位） */
+  placeholder: { type: String, default: undefined },
 })
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
@@ -39,7 +41,7 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 
 <template>
   <div class="md-field">
-    <!-- 编辑态：等宽 textarea -->
+    <!-- 编辑态：等宽 textarea（placeholder 来自 FormField 的 placeholderKey 透传） -->
     <n-input
       v-if="!preview"
       class="md-editor"
@@ -47,6 +49,7 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
       size="small"
       :rows="5"
       :value="modelValue ?? ''"
+      :placeholder="placeholder"
       :disabled="disabled"
       :input-props="{ spellcheck: false }"
       @update:value="emit('update:modelValue', $event)"

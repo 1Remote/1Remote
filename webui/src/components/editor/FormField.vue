@@ -25,9 +25,11 @@ function ensureSerialOptionsLoaded() {
       serialBaudRateSuggestions.value = Array.isArray(resp?.baudRates) ? resp.baudRates : []
     })
     .catch(() => {
-      // API 失败（含开发模式后端未起）：留空建议，字段退化为纯文本输入
+      // API 失败（含开发模式后端未起）：留空建议，字段退化为纯文本输入；
+      // 复位请求标记让下次渲染重试——否则本会话内建议功能整段失效（批次4-B 评审）
       serialPortSuggestions.value = []
       serialBaudRateSuggestions.value = []
+      serialOptionsRequested = false
     })
 }
 
@@ -261,6 +263,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         size="small"
         :type="showPassword ? 'text' : 'password'"
         :value="modelValue ?? ''"
+        :placeholder="placeholder"
         :disabled="disabled"
         :input-props="{ spellcheck: false }"
         @update:value="emit('update:modelValue', $event)"
@@ -297,12 +300,14 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       />
 
       <!-- markdown：编辑 ⇄ 预览（MarkdownField，fix-batch2 Task C #4；值域同 textarea；
-           fix-batch4 #2 受控化：preview 状态由本组件持有，切换按钮在标签列右侧） -->
+           fix-batch4 #2 受控化：preview 状态由本组件持有，切换按钮在标签列右侧）；
+           placeholder 透传编辑态 textarea（同 placeholderKey，当前 Note 字段无键 → 空） -->
       <MarkdownField
         v-else-if="field.type === FIELD_TYPE.MARKDOWN"
         :model-value="String(modelValue ?? '')"
         :disabled="disabled"
         :preview="mdPreview"
+        :placeholder="placeholder"
         @update:model-value="emit('update:modelValue', $event)"
       />
 

@@ -362,6 +362,18 @@
 
   "editor.ph.serialPort": "e.g. COM1",
   "editor.ph.bitRate": "e.g. 9600",
+  "editor.ph.address": "e.g. 192.168.0.101",
+  "editor.ph.password": "leave it blank and it will prompt for the password later.",
+  "editor.ph.loadBalanceInfo": "tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses",
+  "editor.ph.startupPath": "e.g. /home/user/Desktop",
+  "editor.ph.startupAutoCommand": "e.g. cd /home/user/Desktop/",
+  "editor.ph.sshStartupAutoCommand": "e.g. cd /home/user/Desktop/;./build.sh;",
+  "editor.ph.exePath": "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe",
+  "editor.ph.inheritDefault": "留空以继承默认值",
+  "editor.ph.remoteAppName": "程序名称的名称（如 hello.exe）",
+  "editor.ph.remoteAppProgram": "被远程程序在服务器上的路径（如 ' C:\\\\Apps\\\\hello.exe'）",
+  "editor.ph.appProtocolDisplayName": "可选的",
+  "editor.ph.externalKittySession": "输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置",
 
   "editor.group.basic": "基本信息",
   "editor.group.credential": "凭据",
