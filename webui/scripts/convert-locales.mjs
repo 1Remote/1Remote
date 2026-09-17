@@ -194,6 +194,16 @@ const MAPPING = {
   // fix-batch4 Task A #6：IsPingBeforeConnect（可用性检测行）的控件列说明文字
   'editor.o.checkAddressAvailable': 'Check if address is available before connect',
 
+  // -- 编辑器：输入框 placeholder（editor.ph.*，fix-batch4 Task C）--
+  // 仅 DynamicResource Tag（WPF 14 语言有译文）的键走映射；字面量英文 Tag 的键
+  // （address/password/startupPath 等，WPF 所有语言同显英文）不映射——生成 locale
+  // 回退 en-US 原文，即 14 语言同值。
+  'editor.ph.inheritDefault': 'Leave blank to inherit the default value',
+  'editor.ph.remoteAppName': 'server_editor_remote_app_name_tag',
+  'editor.ph.remoteAppProgram': 'server_editor_remote_app_fullname_tag',
+  'editor.ph.appProtocolDisplayName': 'Optional',
+  'editor.ph.externalKittySession': 'server_editor_advantage_ssh_startup_auto_kitty_session_tip',
+
   // -- 编辑器：分组 / 窗口 --
   'editor.group.basic': 'server_editor_group_title_common',
   'editor.group.credential': 'Credentials',

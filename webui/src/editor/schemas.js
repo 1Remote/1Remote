@@ -48,6 +48,40 @@
  * IsAutoAlternateAddressSwitching（ProtocolBaseWithAddressPort.cs:83-90，备用地址自动切换）
  * 同样有意不入 schema：WPF 在备用地址 UI 暴露该开关，web 子表单暂未等价实现，
  * 值原样透传不丢失；待后续任务补备用地址 UI 时一并接入。
+ *
+ * placeholderKey（fix-batch4 Task C）：对齐 WPF 编辑器各表单 XAML 输入框的 Tag 属性
+ * （WPF 的 placeholder 机制——Tag 即提示文本，无 Tag = 无提示）。键名 editor.ph.<字段
+ * key 驼峰>，locales 端 editor.ph.*；全量对照清单（Ui/View/Editor/Forms/ 逐一复核）：
+ *  - 字面量英文（WPF 所有语言同显英文 → 14 locale 同值）：
+ *      Address（HostView/各 FormView 均为 "e.g. 192.168.0.101"）→ editor.ph.address
+ *      Password（CredentialView.xaml:148 "leave it blank and it will prompt..."，RdpFormView
+ *        同文本的行已整块注释）→ editor.ph.password
+ *      LoadBalanceInfo（RdpFormView.xaml:58 tsv:// 前缀）→ editor.ph.loadBalanceInfo
+ *      StartupPath（FtpFormView:72 / SftpFormView:24 "e.g. /home/user/Desktop"）→ editor.ph.startupPath
+ *      StartupAutoCommand（TelnetFormView:46 "e.g. cd /home/user/Desktop/"）→ editor.ph.startupAutoCommand
+ *        SSH 同名 Tag 文案不同（SshFormView:158 带 ";./build.sh;" 示例）→ 独立键
+ *        editor.ph.sshStartupAutoCommand；Serial 表单该行 WPF 已注释隐藏（字段透传不编辑）
+ *      ExePath（LocalAppFormView:30）→ editor.ph.exePath
+ *      SerialPort/BitRate（"e.g. COM1"/"e.g. 9600"，上一提交已做）
+ *  - DynamicResource（WPF 14 语言有译文 → convert-locales.mjs MAPPING 移植）：
+ *      RemoteApplicationName/Program（RdpAppFormView:65/77）→ editor.ph.remoteAppName /
+ *        editor.ph.remoteAppProgram（WPF 键 server_editor_remote_app_name_tag /
+ *        server_editor_remote_app_fullname_tag）
+ *      AlternateCredentials 子表单行 Address/Port/UserName/Password/PrivateKeyPath
+ *        （AlternativeCredentialEditView 5 处同 Tag）→ editor.ph.inheritDefault（WPF 键
+ *        'Leave blank to inherit the default value'；行内 Name 无 Tag 不加）
+ *      ExternalKittySessionConfigPath（SshFormView:169 / SerialFormView:97）→
+ *        editor.ph.externalKittySession（WPF 键 server_editor_advantage_ssh_startup_auto_kitty_session_tip）
+ *      AppProtocolDisplayName（LocalAppFormView:56）→ editor.ph.appProtocolDisplayName（WPF 键 Optional）
+ *  - 有意不加 placeholder 的字段（与 WPF 一致显示为空；naive 默认 "Please Input" 已在
+ *    App.vue 的 locale 覆盖中清空）：
+ *      LocalApp 连接组 Address/Port/UserName/Password/PrivateKey：WPF Tag 是 {Binding
+ *        HintHostName} 等动态宏推导提示（依赖 ArgumentList 里的宏引用，静态 schema 无法
+ *        表达）→ 跳过不实现，记录在案；
+ *      Credential 选择器：CredentialPicker 自带 editor.credSelectHint（WPF 同键译文）；
+ *      Domain/网关四字段/其余无 Tag 字段：WPF 无 Tag → 不加。
+ *  - BULK_FIELDS（批量域）不加：字段形态与单机编辑不同（共享值/覆盖语义），WPF 批量
+ *    编辑弹窗无对应 Tag。
  */
 import { FIELD } from './fieldTypes.js'
 
@@ -182,7 +216,8 @@ function basicGroup({ withAddressPort = true } = {}) {
   ]
   if (withAddressPort) {
     fields.push(
-      { key: 'Address', type: FIELD.TEXT, required: true },
+      // placeholder：各协议表单的 Address Tag 均为 "e.g. 192.168.0.101"（文件头清单）
+      { key: 'Address', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.address' },
       // C# Port 是 string（ProtocolBaseWithAddressPort.cs:49），数字输入但按字符串写回
       { key: 'Port', type: FIELD.NUMBER, required: true, asString: true },
       // 可用性检测开关紧跟地址/端口正下方（对齐 WPF HostView.xaml:29-38 的行序，
@@ -247,13 +282,15 @@ function alternateCredentialsField() {
         // required：WPF 备用凭据弹窗 IDataErrorInfo 强制 Name 非空（AlternativeCredentialEditViewModel.cs:275）。
         // 子表单内 UI 只标 *，非空校验由保存流/后端把关（AlternateCredentials 数组反序列化不逐行校验，
         // 空名行会在保存时被整体拒绝或按后端行为处理——Task 8 保存错误提示承接）
+        // placeholder：WPF 备用凭据弹窗 5 个可继承字段同 Tag（AlternativeCredentialEditView，
+        // 文件头清单）；Name 无 Tag 不加
         { key: 'Name', type: FIELD.TEXT, required: true },
-        { key: 'Address', type: FIELD.TEXT },
+        { key: 'Address', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
         // Credential.Port 是 string（Credential.cs:81），子表单内保持文本不转数字
-        { key: 'Port', type: FIELD.TEXT },
-        { key: 'UserName', type: FIELD.TEXT },
-        { key: 'Password', type: FIELD.PASSWORD },
-        { key: 'PrivateKeyPath', type: FIELD.TEXT },
+        { key: 'Port', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
+        { key: 'UserName', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
+        { key: 'Password', type: FIELD.PASSWORD, placeholderKey: 'editor.ph.inheritDefault' },
+        { key: 'PrivateKeyPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
       ],
     },
   }
@@ -280,7 +317,8 @@ function alternateCredentialsField() {
  *   prepend: 组首额外字段（自动标 'pre'，RDP 的 Domain/LoadBalanceInfo）。
  */
 function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
-  const password = { key: 'Password', type: FIELD.PASSWORD, credRole: 'identity' }
+  // placeholder：WPF CredentialView.xaml:148 的 Password Tag（各协议共用，文件头清单）
+  const password = { key: 'Password', type: FIELD.PASSWORD, credRole: 'identity', placeholderKey: 'editor.ph.password' }
   if (withPrivateKey) {
     password.visibleWhen = { field: 'UsePrivateKeyForConnect', notIn: [true] }
   }
@@ -505,6 +543,8 @@ function serialGroup() {
  * AlternateCredentials 跟随 WPF：LocalApp 继承 ProtocolBaseWithAddressPortUserPwd，
  * WPF 在 Connection 区尾部展示备用凭据列表（LocalAppFormView.xaml:163）→ web 移入独立
  * 备用连接组（alternateGroup，fix-batch1 Task 3 #7）。
+ * placeholder：本组五字段的 WPF Tag 是 {Binding HintHostName} 等动态宏推导提示
+ * （依赖 ArgumentList 的宏引用，静态 schema 无法表达）→ 不加 placeholderKey（文件头清单）。
  */
 function localAppConnectionGroup() {
   return {
@@ -562,10 +602,11 @@ export const PROTOCOLS = {
     groups: [
       basicGroup(),
       credentialGroup({
-        // Domain/LoadBalanceInfo（RDP.cs:129/137）位于 WPF Connection 组的凭据区之前
+        // Domain/LoadBalanceInfo（RDP.cs:129/137）位于 WPF Connection 组的凭据区之前。
+        // placeholder：LoadBalanceInfo 的 tsv:// 前缀 Tag（RdpFormView.xaml:58）；Domain 无 Tag
         prepend: [
           { key: 'Domain', type: FIELD.TEXT },
-          { key: 'LoadBalanceInfo', type: FIELD.TEXT },
+          { key: 'LoadBalanceInfo', type: FIELD.TEXT, placeholderKey: 'editor.ph.loadBalanceInfo' },
         ],
       }),
       alternateGroup(),
@@ -609,9 +650,12 @@ export const PROTOCOLS = {
             { value: 2, labelKey: 'editor.o.sshVersion.V2' },
           ],
         },
-        { key: 'StartupAutoCommand', type: FIELD.TEXT },
+        // placeholder：SSH 的 StartupAutoCommand Tag 带 ";./build.sh;" 示例（SshFormView:158，
+        // 与 Telnet 文案不同 → 独立键）；ExternalKittySessionConfigPath 的 Tag =
+        // kitty session tip（SshFormView:169，14 语言 DynamicResource）
+        { key: 'StartupAutoCommand', type: FIELD.TEXT, placeholderKey: 'editor.ph.sshStartupAutoCommand' },
         { key: 'OpenSftpOnConnected', type: FIELD.SWITCH },
-        { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT },
+        { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' },
       ]),
       // ExternalSessionConfigPath（ExternalKitty 的回退取值属性）透传不编辑
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
@@ -632,7 +676,8 @@ export const PROTOCOLS = {
       basicGroup(),
       credentialGroup({ withPrivateKey: true }),
       alternateGroup(),
-      behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
+      // placeholder：StartupPath Tag "e.g. /home/user/Desktop"（SftpFormView:24，文件头清单）
+      behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.startupPath' }]),
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
@@ -651,7 +696,8 @@ export const PROTOCOLS = {
       // FTP 未覆写 ShowPrivateKeyInput()（基类默认 false），无私钥两件套
       credentialGroup(),
       alternateGroup(),
-      behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT }]),
+      // placeholder：StartupPath Tag "e.g. /home/user/Desktop"（FtpFormView:72，文件头清单）
+      behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.startupPath' }]),
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
@@ -704,8 +750,9 @@ export const PROTOCOLS = {
       basicGroup(),
       alternateGroup(),
       // WPF 优势组只有 StartupAutoCommand（TelnetFormView.xaml:39-50）；
-      // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传
-      behaviorGroup([{ key: 'StartupAutoCommand', type: FIELD.TEXT }]),
+      // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传。
+      // placeholder：Tag "e.g. cd /home/user/Desktop/"（TelnetFormView:46，文件头清单）
+      behaviorGroup([{ key: 'StartupAutoCommand', type: FIELD.TEXT, placeholderKey: 'editor.ph.startupAutoCommand' }]),
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
   },
@@ -732,8 +779,9 @@ export const PROTOCOLS = {
     groups: [
       basicGroup({ withAddressPort: false }),
       serialGroup(),
-      // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）
-      behaviorGroup([{ key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT }]),
+      // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）；
+      // placeholder = kitty session tip（SerialFormView:97，14 语言 DynamicResource）
+      behaviorGroup([{ key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' }]),
     ],
   },
 
@@ -760,12 +808,13 @@ export const PROTOCOLS = {
       credentialGroup(),
       alternateGroup(),
       {
-        // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）
+        // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）；
+        // placeholder = WPF 两键 Tag 的 14 语言译文（RdpAppFormView:65/77，文件头清单）
         id: 'remote',
         labelKey: 'editor.group.remote',
         fields: [
-          { key: 'RemoteApplicationName', type: FIELD.TEXT, required: true },
-          { key: 'RemoteApplicationProgram', type: FIELD.TEXT, required: true },
+          { key: 'RemoteApplicationName', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.remoteAppName' },
+          { key: 'RemoteApplicationProgram', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.remoteAppProgram' },
         ],
       },
       {
@@ -819,11 +868,13 @@ export const PROTOCOLS = {
         id: 'exe',
         labelKey: 'editor.group.exe',
         fields: [
-          // IDataErrorInfo：ExePath 必填（AppProtocol.cs:206-211）
-          { key: 'ExePath', type: FIELD.TEXT, required: true },
+          // IDataErrorInfo：ExePath 必填（AppProtocol.cs:206-211）；
+          // placeholder：Tag "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"（LocalAppFormView:30）
+          { key: 'ExePath', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.exePath' },
           { key: 'RunWithHosting', type: FIELD.SWITCH },
-          // 自定义协议显示名（LocalAppFormView.xaml:52-60，可选项）
-          { key: 'AppProtocolDisplayName', type: FIELD.TEXT },
+          // 自定义协议显示名（LocalAppFormView.xaml:52-60，可选项）；
+          // placeholder = DynamicResource Optional（LocalAppFormView:56，14 语言译文）
+          { key: 'AppProtocolDisplayName', type: FIELD.TEXT, placeholderKey: 'editor.ph.appProtocolDisplayName' },
         ],
       },
       {

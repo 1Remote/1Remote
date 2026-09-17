@@ -8,8 +8,18 @@ import { useEditorBus } from './composables/editorBus'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
 const { requestNewServer, requestImport } = useEditorBus()
-// naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）
-const naiveLocale = computed(() => (locale.value === 'en-US' ? enUS : zhCN))
+// naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）。
+// Input/Select 的默认 placeholder（enUS "Please Input"/"Please Select"、zhCN "请输入"/"请选择"）
+// 清空为 ''：WPF 表单无 Tag 的输入框不显示任何提示文本，web 未提供 placeholderKey 的字段
+// 同样应为空才对齐；有键的字段由 FormField 显式传 :placeholder，不受该默认影响（fix-batch4 Task C）。
+const naiveLocale = computed(() => {
+  const base = locale.value === 'en-US' ? enUS : zhCN
+  return {
+    ...base,
+    Input: { ...base.Input, placeholder: '' },
+    Select: { ...base.Select, placeholder: '' },
+  }
+})
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 

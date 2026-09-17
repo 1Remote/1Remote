@@ -362,6 +362,18 @@
 
   "editor.ph.serialPort": "e.g. COM1",
   "editor.ph.bitRate": "e.g. 9600",
+  "editor.ph.address": "e.g. 192.168.0.101",
+  "editor.ph.password": "leave it blank and it will prompt for the password later.",
+  "editor.ph.loadBalanceInfo": "tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses",
+  "editor.ph.startupPath": "e.g. /home/user/Desktop",
+  "editor.ph.startupAutoCommand": "e.g. cd /home/user/Desktop/",
+  "editor.ph.sshStartupAutoCommand": "e.g. cd /home/user/Desktop/;./build.sh;",
+  "editor.ph.exePath": "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe",
+  "editor.ph.inheritDefault": "Leave blank to inherit the default value",
+  "editor.ph.remoteAppName": "Name of the app (e.g. hello)",
+  "editor.ph.remoteAppProgram": "Full exe path on the server (e.g. C:\\Apps\\hello.exe)",
+  "editor.ph.appProtocolDisplayName": "Optional",
+  "editor.ph.externalKittySession": "Use external configuration by selecting a session file path for KiTTY",
 
   "editor.group.basic": "Basic",
   "editor.group.credential": "Credentials",
