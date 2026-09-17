@@ -226,6 +226,7 @@ function onTopbarDblClick(e) {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  width: 420px; /* absolute+left 定位下 width:auto 会 shrink-to-fit（收官评审问题1），须显式定宽 */
   max-width: min(420px, max(calc(100vw - 360px), 160px));
   display: flex;
   align-items: center;
