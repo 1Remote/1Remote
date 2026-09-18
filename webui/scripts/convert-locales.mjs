@@ -90,19 +90,6 @@ const MAPPING = {
   // -- 编辑器：凭据/批量 --
   'editor.credSelectHint': 'Select credentials within the same database',
   'editor.differentValues': 'server_editor_different_options',
-  'editor.bulkField.displayName': 'Name',
-  'editor.bulkField.note': 'Note',
-  'editor.bulkField.tags': 'Tags',
-  'editor.bulkField.colorHex': 'Color',
-  'editor.bulkField.iconBase64': 'Icon',
-  'editor.bulkField.address': 'Hostname',
-  'editor.bulkField.port': 'Port',
-  'editor.bulkField.userName': 'User',
-  'editor.bulkField.password': 'Password',
-  'editor.bulkField.askPasswordWhenConnect': 'Ask for password when open connect',
-  'editor.bulkField.startupAutoCommand': 'server_editor_advantage_ssh_startup_auto_command',
-  'editor.bulkField.startupPath': 'server_editor_advantage_sftp_startup_path',
-  'editor.bulkField.rdpFileAdditionalSettings': 'Additional settings',
 
   // -- 编辑器：字段标签（editor.f.*）--
   'editor.f.AddBlankAfterKey': 'append blank after prefix',
@@ -544,7 +531,7 @@ const OVERRIDES = {
       '\u6c92\u6709\u53ef\u5132\u5b58\u7684\u8b8a\u66f4\uff1a\u5148\u9ede\u300c\u8986\u5beb\u300d\u518d\u4fee\u6539\u6b04\u4f4d',
     'editor.bulkMixedDs':
       '\u6240\u9078\u4f3a\u670d\u5668\u8de8\u8d8a\u591a\u500b\u8cc7\u6599\u4f86\u6e90\uff1b\u6279\u6b21\u7de8\u8f2f\u50c5\u652f\u63f4\u540c\u4e00\u8cc7\u6599\u4f86\u6e90',
-    'editor.bulkField.inheritedCredentialName': '\u7e7c\u627f\u6191\u8b49',
+    'editor.bulkMixedProtocols': '所選伺服器協定不完全相同：僅顯示各協定共有的選項，其餘選項保持不變。',
     'editor.f.AppProtocolDisplayName': '\u5354\u5b9a\u986f\u793a\u540d\u7a31',
     'editor.f.BitRate': '\u9b91\u7387',
     'editor.f.DataBits': '\u8cc7\u6599\u4f4d\u5143',
@@ -839,7 +826,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': 'Aktualizováno serverů: {n}',
     'editor.bulkNoChanges': 'Žádné změny k uložení: nejdřív klikněte na „Přepsat“ a upravte pole',
     'editor.bulkMixedDs': 'Výběr zahrnuje více zdrojů dat; hromadná úprava vyžaduje jediný zdroj',
-    'editor.bulkField.inheritedCredentialName': 'Zděděná pověření',
+    'editor.bulkMixedProtocols':
+      'Vybrané servery používají různé protokoly; zobrazují se jen možnosti společné pro všechny. Ostatní zůstanou beze změn.',
     'editor.f.AppProtocolDisplayName': 'Zobrazovaný název protokolu',
     'editor.f.BitRate': 'Přenosová rychlost',
     'editor.f.DataBits': 'Datové bity',
@@ -1127,7 +1115,8 @@ const OVERRIDES = {
       'Keine zu speichernden Änderungen: Klicken Sie zuerst auf „Überschreiben“ und bearbeiten Sie dann das Feld',
     'editor.bulkMixedDs':
       'Die Auswahl umfasst mehrere Datenquellen; Massenbearbeitung erfordert eine einzelne Datenquelle',
-    'editor.bulkField.inheritedCredentialName': 'Geerbte Anmeldeinformationen',
+    'editor.bulkMixedProtocols':
+      'Die ausgewählten Server verwenden unterschiedliche Protokolle; es werden nur gemeinsame Optionen angezeigt. Die übrigen bleiben unverändert.',
     'editor.f.AppProtocolDisplayName': 'Protokollanzeigename',
     'editor.f.BitRate': 'Baudrate',
     'editor.f.DataBits': 'Datenbits',
@@ -1413,7 +1402,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} servidores actualizados',
     'editor.bulkNoChanges': 'No hay cambios para guardar: primero tocá “Sobrescribir” y editá el campo',
     'editor.bulkMixedDs': 'La selección abarca varias fuentes de datos; la edición masiva requiere una única fuente',
-    'editor.bulkField.inheritedCredentialName': 'Credencial heredada',
+    'editor.bulkMixedProtocols':
+      'Los servidores seleccionados usan distintos protocolos; solo se muestran las opciones comunes a todos. El resto queda sin cambios.',
     'editor.f.AppProtocolDisplayName': 'Nombre visible del protocolo',
     'editor.f.BitRate': 'Baudios',
     'editor.f.DataBits': 'Bits de datos',
@@ -1701,7 +1691,8 @@ const OVERRIDES = {
       "Aucune modification à enregistrer : cliquez d'abord sur « Écraser » puis modifiez le champ",
     'editor.bulkMixedDs':
       "La sélection s'étend sur plusieurs sources de données ; la modification groupée exige une seule source",
-    'editor.bulkField.inheritedCredentialName': 'Identifiants hérités',
+    'editor.bulkMixedProtocols':
+      'Les serveurs sélectionnés utilisent des protocoles différents ; seules les options communes à tous sont affichées. Les autres restent inchangées.',
     'editor.f.AppProtocolDisplayName': 'Nom affiché du protocole',
     'editor.f.BitRate': 'Débit en bauds',
     'editor.f.DataBits': 'Bits de données',
@@ -1987,7 +1978,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': 'Actualizáronse {n} servidores',
     'editor.bulkNoChanges': 'Non hai cambios para gardar: primeiro preme «Sobrescribir» e edita o campo',
     'editor.bulkMixedDs': 'A selección abrangue varias fontes de datos; a edición en bloque require unha única fonte',
-    'editor.bulkField.inheritedCredentialName': 'Credencial herdada',
+    'editor.bulkMixedProtocols':
+      'Os servidores seleccionados usan protocolos distintos; só se mostran as opcións comúns a todos. O resto permanece sen cambios.',
     'editor.f.AppProtocolDisplayName': 'Nome visible do protocolo',
     'editor.f.BitRate': 'Velocidade en baudios',
     'editor.f.DataBits': 'Bits de datos',
@@ -2275,7 +2267,8 @@ const OVERRIDES = {
     'editor.bulkNoChanges': 'Nessuna modifica da salvare: prima fai clic su “Sovrascrivi” e modifica il campo',
     'editor.bulkMixedDs':
       'La selezione si estende su più origini dati; la modifica in blocco richiede una singola origine',
-    'editor.bulkField.inheritedCredentialName': 'Credenziali ereditate',
+    'editor.bulkMixedProtocols':
+      'I server selezionati usano protocolli diversi; vengono mostrate solo le opzioni comuni a tutti. Le altre restano invariate.',
     'editor.f.AppProtocolDisplayName': 'Nome visualizzato del protocollo',
     'editor.f.BitRate': 'Baud rate',
     'editor.f.DataBits': 'Bit dati',
@@ -2560,7 +2553,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': 'Zaktualizowano serwery: {n}',
     'editor.bulkNoChanges': 'Brak zmian do zapisania: najpierw kliknij „Nadpisz” i edytuj pole',
     'editor.bulkMixedDs': 'Zaznaczenie obejmuje wiele źródeł danych; edycja masowa wymaga jednego źródła',
-    'editor.bulkField.inheritedCredentialName': 'Dziedziczone poświadczenia',
+    'editor.bulkMixedProtocols':
+      'Wybrane serwery używają różnych protokołów; pokazywane są tylko opcje wspólne dla wszystkich. Pozostałe pozostaną bez zmian.',
     'editor.f.AppProtocolDisplayName': 'Nazwa wyświetlana protokołu',
     'editor.f.BitRate': 'Prędkość transmisji',
     'editor.f.DataBits': 'Bity danych',
@@ -2844,7 +2838,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} servidores atualizados',
     'editor.bulkNoChanges': 'Nenhuma alteração a salvar: primeiro clique em “Sobrescrever” e edite o campo',
     'editor.bulkMixedDs': 'A seleção abrange várias fontes de dados; a edição em massa exige uma única fonte',
-    'editor.bulkField.inheritedCredentialName': 'Credencial herdada',
+    'editor.bulkMixedProtocols':
+      'Os servidores selecionados usam protocolos diferentes; apenas as opções comuns a todos são exibidas. As demais permanecem inalteradas.',
     'editor.f.AppProtocolDisplayName': 'Nome de exibição do protocolo',
     'editor.f.BitRate': 'Taxa de transmissão',
     'editor.f.DataBits': 'Bits de dados',
@@ -3128,7 +3123,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} servidores atualizados',
     'editor.bulkNoChanges': 'Sem alterações a guardar: primeiro clique em “Substituir” e edite o campo',
     'editor.bulkMixedDs': 'A seleção abrange várias fontes de dados; a edição em massa requer uma única fonte',
-    'editor.bulkField.inheritedCredentialName': 'Credencial herdada',
+    'editor.bulkMixedProtocols':
+      'Os servidores selecionados utilizam protocolos diferentes; apenas são apresentadas as opções comuns a todos. As restantes permanecem inalteradas.',
     'editor.f.AppProtocolDisplayName': 'Nome de apresentação do protocolo',
     'editor.f.BitRate': 'Taxa de transmissão',
     'editor.f.DataBits': 'Bits de dados',
@@ -3415,7 +3411,8 @@ const OVERRIDES = {
     'editor.bulkUpdated': 'Обновлено серверов: {n}',
     'editor.bulkNoChanges': 'Нет изменений для сохранения: сначала нажмите «Перезаписать» и измените поле',
     'editor.bulkMixedDs': 'Выбор охватывает несколько источников данных; для группового изменения нужен один источник',
-    'editor.bulkField.inheritedCredentialName': 'Унаследованные учетные данные',
+    'editor.bulkMixedProtocols':
+      'Выбранные серверы используют разные протоколы; показываются только общие для всех параметры. Остальные остаются без изменений.',
     'editor.f.AppProtocolDisplayName': 'Отображаемое имя протокола',
     'editor.f.BitRate': 'Скорость (бод)',
     'editor.f.DataBits': 'Биты данных',
@@ -3736,7 +3733,8 @@ const OVERRIDES = {
       '\u4fdd\u5b58\u3059\u308b\u5909\u66f4\u304c\u3042\u308a\u307e\u305b\u3093\uff1a\u5148\u306b\u300c\u4e0a\u66f8\u304d\u300d\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304b\u3089\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u7de8\u96c6\u3057\u3066\u304f\u3060\u3055\u3044',
     'editor.bulkMixedDs':
       '\u9078\u629e\u7bc4\u56f2\u304c\u8907\u6570\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u307e\u305f\u304c\u3063\u3066\u3044\u307e\u3059\u3002\u4e00\u62ec\u7de8\u96c6\u306b\u306f\u5358\u4e00\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u5fc5\u8981\u3067\u3059',
-    'editor.bulkField.inheritedCredentialName': '\u7d99\u627f\u3055\u308c\u305f\u8cc7\u683c\u60c5\u5831',
+    'editor.bulkMixedProtocols':
+      '選択したサーバーのプロトコルが異なるため、共通のオプションのみ表示されます。その他は変更されません。',
     'editor.f.AppProtocolDisplayName': '\u30d7\u30ed\u30c8\u30b3\u30eb\u8868\u793a\u540d',
     'editor.f.BitRate': '\u30dc\u30fc\u30ec\u30fc\u30c8',
     'editor.f.DataBits': '\u30c7\u30fc\u30bf\u30d3\u30c3\u30c8',
