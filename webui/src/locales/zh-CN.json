@@ -519,5 +519,20 @@
   "settings.r.f.arguments": "启动参数",
   "settings.r.f.env": "环境变量",
   "settings.r.f.envHint": "每行一个 KEY=VALUE",
-  "settings.r.loadFailed": "加载运行器配置失败"
+  "settings.r.loadFailed": "加载运行器配置失败",
+"settings.r.add": "添加运行器",
+"settings.r.addTitle": "新增 runner 名",
+"settings.r.nameRequired": "不能为空！",
+"settings.r.nameExists": "`{name}`已经存在！",
+"settings.r.deleteTitle": "删除运行器",
+"settings.r.deleteConfirm": "确定删除运行器「{name}」？此操作不可撤销。",
+"settings.r.internalNoDelete": "内置运行器不可删除。",
+"settings.r.f.theme": "主题",
+"settings.r.f.font": "字体",
+"settings.r.f.fontSize": "字体大小",
+"settings.r.f.charset": "字符集",
+"settings.r.f.argsPrivateKey": "通过私钥登录",
+"settings.r.f.special": "特殊字符",
+"settings.r.f.specialHint": "特殊字符（如用户名中的 @）可能需要用 %XX 语法转义。每行一个 KEY=VALUE，如 @=%40",
+"settings.r.f.macroHint": "可用宏："
 }

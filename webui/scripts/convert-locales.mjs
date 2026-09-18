@@ -266,6 +266,15 @@ const MAPPING = {
   'settings.r.internal': 'Default',
   'settings.r.f.arguments': 'Cmd parameter',
   'settings.r.f.env': 'Environment variables',
+  // fix batch7 Task E #13/#14：PuTTY 主题/字体/字号、私钥参数、增删校验文案（WPF 运行器
+  // 设置页词条 1:1；主题/字体/字符集为下拉标签，字号自由数字）
+  'settings.r.addTitle': 'New runner name',
+  'settings.r.nameRequired': 'Can not be empty!',
+  'settings.r.nameExists': 'XXX is already existed!',
+  'settings.r.f.theme': 'Themes',
+  'settings.r.f.font': 'Font',
+  'settings.r.f.fontSize': 'Font size',
+  'settings.r.f.argsPrivateKey': 'Login with ssh private key',
 
   // -- 关于页（fix batch6 Task D #7）：5 个有 WPF 词条的键，14 语言文案从
   //    AboutPageView.xaml 的 DynamicResource 键移植；纯技术标签（Author/Support/
@@ -282,6 +291,7 @@ const MAPPING = {
 // WPF {0}/{1} → web 具名占位符（仅当目标 WPF 键的值含 {N} 时需要）
 const PLACEHOLDERS = {
   'tree.deleteFolderConfirm': ['{name}', '{n}'], // {0}=文件夹名，{1}=服务器数
+  'settings.r.nameExists': ['{name}'], // {0}=运行器名（WPF XXX is already existed!）
 }
 const FALLBACK_PARAMS = ['{n}', '{m}']
 
@@ -301,6 +311,19 @@ const OVERRIDES = {
   'zh-TW': {
     // 搜尋伺服器（Ctrl+F）
     'search.placeholder': '\u641c\u5c0b\u4f3a\u670d\u5668\uff08Ctrl+F\uff09',
+    // fix batch7 Task E #13/#14\uff1aweb \u5c08\u6709\u9375\uff08\u589e\u522a\u904b\u884c\u5668\u6309\u9215/\u78ba\u8a8d/\u5167\u5efa\u4e0d\u53ef\u522a\u63d0\u793a\u3001\u5b57\u5143\u96c6\u3001
+    // \u7279\u6b8a\u5b57\u5143\u3001\u5b8f\u63d0\u793a\uff09\u2014\u2014WPF \u7121\u5c0d\u61c9\u689d\u76ee\uff0c\u767b\u8a18\u5f8c\u518d\u751f\u6210\u624d\u4e0d\u6703\u56de\u843d en-US\uff08\u503c\u4fdd\u6301 \u \u8f49\u7fa9\uff0c
+    // \u53ef\u8b80\u5f62\u5f0f\u898b\u63d0\u4ea4\u8aaa\u660e\uff09
+    'settings.r.add': '\u65b0\u589e\u57f7\u884c\u5668',
+    'settings.r.deleteTitle': '\u522a\u9664\u57f7\u884c\u5668',
+    'settings.r.deleteConfirm':
+      '\u522a\u9664\u57f7\u884c\u5668\u300c{name}\u300d\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u92b7\u3002',
+    'settings.r.internalNoDelete': '\u5167\u5efa\u57f7\u884c\u5668\u4e0d\u53ef\u522a\u9664\u3002',
+    'settings.r.f.charset': '\u5b57\u5143\u96c6',
+    'settings.r.f.special': '\u7279\u6b8a\u5b57\u5143',
+    'settings.r.f.specialHint':
+      '\u7279\u6b8a\u5b57\u5143\uff08\u5982\u4f7f\u7528\u8005\u540d\u7a31\u4e2d\u7684 @\uff09\u53ef\u80fd\u9700\u8981\u7528 %XX \u8a9e\u6cd5\u8f49\u7fa9\uff0c\u6bcf\u884c\u4e00\u500b KEY=VALUE\uff0c\u4f8b\u5982 @=%40',
+    'settings.r.f.macroHint': '\u53ef\u7528\u5de8\u96c6\uff1a',
   },
 }
 
@@ -327,12 +350,17 @@ function parseXaml(file) {
   return dict
 }
 
-/** WPF 值 → vue-i18n 消息：{N} 转具名占位符；残留特殊字符用字面量语法转义 */
+/** WPF 值 → vue-i18n 消息：{N} 转具名占位符；残留特殊字符用字面量语法转义。
+ * 修复（fix batch7 Task E 顺带）：原实现 for-of 迭代器与手工跳读 i 并行推进——命中 {N}
+ * 替换并 i+=len 后，迭代器仍按原串顺序吐出占位符剩余字符（如 {0} 的 "0}"），被当作
+ * 字面量二次转义追加（生成值出现 "`{name}0{'}'}`" 垃圾尾巴，tree.deleteFolderConfirm
+ * 在 12 个生成语言里早已带此缺陷）。改为纯索引循环，跳读后不再回读已消费字符。 */
 function toI18nMessage(webKey, v) {
   const params = PLACEHOLDERS[webKey] || FALLBACK_PARAMS
   let out = ''
   let i = 0
-  for (const ch of v) {
+  while (i < v.length) {
+    const ch = v[i]
     if (ch === '{') {
       const m = /^(\{\d+\})/.exec(v.slice(i))
       if (m) {
@@ -346,7 +374,7 @@ function toI18nMessage(webKey, v) {
     else if (ch === '|') out += "{'|'}"
     else if (ch === '@') out += "{'@'}"
     else out += ch
-    i += ch.length
+    i += 1
   }
   return out
 }

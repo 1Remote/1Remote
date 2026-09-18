@@ -7,9 +7,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using _1RM.Model;
 using _1RM.Model.ProtocolRunner;
+using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
+using _1RM.Utils.PuTTY;
 using _1RM.View;
 
 namespace _1RM.Service.WebUi
@@ -286,10 +288,13 @@ namespace _1RM.Service.WebUi
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// GET /api/settings/runners：{protocols:{SSH:{selectedRunnerName, runners:[...]}}}。
+        /// GET /api/settings/runners：{protocols:{SSH:{selectedRunnerName, runners:[...], macros:[...]}}, meta:{...}}。
         /// 每协议序列化 ProtocolSettings（Newtonsoft，与 ProtocolConfigurationService.Save 同路径），
-        /// 顶层键改写为 camelCase（selectedRunnerName/runners），runners 数组内容 PascalCase +
+        /// 顶层键改写为 camelCase（selectedRunnerName/runners/macros），runners 数组内容 PascalCase +
         /// $type 判别直通（内置/外部运行器结构完整保留；无循环引用——Save() 早已验证）。
+        /// macros（fix batch7 Task E）：ProtocolSettings.MarcoNames/MarcoDescriptions（[JsonIgnore]，
+        /// 序列化不可见）单独铺平为 [{name, description}]——WPF 参数宏自动补全与协议帮助 (i) 的数据源，
+        /// web 添加运行器模态的宏提示用；PUT 侧 Newtonsoft 对未知键默认忽略，原样回传安全。
         /// </summary>
         public static Dictionary<string, JsonElement> ReadRunners(ProtocolConfigurationService pcs)
         {
@@ -297,15 +302,99 @@ namespace _1RM.Service.WebUi
             foreach (var kv in pcs.ProtocolConfigs)
             {
                 var jObj = JObject.Parse(JsonConvert.SerializeObject(kv.Value));
+                var macros = new JArray();
+                for (var i = 0; i < Math.Min(kv.Value.MarcoNames.Count, kv.Value.MarcoDescriptions.Count); i++)
+                {
+                    macros.Add(new JObject
+                    {
+                        ["name"] = kv.Value.MarcoNames[i],
+                        ["description"] = kv.Value.MarcoDescriptions[i],
+                    });
+                }
                 var renamed = new JObject
                 {
                     ["selectedRunnerName"] = jObj["SelectedRunnerName"] ?? JValue.CreateString(""),
                     ["runners"] = jObj["Runners"] ?? new JArray(),
+                    ["macros"] = macros,
                 };
                 using var doc = JsonDocument.Parse(renamed.ToString(Formatting.None));
                 protocols[kv.Key] = doc.RootElement.Clone(); // Clone 脱离文档生命周期（STJ 内嵌安全，同 /api/servers/{id}/config）
             }
             return protocols;
+        }
+
+        /// <summary>
+        /// 运行器编辑元数据（fix batch7 Task E #13）：主题/字体/字符集三个下拉的选项域，
+        /// 均取 WPF 运行器设置页的同源数据，避免前端另行硬编码：
+        /// - puttyThemes：PuttyRunnerSettings 主题下拉源 = PuttyThemes.Themes.Keys（静态资源
+        ///   Resources/KiTTY/PuttyThemes.json）；colors 只取 WPF 预览用到的 5 个语义位
+        ///   （Colour2 背景 / Colour0 前景 / Colour9 红 / Colour11 绿 / Colour15 白，与
+        ///   PuttyRunner.LoadColours 的键位一致），"r,g,b" 归一为 #RRGGBB 供 web 色块预览；
+        /// - fonts：WPF 字体下拉源 = Fonts.SystemFontFamilies（FamilyNames.Last().Value），
+        ///   排序去重（WPF 未排序，web 下拉按名排序更可用）；无 WPF Media 环境时回退空表；
+        /// - codePages：字符集清单 = PuttyRunner.CodePages（[JsonIgnore] 不随 runners 直通），
+        ///   从现有配置实例取（SSH 首项恒为 PuttyRunner），不新建实例避免触发主题装载。
+        /// </summary>
+        public static Dictionary<string, object> ReadRunnersMeta(ProtocolConfigurationService pcs)
+        {
+            var themes = new List<Dictionary<string, object>>();
+            foreach (var kv in PuttyThemes.Themes)
+            {
+                var colors = new Dictionary<string, string?>();
+                // 键位与 PuttyRunner.LoadColours/SetBrush 一致（WPF 预览用到的 5 个 ColourN）
+                foreach (var (semantic, colourKey) in new[]
+                {
+                    ("bg", "Colour2"),   // 背景色（WPF 预览外层）
+                    ("fg", "Colour0"),   // 默认前景（WPF 预览 "root@putty" 行）
+                    ("red", "Colour9"),  // 亮红（WPF 预览 "data.zip"）
+                    ("green", "Colour11"), // 亮绿（WPF 预览 "1Remote"）
+                    ("white", "Colour15"), // 亮白（WPF 预览 "cmake"/"packages"）
+                })
+                {
+                    var option = kv.Value.FirstOrDefault(x => string.Equals(x.Key, colourKey, StringComparison.CurrentCultureIgnoreCase));
+                    colors[semantic] = RgbToHex(option?.Value as string);
+                }
+                themes.Add(new Dictionary<string, object> { ["name"] = kv.Key, ["colors"] = colors });
+            }
+
+            var fonts = new List<string>();
+            try
+            {
+                fonts = System.Windows.Media.Fonts.SystemFontFamilies
+                    .Select(f => f.FamilyNames.Last().Value)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Distinct()
+                    .OrderBy(n => n, StringComparer.InvariantCultureIgnoreCase)
+                    .ToList();
+            }
+            catch (Exception)
+            {
+                // 无 WPF Media 上下文（理论上不发生——桌面宿主必载）：空表，前端下拉退化
+            }
+
+            var codePages = pcs.ProtocolConfigs.Values
+                .SelectMany(c => c.Runners.OfType<PuttyRunner>())
+                .FirstOrDefault()?.CodePages ?? new List<string>();
+
+            return new Dictionary<string, object>
+            {
+                ["puttyThemes"] = themes,
+                ["fonts"] = fonts,
+                ["codePages"] = codePages,
+            };
+        }
+
+        /// <summary>"r,g,b"（PuTTY 主题 ColourN 值形态）→ "#RRGGBB"；解析失败返回 null（前端回退黑/白）。</summary>
+        private static string? RgbToHex(string? rgb)
+        {
+            if (string.IsNullOrEmpty(rgb)) return null;
+            var parts = rgb.Split(',');
+            if (parts.Length != 3
+                || !byte.TryParse(parts[0].Trim(), out var r)
+                || !byte.TryParse(parts[1].Trim(), out var g)
+                || !byte.TryParse(parts[2].Trim(), out var b))
+                return null;
+            return $"#{r:X2}{g:X2}{b:X2}";
         }
 
         /// <summary>

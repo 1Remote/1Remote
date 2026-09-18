@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -13,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tests;
 using _1RM.Model;
 using _1RM.Model.Protocol;
+using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
@@ -594,5 +596,87 @@ namespace Tests.Service.WebUi
                 Assert.AreEqual(kv.Value.count, pcs.ProtocolConfigs[kv.Key].Runners.Count, kv.Key + " 零写入");
             }
         }
+
+        // ------------------------------------------------------------------
+        // fix batch7 Task E #13/#14：meta（主题/字体/字符集选项域）、macros、PuTTY 配置
+        // 字段与外部运行器增删的 PUT 全量往返。
+        // ------------------------------------------------------------------
+
+        [TestMethod]
+        public async Task GetRunners_IncludesMetaAndMacros()
+        {
+            var root = await GetRunnersAsync();
+            var meta = root.GetProperty("meta");
+
+            // puttyThemes：测试宿主预置主题占位 {"Default": []}（TestInit，绕开 pack 资源）——
+            // 名称在列即证清单来自 PuttyThemes.Themes；占位无 ColourN 条目，颜色位允许 null
+            Assert.AreEqual(JsonValueKind.Array, meta.GetProperty("puttyThemes").ValueKind);
+            Assert.IsTrue(meta.GetProperty("puttyThemes").EnumerateArray()
+                .Any(t => t.GetProperty("name").GetString() == "Default"), "主题清单应含 PuttyThemes.Themes 键");
+
+            // fonts/codePages：选项域形状（codePages 取自 SSH 首项 PuttyRunner.CodePages）
+            Assert.AreEqual(JsonValueKind.Array, meta.GetProperty("fonts").ValueKind);
+            CollectionAssert.Contains(meta.GetProperty("codePages").EnumerateArray().Select(x => x.GetString()).ToList(), "UTF-8");
+
+            // macros：每协议 [{name, description}]（WPF 参数宏自动补全的数据源）
+            var ssh = root.GetProperty("protocols").GetProperty("SSH");
+            Assert.AreEqual(JsonValueKind.Array, ssh.GetProperty("macros").ValueKind);
+            Assert.IsTrue(ssh.GetProperty("macros").GetArrayLength() > 0, "SSH 宏清单非空（%1RM_HOSTNAME% 等）");
+        }
+
+        [TestMethod]
+        public async Task PutRunners_PuttyConfigFields_UpdateAndPersist()
+        {
+            var pcs = _1RM.IoC.Get<ProtocolConfigurationService>();
+            var ssh = pcs.ProtocolConfigs["SSH"];
+            var putty = (PuttyRunner)ssh.Runners.First(r => r is PuttyRunner);
+            var orig = (putty.PuttyThemeName, putty.PuttyFont, putty.PuttyFontSize, putty.LineCodePage);
+            try
+            {
+                var original = await GetRunnersAsync();
+                var sshCfg = original.GetProperty("protocols").GetProperty("SSH");
+
+                // 直通 runners 上改 PuTTY 的主题/字体/字号/字符集（测试宿主主题占位仅 "Default"）
+                var runners = JsonNode.Parse(sshCfg.GetProperty("runners").GetRawText())!.AsArray();
+                var puttyNode = runners.First(n => n["$type"]!.GetValue<string>() == "PuttyRunner");
+                puttyNode["PuttyThemeName"] = "Default";
+                puttyNode["PuttyFont"] = "Courier New";
+                puttyNode["PuttyFontSize"] = 16;
+                puttyNode["LineCodePage"] = "CP437";
+                var payload = "{\"protocols\":{\"SSH\":{\"selectedRunnerName\":" + JsonSerializer.Serialize(sshCfg.GetProperty("selectedRunnerName").GetString())
+                              + ",\"runners\":" + runners.ToJsonString() + ",\"macros\":" + sshCfg.GetProperty("macros").GetRawText() + "}}}";
+
+                var (code, body) = await PutAsync("/api/settings/runners", payload);
+                Assert.AreEqual(HttpStatusCode.OK, code, body);
+                // ApplyRunners 原位替换 Runners 列表（新反序列化实例），断言须取替换后的当前实例
+                var updated = (PuttyRunner)ssh.Runners.First(r => r is PuttyRunner);
+                Assert.AreEqual("Default", updated.PuttyThemeName);
+                Assert.AreEqual("Courier New", updated.PuttyFont);
+                Assert.AreEqual(16, updated.PuttyFontSize);
+                Assert.AreEqual("CP437", updated.LineCodePage);
+
+                // PUT 请求体携带 macros（GET 原样回传场景）——未知键被忽略，不破坏反序列化
+                var after = await GetRunnersAsync();
+                var afterPutty = after.GetProperty("protocols").GetProperty("SSH").GetProperty("runners").EnumerateArray()
+                    .First(n => n.GetProperty("$type").GetString() == "PuttyRunner");
+                Assert.AreEqual("Courier New", afterPutty.GetProperty("PuttyFont").GetString());
+                Assert.AreEqual(16, afterPutty.GetProperty("PuttyFontSize").GetInt32());
+                Assert.AreEqual("CP437", afterPutty.GetProperty("LineCodePage").GetString());
+            }
+            finally
+            {
+                // 同上：恢复须作用于当前列表内的实例（PUT 已整体换过实例），否则 Save 落盘的仍是改动值
+                var cur = ssh.Runners.FirstOrDefault(r => r is PuttyRunner) as PuttyRunner;
+                if (cur != null)
+                {
+                    cur.PuttyThemeName = orig.Item1;
+                    cur.PuttyFont = orig.Item2;
+                    cur.PuttyFontSize = orig.Item3;
+                    cur.LineCodePage = orig.Item4;
+                }
+                pcs.Save();
+            }
+        }
+
     }
 }
