@@ -51,7 +51,7 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
     target="_blank"
     rel="noreferrer noopener"
     :title="tip || undefined"
-    :aria-label="ariaLabel"
+    :aria-label="$slots.default ? undefined : ariaLabel"
   >
     <span v-if="badgeChar" class="hl-badge" aria-hidden="true">
       <!-- "?" / "i" 用 SVG 笔画绘制（比例可控）；其余自定义字符兜底字体渲染 -->
