@@ -174,6 +174,7 @@ namespace _1RM.Service.WebUi
             MapIconsExtractFromExe(app); // POST   /api/icons/extract-from-exe
             MapFilesPick(app);           // POST   /api/files/pick（通用文件选择器，batch9 Task B #9；
                                            //        泛化自 batch8 pick-exe，旧端点已删、调用方迁移）
+            MapScriptsTest(app);         // POST   /api/scripts/test（编辑器脚本测试执行，batch9 Task B #9）
             MapServersEvents(app);       // GET    /api/events（SSE）
             MapSettingsAppearance(app);  // GET    /api/settings/appearance
                                            // PUT    /api/settings/appearance

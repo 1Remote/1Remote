@@ -217,6 +217,107 @@ namespace _1RM.Service.WebUi
             return result;
         }
 
+        /// <summary>
+        /// 脚本测试执行的超时上限（batch9 Task B #9）。WPF 的测试跑（RunScriptBeforeConnect
+        /// (isTestRun:true) → WinCmdRunner.RunFile(isAsync:false)）无限等待；HTTP 请求不能
+        /// 永久挂起，超时杀进程并置 timedOut。public static 兼作测试注入点（Tests 程序集无
+        /// InternalsVisibleTo）：单测改小该值覆盖超时分支。
+        /// </summary>
+        public static int ScriptTestTimeoutMs = 15_000;
+
+        /// <summary>测试输出回传截断上限（字符）：编辑器弹窗展示用途，防超长输出撑爆响应。</summary>
+        private const int ScriptTestOutputLimit = 4096;
+
+        internal static void MapScriptsTest(WebApplication app)
+        {
+            // 脚本测试端点（batch9 Task B #9）：对齐 WPF 编辑器脚本行的 Test 按钮
+            // （ServerEditorPageViewModel.CmdTestScript → Server.RunScriptBeforeConnect/
+            // AfterDisconnected(isTestRun:true)）：WinCmdRunner.DisassembleOneLineScriptCmd
+            // 拆解单行命令（带引号/空格路径还原 + .py→python、.ps1→powershell.exe 的翻译
+            // 与工作目录推导都复用 WPF 同一函数），随后同步执行并回传结果。
+            // 与 WPF 的差异（web 形态约束，记录在案）：
+            //  1) WPF 测试跑弹真实控制台窗口显示输出 + 结束后弹 MessageBox 报退出码；web
+            //     无本地窗口 → 重定向 stdout/stderr 回传 {output}（截断 4KB），由前端弹窗
+            //     展示命令/输出/退出码（信息等价：WPF 的 "We will run ..." 与
+            //     "The exit code of the script = N" 两段提示分别对应回传的 file/arguments
+            //     与 exitCode，前端组文案）；
+            //  2) WPF 无超时；web 15s 超时杀进程置 {timedOut}（防挂起的脚本拖死请求）；
+            //  3) WPF 实跑注入 SESSION_ID/SERVER_* 环境变量（RunFile 内 useShellExcute 因
+            //     env 非空恒归 false）；测试请求只携带命令文本（编辑器草稿可能尚未落库，
+            //     无服务器上下文）→ 有意不注入同名列，UseShellExecute 直接置 false（重定向
+            //     输出的必要条件，与 WPF 实跑的实际取值一致）。
+            // 安全论证：该命令本就由本机用户在编辑器里书写、连接时必然在本地执行——本端点
+            // 只是把执行提前到保存前；暴露面 = 回环 + Bearer token，与既有端点相同。
+            app.MapPost("/api/scripts/test", async (ScriptTestRequest? body) =>
+            {
+                var command = body?.Command?.Trim();
+                if (string.IsNullOrEmpty(command))
+                    return Results.BadRequest(new { error = "body must contain a 'command' string" });
+
+                var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(command);
+                var psi = new ProcessStartInfo
+                {
+                    FileName = tuple.Item1,
+                    Arguments = tuple.Item2,
+                    UseShellExecute = false, // 重定向输出必须 false；WPF 实跑因 env 非空同归 false
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = tuple.Item3?.FullName ?? string.Empty,
+                };
+
+                string? error = null;
+                var timedOut = false;
+                var exitCode = -1;
+                var output = string.Empty;
+                try
+                {
+                    using var pro = Process.Start(psi);
+                    if (pro == null) throw new InvalidOperationException("Process.Start returned null");
+                    var stdoutTask = pro.StandardOutput.ReadToEndAsync();
+                    var stderrTask = pro.StandardError.ReadToEndAsync();
+                    try
+                    {
+                        await pro.WaitForExitAsync(new CancellationTokenSource(ScriptTestTimeoutMs).Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        timedOut = true;
+                        try { pro.Kill(); } catch { /* 竞态：进程恰已退出 / Kill 失败按超时呈现 */ }
+                    }
+                    // Kill 后管道随进程关闭，两个无 token 的读取任务随即完成；2s 兜底等待
+                    // 防御 Kill 未竟的极端场景（结果按已完成部分取）
+                    await Task.WhenAny(Task.WhenAll(stdoutTask, stderrTask), Task.Delay(2000));
+                    static string Done(Task<string> t) => t.Status == TaskStatus.RanToCompletion ? t.Result : string.Empty;
+                    var stdout = Done(stdoutTask);
+                    var stderr = Done(stderrTask);
+                    output = string.IsNullOrEmpty(stderr) ? stdout : stdout + Environment.NewLine + stderr;
+                    if (!timedOut)
+                    {
+                        try { exitCode = pro.ExitCode; } catch (InvalidOperationException) { /* 兜底 -1 */ }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // 启动失败（文件不存在/路径非法等）：WPF 同款吞异常弹错误（ProtocolBase
+                    // .RunScriptBeforeConnect 的 catch）→ web 回 200 {error}，前端弹窗呈现
+                    error = e.Message;
+                }
+
+                if (output.Length > ScriptTestOutputLimit)
+                    output = output.Substring(0, ScriptTestOutputLimit) + Environment.NewLine + "... (" + output.Length + " chars, truncated)";
+                return Results.Json(new
+                {
+                    file = tuple.Item1,
+                    arguments = tuple.Item2,
+                    exitCode,
+                    timedOut,
+                    output,
+                    error,
+                });
+            });
+        }
+
         internal static void MapUiStateTree(WebApplication app)
         {
             // 服务器树状态：LocalityTreeViewService（静态类，无 IoC）两个字典的读写代理。
