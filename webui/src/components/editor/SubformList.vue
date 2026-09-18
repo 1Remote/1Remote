@@ -103,6 +103,20 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
 function visibleRowFields(row) {
   return props.fields.filter((f) => isVisible(f, row))
 }
+
+/**
+ * 行字段的"浏览…"按钮条件（batch9 Task E ⑱A）：filePickWhen 以行对象求值——
+ * 数据源与语义同 visibleWhen（借道 isVisible 的条件求值器传入）。不满足时返回
+ * 剥离 filePick 的浅拷贝（勿改 schema 常量——描述符是模块级共享对象），满足时
+ * 原样透传。当前唯一消费方：ArgumentList 的 Value（仅 Type=File 的行带按钮，
+ * 对齐 WPF ArgumentFile 模板，ArgumentListControl.xaml:90-106）。
+ * @param {Object} row 当前行（json 域）
+ * @param {FieldDescriptor} f 行字段描述符
+ */
+function rowFieldFor(row, f) {
+  if (!f.filePick || !f.filePickWhen) return f
+  return isVisible({ visibleWhen: f.filePickWhen }, row) ? f : { ...f, filePick: undefined }
+}
 </script>
 
 <template>
@@ -118,7 +132,7 @@ function visibleRowFields(row) {
         <FormField
           v-for="f in visibleRowFields(row)"
           :key="f.key"
-          :field="f"
+          :field="rowFieldFor(row, f)"
           :model-value="row[f.key]"
           :data-source-name="dataSourceName"
           @update:model-value="(v) => updateRowField(i, f.key, v)"

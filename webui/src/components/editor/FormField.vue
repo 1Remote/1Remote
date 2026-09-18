@@ -6,7 +6,10 @@
  *  - 不读 visibleWhen（可见性由父级抽屉用 editor/visibility.js 的 isVisible 求值并隐藏整行）；
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
- * 三个字段类型带远程交互（其余仍为纯展示）：
+ * 四个字段类型带远程交互（其余仍为纯展示）：
+ *  - TEXT 的路径字段（filePick 描述符，batch9 Task E ⑱A）：行内"浏览…"按钮——
+ *    POST /api/files/pick 弹后端原生文件对话框回填路径（WPF 表单 Select 按钮
+ *    的 web 平价，见 onFilePick）；
  *  - TEXTAREA 的脚本字段（actions: ['select','test']，batch9 #9）：行内 [选择][测试]
  *    两按钮——选择 = POST /api/files/pick 弹后端原生文件对话框回填路径；测试 =
  *    POST /api/scripts/test 执行命令并把命令/输出/退出码弹 naive dialog 呈现
@@ -61,6 +64,32 @@ const { runnerNames } = useRunnerOptions()
 
 const label = computed(() => (props.field.labelKey ? t(props.field.labelKey) : props.field.key))
 const placeholder = computed(() => (props.field.placeholderKey ? t(props.field.placeholderKey) : undefined))
+
+// ---- text 的"浏览…"按钮（batch9 Task E ⑱A）：filePick 描述符（fieldTypes.js）——
+// WPF 表单路径字段旁 SelectFileHelper.OpenFile 按钮的 web 平价（全集审计见
+// schemas.js 的 filePick 注释块）。按钮调 POST /api/files/pick（后端弹 WPF 同款
+// OpenFileDialog，filter 照抄各 WPF 调用点；path 传当前值作初始目录），选中回填
+// 裸路径；404=用户取消静默（api.pickFile 约定）。按钮文案复用 settings.r.f.browse
+//（"Browse…"——与 RunnerCard/CredentialVault 的原生文件选择按钮同一词条，WPF 的
+// 按钮文案 Select 在 web 已被脚本行的"选择"占用，统一走 Browse 系）。
+// 子表单行内的条件按钮（ArgumentList Value 仅 File 型行）由 SubformList 按
+// filePickWhen 求值后剥离/保留描述符，本组件只看 filePick 有无。
+const filePickBusy = ref(false) // 请求寿命 = 用户开着对话框的时间（同 scriptBusy 语义）
+async function onFilePick() {
+  if (filePickBusy.value) return
+  filePickBusy.value = true
+  try {
+    const resp = await api.pickFile(props.field.filePick.filter, {
+      path: String(props.modelValue ?? ''),
+      title: props.field.filePick.titleKey ? t(props.field.filePick.titleKey) : '',
+    })
+    if (resp?.path) emit('update:modelValue', resp.path)
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed')) // 404=用户取消，静默
+  } finally {
+    filePickBusy.value = false
+  }
+}
 
 // ---- switch 行式（对齐 WPF 复选框行 CredentialView.xaml:191-215：空标题列 + 输入列
 // [CheckBox+文字]）----
@@ -312,9 +341,23 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
     </div>
 
     <div class="ff-control">
-      <!-- text -->
+      <!-- text（+ 可选 filePick"浏览…"按钮：占主列、按钮贴右，样式复用 ff-mini-btn） -->
+      <div v-if="field.type === FIELD_TYPE.TEXT && field.filePick" class="ff-text-pick">
+        <n-input
+          class="ff-text-pick-input"
+          size="small"
+          :value="modelValue ?? ''"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          :input-props="{ spellcheck: false }"
+          @update:value="emit('update:modelValue', $event)"
+        />
+        <button class="ff-mini-btn" type="button" :disabled="disabled || filePickBusy" @click="onFilePick">
+          {{ t('settings.r.f.browse') }}
+        </button>
+      </div>
       <n-input
-        v-if="field.type === FIELD_TYPE.TEXT"
+        v-else-if="field.type === FIELD_TYPE.TEXT"
         size="small"
         :value="modelValue ?? ''"
         :placeholder="placeholder"
@@ -615,6 +658,21 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 
 .ff-control > :deep(*) {
   width: 100%;
+}
+
+/* text + filePick"浏览…"按钮（batch9 ⑱A）：输入框占主列、按钮贴右（同 ff-ta 布局）；
+   容器由上方 100% 规则撑满控件列 */
+.ff-text-pick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.ff-text-pick-input {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* switch 行：[开关][6px][文字] 由 SwitchItem 渲染——其根节点被上方
