@@ -678,5 +678,67 @@ namespace Tests.Service.WebUi
             }
         }
 
+        [TestMethod]
+        public async Task PutRunners_AddAndRemoveExternalRunner_Persists()
+        {
+            var pcs = _1RM.IoC.Get<ProtocolConfigurationService>();
+            var sftp = pcs.ProtocolConfigs["SFTP"];
+            var origRunners = sftp.Runners.ToList();
+            var origSelected = sftp.SelectedRunnerName;
+            const string name = "web-add-test-runner";
+            try
+            {
+                var original = await GetRunnersAsync();
+                var sftpCfg = original.GetProperty("protocols").GetProperty("SFTP");
+                var runners = JsonNode.Parse(sftpCfg.GetProperty("runners").GetRawText())!.AsArray();
+
+                // 增：SFTP 按协议族使用 ExternalRunnerForSSH（WPF CmdAddRunner 同款分支），
+                // 新建对象 = 前端"添加运行器"模态构造的最小字段集（$type/Name/ExePath/Arguments/
+                // ArgumentsForPrivateKey/RunWithHosting/EnvironmentVariables/SpecialCharacters）
+                runners.Add(JsonNode.Parse(
+                    "{\"$type\":\"ExternalRunnerForSSH\",\"Name\":\"" + name + "\",\"OwnerProtocolName\":\"SFTP\"," +
+                    "\"ExePath\":\"C:\\\\tools\\\\sftp.exe\",\"Arguments\":\"sftp://%1RM_USERNAME%@%1RM_HOSTNAME%\"," +
+                    "\"ArgumentsForPrivateKey\":\"/privatekey=%1RM_PRIVATE_KEY_PATH%\",\"RunWithHosting\":false," +
+                    "\"EnvironmentVariables\":[{\"Key\":\"USER\",\"Value\":\"%1RM_USERNAME%\"}],\"SpecialCharacters\":[]}"));
+                var addPayload = "{\"protocols\":{\"SFTP\":{\"selectedRunnerName\":" + JsonSerializer.Serialize(origSelected)
+                              + ",\"runners\":" + runners.ToJsonString() + "}}}";
+                var (c1, b1) = await PutAsync("/api/settings/runners", addPayload);
+                Assert.AreEqual(HttpStatusCode.OK, c1, b1);
+
+                var added = sftp.Runners.OfType<ExternalRunnerForSSH>().SingleOrDefault(r => r.Name == name);
+                Assert.IsNotNull(added, "PUT 全量保存后内存配置应含新增外部运行器");
+                Assert.AreEqual("C:\\tools\\sftp.exe", added.ExePath);
+                Assert.AreEqual("/privatekey=%1RM_PRIVATE_KEY_PATH%", added.ArgumentsForPrivateKey);
+                Assert.AreEqual(1, added.EnvironmentVariables.Count);
+                Assert.IsTrue(added.MarcoNames.Count > 0, "Load 后处理应回填宏清单（ApplyRunners 重放）");
+
+                var afterAdd = await GetRunnersAsync();
+                var addedNode = afterAdd.GetProperty("protocols").GetProperty("SFTP").GetProperty("runners").EnumerateArray()
+                    .FirstOrDefault(n => n.GetProperty("Name").GetString() == name);
+                Assert.IsNotNull(addedNode, "GET 应返回新增运行器");
+                Assert.AreEqual("ExternalRunnerForSSH", addedNode.GetProperty("$type").GetString());
+
+                // 删：全量表回退到 GET 原始 runners（即不含新增行的状态）+
+                // selectedRunnerName 指向首项（WPF CmdDeleteRunner 后回退语义）
+                var origRunnersRaw = sftpCfg.GetProperty("runners").GetRawText();
+                var firstName = sftpCfg.GetProperty("runners").EnumerateArray().First().GetProperty("Name").GetString();
+                var delPayload = "{\"protocols\":{\"SFTP\":{\"selectedRunnerName\":" + JsonSerializer.Serialize(firstName)
+                              + ",\"runners\":" + origRunnersRaw + "}}}";
+                var (c2, b2) = await PutAsync("/api/settings/runners", delPayload);
+                Assert.AreEqual(HttpStatusCode.OK, c2, b2);
+                Assert.IsFalse(sftp.Runners.Any(r => r.Name == name), "删除后内存配置不再含该运行器");
+                Assert.AreEqual(firstName, sftp.SelectedRunnerName);
+
+                var afterDel = await GetRunnersAsync();
+                Assert.IsFalse(afterDel.GetProperty("protocols").GetProperty("SFTP").GetProperty("runners").EnumerateArray()
+                    .Any(n => n.GetProperty("Name").GetString() == name), "GET 不再返回已删运行器");
+            }
+            finally
+            {
+                sftp.Runners = origRunners;
+                sftp.SelectedRunnerName = origSelected;
+                pcs.Save();
+            }
+        }
     }
 }
