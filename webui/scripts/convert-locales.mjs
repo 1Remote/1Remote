@@ -293,6 +293,17 @@ const WRAP = {
   'editor.f.IsAdministrativePurposes': ['/admini (', ')'],
 }
 
+// 生成 locale 的手写覆盖（fix-batch7 #7）：web 专有键需要某个生成语言的文案、WPF 又无
+// 可映射词条时在此登记——否则重跑生成会把它静默回落 en-US（手写进 JSON 不稳定）。
+// 仅对未映射键生效（映射键走 XAML 译文）。值用 \u 转义书写以保持脚本"非注释 CJK=0"
+// 门禁（可读形式见上一行注释）。
+const OVERRIDES = {
+  'zh-TW': {
+    // 搜尋伺服器（Ctrl+F）
+    'search.placeholder': '\u641c\u5c0b\u4f3a\u670d\u5668\uff08Ctrl+F\uff09',
+  },
+}
+
 // ---------------------------------------------------------------------------
 
 function decodeXml(s) {
@@ -367,6 +378,16 @@ if (badWrap.length) {
   process.exit(1)
 }
 
+// OVERRIDES 键必须是 en-US 现存键：登记错键名会破坏键集平价（--check 门禁拦截的是
+// 生成后的结果，这里在源头拦截）
+const badOverride = Object.values(OVERRIDES)
+  .flatMap((kv) => Object.keys(kv))
+  .filter((k) => !(k in enUS))
+if (badOverride.length) {
+  console.error('OVERRIDES 校验失败: 未知 web 键:', badOverride)
+  process.exit(1)
+}
+
 const xamlFiles = readdirSync(XAML_DIR).filter((f) => f.endsWith('.xaml'))
 const langs = xamlFiles.map((f) => bcp47(f.replace(/\.xaml$/, '')))
 const GENERATE = langs.filter((l) => l !== 'zh-CN' && l !== 'en-US') // 12 个生成目标
@@ -414,7 +435,7 @@ for (const lang of GENERATE) {
       out[k] = toI18nMessage(k, pre + dict[wpfKey] + post)
       filled++
     } else {
-      out[k] = enUS[k]
+      out[k] = OVERRIDES[lang]?.[k] ?? enUS[k]
     }
   }
   writeFileSync(path.join(OUT_DIR, `${lang}.json`), JSON.stringify(out, null, 2) + '\n')

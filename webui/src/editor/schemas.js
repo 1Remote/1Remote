@@ -964,6 +964,8 @@ for (const schema of Object.values(PROTOCOLS)) {
  *    null = 列表 DTO 无此字段（password/inheritedCredentialName/askPasswordWhenConnect
  *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值
  *    （note 在列表 DTO 中存在，可显示共享备注值）；
+ *  - bulkSensitive：未回读字段中的敏感项（password——列表接口不回读明文，安全设计）；
+ *    批量表单占位文案据此分叉（bulkSensitiveHint vs bulkUnknown，见 BulkEditForm）；
  *  - protocols：协议专属字段（startupAutoCommand/startupPath/rdpFileAdditionalSettings）
  *    的适用协议集（对照 BatchPatchFieldMap 注释）；所选服务器全部适用才显示该字段，
  *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。
@@ -990,7 +992,13 @@ export const BULK_FIELDS = [
     dtoKey: 'port',
   },
   { key: 'userName', type: FIELD.TEXT, labelKey: 'editor.bulkField.userName', dtoKey: 'userName' },
-  { key: 'password', type: FIELD.PASSWORD, labelKey: 'editor.bulkField.password', dtoKey: null },
+  {
+    key: 'password',
+    type: FIELD.PASSWORD,
+    labelKey: 'editor.bulkField.password',
+    dtoKey: null,
+    bulkSensitive: true,
+  },
   {
     key: 'inheritedCredentialName',
     type: FIELD.CREDENTIAL,

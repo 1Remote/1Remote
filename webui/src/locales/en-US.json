@@ -4,7 +4,7 @@
   "common.username": "username",
   "common.ok": "OK",
 
-  "search.placeholder": "Search servers, tags…",
+  "search.placeholder": "Search servers (Ctrl+F)",
   "search.title": "Ctrl+K to focus · Esc to clear",
   "search.searching": "Searching…",
 
@@ -59,7 +59,8 @@
   "batch.connect": "Connect",
   "batch.connectTitle": "Connect all selected",
   "batch.edit": "Bulk edit",
-  "batch.editTitle": "Bulk edit all selected",
+  "batch.editTitle": "Bulk edit {n} selected",
+  "batch.editSingleTitle": "Edit the selected server",
   "batch.export": "Export",
   "batch.exportTitle": "Export all selected (plaintext JSON, local verification required)",
   "batch.clear": "Clear selection",
@@ -231,7 +232,8 @@
 
   "editor.bulkTitle": "Bulk edit ({n} servers)",
   "editor.differentValues": "‹differs across {n}›",
-  "editor.bulkUnknown": "‹not loaded›",
+  "editor.bulkUnknown": "Current value not included in the list; choose “Overwrite” to set one",
+  "editor.bulkSensitiveHint": "This value is never read back; choose “Overwrite” to set a uniform value",
   "editor.keepUnchanged": "Keep",
   "editor.keepUnchangedTip": "Stop overwriting: leave each server's value untouched",
   "editor.overwrite": "Overwrite",

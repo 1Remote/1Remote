@@ -4,9 +4,10 @@
  * 扁平列表 + 逐字段「保持不变 / 覆盖」切换，不含抽屉骨架/头部/底部按钮（留在 EditorDrawer）。
  *
  * 数据来源（不加载单台 config）：共享值由父级传入的列表 DTO（camelCase 域，bulkServers）
- * 逐字段计算——全同 → 只读展示；不同 / 列表 DTO 无此字段 →「‹N 台各不相同›」/「未读取」
- * 占位。每字段默认「保持不变」（不进 patch），点「覆盖」后从共享值（已知且全同）或空值
- * 起编辑；保存 = diffPatch(共享初值, 当前值) 仅取被覆盖字段 → POST /api/servers/batch
+ * 逐字段计算——全同 → 只读展示；不同 →「N 台各不相同」；列表 DTO 无此字段 → 未回读
+ * 提示（敏感字段与普通未携带字段文案分叉，见 bulkUnknownKey）。每字段默认「保持不变」
+ *（不进 patch），点「覆盖」后从共享值（已知且全同）或空值起编辑；保存 =
+ * diffPatch(共享初值, 当前值) 仅取被覆盖字段 → POST /api/servers/batch
  *（patch 键 camelCase，缺失 = 保持不变）。表单字段限于后端 BatchPatchFieldMap 的
  * allow-list（schemas.js BULK_FIELDS），深层/子表单字段不参与批量。
  *
@@ -71,6 +72,14 @@ const bulkShared = computed(() => {
 })
 const bulkOverwrite = reactive({}) // key → true（已切到覆盖编辑）；缺省 = 保持不变
 const bulkValues = reactive({}) // key → 覆盖态下的当前值（仅覆盖态有意义）
+
+// 未回读字段（dtoKey=null）的占位文案分两类：敏感字段（bulkSensitive，如 password——
+// 列表接口不回读明文，安全设计，与 WPF 哨兵机制同源）用 bulkSensitiveHint；其余
+//（继承凭据/连接时询问密码/协议专属键——列表 DTO 出于体积不携带）用 bulkUnknown。
+// 两者都只引导「覆盖」式设置，不能回读展示当前值。
+function bulkUnknownKey(f) {
+  return f.bulkSensitive ? 'editor.bulkSensitiveHint' : 'editor.bulkUnknown'
+}
 const bulkCount = computed(() => props.bulkServers.length)
 const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
 // 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
@@ -178,16 +187,16 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
         :model-value="bulkShared[f.key].value"
         disabled
       />
-      <!-- 保持不变 + 各不相同/未读取：占位行（标签列对齐 FormField 的 148px） -->
+      <!-- 保持不变 + 各不相同/未回读：占位行（标签列对齐 FormField 的 148px） -->
       <div v-else class="bulk-keep bulk-control">
         <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
           {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
         </div>
         <div
           class="bulk-hint"
-          :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown')"
+          :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f))"
         >
-          {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t('editor.bulkUnknown') }}
+          {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f)) }}
         </div>
       </div>
       <button
