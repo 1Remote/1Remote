@@ -98,9 +98,10 @@ export const api = {
   // 批量补丁：patch 键为 camelCase（列表 DTO 域，与后端 allow-list 对应）；ds 省略 = Local
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
-  // 批量回读：只读返回逐台非敏感字段 {id, askPasswordWhenConnect,
-  // inheritedCredentialName, startupAutoCommand, startupPath, rdpFileAdditionalSettings}
-  //（协议不适用字段为 null；不含 password 等任何加密字段）；ids 空或任一未知 id → 400/404
+  // 批量回读：逐台返回 {id, ...camelCase: value}，键集从批量 allow-list 同源派生（扣
+  // password/privateKey/gatewayPassword 三个敏感键与 displayName 等 8 个列表 DTO 已覆盖
+  // 键，见 WebUiEditorService.PeekBatch）；协议不适用字段为 null（如 RDP 无 StartupPath）；
+  // ids 空/未知数据源 → 400，任一 id 不存在 → 404（整批拒绝，前端退化为「未回读」占位）
   batchPeek: (ids, ds) => request('/api/servers/batch/peek', { method: 'POST', body: ds ? { ids, ds } : { ids } }),
   icons: () => request('/api/icons'),
   // 通用文件选择器（batch9 #9，泛化自 pick-exe）：后端弹 WPF OpenFileDialog，
