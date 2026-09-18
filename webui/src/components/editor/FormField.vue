@@ -26,7 +26,7 @@
  * 的模块级缓存拉取一次，两字段共享；SELECT 的动态选项（optionsSource 'runners:*'，
  * SelectedRunnerName）同样经 composables/useRunnerOptions.js 模块级缓存共享。
  */
-import { computed, h, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import SubformList from './SubformList.vue'
@@ -38,6 +38,7 @@ import KeyValueLines from './KeyValueLines.vue'
 import HelpLink from '../HelpLink.vue'
 import KvMapField from './KvMapField.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
+import { showScriptTestResult } from '../../editor/scriptTest.js'
 import { api } from '../../api'
 import { opaqueHex } from '../../utils/color.js'
 import { useSerialOptions } from '../../composables/useSerialOptions.js'
@@ -235,52 +236,12 @@ async function onScriptTest() {
   if (!command) return
   scriptBusy.value = true
   try {
-    showScriptTestResult(command, await api.testScript(command))
+    showScriptTestResult({ dialog, t, fieldKey: props.field.key, command, resp: await api.testScript(command) })
   } catch (e) {
     message.error(t('editor.scriptTestStartFailed') + ': ' + (e?.message || e))
   } finally {
     scriptBusy.value = false
   }
-}
-// 测试结果弹窗：命令行 + 输出（pre 滚动区）+ 退出码行（连接前脚本带"非 0 中止连接"括注，
-// WPF RunScriptBeforeConnect 的 isTestRun 消息盒文案同语义；dialog 内容经 h() 组装，
-// inline style——弹窗 teleport 到 body，scoped 样式作用不到）
-function showScriptTestResult(command, resp) {
-  const line = (text) =>
-    h('div', { style: 'font-size:13px;line-height:1.6;color:var(--text-2);word-break:break-all;' }, text)
-  const rows = [line(t('editor.scriptTestCmd', { cmd: command }))]
-  if (resp?.error) {
-    rows.push(line(`${t('editor.scriptTestStartFailed')}: ${resp.error}`))
-  } else {
-    rows.push(
-      h(
-        'pre',
-        {
-          style:
-            'margin:8px 0;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;' +
-            'border:1px solid var(--border);border-radius:4px;background:var(--bg-hover);padding:8px;font-size:12px;',
-        },
-        resp?.output || ' '
-      )
-    )
-  }
-  if (resp?.timedOut) {
-    rows.push(line(t('editor.scriptTestTimeout')))
-  } else if (!resp?.error) {
-    const code = resp?.exitCode ?? -1
-    rows.push(
-      line(
-        props.field.key === 'CommandBeforeConnected'
-          ? t('editor.scriptTestExitAbort', { code })
-          : t('editor.scriptTestExit', { code })
-      )
-    )
-  }
-  dialog.info({
-    title: t('editor.scriptTestTitle'),
-    content: () => h('div', null, rows),
-    positiveText: t('common.ok'),
-  })
 }
 
 // ---- color：8 色固定色板 + 原始 hex 文本（WPF 为 ColorPickerWPF 全功能拾色器，
