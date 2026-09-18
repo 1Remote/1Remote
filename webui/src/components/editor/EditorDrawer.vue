@@ -30,6 +30,7 @@ import EditorHead from './EditorHead.vue'
 import BulkEditForm from './BulkEditForm.vue'
 import HelpLink from '../HelpLink.vue'
 import { PROTOCOLS } from '../../editor/schemas.js'
+import { FIELD } from '../../editor/fieldTypes.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
 import { deriveCredentialMode } from '../../editor/credentialMode.js'
@@ -116,7 +117,7 @@ function onCredModeSwitch(mode) {
 function blocksOf(fields) {
   const blocks = []
   for (const f of fields) {
-    const asRun = f.type === 'switch' && !f.switchWithLabel
+    const asRun = f.type === FIELD.SWITCH && !f.switchWithLabel
     const last = blocks[blocks.length - 1]
     if (asRun && last?.type === 'switch-run') last.fields.push(f)
     else
