@@ -51,12 +51,14 @@ namespace _1RM.Service.WebUi
                 // 注意：加载数据的 GetServers 锁的是 DataSourceService/DataSourceBase 实例，不是 GlobalData。
                 lock (gd)
                 {
-                    // 活动会话 Id 快照：仅并发字典的属性读，无 IO，锁内安全（Plan 4 Task 1）
+                    // 活动会话 Id 快照：仅并发字典的属性读，无 IO，锁内安全（Plan 4 Task 1）；
+                    // connecting 快照 = 连接请求进行中（前置脚本/凭据对话期间），状态点先转琥珀再翻绿
                     var activeIds = BuildActiveServerIdSet();
+                    var connectingIds = BuildConnectingServerIdSet();
                     var list = gd.VmItemList
                         .Where(vm => IsConnectable(vm.Server))
                         .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime,
-                            DeriveConnectionState(activeIds, vm.Server.Id)))
+                            DeriveConnectionState(activeIds, vm.Server.Id, connectingIds)))
                         .ToList();
                     return Results.Json(list); // 先物化快照再序列化，锁内不做 IO
                 }
@@ -83,9 +85,10 @@ namespace _1RM.Service.WebUi
                 var matched = FilterHelpers.MatchServers(source, q);
                 // 活动会话 Id 快照在锁外构建（语义同 /api/servers；仅并发字典属性读）
                 var activeIds = BuildActiveServerIdSet();
+                var connectingIds = BuildConnectingServerIdSet();
                 return Results.Json(matched
                     .Select(vm => DtoMapper.FromServer(vm.Server, vm.DataSourceName, vm.LastConnectTime,
-                        DeriveConnectionState(activeIds, vm.Server.Id)))
+                        DeriveConnectionState(activeIds, vm.Server.Id, connectingIds)))
                     .ToList());
             });
         }

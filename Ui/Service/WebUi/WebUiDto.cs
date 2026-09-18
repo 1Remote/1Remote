@@ -8,6 +8,7 @@ namespace _1RM.Service.WebUi
     {
         public const string StatusDisconnected = "disconnected";
         public const string StatusConnected = "connected";
+        public const string StatusConnecting = "connecting";
         public const string StatusReconnecting = "reconnecting";
     }
 
@@ -30,7 +31,7 @@ namespace _1RM.Service.WebUi
         public string DataSourceName { get; set; } = string.Empty;
         public string FolderPath { get; set; } = string.Empty; // "a/b"，根为空串
         public long LastConnectTime { get; set; }              // Unix 秒，0=从未连接
-        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // connected/disconnected，由活动会话派生（WebUiEndpoints.DeriveConnectionState）
+        public string ConnectionState { get; set; } = WebUiConstants.StatusDisconnected; // connected/connecting/disconnected，由活动/进行中会话派生（WebUiEndpoints.DeriveConnectionState）
     }
 
     public class DataSourceDto

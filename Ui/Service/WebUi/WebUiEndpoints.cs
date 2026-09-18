@@ -27,8 +27,8 @@ namespace _1RM.Service.WebUi
     /// 本类为 partial，按业务域拆分为同目录多个文件，本文件（主文件）只持有：
     /// ─ <see cref="MapAll"/>：按固定顺序调用各分域 Map* 完成全部路由注册（WebUiServer 启动时调用）；
     /// ─ 共享助手：<see cref="IsConnectable"/> / <see cref="DeriveConnectionState"/> /
-    ///   <see cref="BuildActiveServerIdSet"/>（跨多个分域复用；前两者还被 DtoMapper、
-    ///   WebUiEditorService 等类与 Tests 直接引用，须保持 public）。
+    ///   <see cref="BuildActiveServerIdSet"/> / <see cref="BuildConnectingServerIdSet"/>（跨多个分域复用；
+    ///   前两者还被 DtoMapper、WebUiEditorService 等类与 Tests 直接引用，须保持 public）。
     /// 分域文件（各自持有该域的路由注册方法与仅该域使用的私有助手）：
     /// ─ WebUiEndpoints.Servers.cs     —— /api/servers*（列表/单机配置/CRUD/批量补丁/导入/导出）、
     ///                                     /api/search、/api/connect/{id}、/api/events（SSE 推送）
@@ -53,11 +53,15 @@ namespace _1RM.Service.WebUi
 
         /// <summary>
         /// 连接状态派生（纯函数，Plan 4 Task 1）：activeServerIds 为当前 1Remote 托管会话占用的
-        /// 服务器 Id 集合（<see cref="BuildActiveServerIdSet"/> 快照），serverId 命中 → connected。
+        /// 服务器 Id 集合（<see cref="BuildActiveServerIdSet"/> 快照），serverId 命中 → connected；
+        /// 否则 connectingServerIds（<see cref="BuildConnectingServerIdSet"/> 快照，连接请求
+        /// 进行中、会话尚未注册——前置脚本/凭据对话等耗时环节期间）命中 → connecting；
+        /// 其余 → disconnected。connected 优先于 connecting：注册完成瞬间两个集合可能同时
+        /// 含同一 id（收尾移除尚未执行），此时按已连接呈现，避免绿→琥珀回跳。
         /// 语义收窄：Unhosted 会话（外部 mstsc.exe、RunWithHosting=false 的 LocalApp）不进连接字典，
         /// 显示 disconnected——状态含义是「该服务器是否有 1Remote 托管的活动会话」，不代表远端可达性。
         /// </summary>
-        public static string DeriveConnectionState(IEnumerable<string> activeServerIds, string? serverId)
+        public static string DeriveConnectionState(IEnumerable<string> activeServerIds, string? serverId, IEnumerable<string>? connectingServerIds = null)
         {
             if (string.IsNullOrEmpty(serverId))
                 return WebUiConstants.StatusDisconnected;
@@ -65,6 +69,14 @@ namespace _1RM.Service.WebUi
             {
                 if (id == serverId)
                     return WebUiConstants.StatusConnected;
+            }
+            if (connectingServerIds != null)
+            {
+                foreach (var id in connectingServerIds)
+                {
+                    if (id == serverId)
+                        return WebUiConstants.StatusConnecting;
+                }
             }
             return WebUiConstants.StatusDisconnected;
         }
@@ -87,6 +99,26 @@ namespace _1RM.Service.WebUi
             foreach (var host in sessions.ConnectionId2Hosts.Values)
             {
                 var id = host?.ProtocolServer?.Id;
+                if (!string.IsNullOrEmpty(id))
+                    set.Add(id);
+            }
+            return set;
+        }
+
+        /// <summary>
+        /// 快照「连接请求进行中」的服务器 Id 集合（batch7 #6）：SessionControlService 在
+        /// OnRequestOpenConnection 入队时加入、Connect 收尾时移除（见 ConnectingServerIds 注释）。
+        /// 键枚举即可（值无意义），同上仅依赖 ConcurrentDictionary 的线程安全性；
+        /// 测试宿主未注册 SessionControlService → 空集 → 不产生 connecting 态。
+        /// </summary>
+        private static HashSet<string> BuildConnectingServerIdSet()
+        {
+            var set = new HashSet<string>();
+            var sessions = IoC.TryGet<SessionControlService>();
+            if (sessions == null)
+                return set;
+            foreach (var id in sessions.ConnectingServerIds.Keys)
+            {
                 if (!string.IsNullOrEmpty(id))
                     set.Add(id);
             }
