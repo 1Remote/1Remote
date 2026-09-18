@@ -81,9 +81,11 @@ export function useFolderOps() {
       function onWinEnter(e) {
         if (e.key !== 'Enter' || e.isComposing || e.repeat) return
         if (e.target?.closest?.('button, textarea, .n-select, [contenteditable]')) return
-        // 对话框打开期间回车属于本对话框：capture 阶段拦截（先于表格等 bubble 监听），
-        // 防止全焦点失败（tableFocused 仍 true）时被 ServerTable 的 Enter 连接消费
+        // capture 阶段拦截并截断传播：先于表格等 bubble 监听（preventDefault 只取消默认
+        // 行为、不阻断监听器），不 stopPropagation 的话焦点全失败（tableFocused 仍 true）
+        // 时同一次回车还会被 ServerTable 的 Enter 连接消费——提交对话框的同时连接光标行
         e.preventDefault()
+        e.stopPropagation()
         if (submit()) dia?.destroy()
       }
       window.addEventListener('keydown', onWinEnter, { capture: true })
