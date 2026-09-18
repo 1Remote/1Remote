@@ -65,7 +65,7 @@ export function useFolderOps() {
       const settle = (v) => {
         if (settled) return
         settled = true
-        window.removeEventListener('keydown', onWinEnter)
+        window.removeEventListener('keydown', onWinEnter, { capture: true })
         resolve(v)
       }
       const submit = () => {
@@ -79,11 +79,14 @@ export function useFolderOps() {
         return true
       }
       function onWinEnter(e) {
-        if (e.key !== 'Enter' || e.isComposing || e.defaultPrevented) return
+        if (e.key !== 'Enter' || e.isComposing || e.repeat) return
         if (e.target?.closest?.('button, textarea, .n-select, [contenteditable]')) return
+        // 对话框打开期间回车属于本对话框：capture 阶段拦截（先于表格等 bubble 监听），
+        // 防止全焦点失败（tableFocused 仍 true）时被 ServerTable 的 Enter 连接消费
+        e.preventDefault()
         if (submit()) dia?.destroy()
       }
-      window.addEventListener('keydown', onWinEnter)
+      window.addEventListener('keydown', onWinEnter, { capture: true })
       dia = dialog.create({
         title,
         content: () =>
