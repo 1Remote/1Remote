@@ -17,7 +17,7 @@
  * 不返回；快照与计数均为 0 才返回列表。任何卡死计数至多吞一次 Esc 即恢复。
  */
 import { markRaw, onBeforeUnmount, onMounted, provide, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { isNavigationFailure, NavigationFailureType, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import GeneralGroup from '../components/settings/GeneralGroup.vue'
 import AppearanceGroup from '../components/settings/AppearanceGroup.vue'
@@ -78,7 +78,20 @@ function onKey(e) {
     escShield.open = 0 // 本键用于关（或刚关掉）下拉/浮层：消费一次，计数归零自愈
     return
   }
-  router.push('/')
+  leaveSettings()
+}
+
+// 「← 返回」/Esc 共用出口（#19 自愈加固，机制见 App.vue openSettings 注释）：
+// 同目标重复导航被 vue-router 去重丢弃时带 force 重发，重新触发 router-view 渲染。
+function leaveSettings() {
+  router.push('/').then(
+    (failure) => {
+      if (isNavigationFailure(failure, NavigationFailureType.duplicated)) {
+        router.push({ path: '/', force: true }).catch(() => {})
+      }
+    },
+    () => {}
+  )
 }
 onMounted(() => {
   window.addEventListener('keydown', onEscCapture, true)
@@ -93,7 +106,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="settings">
     <aside class="s-nav">
-      <button class="s-back" type="button" :title="t('settings.backTitle')" @click="router.push('/')">
+      <button class="s-back" type="button" :title="t('settings.backTitle')" @click="leaveSettings()">
         <svg class="s-back-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
           <path
             d="M10 3 5 8l5 5"
