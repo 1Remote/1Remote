@@ -2,7 +2,7 @@
 /**
  * 通用字段渲染器：按 field.type 分发到具体控件（text / number / select / switch /
  * tags / password / textarea / markdown / icon / color / credential / autocomplete /
- * subform，未知类型兜底只读呈现），纯展示组件——
+ * key-value-lines / subform，未知类型兜底只读呈现），纯展示组件——
  *  - 不读 visibleWhen（可见性由父级抽屉用 editor/visibility.js 的 isVisible 求值并隐藏整行）；
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
@@ -22,6 +22,7 @@ import IconPicker from './IconPicker.vue'
 import CredentialPicker from './CredentialPicker.vue'
 import MarkdownField from './MarkdownField.vue'
 import SwitchItem from './SwitchItem.vue'
+import KeyValueLines from './KeyValueLines.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { opaqueHex } from '../../utils/color.js'
 import { useSerialOptions } from '../../composables/useSerialOptions.js'
@@ -341,6 +342,17 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         v-else-if="field.type === FIELD_TYPE.CREDENTIAL"
         :model-value="modelValue || ''"
         :data-source-name="dataSourceName"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
+
+      <!-- key-value-lines：RDP 额外指令的行编辑器（KeyValueLines；候选 kvSuggestions
+           由 schema 注入，placeholder 同 placeholderKey） -->
+      <KeyValueLines
+        v-else-if="field.type === FIELD_TYPE.KEY_VALUE_LINES"
+        :field="field"
+        :model-value="modelValue"
+        :placeholder="placeholder"
         :disabled="disabled"
         @update:model-value="emit('update:modelValue', $event)"
       />

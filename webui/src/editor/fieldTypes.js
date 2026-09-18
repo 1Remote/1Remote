@@ -39,6 +39,11 @@ export const FIELD = {
    *  既能从建议列表选择，也能直接键入任意自定义值（如非标准波特率）。值域与 TEXT
    *  相同（字符串原样存取）。建议来源见 FieldDescriptor 的 suggestions/suggestionsSource。 */
   AUTOCOMPLETE: 'autocomplete',
+  /** KEY_VALUE_LINES：键值行编辑器——RDP「额外指令」（RdpControlAdditionalSettings）
+   *  的特化。json 值是字符串，但语义为"一行一个 属性名:类型:值"（WPF AvalonEdit 文本域，
+   *  解析器 RDP.cs SplitAdditionalSettings）。渲染为行数组编辑器（每行 [属性名自动补全]
+   *  [值输入][删行]），序列化回 WPF 存储格式（详见 KeyValueLines.vue 头注释）。 */
+  KEY_VALUE_LINES: 'key-value-lines',
 }
 
 /**
@@ -87,6 +92,12 @@ export const FIELD = {
  *   | 'serial-baud-rates'（Serial.cs BitRates 常量表）——经 /api/serial/options
  *   模块级缓存拉取一次（composables/useSerialOptions.js，两字段共享）；失败静默退化
  *   为空建议 = 纯文本输入。与 suggestions 二选一（suggestionsSource 优先）。
+ * @property {Array<string>} [kvSuggestions]
+ *   仅 KEY_VALUE_LINES 使用：属性名自动补全候选（完整 'name:type:' 串，如
+ *   'EnableAutoReconnect:i:'——与 WPF CompletionWindow 插入的文本一致，见
+ *   editor/rdpProperties.js 的来源说明）。行内属性名框 n-auto-complete 恒全量
+ *   展示（同 AUTOCOMPLETE 的 Serial 模式），候选不约束取值（任意键入原样进 json，
+ *   校验与 WPF 平价规则交给后端/连接时解析器）。
  * @property {string} [credRole]
  *   仅凭据组（credentialGroup）字段有值，由 schemas.js 注入，EditorDrawer 的
  *   groupBlocks 按此四段渲染（对齐 WPF CredentialView.xaml 的区段顺序）：
