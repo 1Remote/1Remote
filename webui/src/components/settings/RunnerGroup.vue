@@ -51,6 +51,14 @@ import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useAutoSave } from '../../composables/useAutoSave'
+import HelpLink from '../HelpLink.vue'
+
+// 帮助链接（batch8 Task F #20）：URL 照抄 WPF Hyperlink NavigateUri——
+// 运行器文档（External*Settings 各行 (?) 与添加行 (?)，ProtocolRunnerSettingsPageView.xaml:241-247）
+const RUNNER_DOC_URL = 'https://1remote.github.io/usage/protocol/runner/'
+// PuTTY 主题站（PuttyRunnerSettings.xaml:101-105 Themes 行 (?)；KittyRunnerSettings 同款；
+// Character set 行 WPF 也指向此 URL（xaml:150-154，照抄不改））
+const PUTTY_THEMES_URL = 'https://putty.org.ru/themes/'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -484,9 +492,13 @@ onBeforeUnmount(() => {
           @update:show="shield"
           @update:value="onRunnerSelect"
         />
-        <n-button class="sel-add" size="small" type="primary" @click="openAdd">
-          {{ t('settings.r.add') }}
-        </n-button>
+        <span class="sel-add">
+          <n-button size="small" type="primary" @click="openAdd">
+            {{ t('settings.r.add') }}
+          </n-button>
+          <!-- 添加行 (?)（#20）：WPF 添加运行器按钮旁 (?) → 运行器文档（url 照抄） -->
+          <HelpLink :href="RUNNER_DOC_URL" />
+        </span>
       </div>
 
       <!-- runner 卡片列表（新建卡短暂高亮 flash，3s 后熄灭） -->
@@ -525,14 +537,19 @@ onBeforeUnmount(() => {
               <div v-if="hasTheme(r)" class="f-row">
                 <label>{{ t('settings.r.f.theme') }}</label>
                 <div class="theme-wrap">
-                  <n-select
-                    size="small"
-                    :value="r.PuttyThemeName"
-                    :options="themeOptions"
-                    :render-label="renderThemeLabel"
-                    @update:show="shield"
-                    @update:value="onSelectField(r, 'PuttyThemeName', $event)"
-                  />
+                  <div class="theme-select-row">
+                    <n-select
+                      size="small"
+                      :value="r.PuttyThemeName"
+                      :options="themeOptions"
+                      :render-label="renderThemeLabel"
+                      @update:show="shield"
+                      @update:value="onSelectField(r, 'PuttyThemeName', $event)"
+                    />
+                    <!-- 主题行 (?)（#20）：WPF PuttyRunnerSettings.xaml:101-105 / KittyRunnerSettings
+                         :88 → 主题站（url 照抄） -->
+                    <HelpLink :href="PUTTY_THEMES_URL" />
+                  </div>
                   <!-- 主题预览：与 WPF 预览同键位的色块文本行（Colour2 底 / Colour11·15·9·0 前景） -->
                   <div
                     v-if="themeColors(r.PuttyThemeName)"
@@ -570,14 +587,19 @@ onBeforeUnmount(() => {
               </div>
               <div v-if="hasCharset(r)" class="f-row">
                 <label>{{ t('settings.r.f.charset') }}</label>
-                <n-select
-                  size="small"
-                  filterable
-                  :value="r.LineCodePage"
-                  :options="codePageOptions"
-                  @update:show="shield"
-                  @update:value="onSelectField(r, 'LineCodePage', $event)"
-                />
+                <div class="charset-wrap">
+                  <n-select
+                    size="small"
+                    filterable
+                    :value="r.LineCodePage"
+                    :options="codePageOptions"
+                    @update:show="shield"
+                    @update:value="onSelectField(r, 'LineCodePage', $event)"
+                  />
+                  <!-- 字符集行 (?)（#20）：WPF Putty/KittyRunnerSettings Character set 行 (?)
+                       ——WPF 该链接同样指向主题站 URL（原样照抄，不代为修正） -->
+                  <HelpLink :href="PUTTY_THEMES_URL" />
+                </div>
               </div>
             </template>
             <p v-else class="r-internal-hint">{{ t('settings.r.internalHint') }}</p>
@@ -602,7 +624,13 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <div class="f-row">
-              <label>{{ t('settings.r.f.arguments') }}</label>
+              <label>
+                {{ t('settings.r.f.arguments') }}
+                <!-- 参数行 (?)（#20）：WPF External(SSH)RunnerSettings Arguments 行 (?) →
+                     运行器文档（url 照抄）；WPF 同行的 (i) 宏说明弹窗由宏 chips 的
+                     title=描述承载（batch8 #13），不再重复 -->
+                <HelpLink :href="RUNNER_DOC_URL" />
+              </label>
               <div class="arg-wrap">
                 <n-input
                   size="small"
@@ -631,7 +659,11 @@ onBeforeUnmount(() => {
             </div>
             <!-- SSH 族外部运行器：私钥登录参数（WPF ExternalSshRunnerSettings 审计补齐） -->
             <div v-if="hasArgsPrivateKey(r)" class="f-row">
-              <label>{{ t('settings.r.f.argsPrivateKey') }}</label>
+              <label>
+                {{ t('settings.r.f.argsPrivateKey') }}
+                <!-- 私钥参数行 (?)（#20）：WPF ExternalSshRunnerSettings:216 同款（url 照抄） -->
+                <HelpLink :href="RUNNER_DOC_URL" />
+              </label>
               <div class="arg-wrap">
                 <n-input
                   size="small"
@@ -685,7 +717,12 @@ onBeforeUnmount(() => {
                   :placeholder="t('settings.r.f.envHint')"
                   @update:value="onSpecialText(active, r, $event)"
                 />
-                <p class="f-hint">{{ t('settings.r.f.specialHint') }}</p>
+                <p class="f-hint">
+                  {{ t('settings.r.f.specialHint') }}
+                  <!-- 特殊字符行 (?)（#20）：WPF External*RunnerSettings 转义说明旁 (?)
+                       → 运行器文档（url 照抄） -->
+                  <HelpLink :href="RUNNER_DOC_URL" />
+                </p>
               </div>
             </div>
             <!-- 集成到标签页（#12）：开关与输入框同列对齐；解释文本移植 WPF
@@ -793,7 +830,11 @@ onBeforeUnmount(() => {
   color: var(--text-2);
 }
 .sel-add {
+  /* #9+#20：添加按钮与旁侧 (?) 成组右对齐（grid 第三列端对齐的组形态） */
   justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .r-cards {
   display: flex;
@@ -979,6 +1020,27 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+/* 主题下拉 + (?) 帮助并排（#20） */
+.theme-select-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theme-select-row .n-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* 字符集下拉 + (?) 帮助并排（#20） */
+.charset-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.charset-wrap .n-select {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .theme-preview {
   display: flex;

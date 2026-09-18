@@ -19,6 +19,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PROTOCOLS } from '../../editor/schemas.js'
+import HelpLink from '../HelpLink.vue'
 import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
 
@@ -73,6 +74,9 @@ const tileStyle = computed(() => {
   return rgb ? { background: rgb + '33', color: rgb } : null
 })
 const protocolOptions = Object.keys(PROTOCOLS).map((k) => ({ value: k, label: k }))
+// 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView 协议页签旁的 "?"——仅
+// HelpUrl 非空的协议显示（AppProtocol/RdpApp.GetHelpUrl，url 照抄），其余协议无此元素
+const protoHelpUrl = computed(() => PROTOCOLS[props.protocolKey]?.helpUrl || '')
 
 // ---- 数据源：新建（非复制）可在头部改选，其余模式恒用传入 ds ----
 const ds = ref(props.dataSourceName || 'Local')
@@ -121,6 +125,8 @@ defineExpose({ title })
         :title="t('editor.headProtocolTip')"
         @update:value="onProtocolSwitch"
       />
+      <!-- 协议帮助（#20）：跟随当前协议（WPF 页签 "?" 同款，仅 APP/RemoteApp 有） -->
+      <HelpLink v-if="protoHelpUrl" :href="protoHelpUrl" />
     </template>
     <template v-if="showDsSelect && dsOptions.length > 1">
       <span class="ed-head-label">{{ t('editor.headDsLabel') }}</span>
