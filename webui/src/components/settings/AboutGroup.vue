@@ -1,9 +1,12 @@
 <script setup>
 /**
- * 关于分组（fix batch6 Task D #7）：内容对齐 WPF AboutPageView.xaml（不漏项）——
- * logo/应用名/标语、版本 + 构建日期、Update 行（有新版本时显示新版本号链接 + 红点，
- * 同 WPF Hyperlink 红点形态；破坏性更新在 tooltip 里标记）、作者、支持（使用文档）、
- * 做出贡献（说明 + 三按钮）、包含组件（10 个链接照抄 WPF 列表）。
+ * 关于分组（fix batch6 Task D #7 建立；fix batch7 Task D #11 重排为 web 单列自适应）：
+ * 内容对齐 WPF AboutPageView.xaml（12 节零遗漏）——
+ * hero（logo/应用名/标语/版本/构建日期）、Update 行（有新版本时显示新版本号链接 + 红点，
+ * 破坏性更新在 tooltip 里标记）、Author 卡（头像 + Shawn(github) + 邮箱）、Support
+ * （使用文档）、做出贡献（说明 + 三按钮）、包含组件（10 个链接照抄 WPF 列表）。
+ * 重排仅动结构与视觉（克制风格：分组小标题 + 留白 + 主题变量取色，不再克隆 WPF 的
+ * 三色按钮/双栏形态），词条与链接零增删。
  * 语言选择行已删除——常规组（GeneralGroup）已有语言下拉，此处不再重复。
  * 纯技术标签（Author/Support/Make contributions/Included Components/Update/Version/标语）
  * 与 WPF 一致为硬编码英文（locale 中 14 语言同值）；howToUse/贡献说明/三按钮文案
@@ -41,19 +44,17 @@ const COMPONENTS = [
   'https://github.com/icsharpcode/AvalonEdit',
 ]
 
-// 贡献三按钮（WPF AboutPageView.xaml:199-236：红/绿/蓝三色链接按钮；文案键从 WPF 移植）
+// 贡献三按钮（WPF AboutPageView.xaml:199-236；文案键从 WPF 移植，视觉统一为克制 outline 风格）
 const CONTRIBUTE = [
   {
     key: 'suggestions',
-    cls: 'c-suggest',
     label: 'about.giveSuggestions',
     url: 'https://github.com/1Remote/1Remote/issues/',
   },
-  { key: 'coffee', cls: 'c-coffee', label: 'about.buyCoffee', url: 'https://1remote.github.io/about/' },
+  { key: 'coffee', label: 'about.buyCoffee', url: 'https://1remote.github.io/about/' },
   // ms-windows-store: 协议链接直接 href（任务约定；浏览器/WebView2 交由系统处理）
   {
     key: 'review',
-    cls: 'c-review',
     label: 'about.giveReview',
     url: 'ms-windows-store://review/?productid=9PNMNF92JNFP',
   },
@@ -62,47 +63,40 @@ const CONTRIBUTE = [
 
 <template>
   <div class="about">
-    <!-- 顶部：logo + 应用名 + 标语（WPF 左栏顶部块；应用名与 App.vue 顶栏一致硬编码 1Remote） -->
+    <!-- hero：logo + 应用名 + 标语 + 版本/构建日期（版本徽章 + 日期弱化，tooltip 均为 BuildDate 全文） -->
     <div class="hero">
-      <img class="hero-logo" src="/logo.png" width="96" height="96" alt="" />
-      <div class="hero-text">
+      <img class="hero-logo" src="/logo.png" width="72" height="72" alt="" />
+      <div class="hero-body">
         <div class="hero-name">1Remote</div>
         <div class="hero-tagline">{{ t('about.tagline') }}</div>
+        <div class="hero-meta">
+          <span v-if="version" class="ver-badge">{{ version }}</span>
+          <span v-else class="ver-badge soon">{{ t('common.comingSoon') }}</span>
+          <span v-if="buildDateDisplay" class="hero-build" :title="buildDate">{{ buildDateDisplay }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- 版本 + 构建日期（WPF: Version 行 + CurrentVersionDate 行，tooltip 均为 BuildDate 全文） -->
-    <div class="row">
-      <span class="row-label">{{ t('about.version') }}</span>
-      <span class="row-value">{{ version || t('common.comingSoon') }}</span>
-    </div>
-    <div v-if="buildDateDisplay" class="row">
-      <span class="row-label"></span>
-      <span class="row-value hint" :title="buildDate">{{ buildDateDisplay }}</span>
-    </div>
-
     <!-- Update 行：无新版本时整行隐藏（WPF DataTrigger Text="" → Collapsed 同语义） -->
-    <div v-if="updateAvailable" class="row">
-      <span class="row-label">{{ t('about.update') }}</span>
-      <span class="row-value">
-        <a
-          class="upd-link"
-          :href="update.newVersionUrl || '#'"
-          target="_blank"
-          rel="noreferrer noopener"
-          :title="update.breaking ? t('about.update') + ' (breaking change!)' : t('about.update')"
-        >
-          {{ update.newVersion }}
-          <!-- 红点：同 WPF Hyperlink 右上角红点形态（破坏性更新标记见上行 tooltip） -->
-          <span class="dot"></span>
-        </a>
-      </span>
+    <div v-if="updateAvailable" class="update-line">
+      <span class="update-label">{{ t('about.update') }}</span>
+      <a
+        class="upd-link"
+        :href="update.newVersionUrl || '#'"
+        target="_blank"
+        rel="noreferrer noopener"
+        :title="update.breaking ? t('about.update') + ' (breaking change!)' : t('about.update')"
+      >
+        {{ update.newVersion }}
+        <!-- 红点：同 WPF Hyperlink 右上角红点形态（破坏性更新标记见上行 tooltip） -->
+        <span class="dot"></span>
+      </a>
     </div>
 
-    <!-- Author（WPF:201-233：头像 + Shawn(github) + 邮箱） -->
+    <!-- Author 卡（WPF:201-233：头像 + Shawn(github) + 邮箱） -->
     <h3 class="sec-title">{{ t('about.author') }}</h3>
-    <div class="author">
-      <img class="author-avatar" src="/author-avatar.jpg" width="32" height="32" alt="" />
+    <div class="author-card">
+      <img class="author-avatar" src="/author-avatar.jpg" width="36" height="36" alt="" />
       <div class="author-links">
         <a href="https://github.com/VShawn" target="_blank" rel="noreferrer noopener">Shawn</a>
         <a href="mailto:veckshawn@gmail.com?subject=1Remote">(veckshawn@gmail.com)</a>
@@ -111,22 +105,15 @@ const CONTRIBUTE = [
 
     <!-- Support（WPF:168-180：使用文档链接，文案 = WPF about_page_how_to_use 词条） -->
     <h3 class="sec-title">{{ t('about.support') }}</h3>
-    <a href="https://1remote.github.io/usage/quick-start/" target="_blank" rel="noreferrer noopener">
+    <a class="link-btn" href="https://1remote.github.io/usage/quick-start/" target="_blank" rel="noreferrer noopener">
       {{ t('about.howToUse') }}
     </a>
 
-    <!-- Make contributions（WPF:183-238：说明文案 + 三色按钮） -->
+    <!-- Make contributions（WPF:183-238：说明文案 + 三按钮） -->
     <h3 class="sec-title">{{ t('about.makeContributions') }}</h3>
     <p class="contribute-text">{{ t('about.contributeText') }}</p>
     <div class="contribute-actions">
-      <a
-        v-for="c in CONTRIBUTE"
-        :key="c.key"
-        :class="['c-btn', c.cls]"
-        :href="c.url"
-        target="_blank"
-        rel="noreferrer noopener"
-      >
+      <a v-for="c in CONTRIBUTE" :key="c.key" class="link-btn" :href="c.url" target="_blank" rel="noreferrer noopener">
         {{ t(c.label) }}
       </a>
     </div>
@@ -145,14 +132,17 @@ const CONTRIBUTE = [
 .about {
   max-width: 640px;
 }
+
+/* ---- hero：logo + 名称/标语/版本元信息 ---- */
 .hero {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 0 16px;
+  padding: 4px 0 20px;
 }
 .hero-logo {
   flex: 0 0 auto;
+  border-radius: 10px;
 }
 .hero-name {
   font-size: 1.3846rem;
@@ -164,28 +154,51 @@ const CONTRIBUTE = [
   font-size: 0.9615rem;
   color: var(--text-2);
 }
-.row {
-  display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
-  gap: 6px 12px;
+.hero-meta {
+  display: flex;
   align-items: center;
-  padding: 4px 0;
+  gap: 10px;
+  margin-top: 6px;
 }
-.row-label {
-  font-size: 0.9615rem;
-  color: var(--text-2);
+.ver-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent-text);
+  font-size: 0.8462rem;
+  line-height: 1.5;
 }
-.row-value {
-  font-size: 0.9615rem;
-  color: var(--text-1);
-}
-.row-value.hint {
+.ver-badge.soon {
+  border-color: var(--border-strong);
   color: var(--text-4);
 }
-/* Update 行链接：占位 underline 去除、hover 出现（对齐 WPF Hyperlink 样式触发器） */
+.hero-build {
+  font-size: 0.8462rem;
+  color: var(--text-4);
+}
+
+/* ---- Update 行 ---- */
+.update-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-container);
+  margin-bottom: 4px;
+}
+.update-label {
+  flex: 0 0 auto;
+  font-size: 0.9231rem;
+  font-weight: 600;
+  color: var(--accent-text);
+}
 .upd-link {
   position: relative; /* 红点（.dot）的定位基准 */
   color: var(--accent-text);
+  font-size: 0.9231rem;
   text-decoration: none;
 }
 .upd-link:hover {
@@ -200,67 +213,73 @@ const CONTRIBUTE = [
   border-radius: 50%;
   background: red; /* WPF Path Fill="Red" 同值 */
 }
+
+/* ---- 分组小标题：克制样式（text-2 弱化 + 留白，不再克隆 WPF accent 色标题） ---- */
 .sec-title {
-  margin: 18px 0 8px;
-  font-size: 1.0769rem;
+  margin: 24px 0 10px;
+  font-size: 0.9231rem;
   font-weight: 600;
-  color: var(--accent-text); /* 对齐 WPF EditorGroupTextBlockTitle 的 accent 色小节标题 */
+  color: var(--text-3);
 }
-/* 通用链接配色排除贡献按钮（.c-btn 白字）——否则 .about a 的类+元素优先级会盖掉按钮白字 */
-.about a:not(.c-btn) {
+.about a:not(.link-btn) {
   color: var(--accent-text);
 }
-.author {
+
+/* ---- Author 卡 ---- */
+.author-card {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  width: fit-content;
 }
 .author-avatar {
   flex: 0 0 auto;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 .author-links {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  font-size: 0.9615rem;
+}
+
+/* ---- Support / 贡献按钮：统一克制 outline 风格（替代 WPF 三色实心按钮） ---- */
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text-1);
+  font-size: 0.9615rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.link-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-container);
+  color: var(--accent-text);
 }
 .contribute-text {
   margin: 0 0 12px;
   font-size: 0.9615rem;
   line-height: 1.5;
   color: var(--text-2);
-  opacity: 0.85; /* WPF Opacity 0.7 的克制近似 */
+  max-width: 56ch;
 }
 .contribute-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
-/* 三色贡献按钮：WPF Border 背景 #e53e3e/#2f855a/#3182ce + 白字圆角（WPF:199/212/225） */
-.c-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 130px; /* WPF MinWidth=130 */
-  padding: 7px 14px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 0.9615rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-.c-btn:hover {
-  opacity: 0.85; /* WPF IsMouseOver Opacity 0.6 的克制近似 */
-}
-.c-suggest {
-  background: #e53e3e;
-}
-.c-coffee {
-  background: #2f855a;
-}
-.c-review {
-  background: #3182ce;
-}
+
+/* ---- Included Components ---- */
 .components {
   margin: 0;
   padding: 0;
@@ -271,7 +290,9 @@ const CONTRIBUTE = [
 }
 .components a {
   font-size: 0.9615rem;
+  color: var(--accent-text);
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
 .components a:hover {
   text-decoration: underline;
