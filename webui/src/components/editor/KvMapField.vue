@@ -10,10 +10,13 @@
  * web 以显式双列取代行文法（key/value 各一列，语义无需用户记忆分隔符）。
  *
  * 序列化约定：
- *  - 空白 key 的行丢弃（空行等价于不产生字典项；C# setter 侧本就过滤空白键，
- *    AppArgument.cs:159——双保险）；value 原样保留（空 value 落库时由 C# setter
- *    归一为 value=key，AppArgument.cs:169-174，与 WPF"仅 key 行"语义等价）。
- *  - 重复 key 后者覆盖前者（JSON 对象无重复键，C# Dictionary.Add 亦然）。
+ *  - 仅丢弃 key 为空串（''）的行（新加空行/删空行不产生字典项，值不因空行变脏——
+ *    与 KeyValueLines 的空名行丢弃同语义）；key 不做 trim/归一，原样透传——
+ *    含空格键名（如 "Full HD"）必须保真，trim 权威在 C# setter（AppArgument.cs:159
+ *    过滤空白键），web 侧剥字符会打断输入（评审修复）。
+ *  - value 原样保留（空 value 落库时由 C# setter 归一为 value=key，
+ *    AppArgument.cs:169-174，与 WPF"仅 key 行"语义等价）。
+ *  - 重复 key 后者覆盖前者（JSON 对象无重复键，C# Dictionary 语义亦然）。
  *  - 空表 → 提交 {}（非 null：null 会绕过 C# setter 的空防护直落 NRE 风险，
  *    与 batch patch 的「JSON null 一律拒绝」同一纪律）。
  *
@@ -39,24 +42,31 @@ function parseRows(obj) {
   return Object.keys(obj).map((k) => ({ key: String(k), value: obj[k] == null ? '' : String(obj[k]) }))
 }
 
-/** 行数组 → 对象（空白 key 行丢弃、重复键后者覆盖；空表 → {}，见文件头序列化约定）。 */
+/** 行数组 → 对象（空串 key 行丢弃、key 不 trim 原样透传、重复键后者覆盖；空表 → {}）。 */
 function serializeRows(rows) {
   const out = {}
   for (const r of rows) {
-    const k = String(r.key ?? '').trim()
+    const k = String(r.key ?? '')
     if (k === '') continue
     out[k] = String(r.value ?? '')
   }
   return out
 }
 
-// ---- 本地行态与外部值同步（回环挡板同 KeyValueLines：emit 后父级写回同一对象不打断输入）----
+// ---- 本地行态与外部值同步 ----
+// 回环挡板（评审修复）：与 KeyValueLines 不同，值是对象——props.modelValue 经父级
+// 响应式链是 Proxy（EditorDrawer 的 reactive json → SubformList 透传），与 emit 出去
+// 的普通对象永不做同一性相等（v === lastEmitted 恒 false → 每次键入都 re-parse，
+// 叠加序列化 trim 曾把含空格键名瞬间剥掉）。挡板改内容比较（JSON.stringify 相等：
+// serializeRows 按行序建键，回读 proxy 的键序 = 插入序，内容一致即同一回环）。
+// 仅在外部真实变更（加载/回读）时重新解析——半输入态不被打断。
 const rows = ref([])
 let lastEmitted = null
 watch(
   () => props.modelValue,
   (v) => {
-    if (v === lastEmitted) return
+    if (v != null && lastEmitted != null && JSON.stringify(v) === JSON.stringify(lastEmitted)) return
+    if (v === lastEmitted) return // null/undefined 快速路径（两态均为原值时内容比较不可达）
     rows.value = parseRows(v)
   },
   { immediate: true }

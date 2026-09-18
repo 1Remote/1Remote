@@ -13,6 +13,12 @@
  * 行折叠（fix-batch2 Task C #6）：行默认折叠——表头只显示行名（Name 值，缺失 →
  *（未命名））+ 展开箭头 + 删除；点表头切换展开整行编辑；新增行自动展开。
  *
+ * 行字段可见性（评审修复）：行体渲染前按 isVisible(f, row) 过滤——subform 行字段的
+ * visibleWhen 求值数据源是行对象（如 Selections 依赖行内 Type ∈ Normal/Selection，
+ * 对齐 WPF ArgumentEditView 的 SelectionsVisibility），不是抽屉的顶层 json。
+ * 「隐藏≠删值」约定同顶层字段：不渲染仅不进 DOM，行对象上的值保留并随 json
+ * 原样透传（Type 切回可见时值仍在）。
+ *
  * ArgumentList 的 Value 按描述符统一渲染为文本框：WPF 按 Type 逐行切换渲染
  * （Secret=密码框/Flag=勾选/Selection=下拉，见 ArgumentListControl.xaml:126-145），
  * 静态 schema 无法按行内另一字段取值切换控件类型，掩码/控件特化留作 Plan 3+ 润色
@@ -21,6 +27,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FormField from './FormField.vue'
+import { isVisible } from '../../editor/visibility.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor[]} 行字段描述符（subform.fields） */
@@ -87,6 +94,15 @@ function updateRowField(index, key, value) {
 }
 
 const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
+
+/**
+ * 行体渲染的字段集：visibleWhen 以行对象为求值源过滤（见文件头注释——依赖的是
+ * 行内字段如 Type，不是顶层 json；「隐藏≠删值」，未渲染字段的值随行对象透传）。
+ * @param {Object} row 当前行（json 域）
+ */
+function visibleRowFields(row) {
+  return props.fields.filter((f) => isVisible(f, row))
+}
 </script>
 
 <template>
@@ -100,7 +116,7 @@ const keyOf = (row, i) => (props.rowKey ? props.rowKey(row, i) : i)
       </div>
       <div v-if="isExpanded(i)" class="sf-row-body">
         <FormField
-          v-for="f in fields"
+          v-for="f in visibleRowFields(row)"
           :key="f.key"
           :field="f"
           :model-value="row[f.key]"
